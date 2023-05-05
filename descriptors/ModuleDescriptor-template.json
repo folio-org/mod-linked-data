@@ -1,0 +1,77 @@
+{
+  "id": "@artifactId@-@version@",
+  "name": "Linked Data Module",
+  "provides": [
+    {
+      "id": "bibframes",
+      "version": "0.1",
+      "handlers": [
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/bibframes",
+          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/bibframes/{id}",
+          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "modulePermissions": []
+        }
+      ]
+    },
+    {
+      "id": "_tenant",
+      "version": "1.0",
+      "interfaceType": "system",
+      "handlers": [
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/_/tenant",
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "DELETE", "GET" ],
+          "pathPattern": "/_/tenant/{id}"
+        }
+      ]
+    }
+  ],
+  "requires": [],
+  "permissionSets": [
+    {
+      "permissionName": "linked.data.bibframe.post",
+      "displayName": "LinkedData - creates a Bibframe record",
+      "description": "Creates an Bibframe"
+    },
+    {
+      "permissionName": "linked.data.bibframe.get",
+      "displayName": "LinkedData - reads a Bibframe record",
+      "description": "Reads a Bibframe"
+    }
+  ],
+  "launchDescriptor": {
+    "dockerImage": "@artifactId@:@version@",
+    "dockerPull": false,
+    "dockerArgs": {
+      "HostConfig": {
+        "Memory": 1073741824,
+        "PortBindings": { "8081/tcp": [ { "HostPort": "%p" } ] }
+      }
+    },
+    "env": [
+      { "name": "ENV", "value": "folio" },
+      { "name": "JAVA_OPTIONS", "value": "-XX:MaxRAMPercentage=85.0" },
+      { "name": "DB_HOST", "value": "postgres" },
+      { "name": "DB_PORT", "value": "5432" },
+      { "name": "DB_USERNAME", "value": "folio_admin" },
+      { "name": "DB_PASSWORD", "value": "folio_admin" },
+      { "name": "DB_DATABASE", "value": "okapi_modules" },
+      { "name": "DB_QUERYTIMEOUT", "value": "60000" },
+      { "name": "DB_CHARSET", "value": "UTF-8" },
+      { "name": "DB_MAXPOOLSIZE", "value": "5" },
+      { "name": "INITIAL_LANGUAGES", "value": "eng" },
+      { "name": "SYSTEM_USER_PASSWORD", "value": "Mod-linked-data-1-0-0" }
+    ]
+  }
+}

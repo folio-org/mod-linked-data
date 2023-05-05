@@ -1,0 +1,86 @@
+openapi: 3.0.0
+info:
+  title: Search API
+  version: v1
+  description: Linked Data API
+
+paths:
+  /bibframes/{id}:
+    get:
+      operationId: getBibframeById
+      description: Get a Bibframe record by id
+      parameters:
+        - $ref: '#/components/parameters/bibframeId'
+      responses:
+        '200':
+          description: 'Bibframe as json string'
+          content:
+            application/json:
+              example: example/bibframeResponse.sample
+              schema:
+                $ref: schema/bibframeResponse.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /bibframes:
+    post:
+      operationId: createBibframe
+      description: Create a Bibframe record
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+      requestBody:
+        content:
+          application/json:
+            example: example/bibframeCreateRequest.sample
+            schema:
+              $ref: schema/bibframeCreateRequest.json
+      responses:
+        '200':
+          description: 'Created Bibframe record'
+          content:
+            application/json:
+              example: examples/bibframeResponse.sample
+              schema:
+                $ref: schema/bibframeResponse.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+components:
+  parameters:
+    bibframeId:
+      name: id
+      in: path
+      required: true
+      description: Bibframe id
+      schema:
+        type: string
+        format: uuid
+    x-okapi-tenant-header:
+      name: x-okapi-tenant
+      in: header
+      description: X-Okapi-Tenant header value
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    errorResponse:
+      $ref: schema/errors.json
+
+  responses:
+    badRequestResponse:
+      description: Validation errors
+      content:
+        application/json:
+          example: examples/validationErrorResponse.sample
+          schema:
+            $ref: "#/components/schemas/errorResponse"
+    internalServerErrorResponse:
+      description: When unhandled exception occurred during code execution, e.g. NullPointerException
+      content:
+        application/json:
+          example: example/unknownError.sample
