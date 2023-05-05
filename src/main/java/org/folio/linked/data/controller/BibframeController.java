@@ -7,13 +7,11 @@ import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.service.BibframeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bibframes")
 public class BibframeController implements org.folio.linked.data.rest.resource.BibframesApi {
 
   private final BibframeService bibframeService;
