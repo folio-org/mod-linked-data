@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Linked Data API
+  title: Search API
   version: v1
-  description: Linked Data service API
+  description: Linked Data API
 
 paths:
   /bibframes/{id}:

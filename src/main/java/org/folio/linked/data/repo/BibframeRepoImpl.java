@@ -2,7 +2,6 @@ package org.folio.linked.data.repo;
 
 import static java.util.Objects.isNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class BibframeRepoImpl implements BibframeRepo {
 
-  private final Map<UUID, Bibframe> tempStorage = new HashMap<>();
+  private Map<UUID, Bibframe> tempStorage;
 
   @Override
   public Bibframe persist(Bibframe bibframe) {
