@@ -15,15 +15,10 @@ import org.springframework.http.HttpHeaders;
 public class TestUtil {
 
   public static final String TENANT_ID = "test_tenant";
-
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
     .setSerializationInclusion(JsonInclude.Include.NON_NULL)
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
-  public static String getOkapiMockUrl() {
-    return System.getProperty("folio.okapi-url");
-  }
 
   @SneakyThrows
   public static String asJsonString(Object value) {
@@ -41,5 +36,4 @@ public class TestUtil {
     httpHeaders.add(XOkapiHeaders.URL, okapiUrl);
     return httpHeaders;
   }
-
 }
