@@ -49,7 +49,7 @@ public class ApiExceptionHandler {
    */
   @ExceptionHandler(LinkedDataServiceException.class)
   public ResponseEntity<ErrorResponse> handleLinkedDataServiceException(LinkedDataServiceException exception) {
-    logException(DEBUG, exception);
+    logException(WARN, exception);
     return buildResponseEntity(exception, BAD_REQUEST, exception.getErrorCode());
   }
 
@@ -61,7 +61,7 @@ public class ApiExceptionHandler {
    */
   @ExceptionHandler(UnsupportedOperationException.class)
   public ResponseEntity<ErrorResponse> handleUnsupportedOperationException(UnsupportedOperationException exception) {
-    logException(DEBUG, exception);
+    logException(WARN, exception);
     return buildResponseEntity(exception, BAD_REQUEST, SERVICE_ERROR);
   }
 
@@ -96,7 +96,7 @@ public class ApiExceptionHandler {
    */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException exception) {
-    logException(DEBUG, exception);
+    logException(WARN, exception);
     var errorResponse = new ErrorResponse();
     exception.getConstraintViolations().forEach(constraintViolation ->
       errorResponse.addErrorsItem(new Error()
@@ -140,7 +140,7 @@ public class ApiExceptionHandler {
    */
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
-    logException(DEBUG, exception);
+    logException(WARN, exception);
     return buildResponseEntity(exception, BAD_REQUEST, VALIDATION_ERROR);
   }
 
@@ -152,7 +152,7 @@ public class ApiExceptionHandler {
    */
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
-    logException(DEBUG, exception);
+    logException(WARN, exception);
     return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
   }
 
@@ -164,7 +164,7 @@ public class ApiExceptionHandler {
    */
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NotFoundException exception) {
-    logException(DEBUG, exception);
+    logException(WARN, exception);
     return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
   }
 
@@ -176,7 +176,7 @@ public class ApiExceptionHandler {
    */
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
   public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
-    logException(DEBUG, e);
+    logException(WARN, e);
     return buildResponseEntity(e, BAD_REQUEST, VALIDATION_ERROR);
   }
 
@@ -194,7 +194,7 @@ public class ApiExceptionHandler {
       .map(IllegalArgumentException.class::cast)
       .map(this::handleIllegalArgumentException)
       .orElseGet(() -> {
-        logException(DEBUG, e);
+        logException(WARN, e);
         return buildResponseEntity(e, BAD_REQUEST, VALIDATION_ERROR);
       });
   }
@@ -208,7 +208,7 @@ public class ApiExceptionHandler {
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
     MissingServletRequestParameterException exception) {
-    logException(DEBUG, exception);
+    logException(WARN, exception);
     return buildResponseEntity(exception, BAD_REQUEST, VALIDATION_ERROR);
   }
 
