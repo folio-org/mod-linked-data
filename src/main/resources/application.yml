@@ -1,7 +1,8 @@
 spring:
   application:
     name: mod-linked-data
-  server.port: 8081
+  server:
+    port: 8081
   cloud:
     openfeign:
       okhttp:
@@ -14,6 +15,12 @@ spring:
     change-log: classpath:changelog/changelog-master.xml
   main:
     allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 folio:
   environment: ${ENV:folio}

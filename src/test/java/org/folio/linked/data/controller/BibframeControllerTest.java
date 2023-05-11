@@ -1,8 +1,11 @@
 package org.folio.linked.data.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.TestUtil.CONFIGURATION;
+import static org.folio.linked.data.TestUtil.GRAPH_NAME;
 import static org.mockito.Mockito.when;
 
+import java.util.Objects;
 import java.util.UUID;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
@@ -29,10 +32,16 @@ class BibframeControllerTest {
   void createBibframe_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
     var request = new BibframeCreateRequest();
-    request.setToBeFilled(true);
+    request.setGraphName(GRAPH_NAME);
+    request.setConfiguration(CONFIGURATION);
+
     var response = new BibframeResponse();
-    response.setToBeFilled(request.getToBeFilled());
-    response.setId(UUID.randomUUID());
+    response.setId(1);
+    response.setGraphName(GRAPH_NAME);
+    response.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
+    response.setConfiguration(CONFIGURATION);
+    response.setGraphHash(Objects.hash(CONFIGURATION));
+
     var tenantId = UUID.randomUUID().toString();
     when(bibframeService.createBibframe(tenantId, request)).thenReturn(response);
 
@@ -47,14 +56,18 @@ class BibframeControllerTest {
   @Test
   void getBibframeById_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var id = UUID.randomUUID();
     var response = new BibframeResponse();
-    response.setToBeFilled(true);
-    response.setId(UUID.randomUUID());
-    when(bibframeService.getBibframeById(id)).thenReturn(response);
+    response.setId(1);
+    response.setGraphName(GRAPH_NAME);
+    response.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
+    response.setConfiguration(CONFIGURATION);
+    response.setGraphHash(Objects.hash(CONFIGURATION));
+
+    var slug = UUID.randomUUID().toString();
+    when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
 
     // when
-    var result = bibframeController.getBibframeById(id);
+    var result = bibframeController.getBibframeById(slug);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

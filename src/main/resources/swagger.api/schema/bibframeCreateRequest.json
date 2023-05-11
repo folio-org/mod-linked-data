@@ -3,9 +3,13 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Request body to create Bibframe record",
   "properties": {
-    "to-be-filled": {
-      "type": "boolean",
-      "description": "more properties to be added later"
+    "graphName": {
+      "type": "string",
+      "description": "The name of the graph associated with the Bibframe object."
+    },
+    "configuration": {
+      "type": "string",
+      "description": "The configuration JSON for the Bibframe."
     }
   },
   "additionalProperties": false,

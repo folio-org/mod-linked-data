@@ -15,6 +15,8 @@ import org.springframework.http.HttpHeaders;
 public class TestUtil {
 
   public static final String TENANT_ID = "test_tenant";
+  public static final String GRAPH_NAME = "graphName";
+  public static final String CONFIGURATION = "{}";
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
     .setSerializationInclusion(JsonInclude.Include.NON_NULL)
