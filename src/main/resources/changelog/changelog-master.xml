@@ -4,5 +4,11 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-  <include file="changes/1.0.xml" relativeToChangelogFile="true"/>
+  <!-- Properties -->
+  <property name="baseDir" value="changelog"/>
+
+  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-graphset-schemas.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-graphset-functions.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-graphset-table.xml" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

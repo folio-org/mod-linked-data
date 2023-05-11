@@ -5,8 +5,8 @@ import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -33,30 +33,31 @@ class BibframeControllerIT {
   private BibframeRepo bibframeRepo;
 
   @Test
-  void createBibframeEndpoint_shouldStoreEntityCorrectlyAndReturnIt() throws Exception {
-    // given
-    var bibframeCreateRequest = new BibframeCreateRequest();
-    bibframeCreateRequest.setToBeFilled(true);
-    var requestBuilder = post(BIBFRAMES_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()))
-      .content(asJsonString(bibframeCreateRequest));
+  void createBibframeEndpoint_shouldStoreEntityCorrectly() throws Exception {
+    String graphName = "graphName";
+    String configuration = "{}";
 
+    // given
+    BibframeCreateRequest bibframeCreateRequest = new BibframeCreateRequest();
+    bibframeCreateRequest.setGraphName(graphName);
+    bibframeCreateRequest.setConfiguration(configuration);
+    MockHttpServletRequestBuilder requestBuilder = post(BIBFRAMES_URL)
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()))
+        .content(asJsonString(bibframeCreateRequest));
 
     // when
-    var resultActions = mockMvc.perform(requestBuilder);
+    ResultActions resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var mvcResult = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", notNullValue()))
-      .andExpect(jsonPath("to-be-filled", is(true)))
-      .andReturn();
-    String id = JsonPath.read(mvcResult.getResponse().getContentAsString(), "id");
-    var bibframeOptional = bibframeRepo.read(UUID.fromString(id));
-    assertThat(bibframeOptional).isNotEmpty();
-    assertThat(bibframeOptional.get().isToBeFilled()).isEqualTo(bibframeCreateRequest.getToBeFilled());
+    resultActions
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("id", notNullValue()))
+        .andExpect(jsonPath("graphName").value(graphName))
+        .andExpect(jsonPath("graphHash", notNullValue()))
+        .andExpect(jsonPath("slug", notNullValue()))
+        .andExpect(jsonPath("configuration").value(configuration));
   }
 
   @Test
@@ -66,8 +67,8 @@ class BibframeControllerIT {
     var persisted = bibframeRepo.persist(bibframe);
 
     var requestBuilder = get(BIBFRAMES_URL + "/" + persisted.getId().toString())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()));
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()));
 
 
     // when
@@ -75,10 +76,10 @@ class BibframeControllerIT {
 
     // then
     resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", is(persisted.getId().toString())))
-      .andExpect(jsonPath("to-be-filled", is(persisted.isToBeFilled())));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("id", is(persisted.getId().toString())))
+        .andExpect(jsonPath("to-be-filled", is(persisted.isToBeFilled())));
   }
 
   @Test
@@ -95,5 +96,10 @@ class BibframeControllerIT {
 
     // then
     resultActions.andExpect(status().isNotFound());
+      .andExpect(jsonPath("id", notNullValue()))
+      .andExpect(jsonPath("graphName").value(graphName))
+      .andExpect(jsonPath("graphHash", notNullValue()))
+      .andExpect(jsonPath("slug", notNullValue()))
+      .andExpect(jsonPath("configuration").value(configuration));
   }
 }
