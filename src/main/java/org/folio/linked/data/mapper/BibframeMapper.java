@@ -9,6 +9,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = SPRING, imports = {Bibframe.class, BibframeCreateRequest.class, BibframeResponse.class})
 public interface BibframeMapper {
+
   Bibframe map(BibframeCreateRequest bibframeCreateRequest);
-  BibframeResponse map (Bibframe bibframe);
+
+  BibframeResponse map(Bibframe bibframe);
+
 }
