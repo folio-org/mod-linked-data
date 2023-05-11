@@ -1,7 +1,6 @@
 package org.folio.linked.data.controller.advice;
 
 import static java.util.Collections.emptyList;
-import static org.apache.logging.log4j.Level.DEBUG;
 import static org.apache.logging.log4j.Level.WARN;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.SERVICE_ERROR;
