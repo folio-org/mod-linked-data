@@ -4,7 +4,6 @@ import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -28,14 +27,17 @@ class BibframeControllerIT {
 
   @Test
   void createBibframeEndpoint_shouldStoreEntityCorrectly() throws Exception {
+    String graphName = "graphName";
+    String configuration = "{}";
+
     // given
     BibframeCreateRequest bibframeCreateRequest = new BibframeCreateRequest();
-    bibframeCreateRequest.setToBeFilled(true);
+    bibframeCreateRequest.setGraphName(graphName);
+    bibframeCreateRequest.setConfiguration(configuration);
     MockHttpServletRequestBuilder requestBuilder = post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()))
       .content(asJsonString(bibframeCreateRequest));
-
 
     // when
     ResultActions resultActions = mockMvc.perform(requestBuilder);
@@ -45,6 +47,9 @@ class BibframeControllerIT {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("id", notNullValue()))
-      .andExpect(jsonPath("to-be-filled", is(true)));
+      .andExpect(jsonPath("graphName").value(graphName))
+      .andExpect(jsonPath("graphHash", notNullValue()))
+      .andExpect(jsonPath("slug", notNullValue()))
+      .andExpect(jsonPath("configuration").value(configuration));
   }
 }
