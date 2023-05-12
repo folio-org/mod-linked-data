@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/okapi_modules
+folio:
+  environment: ${ENV:folio}
+  okapiUrl: ${okapi.url}
