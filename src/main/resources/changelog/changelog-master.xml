@@ -7,8 +7,8 @@
   <!-- Properties -->
   <property name="baseDir" value="changelog"/>
 
-  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-graphset-schemas.xml" relativeToChangelogFile="true"/>
-  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-graphset-functions.xml" relativeToChangelogFile="true"/>
-  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-graphset-table.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-mod-linked-data-schema.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-mod-linked-data-functions.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-mod-linked-data-tables.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

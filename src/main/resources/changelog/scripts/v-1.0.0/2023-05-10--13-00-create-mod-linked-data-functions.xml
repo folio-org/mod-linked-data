@@ -5,8 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
-    <changeSet id="2023-05-10--13-00-create-graphset-functions" author="VictorBodrov">
-        <sqlFile path="${basedir}/sql/v-1.0.0/2023-05-10--13-00-create_function.sql" splitStatements="false"/>
+    <changeSet id="2023-05-10--13-00-create-schema_slugify-function" author="VictorBodrov">
+        <sqlFile path="${basedir}/sql/v-1.0.0/2023-05-10--13-00-create-schema_slugify-function.sql" splitStatements="false"/>
     </changeSet>
 
 </databaseChangeLog>

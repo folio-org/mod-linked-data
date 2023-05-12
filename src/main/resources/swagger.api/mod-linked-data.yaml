@@ -58,7 +58,6 @@ components:
       description: Bibframe id
       schema:
         type: string
-        format: uuid
     x-okapi-tenant-header:
       name: x-okapi-tenant
       in: header

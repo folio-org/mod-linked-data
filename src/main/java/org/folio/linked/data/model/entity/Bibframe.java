@@ -8,18 +8,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "graphset", schema = "graphset")
+@Table(name = "graphset", schema = "mod-linked-data")
 @NoArgsConstructor
-@AllArgsConstructor(staticName = "of")
+@RequiredArgsConstructor(staticName = "of")
 @Getter
 @Setter
 public class Bibframe {
@@ -28,6 +29,7 @@ public class Bibframe {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @NonNull
   @Column(nullable = false)
   private String graphName;
 
@@ -39,6 +41,7 @@ public class Bibframe {
   @Generated(value = GenerationTime.ALWAYS)
   private String slug;
 
+  @NonNull
   @Column(columnDefinition = "json", nullable = false)
   @Type(JsonBinaryType.class)
   private JsonNode configuration;

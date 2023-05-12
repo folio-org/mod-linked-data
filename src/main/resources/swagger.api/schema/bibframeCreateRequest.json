@@ -7,14 +7,6 @@
       "type": "string",
       "description": "The name of the graph associated with the Bibframe object."
     },
-    "graphHash": {
-      "type": "integer",
-      "description": "The hash value of the graph associated with the Bibframe object."
-    },
-    "slug": {
-      "type": "string",
-      "description": "The unique text identifier."
-    },
     "configuration": {
       "type": "string",
       "description": "The configuration JSON for the Bibframe."

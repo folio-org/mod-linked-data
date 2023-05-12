@@ -1,6 +1,5 @@
 package org.folio.linked.data.controller;
 
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
@@ -24,7 +23,7 @@ public class BibframeController implements BibframesApi {
   }
 
   @Override
-  public ResponseEntity<BibframeResponse> getBibframeById(UUID uuid) {
-    return ResponseEntity.ok(bibframeService.getBibframeBySlug(uuid.toString()));
+  public ResponseEntity<BibframeResponse> getBibframeById(String uuid) {
+    return ResponseEntity.ok(bibframeService.getBibframeBySlug(uuid));
   }
 }
