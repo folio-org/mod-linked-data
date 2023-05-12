@@ -18,7 +18,7 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "graphset", schema = "mod-linked-data")
+@Table(name = "graphset")
 @NoArgsConstructor
 @RequiredArgsConstructor(staticName = "of")
 @Getter

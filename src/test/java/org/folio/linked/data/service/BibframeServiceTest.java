@@ -98,7 +98,7 @@ class BibframeServiceTest {
     );
 
     // then
-    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given id [" + notExistedSlug + "] is not found");
+    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given slug [" + notExistedSlug + "] is not found");
   }
 }
 

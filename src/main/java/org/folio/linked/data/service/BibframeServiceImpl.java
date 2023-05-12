@@ -28,6 +28,6 @@ public class BibframeServiceImpl implements BibframeService {
   public BibframeResponse getBibframeBySlug(String slug) {
     Optional<Bibframe> optionalBibframe = bibframeRepo.findBySlug(slug);
     return optionalBibframe.map(bibframeMapper::map)
-      .orElseThrow(() -> new NotFoundException("Bibframe record with given id [" + slug + "] is not found"));
+      .orElseThrow(() -> new NotFoundException("Bibframe record with given slug [" + slug + "] is not found"));
   }
 }
