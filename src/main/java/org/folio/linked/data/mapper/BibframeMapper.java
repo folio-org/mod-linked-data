@@ -26,15 +26,13 @@ public interface BibframeMapper {
   @Named("objectToJson")
   default JsonNode toJson(Object configuration) throws JsonProcessingException {
     JsonNode node = null;
-    if (configuration instanceof String json){
+    if (configuration instanceof String json) {
       node = OBJECT_MAPPER.readTree(json);
-    } else if (configuration instanceof LinkedHashMap json){
+    } else if (configuration instanceof LinkedHashMap json) {
       node = OBJECT_MAPPER.convertValue(json, JsonNode.class);
     }
     return node != null ? node : OBJECT_MAPPER.readTree("{}");
   }
-
-
 
 
 }
