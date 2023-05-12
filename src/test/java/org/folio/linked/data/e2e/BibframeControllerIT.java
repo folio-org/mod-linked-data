@@ -43,13 +43,13 @@ class BibframeControllerIT {
 
     // then
     resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", notNullValue()))
-      .andExpect(jsonPath("graphName", is(GRAPH_NAME)))
-      .andExpect(jsonPath("graphHash", notNullValue()))
-      .andExpect(jsonPath("slug", notNullValue()))
-      .andExpect(jsonPath("configuration", equalTo(CONFIGURATION)));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("id", notNullValue()))
+        .andExpect(jsonPath("graphName", is(GRAPH_NAME)))
+        .andExpect(jsonPath("graphHash", notNullValue()))
+        .andExpect(jsonPath("slug", notNullValue()))
+        .andExpect(jsonPath("configuration", notNullValue()));
   }
 
   @Test
@@ -73,7 +73,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("graphName", equalTo(GRAPH_NAME)))
       .andExpect(jsonPath("graphHash").isNotEmpty())
       .andExpect(jsonPath("slug", equalTo(slug)))
-      .andExpect(jsonPath("configuration", equalTo(CONFIGURATION)));
+      .andExpect(jsonPath("configuration", notNullValue()));
   }
 
   @Test

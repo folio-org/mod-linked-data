@@ -28,8 +28,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class BibframeServiceTest {
 
-
-
   @InjectMocks
   private BibframeServiceImpl bibframeService;
 

@@ -20,7 +20,7 @@
       "description": "The unique text identifier."
     },
     "configuration": {
-      "type": "string",
+      "type": "object",
       "description": "The configuration JSON."
     }
   }

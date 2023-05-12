@@ -45,6 +45,4 @@ public class Bibframe {
   @Column(columnDefinition = "json", nullable = false)
   @Type(JsonBinaryType.class)
   private JsonNode configuration;
-
-
 }

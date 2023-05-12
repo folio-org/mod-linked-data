@@ -5,6 +5,7 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashMap;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.model.entity.Bibframe;
@@ -17,20 +18,23 @@ public interface BibframeMapper {
 
   ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  @Mapping(source = "configuration", target = "configuration", qualifiedByName = "stringToJson")
+  @Mapping(source = "configuration", target = "configuration", qualifiedByName = "objectToJson")
   Bibframe map(BibframeCreateRequest bibframeCreateRequest);
 
-  @Mapping(source = "configuration", target = "configuration", qualifiedByName = "jsonToString")
   BibframeResponse map(Bibframe bibframe);
 
-  @Named("stringToJson")
-  default JsonNode toJson(String configuration) throws JsonProcessingException {
-    return OBJECT_MAPPER.readTree(configuration);
+  @Named("objectToJson")
+  default JsonNode toJson(Object configuration) throws JsonProcessingException {
+    JsonNode node = null;
+    if (configuration instanceof String json){
+      node = OBJECT_MAPPER.readTree(json);
+    } else if (configuration instanceof LinkedHashMap json){
+      node = OBJECT_MAPPER.convertValue(json, JsonNode.class);
+    }
+    return node != null ? node : OBJECT_MAPPER.readTree("{}");
   }
 
-  @Named("jsonToString")
-  default String toString(JsonNode configuration) throws JsonProcessingException {
-    return OBJECT_MAPPER.writeValueAsString(configuration);
-  }
+
+
 
 }

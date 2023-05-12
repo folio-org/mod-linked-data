@@ -21,7 +21,7 @@ public class BibframeServiceImpl implements BibframeService {
   public BibframeResponse createBibframe(String okapiTenant, BibframeCreateRequest bibframeCreateRequest) {
     Bibframe toPersist = bibframeMapper.map(bibframeCreateRequest);
     Bibframe persisted = bibframeRepo.save(toPersist);
-    return bibframeMapper.map(persisted);
+    return bibframeMapper.map(toPersist);
   }
 
   @Override
