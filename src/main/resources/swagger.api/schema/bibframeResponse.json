@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Get bibframe record response",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Bibframe record id"
+    },
+    "to-be-filled": {
+      "type": "boolean",
+      "description": "more properties to be added later"
+    }
+  }
+}
