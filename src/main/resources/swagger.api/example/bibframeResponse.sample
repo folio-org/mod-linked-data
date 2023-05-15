@@ -1,4 +1,33 @@
 {
-  "id" : "8a04824f-cfe2-432b-8f15-bc89e13d7981"
-  "to-be-filled" : true
+    "id": 1,
+    "graphName": "EinsteinGraph",
+    "graphHash": -1247179628,
+    "slug": "einsteingraph",
+    "configuration": {
+        "@context": "http://schema.org",
+        "@id": "http://link.dclibrary.org/resource/Rh5lkqhCBU8/",
+        "@type": "Person",
+        "disambiguatingDescription": "The person Einstein, Albert, 1879-1955 represents an individual (alive, dead, undead, or fictional) associated with resources found in DC Public Library System.",
+        "name": "Einstein, Albert, 1879-1955",
+        "potentialAction": [
+            {
+                "@type": "OrganizeAction",
+                "agent": {
+                    "@id": "http://link.dclibrary.org/",
+                    "@type": "LibrarySystem",
+                    "name": "DC Public Library System"
+                },
+                "object": {
+                    "@id": "http://link.dclibrary.org/resource/Rh5lkqhCBU8/"
+                },
+                "participant": {
+                    "@id": "http://zepheira.com/#This",
+                    "@type": "Organization",
+                    "name": "Zepheira",
+                    "url": "http://zepheira.com/"
+                }
+            }
+        ],
+        "url": "http://link.dclibrary.org/resource/Rh5lkqhCBU8/"
+    }
 }
