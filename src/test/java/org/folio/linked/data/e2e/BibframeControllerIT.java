@@ -5,7 +5,7 @@ import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.getBibframeSample;
 import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
-import static org.folio.linked.data.matchers.IsEqualJson.equalToJson;
+import static org.folio.linked.data.matcher.IsEqualJson.equalToJson;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
@@ -54,7 +54,7 @@ class BibframeControllerIT {
   }
 
   @Test
-  void createAndGetBibframeById_shouldReturnExistedEntity() throws Exception {
+  void createAndGetBibframeBySlug_shouldReturnExistedEntity() throws Exception {
     // given
     var createResult = mockMvc.perform(getCreateRequestBuilder()).andReturn();
     var slug = JsonPath.read(createResult.getResponse().getContentAsString(), "slug");
@@ -78,7 +78,7 @@ class BibframeControllerIT {
   }
 
   @Test
-  void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
+  void getBibframeBySlug_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
     var notExistedId = UUID.randomUUID().toString();
     var requestBuilder = get(BIBFRAMES_URL + "/" + notExistedId)

@@ -54,7 +54,7 @@ class BibframeControllerTest {
   }
 
   @Test
-  void getBibframeById_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
+  void getBibframeSlug_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
     var response = new BibframeResponse();
     response.setId(1);
@@ -67,7 +67,7 @@ class BibframeControllerTest {
     when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
 
     // when
-    var result = bibframeController.getBibframeById(slug);
+    var result = bibframeController.getBibframeBySlug(slug);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

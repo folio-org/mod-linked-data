@@ -23,7 +23,7 @@ public class BibframeController implements BibframesApi {
   }
 
   @Override
-  public ResponseEntity<BibframeResponse> getBibframeById(String uuid) {
+  public ResponseEntity<BibframeResponse> getBibframeBySlug(String uuid) {
     return ResponseEntity.ok(bibframeService.getBibframeBySlug(uuid));
   }
 }

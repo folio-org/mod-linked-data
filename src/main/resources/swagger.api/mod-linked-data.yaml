@@ -7,7 +7,7 @@ info:
 paths:
   /bibframes/{id}:
     get:
-      operationId: getBibframeById
+      operationId: getBibframeBySlug
       description: Get a Bibframe record by id
       parameters:
         - $ref: '#/components/parameters/bibframeId'

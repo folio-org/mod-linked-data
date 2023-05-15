@@ -63,7 +63,7 @@ class BibframeServiceTest {
   }
 
   @Test
-  void getBibframeById_shouldReturnExistedEntity() throws JsonProcessingException {
+  void getBibframeSlug_shouldReturnExistedEntity() throws JsonProcessingException {
     // given
     var existedBibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
     when(bibframeRepo.findBySlug(existedBibframe.getSlug())).thenReturn(Optional.of(existedBibframe));
@@ -83,7 +83,7 @@ class BibframeServiceTest {
   }
 
   @Test
-  void getBibframeById_shouldThrowNotFoundException_ifNoEntityExists() {
+  void getBibframeSlug_shouldThrowNotFoundException_ifNoEntityExists() {
     // given
     var notExistedSlug = UUID.randomUUID().toString();
     when(bibframeRepo.findBySlug(notExistedSlug)).thenReturn(Optional.empty());

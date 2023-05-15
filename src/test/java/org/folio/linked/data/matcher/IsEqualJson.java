@@ -1,4 +1,4 @@
-package org.folio.linked.data.matchers;
+package org.folio.linked.data.matcher;
 
 import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
 
@@ -20,11 +20,11 @@ public class IsEqualJson extends BaseMatcher<String> {
   @Override
   public boolean matches(Object actual) {
     try {
-      String json = OBJECT_MAPPER.writeValueAsString(actual);
+      String json = actual instanceof String ? (String) actual : OBJECT_MAPPER.writeValueAsString(actual);
       JSONCompareResult result = JSONCompare.compareJSON(expectedJson, json, jsonCompareMode);
       return result.passed();
     } catch (JSONException | JsonProcessingException e) {
-      throw new IllegalArgumentException(e);
+      throw new IllegalArgumentException("Error while json processing", e);
     }
   }
 

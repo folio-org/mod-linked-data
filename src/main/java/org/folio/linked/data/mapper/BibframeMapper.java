@@ -5,7 +5,7 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.LinkedHashMap;
+import java.util.Map;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.model.entity.Bibframe;
@@ -28,7 +28,7 @@ public interface BibframeMapper {
     JsonNode node = null;
     if (configuration instanceof String json) {
       node = OBJECT_MAPPER.readTree(json);
-    } else if (configuration instanceof LinkedHashMap json) {
+    } else if (configuration instanceof Map json) {
       node = OBJECT_MAPPER.convertValue(json, JsonNode.class);
     }
     return node != null ? node : OBJECT_MAPPER.readTree("{}");
