@@ -1,9 +1,9 @@
 package org.folio.linked.data.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.TestUtil.CONFIGURATION;
 import static org.folio.linked.data.TestUtil.GRAPH_NAME;
 import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.TestUtil.getBibframeSample;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -42,17 +42,17 @@ class BibframeServiceTest {
     // given
     var request = new BibframeCreateRequest();
     request.setGraphName(GRAPH_NAME);
-    request.setConfiguration(CONFIGURATION);
-    var bibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(CONFIGURATION));
+    request.setConfiguration(getBibframeSample());
+    var bibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
     when(bibframeMapper.map(request)).thenReturn(bibframe);
-    var persisted = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(CONFIGURATION));
+    var persisted = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
     when(bibframeRepo.save(bibframe)).thenReturn(persisted);
     var expectedResponse = new BibframeResponse();
     expectedResponse.setId(1);
     expectedResponse.setGraphName(GRAPH_NAME);
     expectedResponse.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
-    expectedResponse.setConfiguration(CONFIGURATION);
-    expectedResponse.setGraphHash(Objects.hash(CONFIGURATION));
+    expectedResponse.setConfiguration(getBibframeSample());
+    expectedResponse.setGraphHash(Objects.hash(getBibframeSample()));
     when(bibframeMapper.map(persisted)).thenReturn(expectedResponse);
 
     // when
@@ -65,14 +65,14 @@ class BibframeServiceTest {
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws JsonProcessingException {
     // given
-    var existedBibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(CONFIGURATION));
+    var existedBibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
     when(bibframeRepo.findBySlug(existedBibframe.getSlug())).thenReturn(Optional.of(existedBibframe));
     var expectedResponse = new BibframeResponse();
     expectedResponse.setId(1);
     expectedResponse.setGraphName(GRAPH_NAME);
     expectedResponse.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
-    expectedResponse.setConfiguration(CONFIGURATION);
-    expectedResponse.setGraphHash(Objects.hash(CONFIGURATION));
+    expectedResponse.setConfiguration(getBibframeSample());
+    expectedResponse.setGraphHash(Objects.hash(getBibframeSample()));
     when(bibframeMapper.map(existedBibframe)).thenReturn(expectedResponse);
 
     // when

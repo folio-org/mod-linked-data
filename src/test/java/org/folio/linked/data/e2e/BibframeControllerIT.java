@@ -1,10 +1,11 @@
 package org.folio.linked.data.e2e;
 
-import static org.folio.linked.data.TestUtil.CONFIGURATION;
 import static org.folio.linked.data.TestUtil.GRAPH_NAME;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
+import static org.folio.linked.data.TestUtil.getBibframeSample;
 import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
+import static org.folio.linked.data.matchers.IsEqualJson.equalToJson;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
@@ -49,7 +50,7 @@ class BibframeControllerIT {
         .andExpect(jsonPath("graphName", is(GRAPH_NAME)))
         .andExpect(jsonPath("graphHash", notNullValue()))
         .andExpect(jsonPath("slug", notNullValue()))
-        .andExpect(jsonPath("configuration", notNullValue()));
+        .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
   }
 
   @Test
@@ -73,7 +74,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("graphName", equalTo(GRAPH_NAME)))
       .andExpect(jsonPath("graphHash").isNotEmpty())
       .andExpect(jsonPath("slug", equalTo(slug)))
-      .andExpect(jsonPath("configuration", notNullValue()));
+      .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
   }
 
   @Test
@@ -95,7 +96,7 @@ class BibframeControllerIT {
   private MockHttpServletRequestBuilder getCreateRequestBuilder() {
     var bibframeCreateRequest = new BibframeCreateRequest();
     bibframeCreateRequest.setGraphName(GRAPH_NAME);
-    bibframeCreateRequest.setConfiguration(CONFIGURATION);
+    bibframeCreateRequest.setConfiguration(getBibframeSample());
     return post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()))

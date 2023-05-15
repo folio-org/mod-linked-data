@@ -1,8 +1,8 @@
 package org.folio.linked.data.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.TestUtil.CONFIGURATION;
 import static org.folio.linked.data.TestUtil.GRAPH_NAME;
+import static org.folio.linked.data.TestUtil.getBibframeSample;
 import static org.mockito.Mockito.when;
 
 import java.util.Objects;
@@ -33,14 +33,14 @@ class BibframeControllerTest {
     // given
     var request = new BibframeCreateRequest();
     request.setGraphName(GRAPH_NAME);
-    request.setConfiguration(CONFIGURATION);
+    request.setConfiguration(getBibframeSample());
 
     var response = new BibframeResponse();
     response.setId(1);
     response.setGraphName(GRAPH_NAME);
     response.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
-    response.setConfiguration(CONFIGURATION);
-    response.setGraphHash(Objects.hash(CONFIGURATION));
+    response.setConfiguration(getBibframeSample());
+    response.setGraphHash(Objects.hash(getBibframeSample()));
 
     var tenantId = UUID.randomUUID().toString();
     when(bibframeService.createBibframe(tenantId, request)).thenReturn(response);
@@ -60,8 +60,8 @@ class BibframeControllerTest {
     response.setId(1);
     response.setGraphName(GRAPH_NAME);
     response.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
-    response.setConfiguration(CONFIGURATION);
-    response.setGraphHash(Objects.hash(CONFIGURATION));
+    response.setConfiguration(getBibframeSample());
+    response.setGraphHash(Objects.hash(getBibframeSample()));
 
     var slug = UUID.randomUUID().toString();
     when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
