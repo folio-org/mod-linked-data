@@ -10,16 +10,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.Map;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
-@ExtendWith(MockitoExtension.class)
 class BibframeMapperTest {
 
-  @InjectMocks
   private BibframeMapper bibframeMapper = Mappers.getMapper(BibframeMapper.class);
 
   @Test
@@ -37,7 +32,7 @@ class BibframeMapperTest {
   }
 
   @Test
-  void toJsonShouldReturnEmptyJsonNodeForNullInput() throws JsonProcessingException {
+  void toJson_shouldReturnEmptyJsonNodeForNullInput() throws JsonProcessingException {
     var jsonNode = bibframeMapper.toJson(null);
     assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson("{}"));
   }
