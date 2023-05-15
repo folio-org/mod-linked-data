@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet id="2023-05-10--13-00-create-mod-linked-data-tables" author="VictorBodrov">
+        <createTable tableName="graphset">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="graph_name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="graph_hash" type="bigint" defaultValueComputed='GENERATED ALWAYS AS (hashtext(schema_slugify(graph_name))) STORED'>
+                <constraints nullable="false"/>
+            </column>
+            <column name="slug" type="text" defaultValueComputed='GENERATED ALWAYS AS (schema_slugify(graph_name)) STORED'>
+                <constraints nullable="false"/>
+            </column>
+            <column name="configuration" type="jsonb" defaultValue="{}">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
+
+

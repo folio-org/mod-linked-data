@@ -7,7 +7,7 @@ info:
 paths:
   /bibframes/{id}:
     get:
-      operationId: getBibframeById
+      operationId: getBibframeBySlug
       description: Get a Bibframe record by id
       parameters:
         - $ref: '#/components/parameters/bibframeId'
@@ -58,7 +58,6 @@ components:
       description: Bibframe id
       schema:
         type: string
-        format: uuid
     x-okapi-tenant-header:
       name: x-okapi-tenant
       in: header

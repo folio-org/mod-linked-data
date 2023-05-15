@@ -1,9 +1,12 @@
 package org.folio.linked.data.e2e;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.TestUtil.GRAPH_NAME;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
+import static org.folio.linked.data.TestUtil.getBibframeSample;
 import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
+import static org.folio.linked.data.matcher.IsEqualJson.equalToJson;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -17,58 +20,48 @@ import com.jayway.jsonpath.JsonPath;
 import java.util.UUID;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.model.entity.Bibframe;
-import org.folio.linked.data.repo.BibframeRepo;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @IntegrationTest
 class BibframeControllerIT {
 
   public static final String BIBFRAMES_URL = "/bibframes";
+
   @Autowired
   private MockMvc mockMvc;
-  @Autowired
-  private BibframeRepo bibframeRepo;
 
   @Test
-  void createBibframeEndpoint_shouldStoreEntityCorrectlyAndReturnIt() throws Exception {
+  void createBibframe_shouldStoreEntityCorrectly() throws Exception {
     // given
-    var bibframeCreateRequest = new BibframeCreateRequest();
-    bibframeCreateRequest.setToBeFilled(true);
-    var requestBuilder = post(BIBFRAMES_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()))
-      .content(asJsonString(bibframeCreateRequest));
-
+    var requestBuilder = getCreateRequestBuilder();
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var mvcResult = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", notNullValue()))
-      .andExpect(jsonPath("to-be-filled", is(true)))
-      .andReturn();
-    String id = JsonPath.read(mvcResult.getResponse().getContentAsString(), "id");
-    var bibframeOptional = bibframeRepo.read(UUID.fromString(id));
-    assertThat(bibframeOptional).isNotEmpty();
-    assertThat(bibframeOptional.get().isToBeFilled()).isEqualTo(bibframeCreateRequest.getToBeFilled());
+    resultActions
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("id", notNullValue()))
+        .andExpect(jsonPath("graphName", is(GRAPH_NAME)))
+        .andExpect(jsonPath("graphHash", notNullValue()))
+        .andExpect(jsonPath("slug", notNullValue()))
+        .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
   }
 
   @Test
-  void getBibframeById_shouldReturnExistedEntity() throws Exception {
+  void createAndGetBibframeBySlug_shouldReturnExistedEntity() throws Exception {
     // given
-    var bibframe = Bibframe.of(null, true);
-    var persisted = bibframeRepo.persist(bibframe);
+    var createResult = mockMvc.perform(getCreateRequestBuilder()).andReturn();
+    var slug = JsonPath.read(createResult.getResponse().getContentAsString(), "slug");
 
-    var requestBuilder = get(BIBFRAMES_URL + "/" + persisted.getId().toString())
+    var requestBuilder = get(BIBFRAMES_URL + "/" + slug)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()));
-
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -77,23 +70,36 @@ class BibframeControllerIT {
     resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", is(persisted.getId().toString())))
-      .andExpect(jsonPath("to-be-filled", is(persisted.isToBeFilled())));
+      .andExpect(jsonPath("id").isNotEmpty())
+      .andExpect(jsonPath("graphName", equalTo(GRAPH_NAME)))
+      .andExpect(jsonPath("graphHash").isNotEmpty())
+      .andExpect(jsonPath("slug", equalTo(slug)))
+      .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
   }
 
   @Test
-  void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
+  void getBibframeBySlug_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
     var notExistedId = UUID.randomUUID().toString();
     var requestBuilder = get(BIBFRAMES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()));
 
-
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions.andExpect(status().isNotFound());
+  }
+
+  @NotNull
+  private MockHttpServletRequestBuilder getCreateRequestBuilder() {
+    var bibframeCreateRequest = new BibframeCreateRequest();
+    bibframeCreateRequest.setGraphName(GRAPH_NAME);
+    bibframeCreateRequest.setConfiguration(getBibframeSample());
+    return post(BIBFRAMES_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(getOkapiMockUrl()))
+      .content(asJsonString(bibframeCreateRequest));
   }
 }

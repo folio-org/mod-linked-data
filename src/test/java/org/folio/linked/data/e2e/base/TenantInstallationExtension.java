@@ -43,7 +43,7 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
   @Override
   public void afterAll(ExtensionContext extensionContext) {
     mockMvc.perform(post(TENANT_ENDPOINT_URL, randomId())
-        .content(asJsonString(new TenantAttributes().moduleFrom(appName).purge(true)))
+        .content(asJsonString(new TenantAttributes().moduleFrom(appName).purge(false)))
         .headers(defaultHeaders(getOkapiMockUrl())))
       .andExpect(status().isNoContent());
   }
