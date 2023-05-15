@@ -19,21 +19,38 @@ class BibframeMapperTest {
 
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromString() throws JsonProcessingException {
-    var jsonNode = bibframeMapper.toJson(getBibframeSample());
+    // given
+    var json = getBibframeSample();
+
+    // when
+    var jsonNode = bibframeMapper.toJson(json);
+
+    // then
     assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
   }
 
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromMap() throws JsonProcessingException {
-    var map = OBJECT_MAPPER.readValue(getBibframeSample(),
-        new TypeReference<Map<String, Object>>() {});
+    // given
+    var json = getBibframeSample();
+    var map = OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {});
+
+    // when
     var jsonNode = bibframeMapper.toJson(map);
+
+    // then
     assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
   }
 
   @Test
   void toJson_shouldReturnEmptyJsonNodeForNullInput() throws JsonProcessingException {
-    var jsonNode = bibframeMapper.toJson(null);
+    // given
+    Object configuration = null;
+
+    // when
+    var jsonNode = bibframeMapper.toJson(configuration);
+
+    // then
     assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson("{}"));
   }
 
