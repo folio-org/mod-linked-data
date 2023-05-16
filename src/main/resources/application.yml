@@ -21,6 +21,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
 
 folio:
   environment: ${ENV:folio}
@@ -36,7 +37,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: info,health,liquibase,threaddump,heapdump,loggers
+        include: info,health,liquibase,threaddump,heapdump,loggers,env,httptrace,metrics,prometheus
       base-path: /admin
   endpoint:
     loggers:
