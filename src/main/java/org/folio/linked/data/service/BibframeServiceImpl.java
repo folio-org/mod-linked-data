@@ -1,9 +1,12 @@
 package org.folio.linked.data.service;
 
+import static org.folio.linked.data.util.TextUtil.slugify;
+
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Bibframe;
@@ -18,14 +21,18 @@ public class BibframeServiceImpl implements BibframeService {
   private final BibframeMapper bibframeMapper;
 
   @Override
-  public BibframeResponse createBibframe(String okapiTenant, BibframeCreateRequest bibframeCreateRequest) {
+  public BibframeResponse createBibframe(String okapiTenant, BibframeRequest bibframeCreateRequest) {
+    String slug = slugify(bibframeCreateRequest.getGraphName());
+    if (bibframeRepo.existsBySlug(slug)) {
+      throw new AlreadyExistsException("Bibframe record with given slug [" + slug + "] exists already");
+    }
     Bibframe toPersist = bibframeMapper.map(bibframeCreateRequest);
     Bibframe persisted = bibframeRepo.save(toPersist);
     return bibframeMapper.map(persisted);
   }
 
   @Override
-  public BibframeResponse getBibframeBySlug(String slug) {
+  public BibframeResponse getBibframeBySlug(String okapiTenant, String slug) {
     Optional<Bibframe> optionalBibframe = bibframeRepo.findBySlug(slug);
     return optionalBibframe.map(bibframeMapper::map)
       .orElseThrow(() -> new NotFoundException("Bibframe record with given slug [" + slug + "] is not found"));

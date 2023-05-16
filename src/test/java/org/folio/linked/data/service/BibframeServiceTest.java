@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.TestUtil.GRAPH_NAME;
 import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.TestUtil.getBibframeSample;
+import static org.folio.linked.data.util.TextUtil.slugify;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -11,8 +12,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Bibframe;
@@ -40,7 +42,7 @@ class BibframeServiceTest {
   @Test
   void createBibframe_shouldReturnEntityMappedAndPersistedByRepoFromRequest() throws JsonProcessingException {
     // given
-    var request = new BibframeCreateRequest();
+    var request = new BibframeRequest();
     request.setGraphName(GRAPH_NAME);
     request.setConfiguration(getBibframeSample());
     var bibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
@@ -63,6 +65,25 @@ class BibframeServiceTest {
   }
 
   @Test
+  void createBibframe_shouldThrowAlreadyExistsException_ifEntityExists() {
+    // given
+    var request = new BibframeRequest();
+    request.setGraphName(UUID.randomUUID().toString());
+    request.setConfiguration(getBibframeSample());
+    var slug = slugify(request.getGraphName());
+    when(bibframeRepo.existsBySlug(slug)).thenReturn(true);
+
+    // when
+    AlreadyExistsException thrown = assertThrows(
+      AlreadyExistsException.class,
+      () -> bibframeService.createBibframe("", request)
+    );
+
+    // then
+    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given slug [" + slug + "] exists already");
+  }
+
+  @Test
   void getBibframeSlug_shouldReturnExistedEntity() throws JsonProcessingException {
     // given
     var existedBibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
@@ -76,7 +97,7 @@ class BibframeServiceTest {
     when(bibframeMapper.map(existedBibframe)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.getBibframeBySlug(existedBibframe.getSlug());
+    var result = bibframeService.getBibframeBySlug("", existedBibframe.getSlug());
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -91,7 +112,7 @@ class BibframeServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.getBibframeBySlug(notExistedSlug)
+      () -> bibframeService.getBibframeBySlug("", notExistedSlug)
     );
 
     // then

@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Objects;
 import java.util.UUID;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.service.BibframeService;
 import org.folio.spring.test.type.UnitTest;
@@ -31,7 +31,7 @@ class BibframeControllerTest {
   @Test
   void createBibframe_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var request = new BibframeCreateRequest();
+    var request = new BibframeRequest();
     request.setGraphName(GRAPH_NAME);
     request.setConfiguration(getBibframeSample());
 
@@ -64,10 +64,10 @@ class BibframeControllerTest {
     response.setGraphHash(Objects.hash(getBibframeSample()));
 
     var slug = UUID.randomUUID().toString();
-    when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
+    when(bibframeService.getBibframeBySlug("", slug)).thenReturn(response);
 
     // when
-    var result = bibframeController.getBibframeBySlug(slug);
+    var result = bibframeController.getBibframeBySlug("", slug);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

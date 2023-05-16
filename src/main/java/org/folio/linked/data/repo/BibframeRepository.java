@@ -8,4 +8,6 @@ public interface BibframeRepository extends JpaRepository<Bibframe, Long> {
 
   Optional<Bibframe> findBySlug(String slug);
 
+  boolean existsBySlug(String slug);
+
 }

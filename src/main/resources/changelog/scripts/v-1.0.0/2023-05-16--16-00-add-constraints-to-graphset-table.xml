@@ -4,9 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
-  <changeSet id="2023-05-10--13-00-create-schema_slugify-function" author="Victor Bodrov">
-    <sqlFile path="../sql/v-1.0.0/2023-05-10--13-00-create-schema_slugify-function.sql" splitStatements="false"
-             relativeToChangelogFile="true"/>
+  <changeSet id="2023-05-16--16-00-add-constraints-to-graphset-table" author="Pavel Bobylev">
+    <addUniqueConstraint tableName="graphset" columnNames="graph_name"/>
+    <addUniqueConstraint tableName="graphset" columnNames="graph_hash"/>
+    <addUniqueConstraint tableName="graphset" columnNames="slug"/>
   </changeSet>
 
 </databaseChangeLog>

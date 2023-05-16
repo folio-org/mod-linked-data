@@ -6,20 +6,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.model.entity.Bibframe;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = SPRING, imports = {Bibframe.class, BibframeCreateRequest.class, BibframeResponse.class})
+@Mapper(componentModel = SPRING, imports = {Bibframe.class, BibframeRequest.class, BibframeResponse.class})
 public interface BibframeMapper {
 
   ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   @Mapping(source = "configuration", target = "configuration", qualifiedByName = "objectToJson")
-  Bibframe map(BibframeCreateRequest bibframeCreateRequest);
+  Bibframe map(BibframeRequest bibframeCreateRequest);
 
   BibframeResponse map(Bibframe bibframe);
 

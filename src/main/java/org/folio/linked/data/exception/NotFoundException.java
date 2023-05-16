@@ -8,7 +8,4 @@ public class NotFoundException extends BaseLinkedDataException {
     super(message, ErrorCode.NOT_FOUND_ERROR);
   }
 
-  public NotFoundException(String message, Throwable cause) {
-    super(message, cause, ErrorCode.NOT_FOUND_ERROR);
-  }
 }
