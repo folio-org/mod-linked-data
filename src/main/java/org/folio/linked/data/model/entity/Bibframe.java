@@ -35,7 +35,7 @@ public class Bibframe {
 
   @Column(nullable = false, insertable = false, updatable = false)
   @Generated(value = GenerationTime.ALWAYS)
-  private Long graphHash;
+  private Integer graphHash;
 
   @Column(nullable = false, insertable = false, updatable = false)
   @Generated(value = GenerationTime.ALWAYS)

@@ -12,6 +12,6 @@
       "description": "The configuration JSON for the Bibframe."
     }
   },
-  "additionalProperties": false,
-  "required": [ "resourceName" ]
+  "required": [ "graphName", "configuration" ],
+  "additionalProperties": false
 }

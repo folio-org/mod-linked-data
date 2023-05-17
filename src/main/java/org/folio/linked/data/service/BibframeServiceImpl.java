@@ -1,7 +1,5 @@
 package org.folio.linked.data.service;
 
-import static org.folio.linked.data.util.TextUtil.slugify;
-
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeRequest;
@@ -21,12 +19,11 @@ public class BibframeServiceImpl implements BibframeService {
   private final BibframeMapper bibframeMapper;
 
   @Override
-  public BibframeResponse createBibframe(String okapiTenant, BibframeRequest bibframeCreateRequest) {
-    String slug = slugify(bibframeCreateRequest.getGraphName());
-    if (bibframeRepo.existsBySlug(slug)) {
-      throw new AlreadyExistsException("Bibframe record with given slug [" + slug + "] exists already");
+  public BibframeResponse createBibframe(String okapiTenant, BibframeRequest bibframeRequest) {
+    Bibframe toPersist = bibframeMapper.map(bibframeRequest);
+    if (bibframeRepo.existsBySlug(toPersist.getSlug())) {
+      throw new AlreadyExistsException("Bibframe record with given slug [" + toPersist.getSlug() + "] exists already");
     }
-    Bibframe toPersist = bibframeMapper.map(bibframeCreateRequest);
     Bibframe persisted = bibframeRepo.save(toPersist);
     return bibframeMapper.map(persisted);
   }

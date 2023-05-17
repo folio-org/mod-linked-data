@@ -12,11 +12,10 @@
       <column name="graph_name" type="text">
         <constraints nullable="false"/>
       </column>
-      <column name="graph_hash" type="bigint"
-              defaultValueComputed='GENERATED ALWAYS AS (hashtext(schema_slugify(graph_name))) STORED'>
+      <column name="graph_hash" type="bigint">
         <constraints nullable="false"/>
       </column>
-      <column name="slug" type="text" defaultValueComputed='GENERATED ALWAYS AS (schema_slugify(graph_name)) STORED'>
+      <column name="slug" type="text">
         <constraints nullable="false"/>
       </column>
       <column name="configuration" type="jsonb" defaultValue="{}">
