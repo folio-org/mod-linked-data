@@ -6,20 +6,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.model.entity.Bibframe;
+import org.folio.linked.data.util.TextUtil;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = SPRING, imports = {Bibframe.class, BibframeCreateRequest.class, BibframeResponse.class})
+@Mapper(componentModel = SPRING, imports = {TextUtil.class})
 public interface BibframeMapper {
 
   ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  @Mapping(source = "configuration", target = "configuration", qualifiedByName = "objectToJson")
-  Bibframe map(BibframeCreateRequest bibframeCreateRequest);
+  @Mapping(target = "slug", expression = "java(TextUtil.slugify(bibframeRequest.getGraphName()))")
+  @Mapping(target = "graphHash", expression = "java(bibframe.getSlug().hashCode())")
+  @Mapping(target = "configuration", source = "configuration", qualifiedByName = "objectToJson")
+  Bibframe map(BibframeRequest bibframeRequest);
 
   BibframeResponse map(Bibframe bibframe);
 
@@ -33,6 +36,5 @@ public interface BibframeMapper {
     }
     return node != null ? node : OBJECT_MAPPER.readTree("{}");
   }
-
 
 }

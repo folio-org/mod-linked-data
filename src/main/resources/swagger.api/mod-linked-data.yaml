@@ -5,12 +5,13 @@ info:
   description: Linked Data service API
 
 paths:
-  /bibframes/{id}:
+  /bibframes/{slug}:
     get:
       operationId: getBibframeBySlug
-      description: Get a Bibframe record by id
+      description: Get a Bibframe record by slug
       parameters:
-        - $ref: '#/components/parameters/bibframeId'
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/slug'
       responses:
         '200':
           description: 'Bibframe as json string'
@@ -33,9 +34,9 @@ paths:
       requestBody:
         content:
           application/json:
-            example: example/bibframeCreateRequest.sample
+            example: example/bibframeRequest.sample
             schema:
-              $ref: schema/bibframeCreateRequest.json
+              $ref: schema/bibframeRequest.json
       responses:
         '200':
           description: 'Created Bibframe record'
@@ -51,11 +52,11 @@ paths:
 
 components:
   parameters:
-    bibframeId:
-      name: id
+    slug:
+      name: slug
       in: path
       required: true
-      description: Bibframe id
+      description: Bibframe record slug
       schema:
         type: string
     x-okapi-tenant-header:

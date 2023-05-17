@@ -1,6 +1,5 @@
 package org.folio.linked.data.e2e;
 
-import static org.folio.linked.data.TestUtil.GRAPH_NAME;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.getBibframeSample;
@@ -8,7 +7,6 @@ import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
 import static org.folio.linked.data.matcher.IsEqualJson.equalToJson;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.jayway.jsonpath.JsonPath;
 import java.util.UUID;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -44,13 +42,13 @@ class BibframeControllerIT {
 
     // then
     resultActions
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(APPLICATION_JSON))
-        .andExpect(jsonPath("id", notNullValue()))
-        .andExpect(jsonPath("graphName", is(GRAPH_NAME)))
-        .andExpect(jsonPath("graphHash", notNullValue()))
-        .andExpect(jsonPath("slug", notNullValue()))
-        .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("id", notNullValue()))
+      .andExpect(jsonPath("graphName", notNullValue()))
+      .andExpect(jsonPath("graphHash", notNullValue()))
+      .andExpect(jsonPath("slug", notNullValue()))
+      .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
   }
 
   @Test
@@ -71,7 +69,7 @@ class BibframeControllerIT {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("id").isNotEmpty())
-      .andExpect(jsonPath("graphName", equalTo(GRAPH_NAME)))
+      .andExpect(jsonPath("graphName").isNotEmpty())
       .andExpect(jsonPath("graphHash").isNotEmpty())
       .andExpect(jsonPath("slug", equalTo(slug)))
       .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
@@ -94,12 +92,10 @@ class BibframeControllerIT {
 
   @NotNull
   private MockHttpServletRequestBuilder getCreateRequestBuilder() {
-    var bibframeCreateRequest = new BibframeCreateRequest();
-    bibframeCreateRequest.setGraphName(GRAPH_NAME);
-    bibframeCreateRequest.setConfiguration(getBibframeSample());
+    var bibframeRequest = new BibframeRequest(UUID.randomUUID().toString(), getBibframeSample());
     return post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()))
-      .content(asJsonString(bibframeCreateRequest));
+      .content(asJsonString(bibframeRequest));
   }
 }

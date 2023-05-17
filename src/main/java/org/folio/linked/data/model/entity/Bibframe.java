@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 
 @Entity
@@ -30,15 +28,13 @@ public class Bibframe {
   private Long id;
 
   @NonNull
-  @Column(nullable = false)
+  @Column(nullable = false, unique = true)
   private String graphName;
 
-  @Column(nullable = false, insertable = false, updatable = false)
-  @Generated(value = GenerationTime.ALWAYS)
-  private Long graphHash;
+  @Column(nullable = false, unique = true)
+  private Integer graphHash;
 
-  @Column(nullable = false, insertable = false, updatable = false)
-  @Generated(value = GenerationTime.ALWAYS)
+  @Column(nullable = false, unique = true)
   private String slug;
 
   @NonNull
