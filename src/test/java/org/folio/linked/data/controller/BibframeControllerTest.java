@@ -31,17 +31,13 @@ class BibframeControllerTest {
   @Test
   void createBibframe_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var request = new BibframeRequest();
-    request.setGraphName(GRAPH_NAME);
-    request.setConfiguration(getBibframeSample());
-
     var response = new BibframeResponse();
     response.setId(1);
     response.setGraphName(GRAPH_NAME);
     response.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
     response.setConfiguration(getBibframeSample());
     response.setGraphHash(Objects.hash(getBibframeSample()));
-
+    var request = new BibframeRequest(GRAPH_NAME, getBibframeSample());
     var tenantId = UUID.randomUUID().toString();
     when(bibframeService.createBibframe(tenantId, request)).thenReturn(response);
 

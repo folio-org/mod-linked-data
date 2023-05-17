@@ -17,9 +17,8 @@ public class BibframeController implements BibframesApi {
   private final BibframeService bibframeService;
 
   @Override
-  public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant,
-                                                         BibframeRequest bibframeCreateRequest) {
-    return ResponseEntity.ok(bibframeService.createBibframe(okapiTenant, bibframeCreateRequest));
+  public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant, BibframeRequest bibframeRequest) {
+    return ResponseEntity.ok(bibframeService.createBibframe(okapiTenant, bibframeRequest));
   }
 
   @Override

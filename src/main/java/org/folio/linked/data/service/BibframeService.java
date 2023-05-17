@@ -5,7 +5,7 @@ import org.folio.linked.data.domain.dto.BibframeResponse;
 
 public interface BibframeService {
 
-  BibframeResponse createBibframe(String okapiTenant, BibframeRequest bibframeCreateRequest);
+  BibframeResponse createBibframe(String okapiTenant, BibframeRequest bibframeRequest);
 
   BibframeResponse getBibframeBySlug(String okapiTenant, String slug);
 }

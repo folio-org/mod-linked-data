@@ -42,9 +42,7 @@ class BibframeServiceTest {
   @Test
   void createBibframe_shouldReturnEntityMappedAndPersistedByRepoFromRequest() throws JsonProcessingException {
     // given
-    var request = new BibframeRequest();
-    request.setGraphName(GRAPH_NAME);
-    request.setConfiguration(getBibframeSample());
+    var request = new BibframeRequest(GRAPH_NAME, getBibframeSample());
     var bibframe = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
     when(bibframeMapper.map(request)).thenReturn(bibframe);
     var persisted = Bibframe.of(GRAPH_NAME, OBJECT_MAPPER.readTree(getBibframeSample()));
@@ -67,11 +65,12 @@ class BibframeServiceTest {
   @Test
   void createBibframe_shouldThrowAlreadyExistsException_ifEntityExists() {
     // given
-    var request = new BibframeRequest();
-    request.setGraphName(UUID.randomUUID().toString());
-    request.setConfiguration(getBibframeSample());
+    var request = new BibframeRequest(GRAPH_NAME, getBibframeSample());
     var slug = slugify(request.getGraphName());
     when(bibframeRepo.existsBySlug(slug)).thenReturn(true);
+    var bibframe = new Bibframe();
+    bibframe.setSlug(slug);
+    when(bibframeMapper.map(request)).thenReturn(bibframe);
 
     // when
     AlreadyExistsException thrown = assertThrows(

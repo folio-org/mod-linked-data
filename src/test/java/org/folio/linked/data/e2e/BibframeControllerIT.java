@@ -92,9 +92,7 @@ class BibframeControllerIT {
 
   @NotNull
   private MockHttpServletRequestBuilder getCreateRequestBuilder() {
-    var bibframeRequest = new BibframeRequest();
-    bibframeRequest.setGraphName(UUID.randomUUID().toString());
-    bibframeRequest.setConfiguration(getBibframeSample());
+    var bibframeRequest = new BibframeRequest(UUID.randomUUID().toString(), getBibframeSample());
     return post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()))
