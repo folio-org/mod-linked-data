@@ -1,8 +1,8 @@
 package org.folio.linked.data.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.TestUtil.TENANT_ID;
 
-import org.folio.linked.data.TestUtil;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ class DatabaseIT {
     // given
     var appName = context.getEnvironment().getProperty("spring.application.name");
     assertThat(appName).isNotNull();
-    var schema = TestUtil.TENANT_ID + "_" + appName.replace('-', '_');
+    var schema = TENANT_ID + "_" + appName.replace('-', '_');
 
     // when
     var tables = jdbcTemplate.queryForList(LIST_TABLES_QUERY, String.class, schema);

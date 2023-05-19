@@ -47,6 +47,7 @@
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <folio-service-tools.version>3.1.0-SNAPSHOT</folio-service-tools.version>
+    <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
     <maven-openapi-generator-plugin.version>6.5.0</maven-openapi-generator-plugin.version>
@@ -194,6 +195,13 @@
       <groupId>org.skyscreamer</groupId>
       <artifactId>jsonassert</artifactId>
       <version>${jsonassert.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jeasy</groupId>
+      <artifactId>easy-random-core</artifactId>
+      <version>${easy-random.version}</version>
       <scope>test</scope>
     </dependency>
 

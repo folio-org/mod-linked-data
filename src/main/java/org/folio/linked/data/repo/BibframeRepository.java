@@ -10,4 +10,6 @@ public interface BibframeRepository extends JpaRepository<Bibframe, Long> {
 
   boolean existsBySlug(String slug);
 
+  int deleteBySlug(String slug);
+
 }
