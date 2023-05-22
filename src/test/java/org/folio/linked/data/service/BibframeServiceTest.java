@@ -6,24 +6,33 @@ import static org.folio.linked.data.TestUtil.randomBibframe;
 import static org.folio.linked.data.TestUtil.randomString;
 import static org.folio.linked.data.util.TextUtil.slugify;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.function.Function;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.BibframeShort;
+import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.BibframeMapper;
+import org.folio.linked.data.model.BibframeIdAndGraphName;
 import org.folio.linked.data.model.entity.Bibframe;
 import org.folio.linked.data.repo.BibframeRepository;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -170,6 +179,42 @@ class BibframeServiceTest {
 
     // then
     assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given slug [" + notExistedSlug + "] is not found");
+  }
+
+  @Test
+  void getBibframeShortInfoPageWithParams_shouldReturnExistedEntitiesShortInfoMapped(
+    @Mock Page<BibframeIdAndGraphName> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
+    // given
+    var pageNumber = 0;
+    var pageSize = 10;
+    var sort = Sort.by(Sort.Direction.ASC, "graphName");
+    doReturn(pageOfShortEntities).when(bibframeRepo).findAllBy(PageRequest.of(pageNumber, pageSize, sort));
+    doReturn(pageOfDto).when(pageOfShortEntities)
+      .map(ArgumentMatchers.<Function<BibframeIdAndGraphName, BibframeShort>>any());
+    var expectedResult = random(BibframeShortInfoPage.class);
+    doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
+    // when
+    var result = bibframeService.getBibframeShortInfoPage("", pageNumber, pageSize);
+
+    // then
+    assertThat(result).isEqualTo(expectedResult);
+  }
+
+  @Test
+  void getBibframeShortInfoPageWithNoParams_shouldReturnExistedEntitiesShortInfoMapped(
+    @Mock Page<BibframeIdAndGraphName> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
+    // given
+    var sort = Sort.by(Sort.Direction.ASC, "graphName");
+    doReturn(pageOfShortEntities).when(bibframeRepo).findAllBy(PageRequest.of(0, 100, sort));
+    doReturn(pageOfDto).when(pageOfShortEntities)
+      .map(ArgumentMatchers.<Function<BibframeIdAndGraphName, BibframeShort>>any());
+    var expectedResult = random(BibframeShortInfoPage.class);
+    doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
+    // when
+    var result = bibframeService.getBibframeShortInfoPage("", null, null);
+
+    // then
+    assertThat(result).isEqualTo(expectedResult);
   }
 }
 

@@ -5,6 +5,7 @@ import static org.springframework.http.ResponseEntity.noContent;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
 import org.folio.linked.data.rest.resource.BibframesApi;
 import org.folio.linked.data.service.BibframeService;
@@ -40,5 +41,11 @@ public class BibframeController implements BibframesApi {
   public ResponseEntity<Void> deleteBibframe(String okapiTenant, String slug) {
     bibframeService.deleteBibframe(okapiTenant, slug);
     return noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<BibframeShortInfoPage> getBibframesShortInfoPage(String okapiTenant, Integer pageNumber,
+                                                                         Integer pageSize) {
+    return ResponseEntity.ok(bibframeService.getBibframeShortInfoPage(okapiTenant, pageNumber, pageSize));
   }
 }
