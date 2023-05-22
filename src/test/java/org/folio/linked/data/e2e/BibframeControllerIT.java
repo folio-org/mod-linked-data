@@ -3,6 +3,7 @@ package org.folio.linked.data.e2e;
 import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
+import static org.folio.linked.data.TestUtil.getBibframeJsonNodeSample;
 import static org.folio.linked.data.TestUtil.getBibframeSample;
 import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
 import static org.folio.linked.data.TestUtil.random;
@@ -74,7 +75,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
 
     String slug = JsonPath.read(resultActions.andReturn().getResponse().getContentAsString(), "slug");
-    var expectedConfiguration = OBJECT_MAPPER.readTree(getBibframeSample());
+    var expectedConfiguration =  getBibframeJsonNodeSample();
     repo.findBySlug(slug).ifPresentOrElse(e -> {
       assertThat(e.getGraphName(), equalTo(request.getGraphName()));
       assertThat(e.getSlug(), equalTo(TextUtil.slugify(request.getGraphName())));

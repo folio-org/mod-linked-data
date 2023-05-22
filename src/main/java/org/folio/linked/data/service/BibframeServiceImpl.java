@@ -11,8 +11,10 @@ import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Bibframe;
 import org.folio.linked.data.repo.BibframeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class BibframeServiceImpl implements BibframeService {
 

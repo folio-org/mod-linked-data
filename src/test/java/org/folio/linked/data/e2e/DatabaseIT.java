@@ -6,7 +6,7 @@ import static org.folio.linked.data.TestUtil.TENANT_ID;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @IntegrationTest
@@ -20,8 +20,8 @@ class DatabaseIT {
             WHERE table_type = 'BASE TABLE' AND table_schema = ?
     """;
 
-  @Autowired
-  private ApplicationContext context;
+  @Value("${spring.application.name}")
+  private String appName;
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
@@ -29,8 +29,6 @@ class DatabaseIT {
   @Test
   void testTablesCreated() {
     // given
-    var appName = context.getEnvironment().getProperty("spring.application.name");
-    assertThat(appName).isNotNull();
     var schema = TENANT_ID + "_" + appName.replace('-', '_');
 
     // when
