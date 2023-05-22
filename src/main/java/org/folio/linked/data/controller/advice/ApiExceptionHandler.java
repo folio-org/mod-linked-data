@@ -1,6 +1,7 @@
 package org.folio.linked.data.controller.advice;
 
 import static java.util.Collections.emptyList;
+import static org.folio.linked.data.model.ErrorCode.ALREADY_EXISTS_ERROR;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.SERVICE_ERROR;
 import static org.folio.linked.data.model.ErrorCode.UNKNOWN_ERROR;
@@ -19,6 +20,7 @@ import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.domain.dto.Parameter;
+import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -164,6 +166,18 @@ public class ApiExceptionHandler {
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NotFoundException exception) {
     logException(exception);
     return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
+  }
+
+  /**
+   * Handles all {@link AlreadyExistsException} exceptions.
+   *
+   * @param exception {@link AlreadyExistsException} object
+   * @return {@link ResponseEntity} with {@link ErrorResponse} body.
+   */
+  @ExceptionHandler(AlreadyExistsException.class)
+  public ResponseEntity<ErrorResponse> handleAlreadyExistsException(AlreadyExistsException exception) {
+    logException(exception);
+    return buildResponseEntity(exception, BAD_REQUEST, ALREADY_EXISTS_ERROR);
   }
 
   /**

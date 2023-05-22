@@ -1,21 +1,26 @@
 package org.folio.linked.data.mapper;
 
-import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.TestUtil.getBibframeSample;
 import static org.folio.linked.data.matcher.IsEqualJson.equalToJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.test.type.IntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@UnitTest
-class BibframeMapperTest {
+@SpringBootTest
+@IntegrationTest
+class BibframeMapperIT {
 
-  private BibframeMapper bibframeMapper = Mappers.getMapper(BibframeMapper.class);
+  @Autowired
+  private BibframeMapper bibframeMapper;
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromString() throws JsonProcessingException {
@@ -26,20 +31,21 @@ class BibframeMapperTest {
     var jsonNode = bibframeMapper.toJson(json);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
+    assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
   }
 
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromMap() throws JsonProcessingException {
     // given
     var json = getBibframeSample();
-    var map = OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {});
+    var map = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
+    });
 
     // when
     var jsonNode = bibframeMapper.toJson(map);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
+    assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
   }
 
   @Test
@@ -51,7 +57,7 @@ class BibframeMapperTest {
     var jsonNode = bibframeMapper.toJson(configuration);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson("{}"));
+    assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson("{}"));
   }
 
 }

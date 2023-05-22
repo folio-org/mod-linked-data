@@ -31,9 +31,11 @@ public class Bibframe {
   @Column(nullable = false, unique = true)
   private String graphName;
 
+  @NonNull
   @Column(nullable = false, unique = true)
   private Integer graphHash;
 
+  @NonNull
   @Column(nullable = false, unique = true)
   private String slug;
 

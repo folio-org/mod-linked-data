@@ -4,7 +4,7 @@ import static java.util.Objects.isNull;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
-import static org.folio.linked.data.TestUtil.randomId;
+import static org.folio.linked.data.TestUtil.randomString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,7 +31,7 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
       var context = SpringExtension.getApplicationContext(extensionContext);
       appName = context.getEnvironment().getProperty("spring.application.name");
       mockMvc = context.getBean(MockMvc.class);
-      mockMvc.perform(post(TENANT_ENDPOINT_URL, randomId())
+      mockMvc.perform(post(TENANT_ENDPOINT_URL, randomString())
           .content(asJsonString(new TenantAttributes().moduleTo(appName)))
           .headers(defaultHeaders(getOkapiMockUrl()))
           .contentType(APPLICATION_JSON))
@@ -42,7 +42,7 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
   @SneakyThrows
   @Override
   public void afterAll(ExtensionContext extensionContext) {
-    mockMvc.perform(post(TENANT_ENDPOINT_URL, randomId())
+    mockMvc.perform(post(TENANT_ENDPOINT_URL, randomString())
         .content(asJsonString(new TenantAttributes().moduleFrom(appName).purge(false)))
         .headers(defaultHeaders(getOkapiMockUrl())))
       .andExpect(status().isNoContent());
