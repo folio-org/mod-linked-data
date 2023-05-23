@@ -8,7 +8,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.BibframeShort;
+import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
+import org.folio.linked.data.model.BibframeIdAndGraphName;
 import org.folio.linked.data.model.entity.Bibframe;
 import org.folio.linked.data.util.TextUtil;
 import org.mapstruct.Mapper;
@@ -16,6 +19,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = SPRING, imports = {TextUtil.class})
 public abstract class BibframeMapper {
@@ -30,6 +34,10 @@ public abstract class BibframeMapper {
 
   public abstract BibframeResponse map(Bibframe bibframe);
 
+  public abstract BibframeShort map(BibframeIdAndGraphName bibframeIdAndGraphName);
+
+  public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
+
   @Mapping(target = "configuration", source = "configuration", qualifiedByName = "objectToJson")
   public abstract Bibframe update(@MappingTarget Bibframe entity, BibframeUpdateRequest updateRequest);
 
@@ -43,5 +51,4 @@ public abstract class BibframeMapper {
     }
     return node != null ? node : objectMapper.readTree("{}");
   }
-
 }

@@ -13,7 +13,7 @@
       }
     },
     "total_records": {
-        "description": "Total number of errors",
+      "description": "Total number of errors",
       "type": "integer"
     }
   }

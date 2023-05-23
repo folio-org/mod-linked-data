@@ -1,5 +1,6 @@
 package org.folio.linked.data.e2e;
 
+import static java.util.Comparator.comparing;
 import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
@@ -15,6 +16,7 @@ import static org.folio.linked.data.model.ErrorCode.ALREADY_EXISTS_ERROR;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
@@ -36,6 +39,7 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Bibframe;
 import org.folio.linked.data.repo.BibframeRepository;
 import org.folio.linked.data.util.TextUtil;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,11 @@ class BibframeControllerIT {
   private MockMvc mockMvc;
   @Autowired
   private BibframeRepository repo;
+
+  @AfterEach
+  public void clean() {
+    repo.deleteAll();
+  }
 
   @Test
   @SneakyThrows
@@ -75,7 +84,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
 
     String slug = JsonPath.read(resultActions.andReturn().getResponse().getContentAsString(), "slug");
-    var expectedConfiguration =  getBibframeJsonNodeSample();
+    var expectedConfiguration = getBibframeJsonNodeSample();
     repo.findBySlug(slug).ifPresentOrElse(e -> {
       assertThat(e.getGraphName(), equalTo(request.getGraphName()));
       assertThat(e.getSlug(), equalTo(TextUtil.slugify(request.getGraphName())));
@@ -111,7 +120,7 @@ class BibframeControllerIT {
   @Test
   void getBibframeBySlug_shouldReturnExistedEntity() throws Exception {
     // given
-    var existed = repo.save(random(Bibframe.class));
+    var existed = repo.save(randomBibframe());
     var requestBuilder = get(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()));
@@ -178,7 +187,7 @@ class BibframeControllerIT {
   @Test
   void updateBibframeBySlug_shouldReturnUpdatedEntity_ifEntityExists() throws Exception {
     // given
-    var existed = repo.save(random(Bibframe.class));
+    var existed = repo.save(randomBibframe());
     var updatedConfiguration = "{ \"updated\": true }";
     var requestBuilder = put(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
@@ -232,7 +241,7 @@ class BibframeControllerIT {
   @Test
   void deleteBibframeBySlug_shouldDeleteExistedEntity() throws Exception {
     // given
-    var existed = repo.save(random(Bibframe.class));
+    var existed = repo.save(randomBibframe());
     var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(getOkapiMockUrl()));
@@ -243,5 +252,36 @@ class BibframeControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(repo.existsBySlug(existed.getSlug()), is(false));
+  }
+
+  @Test
+  void getBibframesShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
+    // given
+    var existed = Lists.newArrayList(
+      repo.save(randomBibframe()),
+      repo.save(randomBibframe()),
+      repo.save(randomBibframe())
+    ).stream().sorted(comparing(Bibframe::getGraphName)).toList();
+    var requestBuilder = get(BIBFRAMES_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(getOkapiMockUrl()));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("number", equalTo(0)))
+      .andExpect(jsonPath("total_pages", equalTo(1)))
+      .andExpect(jsonPath("total_elements", equalTo(3)))
+      .andExpect(jsonPath("content", hasSize(3)))
+      .andExpect(jsonPath("content[0].id", equalTo(existed.get(0).getId().intValue())))
+      .andExpect(jsonPath("content[0].graphName", equalTo(existed.get(0).getGraphName())))
+      .andExpect(jsonPath("content[1].id", equalTo(existed.get(1).getId().intValue())))
+      .andExpect(jsonPath("content[1].graphName", equalTo(existed.get(1).getGraphName())))
+      .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getId().intValue())))
+      .andExpect(jsonPath("content[2].graphName", equalTo(existed.get(2).getGraphName())));
   }
 }
