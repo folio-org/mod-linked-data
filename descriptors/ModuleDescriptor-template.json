@@ -14,8 +14,26 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/bibframes/{id}",
+          "pathPattern": "/bibframes",
           "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/bibframes/{slug}",
+          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "PUT" ],
+          "pathPattern": "/bibframes/{slug}",
+          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "DELETE" ],
+          "pathPattern": "/bibframes/{slug}",
+          "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []
         }
       ]
@@ -41,13 +59,13 @@
   "permissionSets": [
     {
       "permissionName": "linked.data.bibframe.post",
-      "displayName": "LinkedData - creates a Bibframe record",
-      "description": "Creates an Bibframe"
+      "displayName": "LinkedData - write",
+      "description": "LinkedData - write"
     },
     {
       "permissionName": "linked.data.bibframe.get",
-      "displayName": "LinkedData - reads a Bibframe record",
-      "description": "Reads a Bibframe"
+      "displayName": "LinkedData - read",
+      "description": "LinkedData - read"
     }
   ],
   "launchDescriptor": {
