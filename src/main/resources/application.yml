@@ -23,6 +23,19 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
 
+folio:
+  environment: ${ENV:folio}
+  okapiUrl: ${okapi.url}
+  logging:
+    request:
+      enabled: true
+    feign:
+      enabled: true
+
+bibframe:
+    profile:
+        default: lc:profile:bf2:Monograph
+
 management:
   endpoints:
     web:

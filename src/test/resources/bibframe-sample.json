@@ -1,27 +1,26 @@
 {
-  "@context":"http://schema.org",
-  "@id":"http://link.dclibrary.org/resource/Rh5lkqhCBU8/",
-  "@type":"Person",
-  "disambiguatingDescription":"The person Einstein, Albert, 1879-1955 represents an individual (alive, dead, undead, or fictional) associated with resources found in DC Public Library System.",
-  "name":"Einstein, Albert, 1879-1955",
-  "potentialAction":[
+  "http://id.loc.gov/ontologies/bibframe/Work": [
     {
-      "@type":"OrganizeAction",
-      "agent":{
-        "@id":"http://link.dclibrary.org/",
-        "@type":"LibrarySystem",
-        "name":"DC Public Library System"
-      },
-      "object":{
-        "@id":"http://link.dclibrary.org/resource/Rh5lkqhCBU8/"
-      },
-      "participant":{
-        "@id":"http://zepheira.com/#This",
-        "@type":"Organization",
-        "name":"Zepheira",
-        "url":"http://zepheira.com/"
-      }
+      "http://id.loc.gov/ontologies/bibframe/contribution": [
+        {
+          "http://id.loc.gov/ontologies/bflc/PrimaryContribution": {
+            "http://id.loc.gov/ontologies/bibframe/agent": [
+              {
+                "id": "lc:RT:bf2:Agent:bfPerson",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Person",
+                "label": "Spearman, Frank H. (Frank Hamilton), 1859-1937"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/role": [
+              {
+                "id": "lc:RT:bf2:Agent:bfRole",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Role",
+                "label": "Author"
+              }
+            ]
+          }
+        }
+      ]
     }
-  ],
-  "url":"http://link.dclibrary.org/resource/Rh5lkqhCBU8/"
+  ]
 }

@@ -6,6 +6,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.hash.Hashing;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.folio.linked.data.configuration.ObjectMapperConfig;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.model.entity.Bibframe;
+import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.util.TextUtil;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
@@ -25,10 +27,12 @@ import org.springframework.http.HttpHeaders;
 
 @UtilityClass
 public class TestUtil {
+
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("bibframe-sample.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
+
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
 
   static {
@@ -36,6 +40,8 @@ public class TestUtil {
     PARAMETERS.randomize(named("configuration"), TestUtil::getBibframeJsonNodeSample);
     PARAMETERS.randomize(named("_configuration"), TestUtil::getBibframeSample);
     PARAMETERS.randomize(Bibframe.class, TestUtil::randomBibframe);
+    PARAMETERS.randomizationDepth(3);
+    PARAMETERS.scanClasspathForConcreteTypes(true);
   }
 
   @SneakyThrows
@@ -76,15 +82,32 @@ public class TestUtil {
     return GENERATOR.nextObject(String.class);
   }
 
-  public static BibframeCreateRequest randomBibframeCreateRequest(String graphName) {
-    var request = GENERATOR.nextObject(BibframeCreateRequest.class);
-    request.graphName(graphName);
-    return request;
+  public static Long randomInt() {
+    return GENERATOR.nextLong();
+  }
+
+  public static BibframeCreateRequest randomBibframeCreateRequest() {
+    return GENERATOR.nextObject(BibframeCreateRequest.class);
   }
 
   public static Bibframe randomBibframe() {
-    var graphName = randomString();
+    String graphName = randomString();
     var slug = TextUtil.slugify(graphName);
-    return Bibframe.of(graphName, slug.hashCode(), slug, getBibframeJsonNodeSample());
+    var bibframe = new Bibframe();
+    bibframe.setGraphName(graphName);
+    bibframe.setGraphHash(slug.hashCode());
+    bibframe.setSlug(slug);
+    bibframe.setConfiguration(getBibframeJsonNodeSample());
+    return bibframe;
+  }
+
+  public static Bibframe randomBibframe(ResourceType profile) {
+    var bibframe = randomBibframe();
+    bibframe.setProfile(profile);
+    return bibframe;
+  }
+
+  public static long hash(String str) {
+    return Hashing.murmur3_32_fixed().hashString(str, StandardCharsets.UTF_8).padToLong();
   }
 }

@@ -23,29 +23,29 @@ public class BibframeController implements BibframesApi {
   @Override
   public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant,
                                                          BibframeCreateRequest bibframeCreateRequest) {
-    return ResponseEntity.ok(bibframeService.createBibframe(bibframeCreateRequest));
+    return ResponseEntity.ok(bibframeService.createBibframe(okapiTenant, bibframeCreateRequest));
   }
 
   @Override
-  public ResponseEntity<BibframeResponse> getBibframeBySlug(String slug, String okapiTenant) {
-    return ResponseEntity.ok(bibframeService.getBibframeBySlug(slug));
+  public ResponseEntity<BibframeResponse> getBibframeById(String okapiTenant, Long id) {
+    return ResponseEntity.ok(bibframeService.getBibframeById(okapiTenant, id));
   }
 
   @Override
-  public ResponseEntity<BibframeResponse> updateBibframe(String slug, String okapiTenant,
+  public ResponseEntity<BibframeResponse> updateBibframe(String okapiTenant, Long id,
                                                          BibframeUpdateRequest bibframeUpdateRequest) {
-    return ResponseEntity.ok(bibframeService.updateBibframe(slug, bibframeUpdateRequest));
+    return ResponseEntity.ok(bibframeService.updateBibframe(okapiTenant, id, bibframeUpdateRequest));
   }
 
   @Override
-  public ResponseEntity<Void> deleteBibframe(String slug, String okapiTenant) {
-    bibframeService.deleteBibframe(slug);
+  public ResponseEntity<Void> deleteBibframe(String okapiTenant, Long id) {
+    bibframeService.deleteBibframe(okapiTenant, id);
     return noContent().build();
   }
 
   @Override
   public ResponseEntity<BibframeShortInfoPage> getBibframesShortInfoPage(String okapiTenant, Integer pageNumber,
                                                                          Integer pageSize) {
-    return ResponseEntity.ok(bibframeService.getBibframeShortInfoPage(pageNumber, pageSize));
+    return ResponseEntity.ok(bibframeService.getBibframeShortInfoPage(okapiTenant, pageNumber, pageSize));
   }
 }

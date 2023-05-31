@@ -4,6 +4,8 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-  <include file="scripts/v-1.0.0/2023-05-10--13-00-create-mod-linked-data-tables.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/create-mod-linked-data-tables.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/create-mod-linked-data-indexes.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/insert-mod-liked-data-monograph-profile.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

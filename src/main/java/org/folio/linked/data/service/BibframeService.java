@@ -7,13 +7,13 @@ import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
 
 public interface BibframeService {
 
-  BibframeResponse createBibframe(BibframeCreateRequest bibframeCreateRequest);
+  BibframeResponse createBibframe(String okapiTenant, BibframeCreateRequest bibframeCreateRequest);
 
-  BibframeResponse getBibframeBySlug(String slug);
+  BibframeResponse getBibframeById(String okapiTenant, Long id);
 
-  BibframeResponse updateBibframe(String slug, BibframeUpdateRequest bibframeUpdateRequest);
+  BibframeResponse updateBibframe(String okapiTenant, Long id, BibframeUpdateRequest bibframeUpdateRequest);
 
-  void deleteBibframe(String slug);
+  void deleteBibframe(String okapiTenant, Long id);
 
-  BibframeShortInfoPage getBibframeShortInfoPage(Integer pageNumber, Integer pageSize);
+  BibframeShortInfoPage getBibframeShortInfoPage(String okapiTenant, Integer pageNumber, Integer pageSize);
 }

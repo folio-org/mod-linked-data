@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Search Series Hub Info",
+  "allOf": [
+    {
+      "$ref": "Relationship.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seriesEnumeration": {
+          "type": "array",
+          "items": {
+            "$ref": "../property.json"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/seriesEnumeration"
+        }
+      }
+    }
+  ]
+}

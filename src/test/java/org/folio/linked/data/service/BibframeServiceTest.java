@@ -1,28 +1,29 @@
 package org.folio.linked.data.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.TestUtil.getBibframeJsonNodeSample;
 import static org.folio.linked.data.TestUtil.random;
 import static org.folio.linked.data.TestUtil.randomBibframe;
-import static org.folio.linked.data.TestUtil.randomString;
-import static org.folio.linked.data.util.TextUtil.slugify;
+import static org.folio.linked.data.TestUtil.randomBibframeCreateRequest;
+import static org.folio.linked.data.TestUtil.randomInt;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.function.Function;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
-import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.BibframeIdAndGraphName;
-import org.folio.linked.data.model.entity.Bibframe;
+import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.repo.BibframeRepository;
+import org.folio.linked.data.repo.ResourceTypeRepository;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,108 +46,94 @@ class BibframeServiceTest {
   private BibframeRepository bibframeRepo;
 
   @Mock
+  private ResourceTypeRepository resourceTypeRepo;
+
+  @Mock
   private BibframeMapper bibframeMapper;
+
 
   @Test
   void createBibframe_shouldReturnEntityMappedAndPersistedByRepoFromRequest() {
     // given
-    var request = random(BibframeCreateRequest.class);
+    var profile = new ResourceType();
+    when(resourceTypeRepo.findBySimpleLabel("lc:profile:bf2:Monograph")).thenReturn(Optional.of(profile));
+    var request = randomBibframeCreateRequest();
+    when(bibframeMapper.toJson(request)).thenReturn(getBibframeJsonNodeSample());
     var bibframe = randomBibframe();
-    when(bibframeMapper.map(request)).thenReturn(bibframe);
-    var persisted = randomBibframe();
-    when(bibframeRepo.save(bibframe)).thenReturn(persisted);
+    when(bibframeRepo.save(any())).thenReturn(bibframe);
     var expectedResponse = random(BibframeResponse.class);
-    when(bibframeMapper.map(persisted)).thenReturn(expectedResponse);
+    when(bibframeMapper.toBibframe(bibframe.getConfiguration())).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.createBibframe(request);
+    var result = bibframeService.createBibframe("", request);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
   }
 
   @Test
-  void createBibframe_shouldThrowAlreadyExistsException_ifEntityExists() {
+  void getBibframeById_shouldReturnExistedEntity() {
     // given
-    var request = random(BibframeCreateRequest.class);
-    var slug = slugify(request.getGraphName());
-    when(bibframeRepo.existsBySlug(slug)).thenReturn(true);
-    var bibframe = new Bibframe();
-    bibframe.setSlug(slug);
-    when(bibframeMapper.map(request)).thenReturn(bibframe);
-
-    // when
-    AlreadyExistsException thrown = assertThrows(
-      AlreadyExistsException.class,
-      () -> bibframeService.createBibframe(request)
-    );
-
-    // then
-    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given slug [" + slug + "] exists already");
-  }
-
-  @Test
-  void getBibframeSlug_shouldReturnExistedEntity() {
-    // given
+    var id = randomInt();
     var existedBibframe = randomBibframe();
-    when(bibframeRepo.findBySlug(existedBibframe.getSlug())).thenReturn(Optional.of(existedBibframe));
+    existedBibframe.setConfiguration(getBibframeJsonNodeSample());
+    when(bibframeRepo.findById(id)).thenReturn(Optional.of(existedBibframe));
     var expectedResponse = random(BibframeResponse.class);
-    when(bibframeMapper.map(existedBibframe)).thenReturn(expectedResponse);
+    when(bibframeMapper.toBibframe(existedBibframe.getConfiguration())).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.getBibframeBySlug(existedBibframe.getSlug());
+    var result = bibframeService.getBibframeById("", id);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
   }
 
   @Test
-  void getBibframeSlug_shouldThrowNotFoundException_ifNoEntityExists() {
+  void getBibframeById_shouldThrowNotFoundException_ifNoEntityExists() {
     // given
-    var notExistedSlug = randomString();
-    when(bibframeRepo.findBySlug(notExistedSlug)).thenReturn(Optional.empty());
+    var notExistedId = randomInt();
+    when(bibframeRepo.findById(notExistedId)).thenReturn(Optional.empty());
 
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.getBibframeBySlug(notExistedSlug)
+      () -> bibframeService.getBibframeById("", notExistedId)
     );
 
     // then
-    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given slug [" + notExistedSlug + "] is not found");
+    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given id [" + notExistedId + "] is not found");
   }
 
   @Test
   void updateBibframe_shouldThrowNotFoundException_ifNoEntityExists() {
     // given
-    var notExistedSlug = randomString();
+    var notExistedId = randomInt();
     var request = random(BibframeUpdateRequest.class);
-    when(bibframeRepo.findBySlug(notExistedSlug)).thenReturn(Optional.empty());
+    when(bibframeRepo.findById(notExistedId)).thenReturn(Optional.empty());
 
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.updateBibframe(notExistedSlug, request)
+      () -> bibframeService.updateBibframe("", notExistedId, request)
     );
 
     // then
-    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given slug [" + notExistedSlug + "] is not found");
+    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given id [" + notExistedId + "] is not found");
   }
 
   @Test
   void updateBibframe_shouldReturnUpdatedMappedEntity() {
     // given
     var existedBibframe = randomBibframe();
-    when(bibframeRepo.findBySlug(existedBibframe.getSlug())).thenReturn(Optional.of(existedBibframe));
+    when(bibframeRepo.findById(existedBibframe.getId())).thenReturn(Optional.of(existedBibframe));
     var request = random(BibframeUpdateRequest.class);
-    var updatedBibframe = randomBibframe();
-    when(bibframeMapper.update(existedBibframe, request)).thenReturn(updatedBibframe);
-    when(bibframeRepo.save(updatedBibframe)).thenReturn(updatedBibframe);
+    when(bibframeMapper.toJson(request)).thenReturn(getBibframeJsonNodeSample());
+    when(bibframeRepo.save(existedBibframe)).thenReturn(existedBibframe);
     var expectedResponse = random(BibframeResponse.class);
-    when(bibframeMapper.map(updatedBibframe)).thenReturn(expectedResponse);
+    when(bibframeMapper.toBibframe(existedBibframe.getConfiguration())).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.updateBibframe(existedBibframe.getSlug(), request);
+    var result = bibframeService.updateBibframe("", existedBibframe.getId(), request);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -156,29 +143,29 @@ class BibframeServiceTest {
   void deleteBibframe_shouldDeleteExistedEntity() {
     // given
     var existedBibframe = randomBibframe();
-    when(bibframeRepo.deleteBySlug(existedBibframe.getSlug())).thenReturn(1);
+    when(bibframeRepo.existsById(existedBibframe.getId())).thenReturn(true);
 
     // when
-    bibframeService.deleteBibframe(existedBibframe.getSlug());
+    bibframeService.deleteBibframe("", existedBibframe.getId());
 
     // then
-    verify(bibframeRepo).deleteBySlug(existedBibframe.getSlug());
+    verify(bibframeRepo).deleteById(existedBibframe.getId());
   }
 
   @Test
   void deleteBibframe_shouldThrowNotFoundException_ifNoEntityExists() {
     // given
-    var notExistedSlug = randomString();
-    when(bibframeRepo.deleteBySlug(notExistedSlug)).thenReturn(0);
+    var notExistedId = randomInt();
+    when(bibframeRepo.existsById(notExistedId)).thenReturn(false);
 
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.deleteBibframe(notExistedSlug)
+      () -> bibframeService.deleteBibframe("", notExistedId)
     );
 
     // then
-    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given slug [" + notExistedSlug + "] is not found");
+    assertThat(thrown.getMessage()).isEqualTo("Bibframe record with given id [" + notExistedId + "] is not found");
   }
 
   @Test
@@ -193,8 +180,9 @@ class BibframeServiceTest {
       .map(ArgumentMatchers.<Function<BibframeIdAndGraphName, BibframeShort>>any());
     var expectedResult = random(BibframeShortInfoPage.class);
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
+
     // when
-    var result = bibframeService.getBibframeShortInfoPage(pageNumber, pageSize);
+    var result = bibframeService.getBibframeShortInfoPage("", pageNumber, pageSize);
 
     // then
     assertThat(result).isEqualTo(expectedResult);
@@ -210,11 +198,14 @@ class BibframeServiceTest {
       .map(ArgumentMatchers.<Function<BibframeIdAndGraphName, BibframeShort>>any());
     var expectedResult = random(BibframeShortInfoPage.class);
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
+
     // when
-    var result = bibframeService.getBibframeShortInfoPage(null, null);
+    var result = bibframeService.getBibframeShortInfoPage("", null, null);
 
     // then
     assertThat(result).isEqualTo(expectedResult);
   }
+
+
 }
 

@@ -7,18 +7,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 @Entity
 @Table(name = "graphset")
 @NoArgsConstructor
-@RequiredArgsConstructor(staticName = "of")
 @Getter
 @Setter
 public class Bibframe {
@@ -27,20 +29,26 @@ public class Bibframe {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NonNull
-  @Column(nullable = false, unique = true)
+  @Column(unique = true)
   private String graphName;
 
-  @NonNull
-  @Column(nullable = false, unique = true)
+  @Column(unique = true)
   private Integer graphHash;
 
-  @NonNull
   @Column(nullable = false, unique = true)
   private String slug;
 
-  @NonNull
-  @Column(columnDefinition = "json", nullable = false)
+  @Column(columnDefinition = "json")
   @Type(JsonBinaryType.class)
   private JsonNode configuration;
+
+  @ManyToOne
+  @JoinColumn(name = "profile_hash")
+  private ResourceType profile;
+
+  @ManyToMany
+  @JoinTable(name = "graph_resources",
+      joinColumns = @JoinColumn(name = "graph_id"),
+      inverseJoinColumns = @JoinColumn(name = "resource_hash"))
+  private List<Resource> resources;
 }

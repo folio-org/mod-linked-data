@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Contribution Info",
+  "type": "object",
+  "properties": {
+    "agent": {
+      "type": "array",
+      "items": {
+        "$ref": "../property.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/agent"
+    },
+    "role": {
+      "type": "array",
+      "items": {
+        "$ref": "../property.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/role"
+    }
+  }
+}

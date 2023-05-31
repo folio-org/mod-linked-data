@@ -2,10 +2,11 @@ package org.folio.linked.data.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.TestUtil.random;
+import static org.folio.linked.data.TestUtil.randomBibframeCreateRequest;
+import static org.folio.linked.data.TestUtil.randomInt;
 import static org.folio.linked.data.TestUtil.randomString;
 import static org.mockito.Mockito.when;
 
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
@@ -31,10 +32,10 @@ class BibframeControllerTest {
   @Test
   void createBibframe_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var request = random(BibframeCreateRequest.class);
+    var request = randomBibframeCreateRequest();
     var response = random(BibframeResponse.class);
     var tenant = randomString();
-    when(bibframeService.createBibframe(request)).thenReturn(response);
+    when(bibframeService.createBibframe(tenant, request)).thenReturn(response);
 
     // when
     var result = bibframeController.createBibframe(tenant, request);
@@ -45,15 +46,15 @@ class BibframeControllerTest {
   }
 
   @Test
-  void getBibframeSlug_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
+  void getBibframeid_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var slug = randomString();
+    var id = randomInt();
     var tenant = randomString();
     var response = random(BibframeResponse.class);
-    when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
+    when(bibframeService.getBibframeById(tenant, id)).thenReturn(response);
 
     // when
-    var result = bibframeController.getBibframeBySlug(slug, tenant);
+    var result = bibframeController.getBibframeById(tenant, id);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -63,14 +64,14 @@ class BibframeControllerTest {
   @Test
   void updateBibframe_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var slug = randomString();
+    var id = randomInt();
     var tenant = randomString();
     var response = random(BibframeResponse.class);
     var request = random(BibframeUpdateRequest.class);
-    when(bibframeService.updateBibframe(slug, request)).thenReturn(response);
+    when(bibframeService.updateBibframe(tenant, id, request)).thenReturn(response);
 
     // when
-    var result = bibframeController.updateBibframe(slug, tenant, request);
+    var result = bibframeController.updateBibframe(tenant, id, request);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -80,11 +81,11 @@ class BibframeControllerTest {
   @Test
   void deleteBibframe_shouldReturnOkResponse_ifNoException() {
     // given
-    var slug = randomString();
+    var id = randomInt();
     var tenant = randomString();
 
     // when
-    var result = bibframeController.deleteBibframe(slug, tenant);
+    var result = bibframeController.deleteBibframe(tenant, id);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -98,7 +99,7 @@ class BibframeControllerTest {
     var page = random(Integer.class);
     var size = random(Integer.class);
     var expectedResponse = random(BibframeShortInfoPage.class);
-    when(bibframeService.getBibframeShortInfoPage(page, size)).thenReturn(expectedResponse);
+    when(bibframeService.getBibframeShortInfoPage(tenant, page, size)).thenReturn(expectedResponse);
 
     // when
     var result = bibframeController.getBibframesShortInfoPage(tenant, page, size);

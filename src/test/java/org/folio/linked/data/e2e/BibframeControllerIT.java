@@ -1,18 +1,20 @@
 package org.folio.linked.data.e2e;
 
 import static java.util.Comparator.comparing;
-import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
-import static org.folio.linked.data.TestUtil.getBibframeJsonNodeSample;
-import static org.folio.linked.data.TestUtil.getBibframeSample;
+import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
+import static org.folio.linked.data.TestUtil.hash;
 import static org.folio.linked.data.TestUtil.random;
 import static org.folio.linked.data.TestUtil.randomBibframe;
 import static org.folio.linked.data.TestUtil.randomBibframeCreateRequest;
-import static org.folio.linked.data.TestUtil.randomString;
-import static org.folio.linked.data.matcher.IsEqualJson.equalToJson;
-import static org.folio.linked.data.model.ErrorCode.ALREADY_EXISTS_ERROR;
+import static org.folio.linked.data.TestUtil.randomInt;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
+import static org.folio.linked.data.util.BibframeConstants.ITEM_URL;
+import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH_URL;
+import static org.folio.linked.data.util.BibframeConstants.WORK_URL;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,23 +29,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.jayway.jsonpath.JsonPath;
+import java.io.UnsupportedEncodingException;
 import lombok.SneakyThrows;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Bibframe;
+import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.repo.BibframeRepository;
-import org.folio.linked.data.util.TextUtil;
+import org.folio.linked.data.repo.ResourceTypeRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
 class BibframeControllerIT {
@@ -53,237 +57,219 @@ class BibframeControllerIT {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
-  private BibframeRepository repo;
+  private BibframeRepository bibframeRepo;
   @Autowired
-  private Environment env;
+  private ResourceTypeRepository typeRepo;
+  @Autowired
+  private ObjectMapper objectMapper;
+  @Autowired
+  private BibframeMapper bibframeMapper;
+
+  @BeforeEach
+  public void setup() {
+    var profile = new ResourceType();
+    profile.setTypeUri(MONOGRAPH_URL);
+    profile.setSimpleLabel(MONOGRAPH);
+    profile.setTypeHash(hash(MONOGRAPH));
+    typeRepo.save(profile);
+  }
 
   @AfterEach
   public void clean() {
-    repo.deleteAll();
+    bibframeRepo.deleteAll();
   }
 
   @Test
   @SneakyThrows
   void postBibframe_shouldStoreEntityCorrectly() {
     // given
-    var request = random(BibframeCreateRequest.class);
+    var request = randomBibframeCreateRequest();
     var requestBuilder = post(BIBFRAMES_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(asJsonString(request));
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()))
+        .content(asJsonString(request));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", notNullValue()))
-      .andExpect(jsonPath("graphName", notNullValue()))
-      .andExpect(jsonPath("graphHash", notNullValue()))
-      .andExpect(jsonPath("slug", notNullValue()))
-      .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("id", notNullValue()))
+        .andExpect(jsonPath("$.['" + WORK_URL + "']", notNullValue()))
+        .andExpect(jsonPath("$.['" + INSTANCE_URL + "']", notNullValue()))
+        .andExpect(jsonPath("$.['" + ITEM_URL + "']", notNullValue()));
+  }
 
-    String slug = JsonPath.read(resultActions.andReturn().getResponse().getContentAsString(), "slug");
-    var expectedConfiguration = getBibframeJsonNodeSample();
-    repo.findBySlug(slug).ifPresentOrElse(e -> {
-      assertThat(e.getGraphName(), equalTo(request.getGraphName()));
-      assertThat(e.getSlug(), equalTo(TextUtil.slugify(request.getGraphName())));
-      assertThat(e.getGraphHash(), equalTo(e.getSlug().hashCode()));
-      assertThat(e.getConfiguration(), equalTo(expectedConfiguration));
-    }, () -> Assertions.fail("Expected entity wasn't saved into a repo"));
+  private Long extractId(ResultActions resultActions) throws UnsupportedEncodingException {
+    Object id = JsonPath.read(resultActions.andReturn().getResponse().getContentAsString(), "id");
+    if (id instanceof Integer idInt) {
+      return idInt.longValue();
+    } else {
+      return (Long) id;
+    }
   }
 
   @Test
-  void postBibframe_shouldReturnAlreadyExistsError_ifBibframeWithGivenSlugExists() throws Exception {
+  void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
-    var existed = randomBibframe();
-    repo.save(existed);
-    var requestBuilder = post(BIBFRAMES_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(asJsonString(randomBibframeCreateRequest(existed.getGraphName())));
+    var existed = bibframeRepo.save(randomBibframe(defaultProfile()));
+    var requestBuilder = get(BIBFRAMES_URL + "/" + existed.getId())
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions
-      .andExpect(status().isBadRequest())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo("Bibframe record with given slug ["
-        + existed.getSlug() + "] exists already")))
-      .andExpect(jsonPath("errors[0].type", equalTo(AlreadyExistsException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(ALREADY_EXISTS_ERROR.getValue())))
-      .andExpect(jsonPath("total_records", equalTo(1)));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("id", notNullValue()))
+        .andExpect(jsonPath("$.['" + WORK_URL + "']", notNullValue()))
+        .andExpect(jsonPath("$.['" + INSTANCE_URL + "']", notNullValue()))
+        .andExpect(jsonPath("$.['" + ITEM_URL + "']", notNullValue()));
+  }
+
+  private ResourceType defaultProfile() {
+    return typeRepo.findBySimpleLabel(MONOGRAPH).orElseThrow();
   }
 
   @Test
-  void getBibframeBySlug_shouldReturnExistedEntity() throws Exception {
+  void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
-    var existed = repo.save(randomBibframe());
-    var requestBuilder = get(BIBFRAMES_URL + "/" + existed.getSlug())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id").isNotEmpty())
-      .andExpect(jsonPath("graphName", equalTo(existed.getGraphName())))
-      .andExpect(jsonPath("graphHash", equalTo(existed.getGraphHash())))
-      .andExpect(jsonPath("slug", equalTo(existed.getSlug())))
-      .andExpect(jsonPath("configuration", equalToJson(getBibframeSample())));
-  }
-
-  @Test
-  void getBibframeBySlug_shouldReturn404_ifNoExistedEntity() throws Exception {
-    // given
-    var notExistedId = randomString();
+    var notExistedId = randomInt();
     var requestBuilder = get(BIBFRAMES_URL + "/" + notExistedId)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions
-      .andExpect(status().isNotFound())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo("Bibframe record with given slug ["
-        + notExistedId + "] is not found")))
-      .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
-      .andExpect(jsonPath("total_records", equalTo(1)));
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("errors[0].message", equalTo("Bibframe record with given id ["
+            + notExistedId + "] is not found")))
+        .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
+        .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
+        .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
   @Test
-  void updateBibframeBySlug_shouldReturn404_ifNoExistedEntity() throws Exception {
+  void updateBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
-    var notExistedId = randomString();
+    var notExistedId = randomInt();
     var requestBuilder = put(BIBFRAMES_URL + "/" + notExistedId)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(asJsonString(random(BibframeUpdateRequest.class)));
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()))
+        .content(asJsonString(random(BibframeUpdateRequest.class)));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions
-      .andExpect(status().isNotFound())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo("Bibframe record with given slug ["
-        + notExistedId + "] is not found")))
-      .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
-      .andExpect(jsonPath("total_records", equalTo(1)));
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("errors[0].message", equalTo("Bibframe record with given id ["
+            + notExistedId + "] is not found")))
+        .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
+        .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
+        .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
   @Test
-  void updateBibframeBySlug_shouldReturnUpdatedEntity_ifEntityExists() throws Exception {
+  void updateBibframeById_shouldReturnUpdatedEntity_ifEntityExists() throws Exception {
     // given
-    var existed = repo.save(randomBibframe());
-    var updatedConfiguration = "{ \"updated\": true }";
-    var requestBuilder = put(BIBFRAMES_URL + "/" + existed.getSlug())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(asJsonString(new BibframeUpdateRequest(updatedConfiguration)));
+    var existed = bibframeRepo.save(randomBibframe(defaultProfile()));
+    var request = randomBibframeCreateRequest();
+    var requestBuilder = put(BIBFRAMES_URL + "/" + existed.getId())
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()))
+        .content(asJsonString(request));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", equalTo(existed.getId().intValue())))
-      .andExpect(jsonPath("graphName", equalTo(existed.getGraphName())))
-      .andExpect(jsonPath("graphHash", equalTo(existed.getGraphHash())))
-      .andExpect(jsonPath("slug", equalTo(existed.getSlug())))
-      .andExpect(jsonPath("configuration", equalToJson(updatedConfiguration)));
-
-    var expectedConfiguration = OBJECT_MAPPER.readTree(updatedConfiguration);
-    repo.findBySlug(existed.getSlug()).ifPresentOrElse(e -> {
-      assertThat(e.getGraphName(), equalTo(existed.getGraphName()));
-      assertThat(e.getSlug(), equalTo(TextUtil.slugify(existed.getGraphName())));
-      assertThat(e.getGraphHash(), equalTo(e.getSlug().hashCode()));
-      assertThat(e.getConfiguration(), equalTo(expectedConfiguration));
-    }, () -> Assertions.fail("Expected entity wasn't saved into a repo"));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("id", equalTo(existed.getId().intValue())))
+        .andExpect(jsonPath("$.['" + WORK_URL + "']", notNullValue()))
+        .andExpect(jsonPath("$.['" + INSTANCE_URL + "']", notNullValue()))
+        .andExpect(jsonPath("$.['" + ITEM_URL + "']", notNullValue()));
   }
 
   @Test
-  void deleteBibframeBySlug_shouldReturn404_ifNoExistedEntity() throws Exception {
+  void deleteBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
-    var notExistedId = randomString();
+    var notExistedId = randomInt();
     var requestBuilder = delete(BIBFRAMES_URL + "/" + notExistedId)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions
-      .andExpect(status().isNotFound())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo("Bibframe record with given slug ["
-        + notExistedId + "] is not found")))
-      .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
-      .andExpect(jsonPath("total_records", equalTo(1)));
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("errors[0].message", equalTo("Bibframe record with given id ["
+            + notExistedId + "] is not found")))
+        .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
+        .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
+        .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
   @Test
-  void deleteBibframeBySlug_shouldDeleteExistedEntity() throws Exception {
+  void deleteBibframeById_shouldDeleteExistedEntity() throws Exception {
     // given
-    var existed = repo.save(randomBibframe());
-    var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getSlug())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+    var existed = bibframeRepo.save(randomBibframe(defaultProfile()));
+    var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getId())
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions.andExpect(status().isNoContent());
-    assertThat(repo.existsBySlug(existed.getSlug()), is(false));
+    assertThat(bibframeRepo.existsById(existed.getId()), is(false));
   }
 
   @Test
   void getBibframesShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-      repo.save(randomBibframe()),
-      repo.save(randomBibframe()),
-      repo.save(randomBibframe())
+        bibframeRepo.save(randomBibframe(defaultProfile())),
+        bibframeRepo.save(randomBibframe(defaultProfile())),
+        bibframeRepo.save(randomBibframe(defaultProfile()))
     ).stream().sorted(comparing(Bibframe::getGraphName)).toList();
     var requestBuilder = get(BIBFRAMES_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(getOkapiMockUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
     resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("number", equalTo(0)))
-      .andExpect(jsonPath("total_pages", equalTo(1)))
-      .andExpect(jsonPath("total_elements", equalTo(3)))
-      .andExpect(jsonPath("content", hasSize(3)))
-      .andExpect(jsonPath("content[0].id", equalTo(existed.get(0).getId().intValue())))
-      .andExpect(jsonPath("content[0].graphName", equalTo(existed.get(0).getGraphName())))
-      .andExpect(jsonPath("content[1].id", equalTo(existed.get(1).getId().intValue())))
-      .andExpect(jsonPath("content[1].graphName", equalTo(existed.get(1).getGraphName())))
-      .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getId().intValue())))
-      .andExpect(jsonPath("content[2].graphName", equalTo(existed.get(2).getGraphName())));
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(APPLICATION_JSON))
+        .andExpect(jsonPath("number", equalTo(0)))
+        .andExpect(jsonPath("total_pages", equalTo(1)))
+        .andExpect(jsonPath("total_elements", equalTo(3)))
+        .andExpect(jsonPath("content", hasSize(3)))
+        .andExpect(jsonPath("content[0].id", equalTo(existed.get(0).getId().intValue())))
+        .andExpect(jsonPath("content[0].graphName", equalTo(existed.get(0).getGraphName())))
+        .andExpect(jsonPath("content[1].id", equalTo(existed.get(1).getId().intValue())))
+        .andExpect(jsonPath("content[1].graphName", equalTo(existed.get(1).getGraphName())))
+        .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getId().intValue())))
+        .andExpect(jsonPath("content[2].graphName", equalTo(existed.get(2).getGraphName())));
   }
 }
