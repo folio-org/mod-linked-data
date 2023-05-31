@@ -24,14 +24,16 @@ spring:
     open-in-view: false
 
 folio:
-  environment: ${ENV:folio}
+  environment: ${ENV}
   okapiUrl: ${okapi.url}
+  tenant:
+    validation:
+      enabled: false
   logging:
     request:
-      enabled: true
+      enabled: false
     feign:
-      enabled: true
-
+      enabled: false
 
 management:
   endpoints:
@@ -42,3 +44,6 @@ management:
   endpoint:
     loggers:
       enabled: true
+
+mod-linked-data:
+  default-schema: mod_linked_data

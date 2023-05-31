@@ -31,7 +31,7 @@ public class BibframeServiceImpl implements BibframeService {
   private final BibframeMapper bibframeMapper;
 
   @Override
-  public BibframeResponse createBibframe(String okapiTenant, BibframeCreateRequest bibframeCreateRequest) {
+  public BibframeResponse createBibframe(BibframeCreateRequest bibframeCreateRequest) {
     var toPersist = bibframeMapper.map(bibframeCreateRequest);
     if (bibframeRepo.existsBySlug(toPersist.getSlug())) {
       throw new AlreadyExistsException(RECORD_WITH_GIVEN_SLUG + toPersist.getSlug() + EXISTS_ALREADY);
@@ -41,14 +41,14 @@ public class BibframeServiceImpl implements BibframeService {
   }
 
   @Override
-  public BibframeResponse getBibframeBySlug(String okapiTenant, String slug) {
+  public BibframeResponse getBibframeBySlug(String slug) {
     var optionalBibframe = bibframeRepo.findBySlug(slug);
     return optionalBibframe.map(bibframeMapper::map)
       .orElseThrow(() -> new NotFoundException(RECORD_WITH_GIVEN_SLUG + slug + IS_NOT_FOUND));
   }
 
   @Override
-  public BibframeResponse updateBibframe(String okapiTenant, String slug, BibframeUpdateRequest bibframeUpdateRequest) {
+  public BibframeResponse updateBibframe(String slug, BibframeUpdateRequest bibframeUpdateRequest) {
     var toPersist = bibframeRepo.findBySlug(slug)
       .map(e -> bibframeMapper.update(e, bibframeUpdateRequest))
       .orElseThrow(() -> new NotFoundException(RECORD_WITH_GIVEN_SLUG + slug + IS_NOT_FOUND));
@@ -57,14 +57,14 @@ public class BibframeServiceImpl implements BibframeService {
   }
 
   @Override
-  public void deleteBibframe(String okapiTenant, String slug) {
+  public void deleteBibframe(String slug) {
     if (bibframeRepo.deleteBySlug(slug) < 1) {
       throw new NotFoundException(RECORD_WITH_GIVEN_SLUG + slug + IS_NOT_FOUND);
     }
   }
 
   @Override
-  public BibframeShortInfoPage getBibframeShortInfoPage(String okapiTenant, Integer pageNumber, Integer pageSize) {
+  public BibframeShortInfoPage getBibframeShortInfoPage(Integer pageNumber, Integer pageSize) {
     if (isNull(pageNumber)) {
       pageNumber = DEFAULT_PAGE_NUMBER;
     }

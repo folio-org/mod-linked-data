@@ -10,8 +10,6 @@ paths:
     post:
       operationId: createBibframe
       description: Create a Bibframe record
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
       requestBody:
         content:
           application/json:
@@ -34,7 +32,6 @@ paths:
       operationId: getBibframesShortInfoPage
       description: Get page of bibframes short info
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/pageNumber'
         - $ref: '#/components/parameters/pageSize'
       responses:
@@ -53,7 +50,6 @@ paths:
       operationId: getBibframeBySlug
       description: Get a Bibframe record by slug
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/slug'
       responses:
         '200':
@@ -73,7 +69,6 @@ paths:
       operationId: updateBibframe
       description: Update a Bibframe record by Slug
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/slug'
       requestBody:
         content:
@@ -99,7 +94,6 @@ paths:
       operationId: deleteBibframe
       description: Delete a Bibframe record by Slug
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/slug'
       responses:
         '204':
@@ -116,13 +110,6 @@ components:
       in: path
       required: true
       description: Bibframe record slug
-      schema:
-        type: string
-    x-okapi-tenant-header:
-      name: x-okapi-tenant
-      in: header
-      description: X-Okapi-Tenant header value
-      required: true
       schema:
         type: string
     pageNumber:

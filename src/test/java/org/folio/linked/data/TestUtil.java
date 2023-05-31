@@ -44,11 +44,10 @@ public class TestUtil {
     return OBJECT_MAPPER.writeValueAsString(value);
   }
 
-  public static HttpHeaders defaultHeaders(String okapiUrl) {
+  public static HttpHeaders defaultHeaders() {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
     httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
-    httpHeaders.add(XOkapiHeaders.URL, okapiUrl);
     return httpHeaders;
   }
 

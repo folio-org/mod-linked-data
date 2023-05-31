@@ -1,7 +1,6 @@
 package org.folio.linked.data.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.TestUtil.TENANT_ID;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -22,15 +21,14 @@ class DatabaseIT {
 
   @Value("${spring.application.name}")
   private String appName;
+  @Value("${spring.jpa.properties.hibernate.default_schema}")
+  private String schema;
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
   @Test
   void testTablesCreated() {
-    // given
-    var schema = TENANT_ID + "_" + appName.replace('-', '_');
-
     // when
     var tables = jdbcTemplate.queryForList(LIST_TABLES_QUERY, String.class, schema);
 

@@ -6,7 +6,6 @@ import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.getBibframeJsonNodeSample;
 import static org.folio.linked.data.TestUtil.getBibframeSample;
-import static org.folio.linked.data.TestUtil.getOkapiMockUrl;
 import static org.folio.linked.data.TestUtil.random;
 import static org.folio.linked.data.TestUtil.randomBibframe;
 import static org.folio.linked.data.TestUtil.randomBibframeCreateRequest;
@@ -67,7 +66,7 @@ class BibframeControllerIT {
     var request = random(BibframeCreateRequest.class);
     var requestBuilder = post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()))
+      .headers(defaultHeaders())
       .content(asJsonString(request));
 
     // when
@@ -100,7 +99,7 @@ class BibframeControllerIT {
     repo.save(existed);
     var requestBuilder = post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()))
+      .headers(defaultHeaders())
       .content(asJsonString(randomBibframeCreateRequest(existed.getGraphName())));
 
     // when
@@ -123,7 +122,7 @@ class BibframeControllerIT {
     var existed = repo.save(randomBibframe());
     var requestBuilder = get(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()));
+      .headers(defaultHeaders());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -145,7 +144,7 @@ class BibframeControllerIT {
     var notExistedId = randomString();
     var requestBuilder = get(BIBFRAMES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()));
+      .headers(defaultHeaders());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -167,7 +166,7 @@ class BibframeControllerIT {
     var notExistedId = randomString();
     var requestBuilder = put(BIBFRAMES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()))
+      .headers(defaultHeaders())
       .content(asJsonString(random(BibframeUpdateRequest.class)));
 
     // when
@@ -191,7 +190,7 @@ class BibframeControllerIT {
     var updatedConfiguration = "{ \"updated\": true }";
     var requestBuilder = put(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()))
+      .headers(defaultHeaders())
       .content(asJsonString(new BibframeUpdateRequest(updatedConfiguration)));
 
     // when
@@ -222,7 +221,7 @@ class BibframeControllerIT {
     var notExistedId = randomString();
     var requestBuilder = delete(BIBFRAMES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()));
+      .headers(defaultHeaders());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -244,7 +243,7 @@ class BibframeControllerIT {
     var existed = repo.save(randomBibframe());
     var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()));
+      .headers(defaultHeaders());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -264,7 +263,7 @@ class BibframeControllerIT {
     ).stream().sorted(comparing(Bibframe::getGraphName)).toList();
     var requestBuilder = get(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(getOkapiMockUrl()));
+      .headers(defaultHeaders());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
