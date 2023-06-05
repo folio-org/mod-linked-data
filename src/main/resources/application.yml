@@ -46,4 +46,4 @@ management:
       enabled: true
 
 mod-linked-data:
-  default-schema: mod_linked_data
+  default-schema: public

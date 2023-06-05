@@ -42,6 +42,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
@@ -53,6 +54,8 @@ class BibframeControllerIT {
   private MockMvc mockMvc;
   @Autowired
   private BibframeRepository repo;
+  @Value("${folio.environment}")
+  private String folioEnv;
 
   @AfterEach
   public void clean() {
@@ -66,7 +69,7 @@ class BibframeControllerIT {
     var request = random(BibframeCreateRequest.class);
     var requestBuilder = post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders())
+      .headers(defaultHeaders(folioEnv))
       .content(asJsonString(request));
 
     // when
@@ -99,7 +102,7 @@ class BibframeControllerIT {
     repo.save(existed);
     var requestBuilder = post(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders())
+      .headers(defaultHeaders(folioEnv))
       .content(asJsonString(randomBibframeCreateRequest(existed.getGraphName())));
 
     // when
@@ -122,7 +125,7 @@ class BibframeControllerIT {
     var existed = repo.save(randomBibframe());
     var requestBuilder = get(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders());
+      .headers(defaultHeaders(folioEnv));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -144,7 +147,7 @@ class BibframeControllerIT {
     var notExistedId = randomString();
     var requestBuilder = get(BIBFRAMES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders());
+      .headers(defaultHeaders(folioEnv));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -166,7 +169,7 @@ class BibframeControllerIT {
     var notExistedId = randomString();
     var requestBuilder = put(BIBFRAMES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders())
+      .headers(defaultHeaders(folioEnv))
       .content(asJsonString(random(BibframeUpdateRequest.class)));
 
     // when
@@ -190,7 +193,7 @@ class BibframeControllerIT {
     var updatedConfiguration = "{ \"updated\": true }";
     var requestBuilder = put(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders())
+      .headers(defaultHeaders(folioEnv))
       .content(asJsonString(new BibframeUpdateRequest(updatedConfiguration)));
 
     // when
@@ -221,7 +224,7 @@ class BibframeControllerIT {
     var notExistedId = randomString();
     var requestBuilder = delete(BIBFRAMES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders());
+      .headers(defaultHeaders(folioEnv));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -243,7 +246,7 @@ class BibframeControllerIT {
     var existed = repo.save(randomBibframe());
     var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getSlug())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders());
+      .headers(defaultHeaders(folioEnv));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -263,7 +266,7 @@ class BibframeControllerIT {
     ).stream().sorted(comparing(Bibframe::getGraphName)).toList();
     var requestBuilder = get(BIBFRAMES_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders());
+      .headers(defaultHeaders(folioEnv));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);

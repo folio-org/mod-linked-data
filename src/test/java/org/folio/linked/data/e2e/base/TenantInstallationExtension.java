@@ -1,6 +1,7 @@
 package org.folio.linked.data.e2e.base;
 
 import static java.util.Objects.isNull;
+import static org.folio.linked.data.TestUtil.FOLIO_ENV;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.randomString;
@@ -20,10 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 public class TenantInstallationExtension implements Extension, BeforeEachCallback, AfterAllCallback {
 
   private static final String TENANT_ENDPOINT_URL = "/_/tenant";
-  private static final String FOLIO = "folio";
   private MockMvc mockMvc;
   private String appName;
-  private String env;
+  private String folioEnv;
 
   @SneakyThrows
   @Override
@@ -31,12 +31,12 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
     if (isNull(appName)) {
       var context = SpringExtension.getApplicationContext(extensionContext);
       appName = context.getEnvironment().getProperty("spring.application.name");
-      env = context.getEnvironment().getProperty("folio.environment");
-      if (FOLIO.equals(env)) {
+      folioEnv = context.getEnvironment().getProperty("folio.environment");
+      if (FOLIO_ENV.equals(folioEnv)) {
         mockMvc = context.getBean(MockMvc.class);
         mockMvc.perform(post(TENANT_ENDPOINT_URL, randomString())
             .content(asJsonString(new TenantAttributes().moduleTo(appName)))
-            .headers(defaultHeaders())
+            .headers(defaultHeaders(folioEnv))
             .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent());
       }
@@ -46,10 +46,10 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
   @SneakyThrows
   @Override
   public void afterAll(ExtensionContext extensionContext) {
-    if (FOLIO.equals(env)) {
+    if (FOLIO_ENV.equals(folioEnv)) {
       mockMvc.perform(post(TENANT_ENDPOINT_URL, randomString())
           .content(asJsonString(new TenantAttributes().moduleFrom(appName).purge(false)))
-          .headers(defaultHeaders()))
+          .headers(defaultHeaders(folioEnv)))
         .andExpect(status().isNoContent());
     }
   }

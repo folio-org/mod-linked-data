@@ -21,28 +21,31 @@ public class BibframeController implements BibframesApi {
   private final BibframeService bibframeService;
 
   @Override
-  public ResponseEntity<BibframeResponse> createBibframe(BibframeCreateRequest bibframeCreateRequest) {
+  public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant,
+                                                         BibframeCreateRequest bibframeCreateRequest) {
     return ResponseEntity.ok(bibframeService.createBibframe(bibframeCreateRequest));
   }
 
   @Override
-  public ResponseEntity<BibframeResponse> getBibframeBySlug(String slug) {
+  public ResponseEntity<BibframeResponse> getBibframeBySlug(String slug, String okapiTenant) {
     return ResponseEntity.ok(bibframeService.getBibframeBySlug(slug));
   }
 
   @Override
-  public ResponseEntity<BibframeResponse> updateBibframe(String slug, BibframeUpdateRequest bibframeUpdateRequest) {
+  public ResponseEntity<BibframeResponse> updateBibframe(String slug, String okapiTenant,
+                                                         BibframeUpdateRequest bibframeUpdateRequest) {
     return ResponseEntity.ok(bibframeService.updateBibframe(slug, bibframeUpdateRequest));
   }
 
   @Override
-  public ResponseEntity<Void> deleteBibframe(String slug) {
+  public ResponseEntity<Void> deleteBibframe(String slug, String okapiTenant) {
     bibframeService.deleteBibframe(slug);
     return noContent().build();
   }
 
   @Override
-  public ResponseEntity<BibframeShortInfoPage> getBibframesShortInfoPage(Integer pageNumber, Integer pageSize) {
+  public ResponseEntity<BibframeShortInfoPage> getBibframesShortInfoPage(String okapiTenant, Integer pageNumber,
+                                                                         Integer pageSize) {
     return ResponseEntity.ok(bibframeService.getBibframeShortInfoPage(pageNumber, pageSize));
   }
 }

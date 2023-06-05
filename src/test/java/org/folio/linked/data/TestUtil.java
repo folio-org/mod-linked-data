@@ -22,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 
 @UtilityClass
 public class TestUtil {
+  public static final String FOLIO_ENV = "folio";
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("bibframe-sample.json");
@@ -35,19 +36,17 @@ public class TestUtil {
     PARAMETERS.randomize(Bibframe.class, TestUtil::randomBibframe);
   }
 
-  public static String getOkapiMockUrl() {
-    return System.getProperty("folio.okapi-url");
-  }
-
   @SneakyThrows
   public static String asJsonString(Object value) {
     return OBJECT_MAPPER.writeValueAsString(value);
   }
 
-  public static HttpHeaders defaultHeaders() {
+  public static HttpHeaders defaultHeaders(String folioEnv) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
-    httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
+    if (FOLIO_ENV.equals(folioEnv)) {
+      httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
+    }
     return httpHeaders;
   }
 
