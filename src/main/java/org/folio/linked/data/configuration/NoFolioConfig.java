@@ -43,6 +43,7 @@ public class NoFolioConfig implements ApplicationListener<ContextRefreshedEvent>
   }
 
   @Bean
+  @Primary
   public FolioModuleMetadata folioModuleMetadata() {
     return new FolioModuleMetadata() {
       @Override

@@ -142,6 +142,8 @@ components:
   schemas:
     errorResponse:
       $ref: schema/errors.json
+    kafkaMessage:
+      $ref: schema/kafkaMessage.json
 
   responses:
     badRequestResponse:
