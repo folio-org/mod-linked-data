@@ -36,4 +36,10 @@ public class LinkedDataTenantService extends TenantService {
     log.info("Tenant init has been completed");
   }
 
+  @Override
+  protected void afterTenantDeletion(TenantAttributes tenantAttributes) {
+    var tenantId = FOLIO_ENV.equals(folioEnv) ? context.getTenantId() : "standalone";
+    kafkaAdminService.deleteTopics(tenantId);
+  }
+
 }
