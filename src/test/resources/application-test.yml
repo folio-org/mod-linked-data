@@ -2,6 +2,3 @@ spring:
   jpa:
     properties:
       hibernate.default_schema: ${mod-linked-data.default-schema}
-
-folio:
-  environment: not-folio

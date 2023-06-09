@@ -1,11 +1,13 @@
 package org.folio.linked.data;
 
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -17,12 +19,12 @@ import org.folio.linked.data.util.TextUtil;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 
 @UtilityClass
 public class TestUtil {
-  public static final String FOLIO_ENV = "folio";
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("bibframe-sample.json");
@@ -41,10 +43,10 @@ public class TestUtil {
     return OBJECT_MAPPER.writeValueAsString(value);
   }
 
-  public static HttpHeaders defaultHeaders(String folioEnv) {
+  public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
-    if (FOLIO_ENV.equals(folioEnv)) {
+    if (Arrays.asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
       httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
     }
     return httpHeaders;
