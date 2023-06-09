@@ -1,0 +1,11 @@
+folio:
+  environment: ${ENV:folio}
+  okapiUrl: ${okapi.url}
+  tenant:
+    validation:
+      enabled: true
+  logging:
+    request:
+      enabled: true
+    feign:
+      enabled: true

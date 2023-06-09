@@ -59,7 +59,7 @@ class BibframeServiceTest {
     when(bibframeMapper.map(persisted)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.createBibframe("", request);
+    var result = bibframeService.createBibframe(request);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -78,7 +78,7 @@ class BibframeServiceTest {
     // when
     AlreadyExistsException thrown = assertThrows(
       AlreadyExistsException.class,
-      () -> bibframeService.createBibframe("", request)
+      () -> bibframeService.createBibframe(request)
     );
 
     // then
@@ -94,7 +94,7 @@ class BibframeServiceTest {
     when(bibframeMapper.map(existedBibframe)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.getBibframeBySlug("", existedBibframe.getSlug());
+    var result = bibframeService.getBibframeBySlug(existedBibframe.getSlug());
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -109,7 +109,7 @@ class BibframeServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.getBibframeBySlug("", notExistedSlug)
+      () -> bibframeService.getBibframeBySlug(notExistedSlug)
     );
 
     // then
@@ -126,7 +126,7 @@ class BibframeServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.updateBibframe("", notExistedSlug, request)
+      () -> bibframeService.updateBibframe(notExistedSlug, request)
     );
 
     // then
@@ -146,7 +146,7 @@ class BibframeServiceTest {
     when(bibframeMapper.map(updatedBibframe)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.updateBibframe("", existedBibframe.getSlug(), request);
+    var result = bibframeService.updateBibframe(existedBibframe.getSlug(), request);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -159,7 +159,7 @@ class BibframeServiceTest {
     when(bibframeRepo.deleteBySlug(existedBibframe.getSlug())).thenReturn(1);
 
     // when
-    bibframeService.deleteBibframe("", existedBibframe.getSlug());
+    bibframeService.deleteBibframe(existedBibframe.getSlug());
 
     // then
     verify(bibframeRepo).deleteBySlug(existedBibframe.getSlug());
@@ -174,7 +174,7 @@ class BibframeServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.deleteBibframe("", notExistedSlug)
+      () -> bibframeService.deleteBibframe(notExistedSlug)
     );
 
     // then
@@ -194,7 +194,7 @@ class BibframeServiceTest {
     var expectedResult = random(BibframeShortInfoPage.class);
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
     // when
-    var result = bibframeService.getBibframeShortInfoPage("", pageNumber, pageSize);
+    var result = bibframeService.getBibframeShortInfoPage(pageNumber, pageSize);
 
     // then
     assertThat(result).isEqualTo(expectedResult);
@@ -211,7 +211,7 @@ class BibframeServiceTest {
     var expectedResult = random(BibframeShortInfoPage.class);
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
     // when
-    var result = bibframeService.getBibframeShortInfoPage("", null, null);
+    var result = bibframeService.getBibframeShortInfoPage(null, null);
 
     // then
     assertThat(result).isEqualTo(expectedResult);

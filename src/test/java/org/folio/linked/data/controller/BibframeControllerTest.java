@@ -34,7 +34,7 @@ class BibframeControllerTest {
     var request = random(BibframeCreateRequest.class);
     var response = random(BibframeResponse.class);
     var tenant = randomString();
-    when(bibframeService.createBibframe(tenant, request)).thenReturn(response);
+    when(bibframeService.createBibframe(request)).thenReturn(response);
 
     // when
     var result = bibframeController.createBibframe(tenant, request);
@@ -50,10 +50,10 @@ class BibframeControllerTest {
     var slug = randomString();
     var tenant = randomString();
     var response = random(BibframeResponse.class);
-    when(bibframeService.getBibframeBySlug(tenant, slug)).thenReturn(response);
+    when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
 
     // when
-    var result = bibframeController.getBibframeBySlug(tenant, slug);
+    var result = bibframeController.getBibframeBySlug(slug, tenant);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -67,10 +67,10 @@ class BibframeControllerTest {
     var tenant = randomString();
     var response = random(BibframeResponse.class);
     var request = random(BibframeUpdateRequest.class);
-    when(bibframeService.updateBibframe(tenant, slug, request)).thenReturn(response);
+    when(bibframeService.updateBibframe(slug, request)).thenReturn(response);
 
     // when
-    var result = bibframeController.updateBibframe(tenant, slug, request);
+    var result = bibframeController.updateBibframe(slug, tenant, request);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -84,7 +84,7 @@ class BibframeControllerTest {
     var tenant = randomString();
 
     // when
-    var result = bibframeController.deleteBibframe(tenant, slug);
+    var result = bibframeController.deleteBibframe(slug, tenant);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
@@ -98,7 +98,7 @@ class BibframeControllerTest {
     var page = random(Integer.class);
     var size = random(Integer.class);
     var expectedResponse = random(BibframeShortInfoPage.class);
-    when(bibframeService.getBibframeShortInfoPage(tenant, page, size)).thenReturn(expectedResponse);
+    when(bibframeService.getBibframeShortInfoPage(page, size)).thenReturn(expectedResponse);
 
     // when
     var result = bibframeController.getBibframesShortInfoPage(tenant, page, size);

@@ -443,6 +443,7 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <groups>integration</groups>
+          <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
 

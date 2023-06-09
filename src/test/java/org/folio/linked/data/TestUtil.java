@@ -1,11 +1,13 @@
 package org.folio.linked.data;
 
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -17,6 +19,7 @@ import org.folio.linked.data.util.TextUtil;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 
@@ -35,20 +38,17 @@ public class TestUtil {
     PARAMETERS.randomize(Bibframe.class, TestUtil::randomBibframe);
   }
 
-  public static String getOkapiMockUrl() {
-    return System.getProperty("folio.okapi-url");
-  }
-
   @SneakyThrows
   public static String asJsonString(Object value) {
     return OBJECT_MAPPER.writeValueAsString(value);
   }
 
-  public static HttpHeaders defaultHeaders(String okapiUrl) {
+  public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
-    httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
-    httpHeaders.add(XOkapiHeaders.URL, okapiUrl);
+    if (Arrays.asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
+      httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
+    }
     return httpHeaders;
   }
 
