@@ -1,0 +1,4 @@
+spring:
+  jpa:
+    properties:
+      hibernate.default_schema: test_tenant_mod_linked_data
