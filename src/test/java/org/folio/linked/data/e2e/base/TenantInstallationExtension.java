@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,14 +24,13 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
   private static final String TENANT_ENDPOINT_URL = "/_/tenant";
   private MockMvc mockMvc;
   private String appName;
-  private Environment env;
 
   @SneakyThrows
   @Override
   public void beforeEach(ExtensionContext extensionContext) {
     if (isNull(appName)) {
       var context = SpringExtension.getApplicationContext(extensionContext);
-      env = context.getEnvironment();
+      var env = context.getEnvironment();
       appName = env.getProperty("spring.application.name");
       if (asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
         mockMvc = context.getBean(MockMvc.class);
@@ -48,6 +46,8 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
   @SneakyThrows
   @Override
   public void afterAll(ExtensionContext extensionContext) {
+    var context = SpringExtension.getApplicationContext(extensionContext);
+    var env = context.getEnvironment();
     if (asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
       mockMvc.perform(post(TENANT_ENDPOINT_URL, randomString())
           .content(asJsonString(new TenantAttributes().moduleFrom(appName).purge(false)))

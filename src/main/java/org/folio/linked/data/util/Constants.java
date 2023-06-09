@@ -6,4 +6,5 @@ import lombok.experimental.UtilityClass;
 public class Constants {
 
   public static final String FOLIO_PROFILE = "folio";
+  public static final String STANDALONE = "standalone";
 }

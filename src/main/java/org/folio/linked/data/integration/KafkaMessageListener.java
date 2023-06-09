@@ -17,11 +17,13 @@ import org.folio.linked.data.model.entity.Bibframe;
 import org.folio.linked.data.repo.BibframeRepository;
 import org.folio.spring.FolioModuleMetadata;
 import org.folio.spring.scope.FolioExecutionContextSetter;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
+@Profile({"folio", "kafka"})
 @RequiredArgsConstructor
 public class KafkaMessageListener {
 

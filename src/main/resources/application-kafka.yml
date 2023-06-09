@@ -1,0 +1,32 @@
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:kafka}:${KAFKA_PORT:9092}
+    consumer:
+      max-poll-records: ${KAFKA_CONSUMER_MAX_POLL_RECORDS:200}
+    security:
+      protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+    ssl:
+      key-store-password: ${KAFKA_SSL_KEYSTORE_PASSWORD:}
+      key-store-location: ${KAFKA_SSL_KEYSTORE_LOCATION:}
+      trust-store-password: ${KAFKA_SSL_TRUSTSTORE_PASSWORD:}
+      trust-store-location: ${KAFKA_SSL_TRUSTSTORE_LOCATION:}
+    producer:
+      acks: all
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        retries: 5
+
+folio:
+  kafka:
+    retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:10}
+    retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
+    topics:
+      - name: linked-data.bibframe
+        numPartitions: ${KAFKA_TOPIC_PARTITIONS:1}
+        replicationFactor: ${KAFKA_TOPIC_REPLICATION_FACTOR:}
+    listener:
+      bibframes:
+        concurrency: ${KAFKA_BIBFRAMES_CONCURRENCY:1}
+        topic-pattern: ${KAFKA_BIBFRAMES_CONSUMER_PATTERN:.*linked-data.bibframe}
+        group-id: ${folio.environment}-linked-data-bibframe-group

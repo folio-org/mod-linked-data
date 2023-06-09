@@ -9,3 +9,15 @@ folio:
       enabled: true
     feign:
       enabled: true
+  kafka:
+    retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:10}
+    retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
+    topics:
+      - name: linked-data.bibframe
+        numPartitions: ${KAFKA_TOPIC_PARTITIONS:1}
+        replicationFactor: ${KAFKA_TOPIC_REPLICATION_FACTOR:}
+    listener:
+      bibframes:
+        concurrency: ${KAFKA_BIBFRAMES_CONCURRENCY:1}
+        topic-pattern: ${KAFKA_BIBFRAMES_CONSUMER_PATTERN:.*linked-data.bibframe}
+        group-id: ${folio.environment}-linked-data-bibframe-group

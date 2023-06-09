@@ -15,6 +15,7 @@ import org.folio.linked.data.domain.dto.KafkaMessage;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -26,6 +27,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Log4j2
 @Configuration
+@Profile("kafka")
 @RequiredArgsConstructor
 public class KafkaConfiguration {
 
