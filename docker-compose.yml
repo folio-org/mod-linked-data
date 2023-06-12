@@ -12,6 +12,14 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+  opensearch:
+    container_name: opensearch
+    image: dev.folio/searchengine
+    environment:
+      - discovery.type=single-node
+      - DISABLE_SECURITY_PLUGIN=true
+    ports:
+      - "9200:9200"
 volumes:
   db:
     driver: local

@@ -1,0 +1,6 @@
+spring:
+  opensearch:
+    username: ${ELASTICSEARCH_USERNAME:}
+    password: ${ELASTICSEARCH_PASSWORD:}
+    uris: ${ELASTICSEARCH_URL}
+    compression-enabled: ${ELASTICSEARCH_COMPRESSION_ENABLED:true}

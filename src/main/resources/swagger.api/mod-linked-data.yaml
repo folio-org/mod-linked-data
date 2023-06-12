@@ -109,6 +109,41 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+
+  /search/indices/{index}:
+    post:
+      operationId: createIndex
+      description: Create an index
+      parameters:
+        - $ref: '#/components/parameters/index'
+      responses:
+        '200':
+          description: Created index
+          content:
+            application/json:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+    get:
+      operationId: getIndices
+      description: Get existed indices
+      parameters:
+        - $ref: '#/components/parameters/index'
+      responses:
+        '200':
+          description: Indices found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     slug:
@@ -138,6 +173,13 @@ components:
       description: Page size for paginated endpoint, default is 100
       schema:
         type: integer
+    index:
+      name: index
+      in: path
+      required: true
+      description: index
+      schema:
+        type: string
 
   schemas:
     errorResponse:
