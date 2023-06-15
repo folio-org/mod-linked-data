@@ -5,24 +5,6 @@ info:
   description: Linked Data service API
 
 paths:
-  /bibframes/{id}:
-    get:
-      operationId: getBibframeBySlug
-      description: Get a Bibframe record by id
-      parameters:
-        - $ref: '#/components/parameters/bibframeId'
-      responses:
-        '200':
-          description: 'Bibframe as json string'
-          content:
-            application/json:
-              example: example/bibframeResponse.sample
-              schema:
-                $ref: schema/bibframeResponse.json
-        '400':
-          $ref: '#/components/responses/badRequestResponse'
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
 
   /bibframes:
     post:
@@ -38,7 +20,7 @@ paths:
               $ref: schema/bibframeCreateRequest.json
       responses:
         '200':
-          description: 'Created Bibframe record'
+          description: Created Bibframe record
           content:
             application/json:
               example: examples/bibframeResponse.sample
@@ -48,23 +30,114 @@ paths:
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
+    get:
+      operationId: getBibframesShortInfoPage
+      description: Get page of bibframes short info
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/pageNumber'
+        - $ref: '#/components/parameters/pageSize'
+      responses:
+        '200':
+          description: Page of bibframes short info as json
+          content:
+            application/json:
+              example: example/bibframesShortInfo.sample
+              schema:
+                $ref: schema/bibframeShortInfoPage.json
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /bibframes/{slug}:
+    get:
+      operationId: getBibframeBySlug
+      description: Get a Bibframe record by slug
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/slug'
+      responses:
+        '200':
+          description: Bibframe as json string
+          content:
+            application/json:
+              example: example/bibframeResponse.sample
+              schema:
+                $ref: schema/bibframeResponse.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          description: No bibframe is found by slug
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+    put:
+      operationId: updateBibframe
+      description: Update a Bibframe record by Slug
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/slug'
+      requestBody:
+        content:
+          application/json:
+            example: example/bibframeUpdateRequest.sample
+            schema:
+              $ref: schema/bibframeUpdateRequest.json
+      responses:
+        '200':
+          description: Updated Bibframe record
+          content:
+            application/json:
+              example: examples/bibframeResponse.sample
+              schema:
+                $ref: schema/bibframeResponse.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          description: No bibframe is found by slug
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+    delete:
+      operationId: deleteBibframe
+      description: Delete a Bibframe record by Slug
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/slug'
+      responses:
+        '204':
+          description: Bibframe record deleted
+        '404':
+          description: No bibframe is found by slug
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
 
 components:
   parameters:
-    bibframeId:
-      name: id
+    slug:
+      name: slug
       in: path
       required: true
-      description: Bibframe id
+      description: Bibframe record slug
       schema:
         type: string
     x-okapi-tenant-header:
       name: x-okapi-tenant
       in: header
       description: X-Okapi-Tenant header value
-      required: true
       schema:
         type: string
+    pageNumber:
+      name: pageNumber
+      in: query
+      required: false
+      description: Page number for paginated endpoint, default is 0
+      schema:
+        type: integer
+    pageSize:
+      name: pageSize
+      in: query
+      required: false
+      description: Page size for paginated endpoint, default is 100
+      schema:
+        type: integer
 
   schemas:
     errorResponse:
@@ -83,3 +156,5 @@ components:
       content:
         application/json:
           example: example/unknownError.sample
+          schema:
+            $ref: "#/components/schemas/errorResponse"

@@ -21,23 +21,17 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-folio:
-  environment: ${ENV:folio}
-  okapiUrl: ${okapi.url}
-  logging:
-    request:
-      enabled: true
-    feign:
-      enabled: true
-
+    open-in-view: false
 
 management:
   endpoints:
     web:
       exposure:
-        include: info,health,liquibase,threaddump,heapdump,loggers
+        include: info,health,liquibase,threaddump,heapdump,loggers,env,httptrace,metrics,prometheus
       base-path: /admin
   endpoint:
     loggers:
       enabled: true
+
+mod-linked-data:
+  default-schema: public

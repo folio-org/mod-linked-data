@@ -47,6 +47,7 @@
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <folio-service-tools.version>3.1.0-SNAPSHOT</folio-service-tools.version>
+    <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
     <maven-openapi-generator-plugin.version>6.5.0</maven-openapi-generator-plugin.version>
@@ -129,6 +130,11 @@
       <version>${hibernate-types.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -189,6 +195,13 @@
       <groupId>org.skyscreamer</groupId>
       <artifactId>jsonassert</artifactId>
       <version>${jsonassert.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jeasy</groupId>
+      <artifactId>easy-random-core</artifactId>
+      <version>${easy-random.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -391,11 +404,6 @@
           <release>${java.version}</release>
           <annotationProcessorPaths>
             <path>
-              <groupId>org.mapstruct</groupId>
-              <artifactId>mapstruct-processor</artifactId>
-              <version>${mapstruct.version}</version>
-            </path>
-            <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
               <version>${lombok.version}</version>
@@ -404,6 +412,11 @@
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok-mapstruct-binding</artifactId>
               <version>${lombok.mapstruct-binding.version}</version>
+            </path>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
             </path>
             <path>
               <groupId>org.springframework.boot</groupId>
@@ -430,6 +443,7 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <groups>integration</groups>
+          <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
 

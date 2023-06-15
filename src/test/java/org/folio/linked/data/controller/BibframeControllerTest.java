@@ -1,14 +1,14 @@
 package org.folio.linked.data.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.TestUtil.GRAPH_NAME;
-import static org.folio.linked.data.TestUtil.getBibframeSample;
+import static org.folio.linked.data.TestUtil.random;
+import static org.folio.linked.data.TestUtil.randomString;
 import static org.mockito.Mockito.when;
 
-import java.util.Objects;
-import java.util.UUID;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
+import org.folio.linked.data.domain.dto.BibframeUpdateRequest;
 import org.folio.linked.data.service.BibframeService;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -31,22 +31,13 @@ class BibframeControllerTest {
   @Test
   void createBibframe_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var request = new BibframeCreateRequest();
-    request.setGraphName(GRAPH_NAME);
-    request.setConfiguration(getBibframeSample());
-
-    var response = new BibframeResponse();
-    response.setId(1);
-    response.setGraphName(GRAPH_NAME);
-    response.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
-    response.setConfiguration(getBibframeSample());
-    response.setGraphHash(Objects.hash(getBibframeSample()));
-
-    var tenantId = UUID.randomUUID().toString();
-    when(bibframeService.createBibframe(tenantId, request)).thenReturn(response);
+    var request = random(BibframeCreateRequest.class);
+    var response = random(BibframeResponse.class);
+    var tenant = randomString();
+    when(bibframeService.createBibframe(request)).thenReturn(response);
 
     // when
-    var result = bibframeController.createBibframe(tenantId, request);
+    var result = bibframeController.createBibframe(tenant, request);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -56,21 +47,64 @@ class BibframeControllerTest {
   @Test
   void getBibframeSlug_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
     // given
-    var response = new BibframeResponse();
-    response.setId(1);
-    response.setGraphName(GRAPH_NAME);
-    response.setSlug(String.valueOf(Objects.hash(GRAPH_NAME)));
-    response.setConfiguration(getBibframeSample());
-    response.setGraphHash(Objects.hash(getBibframeSample()));
-
-    var slug = UUID.randomUUID().toString();
+    var slug = randomString();
+    var tenant = randomString();
+    var response = random(BibframeResponse.class);
     when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
 
     // when
-    var result = bibframeController.getBibframeBySlug(slug);
+    var result = bibframeController.getBibframeBySlug(slug, tenant);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(result.getBody()).isEqualTo(response);
+  }
+
+  @Test
+  void updateBibframe_shouldReturnOkResponse_ifBibframeServiceReturnsEntity() {
+    // given
+    var slug = randomString();
+    var tenant = randomString();
+    var response = random(BibframeResponse.class);
+    var request = random(BibframeUpdateRequest.class);
+    when(bibframeService.updateBibframe(slug, request)).thenReturn(response);
+
+    // when
+    var result = bibframeController.updateBibframe(slug, tenant, request);
+
+    // then
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isEqualTo(response);
+  }
+
+  @Test
+  void deleteBibframe_shouldReturnOkResponse_ifNoException() {
+    // given
+    var slug = randomString();
+    var tenant = randomString();
+
+    // when
+    var result = bibframeController.deleteBibframe(slug, tenant);
+
+    // then
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+    assertThat(result.getBody()).isNull();
+  }
+
+  @Test
+  void getBibframesShortInfoPage_shouldReturnResultOfService() {
+    // given
+    var tenant = randomString();
+    var page = random(Integer.class);
+    var size = random(Integer.class);
+    var expectedResponse = random(BibframeShortInfoPage.class);
+    when(bibframeService.getBibframeShortInfoPage(page, size)).thenReturn(expectedResponse);
+
+    // when
+    var result = bibframeController.getBibframesShortInfoPage(tenant, page, size);
+
+    // then
+    assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(result.getBody()).isEqualTo(expectedResponse);
   }
 }

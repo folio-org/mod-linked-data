@@ -2,11 +2,10 @@ package org.folio.linked.data.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.folio.linked.data.TestUtil;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @IntegrationTest
@@ -20,19 +19,16 @@ class DatabaseIT {
             WHERE table_type = 'BASE TABLE' AND table_schema = ?
     """;
 
-  @Autowired
-  private ApplicationContext context;
+  @Value("${spring.application.name}")
+  private String appName;
+  @Value("${spring.jpa.properties.hibernate.default_schema}")
+  private String schema;
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
   @Test
   void testTablesCreated() {
-    // given
-    var appName = context.getEnvironment().getProperty("spring.application.name");
-    assertThat(appName).isNotNull();
-    var schema = TestUtil.TENANT_ID + "_" + appName.replace('-', '_');
-
     // when
     var tables = jdbcTemplate.queryForList(LIST_TABLES_QUERY, String.class, schema);
 

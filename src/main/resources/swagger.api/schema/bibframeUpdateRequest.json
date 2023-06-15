@@ -1,17 +1,13 @@
 {
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Request body to create Bibframe record",
+  "description": "Request body to update Bibframe record",
   "properties": {
-    "graphName": {
-      "type": "string",
-      "description": "The name of the graph associated with the Bibframe object."
-    },
     "configuration": {
       "type": "object",
       "description": "The configuration JSON for the Bibframe."
     }
   },
-  "required": [ "graphName", "configuration" ],
+  "required": [ "configuration" ],
   "additionalProperties": false
 }
