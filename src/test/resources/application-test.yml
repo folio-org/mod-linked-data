@@ -2,3 +2,9 @@ spring:
   jpa:
     properties:
       hibernate.default_schema: ${mod-linked-data.default-schema}
+
+mod-linked-data:
+  minio:
+    endpoint: localhost
+    access-key: admin
+    secret-key: admin123

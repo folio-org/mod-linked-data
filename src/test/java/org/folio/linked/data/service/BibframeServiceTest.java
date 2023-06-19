@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import java.util.function.Function;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
@@ -47,6 +48,12 @@ class BibframeServiceTest {
   @Mock
   private BibframeMapper bibframeMapper;
 
+  @Mock
+  private FileService fileService;
+
+  @Mock
+  private ObjectMapper objectMapper;
+
   @Test
   void createBibframe_shouldReturnEntityMappedAndPersistedByRepoFromRequest() {
     // given
@@ -59,7 +66,7 @@ class BibframeServiceTest {
     when(bibframeMapper.map(persisted)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.createBibframe(request);
+    var result = bibframeService.createBibframe(request, null);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -78,7 +85,7 @@ class BibframeServiceTest {
     // when
     AlreadyExistsException thrown = assertThrows(
       AlreadyExistsException.class,
-      () -> bibframeService.createBibframe(request)
+      () -> bibframeService.createBibframe(request, null)
     );
 
     // then
@@ -94,7 +101,7 @@ class BibframeServiceTest {
     when(bibframeMapper.map(existedBibframe)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.getBibframeBySlug(existedBibframe.getSlug());
+    var result = bibframeService.getBibframeBySlug(existedBibframe.getSlug(), null);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -109,7 +116,7 @@ class BibframeServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.getBibframeBySlug(notExistedSlug)
+      () -> bibframeService.getBibframeBySlug(notExistedSlug, null)
     );
 
     // then
@@ -126,7 +133,7 @@ class BibframeServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.updateBibframe(notExistedSlug, request)
+      () -> bibframeService.updateBibframe(notExistedSlug, request, null)
     );
 
     // then
@@ -146,7 +153,7 @@ class BibframeServiceTest {
     when(bibframeMapper.map(updatedBibframe)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeService.updateBibframe(existedBibframe.getSlug(), request);
+    var result = bibframeService.updateBibframe(existedBibframe.getSlug(), request, null);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -159,7 +166,7 @@ class BibframeServiceTest {
     when(bibframeRepo.deleteBySlug(existedBibframe.getSlug())).thenReturn(1);
 
     // when
-    bibframeService.deleteBibframe(existedBibframe.getSlug());
+    bibframeService.deleteBibframe(existedBibframe.getSlug(), null);
 
     // then
     verify(bibframeRepo).deleteBySlug(existedBibframe.getSlug());
@@ -174,7 +181,7 @@ class BibframeServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> bibframeService.deleteBibframe(notExistedSlug)
+      () -> bibframeService.deleteBibframe(notExistedSlug, null)
     );
 
     // then

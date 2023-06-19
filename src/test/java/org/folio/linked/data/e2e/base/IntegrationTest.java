@@ -22,5 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 @org.folio.spring.test.type.IntegrationTest
 @ExtendWith(TenantInstallationExtension.class)
+@ExtendWith(MinioExtension.class)
 public @interface IntegrationTest {
 }

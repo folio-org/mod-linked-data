@@ -25,7 +25,7 @@ import org.springframework.http.HttpHeaders;
 
 @UtilityClass
 public class TestUtil {
-  public static final String TENANT_ID = "test_tenant";
+  public static final String TENANT_ID = "test";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("bibframe-sample.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
@@ -85,6 +85,6 @@ public class TestUtil {
   public static Bibframe randomBibframe() {
     var graphName = randomString();
     var slug = TextUtil.slugify(graphName);
-    return Bibframe.of(graphName, slug.hashCode(), slug, getBibframeJsonNodeSample());
+    return Bibframe.of(graphName, slug.hashCode(), slug).setConfiguration(getBibframeJsonNodeSample());
   }
 }

@@ -23,23 +23,23 @@ public class BibframeController implements BibframesApi {
   @Override
   public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant,
                                                          BibframeCreateRequest bibframeCreateRequest) {
-    return ResponseEntity.ok(bibframeService.createBibframe(bibframeCreateRequest));
+    return ResponseEntity.ok(bibframeService.createBibframe(bibframeCreateRequest, okapiTenant));
   }
 
   @Override
   public ResponseEntity<BibframeResponse> getBibframeBySlug(String slug, String okapiTenant) {
-    return ResponseEntity.ok(bibframeService.getBibframeBySlug(slug));
+    return ResponseEntity.ok(bibframeService.getBibframeBySlug(slug, okapiTenant));
   }
 
   @Override
   public ResponseEntity<BibframeResponse> updateBibframe(String slug, String okapiTenant,
                                                          BibframeUpdateRequest bibframeUpdateRequest) {
-    return ResponseEntity.ok(bibframeService.updateBibframe(slug, bibframeUpdateRequest));
+    return ResponseEntity.ok(bibframeService.updateBibframe(slug, bibframeUpdateRequest, okapiTenant));
   }
 
   @Override
   public ResponseEntity<Void> deleteBibframe(String slug, String okapiTenant) {
-    bibframeService.deleteBibframe(slug);
+    bibframeService.deleteBibframe(slug, okapiTenant);
     return noContent().build();
   }
 

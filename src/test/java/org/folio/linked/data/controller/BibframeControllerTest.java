@@ -34,7 +34,7 @@ class BibframeControllerTest {
     var request = random(BibframeCreateRequest.class);
     var response = random(BibframeResponse.class);
     var tenant = randomString();
-    when(bibframeService.createBibframe(request)).thenReturn(response);
+    when(bibframeService.createBibframe(request, tenant)).thenReturn(response);
 
     // when
     var result = bibframeController.createBibframe(tenant, request);
@@ -50,7 +50,7 @@ class BibframeControllerTest {
     var slug = randomString();
     var tenant = randomString();
     var response = random(BibframeResponse.class);
-    when(bibframeService.getBibframeBySlug(slug)).thenReturn(response);
+    when(bibframeService.getBibframeBySlug(slug, tenant)).thenReturn(response);
 
     // when
     var result = bibframeController.getBibframeBySlug(slug, tenant);
@@ -67,7 +67,7 @@ class BibframeControllerTest {
     var tenant = randomString();
     var response = random(BibframeResponse.class);
     var request = random(BibframeUpdateRequest.class);
-    when(bibframeService.updateBibframe(slug, request)).thenReturn(response);
+    when(bibframeService.updateBibframe(slug, request, tenant)).thenReturn(response);
 
     // when
     var result = bibframeController.updateBibframe(slug, tenant, request);

@@ -109,6 +109,51 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /files:
+    get:
+      operationId: downloadFile
+      description: Download file
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/etag'
+      responses:
+        '200':
+          description: Downloading file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: No file is found by etag
+        '500':
+            $ref: '#/components/responses/internalServerErrorResponse'
+    post:
+      operationId: uploadFile
+      description: Upload file
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Uploaded file reference
+          content:
+            application/json:
+              schema:
+                $ref: schema/uploadedFileRef.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     slug:
@@ -116,6 +161,13 @@ components:
       in: path
       required: true
       description: Bibframe record slug
+      schema:
+        type: string
+    etag:
+      name: objectName
+      in: query
+      required: true
+      description: File objectName in Minio storage
       schema:
         type: string
     x-okapi-tenant-header:

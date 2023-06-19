@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Uploaded file reference",
+  "type": "object",
+  "properties": {
+    "objectName": {
+      "type": "string",
+      "description": "S3 storage object name"
+    },
+    "etag": {
+      "type": "string",
+      "description": "S3 storage object etag"
+    },
+    "versionId": {
+      "type": "string",
+      "description": "S3 storage object versionId"
+    }
+  }
+}

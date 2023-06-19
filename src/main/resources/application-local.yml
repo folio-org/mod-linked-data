@@ -1,3 +1,9 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/okapi_modules
+
+mod-linked-data:
+  minio:
+    endpoint: localhost
+    access-key: admin
+    secret-key: admin123
