@@ -1,9 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Bibframe base properties",
+  "description": "Request body to update Resource record",
+  "type": "object",
   "allOf": [
     {
-      "$ref": "bibframe.json"
+      "$ref": "resource.json"
     },
     {
       "type": "object",
@@ -11,7 +12,7 @@
         "id": {
           "type": "integer",
           "format": "int64",
-          "description": "ID of the graph"
+          "description": "ID of the resource"
         }
       }
     }

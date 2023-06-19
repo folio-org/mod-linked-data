@@ -6,7 +6,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.hash.Hashing;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
@@ -14,10 +13,9 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.folio.linked.data.configuration.ObjectMapperConfig;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
-import org.folio.linked.data.model.entity.Bibframe;
+import org.folio.linked.data.domain.dto.ResourceCreateRequest;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.util.TextUtil;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -37,9 +35,9 @@ public class TestUtil {
 
   static {
     PARAMETERS.excludeField(named("id"));
-    PARAMETERS.randomize(named("configuration"), TestUtil::getBibframeJsonNodeSample);
-    PARAMETERS.randomize(named("_configuration"), TestUtil::getBibframeSample);
-    PARAMETERS.randomize(Bibframe.class, TestUtil::randomBibframe);
+    PARAMETERS.randomize(named("configuration"), TestUtil::getResourceJsonNodeSample);
+    PARAMETERS.randomize(named("_configuration"), TestUtil::getResourceSample);
+    PARAMETERS.randomize(Resource.class, TestUtil::randomResource);
     PARAMETERS.randomizationDepth(3);
     PARAMETERS.scanClasspathForConcreteTypes(true);
   }
@@ -65,12 +63,12 @@ public class TestUtil {
     return IOUtils.toString(is, StandardCharsets.UTF_8);
   }
 
-  public static String getBibframeSample() {
+  public static String getResourceSample() {
     return BIBFRAME_SAMPLE;
   }
 
   @SneakyThrows
-  public static JsonNode getBibframeJsonNodeSample() {
+  public static JsonNode getResourceJsonNodeSample() {
     return OBJECT_MAPPER.readTree(BIBFRAME_SAMPLE);
   }
 
@@ -82,32 +80,25 @@ public class TestUtil {
     return GENERATOR.nextObject(String.class);
   }
 
-  public static Long randomInt() {
+  public static Long randomLong() {
     return GENERATOR.nextLong();
   }
 
-  public static BibframeCreateRequest randomBibframeCreateRequest() {
-    return GENERATOR.nextObject(BibframeCreateRequest.class);
+  public static ResourceCreateRequest randomResourceCreateRequest() {
+    return GENERATOR.nextObject(ResourceCreateRequest.class);
   }
 
-  public static Bibframe randomBibframe() {
-    String graphName = randomString();
-    var slug = TextUtil.slugify(graphName);
-    var bibframe = new Bibframe();
-    bibframe.setGraphName(graphName);
-    bibframe.setGraphHash(slug.hashCode());
-    bibframe.setSlug(slug);
-    bibframe.setConfiguration(getBibframeJsonNodeSample());
+  public static Resource randomResource() {
+    var resource = new Resource();
+    resource.setDoc(getResourceJsonNodeSample());
+    return resource;
+  }
+
+  public static Resource randomResource(Long resourceHash, ResourceType profile) {
+    var bibframe = randomResource();
+    bibframe.setResourceHash(resourceHash);
+    bibframe.setType(profile);
     return bibframe;
   }
 
-  public static Bibframe randomBibframe(ResourceType profile) {
-    var bibframe = randomBibframe();
-    bibframe.setProfile(profile);
-    return bibframe;
-  }
-
-  public static long hash(String str) {
-    return Hashing.murmur3_32_fixed().hashString(str, StandardCharsets.UTF_8).padToLong();
-  }
 }

@@ -64,6 +64,20 @@
               "21014542"
             ]
           }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Local": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "10128190"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/assigner": [
+              {
+                "id": "lc:RT:bf2:Agent:bfCorp",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Organization",
+                "label": "United States, Library of Congress"
+              }
+            ]
+          }
         }
       ],
       "http://id.loc.gov/ontologies/bibframe/extent": [

@@ -1,15 +1,15 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Bibframe record short info",
+  "description": "Resource record short info",
   "type": "object",
   "properties": {
     "id": {
       "type": "integer",
-      "description": "Bibframe record id"
+      "description": "Resource record id"
     },
-    "graphName": {
+    "label": {
       "type": "string",
-      "description": "The name of the graph."
+      "description": "The label of the resource."
     }
   }
 }

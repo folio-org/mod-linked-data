@@ -286,7 +286,7 @@
               "Topic": {
                 "type": "object",
                 "$ref": "Subject.json",
-                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Topic"
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Work"
               }
             }
           },
@@ -298,6 +298,17 @@
                 "type": "object",
                 "$ref": "Subject.json",
                 "x-json-property": "http://id.loc.gov/ontologies/bibframe/Place"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "SubjectWorkField",
+            "properties": {
+              "Place": {
+                "type": "object",
+                "$ref": "Subject.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Work"
               }
             }
           }

@@ -377,17 +377,6 @@
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="25_create_graph_resources_table">
-    <createTable remarks="Mapping between graphs and its main resources" tableName="graph_resources">
-      <column name="graph_id" type="INTEGER">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="graph_resources_pkey" foreignKeyName="graph_resources_graph_id_fkey" referencedColumnNames="id" referencedTableName="graphset" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
-      </column>
-      <column name="resource_hash" type="BIGINT">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="graph_resources_pkey" foreignKeyName="graph_resources_resource_hash_fkey" referencedColumnNames="resource_hash" referencedTableName="resources" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
-      </column>
-    </createTable>
-  </changeSet>
-
 </databaseChangeLog>
 
 

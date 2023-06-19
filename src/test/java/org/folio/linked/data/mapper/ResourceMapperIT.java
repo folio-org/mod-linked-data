@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper;
 
-import static org.folio.linked.data.TestUtil.getBibframeSample;
+import static org.folio.linked.data.TestUtil.getResourceSample;
 import static org.folio.linked.data.matcher.IsEqualJson.equalToJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @IntegrationTest
-class BibframeMapperIT {
+class ResourceMapperIT {
 
   @Autowired
-  private BibframeMapper bibframeMapper;
+  private ResourceMapper resourceMapper;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -26,28 +26,30 @@ class BibframeMapperIT {
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromString() throws JsonProcessingException {
     // given
-    var json = getBibframeSample();
+    var json = getResourceSample();
 
     // when
-    var jsonNode = bibframeMapper.toJson(json);
+    var jsonNode = resourceMapper.toJson(json);
 
     // then
-    assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
+    assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getResourceSample()));
   }
 
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromMap() throws JsonProcessingException {
     // given
-    var json = getBibframeSample();
+    var json = getResourceSample();
     var map = objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {
     });
 
     // when
-    var jsonNode = bibframeMapper.toJson(map);
+    var jsonNode = resourceMapper.toJson(map);
 
     // then
-    assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
+    assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getResourceSample()));
   }
+
+
 
   @Test
   void toJson_shouldReturnEmptyJsonNodeForNullInput() throws JsonProcessingException {
@@ -55,7 +57,7 @@ class BibframeMapperIT {
     Object configuration = null;
 
     // when
-    var jsonNode = bibframeMapper.toJson(configuration);
+    var jsonNode = resourceMapper.toJson(configuration);
 
     // then
     assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson("{}"));
@@ -64,22 +66,22 @@ class BibframeMapperIT {
   @Test
   void toBibframe_shouldReturnBibframeResponseForJsonNode() throws JsonProcessingException {
     // given
-    var jsonNode = objectMapper.readTree(getBibframeSample());
+    var jsonNode = objectMapper.readTree(getResourceSample());
 
     // when
-    var bibframe = bibframeMapper.toBibframe(jsonNode);
+    var resource = resourceMapper.map(jsonNode);
 
     // then
-    assertThat(objectMapper.writeValueAsString(bibframe), equalToJson(getBibframeSample()));
+    assertThat(objectMapper.writeValueAsString(resource), equalToJson(getResourceSample()));
   }
 
   @Test
-  void toBibframe_shouldReturnEmptyBibframeForNullInput() throws JsonProcessingException {
+  void toBibframe_shouldReturnEmptyBibframeForNullInput() {
     // given
     JsonNode jsonNode = null;
 
     // when
-    var bibframe = bibframeMapper.toBibframe(jsonNode);
+    var bibframe = resourceMapper.map(jsonNode);
 
     // then
     assertNull(bibframe.getWork());

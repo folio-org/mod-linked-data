@@ -5,11 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "predicate_lookup")
+@RequiredArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class Predicate {
@@ -18,7 +22,7 @@ public class Predicate {
   private Long predicateHash;
 
   @NonNull
-  @Column(nullable = false)
-  private String predicate;
+  @Column(name = "predicate", nullable = false)
+  private String label;
 
 }

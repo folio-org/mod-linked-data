@@ -2,15 +2,15 @@
   "content": [
     {
       "id": 2,
-      "graphName": "JxkyvRnL"
+      "label": "resource 2"
     },
     {
       "id": 3,
-      "graphName": "RYtGKbgicZaHCBRQDSx"
+      "profile": "resource 3"
     },
     {
       "id": 1,
-      "graphName": "yedUsFwdkelQbxeTeQOvaScfqIOOmaa"
+      "profile": "resource 1"
     }
   ],
   "number": 0,

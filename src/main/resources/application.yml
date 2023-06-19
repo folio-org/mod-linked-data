@@ -32,10 +32,6 @@ folio:
     feign:
       enabled: true
 
-bibframe:
-    profile:
-        default: lc:profile:bf2:Monograph
-
 management:
   endpoints:
     web:

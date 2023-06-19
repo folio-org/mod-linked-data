@@ -6,9 +6,6 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.domain.dto.AccessPolicyField;
-import org.folio.linked.data.domain.dto.BibframeInstanceInner;
-import org.folio.linked.data.domain.dto.BibframeItemInner;
-import org.folio.linked.data.domain.dto.BibframeWorkInner;
 import org.folio.linked.data.domain.dto.ClassificationLccField;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceIdentifiedByInner;
@@ -22,6 +19,9 @@ import org.folio.linked.data.domain.dto.PlaceField;
 import org.folio.linked.data.domain.dto.PrimaryContributionField;
 import org.folio.linked.data.domain.dto.PublicationField;
 import org.folio.linked.data.domain.dto.RelatedWorkField;
+import org.folio.linked.data.domain.dto.ResourceInstanceInner;
+import org.folio.linked.data.domain.dto.ResourceItemInner;
+import org.folio.linked.data.domain.dto.ResourceWorkInner;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkClassificationInner;
 import org.folio.linked.data.domain.dto.WorkContributionInner;
@@ -46,9 +46,10 @@ public class ObjectMapperConfig {
 
   private Module monographModule() {
     var module = new SimpleModule();
-    module.addAbstractTypeMapping(BibframeWorkInner.class, Work.class);
-    module.addAbstractTypeMapping(BibframeInstanceInner.class, Instance.class);
-    module.addAbstractTypeMapping(BibframeItemInner.class, Item.class);
+
+    module.addAbstractTypeMapping(ResourceWorkInner.class, Work.class);
+    module.addAbstractTypeMapping(ResourceInstanceInner.class, Instance.class);
+    module.addAbstractTypeMapping(ResourceItemInner.class, Item.class);
     module.addAbstractTypeMapping(WorkContributionInner.class, PrimaryContributionField.class);
     module.addAbstractTypeMapping(WorkClassificationInner.class, ClassificationLccField.class);
     module.addAbstractTypeMapping(WorkSubjectInner.class, PlaceField.class);
@@ -61,4 +62,7 @@ public class ObjectMapperConfig {
 
     return module;
   }
+
+
+
 }
