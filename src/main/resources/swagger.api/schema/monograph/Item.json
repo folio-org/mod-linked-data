@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Item Info",
+  "type": "object",
+  "properties": {
+    "contribution": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "ItemContributionField",
+        "properties": {
+          "Contribution": {
+            "type": "object",
+            "$ref": "Collection.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Contribution"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/contribution"
+    },
+    "enumerationAndChronology": {
+      "type": "array",
+      "items": {
+        "$ref": "../property.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/enumerationAndChronology"
+    },
+    "usageAndAccessPolicy": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "AccessPolicyField",
+            "properties": {
+              "AccessPolicy": {
+                "type": "object",
+                "$ref": "AccessPolicy.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/AccessPolicy"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "UsePolicyField",
+            "properties": {
+              "UsePolicy": {
+                "type": "object",
+                "$ref": "UsePolicy.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/UsePolicy"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "RetentionPolicyField",
+            "properties": {
+              "RetentionPolicy": {
+                "type": "object",
+                "$ref": "RetentionPolicy.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/RetentionPolicy"
+              }
+            }
+          }
+        ],
+        "x-json-property": "http://id.loc.gov/ontologies/bibframe/usageAndAccessPolicy"
+      }
+    },
+    "note": {
+      "type": "array",
+      "items": {
+        "$ref": "../property.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
+    },
+    "classification": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "ItemClassificationLccField",
+        "properties": {
+          "ClassificationLcc": {
+            "type": "object",
+            "$ref": "ItemClassificationLcc.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/ClassificationLcc"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/classification"
+    },
+    "electronicLocator": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "UrlField",
+        "properties": {
+          "Url": {
+            "type": "object",
+            "$ref": "Url.json",
+            "x-json-property": "http://www.w3.org/2000/01/rdf-schema#Bibframe"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/electronicLocator"
+    }
+  }
+}

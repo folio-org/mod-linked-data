@@ -20,19 +20,19 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/bibframes/{slug}",
+          "pathPattern": "/bibframes/{id}",
           "permissionsRequired": [ "linked.data.bibframe.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "PUT" ],
-          "pathPattern": "/bibframes/{slug}",
+          "pathPattern": "/bibframes/{id}",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []
         },
         {
           "methods": [ "DELETE" ],
-          "pathPattern": "/bibframes/{slug}",
+          "pathPattern": "/bibframes/{id}",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []
         }

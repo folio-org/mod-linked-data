@@ -2,15 +2,15 @@
   "content": [
     {
       "id": 2,
-      "graphName": "JxkyvRnL"
+      "label": "bibframe 2"
     },
     {
       "id": 3,
-      "graphName": "RYtGKbgicZaHCBRQDSx"
+      "profile": "bibframe 3"
     },
     {
       "id": 1,
-      "graphName": "yedUsFwdkelQbxeTeQOvaScfqIOOmaa"
+      "profile": "bibframe 1"
     }
   ],
   "number": 0,

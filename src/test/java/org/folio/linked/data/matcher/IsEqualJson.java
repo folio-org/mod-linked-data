@@ -3,7 +3,9 @@ package org.folio.linked.data.matcher;
 import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.NullNode;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.exception.JsonException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.json.JSONException;
@@ -20,11 +22,13 @@ public class IsEqualJson extends BaseMatcher<String> {
   @Override
   public boolean matches(Object actual) {
     try {
-      String json = actual instanceof String ? (String) actual : OBJECT_MAPPER.writeValueAsString(actual);
+      String json = actual instanceof String
+          ? (String) actual
+          : OBJECT_MAPPER.writeValueAsString(!(actual instanceof NullNode) ? actual : "{}");
       JSONCompareResult result = JSONCompare.compareJSON(expectedJson, json, jsonCompareMode);
       return result.passed();
     } catch (JSONException | JsonProcessingException e) {
-      throw new IllegalArgumentException("Error while json processing", e);
+      throw new JsonException("Error while json processing", e);
     }
   }
 

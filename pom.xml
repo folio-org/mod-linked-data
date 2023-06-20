@@ -374,12 +374,17 @@
               <generateSupportingFiles>true</generateSupportingFiles>
               <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
               <generateModelDocumentation>true</generateModelDocumentation>
+              <templateDirectory>${project.basedir}/src/main/resources/swagger.api/templates</templateDirectory>
               <configOptions>
                 <java8>true</java8>
                 <dateLibrary>java</dateLibrary>
                 <interfaceOnly>true</interfaceOnly>
                 <useSpringBoot3>true</useSpringBoot3>
                 <requestMappingMode>api_interface</requestMappingMode>
+                <renameModelProperties>true</renameModelProperties>
+                <additionalProperties>
+                  <modelPropertyNaming>original</modelPropertyNaming>
+                </additionalProperties>
               </configOptions>
             </configuration>
           </execution>
