@@ -55,9 +55,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
-class ResourceControllerIT {
+class BibframeControllerIT {
 
-  public static final String BIBFRAMES_URL = "/resources";
+  public static final String BIBFRAMES_URL = "/bibframes";
 
   @Autowired
   private MockMvc mockMvc;

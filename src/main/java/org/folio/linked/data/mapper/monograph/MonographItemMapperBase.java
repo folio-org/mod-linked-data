@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.monograph;
 
-import static org.folio.linked.data.mapper.ResourceMapper.IS_NOT_SUPPORTED_HERE;
-import static org.folio.linked.data.mapper.ResourceMapper.RESOURCE_TYPE;
+import static org.folio.linked.data.mapper.BibframeMapper.IS_NOT_SUPPORTED_HERE;
+import static org.folio.linked.data.mapper.BibframeMapper.RESOURCE_TYPE;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
@@ -33,23 +33,24 @@ import org.folio.linked.data.domain.dto.RetentionPolicyField;
 import org.folio.linked.data.domain.dto.UsePolicy;
 import org.folio.linked.data.domain.dto.UsePolicyField;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.ItemMapper;
+import org.folio.linked.data.mapper.BaseResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MonographItemMapper extends BaseBibframeMapper implements ItemMapper {
+public class MonographItemMapperBase extends BaseResourceMapper<Item> {
 
-  public MonographItemMapper(ObjectMapper mapper) {
+  public MonographItemMapperBase(ObjectMapper mapper) {
     super(mapper);
   }
 
   @Override
-  public Item toItem(Resource item) {
-    return toDto(item, Item.class, getPredicate2ActionMap());
+  public Item map(Resource resource) {
+    return map(resource, Item.class);
   }
 
-  private Map<String, BiConsumer<Resource, Item>> getPredicate2ActionMap() {
+  @Override
+  protected Map<String, BiConsumer<Resource, Item>> initPred2Action() {
     var map = new HashMap<String, BiConsumer<Resource, Item>>();
     map.put(CONTRIBUTION_PRED, (target, dto) -> dto.addContributionItem(toItemContribution(target)));
     map.put(ENUMERATION_AND_CHRONOLOGY_PRED, (target, dto) -> dto.addEnumerationAndChronologyItem(toProperty(target)));

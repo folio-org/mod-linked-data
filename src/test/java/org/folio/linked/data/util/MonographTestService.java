@@ -56,7 +56,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -77,7 +77,7 @@ public class MonographTestService {
 
   private final ResourceTypeRepository resourceTypeRepo;
   private final PredicateRepository predicateRepo;
-  private final ResourceMapper resourceMapper;
+  private final BibframeMapper bibframeMapper;
   private final ObjectMapper objectMapper;
 
   public ResourceType getMonographProfile() {
@@ -214,7 +214,7 @@ public class MonographTestService {
             .map(target -> new ResourceEdge(resource, target, pred)))
         .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
-    resource.setDoc(resourceMapper.toJson(properties));
+    resource.setDoc(bibframeMapper.toJson(properties));
     resource.setResourceHash(hash(serialize(resource).toString()));
     resource.setType(findTypeByLabel(typeLabel));
     return resource;
@@ -237,7 +237,7 @@ public class MonographTestService {
     } else {
       resource.setType(findTypeByUri(typeUri));
     }
-    var doc = resourceMapper.toJson(map);
+    var doc = bibframeMapper.toJson(map);
     resource.setDoc(doc);
     resource.setResourceHash(hash(serialize(resource).toString()));
     resource.setLabel(label);

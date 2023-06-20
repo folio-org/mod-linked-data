@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.monograph;
+package org.folio.linked.data.mapper;
 
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 
@@ -14,9 +14,18 @@ import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.model.entity.Resource;
 
 @RequiredArgsConstructor
-public abstract class BaseBibframeMapper {
+public abstract class BaseResourceMapper<T> {
 
+  protected final Map<String, BiConsumer<Resource, T>> pred2Action = initPred2Action();
   private final ObjectMapper mapper;
+
+  public abstract T map(Resource resource);
+
+  protected T map(Resource resource, Class<T> resourceClass) {
+    return toDto(resource, resourceClass, pred2Action);
+  }
+
+  protected abstract Map<String, BiConsumer<Resource, T>> initPred2Action();
 
   protected UrlField toElectronicLocator(Resource electronicLocator) {
     var electronicLocDto = new UrlField();

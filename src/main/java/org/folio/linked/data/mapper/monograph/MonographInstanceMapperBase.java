@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.monograph;
 
-import static org.folio.linked.data.mapper.ResourceMapper.IS_NOT_SUPPORTED_HERE;
-import static org.folio.linked.data.mapper.ResourceMapper.RESOURCE_TYPE;
+import static org.folio.linked.data.mapper.BibframeMapper.IS_NOT_SUPPORTED_HERE;
+import static org.folio.linked.data.mapper.BibframeMapper.RESOURCE_TYPE;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
@@ -72,23 +72,24 @@ import org.folio.linked.data.domain.dto.PublicationField;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.InstanceMapper;
+import org.folio.linked.data.mapper.BaseResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MonographInstanceMapper extends BaseBibframeMapper implements InstanceMapper {
+public class MonographInstanceMapperBase extends BaseResourceMapper<Instance> {
 
-  public MonographInstanceMapper(ObjectMapper mapper) {
+  public MonographInstanceMapperBase(ObjectMapper mapper) {
     super(mapper);
   }
 
   @Override
-  public Instance toInstance(Resource instance) {
-    return toDto(instance, Instance.class, getPredicate2ActionMap());
+  public Instance map(Resource resource) {
+    return map(resource, Instance.class);
   }
 
-  private Map<String, BiConsumer<Resource, Instance>> getPredicate2ActionMap() {
+  @Override
+  protected Map<String, BiConsumer<Resource, Instance>> initPred2Action() {
     var map = new HashMap<String, BiConsumer<Resource, Instance>>();
     map.put(TITLE_PRED, (target, dto) -> dto.addTitleItem(toInstanceTitle(target)));
     map.put(PROVISION_ACTIVITY_PRED, (target, dto) ->

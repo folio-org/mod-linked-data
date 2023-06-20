@@ -5,102 +5,102 @@ info:
   description: Linked Data service API
 
 paths:
-  /resources:
+  /bibframes:
     post:
-      operationId: createResource
-      description: Create a Resource record
+      operationId: createBibframe
+      description: Create a Bibframe record
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: schema/resourceCreateRequest.json
+              $ref: schema/bibframeCreateRequest.json
       responses:
         '200':
-          description: Created Resource record
+          description: Created Bibframe record
           content:
             application/json:
               schema:
-                $ref: schema/resourceResponse.json
+                $ref: schema/bibframeResponse.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
     get:
-      operationId: getResourcesShortInfoPage
-      description: Get page of resources short info
+      operationId: getBibframesShortInfoPage
+      description: Get page of bibframes short info
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/pageNumber'
         - $ref: '#/components/parameters/pageSize'
       responses:
         '200':
-          description: Page of resources short info as json
+          description: Page of bibframes short info as json
           content:
             application/json:
-              example: example/resourcesShortInfo.sample
+              example: example/bibframesShortInfo.sample
               schema:
-                $ref: schema/resourceShortInfoPage.json
+                $ref: schema/bibframeShortInfoPage.json
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resources/{id}:
+  /bibframes/{id}:
     get:
-      operationId: getResourceById
-      description: Get a Resource record by id
+      operationId: getBibframeById
+      description: Get a Bibframe record by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '200':
-          description: Resource as json string
+          description: Bibframe as json string
           content:
             application/json:
               schema:
-                $ref: schema/resourceResponse.json
+                $ref: schema/bibframeResponse.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
-          description: No Resource is found by id
+          description: No Bibframe is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
     put:
-      operationId: Resource
-      description: Update a Resource record by id
+      operationId: Bibframe
+      description: Update a Bibframe record by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       requestBody:
         content:
           application/json:
-            example: example/resourceUpdateRequest.sample
+            example: example/bibframeUpdateRequest.sample
             schema:
-              $ref: schema/resourceUpdateRequest.json
+              $ref: schema/bibframeUpdateRequest.json
       responses:
         '200':
-          description: Updated Resource record
+          description: Updated Bibframe record
           content:
             application/json:
               schema:
-                $ref: schema/resourceResponse.json
+                $ref: schema/bibframeResponse.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
-          description: No resource is found by id
+          description: No bibframe is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
     delete:
-      operationId: deleteResource
-      description: Delete a Resource record by id
+      operationId: deleteBibframe
+      description: Delete a Bibframe record by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '204':
-          description: Resource record deleted
+          description: Bibframe record deleted
         '404':
-          description: No resource is found by id
+          description: No bibframe is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
@@ -110,7 +110,7 @@ components:
       name: id
       in: path
       required: true
-      description: Resource record id
+      description: Bibframe record id
       schema:
         type: integer
         format: int64

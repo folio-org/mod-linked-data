@@ -97,7 +97,7 @@
           "Url": {
             "type": "object",
             "$ref": "Url.json",
-            "x-json-property": "http://www.w3.org/2000/01/rdf-schema#Resource"
+            "x-json-property": "http://www.w3.org/2000/01/rdf-schema#Bibframe"
           }
         }
       },

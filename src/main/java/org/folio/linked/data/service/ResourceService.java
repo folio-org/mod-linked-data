@@ -1,13 +1,13 @@
 package org.folio.linked.data.service;
 
-import org.folio.linked.data.domain.dto.ResourceResponse;
-import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
+import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 
 public interface ResourceService {
 
 
-  ResourceResponse getResourceById(Long id);
+  BibframeResponse getBibframeById(Long id);
 
 
-  ResourceShortInfoPage getResourceShortInfoPage(Integer pageNumber, Integer pageSize);
+  BibframeShortInfoPage getBibframeShortInfoPage(Integer pageNumber, Integer pageSize);
 }

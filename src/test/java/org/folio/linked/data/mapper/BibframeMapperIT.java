@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @IntegrationTest
-class ResourceMapperIT {
+class BibframeMapperIT {
 
   @Autowired
-  private ResourceMapper resourceMapper;
+  private BibframeMapper bibframeMapper;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -29,7 +29,7 @@ class ResourceMapperIT {
     var json = getResourceSample();
 
     // when
-    var jsonNode = resourceMapper.toJson(json);
+    var jsonNode = bibframeMapper.toJson(json);
 
     // then
     assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getResourceSample()));
@@ -43,7 +43,7 @@ class ResourceMapperIT {
     });
 
     // when
-    var jsonNode = resourceMapper.toJson(map);
+    var jsonNode = bibframeMapper.toJson(map);
 
     // then
     assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson(getResourceSample()));
@@ -57,7 +57,7 @@ class ResourceMapperIT {
     Object configuration = null;
 
     // when
-    var jsonNode = resourceMapper.toJson(configuration);
+    var jsonNode = bibframeMapper.toJson(configuration);
 
     // then
     assertThat(objectMapper.writeValueAsString(jsonNode), equalToJson("{}"));
@@ -69,7 +69,7 @@ class ResourceMapperIT {
     var jsonNode = objectMapper.readTree(getResourceSample());
 
     // when
-    var resource = resourceMapper.map(jsonNode);
+    var resource = bibframeMapper.map(jsonNode);
 
     // then
     assertThat(objectMapper.writeValueAsString(resource), equalToJson(getResourceSample()));
@@ -81,7 +81,7 @@ class ResourceMapperIT {
     JsonNode jsonNode = null;
 
     // when
-    var bibframe = resourceMapper.map(jsonNode);
+    var bibframe = bibframeMapper.map(jsonNode);
 
     // then
     assertNull(bibframe.getWork());

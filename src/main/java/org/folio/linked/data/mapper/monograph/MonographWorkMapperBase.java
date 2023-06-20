@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.monograph;
 
-import static org.folio.linked.data.mapper.ResourceMapper.IS_NOT_SUPPORTED_HERE;
-import static org.folio.linked.data.mapper.ResourceMapper.RESOURCE_TYPE;
+import static org.folio.linked.data.mapper.BibframeMapper.IS_NOT_SUPPORTED_HERE;
+import static org.folio.linked.data.mapper.BibframeMapper.RESOURCE_TYPE;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CHILDRENS_COMPONENTS;
@@ -93,23 +93,24 @@ import org.folio.linked.data.domain.dto.WorkTitle;
 import org.folio.linked.data.domain.dto.WorkTitleField;
 import org.folio.linked.data.domain.dto.WorkTitleInner;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.WorkMapper;
+import org.folio.linked.data.mapper.BaseResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MonographWorkMapper extends BaseBibframeMapper implements WorkMapper {
+public class MonographWorkMapperBase extends BaseResourceMapper<Work> {
 
-  public MonographWorkMapper(ObjectMapper mapper) {
+  public MonographWorkMapperBase(ObjectMapper mapper) {
     super(mapper);
   }
 
   @Override
-  public Work toWork(Resource resource) {
-    return toDto(resource, Work.class, getPredicate2ActionMap());
+  public Work map(Resource resource) {
+    return map(resource, Work.class);
   }
 
-  private Map<String, BiConsumer<Resource, Work>> getPredicate2ActionMap() {
+  @Override
+  protected Map<String, BiConsumer<Resource, Work>> initPred2Action() {
     var map = new HashMap<String, BiConsumer<Resource, Work>>();
     map.put(CONTRIBUTION_PRED, (target, dto) -> dto.addContributionItem(toWorkContribution(target)));
     map.put(CLASSIFICATION_PRED, (target, dto) -> dto.addClassificationItem(toWorkClassification(target)));

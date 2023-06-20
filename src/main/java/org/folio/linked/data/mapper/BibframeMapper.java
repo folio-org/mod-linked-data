@@ -13,12 +13,15 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import org.folio.linked.data.domain.dto.ResourceInstanceInner;
-import org.folio.linked.data.domain.dto.ResourceItemInner;
-import org.folio.linked.data.domain.dto.ResourceResponse;
-import org.folio.linked.data.domain.dto.ResourceShort;
-import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
-import org.folio.linked.data.domain.dto.ResourceWorkInner;
+import org.folio.linked.data.domain.dto.BibframeInstanceInner;
+import org.folio.linked.data.domain.dto.BibframeItemInner;
+import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.BibframeShort;
+import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
+import org.folio.linked.data.domain.dto.BibframeWorkInner;
+import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.Item;
+import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.model.ResourceHashAndProfile;
@@ -32,7 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = SPRING, imports = {TextUtil.class})
-public abstract class ResourceMapper {
+public abstract class BibframeMapper {
 
   public static final String RESOURCE_TYPE = "Resource type [";
   public static final String IS_NOT_SUPPORTED = "] is not supported";
@@ -44,28 +47,28 @@ public abstract class ResourceMapper {
   private ObjectMapper objectMapper;
 
   @Autowired
-  private WorkMapper workMapper;
+  private BaseResourceMapper<Work> workMapper;
 
   @Autowired
-  private InstanceMapper instanceMapper;
+  private BaseResourceMapper<Instance> instanceMapper;
 
   @Autowired
-  private ItemMapper itemMapper;
+  private BaseResourceMapper<Item> itemMapper;
 
   @Mapping(target = "id", source = "resourceHash")
-  public abstract ResourceShort map(ResourceHashAndProfile resourceHashAndProfile);
+  public abstract BibframeShort map(ResourceHashAndProfile resourceHashAndProfile);
 
-  public abstract ResourceShortInfoPage map(Page<ResourceShort> page);
+  public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
 
   @Named("jsonToBibframe")
-  public ResourceResponse map(JsonNode node) {
+  public BibframeResponse map(JsonNode node) {
     return node != null
-        ? objectMapper.convertValue(node, ResourceResponse.class)
-        : new ResourceResponse();
+        ? objectMapper.convertValue(node, BibframeResponse.class)
+        : new BibframeResponse();
   }
 
-  public ResourceResponse map(Resource resource) {
-    var response = new ResourceResponse();
+  public BibframeResponse map(Resource resource) {
+    var response = new BibframeResponse();
     if (MONOGRAPH.equals(resource.getType().getSimpleLabel())) {
       addResources(response, resource.getOutgoingEdges(), workMapper, instanceMapper, itemMapper);
     } else {
@@ -92,21 +95,21 @@ public abstract class ResourceMapper {
     }
   }
 
-  private void addResources(ResourceResponse response,
+  private void addResources(BibframeResponse response,
                             Set<ResourceEdge> resourceEdges,
-                            WorkMapper workMapper,
-                            InstanceMapper instanceMapper,
-                            ItemMapper itemMapper) {
-    var works = new ArrayList<ResourceWorkInner>();
-    var instances = new ArrayList<ResourceInstanceInner>();
-    var items = new ArrayList<ResourceItemInner>();
+                            BaseResourceMapper<Work> workMapper,
+                            BaseResourceMapper<Instance> instanceMapper,
+                            BaseResourceMapper<Item> itemMapper) {
+    var works = new ArrayList<BibframeWorkInner>();
+    var instances = new ArrayList<BibframeInstanceInner>();
+    var items = new ArrayList<BibframeItemInner>();
 
     for (var edge : resourceEdges) {
       var resource = edge.getTarget();
       switch (resource.getType().getSimpleLabel()) {
-        case WORK -> works.add(workMapper.toWork(resource));
-        case INSTANCE -> instances.add(instanceMapper.toInstance(resource));
-        case ITEM -> items.add(itemMapper.toItem(resource));
+        case WORK -> works.add(workMapper.map(resource));
+        case INSTANCE -> instances.add(instanceMapper.map(resource));
+        case ITEM -> items.add(itemMapper.map(resource));
         default -> throw new NotSupportedException(RESOURCE_TYPE + resource.getType() + IS_NOT_SUPPORTED);
       }
     }

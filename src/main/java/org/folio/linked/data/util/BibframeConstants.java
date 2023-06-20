@@ -1,6 +1,8 @@
 package org.folio.linked.data.util;
 
 
+import java.util.Set;
+
 public class BibframeConstants {
 
   //PROPERTY
@@ -118,4 +120,6 @@ public class BibframeConstants {
   public static final String LABEL_PRED = "http://www.w3.org/2000/01/rdf-schema#label";
   public static final String INSTANCE_PRED = "http://id.loc.gov/ontologies/bibframe/Instance";
 
+  //BIBFRAME PROFILES
+  public static final Set<String> PROFILES = Set.of(MONOGRAPH);
 }

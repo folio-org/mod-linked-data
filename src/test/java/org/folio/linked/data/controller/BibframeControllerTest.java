@@ -6,8 +6,8 @@ import static org.folio.linked.data.TestUtil.randomLong;
 import static org.folio.linked.data.TestUtil.randomString;
 import static org.mockito.Mockito.when;
 
-import org.folio.linked.data.domain.dto.ResourceResponse;
-import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
+import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.service.ResourceService;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -19,10 +19,10 @@ import org.springframework.http.HttpStatus;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceControllerTest {
+class BibframeControllerTest {
 
   @InjectMocks
-  private ResourceController resourceController;
+  private BibframeController bibframeController;
 
   @Mock
   private ResourceService resourceService;
@@ -32,11 +32,11 @@ class ResourceControllerTest {
     // given
     var id = randomLong();
     var tenant = randomString();
-    var response = random(ResourceResponse.class);
-    when(resourceService.getResourceById(id)).thenReturn(response);
+    var response = random(BibframeResponse.class);
+    when(resourceService.getBibframeById(id)).thenReturn(response);
 
     // when
-    var result = resourceController.getResourceById(id, tenant);
+    var result = bibframeController.getBibframeById(id, tenant);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -49,11 +49,11 @@ class ResourceControllerTest {
     var tenant = randomString();
     var page = random(Integer.class);
     var size = random(Integer.class);
-    var expectedResponse = random(ResourceShortInfoPage.class);
-    when(resourceService.getResourceShortInfoPage(page, size)).thenReturn(expectedResponse);
+    var expectedResponse = random(BibframeShortInfoPage.class);
+    when(resourceService.getBibframeShortInfoPage(page, size)).thenReturn(expectedResponse);
 
     // when
-    var result = resourceController.getResourcesShortInfoPage(tenant, page, size);
+    var result = bibframeController.getBibframesShortInfoPage(tenant, page, size);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

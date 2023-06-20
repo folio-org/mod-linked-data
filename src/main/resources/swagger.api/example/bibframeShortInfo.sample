@@ -2,15 +2,15 @@
   "content": [
     {
       "id": 2,
-      "label": "resource 2"
+      "label": "bibframe 2"
     },
     {
       "id": 3,
-      "profile": "resource 3"
+      "profile": "bibframe 3"
     },
     {
       "id": 1,
-      "profile": "resource 1"
+      "profile": "bibframe 1"
     }
   ],
   "number": 0,

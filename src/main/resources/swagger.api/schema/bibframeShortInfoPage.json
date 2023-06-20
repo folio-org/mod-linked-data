@@ -1,14 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Get page of resources short info",
+  "description": "Get page of bibframes short info",
   "type": "object",
   "properties": {
     "content": {
-      "description": "Paginated list of resources short info",
+      "description": "Paginated list of bibframes short info",
       "type": "array",
       "items": {
         "type": "object",
-        "$ref": "resourceShort.json"
+        "$ref": "bibframeShort.json"
       }
     },
     "number": {
