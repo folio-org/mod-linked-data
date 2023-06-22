@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.base;
 
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.folio.linked.data.TestUtil.asJsonString;
 import static org.folio.linked.data.TestUtil.defaultHeaders;
 import static org.folio.linked.data.TestUtil.randomString;
@@ -48,7 +49,7 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
   @SneakyThrows
   @Override
   public void afterAll(ExtensionContext extensionContext) {
-    if (asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
+    if (nonNull(env) && asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
       mockMvc.perform(post(TENANT_ENDPOINT_URL, randomString())
           .content(asJsonString(new TenantAttributes().moduleFrom(appName).purge(false)))
           .headers(defaultHeaders(env)))

@@ -1,8 +1,8 @@
 package org.folio.linked.data.util;
 
+import lombok.experimental.UtilityClass;
 
-import java.util.Set;
-
+@UtilityClass
 public class BibframeConstants {
 
   //PROPERTY
@@ -99,9 +99,12 @@ public class BibframeConstants {
   public static final String CARRIER_PRED = "http://id.loc.gov/ontologies/bibframe/carrier";
   public static final String AGENT_PRED = "http://id.loc.gov/ontologies/bibframe/agent";
   public static final String ROLE_PRED = "http://id.loc.gov/ontologies/bibframe/role";
-  public static final String ENUMERATION_AND_CHRONOLOGY_PRED = "http://id.loc.gov/ontologies/bibframe/enumerationAndChronology";
-  public static final String USAGE_AND_ACCESS_POLICY_PRED = "http://id.loc.gov/ontologies/bibframe/usageAndAccessPolicy";
-  public static final String APPLICABLE_INSTITUTION_PRED = "http://id.loc.gov/ontologies/bibframe/applicableInstitution";
+  public static final String ENUMERATION_AND_CHRONOLOGY_PRED =
+    "http://id.loc.gov/ontologies/bibframe/enumerationAndChronology";
+  public static final String USAGE_AND_ACCESS_POLICY_PRED =
+    "http://id.loc.gov/ontologies/bibframe/usageAndAccessPolicy";
+  public static final String APPLICABLE_INSTITUTION_PRED =
+    "http://id.loc.gov/ontologies/bibframe/applicableInstitution";
   public static final String GRANTING_INSTITUTION_PRED = "http://id.loc.gov/ontologies/bibframe/grantingInstitution";
   public static final String SAME_AS_PRED = "http://www.w3.org/2002/07/owl#sameAs";
   public static final String STATUS_PRED = "http://id.loc.gov/ontologies/bibframe/status";
@@ -120,6 +123,4 @@ public class BibframeConstants {
   public static final String LABEL_PRED = "http://www.w3.org/2000/01/rdf-schema#label";
   public static final String INSTANCE_PRED = "http://id.loc.gov/ontologies/bibframe/Instance";
 
-  //BIBFRAME PROFILES
-  public static final Set<String> PROFILES = Set.of(MONOGRAPH);
 }

@@ -1,6 +1,6 @@
 package org.folio.linked.data.model;
 
-public interface ResourceHashAndProfile {
+public interface ResourceHashAndLabel {
 
   Long getResourceHash();
 
