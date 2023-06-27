@@ -19,6 +19,7 @@ import static org.folio.linked.data.util.BibframeConstants.ITEM_URL;
 import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
@@ -26,6 +27,7 @@ import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
 import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_URL;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
@@ -103,9 +105,8 @@ class BibframeControllerIT {
         .andExpect(jsonPath("$." + pathToPlaceId(), equalTo("lc:RT:bf2:Place")))
         .andExpect(jsonPath("$." + pathToPlaceLabel(), equalTo("New York (State)")))
         .andExpect(jsonPath("$." + pathToDate(), equalTo("1921")))
-        .andExpect(jsonPath("$." + pathToAgentId(), equalTo("lc:RT:bf2:Agent:bfPerson")))
-        .andExpect(jsonPath("$." + pathToAgentUri(), equalTo("http://id.loc.gov/ontologies/bibframe/Person")))
-        .andExpect(jsonPath("$." + pathToAgentLabel(), equalTo("Spearman, Frank H. (Frank Hamilton), 1859-1937")))
+        .andExpect(jsonPath("$." + pathToAgentSameAsUri(), equalTo("http://id.loc.gov/authorities/names/no98072015")))
+        .andExpect(jsonPath("$." + pathToAgentSameAsLabel(), equalTo("Test and Evaluation Year-2000 Team (U.S.)")))
         .andExpect(jsonPath("$." + pathToRoleId(), equalTo("lc:RT:bf2:Agent:bfRole")))
         .andExpect(jsonPath("$." + pathToRoleUri(), equalTo("http://id.loc.gov/ontologies/bibframe/Role")))
         .andExpect(jsonPath("$." + pathToRoleLabel(), equalTo("Author")))
@@ -220,19 +221,19 @@ class BibframeControllerIT {
         path(CONTRIBUTION_URL), arrayPath(ROLE_PRED), path(PROPERTY_ID));
   }
 
-  private String pathToAgentLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-        path(CONTRIBUTION_URL), arrayPath(AGENT_PRED), path(PROPERTY_LABEL));
+  private String pathToAgentSameAsLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED), path(CONTRIBUTION_URL),
+      arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_LABEL));
   }
 
-  private String pathToAgentUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-        path(CONTRIBUTION_URL), arrayPath(AGENT_PRED), path(PROPERTY_URI));
+  private String pathToAgentSameAsUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED), path(CONTRIBUTION_URL),
+      arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_URI));
   }
 
-  private String pathToAgentId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-        path(CONTRIBUTION_URL), arrayPath(AGENT_PRED), path(PROPERTY_ID));
+  private String pathToAgentSameAsId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED), path(CONTRIBUTION_URL),
+      arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_ID));
   }
 
   private String pathToDate() {

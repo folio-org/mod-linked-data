@@ -243,7 +243,7 @@ public class MonographWorkMapperBase extends BaseResourceMapper<Work> {
 
   private WorkContributionInner toWorkContribution(Resource contrib) {
     Map<String, BiConsumer<Resource, Contribution>> map = Map.of(
-        AGENT_PRED, (target, dto) -> dto.addAgentItem(toProperty(target)),
+        AGENT_PRED, (target, dto) -> dto.addAgentItem(toContributionPerson(target)),
         ROLE_PRED, (target, dto) -> dto.addRoleItem(toProperty(target)));
     if (PRIMARY_CONTRIBUTION.equals(contrib.getType().getSimpleLabel())) {
       return new PrimaryContributionField().primaryContribution(toDto(contrib, Contribution.class, map));
