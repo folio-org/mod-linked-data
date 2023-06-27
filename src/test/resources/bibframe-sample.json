@@ -42,9 +42,14 @@
           "http://id.loc.gov/ontologies/bibframe/Contribution": {
             "http://id.loc.gov/ontologies/bibframe/agent": [
               {
-                "id": "lc:RT:bf2:Agent:bfPerson",
-                "uri": "http://id.loc.gov/ontologies/bibframe/Person",
-                "label": "Spearman, Frank H. (Frank Hamilton), 1859-1937"
+                "http://id.loc.gov/ontologies/bibframe/Person": {
+                  "http://www.w3.org/2002/07/owl#sameAs": [
+                    {
+                      "label": "Test and Evaluation Year-2000 Team (U.S.)",
+                      "uri": "http://id.loc.gov/authorities/names/no98072015"
+                    }
+                  ]
+                }
               }
             ],
             "http://id.loc.gov/ontologies/bibframe/role": [

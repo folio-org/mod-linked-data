@@ -29,7 +29,6 @@ import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
 import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
-import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
@@ -39,6 +38,7 @@ import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
 import static org.folio.linked.data.util.BibframeConstants.ROLE;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
@@ -46,6 +46,7 @@ import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 import static org.folio.linked.data.util.TextUtil.hash;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -84,7 +85,7 @@ public class MonographTestService {
     return resourceTypeRepo.findBySimpleLabel(MONOGRAPH).orElseThrow();
   }
 
-  public Resource createSampleMonograph() {
+  public Resource createSampleMonograph() throws JsonProcessingException {
     var instance = createSampleInstance();
     return createResource(
         Collections.emptyMap(),
@@ -93,7 +94,7 @@ public class MonographTestService {
     );
   }
 
-  private Resource createSampleInstance() {
+  private Resource createSampleInstance() throws JsonProcessingException {
     var title = createResource(
         Map.of(MAIN_TITLE_PRED, Set.of("Laramie holds the range")),
         INSTANCE_TITLE,
@@ -117,11 +118,6 @@ public class MonographTestService {
         Map.of(PLACE_PRED, Set.of(place))
     );
 
-    var agent = createSimpleResource(
-        "Spearman, Frank H. (Frank Hamilton), 1859-1937",
-        PERSON,
-        PERSON_URL
-    );
 
     var role = createSimpleResource(
         "Author",
@@ -129,11 +125,19 @@ public class MonographTestService {
         ROLE_URL
     );
 
+    var person = createResource(Map.of(
+        SAME_AS_PRED, Set.of(Map.of(
+          PROPERTY_LABEL, "Test and Evaluation Year-2000 Team (U.S.)",
+          PROPERTY_URI, "http://id.loc.gov/authorities/names/no98072015")
+        )
+      ), PERSON,
+      Collections.emptyMap());
+
     var contrib = createResource(
         Collections.emptyMap(),
         CONTRIBUTION,
         Map.of(
-            AGENT_PRED, Set.of(agent),
+            AGENT_PRED, Set.of(person),
             ROLE_PRED, Set.of(role)
         )
     );
@@ -203,7 +207,7 @@ public class MonographTestService {
     );
   }
 
-  private Resource createResource(Map<String, Set<String>> properties, String typeLabel,
+  private Resource createResource(Map<String, Set<?>> properties, String typeLabel,
                                  Map<String, Set<Resource>> pred2OutgoingResources) {
     var resource = new Resource();
     pred2OutgoingResources.keySet()
@@ -220,12 +224,6 @@ public class MonographTestService {
     return resource;
   }
 
-  private Resource createResource(String label, Map<String, Set<String>> properties, String typeLabel,
-                                 Map<String, Set<Resource>> pred2OutgoingResources) {
-    var resource = createResource(properties, typeLabel, pred2OutgoingResources);
-    resource.setLabel(label);
-    return resource;
-  }
 
   private Resource createSimpleResource(String label, String typeLabel, String typeUri) {
     var resource = new Resource();

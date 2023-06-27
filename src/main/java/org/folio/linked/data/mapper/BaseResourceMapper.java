@@ -1,12 +1,16 @@
 package org.folio.linked.data.mapper;
 
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.Lookup;
+import org.folio.linked.data.domain.dto.Person;
+import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.Url;
 import org.folio.linked.data.domain.dto.UrlField;
@@ -34,6 +38,11 @@ public abstract class BaseResourceMapper<T> {
     return electronicLocDto;
   }
 
+  protected PersonField toContributionPerson(Resource person) {
+    return new PersonField().person(toDto(
+      person, Person.class, Map.of(SAME_AS_PRED, (target, dto) -> dto.addSameAsItem(toLookupProperty(target)))));
+  }
+
   protected  <T> T readResourceDoc(Resource resource, Class<T> dtoClass) {
     try {
       var node = resource.getDoc() != null ? resource.getDoc() : mapper.createObjectNode();
@@ -45,6 +54,10 @@ public abstract class BaseResourceMapper<T> {
 
   protected Property toProperty(Resource resource) {
     return readResourceDoc(resource, Property.class);
+  }
+
+  protected Lookup toLookupProperty(Resource resource) {
+    return readResourceDoc(resource, Lookup.class);
   }
 
   protected <T> T toDto(Resource resource, Class<T> dtoClass,

@@ -214,7 +214,13 @@
             <column name="predicate_hash" value="1150854333"/>
             <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/Item"/>
         </insert>
-
     </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="02_insert_predicate_lookup">
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-1914808317"/>
+      <column name="predicate" value="http://www.w3.org/2002/07/owl#sameAs"/>
+    </insert>
+  </changeSet>
 
 </databaseChangeLog>
