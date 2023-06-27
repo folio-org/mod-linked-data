@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Input Transcribed Series Info",
+  "allOf": [
+    {
+      "$ref": "Relationship.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "seriesEnumeration": {
+          "type": "array",
+          "items": {
+            "$ref": "../property.json"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/seriesEnumeration"
+        },
+        "appliesTo": {
+          "type": "array",
+          "items": {
+            "$ref": "../property.json"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bflc/appliesTo"
+        }
+      }
+    }
+  ]
+}

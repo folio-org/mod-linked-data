@@ -14,8 +14,8 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.folio.linked.data.configuration.ObjectMapperConfig;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
-import org.folio.linked.data.model.entity.Bibframe;
-import org.folio.linked.data.util.TextUtil;
+import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -25,17 +25,21 @@ import org.springframework.http.HttpHeaders;
 
 @UtilityClass
 public class TestUtil {
+
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("bibframe-sample.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
+
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
 
   static {
     PARAMETERS.excludeField(named("id"));
-    PARAMETERS.randomize(named("configuration"), TestUtil::getBibframeJsonNodeSample);
-    PARAMETERS.randomize(named("_configuration"), TestUtil::getBibframeSample);
-    PARAMETERS.randomize(Bibframe.class, TestUtil::randomBibframe);
+    PARAMETERS.randomize(named("configuration"), TestUtil::getResourceJsonNodeSample);
+    PARAMETERS.randomize(named("_configuration"), TestUtil::getResourceSample);
+    PARAMETERS.randomize(Resource.class, TestUtil::randomResource);
+    PARAMETERS.randomizationDepth(3);
+    PARAMETERS.scanClasspathForConcreteTypes(true);
   }
 
   @SneakyThrows
@@ -59,12 +63,12 @@ public class TestUtil {
     return IOUtils.toString(is, StandardCharsets.UTF_8);
   }
 
-  public static String getBibframeSample() {
+  public static String getResourceSample() {
     return BIBFRAME_SAMPLE;
   }
 
   @SneakyThrows
-  public static JsonNode getBibframeJsonNodeSample() {
+  public static JsonNode getResourceJsonNodeSample() {
     return OBJECT_MAPPER.readTree(BIBFRAME_SAMPLE);
   }
 
@@ -76,15 +80,25 @@ public class TestUtil {
     return GENERATOR.nextObject(String.class);
   }
 
-  public static BibframeCreateRequest randomBibframeCreateRequest(String graphName) {
-    var request = GENERATOR.nextObject(BibframeCreateRequest.class);
-    request.graphName(graphName);
-    return request;
+  public static Long randomLong() {
+    return GENERATOR.nextLong();
   }
 
-  public static Bibframe randomBibframe() {
-    var graphName = randomString();
-    var slug = TextUtil.slugify(graphName);
-    return Bibframe.of(graphName, slug.hashCode(), slug, getBibframeJsonNodeSample());
+  public static BibframeCreateRequest randomResourceCreateRequest() {
+    return GENERATOR.nextObject(BibframeCreateRequest.class);
   }
+
+  public static Resource randomResource() {
+    var resource = new Resource();
+    resource.setDoc(getResourceJsonNodeSample());
+    return resource;
+  }
+
+  public static Resource randomResource(Long resourceHash, ResourceType profile) {
+    var bibframe = randomResource();
+    bibframe.setResourceHash(resourceHash);
+    bibframe.setType(profile);
+    return bibframe;
+  }
+
 }

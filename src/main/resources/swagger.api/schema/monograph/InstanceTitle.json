@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Instance Title Info",
+  "allOf": [
+    {
+      "$ref": "BaseTitle.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "nonSortNum": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bflc/nonSortNum"
+        },
+        "subtitle": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/subtitle"
+        }
+      }
+    }
+  ]
+}

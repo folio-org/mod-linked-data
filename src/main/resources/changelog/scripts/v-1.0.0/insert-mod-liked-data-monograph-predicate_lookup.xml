@@ -1,0 +1,220 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+    <changeSet author="Victor_Bodrov@epam.com" id="01_insert_predicate_lookup">
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="355413198"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/classification"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-2027314346"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/contribution"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-450939906"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/colorContent"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-547260246"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/content"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-583051663"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/tableOfContents"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1552628823"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/hasInstance"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="663150043"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/originDate"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="518650340"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/dissertation"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-308780913"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/genreForm"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="202501540"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/geographicCoverage"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="1496646143"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bflc/governmentPubType"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="978694912"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/illustrativeContent"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1647754466"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/intendedAudience"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="843290001"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/language"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-318001415"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/note"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1467621644"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/originPlace"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-228188081"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bflc/relationship"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="2035965794"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/subject"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="127437062"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/summary"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-711899006"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/supplementaryContent"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="1813440659"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/temporalCoverage"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-548295646"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/title"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1527166823"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/agent"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1227642082"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/role"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="597520493"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/place"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1098188120"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bflc/appliesTo"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1932477142"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/mainTitle"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1060981056"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bflc/simplePlace"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-856993720"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bflc/simpleAgent"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-309004944"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bflc/simpleDate"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="614375487"/>
+            <column name="predicate" value="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1328225512"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/assigner"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="892397044"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/issuance"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1387582006"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/media"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-82723026"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/carrier"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="474833042"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/identifiedBy"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-2115543914"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/provisionActivity"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-1640121608"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/extent"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="-903172118"/>
+            <column name="predicate" value="http://www.w3.org/2000/01/rdf-schema#label"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="1046072513"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/Work"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="1688121229"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/Instance"/>
+        </insert>
+
+        <insert tableName="predicate_lookup">
+            <column name="predicate_hash" value="1150854333"/>
+            <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/Item"/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>

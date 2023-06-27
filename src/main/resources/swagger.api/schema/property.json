@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Basic fields",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Property id",
+      "type": "string"
+    },
+    "uri": {
+      "description": "Property uri",
+      "type": "string"
+    },
+    "label": {
+      "description": "Property value",
+      "type": "string"
+    }
+  }
+}

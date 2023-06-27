@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Subject Info",
+  "type": "object",
+  "properties": {
+    "componentList": {
+      "type": "array",
+      "items": {
+        "$ref": "../property.json"
+      },
+      "x-json-property": "http://www.loc.gov/mads/rdf/v1#componentList"
+    },
+    "source": {
+      "type": "array",
+      "items": {
+        "$ref": "../property.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/source"
+    }
+  }
+}

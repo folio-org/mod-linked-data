@@ -1,27 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Get bibframe record response",
-  "type": "object",
-  "properties": {
-    "id": {
-      "type": "integer",
-      "description": "Bibframe record id"
+  "description": "Bibframe base properties",
+  "allOf": [
+    {
+      "$ref": "bibframe.json"
     },
-    "graphName": {
-      "type": "string",
-      "description": "The name of the graph."
-    },
-    "graphHash": {
-      "type": "integer",
-      "description": "The hash value of the graph."
-    },
-    "slug": {
-      "type": "string",
-      "description": "The unique text identifier."
-    },
-    "configuration": {
+    {
       "type": "object",
-      "description": "The configuration JSON."
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID of the bibframe"
+        },
+        "profile": {
+          "type": "string",
+          "description": "Text ID of the bibframe profile"
+        }
+      }
     }
-  }
+  ]
 }

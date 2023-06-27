@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Classification DDC Info",
+  "allOf": [
+    {
+      "$ref": "BaseClassification.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "edition": {
+          "type": "string",
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/edition"
+        },
+        "source": {
+          "type": "array",
+          "items": {
+            "$ref": "../property.json"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/source"
+        },
+        "itemPortion": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/itemPortion"
+        }
+      }
+    }
+  ]
+}
