@@ -7,6 +7,7 @@ import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
+import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
@@ -25,7 +26,11 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.StreamSupport;
 import lombok.experimental.UtilityClass;
+import org.folio.linked.data.domain.dto.Lookup;
+import org.folio.linked.data.domain.dto.Person;
+import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.domain.dto.Url;
@@ -53,21 +58,7 @@ public class MappingUtil {
   }
 
   public static <T> T readResourceDoc(ObjectMapper mapper, Resource resource, Class<T> dtoClass) {
-    try {
-      var node = resource.getDoc() != null ? resource.getDoc() : mapper.createObjectNode();
-      return mapper.treeToValue(node, dtoClass);
-    } catch (JsonProcessingException e) {
-      throw new JsonException(e.getMessage());
-    }
-  }
-
-  public static void addMappedProperties(ObjectMapper mapper, Resource source, String predicate,
-    Consumer<Property> consumer) {
-    source.getOutgoingEdges().stream()
-      .filter(re -> predicate.equals(re.getPredicate().getLabel()))
-      .map(ResourceEdge::getTarget)
-      .map(r -> toProperty(mapper, r))
-      .forEach(consumer);
+    return readDoc(mapper, resource.getDoc(), dtoClass);
   }
 
   public static <T> void addMappedResources(ObjectMapper mapper, SubResourceMapper subResourceMapper,
@@ -142,7 +133,7 @@ public class MappingUtil {
       resource = new Resource();
       resource.setLabel(label);
       resource.setType(resourceType);
-      resource.setDoc(toJson(getProvisionActivityDoc(dto), mapper));
+      resource.setDoc(provisionActivityToDoc(dto, mapper));
       mapPropertyEdges(dto.getPlace(), resource, () -> predicateService.get(PLACE_PRED),
         () -> typeHolder.get(PLACE_COMPONENTS), mapper);
       resource.setResourceHash(hash(resource, mapper));
@@ -150,13 +141,52 @@ public class MappingUtil {
     return resource;
   }
 
-  private Map<String, List<String>> getProvisionActivityDoc(ProvisionActivity dto) {
+  public static void addMappedProperties(ObjectMapper mapper, Resource s, String pred, Consumer<Property> consumer) {
+    s.getOutgoingEdges().stream()
+      .filter(re -> pred.equals(re.getPredicate().getLabel()))
+      .map(ResourceEdge::getTarget)
+      .map(r -> readResourceDoc(mapper, r, Property.class))
+      .forEach(consumer);
+  }
+
+  public static void addMappedPersonLookups(ObjectMapper mapper, Resource source, String predicate,
+    Consumer<PersonField> personConsumer) {
+    var person = new Person();
+    addMappedLookups(mapper, source, predicate, person::addSameAsItem);
+    if (!person.getSameAs().isEmpty()) {
+      personConsumer.accept(new PersonField().person(person));
+    }
+  }
+
+  private static void addMappedLookups(ObjectMapper mapper, Resource source, String predicate,
+    Consumer<Lookup> consumer) {
+    source.getOutgoingEdges().stream()
+      .filter(re -> predicate.equals(re.getPredicate().getLabel()))
+      .map(ResourceEdge::getTarget)
+      .forEach(r -> {
+        var jsonNodes = readDoc(mapper, r.getDoc().get(SAME_AS_PRED), ArrayNode.class);
+        Iterable<JsonNode> iterable = jsonNodes::elements;
+        StreamSupport.stream(iterable.spliterator(), false)
+          .map(n -> readDoc(mapper, n, Lookup.class))
+          .forEach(consumer);
+      });
+  }
+
+  private static <T> T readDoc(ObjectMapper mapper, JsonNode node, Class<T> dtoClass) {
+    try {
+      return mapper.treeToValue(nonNull(node) ? node : mapper.createObjectNode(), dtoClass);
+    } catch (JsonProcessingException e) {
+      throw new JsonException(e.getMessage());
+    }
+  }
+
+  private JsonNode provisionActivityToDoc(ProvisionActivity dto, ObjectMapper mapper) {
     var map = new HashMap<String, List<String>>();
     map.put(DATE_URL, dto.getDate());
     map.put(SIMPLE_AGENT_PRED, dto.getSimpleAgent());
     map.put(SIMPLE_DATE_PRED, dto.getSimpleDate());
     map.put(SIMPLE_PLACE_PRED, dto.getSimplePlace());
-    return map;
+    return toJson(map, mapper);
   }
 
   private JsonNode propertyToDoc(Property property, ObjectMapper mapper) {

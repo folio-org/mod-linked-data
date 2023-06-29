@@ -51,8 +51,8 @@ public class ImmediateAcquisitionMapper implements InstanceSubResourceMapper {
     resource.setType(resourceTypeService.get(IMM_ACQUISITION_URI));
     resource.setDoc(toJson(getDoc(immediateAcquisition), mapper));
     mapPropertyEdges(immediateAcquisition.getApplicableInstitution(), resource,
-      () -> predicateService.get(APPLICABLE_INSTITUTION_PRED), () -> resourceTypeService.get(APPLICABLE_INSTITUTION_URL),
-      mapper);
+      () -> predicateService.get(APPLICABLE_INSTITUTION_PRED),
+      () -> resourceTypeService.get(APPLICABLE_INSTITUTION_URL), mapper);
     resource.setResourceHash(hash(resource, mapper));
     return resource;
   }

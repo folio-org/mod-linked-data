@@ -24,8 +24,7 @@ public class MonographWorkMapper implements InnerResourceMapperUnit {
 
   @Override
   public BibframeResponse toDto(Resource resource, BibframeResponse destination) {
-    addMappedResources(mapper, subResourceMapper, resource, destination::addWorkItem,
-      Work.class);
+    addMappedResources(mapper, subResourceMapper, resource, destination::addWorkItem, Work.class);
     return destination;
   }
 

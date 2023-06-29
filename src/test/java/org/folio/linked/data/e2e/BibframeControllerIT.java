@@ -2,11 +2,11 @@ package org.folio.linked.data.e2e;
 
 import static java.util.Comparator.comparing;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.test.TestUtil.randomResource;
-import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
@@ -50,6 +50,7 @@ import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_URL;
 import static org.folio.linked.data.util.BibframeConstants.ROLE;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
@@ -123,9 +124,8 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + path(INSTANCE_URL), notNullValue()))
       .andExpect(jsonPath("$." + toCarrierUri(), equalTo("http://id.loc.gov/ontologies/bibframe/Carrier")))
       .andExpect(jsonPath("$." + toCarrierLabel(), equalTo("volume")))
-      .andExpect(jsonPath("$." + toContributionAgentId(), equalTo("lc:RT:bf2:Agent:bfPerson")))
-      .andExpect(jsonPath("$." + toContributionAgentUri(), equalTo("http://id.loc.gov/ontologies/bibframe/Person")))
-      .andExpect(jsonPath("$." + toContributionAgentLabel(), equalTo("Spearman, Frank H. (Frank Hamilton), 1859-1937")))
+      .andExpect(jsonPath("$." + toContributionAgentUri(), equalTo("http://id.loc.gov/authorities/names/no98072015")))
+      .andExpect(jsonPath("$." + toContributionAgentLabel(), equalTo("Test and Evaluation Year-2000 Team (U.S.)")))
       .andExpect(jsonPath("$." + toContributionRoleId(), equalTo("lc:RT:bf2:Agent:bfRole")))
       .andExpect(jsonPath("$." + toContributionRoleUri(), equalTo("http://id.loc.gov/ontologies/bibframe/Role")))
       .andExpect(jsonPath("$." + toContributionRoleLabel(), equalTo("Author")))
@@ -216,14 +216,14 @@ class BibframeControllerIT {
     assertThat(contributionAgentEdge.getSource()).isEqualTo(contribution);
     assertThat(contributionAgentEdge.getPredicate().getLabel()).isEqualTo(AGENT_PRED);
     var contributionAgent = contributionAgentEdge.getTarget();
-    assertThat(contributionAgent.getLabel()).isEqualTo("Spearman, Frank H. (Frank Hamilton), 1859-1937");
-    assertThat(contributionAgent.getType().getTypeUri()).isEqualTo(PERSON_URL);
+    assertThat(contributionAgent.getLabel()).isEqualTo(PERSON_URL);
+    assertThat(contributionAgent.getType().getSimpleLabel()).isEqualTo(PERSON);
     assertThat(contributionAgent.getResourceHash()).isNotNull();
-    assertThat(contributionAgent.getDoc().size()).isEqualTo(3);
-    assertThat(contributionAgent.getDoc().get(PROPERTY_URI).asText()).isEqualTo(PERSON_URL);
-    assertThat(contributionAgent.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(
-      "Spearman, Frank H. (Frank Hamilton), 1859-1937");
-    assertThat(contributionAgent.getDoc().get(PROPERTY_ID).asText()).isEqualTo(PERSON);
+    assertThat(contributionAgent.getDoc().size()).isEqualTo(1);
+    assertThat(contributionAgent.getDoc().get(SAME_AS_PRED).get(0).get(PROPERTY_LABEL).asText())
+      .isEqualTo("Test and Evaluation Year-2000 Team (U.S.)");
+    assertThat(contributionAgent.getDoc().get(SAME_AS_PRED).get(0).get(PROPERTY_URI).asText())
+      .isEqualTo("http://id.loc.gov/authorities/names/no98072015");
     assertThat(contributionAgent.getOutgoingEdges().isEmpty()).isTrue();
     var contributionRoleEdge = contributionEdgeIterator.next();
     assertThat(contributionRoleEdge.getId()).isNotNull();
@@ -330,9 +330,8 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toPublicationPlaceId(), equalTo("lc:RT:bf2:Place")))
       .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("New York (State)")))
       .andExpect(jsonPath("$." + toPublicationDate(), equalTo("1921")))
-      .andExpect(jsonPath("$." + toContributionAgentId(), equalTo("lc:RT:bf2:Agent:bfPerson")))
-      .andExpect(jsonPath("$." + toContributionAgentUri(), equalTo("http://id.loc.gov/ontologies/bibframe/Person")))
-      .andExpect(jsonPath("$." + toContributionAgentLabel(), equalTo("Spearman, Frank H. (Frank Hamilton), 1859-1937")))
+      .andExpect(jsonPath("$." + toContributionAgentUri(), equalTo("http://id.loc.gov/authorities/names/no98072015")))
+      .andExpect(jsonPath("$." + toContributionAgentLabel(), equalTo("Test and Evaluation Year-2000 Team (U.S.)")))
       .andExpect(jsonPath("$." + toContributionRoleId(), equalTo("lc:RT:bf2:Agent:bfRole")))
       .andExpect(jsonPath("$." + toContributionRoleUri(), equalTo("http://id.loc.gov/ontologies/bibframe/Role")))
       .andExpect(jsonPath("$." + toContributionRoleLabel(), equalTo("Author")))
@@ -448,18 +447,13 @@ class BibframeControllerIT {
   }
 
   private String toContributionAgentLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-      path(CONTRIBUTION_URL), arrayPath(AGENT_PRED), path(PROPERTY_LABEL));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED), path(CONTRIBUTION_URL),
+      arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_LABEL));
   }
 
   private String toContributionAgentUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-      path(CONTRIBUTION_URL), arrayPath(AGENT_PRED), path(PROPERTY_URI));
-  }
-
-  private String toContributionAgentId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-      path(CONTRIBUTION_URL), arrayPath(AGENT_PRED), path(PROPERTY_ID));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED), path(CONTRIBUTION_URL),
+      arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_URI));
   }
 
   private String toPublicationDate() {

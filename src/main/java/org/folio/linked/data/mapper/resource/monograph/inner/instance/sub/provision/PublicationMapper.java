@@ -39,8 +39,8 @@ public class PublicationMapper implements InstanceSubResourceMapper {
   @Override
   public Resource toEntity(Object dto, String predicate) {
     var publication = ((PublicationField) dto).getPublication();
-    return provisionActivityToEntity(publication, PUBLICATION_URL, resourceTypeService.get(PUBLICATION), predicateService,
-      resourceTypeService, mapper);
+    return provisionActivityToEntity(publication, PUBLICATION_URL, resourceTypeService.get(PUBLICATION),
+      predicateService, resourceTypeService, mapper);
   }
 
 }

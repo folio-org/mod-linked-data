@@ -39,8 +39,8 @@ public class ManufactureMapper implements InstanceSubResourceMapper {
   @Override
   public Resource toEntity(Object dto, String predicate) {
     var manufacture = ((ManufactureField) dto).getManufacture();
-    return provisionActivityToEntity(manufacture, MANUFACTURE_URL, resourceTypeService.get(MANUFACTURE), predicateService,
-      resourceTypeService, mapper);
+    return provisionActivityToEntity(manufacture, MANUFACTURE_URL, resourceTypeService.get(MANUFACTURE),
+      predicateService, resourceTypeService, mapper);
   }
 
 }

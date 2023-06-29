@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper;
 
-import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.folio.linked.data.matcher.IsEqualJson.equalToJson;
+import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 

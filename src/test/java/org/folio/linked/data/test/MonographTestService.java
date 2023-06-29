@@ -30,7 +30,6 @@ import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
 import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
-import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
@@ -40,6 +39,7 @@ import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
 import static org.folio.linked.data.util.BibframeConstants.ROLE;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
@@ -109,11 +109,13 @@ public class MonographTestService {
       Map.of(PLACE_PRED, Set.of(place))
     );
 
-    var agent = createSimpleResource(
-      "Spearman, Frank H. (Frank Hamilton), 1859-1937",
-      PERSON,
-      PERSON_URL
-    );
+    var person = createResource(Map.of(
+        SAME_AS_PRED, Set.of(Map.of(
+          PROPERTY_LABEL, "Test and Evaluation Year-2000 Team (U.S.)",
+          PROPERTY_URI, "http://id.loc.gov/authorities/names/no98072015")
+        )
+      ), PERSON,
+      Collections.emptyMap());
 
     var role = createSimpleResource(
       "Author",
@@ -125,7 +127,7 @@ public class MonographTestService {
       Collections.emptyMap(),
       CONTRIBUTION,
       Map.of(
-        AGENT_PRED, Set.of(agent),
+        AGENT_PRED, Set.of(person),
         ROLE_PRED, Set.of(role)
       )
     );
@@ -195,7 +197,7 @@ public class MonographTestService {
     );
   }
 
-  private Resource createResource(Map<String, Set<String>> properties, String typeLabel,
+  private Resource createResource(Map<String, Set<?>> properties, String typeLabel,
     Map<String, Set<Resource>> pred2OutgoingResources) {
     var resource = new Resource();
     pred2OutgoingResources.keySet()
