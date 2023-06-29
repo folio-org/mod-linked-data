@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 
 @Entity
@@ -20,6 +21,7 @@ import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 @NoArgsConstructor
 @Getter
 @Setter
+@Accessors(chain = true)
 public class ResourceEdge {
 
   @EmbeddedId

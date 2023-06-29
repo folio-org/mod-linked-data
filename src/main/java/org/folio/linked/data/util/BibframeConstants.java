@@ -47,6 +47,8 @@ public class BibframeConstants {
   public static final String EXTENT = "lc:RT:bf2:Extent";
   public static final String PERSON = "lc:RT:bf2:Agent:bfPerson";
   public static final String ROLE = "lc:RT:bf2:Agent:bfRole";
+  public static final String PLACE = "lc:RT:bf2:Place";
+  public static final String URL = "http://www.w3.org/2000/01/rdf-schema#Bibframe";
 
   //Type URLs
   public static final String WORK_URL = "http://id.loc.gov/ontologies/bibframe/Work";
@@ -54,16 +56,52 @@ public class BibframeConstants {
   public static final String ITEM_URL = "http://id.loc.gov/ontologies/bibframe/Item";
   public static final String CONTRIBUTION_URL = "http://id.loc.gov/ontologies/bibframe/Contribution";
   public static final String NOTE_URL = "http://id.loc.gov/ontologies/bibframe/Note";
-  public static final String TITLE_URL = "http://id.loc.gov/ontologies/bibframe/Title";
   public static final String PUBLICATION_URL = "http://id.loc.gov/ontologies/bibframe/Publication";
   public static final String EXTENT_URL = "http://id.loc.gov/ontologies/bibframe/Extent";
-  public static final String PERSON_URL = "http://id.loc.gov/ontologies/bibframe/Person";
-  public static final String ROLE_URL = "http://id.loc.gov/ontologies/bibframe/Role";
   public static final String ISSUANCE_URL = "http://id.loc.gov/ontologies/bibframe/Issuance";
   public static final String CARRIER_URL = "http://id.loc.gov/ontologies/bibframe/Carrier";
   public static final String MEDIA_URL = "http://id.loc.gov/ontologies/bibframe/Media";
   public static final String ORGANIZATION_URL = "http://id.loc.gov/ontologies/bibframe/Organization";
+  public static final String PART_NAME_URL = "http://id.loc.gov/ontologies/bibframe/partName";
+  public static final String PART_NUMBER_URL = "http://id.loc.gov/ontologies/bibframe/partNumber";
+  public static final String MAIN_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/mainTitle";
+  public static final String DATE_URL = "http://id.loc.gov/ontologies/bibframe/date";
+  public static final String SUBTITLE_URL = "http://id.loc.gov/ontologies/bibframe/subtitle";
+  public static final String NON_SORT_NUM_URL = "http://id.loc.gov/ontologies/bflc/nonSortNum";
+  public static final String VARIANT_TYPE_URL = "http://id.loc.gov/ontologies/bibframe/variantType";
+  public static final String VALUE_URL = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
+  public static final String QUALIFIER_URL = "http://id.loc.gov/ontologies/bibframe/qualifier";
+  public static final String INSTANCE_PRED = INSTANCE_URL;
+  public static final String INSTANCE_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/Title";
+  public static final String PARALLEL_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/ParallelTitle";
+  public static final String VARIANT_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/VariantTitle";
+  public static final String IDENTIFIERS_LCCN_URL = "http://id.loc.gov/ontologies/bibframe/Lccn";
+  public static final String IDENTIFIERS_EAN_URL = "http://id.loc.gov/ontologies/bibframe/Ean";
+  public static final String IDENTIFIERS_ISBN_URL = "http://id.loc.gov/ontologies/bibframe/Isbn";
+  public static final String IDENTIFIERS_OTHER_URL = "http://id.loc.gov/ontologies/bibframe/Identifier";
+  public static final String IDENTIFIERS_LOCAL_URL = "http://id.loc.gov/ontologies/bibframe/Local";
+  public static final String PLACE_URL = "http://id.loc.gov/ontologies/bibframe/Place";
+  public static final String DISTRIBUTION_URL = "http://id.loc.gov/ontologies/bibframe/Distribution";
+  public static final String MANUFACTURE_URL = "http://id.loc.gov/ontologies/bibframe/Manufacture";
+  public static final String PRODUCTION_URL = "http://id.loc.gov/ontologies/bibframe/Production";
 
+  //Property type URLs
+  public static final String PERSON_URL = "http://id.loc.gov/ontologies/bibframe/Person";
+  public static final String ROLE_URL = "http://id.loc.gov/ontologies/bibframe/Role";
+  public static final String STATUS_URL = "http://id.loc.gov/ontologies/bibframe/Status";
+  public static final String SUPP_CONTENT_URL = "http://id.loc.gov/ontologies/bibframe/SupplementaryContent";
+  public static final String IMM_ACQUISITION_URI = "http://id.loc.gov/ontologies/bibframe/ImmediateAcquisition";
+  public static final String APPLICABLE_INSTITUTION_URL = "http://id.loc.gov/ontologies/bibframe/ApplicableInstitution";
+  public static final String APPLIES_TO_URL = "http://id.loc.gov/ontologies/bflc/AppliesTo";
+
+  //Literal URLs
+  public static final String RESPONSIBILITY_STATEMENT_URL =
+    "http://id.loc.gov/ontologies/bibframe/responsibilityStatement";
+  public static final String EDITION_STATEMENT_URL = "http://id.loc.gov/ontologies/bibframe/editionStatement";
+  public static final String COPYRIGHT_DATE_URL = "http://id.loc.gov/ontologies/bibframe/copyrightDate";
+  public static final String DIMENSIONS_URL = "http://id.loc.gov/ontologies/bibframe/dimensions";
+  public static final String PROJECT_PROVISION_DATE_URL =
+    "http://id.loc.gov/ontologies/bibframe/bflc/projectProvisionDate";
 
   //Predicates
   public static final String CLASSIFICATION_PRED = "http://id.loc.gov/ontologies/bibframe/classification";
@@ -83,17 +121,16 @@ public class BibframeConstants {
   public static final String RELATIONSHIP_PRED = "http://id.loc.gov/ontologies/bflc/relationship";
   public static final String SUBJECT_PRED = "http://id.loc.gov/ontologies/bibframe/subject";
   public static final String SUMMARY_PRED = "http://id.loc.gov/ontologies/bibframe/summary";
-  public static final String SUPPLEMENTARY_CONTENT_PRED = "http://id.loc.gov/ontologies/bibframe/supplementaryContent";
-  public static final String TITLE_PRED = "http://id.loc.gov/ontologies/bibframe/title";
+  public static final String SUPP_CONTENT_PRED = "http://id.loc.gov/ontologies/bibframe/supplementaryContent";
+  public static final String INSTANCE_TITLE_PRED = "http://id.loc.gov/ontologies/bibframe/title";
   public static final String OTHER_EDITION_PRED = "http://id.loc.gov/ontologies/bibframe/otherEdition";
   public static final String OTHER_PHYSICAL_FORMAT_PRED = "http://id.loc.gov/ontologies/bibframe/otherPhysicalFormat";
   public static final String PROVISION_ACTIVITY_PRED = "http://id.loc.gov/ontologies/bibframe/provisionActivity";
   public static final String IDENTIFIED_BY_PRED = "http://id.loc.gov/ontologies/bibframe/identifiedBy";
-  public static final String IMMEDIATE_ACQUISITION_PRED = "http://id.loc.gov/ontologies/bibframe/immediateAcquisition";
+  public static final String IMM_ACQUISITION_PRED = "http://id.loc.gov/ontologies/bibframe/immediateAcquisition";
   public static final String EXTENT_PRED = "http://id.loc.gov/ontologies/bibframe/extent";
   public static final String ELECTRONIC_LOCATOR_PRED = "http://id.loc.gov/ontologies/bibframe/electronicLocator";
   public static final String DATE_PRED = "http://id.loc.gov/ontologies/bibframe/date";
-  public static final String DIMENSIONS_PRED = "http://id.loc.gov/ontologies/bibframe/dimensions";
   public static final String ISSUANCE_PRED = "http://id.loc.gov/ontologies/bibframe/issuance";
   public static final String MEDIA_PRED = "http://id.loc.gov/ontologies/bibframe/media";
   public static final String CARRIER_PRED = "http://id.loc.gov/ontologies/bibframe/carrier";
@@ -110,6 +147,7 @@ public class BibframeConstants {
   public static final String STATUS_PRED = "http://id.loc.gov/ontologies/bibframe/status";
   public static final String ASSIGNER_PRED = "http://id.loc.gov/ontologies/bibframe/assigner";
   public static final String SOURCE_PRED = "http://id.loc.gov/ontologies/bibframe/source";
+  public static final String COMPONENT_LIST_PRED = "http://www.loc.gov/mads/rdf/v1#componentList";
   public static final String PART_PRED = "http://id.loc.gov/ontologies/bibframe/part";
   public static final String RELATION_PRED = "http://id.loc.gov/ontologies/bflc/relation";
   public static final String RELATED_TO_PRED = "http://id.loc.gov/ontologies/bibframe/relatedTo";
@@ -119,8 +157,6 @@ public class BibframeConstants {
   public static final String SIMPLE_PLACE_PRED = "http://id.loc.gov/ontologies/bflc/simplePlace";
   public static final String SIMPLE_AGENT_PRED = "http://id.loc.gov/ontologies/bflc/simpleAgent";
   public static final String SIMPLE_DATE_PRED = "http://id.loc.gov/ontologies/bflc/simpleDate";
-  public static final String VALUE_PRED = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
   public static final String LABEL_PRED = "http://www.w3.org/2000/01/rdf-schema#label";
-  public static final String INSTANCE_PRED = "http://id.loc.gov/ontologies/bibframe/Instance";
 
 }

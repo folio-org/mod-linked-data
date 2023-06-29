@@ -1,6 +1,6 @@
 package org.folio.linked.data.matcher;
 
-import static org.folio.linked.data.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.NullNode;

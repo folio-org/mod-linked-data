@@ -1,6 +1,10 @@
 package org.folio.linked.data.service;
 
 import static java.util.Objects.isNull;
+import static org.folio.linked.data.util.Constants.BIBFRAME_PROFILE;
+import static org.folio.linked.data.util.Constants.BIBFRAME_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
+import static org.folio.linked.data.util.Constants.IS_NOT_IN_THE_LIST_OF_SUPPORTED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
@@ -10,7 +14,6 @@ import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.BibframeMapper;
-import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,10 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-  private static final String BIBFRAME_WITH_GIVEN_ID = "Bibframe record with given id [";
-  private static final String IS_NOT_FOUND = "] is not found";
-  private static final String BIBFRAME_PROFILE = "Bibframe profile [";
-  private static final String IS_NOT_IN_THE_LIST_OF_SUPPORTED = "] is not in the list of supported: ";
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "resourceHash");
@@ -39,7 +38,8 @@ public class ResourceServiceImpl implements ResourceService {
       throw new NotSupportedException(BIBFRAME_PROFILE + bibframeCreateRequest.getProfile()
         + IS_NOT_IN_THE_LIST_OF_SUPPORTED + String.join(", ", bibframeProperties.getProfiles()));
     }
-    Resource persisted = resourceRepo.save(bibframeMapper.map(bibframeCreateRequest));
+    var mapped = bibframeMapper.map(bibframeCreateRequest);
+    var persisted = resourceRepo.save(mapped);
     return bibframeMapper.map(persisted);
   }
 

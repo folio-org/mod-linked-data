@@ -6,11 +6,13 @@ import java.io.Serializable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Embeddable
 @NoArgsConstructor
 @Getter
 @Setter
+@Accessors(chain = true)
 public class ResourceEdgePk implements Serializable {
 
   @Column(name = "source_hash")
