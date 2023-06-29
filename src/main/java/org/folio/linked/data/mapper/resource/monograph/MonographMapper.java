@@ -4,14 +4,13 @@ import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.ITEM;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.WORK;
-import static org.folio.linked.data.util.MappingUtil.hash;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeCreateRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.mapper.resource.common.BibframeProfiledMapperUnit;
+import org.folio.linked.data.mapper.resource.common.CommonMapper;
 import org.folio.linked.data.mapper.resource.common.ResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -27,7 +26,7 @@ public class MonographMapper implements BibframeProfiledMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final InnerResourceMapper innerResourceMapper;
-  private final ObjectMapper mapper;
+  private final CommonMapper commonMapper;
 
   @Override
   public Resource toResource(BibframeCreateRequest bibframeCreateRequest) {
@@ -37,7 +36,7 @@ public class MonographMapper implements BibframeProfiledMapperUnit {
     addResources(bibframeCreateRequest.getWork(), WORK, bibframe);
     addResources(bibframeCreateRequest.getInstance(), INSTANCE, bibframe);
     addResources(bibframeCreateRequest.getItem(), ITEM, bibframe);
-    bibframe.setResourceHash(hash(bibframe, mapper));
+    bibframe.setResourceHash(commonMapper.hash(bibframe));
     return bibframe;
   }
 

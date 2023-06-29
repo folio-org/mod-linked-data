@@ -1,12 +1,11 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
 import static org.folio.linked.data.util.BibframeConstants.WORK;
-import static org.folio.linked.data.util.MappingUtil.addMappedResources;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.mapper.resource.common.CommonMapper;
 import org.folio.linked.data.mapper.resource.common.ResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
@@ -20,11 +19,11 @@ import org.springframework.stereotype.Component;
 public class MonographWorkMapper implements InnerResourceMapperUnit {
 
   private final SubResourceMapper subResourceMapper;
-  private final ObjectMapper mapper;
+  private final CommonMapper commonMapper;
 
   @Override
   public BibframeResponse toDto(Resource resource, BibframeResponse destination) {
-    addMappedResources(mapper, subResourceMapper, resource, destination::addWorkItem, Work.class);
+    commonMapper.addMappedResources(subResourceMapper, resource, destination::addWorkItem, Work.class);
     return destination;
   }
 

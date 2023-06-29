@@ -9,10 +9,7 @@ import static org.folio.linked.data.util.BibframeConstants.SUBJECT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBJECT_WORK;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
-import static org.folio.linked.data.util.MappingUtil.addMappedProperties;
-import static org.folio.linked.data.util.MappingUtil.readResourceDoc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.PlaceField;
@@ -21,6 +18,7 @@ import org.folio.linked.data.domain.dto.TopicField;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkSubjectInner;
 import org.folio.linked.data.exception.NotSupportedException;
+import org.folio.linked.data.mapper.resource.common.CommonMapper;
 import org.folio.linked.data.mapper.resource.common.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
@@ -30,13 +28,13 @@ import org.springframework.stereotype.Component;
 @ResourceMapper(predicate = SUBJECT_PRED)
 public class SubjectMapper implements WorkSubResourceMapper {
 
-  private final ObjectMapper mapper;
+  private final CommonMapper commonMapper;
 
   @Override
   public Work toDto(Resource source, Work destination) {
-    var subject = readResourceDoc(mapper, source, Subject.class);
-    addMappedProperties(mapper, source, SOURCE_PRED, subject::addSourceItem);
-    addMappedProperties(mapper, source, COMPONENT_LIST_PRED, subject::addComponentListItem);
+    var subject = commonMapper.readResourceDoc(source, Subject.class);
+    commonMapper.addMappedProperties(source, SOURCE_PRED, subject::addSourceItem);
+    commonMapper.addMappedProperties(source, COMPONENT_LIST_PRED, subject::addComponentListItem);
     destination.addSubjectItem(toWorkSubjectInner(source, subject));
     return destination;
   }

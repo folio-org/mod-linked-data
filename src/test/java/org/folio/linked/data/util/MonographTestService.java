@@ -1,7 +1,6 @@
-package org.folio.linked.data.test;
+package org.folio.linked.data.util;
 
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION;
@@ -12,7 +11,6 @@ import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
@@ -27,8 +25,6 @@ import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
@@ -44,10 +40,7 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
-import static org.folio.linked.data.util.MappingUtil.hash;
-import static org.folio.linked.data.util.MappingUtil.toJson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +48,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.exception.NotSupportedException;
+import org.folio.linked.data.mapper.resource.common.CommonMapper;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -70,7 +64,7 @@ public class MonographTestService {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final DictionaryService<Predicate> predicateService;
-  private final ObjectMapper objectMapper;
+  private final CommonMapper commonMapper;
 
   public ResourceType getMonographProfile() {
     return resourceTypeService.get(MONOGRAPH);
@@ -138,18 +132,6 @@ public class MonographTestService {
       Collections.emptyMap()
     );
 
-    var organization = createSimpleResource(
-      "United States, Library of Congress",
-      ORGANIZATION,
-      ORGANIZATION_URL
-    );
-
-    var local = createResource(
-      Map.of(VALUE_URL, Set.of("10128190")),
-      IDENTIFIERS_LOCAL,
-      Map.of(ASSIGNER_PRED, Set.of(organization))
-    );
-
     var note = createSimpleResource(
       "",
       NOTE,
@@ -187,7 +169,7 @@ public class MonographTestService {
         INSTANCE_TITLE_PRED, Set.of(title),
         PROVISION_ACTIVITY_PRED, Set.of(provisionActivity),
         CONTRIBUTION_PRED, Set.of(contrib),
-        IDENTIFIED_BY_PRED, Set.of(lccn, local),
+        IDENTIFIED_BY_PRED, Set.of(lccn),
         NOTE_PRED, Set.of(note),
         EXTENT_PRED, Set.of(extent),
         ISSUANCE_PRED, Set.of(issuance),
@@ -208,8 +190,8 @@ public class MonographTestService {
         .map(target -> new ResourceEdge(resource, target, pred)))
       .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
-    resource.setDoc(toJson(properties, objectMapper));
-    resource.setResourceHash(hash(resource, objectMapper));
+    resource.setDoc(commonMapper.toJson(properties));
+    resource.setResourceHash(commonMapper.hash(resource));
     resource.setType(resourceTypeService.get(typeLabel));
     return resource;
   }
@@ -224,9 +206,9 @@ public class MonographTestService {
     } else {
       resource.setType(resourceTypeService.get(typeUri));
     }
-    var doc = toJson(map, objectMapper);
+    var doc = commonMapper.toJson(map);
     resource.setDoc(doc);
-    resource.setResourceHash(hash(resource, objectMapper));
+    resource.setResourceHash(commonMapper.hash(resource));
     resource.setLabel(label);
 
     return resource;

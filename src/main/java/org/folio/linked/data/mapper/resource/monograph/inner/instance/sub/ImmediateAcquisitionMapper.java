@@ -5,22 +5,16 @@ import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTIO
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_URI;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.MappingUtil.addMappedProperties;
-import static org.folio.linked.data.util.MappingUtil.hash;
-import static org.folio.linked.data.util.MappingUtil.mapPropertyEdges;
-import static org.folio.linked.data.util.MappingUtil.readResourceDoc;
-import static org.folio.linked.data.util.MappingUtil.toJson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ImmediateAcquisition;
 import org.folio.linked.data.domain.dto.ImmediateAcquisitionField;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.mapper.resource.common.CommonMapper;
 import org.folio.linked.data.mapper.resource.common.ResourceMapper;
-import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
@@ -32,13 +26,12 @@ import org.springframework.stereotype.Component;
 public class ImmediateAcquisitionMapper implements InstanceSubResourceMapper {
 
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final DictionaryService<Predicate> predicateService;
-  private final ObjectMapper mapper;
+  private final CommonMapper commonMapper;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
-    var item = readResourceDoc(mapper, source, ImmediateAcquisition.class);
-    addMappedProperties(mapper, source, APPLICABLE_INSTITUTION_PRED, item::addApplicableInstitutionItem);
+    var item = commonMapper.readResourceDoc(source, ImmediateAcquisition.class);
+    commonMapper.addMappedProperties(source, APPLICABLE_INSTITUTION_PRED, item::addApplicableInstitutionItem);
     destination.addImmediateAcquisitionItem(new ImmediateAcquisitionField().immediateAcquisition(item));
     return destination;
   }
@@ -49,17 +42,16 @@ public class ImmediateAcquisitionMapper implements InstanceSubResourceMapper {
     var resource = new Resource();
     resource.setLabel(IMM_ACQUISITION_URI);
     resource.setType(resourceTypeService.get(IMM_ACQUISITION_URI));
-    resource.setDoc(toJson(getDoc(immediateAcquisition), mapper));
-    mapPropertyEdges(immediateAcquisition.getApplicableInstitution(), resource,
-      () -> predicateService.get(APPLICABLE_INSTITUTION_PRED),
-      () -> resourceTypeService.get(APPLICABLE_INSTITUTION_URL), mapper);
-    resource.setResourceHash(hash(resource, mapper));
+    resource.setDoc(getDoc(immediateAcquisition));
+    commonMapper.mapPropertyEdges(immediateAcquisition.getApplicableInstitution(), resource,
+      APPLICABLE_INSTITUTION_PRED, APPLICABLE_INSTITUTION_URL);
+    resource.setResourceHash(commonMapper.hash(resource));
     return resource;
   }
 
-  private Map<String, List<String>> getDoc(ImmediateAcquisition dto) {
+  private JsonNode getDoc(ImmediateAcquisition dto) {
     var map = new HashMap<String, List<String>>();
     map.put(PROPERTY_LABEL, dto.getLabel());
-    return map;
+    return commonMapper.toJson(map);
   }
 }

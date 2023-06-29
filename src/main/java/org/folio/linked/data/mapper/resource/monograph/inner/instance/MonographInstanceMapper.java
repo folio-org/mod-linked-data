@@ -20,19 +20,14 @@ import static org.folio.linked.data.util.BibframeConstants.PROJECT_PROVISION_DAT
 import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
-import static org.folio.linked.data.util.MappingUtil.addMappedResources;
-import static org.folio.linked.data.util.MappingUtil.hash;
-import static org.folio.linked.data.util.MappingUtil.mapResourceEdges;
-import static org.folio.linked.data.util.MappingUtil.toJson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.mapper.resource.common.CommonMapper;
 import org.folio.linked.data.mapper.resource.common.ResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
@@ -50,12 +45,12 @@ public class MonographInstanceMapper implements InnerResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final DictionaryService<Predicate> predicateService;
-  private final ObjectMapper objectMapper;
+  private final CommonMapper commonMapper;
   private final SubResourceMapper mapper;
 
   @Override
   public BibframeResponse toDto(Resource resource, BibframeResponse destination) {
-    addMappedResources(objectMapper, mapper, resource, destination::addInstanceItem, Instance.class);
+    commonMapper.addMappedResources(mapper, resource, destination::addInstanceItem, Instance.class);
     return destination;
   }
 
@@ -72,35 +67,31 @@ public class MonographInstanceMapper implements InnerResourceMapperUnit {
     var resource = new Resource();
     resource.setLabel(INSTANCE_URL);
     resource.setType(resourceTypeService.get(INSTANCE));
-    resource.setDoc(toJson(getDoc(dto), objectMapper));
-    mapResourceEdges(dto.getTitle(), resource, getPredicate(INSTANCE_TITLE_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getProvisionActivity(), resource, getPredicate(PROVISION_ACTIVITY_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getContribution(), resource, getPredicate(CONTRIBUTION_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getIdentifiedBy(), resource, getPredicate(IDENTIFIED_BY_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getNote(), resource, getPredicate(NOTE_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getSupplementaryContent(), resource, getPredicate(SUPP_CONTENT_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getImmediateAcquisition(), resource, getPredicate(IMM_ACQUISITION_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getExtent(), resource, getPredicate(EXTENT_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getElectronicLocator(), resource, getPredicate(ELECTRONIC_LOCATOR_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getIssuance(), resource, getPredicate(ISSUANCE_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getMedia(), resource, getPredicate(MEDIA_PRED), mapper::toEntity);
-    mapResourceEdges(dto.getCarrier(), resource, getPredicate(CARRIER_PRED), mapper::toEntity);
-    resource.setResourceHash(hash(resource, objectMapper));
+    resource.setDoc(getDoc(dto));
+    commonMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getProvisionActivity(), resource, PROVISION_ACTIVITY_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getContribution(), resource, CONTRIBUTION_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, IDENTIFIED_BY_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getNote(), resource, NOTE_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getSupplementaryContent(), resource, SUPP_CONTENT_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getImmediateAcquisition(), resource, IMM_ACQUISITION_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getExtent(), resource, EXTENT_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getElectronicLocator(), resource, ELECTRONIC_LOCATOR_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getIssuance(), resource, ISSUANCE_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, mapper::toEntity);
+    commonMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, mapper::toEntity);
+    resource.setResourceHash(commonMapper.hash(resource));
     return resource;
   }
 
-  private Supplier<Predicate> getPredicate(String predicate) {
-    return () -> predicateService.get(predicate);
-  }
-
-  private Map<String, List<String>> getDoc(Instance dto) {
+  private JsonNode getDoc(Instance dto) {
     var map = new HashMap<String, List<String>>();
     map.put(DIMENSIONS_URL, dto.getDimensions());
     map.put(RESPONSIBILITY_STATEMENT_URL, dto.getResponsiblityStatement());
     map.put(EDITION_STATEMENT_URL, dto.getEditionStatement());
     map.put(COPYRIGHT_DATE_URL, dto.getCopyrightDate());
     map.put(PROJECT_PROVISION_DATE_URL, dto.getProjectProvisionDate());
-    return map;
+    return commonMapper.toJson(map);
   }
 
 }
