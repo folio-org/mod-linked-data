@@ -93,13 +93,13 @@ public class MonographInstanceMapperBase extends BaseResourceMapper<Instance> {
     var map = new HashMap<String, BiConsumer<Resource, Instance>>();
     map.put(TITLE_PRED, (target, dto) -> dto.addTitleItem(toInstanceTitle(target)));
     map.put(PROVISION_ACTIVITY_PRED, (target, dto) ->
-        dto.addProvisionActivityItem(toInstanceProvisionActivity(target)));
+      dto.addProvisionActivityItem(toInstanceProvisionActivity(target)));
     map.put(CONTRIBUTION_PRED, (target, dto) -> dto.addContributionItem(toInstanceContribution(target)));
     map.put(IDENTIFIED_BY_PRED, (target, dto) -> dto.addIdentifiedByItem(toInstanceIdentifiedBy(target)));
     map.put(NOTE, (target, dto) -> dto.addNoteItem(toProperty(target)));
     map.put(SUPPLEMENTARY_CONTENT_PRED, (target, dto) -> dto.addSupplementaryContentItem(toProperty(target)));
     map.put(IMMEDIATE_ACQUISITION_PRED, (target, dto) ->
-        dto.addImmediateAcquisitionItem(toImmediateAcquisition(target)));
+      dto.addImmediateAcquisitionItem(toImmediateAcquisition(target)));
     map.put(EXTENT_PRED, (target, dto) -> dto.addExtentItem(toExtent(target)));
     map.put(ELECTRONIC_LOCATOR_PRED, (target, dto) -> dto.addElectronicLocatorItem(toElectronicLocator(target)));
     map.put(ISSUANCE_PRED, (target, dto) -> dto.addIssuanceItem(toProperty(target)));
@@ -110,27 +110,27 @@ public class MonographInstanceMapperBase extends BaseResourceMapper<Instance> {
 
   private ExtentField toExtent(Resource extent) {
     return new ExtentField().extent(toDto(extent, Extent.class, Map.of(
-        NOTE_PRED, (target, dto) -> dto.addNoteItem(toProperty(target)),
-        APPLIES_TO, (target, dto) -> dto.addAppliesToItem(toProperty(target))
+      NOTE_PRED, (target, dto) -> dto.addNoteItem(toProperty(target)),
+      APPLIES_TO, (target, dto) -> dto.addAppliesToItem(toProperty(target))
     )));
   }
 
   private ImmediateAcquisitionField toImmediateAcquisition(Resource immediateAcquisition) {
     return new ImmediateAcquisitionField().immediateAcquisition(toDto(
-        immediateAcquisition, ImmediateAcquisition.class, Map.of(
-            APPLICABLE_INSTITUTION_PRED, (target, dto) -> dto.addApplicableInstitutionItem(toProperty(target)))));
+      immediateAcquisition, ImmediateAcquisition.class, Map.of(
+        APPLICABLE_INSTITUTION_PRED, (target, dto) -> dto.addApplicableInstitutionItem(toProperty(target)))));
   }
 
   private InstanceIdentifiedByInner toInstanceIdentifiedBy(Resource identifiedBy) {
     switch (identifiedBy.getType().getSimpleLabel()) {
       case IDENTIFIERS_LCCN -> {
         return new LccnField().lccn(toDto(identifiedBy, Lccn.class, Map.of(
-            STATUS_PRED, (target, dto) -> dto.addStatusItem(toProperty(target))
+          STATUS_PRED, (target, dto) -> dto.addStatusItem(toProperty(target))
         )));
       }
       case IDENTIFIERS_ISBN -> {
         return new IsbnField().isbn(toDto(identifiedBy, Isbn.class, Map.of(
-            STATUS_PRED, (target, dto) -> dto.addStatusItem(toProperty(target))
+          STATUS_PRED, (target, dto) -> dto.addStatusItem(toProperty(target))
         )));
       }
       case IDENTIFIERS_EAN -> {
@@ -138,15 +138,15 @@ public class MonographInstanceMapperBase extends BaseResourceMapper<Instance> {
       }
       case IDENTIFIERS_LOCAL -> {
         return new LocalIdentifierField().local(toDto(identifiedBy, IdentifierLocal.class, Map.of(
-            ASSIGNER_PRED, (target, dto) -> dto.addAssignerItem(toProperty(target))
+          ASSIGNER_PRED, (target, dto) -> dto.addAssignerItem(toProperty(target))
         )));
       }
       case IDENTIFIERS_OTHER -> {
         return new OtherIdentifierField().identifier(toDto(identifiedBy, IdentifierOther.class,
-            Collections.emptyMap()));
+          Collections.emptyMap()));
       }
       default -> throw new NotSupportedException(RESOURCE_TYPE + identifiedBy.getType().getSimpleLabel()
-          + IS_NOT_SUPPORTED_HERE);
+        + IS_NOT_SUPPORTED_HERE);
     }
   }
 
@@ -154,33 +154,33 @@ public class MonographInstanceMapperBase extends BaseResourceMapper<Instance> {
     switch (provActivity.getType().getSimpleLabel()) {
       case PUBLICATION -> {
         return new PublicationField().publication(toDto(provActivity, ProvisionActivity.class, Map.of(
-            PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
+          PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
         )));
       }
       case DISTRIBUTION -> {
         return new DistributionField().distribution(toDto(provActivity, ProvisionActivity.class, Map.of(
-            PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
+          PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
         )));
       }
       case MANUFACTURE -> {
         return new ManufactureField().manufacture(toDto(provActivity, ProvisionActivity.class, Map.of(
-            PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
+          PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
         )));
       }
       case PRODUCTION -> {
         return new ProductionField().production(toDto(provActivity, ProvisionActivity.class, Map.of(
-            PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
+          PLACE_PRED, (target, dto) -> dto.addPlaceItem(toProperty(target))
         )));
       }
       default -> throw new NotSupportedException(RESOURCE_TYPE + provActivity.getType().getSimpleLabel()
-          + IS_NOT_SUPPORTED_HERE);
+        + IS_NOT_SUPPORTED_HERE);
     }
   }
 
   private ContributionField toInstanceContribution(Resource contrib) {
     return new ContributionField().contribution(toDto(contrib, Contribution.class, Map.of(
-        AGENT_PRED, (target, dto) -> dto.addAgentItem(toProperty(target)),
-        ROLE_PRED, (target, dto) -> dto.addRoleItem(toProperty(target)))));
+      AGENT_PRED, (target, dto) -> dto.addAgentItem(toContributionPerson(target)),
+      ROLE_PRED, (target, dto) -> dto.addRoleItem(toProperty(target)))));
   }
 
   private InstanceTitleInner toInstanceTitle(Resource title) {
@@ -193,11 +193,11 @@ public class MonographInstanceMapperBase extends BaseResourceMapper<Instance> {
       }
       case PARALLEL_TITLE -> {
         return new ParallelTitleField().parallelTitle(toDto(title, ParallelTitle.class, Map.of(
-            NOTE_PRED, (target, dto) -> dto.addNoteItem(toProperty(target))
+          NOTE_PRED, (target, dto) -> dto.addNoteItem(toProperty(target))
         )));
       }
       default -> throw new NotSupportedException(RESOURCE_TYPE + title.getType().getSimpleLabel()
-          + IS_NOT_SUPPORTED_HERE);
+        + IS_NOT_SUPPORTED_HERE);
     }
   }
 

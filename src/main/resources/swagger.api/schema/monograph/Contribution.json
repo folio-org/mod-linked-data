@@ -6,7 +6,15 @@
     "agent": {
       "type": "array",
       "items": {
-        "$ref": "../property.json"
+        "type": "object",
+        "title": "PersonField",
+        "properties": {
+          "Person": {
+            "type": "object",
+            "$ref": "Person.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Person"
+          }
+        }
       },
       "x-json-property": "http://id.loc.gov/ontologies/bibframe/agent"
     },

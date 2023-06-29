@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Lookup fields",
+  "type": "object",
+  "properties": {
+    "uri": {
+      "description": "Lookup uri",
+      "type": "string"
+    },
+    "label": {
+      "description": "Lookup value",
+      "type": "string"
+    }
+  }
+}
