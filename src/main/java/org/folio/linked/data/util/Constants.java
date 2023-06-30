@@ -5,7 +5,6 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class Constants {
 
-  public static final String CONDITION_TO_CACHE = "#result != null";
   public static final String RESOURCE_TYPE = "Resource type [";
   public static final String RIGHT_SQUARE_BRACKET = "]";
   public static final String IS_NOT_SUPPORTED = "] is not supported";
