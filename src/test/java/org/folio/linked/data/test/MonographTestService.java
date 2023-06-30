@@ -1,4 +1,4 @@
-package org.folio.linked.data.util;
+package org.folio.linked.data.test;
 
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;

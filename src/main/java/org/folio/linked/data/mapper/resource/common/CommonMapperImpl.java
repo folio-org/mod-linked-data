@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.common;
 
 import static java.util.Objects.nonNull;
+import static java.util.stream.StreamSupport.stream;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_COMPONENTS;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
@@ -23,9 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Lookup;
 import org.folio.linked.data.domain.dto.Person;
@@ -67,7 +68,7 @@ public class CommonMapperImpl implements CommonMapper {
 
   @Override
   public <T> void addMappedResources(SubResourceMapper subResourceMapper, Resource resource,
-    Consumer<T> consumer, Class<T> destination) {
+                                     Consumer<T> consumer, Class<T> destination) {
     T item = readResourceDoc(resource, destination);
     resource.getOutgoingEdges().forEach(re -> subResourceMapper.toDto(re, item));
     consumer.accept(item);
@@ -91,7 +92,7 @@ public class CommonMapperImpl implements CommonMapper {
   public void addMappedPersonLookups(Resource source, String predicate, Consumer<PersonField> personConsumer) {
     var person = new Person();
     addMappedLookups(source, predicate, person::addSameAsItem);
-    if (!person.getSameAs().isEmpty()) {
+    if (nonNull(person.getSameAs())) {
       personConsumer.accept(new PersonField().person(person));
     }
   }
@@ -123,7 +124,7 @@ public class CommonMapperImpl implements CommonMapper {
 
   @Override
   public <T> void mapResourceEdges(List<T> targets, Resource source, String predicate,
-    BiFunction<T, String, Resource> mappingFunction) {
+                                   BiFunction<T, String, Resource> mappingFunction) {
     if (nonNull(targets)) {
       targets.forEach(target -> {
         var edge = new ResourceEdge()
@@ -212,15 +213,18 @@ public class CommonMapperImpl implements CommonMapper {
 
   private void addMappedLookups(Resource source, String predicate, Consumer<Lookup> consumer) {
     source.getOutgoingEdges().stream()
-      .filter(re -> predicate.equals(re.getPredicate().getLabel()))
+      .filter(resourceEdge -> predicate.equals(resourceEdge.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
-      .forEach(r -> {
-        var jsonNodes = readDoc(r.getDoc().get(SAME_AS_PRED), ArrayNode.class);
-        Iterable<JsonNode> iterable = jsonNodes::elements;
-        StreamSupport.stream(iterable.spliterator(), false)
-          .map(n -> readDoc(n, Lookup.class))
-          .forEach(consumer);
-      });
+      .map(Resource::getDoc)
+      .filter(Objects::nonNull)
+      .map(docNode -> docNode.get(SAME_AS_PRED))
+      .filter(Objects::nonNull)
+      .map(sameAsNode -> readDoc(sameAsNode, ArrayNode.class))
+      .map(ArrayNode::elements)
+      .map(elementIterator -> (Iterable<JsonNode>) () -> elementIterator)
+      .flatMap(iterable -> stream(iterable.spliterator(), false))
+      .map(lookupNode -> readDoc(lookupNode, Lookup.class))
+      .forEach(consumer);
   }
 
   private <T> T readDoc(JsonNode node, Class<T> dtoClass) {

@@ -20,7 +20,7 @@ public interface CommonMapper {
   Url toUrl(Resource resource);
 
   <T> void addMappedResources(SubResourceMapper subResourceMapper, Resource resource,
-    Consumer<T> consumer, Class<T> destination);
+                              Consumer<T> consumer, Class<T> destination);
 
   void addMappedProperties(Resource s, String pred, Consumer<Property> consumer);
 
@@ -33,7 +33,7 @@ public interface CommonMapper {
   JsonNode toJson(Object object);
 
   <T> void mapResourceEdges(List<T> targets, Resource source, String predicate,
-    BiFunction<T, String, Resource> mappingFunction);
+                            BiFunction<T, String, Resource> mappingFunction);
 
   void mapPropertyEdges(List<Property> subProperties, Resource source, String predicate, String type);
 
