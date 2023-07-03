@@ -13,7 +13,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.folio.linked.data.configuration.ObjectMapperConfig;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.spring.integration.XOkapiHeaders;
@@ -84,8 +84,8 @@ public class TestUtil {
     return GENERATOR.nextLong();
   }
 
-  public static BibframeCreateRequest randomResourceCreateRequest() {
-    return GENERATOR.nextObject(BibframeCreateRequest.class);
+  public static BibframeRequest randomResourceCreateRequest() {
+    return GENERATOR.nextObject(BibframeRequest.class);
   }
 
   public static Resource randomResource() {

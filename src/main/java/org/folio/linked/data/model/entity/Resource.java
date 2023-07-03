@@ -14,6 +14,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -26,6 +27,7 @@ import org.hibernate.annotations.Type;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode(exclude = "outgoingEdges")
 @ToString(exclude = "outgoingEdges")
 public class Resource {
 

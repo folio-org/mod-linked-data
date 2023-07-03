@@ -16,6 +16,7 @@ public class Constants {
   public static final String AND = " and ";
   public static final String BIBFRAME_WITH_GIVEN_ID = "Bibframe record with given id [";
   public static final String IS_NOT_FOUND = "] is not found";
+  public static final String EXISTS_ALREADY = "] exists already";
   public static final String BIBFRAME_PROFILE = "Bibframe profile [";
   public static final String IS_NOT_IN_THE_LIST_OF_SUPPORTED = "] is not in the list of supported: ";
 }

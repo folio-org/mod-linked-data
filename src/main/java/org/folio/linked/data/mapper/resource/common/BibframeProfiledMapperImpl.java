@@ -6,7 +6,7 @@ import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.model.entity.Resource;
@@ -26,7 +26,7 @@ public class BibframeProfiledMapperImpl implements BibframeProfiledMapper {
   }
 
   @Override
-  public Resource toResource(BibframeCreateRequest dto) {
+  public Resource toResource(BibframeRequest dto) {
     return getMapper(dto.getProfile()).toResource(dto);
   }
 
