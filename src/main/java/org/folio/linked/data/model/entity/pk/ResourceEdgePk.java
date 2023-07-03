@@ -3,15 +3,13 @@ package org.folio.linked.data.model.entity.pk;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Embeddable
 @NoArgsConstructor
-@Getter
-@Setter
+@Data
 @Accessors(chain = true)
 public class ResourceEdgePk implements Serializable {
 

@@ -1,7 +1,7 @@
 package org.folio.linked.data.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.rest.resource.BibframesApi;
@@ -18,14 +18,18 @@ public class BibframeController implements BibframesApi {
   private final ResourceService resourceService;
 
   @Override
-  public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant,
-                                                         BibframeCreateRequest bibframeCreateRequest) {
-    return ResponseEntity.ok(resourceService.createBibframe(bibframeCreateRequest));
+  public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant, BibframeRequest bibframeRequest) {
+    return ResponseEntity.ok(resourceService.createBibframe(bibframeRequest));
   }
 
   @Override
   public ResponseEntity<BibframeResponse> getBibframeById(Long id, String okapiTenant) {
     return ResponseEntity.ok(resourceService.getBibframeById(id));
+  }
+
+  @Override
+  public ResponseEntity<BibframeResponse> updateBibframe(Long id, String okapiTenant, BibframeRequest bibframeRequest) {
+    return ResponseEntity.ok(resourceService.updateBibframe(id, bibframeRequest));
   }
 
   @Override

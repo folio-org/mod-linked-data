@@ -7,7 +7,7 @@ import static org.folio.linked.data.util.BibframeConstants.WORK;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.mapper.resource.common.BibframeProfiledMapperUnit;
 import org.folio.linked.data.mapper.resource.common.CommonMapper;
@@ -29,13 +29,13 @@ public class MonographMapper implements BibframeProfiledMapperUnit {
   private final CommonMapper commonMapper;
 
   @Override
-  public Resource toResource(BibframeCreateRequest bibframeCreateRequest) {
+  public Resource toResource(BibframeRequest bibframeRequest) {
     var bibframe = new Resource();
     bibframe.setLabel(MONOGRAPH);
     bibframe.setType(resourceTypeService.get(MONOGRAPH));
-    addResources(bibframeCreateRequest.getWork(), WORK, bibframe);
-    addResources(bibframeCreateRequest.getInstance(), INSTANCE, bibframe);
-    addResources(bibframeCreateRequest.getItem(), ITEM, bibframe);
+    addResources(bibframeRequest.getWork(), WORK, bibframe);
+    addResources(bibframeRequest.getInstance(), INSTANCE, bibframe);
+    addResources(bibframeRequest.getItem(), ITEM, bibframe);
     bibframe.setResourceHash(commonMapper.hash(bibframe));
     return bibframe;
   }

@@ -3,14 +3,16 @@ package org.folio.linked.data.service;
 import static java.util.Objects.isNull;
 import static org.folio.linked.data.util.Constants.BIBFRAME_PROFILE;
 import static org.folio.linked.data.util.Constants.BIBFRAME_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.Constants.EXISTS_ALREADY;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.IS_NOT_IN_THE_LIST_OF_SUPPORTED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
+import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.BibframeMapper;
@@ -33,12 +35,15 @@ public class ResourceServiceImpl implements ResourceService {
   private final BibframeProperties bibframeProperties;
 
   @Override
-  public BibframeResponse createBibframe(BibframeCreateRequest bibframeCreateRequest) {
-    if (!bibframeProperties.getProfiles().contains(bibframeCreateRequest.getProfile())) {
-      throw new NotSupportedException(BIBFRAME_PROFILE + bibframeCreateRequest.getProfile()
+  public BibframeResponse createBibframe(BibframeRequest bibframeRequest) {
+    if (!bibframeProperties.getProfiles().contains(bibframeRequest.getProfile())) {
+      throw new NotSupportedException(BIBFRAME_PROFILE + bibframeRequest.getProfile()
         + IS_NOT_IN_THE_LIST_OF_SUPPORTED + String.join(", ", bibframeProperties.getProfiles()));
     }
-    var mapped = bibframeMapper.map(bibframeCreateRequest);
+    var mapped = bibframeMapper.map(bibframeRequest);
+    if (resourceRepo.existsById(mapped.getResourceHash())) {
+      throw new AlreadyExistsException(BIBFRAME_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
+    }
     var persisted = resourceRepo.save(mapped);
     return bibframeMapper.map(persisted);
   }
@@ -48,6 +53,20 @@ public class ResourceServiceImpl implements ResourceService {
     var resource = resourceRepo.findById(id).orElseThrow(() ->
       new NotFoundException(BIBFRAME_WITH_GIVEN_ID + id + IS_NOT_FOUND));
     return bibframeMapper.map(resource);
+  }
+
+  @Override
+  public BibframeResponse updateBibframe(Long id, BibframeRequest bibframeRequest) {
+    if (!resourceRepo.existsById(id)) {
+      throw new NotFoundException(BIBFRAME_WITH_GIVEN_ID + id + IS_NOT_FOUND);
+    }
+    deleteBibframe(id);
+    return createBibframe(bibframeRequest);
+  }
+
+  @Override
+  public void deleteBibframe(Long id) {
+    // to be implemented in MODLD-64
   }
 
   @Override

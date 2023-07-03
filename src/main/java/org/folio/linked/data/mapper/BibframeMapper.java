@@ -2,7 +2,7 @@ package org.folio.linked.data.mapper;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import org.folio.linked.data.domain.dto.BibframeCreateRequest;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
@@ -25,7 +25,7 @@ public abstract class BibframeMapper {
 
   public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
 
-  public Resource map(BibframeCreateRequest dto) {
+  public Resource map(BibframeRequest dto) {
     return bibframeProfiledMapper.toResource(dto);
   }
 

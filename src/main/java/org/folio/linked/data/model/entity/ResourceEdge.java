@@ -7,20 +7,18 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 
+@Data
 @Entity
 @Table(name = "resource_edges")
-@RequiredArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@RequiredArgsConstructor
 @Accessors(chain = true)
 public class ResourceEdge {
 

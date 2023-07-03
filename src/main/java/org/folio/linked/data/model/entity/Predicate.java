@@ -4,18 +4,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
+@Data
 @Entity
-@Table(name = "predicate_lookup")
-@RequiredArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@RequiredArgsConstructor
+@Table(name = "predicate_lookup")
 public class Predicate {
 
   @Id
