@@ -20,15 +20,17 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Table(name = "resources")
-@NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "outgoingEdges")
+@NoArgsConstructor
+@Accessors(chain = true)
+@Table(name = "resources")
 @ToString(exclude = "outgoingEdges")
+@EqualsAndHashCode(exclude = "outgoingEdges")
 public class Resource {
 
   @Id

@@ -1,5 +1,6 @@
 package org.folio.linked.data.test;
 
+import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
@@ -190,7 +191,7 @@ public class MonographTestService {
         .map(target -> new ResourceEdge(resource, target, pred)))
       .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
-    resource.setDoc(commonMapper.toJson(properties));
+    resource.setDoc(getJsonNode(properties));
     resource.setResourceHash(commonMapper.hash(resource));
     resource.setType(resourceTypeService.get(typeLabel));
     return resource;
@@ -206,7 +207,7 @@ public class MonographTestService {
     } else {
       resource.setType(resourceTypeService.get(typeUri));
     }
-    var doc = commonMapper.toJson(map);
+    var doc = getJsonNode(map);
     resource.setDoc(doc);
     resource.setResourceHash(commonMapper.hash(resource));
     resource.setLabel(label);

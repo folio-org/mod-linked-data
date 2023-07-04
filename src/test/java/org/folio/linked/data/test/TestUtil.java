@@ -1,19 +1,33 @@
 package org.folio.linked.data.test;
 
+import static java.util.Objects.nonNull;
+import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
+import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
+import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
+import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
+import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.folio.linked.data.configuration.ObjectMapperConfig;
-import org.folio.linked.data.domain.dto.BibframeRequest;
+import org.folio.linked.data.domain.dto.Property;
+import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.spring.integration.XOkapiHeaders;
@@ -84,10 +98,6 @@ public class TestUtil {
     return GENERATOR.nextLong();
   }
 
-  public static BibframeRequest randomResourceCreateRequest() {
-    return GENERATOR.nextObject(BibframeRequest.class);
-  }
-
   public static Resource randomResource() {
     var resource = new Resource();
     resource.setDoc(getResourceJsonNodeSample());
@@ -101,4 +111,46 @@ public class TestUtil {
     return bibframe;
   }
 
+  public static JsonNode getSameAsJsonNode(ObjectNode... personNodes) {
+    var arrayNode = OBJECT_MAPPER.createArrayNode();
+    Arrays.stream(personNodes).forEach(arrayNode::add);
+    var node = OBJECT_MAPPER.createObjectNode();
+    node.set(SAME_AS_PRED, arrayNode);
+    return node;
+  }
+
+  public static ObjectNode getPropertyNode(String id, String label, String uri) {
+    var node = OBJECT_MAPPER.createObjectNode();
+    if (nonNull(id)) {
+      node.put(PROPERTY_ID, id);
+    }
+    if (nonNull(label)) {
+      node.put(PROPERTY_LABEL, label);
+    }
+    if (nonNull(uri)) {
+      node.put(PROPERTY_URI, uri);
+    }
+    return node;
+  }
+
+  public static JsonNode getJsonNode(Map<String, ?> map) {
+    return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+  }
+
+  public static JsonNode propertyToDoc(Property property) {
+    var map = new HashMap<String, String>();
+    map.put(PROPERTY_ID, property.getId());
+    map.put(PROPERTY_LABEL, property.getLabel());
+    map.put(PROPERTY_URI, property.getUri());
+    return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+  }
+
+  public static JsonNode provisionActivityToDoc(ProvisionActivity dto) {
+    var map = new HashMap<String, List<String>>();
+    map.put(DATE_URL, dto.getDate());
+    map.put(SIMPLE_AGENT_PRED, dto.getSimpleAgent());
+    map.put(SIMPLE_DATE_PRED, dto.getSimpleDate());
+    map.put(SIMPLE_PLACE_PRED, dto.getSimplePlace());
+    return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+  }
 }

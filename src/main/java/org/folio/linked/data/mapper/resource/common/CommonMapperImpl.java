@@ -19,14 +19,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
-import com.google.common.hash.Hashing;
-import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Lookup;
 import org.folio.linked.data.domain.dto.Person;
@@ -41,6 +41,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
+import org.folio.linked.data.util.HashUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -52,55 +53,58 @@ public class CommonMapperImpl implements CommonMapper {
   private final ObjectMapper mapper;
 
   @Override
-  public Property toProperty(Resource resource) {
+  public Property toProperty(@NonNull Resource resource) {
     return readResourceDoc(resource, Property.class);
   }
 
   @Override
-  public ProvisionActivity toProvisionActivity(Resource resource) {
+  public ProvisionActivity toProvisionActivity(@NonNull Resource resource) {
     return readResourceDoc(resource, ProvisionActivity.class);
   }
 
   @Override
-  public Url toUrl(Resource resource) {
+  public Url toUrl(@NonNull Resource resource) {
     return readResourceDoc(resource, Url.class);
   }
 
   @Override
-  public <T> void addMappedResources(SubResourceMapper subResourceMapper, Resource resource,
-                                     Consumer<T> consumer, Class<T> destination) {
+  public <T> void addMappedResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
+    @NonNull Consumer<T> consumer, @NonNull Class<T> destination) {
     T item = readResourceDoc(resource, destination);
     resource.getOutgoingEdges().forEach(re -> subResourceMapper.toDto(re, item));
     consumer.accept(item);
   }
 
   @Override
-  public void addMappedProperties(Resource s, String pred, Consumer<Property> consumer) {
-    s.getOutgoingEdges().stream()
-      .filter(re -> pred.equals(re.getPredicate().getLabel()))
+  public void addMappedProperties(@NonNull Resource resource, @NonNull String predicate,
+    @NonNull Consumer<Property> consumer) {
+    resource.getOutgoingEdges().stream()
+      .filter(re -> predicate.equals(re.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
+      .filter(r -> nonNull(r.getDoc()))
       .map(r -> readResourceDoc(r, Property.class))
       .forEach(consumer);
   }
 
   @Override
-  public <T> T readResourceDoc(Resource resource, Class<T> dtoClass) {
+  public <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass) {
     return readDoc(resource.getDoc(), dtoClass);
   }
 
   @Override
-  public void addMappedPersonLookups(Resource source, String predicate, Consumer<PersonField> personConsumer) {
+  public void addMappedPersonLookups(@NonNull Resource resource, @NonNull String predicate,
+    @NonNull Consumer<PersonField> personConsumer) {
     var person = new Person();
-    addMappedLookups(source, predicate, person::addSameAsItem);
+    addMappedLookups(resource, predicate, person::addSameAsItem);
     if (nonNull(person.getSameAs())) {
       personConsumer.accept(new PersonField().person(person));
     }
   }
 
   @Override
-  public long hash(Resource resource) {
-    var serialized = resourceToJson(resource).toString();
-    return Hashing.murmur3_32_fixed().hashString(serialized, StandardCharsets.UTF_8).padToLong();
+  public long hash(@NonNull Resource resource) {
+    var serialized = resourceToJson(resource);
+    return HashUtil.hash(serialized);
   }
 
   @Override
@@ -123,34 +127,37 @@ public class CommonMapperImpl implements CommonMapper {
   }
 
   @Override
-  public <T> void mapResourceEdges(List<T> targets, Resource source, String predicate,
-                                   BiFunction<T, String, Resource> mappingFunction) {
+  public <T> void mapResourceEdges(List<T> targets, @NonNull Resource source, @NonNull String predicateLabel,
+    @NonNull BiFunction<T, String, Resource> mappingFunction) {
     if (nonNull(targets)) {
+      var predicate = predicateService.get(predicateLabel);
       targets.forEach(target -> {
         var edge = new ResourceEdge()
-          .setPredicate(predicateService.get(predicate))
+          .setPredicate(predicate)
           .setSource(source)
-          .setTarget(mappingFunction.apply(target, predicateService.get(predicate).getLabel()));
+          .setTarget(mappingFunction.apply(target, predicate.getLabel()));
         source.getOutgoingEdges().add(edge);
       });
     }
   }
 
   @Override
-  public void mapPropertyEdges(List<Property> subProperties, Resource source, String predicate, String type) {
+  public void mapPropertyEdges(List<Property> subProperties, @NonNull Resource source, @NonNull String predicateLabel,
+    @NonNull String resourceType) {
     if (nonNull(subProperties)) {
+      var predicate = predicateService.get(predicateLabel);
       subProperties.forEach(property -> {
         var edge = new ResourceEdge()
-          .setPredicate(predicateService.get(predicate))
+          .setPredicate(predicate)
           .setSource(source)
-          .setTarget(propertyToEntity(property, type));
+          .setTarget(propertyToEntity(property, resourceType));
         source.getOutgoingEdges().add(edge);
       });
     }
   }
 
   @Override
-  public Resource propertyToEntity(Property property, String resourceType) {
+  public Resource propertyToEntity(@NonNull Property property, @NonNull String resourceType) {
     var resource = new Resource();
     resource.setLabel(property.getLabel());
     resource.setType(resourceTypeService.get(resourceType));
@@ -160,16 +167,14 @@ public class CommonMapperImpl implements CommonMapper {
   }
 
   @Override
-  public Resource provisionActivityToEntity(ProvisionActivity dto, String label, String resourceType) {
-    Resource resource = null;
-    if (nonNull(dto)) {
-      resource = new Resource();
-      resource.setLabel(label);
-      resource.setType(resourceTypeService.get(resourceType));
-      resource.setDoc(provisionActivityToDoc(dto));
-      mapPropertyEdges(dto.getPlace(), resource, PLACE_PRED, PLACE_COMPONENTS);
-      resource.setResourceHash(hash(resource));
-    }
+  public Resource provisionActivityToEntity(@NonNull ProvisionActivity dto, String label,
+                                            @NonNull String resourceType) {
+    Resource resource = new Resource();
+    resource.setLabel(label);
+    resource.setType(resourceTypeService.get(resourceType));
+    resource.setDoc(provisionActivityToDoc(dto));
+    mapPropertyEdges(dto.getPlace(), resource, PLACE_PRED, PLACE_COMPONENTS);
+    resource.setResourceHash(hash(resource));
     return resource;
   }
 
@@ -191,28 +196,24 @@ public class CommonMapperImpl implements CommonMapper {
   }
 
   private JsonNode resourceToJson(Resource res) {
-    if (res.getDoc() != null && !res.getDoc().isEmpty()) {
-      return res.getDoc();
+    ObjectNode node;
+    if (nonNull(res.getDoc()) && !res.getDoc().isEmpty()) {
+      node = res.getDoc().deepCopy();
     } else {
-      var node = mapper.createObjectNode();
-      res.getOutgoingEdges().forEach(edge -> {
-        var predicate = edge.getPredicate().getLabel();
-        if (node.has(predicate)) {
-          if (node.get(predicate) instanceof ArrayNode array) {
-            array.add(resourceToJson(edge.getTarget()));
-          }
-        } else {
-          var array = mapper.createArrayNode();
-          array.add(resourceToJson(edge.getTarget()));
-          node.set(predicate, array);
-        }
-      });
-      return node;
+      node = mapper.createObjectNode();
     }
+    res.getOutgoingEdges().forEach(edge -> {
+      var predicate = edge.getPredicate().getLabel();
+      if (!node.has(predicate)) {
+        node.set(predicate, mapper.createArrayNode());
+      }
+      ((ArrayNode) node.get(predicate)).add(resourceToJson(edge.getTarget()));
+    });
+    return node;
   }
 
-  private void addMappedLookups(Resource source, String predicate, Consumer<Lookup> consumer) {
-    source.getOutgoingEdges().stream()
+  private void addMappedLookups(Resource resource, String predicate, Consumer<Lookup> consumer) {
+    resource.getOutgoingEdges().stream()
       .filter(resourceEdge -> predicate.equals(resourceEdge.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
       .map(Resource::getDoc)

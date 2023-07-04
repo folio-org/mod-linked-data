@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import lombok.NonNull;
 import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
@@ -13,31 +14,33 @@ import org.folio.linked.data.model.entity.Resource;
 
 public interface CommonMapper {
 
-  Property toProperty(Resource resource);
+  Property toProperty(@NonNull Resource resource);
 
-  ProvisionActivity toProvisionActivity(Resource resource);
+  ProvisionActivity toProvisionActivity(@NonNull Resource resource);
 
-  Url toUrl(Resource resource);
+  Url toUrl(@NonNull Resource resource);
 
-  <T> void addMappedResources(SubResourceMapper subResourceMapper, Resource resource,
-                              Consumer<T> consumer, Class<T> destination);
+  <T> void addMappedResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
+                              @NonNull Consumer<T> consumer, @NonNull Class<T> destination);
 
-  void addMappedProperties(Resource s, String pred, Consumer<Property> consumer);
+  void addMappedProperties(@NonNull Resource s, @NonNull String pred, @NonNull Consumer<Property> consumer);
 
-  <T> T readResourceDoc(Resource resource, Class<T> dtoClass);
+  <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass);
 
-  void addMappedPersonLookups(Resource source, String predicate, Consumer<PersonField> personConsumer);
+  void addMappedPersonLookups(@NonNull Resource source, @NonNull String predicate,
+                              @NonNull Consumer<PersonField> personConsumer);
 
-  long hash(Resource resource);
+  long hash(@NonNull Resource resource);
 
   JsonNode toJson(Object object);
 
-  <T> void mapResourceEdges(List<T> targets, Resource source, String predicate,
-                            BiFunction<T, String, Resource> mappingFunction);
+  <T> void mapResourceEdges(List<T> targets, @NonNull Resource source, @NonNull String predicate,
+                            @NonNull BiFunction<T, String, Resource> mappingFunction);
 
-  void mapPropertyEdges(List<Property> subProperties, Resource source, String predicate, String type);
+  void mapPropertyEdges(List<Property> subProperties, @NonNull Resource source, @NonNull String predicate,
+                        @NonNull String resourceType);
 
-  Resource propertyToEntity(Property property, String resourceType);
+  Resource propertyToEntity(@NonNull Property property, String resourceType);
 
-  Resource provisionActivityToEntity(ProvisionActivity dto, String label, String resourceType);
+  Resource provisionActivityToEntity(@NonNull ProvisionActivity dto, String label, @NonNull String resourceType);
 }
