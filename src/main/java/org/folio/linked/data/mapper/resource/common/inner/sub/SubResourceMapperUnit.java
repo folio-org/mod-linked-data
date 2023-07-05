@@ -8,9 +8,6 @@ public interface SubResourceMapperUnit<T> {
 
   Class<T> getParentDto();
 
-  // required until we implement it for every Item and Work mappers. Should be declared as non default after.
-  default Resource toEntity(Object dto, String predicate) {
-    return null;
-  }
+  Resource toEntity(Object dto, String predicate);
 
 }

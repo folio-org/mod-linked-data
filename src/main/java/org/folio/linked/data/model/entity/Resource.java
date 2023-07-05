@@ -14,23 +14,20 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @Accessors(chain = true)
 @Table(name = "resources")
-@ToString(exclude = "outgoingEdges")
-@EqualsAndHashCode(exclude = "outgoingEdges")
+@EqualsAndHashCode(of = "resourceHash")
 public class Resource {
 
   @Id
@@ -45,6 +42,7 @@ public class Resource {
   private JsonNode doc;
 
   @OrderBy
+  @ToString.Exclude
   @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   private Set<ResourceEdge> outgoingEdges = new HashSet<>();
 

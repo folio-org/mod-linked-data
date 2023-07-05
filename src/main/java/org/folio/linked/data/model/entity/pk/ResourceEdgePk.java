@@ -7,9 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+@Data
 @Embeddable
 @NoArgsConstructor
-@Data
 @Accessors(chain = true)
 public class ResourceEdgePk implements Serializable {
 
