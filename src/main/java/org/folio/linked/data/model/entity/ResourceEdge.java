@@ -1,6 +1,10 @@
 package org.folio.linked.data.model.entity;
 
-import jakarta.persistence.CascadeType;
+import static jakarta.persistence.CascadeType.DETACH;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.REFRESH;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -29,13 +33,13 @@ public class ResourceEdge {
   private ResourceEdgePk id = new ResourceEdgePk();
 
   @NonNull
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
   @MapsId("sourceHash")
   @JoinColumn(name = "source_hash", nullable = false)
   private Resource source;
 
   @NonNull
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
   @MapsId("targetHash")
   @JoinColumn(name = "target_hash", nullable = false)
   private Resource target;

@@ -60,6 +60,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -73,6 +74,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestService;
 import org.jetbrains.annotations.NotNull;
@@ -85,6 +87,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
+@Transactional
 class BibframeControllerIT {
 
   public static final String BIBFRAMES_URL = "/bibframes";
@@ -93,6 +96,8 @@ class BibframeControllerIT {
   private MockMvc mockMvc;
   @Autowired
   private ResourceRepository resourceRepo;
+  @Autowired
+  private ResourceEdgeRepository resourceEdgeRepository;
   @Autowired
   private MonographTestService monographTestService;
   @Autowired
@@ -103,6 +108,7 @@ class BibframeControllerIT {
 
   @AfterEach
   public void clean() {
+    resourceEdgeRepository.deleteAll();
     resourceRepo.deleteAll();
   }
 
@@ -130,7 +136,6 @@ class BibframeControllerIT {
 
 
   @Test
-  @Transactional
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
@@ -196,6 +201,26 @@ class BibframeControllerIT {
       .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getResourceHash().intValue())));
   }
 
+  @Test
+  void deleteBibframeById_shouldDeleteRootResourceAndAllEdges() throws Exception {
+    // given
+    var existed = resourceRepo.save(monographTestService.createSampleMonograph());
+    assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isTrue();
+    assertThat(resourceRepo.count()).isEqualTo(14);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(13);
+    var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getResourceHash())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    mockMvc.perform(requestBuilder);
+
+    // then
+    assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isFalse();
+    assertThat(resourceRepo.count()).isEqualTo(13);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(0);
+  }
+
   @NotNull
   private ResultActions validateSampleBibframeResponse(ResultActions resultActions) throws Exception {
     return resultActions
@@ -252,13 +277,14 @@ class BibframeControllerIT {
     assertThat(instance.getOutgoingEdges().size()).isEqualTo(8);
 
     var instanceEdgeIterator = instance.getOutgoingEdges().iterator();
+    validateSampleInstanceTitle(instanceEdgeIterator.next(), instance);
     validateSamplePublication(instanceEdgeIterator.next(), instance);
     validateSampleContribution(instanceEdgeIterator.next(), instance);
-    validateSampleExtent(instanceEdgeIterator.next(), instance);
-    validateSampleMedia(instanceEdgeIterator.next(), instance);
-    validateSampleInstanceTitle(instanceEdgeIterator.next(), instance);
-    validateSampleCarrier(instanceEdgeIterator.next(), instance);
     validateSampleIdentifiedByLccn(instanceEdgeIterator.next(), instance);
+    validateSampleExtent(instanceEdgeIterator.next(), instance);
+    validateSampleIssuance(instanceEdgeIterator.next(), instance);
+    validateSampleMedia(instanceEdgeIterator.next(), instance);
+    validateSampleCarrier(instanceEdgeIterator.next(), instance);
   }
 
   private void validateSampleIdentifiedByLccn(ResourceEdge identifiedByLccnEdge, Resource instance) {
@@ -315,6 +341,20 @@ class BibframeControllerIT {
     assertThat(media.getDoc().get(PROPERTY_URI).asText()).isEqualTo(MEDIA_URL);
     assertThat(media.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("unmediated");
     assertThat(media.getOutgoingEdges().isEmpty()).isTrue();
+  }
+
+  private void validateSampleIssuance(ResourceEdge issuanceEdge, Resource instance) {
+    assertThat(issuanceEdge.getId()).isNotNull();
+    assertThat(issuanceEdge.getSource()).isEqualTo(instance);
+    assertThat(issuanceEdge.getPredicate().getLabel()).isEqualTo(ISSUANCE_PRED);
+    var issuance = issuanceEdge.getTarget();
+    assertThat(issuance.getLabel()).isEqualTo("single unit");
+    assertThat(issuance.getType().getTypeUri()).isEqualTo(ISSUANCE_URL);
+    assertThat(issuance.getResourceHash()).isNotNull();
+    assertThat(issuance.getDoc().size()).isEqualTo(2);
+    assertThat(issuance.getDoc().get(PROPERTY_URI).asText()).isEqualTo(ISSUANCE_URL);
+    assertThat(issuance.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("single unit");
+    assertThat(issuance.getOutgoingEdges().isEmpty()).isTrue();
   }
 
   private void validateSampleExtent(ResourceEdge extentEdge, Resource instance) {
