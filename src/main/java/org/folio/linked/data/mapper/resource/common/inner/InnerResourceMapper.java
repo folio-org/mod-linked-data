@@ -8,5 +8,5 @@ public interface InnerResourceMapper {
 
   BibframeResponse toDto(Resource source, BibframeResponse destination);
 
-  ResourceEdge toEntity(Object innerResourceDto, String innerResourceType, Resource destination);
+  ResourceEdge toEntity(Object dto, String resourceType, Resource destination);
 }

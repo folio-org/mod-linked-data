@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.resource.common.ResourceMapper;
+import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.stereotype.Service;
@@ -20,11 +20,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SubResourceMapperImpl implements SubResourceMapper {
 
-  private final List<SubResourceMapperUnit<?>> mappers;
+  private final List<SubResourceMapperUnit<?>> mapperUnits;
 
   @Override
   public Resource toEntity(Object dto, String predicate) {
-    return getMapper(null, predicate, null, dto.getClass())
+    return getMapperUnit(null, predicate, null, dto.getClass())
       .map(mapper -> mapper.toEntity(dto, predicate))
       .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + dto.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR + PREDICATE + predicate + RIGHT_SQUARE_BRACKET)
@@ -33,7 +33,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
 
   @Override
   public <T> void toDto(ResourceEdge source, T destination) {
-    getMapper(source.getTarget().getType().getSimpleLabel(), source.getPredicate().getLabel(),
+    getMapperUnit(source.getTarget().getType().getSimpleLabel(), source.getPredicate().getLabel(),
       destination.getClass(), null)
       .map(mapper -> ((SubResourceMapperUnit<T>) mapper).toDto(source.getTarget(), destination))
       .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + source.getTarget().getType().getSimpleLabel()
@@ -41,11 +41,11 @@ public class SubResourceMapperImpl implements SubResourceMapper {
         + destination.getClass().getSimpleName()));
   }
 
-  private Optional<SubResourceMapperUnit<?>> getMapper(String type, String pred, Class<?> parentDto, Class<?> dto) {
-    return mappers.stream()
+  private Optional<SubResourceMapperUnit<?>> getMapperUnit(String type, String pred, Class<?> parentDto, Class<?> dto) {
+    return mapperUnits.stream()
       .filter(m -> isNull(parentDto) || parentDto.equals(m.getParentDto()))
       .filter(m -> {
-        var annotation = m.getClass().getAnnotation(ResourceMapper.class);
+        var annotation = m.getClass().getAnnotation(MapperUnit.class);
         return (isNull(type) || type.equals(annotation.type()))
           && (isNull(pred) || pred.equals(annotation.predicate()))
           && (isNull(dto) || dto.equals(annotation.dtoClass()));

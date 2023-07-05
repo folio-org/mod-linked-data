@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.resource.common.ResourceMapper;
+import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,28 +17,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class InnerResourceMapperImpl implements InnerResourceMapper {
 
-  private final Map<String, InnerResourceMapperUnit> mappers = new HashMap<>();
+  private final Map<String, InnerResourceMapperUnit> mapperUnits = new HashMap<>();
 
   @Autowired
-  public InnerResourceMapperImpl(List<InnerResourceMapperUnit> mappers) {
-    mappers.forEach(mapper -> {
-      var resourceMapper = mapper.getClass().getAnnotation(ResourceMapper.class);
-      this.mappers.put(resourceMapper.type(), mapper);
+  public InnerResourceMapperImpl(List<InnerResourceMapperUnit> mapperUnits) {
+    mapperUnits.forEach(mapperUnit -> {
+      var annotation = mapperUnit.getClass().getAnnotation(MapperUnit.class);
+      this.mapperUnits.put(annotation.type(), mapperUnit);
     });
   }
 
   @Override
   public BibframeResponse toDto(Resource source, BibframeResponse destination) {
-    return getMapper(source.getType().getSimpleLabel()).toDto(source, destination);
+    return getMapperUnit(source.getType().getSimpleLabel()).toDto(source, destination);
   }
 
   @Override
-  public ResourceEdge toEntity(Object innerResourceDto, String innerResourceType, Resource destination) {
-    return getMapper(innerResourceType).toEntity(innerResourceDto, destination);
+  public ResourceEdge toEntity(Object dto, String resourceType, Resource destination) {
+    return getMapperUnit(resourceType).toEntity(dto, destination);
   }
 
-  private InnerResourceMapperUnit getMapper(String type) {
-    return mappers.computeIfAbsent(type, k -> {
+  private InnerResourceMapperUnit getMapperUnit(String type) {
+    return mapperUnits.computeIfAbsent(type, k -> {
       throw new NotSupportedException(RESOURCE_TYPE + k + IS_NOT_SUPPORTED);
     });
   }

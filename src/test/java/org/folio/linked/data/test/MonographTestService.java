@@ -49,7 +49,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.resource.common.CommonMapper;
+import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -65,7 +65,7 @@ public class MonographTestService {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final DictionaryService<Predicate> predicateService;
-  private final CommonMapper commonMapper;
+  private final CoreMapper coreMapper;
 
   public ResourceType getMonographProfile() {
     return resourceTypeService.get(MONOGRAPH);
@@ -192,7 +192,7 @@ public class MonographTestService {
       .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
     resource.setDoc(getJsonNode(properties));
-    resource.setResourceHash(commonMapper.hash(resource));
+    resource.setResourceHash(coreMapper.hash(resource));
     resource.setType(resourceTypeService.get(typeLabel));
     return resource;
   }
@@ -209,7 +209,7 @@ public class MonographTestService {
     }
     var doc = getJsonNode(map);
     resource.setDoc(doc);
-    resource.setResourceHash(commonMapper.hash(resource));
+    resource.setResourceHash(coreMapper.hash(resource));
     resource.setLabel(label);
 
     return resource;

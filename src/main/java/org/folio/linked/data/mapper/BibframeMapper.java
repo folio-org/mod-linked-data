@@ -26,11 +26,11 @@ public abstract class BibframeMapper {
   public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
 
   public Resource map(BibframeRequest dto) {
-    return bibframeProfiledMapper.toResource(dto);
+    return bibframeProfiledMapper.toEntity(dto);
   }
 
   public BibframeResponse map(Resource resource) {
-    return bibframeProfiledMapper.toResponseDto(resource);
+    return bibframeProfiledMapper.toDto(resource);
   }
 
 }

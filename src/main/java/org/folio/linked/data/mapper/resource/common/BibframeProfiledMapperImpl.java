@@ -18,24 +18,24 @@ public class BibframeProfiledMapperImpl implements BibframeProfiledMapper {
 
   private final Map<String, BibframeProfiledMapperUnit> mappers = new HashMap<>();
 
-  public BibframeProfiledMapperImpl(@Autowired List<BibframeProfiledMapperUnit> mappers) {
-    mappers.forEach(mapper -> {
-      var resourceMapper = mapper.getClass().getAnnotation(ResourceMapper.class);
-      this.mappers.put(resourceMapper.type(), mapper);
+  public BibframeProfiledMapperImpl(@Autowired List<BibframeProfiledMapperUnit> mapperUnits) {
+    mapperUnits.forEach(mapperUnit -> {
+      var annotation = mapperUnit.getClass().getAnnotation(MapperUnit.class);
+      this.mappers.put(annotation.type(), mapperUnit);
     });
   }
 
   @Override
-  public Resource toResource(BibframeRequest dto) {
-    return getMapper(dto.getProfile()).toResource(dto);
+  public Resource toEntity(BibframeRequest dto) {
+    return getMapperUnit(dto.getProfile()).toResource(dto);
   }
 
   @Override
-  public BibframeResponse toResponseDto(Resource resource) {
-    return getMapper(resource.getType().getSimpleLabel()).toResponseDto(resource);
+  public BibframeResponse toDto(Resource resource) {
+    return getMapperUnit(resource.getType().getSimpleLabel()).toResponseDto(resource);
   }
 
-  private BibframeProfiledMapperUnit getMapper(String profile) {
+  private BibframeProfiledMapperUnit getMapperUnit(String profile) {
     return mappers.computeIfAbsent(profile, k -> {
       throw new NotSupportedException(RESOURCE_TYPE + k + IS_NOT_BIBFRAME_ROOT);
     });
