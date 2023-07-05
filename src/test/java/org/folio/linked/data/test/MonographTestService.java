@@ -13,9 +13,9 @@ import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
@@ -76,7 +76,7 @@ public class MonographTestService {
     return createResource(
       Collections.emptyMap(),
       MONOGRAPH,
-      Map.of(INSTANCE_PRED, Set.of(instance))
+      Map.of(INSTANCE_URL, Set.of(instance))
     );
   }
 

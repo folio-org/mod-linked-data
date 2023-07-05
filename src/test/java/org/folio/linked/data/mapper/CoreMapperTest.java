@@ -801,13 +801,13 @@ class CoreMapperTest {
   @Test
   void mapResourceEdges_shouldThrowNpe_ifGivenSourceIsNull(@Mock SubResourceMapper mapper) {
     // given
-    var targets = new ArrayList<>();
+    var dtoList = new ArrayList<>();
     Resource source = null;
     var predicate = "predicate";
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapResourceEdges(targets, source, predicate, mapper::toEntity));
+      () -> coreMapper.mapResourceEdges(dtoList, source, null, predicate, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("source is marked non-null but is null"));
@@ -816,13 +816,13 @@ class CoreMapperTest {
   @Test
   void mapResourceEdges_shouldThrowNpe_ifGivenPredicateIsNull(@Mock SubResourceMapper mapper) {
     // given
-    var targets = new ArrayList<>();
+    var dtoList = new ArrayList<>();
     var source = new Resource();
     String predicate = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapResourceEdges(targets, source, predicate, mapper::toEntity));
+      () -> coreMapper.mapResourceEdges(dtoList, source, null, predicate, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("predicateLabel is marked non-null but is null"));
@@ -831,13 +831,13 @@ class CoreMapperTest {
   @Test
   void mapResourceEdges_shouldThrowNpe_ifGivenMappingFunctionIsNull() {
     // given
-    var targets = new ArrayList<>();
+    var dtoList = new ArrayList<>();
     var source = new Resource();
     var predicate = "predicate";
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapResourceEdges(targets, source, predicate, null));
+      () -> coreMapper.mapResourceEdges(dtoList, source, null, predicate, null));
 
     // then
     assertThat(thrown.getMessage(), is("mappingFunction is marked non-null but is null"));
@@ -846,12 +846,12 @@ class CoreMapperTest {
   @Test
   public void mapResourceEdges_shouldDoNothing_ifGivenDtoListIsNull(@Mock SubResourceMapper mapper) {
     // given
-    List targets = null;
+    List dtoList = null;
     var source = new Resource();
     var predicate = "predicate";
 
     // when
-    coreMapper.mapResourceEdges(targets, source, predicate, mapper::toEntity);
+    coreMapper.mapResourceEdges(dtoList, source, null, predicate, mapper::toEntity);
 
     // then
     verify(mapper, never()).toEntity(any(), any());
@@ -861,12 +861,12 @@ class CoreMapperTest {
   @Test
   public void mapResourceEdges_shouldDoNothing_ifGivenDtoListIsEmpty(@Mock SubResourceMapper mapper) {
     // given
-    var targets = new ArrayList<>();
+    var dtoList = new ArrayList<>();
     var source = new Resource();
     var predicate = "predicate";
 
     // when
-    coreMapper.mapResourceEdges(targets, source, predicate, mapper::toEntity);
+    coreMapper.mapResourceEdges(dtoList, source, null, predicate, mapper::toEntity);
 
     // then
     verify(mapper, never()).toEntity(any(), any());
@@ -874,7 +874,8 @@ class CoreMapperTest {
   }
 
   @Test
-  public void mapResourceEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmpty(@Mock SubResourceMapper mapper) {
+  public void mapResourceEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndNoType(
+    @Mock SubResourceMapper mapper) {
     // given
     var dto1 = new Property().id("id").label("label").uri("uri");
     var dto2 = new Property().id("id2").label("label2").uri("uri2");
@@ -886,10 +887,39 @@ class CoreMapperTest {
     var expectedTarget2 = new Resource().setLabel("expectedTarget2");
     doReturn(expectedTarget2).when(mapper).toEntity(dto2, predicate);
     var source = new Resource();
-    var targets = List.of(dto1, dto2);
+    var dtoList = List.of(dto1, dto2);
 
     // when
-    coreMapper.mapResourceEdges(targets, source, predicate, mapper::toEntity);
+    coreMapper.mapResourceEdges(dtoList, source, null, predicate, mapper::toEntity);
+
+    // then
+    assertThat(source.getOutgoingEdges(), hasSize(2));
+    var edgesAreExpected = source.getOutgoingEdges().stream().allMatch(edge ->
+      edge.getPredicate().equals(expectedPredicate)
+        && edge.getSource().equals(source)
+        && (edge.getTarget().equals(expectedTarget1)) || edge.getTarget().equals(expectedTarget2));
+    assertThat(edgesAreExpected, is(true));
+  }
+
+  @Test
+  public void mapResourceEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndType(
+    @Mock SubResourceMapper mapper) {
+    // given
+    var dto1 = new Property().id("id").label("label").uri("uri");
+    var dto2 = new Property().id("id2").label("label2").uri("uri2");
+    var predicate = "predicate";
+    var expectedPredicate = new Predicate(predicate);
+    doReturn(expectedPredicate).when(predicateService).get(predicate);
+    var type = "type";
+    var expectedTarget1 = new Resource().setLabel("expectedTarget1");
+    doReturn(expectedTarget1).when(mapper).toEntity(dto1, type);
+    var expectedTarget2 = new Resource().setLabel("expectedTarget2");
+    doReturn(expectedTarget2).when(mapper).toEntity(dto2, type);
+    var source = new Resource();
+    var dtoList = List.of(dto1, dto2);
+
+    // when
+    coreMapper.mapResourceEdges(dtoList, source, type, predicate, mapper::toEntity);
 
     // then
     assertThat(source.getOutgoingEdges(), hasSize(2));
@@ -903,14 +933,14 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldThrowNpe_ifGivenSourceIsNull() {
     // given
-    var targets = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property>();
     Resource source = null;
     var predicate = "predicate";
     var type = "type";
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapPropertyEdges(targets, source, predicate, type));
+      () -> coreMapper.mapPropertyEdges(subProperties, source, predicate, type));
 
     // then
     assertThat(thrown.getMessage(), is("source is marked non-null but is null"));
@@ -919,14 +949,14 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldThrowNpe_ifGivenPredicateIsNull() {
     // given
-    var targets = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property>();
     var source = new Resource();
     String predicate = null;
     var type = "type";
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapPropertyEdges(targets, source, predicate, type));
+      () -> coreMapper.mapPropertyEdges(subProperties, source, predicate, type));
 
     // then
     assertThat(thrown.getMessage(), is("predicateLabel is marked non-null but is null"));
@@ -935,14 +965,14 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldThrowNpe_ifGivenTypeIsNull() {
     // given
-    var targets = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property>();
     var source = new Resource();
     var predicate = "predicate";
     String type = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapPropertyEdges(targets, source, predicate, type));
+      () -> coreMapper.mapPropertyEdges(subProperties, source, predicate, type));
 
     // then
     assertThat(thrown.getMessage(), is("resourceType is marked non-null but is null"));
@@ -951,13 +981,13 @@ class CoreMapperTest {
   @Test
   public void mapPropertyEdges_shouldDoNothing_ifGivenDtoListIsNull() {
     // given
-    List<Property> targets = null;
+    List<Property> subProperties = null;
     var source = new Resource();
     var predicate = "predicate";
     var type = "type";
 
     // when
-    coreMapper.mapPropertyEdges(targets, source, predicate, type);
+    coreMapper.mapPropertyEdges(subProperties, source, predicate, type);
 
     // then
     assertThat(source.getOutgoingEdges(), hasSize(0));
@@ -966,13 +996,13 @@ class CoreMapperTest {
   @Test
   public void mapPropertyEdges_shouldDoNothing_ifGivenDtoListIsEmpty() {
     // given
-    var targets = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property>();
     var source = new Resource();
     var predicate = "predicate";
     var type = "type";
 
     // when
-    coreMapper.mapPropertyEdges(targets, source, predicate, type);
+    coreMapper.mapPropertyEdges(subProperties, source, predicate, type);
 
     // then
     assertThat(source.getOutgoingEdges(), hasSize(0));
@@ -999,11 +1029,11 @@ class CoreMapperTest {
       .setType(expectedType)
       .setDoc(propertyToDoc(dto2));
     expectedTarget2.setResourceHash(coreMapper.hash(expectedTarget2));
-    var targets = List.of(dto1, dto2);
+    var subProperties = List.of(dto1, dto2);
     var source = new Resource();
 
     // when
-    coreMapper.mapPropertyEdges(targets, source, predicate, type);
+    coreMapper.mapPropertyEdges(subProperties, source, predicate, type);
 
     // then
     assertThat(source.getOutgoingEdges(), hasSize(2));

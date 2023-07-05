@@ -6,7 +6,7 @@ import org.folio.linked.data.model.entity.Resource;
 
 public interface BibframeProfiledMapperUnit {
 
-  Resource toResource(BibframeRequest dto);
+  Resource toEntity(BibframeRequest dto);
 
-  BibframeResponse toResponseDto(Resource resource);
+  BibframeResponse toDto(Resource resource);
 }

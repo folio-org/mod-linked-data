@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.resource.common;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.StreamSupport.stream;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
@@ -127,17 +128,14 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public <T> void mapResourceEdges(List<T> targets, @NonNull Resource source, @NonNull String predicateLabel,
-    @NonNull BiFunction<T, String, Resource> mappingFunction) {
-    if (nonNull(targets)) {
+  public <T> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, String type,
+    @NonNull String predicateLabel, @NonNull BiFunction<T, String, Resource> mappingFunction) {
+    if (nonNull(dtoList)) {
       var predicate = predicateService.get(predicateLabel);
-      targets.forEach(target -> {
-        var edge = new ResourceEdge()
-          .setPredicate(predicate)
-          .setSource(source)
-          .setTarget(mappingFunction.apply(target, predicate.getLabel()));
-        source.getOutgoingEdges().add(edge);
-      });
+      dtoList.stream()
+        .map(dto -> mappingFunction.apply(dto, isNull(type) ? predicateLabel : type))
+        .map(resource -> new ResourceEdge(source, resource, predicate))
+        .forEach(source.getOutgoingEdges()::add);
     }
   }
 
@@ -147,10 +145,7 @@ public class CoreMapperImpl implements CoreMapper {
     if (nonNull(subProperties)) {
       var predicate = predicateService.get(predicateLabel);
       subProperties.forEach(property -> {
-        var edge = new ResourceEdge()
-          .setPredicate(predicate)
-          .setSource(source)
-          .setTarget(propertyToEntity(property, resourceType));
+        var edge = new ResourceEdge(source, propertyToEntity(property, resourceType), predicate);
         source.getOutgoingEdges().add(edge);
       });
     }
@@ -168,7 +163,7 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public Resource provisionActivityToEntity(@NonNull ProvisionActivity dto, String label,
-                                            @NonNull String resourceType) {
+    @NonNull String resourceType) {
     Resource resource = new Resource();
     resource.setLabel(label);
     resource.setType(resourceTypeService.get(resourceType));

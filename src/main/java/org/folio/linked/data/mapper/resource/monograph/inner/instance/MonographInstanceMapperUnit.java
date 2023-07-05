@@ -10,7 +10,6 @@ import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
@@ -31,9 +30,7 @@ import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
@@ -44,7 +41,6 @@ import org.springframework.stereotype.Component;
 public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final DictionaryService<Predicate> predicateService;
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
 
@@ -55,31 +51,24 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
   }
 
   @Override
-  public ResourceEdge toEntity(Object innerResourceDto, Resource parent) {
-    var edge = new ResourceEdge();
-    edge.setSource(parent);
-    edge.setPredicate(predicateService.get(INSTANCE_PRED));
-    edge.setTarget(mapInstance((Instance) innerResourceDto));
-    return edge;
-  }
-
-  private Resource mapInstance(Instance dto) {
+  public Resource toEntity(Object innerResourceDto) {
+    Instance dto = (Instance) innerResourceDto;
     var resource = new Resource();
     resource.setLabel(INSTANCE_URL);
     resource.setType(resourceTypeService.get(INSTANCE));
     resource.setDoc(getDoc(dto));
-    coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getProvisionActivity(), resource, PROVISION_ACTIVITY_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getContribution(), resource, CONTRIBUTION_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, IDENTIFIED_BY_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getNote(), resource, NOTE_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getSupplementaryContent(), resource, SUPP_CONTENT_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getImmediateAcquisition(), resource, IMM_ACQUISITION_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getExtent(), resource, EXTENT_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getElectronicLocator(), resource, ELECTRONIC_LOCATOR_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getIssuance(), resource, ISSUANCE_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getTitle(), resource, null, INSTANCE_TITLE_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getProvisionActivity(), resource, null, PROVISION_ACTIVITY_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getContribution(), resource, null, CONTRIBUTION_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, null, IDENTIFIED_BY_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getNote(), resource, null, NOTE_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getSupplementaryContent(), resource, null, SUPP_CONTENT_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getImmediateAcquisition(), resource, null, IMM_ACQUISITION_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getExtent(), resource, null, EXTENT_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getElectronicLocator(), resource, null, ELECTRONIC_LOCATOR_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getIssuance(), resource, null, ISSUANCE_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getMedia(), resource, null, MEDIA_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCarrier(), resource, null, CARRIER_PRED, mapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

@@ -10,7 +10,6 @@ import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +32,8 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
   }
 
   @Override
-  public ResourceEdge toEntity(Object dto, String resourceType, Resource destination) {
-    return getMapperUnit(resourceType).toEntity(dto, destination);
+  public Resource toEntity(Object dto, String resourceType) {
+    return getMapperUnit(resourceType).toEntity(dto);
   }
 
   private InnerResourceMapperUnit getMapperUnit(String type) {

@@ -34,7 +34,7 @@ public interface CoreMapper {
 
   JsonNode toJson(Object object);
 
-  <T> void mapResourceEdges(List<T> targets, @NonNull Resource source, @NonNull String predicate,
+  <T> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, String type, @NonNull String predicate,
                             @NonNull BiFunction<T, String, Resource> mappingFunction);
 
   void mapPropertyEdges(List<Property> subProperties, @NonNull Resource source, @NonNull String predicate,

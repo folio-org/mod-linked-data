@@ -22,7 +22,6 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
@@ -242,7 +241,7 @@ class BibframeControllerIT {
   private void validateSampleInstance(ResourceEdge instanceEdge, Resource monograph) {
     assertThat(instanceEdge.getId()).isNotNull();
     assertThat(instanceEdge.getSource()).isEqualTo(monograph);
-    assertThat(instanceEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_PRED);
+    assertThat(instanceEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_URL);
     var instance = instanceEdge.getTarget();
     assertThat(instance.getLabel()).isEqualTo(INSTANCE_URL);
     assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE);

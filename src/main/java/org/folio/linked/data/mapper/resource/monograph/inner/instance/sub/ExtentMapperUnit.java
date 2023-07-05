@@ -48,7 +48,7 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setType(resourceTypeService.get(EXTENT));
     resource.setDoc(getDoc(extent));
     coreMapper.mapPropertyEdges(extent.getAppliesTo(), resource, APPLIES_TO, APPLIES_TO_URL);
-    coreMapper.mapResourceEdges(extent.getNote(), resource, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(extent.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

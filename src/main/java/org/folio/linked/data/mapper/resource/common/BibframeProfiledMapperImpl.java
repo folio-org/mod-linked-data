@@ -27,12 +27,12 @@ public class BibframeProfiledMapperImpl implements BibframeProfiledMapper {
 
   @Override
   public Resource toEntity(BibframeRequest dto) {
-    return getMapperUnit(dto.getProfile()).toResource(dto);
+    return getMapperUnit(dto.getProfile()).toEntity(dto);
   }
 
   @Override
   public BibframeResponse toDto(Resource resource) {
-    return getMapperUnit(resource.getType().getSimpleLabel()).toResponseDto(resource);
+    return getMapperUnit(resource.getType().getSimpleLabel()).toDto(resource);
   }
 
   private BibframeProfiledMapperUnit getMapperUnit(String profile) {

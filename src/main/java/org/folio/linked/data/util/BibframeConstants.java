@@ -71,7 +71,6 @@ public class BibframeConstants {
   public static final String VARIANT_TYPE_URL = "http://id.loc.gov/ontologies/bibframe/variantType";
   public static final String VALUE_URL = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
   public static final String QUALIFIER_URL = "http://id.loc.gov/ontologies/bibframe/qualifier";
-  public static final String INSTANCE_PRED = INSTANCE_URL;
   public static final String INSTANCE_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/Title";
   public static final String PARALLEL_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/ParallelTitle";
   public static final String VARIANT_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/VariantTitle";

@@ -51,7 +51,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
     resource.setLabel(VARIANT_TITLE_URL);
     resource.setType(resourceTypeService.get(VARIANT_TITLE));
     resource.setDoc(getDoc(variantTitle));
-    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

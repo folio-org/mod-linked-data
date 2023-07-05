@@ -2,11 +2,10 @@ package org.folio.linked.data.mapper.resource.common.inner;
 
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 
 public interface InnerResourceMapper {
 
   BibframeResponse toDto(Resource source, BibframeResponse destination);
 
-  ResourceEdge toEntity(Object dto, String resourceType, Resource destination);
+  Resource toEntity(Object dto, String resourceType);
 }

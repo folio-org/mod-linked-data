@@ -49,7 +49,7 @@ public class InstanceContributionMapperUnit implements InstanceSubResourceMapper
     var resource = new Resource();
     resource.setLabel(CONTRIBUTION_URL);
     resource.setType(resourceTypeService.get(CONTRIBUTION_URL));
-    coreMapper.mapResourceEdges(contribution.getAgent(), resource, AGENT_PRED, this::personToEntity);
+    coreMapper.mapResourceEdges(contribution.getAgent(), resource, null, AGENT_PRED, this::personToEntity);
     coreMapper.mapPropertyEdges(contribution.getRole(), resource, ROLE_PRED, ROLE_URL);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

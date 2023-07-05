@@ -10,7 +10,6 @@ import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,7 +27,7 @@ public class MonographItemMapperUnit implements InnerResourceMapperUnit {
   }
 
   @Override
-  public ResourceEdge toEntity(Object innerResourceDto, Resource parent) {
+  public Resource toEntity(Object innerResourceDto) {
     return null;
   }
 }

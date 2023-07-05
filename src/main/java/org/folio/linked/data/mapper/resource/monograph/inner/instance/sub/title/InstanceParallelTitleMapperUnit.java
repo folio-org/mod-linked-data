@@ -50,7 +50,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
     resource.setLabel(PARALLEL_TITLE_URL);
     resource.setType(resourceTypeService.get(PARALLEL_TITLE));
     resource.setDoc(getDoc(parallelTitle));
-    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
