@@ -16,6 +16,7 @@ import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.BibframeMapper;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.data.domain.PageRequest;
@@ -68,7 +69,19 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public void deleteBibframe(Long id) {
-    // to be implemented in MODLD-64
+    resourceRepo.findById(id)
+      .ifPresent(resource -> {
+        deleteEdges(resource);
+        resourceRepo.delete(resource);
+      });
+  }
+
+  private void deleteEdges(Resource resource) {
+    resource.getOutgoingEdges().forEach(edge -> {
+      deleteEdges(edge.getTarget());
+      resourceEdgeRepository.delete(edge);
+    });
+    resource.setOutgoingEdges(null);
   }
 
   @Override

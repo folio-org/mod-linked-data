@@ -1,5 +1,7 @@
 package org.folio.linked.data.controller;
 
+import static org.springframework.http.ResponseEntity.noContent;
+
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
@@ -30,6 +32,12 @@ public class BibframeController implements BibframesApi {
   @Override
   public ResponseEntity<BibframeResponse> updateBibframe(Long id, String okapiTenant, BibframeRequest bibframeRequest) {
     return ResponseEntity.ok(resourceService.updateBibframe(id, bibframeRequest));
+  }
+
+  @Override
+  public ResponseEntity<Void> deleteBibframe(Long id, String okapiTenant) {
+    resourceService.deleteBibframe(id);
+    return noContent().build();
   }
 
   @Override
