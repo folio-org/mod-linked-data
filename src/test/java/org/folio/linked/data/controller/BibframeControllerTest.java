@@ -1,9 +1,9 @@
 package org.folio.linked.data.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.TestUtil.random;
-import static org.folio.linked.data.TestUtil.randomLong;
-import static org.folio.linked.data.TestUtil.randomString;
+import static org.folio.linked.data.test.TestUtil.random;
+import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.linked.data.test.TestUtil.randomString;
 import static org.mockito.Mockito.when;
 
 import org.folio.linked.data.domain.dto.BibframeResponse;

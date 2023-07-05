@@ -2,7 +2,7 @@ package org.folio.linked.data.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
-import static org.folio.linked.data.TestUtil.randomString;
+import static org.folio.linked.data.test.TestUtil.randomString;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.TOKEN;
 import static org.mockito.Mockito.when;

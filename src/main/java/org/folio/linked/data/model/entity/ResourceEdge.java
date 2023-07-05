@@ -7,21 +7,24 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
-import lombok.Getter;
+import java.util.Objects;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 
+@Data
 @Entity
-@Table(name = "resource_edges")
-@RequiredArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
+@Accessors(chain = true)
+@RequiredArgsConstructor
+@Table(name = "resource_edges")
 public class ResourceEdge {
 
+  @ToString.Exclude
   @EmbeddedId
   private ResourceEdgePk id = new ResourceEdgePk();
 
@@ -43,4 +46,22 @@ public class ResourceEdge {
   @JoinColumn(name = "predicate_hash", nullable = false)
   private Predicate predicate;
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ResourceEdge that = (ResourceEdge) o;
+    return Objects.equals(source.getResourceHash(), that.source.getResourceHash())
+      && Objects.equals(target.getResourceHash(), that.target.getResourceHash())
+      && Objects.equals(predicate.getPredicateHash(), that.predicate.getPredicateHash());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(source.getResourceHash(), target.getResourceHash(), predicate.getPredicateHash());
+  }
 }
