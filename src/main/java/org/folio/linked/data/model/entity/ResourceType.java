@@ -4,16 +4,18 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
+import lombok.experimental.Accessors;
 
+@Data
 @Entity
-@Table(name = "type_lookup")
 @NoArgsConstructor
-@Getter
-@Setter
+@Accessors(chain = true)
+@Table(name = "type_lookup")
+@EqualsAndHashCode(of = "typeHash")
 public class ResourceType {
 
   @Id
@@ -24,4 +26,5 @@ public class ResourceType {
   private String typeUri;
 
   private String simpleLabel;
+
 }
