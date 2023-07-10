@@ -50,9 +50,8 @@ public class Resource {
   @OneToMany(mappedBy = "source", cascade = {PERSIST, MERGE, REFRESH, DETACH}, fetch = FetchType.EAGER)
   private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
 
-  @NonNull
   @ManyToOne
-  @JoinColumn(name = "type_hash", nullable = false)
+  @JoinColumn(name = "type_hash")
   private ResourceType type;
 
 }

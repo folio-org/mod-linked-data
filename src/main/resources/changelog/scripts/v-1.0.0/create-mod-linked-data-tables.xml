@@ -81,7 +81,7 @@
       </column>
     </createTable>
   </changeSet>
-  
+
   <changeSet author="Victor_Bodrov@epam.com" id="06_create_configurable_settings_table">
     <createTable remarks="Configurable settings for graphs" tableName="configurable_settings">
       <column autoIncrement="true" name="id" startWith="4" type="INTEGER">
@@ -94,7 +94,7 @@
     </createTable>
     <addUniqueConstraint columnNames="group_name, setting_name" tableName="configurable_settings"/>
   </changeSet>
-  
+
   <changeSet author="Victor_Bodrov@epam.com" id="07_create_graph_settings_table">
     <createTable remarks="Settings for a graph" tableName="graph_settings">
       <column autoIncrement="true" name="id" remarks="Primary key for a graph setting" startWith="7" type="INTEGER">
@@ -121,7 +121,7 @@
       </column>
     </createTable>
   </changeSet>
-  
+
   <changeSet author="Victor_Bodrov@epam.com" id="09_create_context_lookup_table">
     <createTable remarks="Lookup of context URI by hash" tableName="context_lookup">
       <column name="context_hash" type="BIGINT">
@@ -183,7 +183,7 @@
       </column>
     </createTable>
   </changeSet>
-  
+
   <changeSet author="Victor_Bodrov@epam.com" id="13_create_predicate_lookup_table">
     <createTable remarks="Lookup of type URI and label by hash" tableName="predicate_lookup">
       <column name="predicate_hash" type="BIGINT">
@@ -376,6 +376,31 @@
       </column>
     </createTable>
   </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="25_drop_constraint_resources_type_hash_not_null">
+    <dropNotNullConstraint tableName="resources" columnName="type_hash"/>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="26_drop_constraint_graphset_profile_hash_not_null">
+    <dropNotNullConstraint tableName="graphset" columnName="profile_hash"/>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="27_drop_constraint_resource_generator_map_updated_event_id_not_null">
+    <dropNotNullConstraint tableName="resource_generator_map" columnName="updated_event_id"/>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="28_drop_constraint_resource_generator_map_created_event_id_not_null">
+    <dropNotNullConstraint tableName="resource_generator_map" columnName="created_event_id"/>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="29_drop_constraint_generator_manifest_updated_event_id_not_null">
+    <dropNotNullConstraint tableName="generator_manifest" columnName="updated_event_id"/>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="30_drop_constraint_generator_manifest_created_event_id_not_null">
+    <dropNotNullConstraint tableName="generator_manifest" columnName="created_event_id"/>
+  </changeSet>
+
 
 </databaseChangeLog>
 
