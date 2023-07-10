@@ -19,6 +19,7 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_URL;
@@ -47,7 +48,6 @@ import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 
@@ -162,7 +162,7 @@ public class MonographTestService {
       Map.of(DIMENSIONS_URL, List.of("20 cm")),
       INSTANCE,
       Map.of(
-        TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle),
+        INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle),
         PROVISION_ACTIVITY_PRED, List.of(distribution, manufacture, production, publication),
         CONTRIBUTION_PRED, List.of(contrib),
         IDENTIFIED_BY_PRED, List.of(ean, isbn, lccn, local, other),

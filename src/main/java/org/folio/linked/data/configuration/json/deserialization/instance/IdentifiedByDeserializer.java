@@ -5,7 +5,7 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER_URL;
-import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_IMPLEMENTATION;
+import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_SUB_ELEMENT;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -38,6 +38,6 @@ public class IdentifiedByDeserializer extends JsonDeserializer<InstanceIdentifie
       return jp.getCodec().treeToValue(node, OtherIdentifierField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(InstanceIdentifiedByInner.class.getSimpleName() + DTO_UNKNOWN_IMPLEMENTATION + field);
+    throw new JsonException(InstanceIdentifiedByInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

@@ -33,6 +33,7 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
@@ -70,7 +71,6 @@ import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
@@ -377,7 +377,7 @@ class BibframeControllerIT {
                                    String prefix) {
     assertThat(titleEdge.getId()).isNotNull();
     assertThat(titleEdge.getSource()).isEqualTo(instance);
-    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
+    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
     var title = titleEdge.getTarget();
     assertThat(title.getLabel()).isEqualTo(label);
     assertThat(title.getType().getSimpleLabel()).isEqualTo(type);
@@ -727,17 +727,17 @@ class BibframeControllerIT {
   }
 
   private String toInstanceTitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toParallelTitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toVariantTitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 

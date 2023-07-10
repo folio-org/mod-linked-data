@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_URL;
-import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_IMPLEMENTATION;
+import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_SUB_ELEMENT;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -34,7 +34,7 @@ public class ProvisionActivityDeserializer extends JsonDeserializer<InstanceProv
       return jp.getCodec().treeToValue(node, PublicationField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(InstanceProvisionActivityInner.class.getSimpleName() + DTO_UNKNOWN_IMPLEMENTATION + field);
+    throw new JsonException(InstanceProvisionActivityInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 
 }

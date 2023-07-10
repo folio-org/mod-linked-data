@@ -121,7 +121,7 @@ public class BibframeConstants {
   public static final String SUBJECT_PRED = "http://id.loc.gov/ontologies/bibframe/subject";
   public static final String SUMMARY_PRED = "http://id.loc.gov/ontologies/bibframe/summary";
   public static final String SUPP_CONTENT_PRED = "http://id.loc.gov/ontologies/bibframe/supplementaryContent";
-  public static final String TITLE_PRED = "http://id.loc.gov/ontologies/bibframe/title";
+  public static final String INSTANCE_TITLE_PRED = "http://id.loc.gov/ontologies/bibframe/title";
   public static final String OTHER_EDITION_PRED = "http://id.loc.gov/ontologies/bibframe/otherEdition";
   public static final String OTHER_PHYSICAL_FORMAT_PRED = "http://id.loc.gov/ontologies/bibframe/otherPhysicalFormat";
   public static final String PROVISION_ACTIVITY_PRED = "http://id.loc.gov/ontologies/bibframe/provisionActivity";

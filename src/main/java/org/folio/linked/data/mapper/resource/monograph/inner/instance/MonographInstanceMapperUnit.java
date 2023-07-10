@@ -10,6 +10,7 @@ import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
@@ -18,7 +19,6 @@ import static org.folio.linked.data.util.BibframeConstants.PROJECT_PROVISION_DAT
 import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
     resource.setLabel(INSTANCE_URL);
     resource.setType(resourceTypeService.get(INSTANCE));
     resource.setDoc(getDoc(dto));
-    coreMapper.mapResourceEdges(dto.getTitle(), resource, null, TITLE_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getTitle(), resource, null, INSTANCE_TITLE_PRED, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getProvisionActivity(), resource, null, PROVISION_ACTIVITY_PRED, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getContribution(), resource, null, CONTRIBUTION_PRED, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, null, IDENTIFIED_BY_PRED, mapper::toEntity);

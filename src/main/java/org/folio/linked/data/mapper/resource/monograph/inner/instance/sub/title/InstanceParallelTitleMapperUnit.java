@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
@@ -8,7 +9,6 @@ import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PARALLEL_TITLE, predicate = TITLE_PRED, dtoClass = ParallelTitleField.class)
+@MapperUnit(type = PARALLEL_TITLE, predicate = INSTANCE_TITLE_PRED, dtoClass = ParallelTitleField.class)
 public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
