@@ -23,7 +23,9 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
@@ -35,6 +37,7 @@ import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
@@ -55,6 +58,8 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.WORK_URL;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -206,8 +211,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isTrue();
-    assertThat(resourceRepo.count()).isEqualTo(14);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(13);
+    assertThat(resourceRepo.count()).isEqualTo(16);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(15);
     var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -217,7 +222,7 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(13);
+    assertThat(resourceRepo.count()).isEqualTo(15);
     assertThat(resourceEdgeRepository.count()).isEqualTo(0);
   }
 
@@ -242,9 +247,14 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toIdentifiedByLccn(), equalTo("21014542")))
       .andExpect(jsonPath("$." + toIssuanceLabel(), equalTo("single unit")))
       .andExpect(jsonPath("$." + toIssuanceUri(), equalTo(ISSUANCE_URL)))
-      .andExpect(jsonPath("$." + toMainTitle(), equalTo("Laramie holds the range")))
+      .andExpect(jsonPath("$." + toInstanceTitle(), equalTo("Laramie holds the range")))
+      .andExpect(jsonPath("$." + toParallelTitle(), equalTo("Parallel: Laramie holds the range")))
+      .andExpect(jsonPath("$." + toVariantTitle(), equalTo("Variant: Laramie holds the range")))
       .andExpect(jsonPath("$." + toMediaLabel(), equalTo("unmediated")))
       .andExpect(jsonPath("$." + toMediaUri(), equalTo(MEDIA_URL)))
+      //.andExpect(jsonPath("$." + toNoteId(), equalTo(NOTE)))
+      //.andExpect(jsonPath("$." + toNoteLabel(), equalTo("some note")))
+      //.andExpect(jsonPath("$." + toNoteUri(), equalTo(NOTE_URL)))
       .andExpect(jsonPath("$." + toPublicationSimpleAgent(), equalTo("Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toPublicationSimpleDate(), equalTo("1921")))
       .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("New York")))
@@ -274,10 +284,12 @@ class BibframeControllerIT {
     assertThat(instance.getDoc().size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
-    assertThat(instance.getOutgoingEdges().size()).isEqualTo(8);
+    assertThat(instance.getOutgoingEdges().size()).isEqualTo(10);
 
     var instanceEdgeIterator = instance.getOutgoingEdges().iterator();
     validateSampleInstanceTitle(instanceEdgeIterator.next(), instance);
+    validateSampleParallelTitle(instanceEdgeIterator.next(), instance);
+    validateSampleVariantTitle(instanceEdgeIterator.next(), instance);
     validateSamplePublication(instanceEdgeIterator.next(), instance);
     validateSampleContribution(instanceEdgeIterator.next(), instance);
     validateSampleIdentifiedByLccn(instanceEdgeIterator.next(), instance);
@@ -318,7 +330,7 @@ class BibframeControllerIT {
   private void validateSampleInstanceTitle(ResourceEdge instanceTitleEdge, Resource instance) {
     assertThat(instanceTitleEdge.getId()).isNotNull();
     assertThat(instanceTitleEdge.getSource()).isEqualTo(instance);
-    assertThat(instanceTitleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
+    assertThat(instanceTitleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
     var instanceTitle = instanceTitleEdge.getTarget();
     assertThat(instanceTitle.getLabel()).isEqualTo(INSTANCE_TITLE_URL);
     assertThat(instanceTitle.getType().getSimpleLabel()).isEqualTo(INSTANCE_TITLE);
@@ -327,6 +339,34 @@ class BibframeControllerIT {
     assertThat(instanceTitle.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
     assertThat(instanceTitle.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo("Laramie holds the range");
     assertThat(instanceTitle.getOutgoingEdges().isEmpty()).isTrue();
+  }
+
+  private void validateSampleParallelTitle(ResourceEdge parallelTitleEdge, Resource instance) {
+    assertThat(parallelTitleEdge.getId()).isNotNull();
+    assertThat(parallelTitleEdge.getSource()).isEqualTo(instance);
+    assertThat(parallelTitleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
+    var parallelTitle = parallelTitleEdge.getTarget();
+    assertThat(parallelTitle.getLabel()).isEqualTo(PARALLEL_TITLE_URL);
+    assertThat(parallelTitle.getType().getSimpleLabel()).isEqualTo(PARALLEL_TITLE);
+    assertThat(parallelTitle.getResourceHash()).isNotNull();
+    assertThat(parallelTitle.getDoc().size()).isEqualTo(1);
+    assertThat(parallelTitle.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
+    assertThat(parallelTitle.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo("Parallel: Laramie holds the range");
+    assertThat(parallelTitle.getOutgoingEdges().isEmpty()).isTrue();
+  }
+
+  private void validateSampleVariantTitle(ResourceEdge variantTitleEdge, Resource instance) {
+    assertThat(variantTitleEdge.getId()).isNotNull();
+    assertThat(variantTitleEdge.getSource()).isEqualTo(instance);
+    assertThat(variantTitleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
+    var variantTitle = variantTitleEdge.getTarget();
+    assertThat(variantTitle.getLabel()).isEqualTo(VARIANT_TITLE_URL);
+    assertThat(variantTitle.getType().getSimpleLabel()).isEqualTo(VARIANT_TITLE);
+    assertThat(variantTitle.getResourceHash()).isNotNull();
+    assertThat(variantTitle.getDoc().size()).isEqualTo(1);
+    assertThat(variantTitle.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
+    assertThat(variantTitle.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo("Variant: Laramie holds the range");
+    assertThat(variantTitle.getOutgoingEdges().isEmpty()).isTrue();
   }
 
   private void validateSampleMedia(ResourceEdge mediaEdge, Resource instance) {
@@ -472,6 +512,17 @@ class BibframeControllerIT {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA_PRED), path(PROPERTY_URI));
   }
 
+  private String toNoteId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(PROPERTY_ID));
+  }
+
+  private String toNoteLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toNoteUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(PROPERTY_URI));
+  }
 
   private String toIssuanceLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ISSUANCE_PRED), path(PROPERTY_LABEL));
@@ -550,8 +601,18 @@ class BibframeControllerIT {
       path(PUBLICATION_URL), arrayPath(SIMPLE_DATE_PRED));
   }
 
-  private String toMainTitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+  private String toInstanceTitle() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(TITLE_PRED), path(INSTANCE_TITLE_URL),
+      arrayPath(MAIN_TITLE_PRED));
+  }
+
+  private String toParallelTitle() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+      arrayPath(MAIN_TITLE_PRED));
+  }
+
+  private String toVariantTitle() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(TITLE_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 

@@ -10,6 +10,20 @@
               "Laramie holds the range"
             ]
           }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/ParallelTitle": {
+            "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+              "Parallel: Laramie holds the range"
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/VariantTitle": {
+            "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+              "Variant: Laramie holds the range"
+            ]
+          }
         }
       ],
       "http://id.loc.gov/ontologies/bibframe/provisionActivity": [
@@ -95,6 +109,7 @@
           "label": "unmediated"
         }
       ],
+
       "http://id.loc.gov/ontologies/bibframe/carrier": [
         {
           "uri": "http://id.loc.gov/ontologies/bibframe/Carrier",

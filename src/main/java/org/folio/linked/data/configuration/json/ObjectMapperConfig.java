@@ -1,10 +1,11 @@
-package org.folio.linked.data.configuration;
+package org.folio.linked.data.configuration.json;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.folio.linked.data.configuration.json.deserialization.InstanceTitleDeserializer;
 import org.folio.linked.data.domain.dto.AccessPolicyField;
 import org.folio.linked.data.domain.dto.BibframeInstanceInner;
 import org.folio.linked.data.domain.dto.BibframeItemInner;
@@ -46,20 +47,18 @@ public class ObjectMapperConfig {
 
   private Module monographModule() {
     var module = new SimpleModule();
-
     module.addAbstractTypeMapping(BibframeWorkInner.class, Work.class);
     module.addAbstractTypeMapping(BibframeInstanceInner.class, Instance.class);
     module.addAbstractTypeMapping(BibframeItemInner.class, Item.class);
+    module.addDeserializer(InstanceTitleInner.class, new InstanceTitleDeserializer());
     module.addAbstractTypeMapping(WorkContributionInner.class, PrimaryContributionField.class);
     module.addAbstractTypeMapping(WorkClassificationInner.class, ClassificationLccField.class);
     module.addAbstractTypeMapping(WorkSubjectInner.class, PlaceField.class);
     module.addAbstractTypeMapping(WorkRelationshipInner.class, RelatedWorkField.class);
     module.addAbstractTypeMapping(WorkTitleInner.class, WorkTitleField.class);
-    module.addAbstractTypeMapping(InstanceTitleInner.class, InstanceTitleField.class);
     module.addAbstractTypeMapping(InstanceIdentifiedByInner.class, LccnField.class);
     module.addAbstractTypeMapping(InstanceProvisionActivityInner.class, PublicationField.class);
     module.addAbstractTypeMapping(ItemUsageAndAccessPolicyInner.class, AccessPolicyField.class);
-
     return module;
   }
 

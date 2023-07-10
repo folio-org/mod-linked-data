@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = VARIANT_TITLE, predicate = INSTANCE_TITLE_PRED, dtoClass = VariantTitleField.class)
+@MapperUnit(type = VARIANT_TITLE, predicate = TITLE_PRED, dtoClass = VariantTitleField.class)
 public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
