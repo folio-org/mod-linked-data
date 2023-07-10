@@ -15,17 +15,24 @@ import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
+import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
+import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN_URL;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN_URL;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL_URL;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
@@ -34,16 +41,22 @@ import static org.folio.linked.data.util.BibframeConstants.ITEM_URL;
 import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE;
+import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_URL;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_COMPONENTS;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
+import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
+import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
@@ -57,6 +70,7 @@ import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
@@ -211,8 +225,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isTrue();
-    assertThat(resourceRepo.count()).isEqualTo(16);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(15);
+    assertThat(resourceRepo.count()).isEqualTo(26);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(25);
     var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -222,7 +236,7 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(15);
+    assertThat(resourceRepo.count()).isEqualTo(25);
     assertThat(resourceEdgeRepository.count()).isEqualTo(0);
   }
 
@@ -244,24 +258,46 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toContributionRoleLabel(), equalTo("Author")))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
       .andExpect(jsonPath("$." + toExtentLabel(), equalTo("vi, 374 pages, 4 unnumbered leaves of plates")))
-      .andExpect(jsonPath("$." + toIdentifiedByLccn(), equalTo("21014542")))
+      .andExpect(jsonPath("$." + toIdentifiedByEan(), equalTo("12345670")))
+      .andExpect(jsonPath("$." + toIdentifiedByIsbn(), equalTo("12345671")))
+      .andExpect(jsonPath("$." + toIdentifiedByLccn(), equalTo("12345672")))
+      .andExpect(jsonPath("$." + toIdentifiedByLocal(), equalTo("12345673")))
+      .andExpect(jsonPath("$." + toIdentifiedByOther(), equalTo("12345674")))
       .andExpect(jsonPath("$." + toIssuanceLabel(), equalTo("single unit")))
       .andExpect(jsonPath("$." + toIssuanceUri(), equalTo(ISSUANCE_URL)))
-      .andExpect(jsonPath("$." + toInstanceTitle(), equalTo("Laramie holds the range")))
+      .andExpect(jsonPath("$." + toInstanceTitle(), equalTo("Instance: Laramie holds the range")))
       .andExpect(jsonPath("$." + toParallelTitle(), equalTo("Parallel: Laramie holds the range")))
       .andExpect(jsonPath("$." + toVariantTitle(), equalTo("Variant: Laramie holds the range")))
       .andExpect(jsonPath("$." + toMediaLabel(), equalTo("unmediated")))
       .andExpect(jsonPath("$." + toMediaUri(), equalTo(MEDIA_URL)))
-      //.andExpect(jsonPath("$." + toNoteId(), equalTo(NOTE)))
-      //.andExpect(jsonPath("$." + toNoteLabel(), equalTo("some note")))
-      //.andExpect(jsonPath("$." + toNoteUri(), equalTo(NOTE_URL)))
-      .andExpect(jsonPath("$." + toPublicationSimpleAgent(), equalTo("Charles Scribner's Sons")))
-      .andExpect(jsonPath("$." + toPublicationSimpleDate(), equalTo("1921")))
-      .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("New York")))
+      .andExpect(jsonPath("$." + toDistributionSimpleAgent(), equalTo("Distribution: Charles Scribner's Sons")))
+      .andExpect(jsonPath("$." + toDistributionSimpleDate(), equalTo("Distribution: 1921")))
+      .andExpect(jsonPath("$." + toDistributionSimplePlace(), equalTo("Distribution: New York")))
+      .andExpect(jsonPath("$." + toDistributionPlaceId(), equalTo(PLACE)))
+      .andExpect(jsonPath("$." + toDistributionPlaceLabel(), equalTo("Distribution: New York (State)")))
+      .andExpect(jsonPath("$." + toDistributionPlaceUri(), equalTo(PLACE_URL)))
+      .andExpect(jsonPath("$." + toDistributionDate(), equalTo("Distribution: 1921")))
+      .andExpect(jsonPath("$." + toManufactureSimpleAgent(), equalTo("Manufacture: Charles Scribner's Sons")))
+      .andExpect(jsonPath("$." + toManufactureSimpleDate(), equalTo("Manufacture: 1921")))
+      .andExpect(jsonPath("$." + toManufactureSimplePlace(), equalTo("Manufacture: New York")))
+      .andExpect(jsonPath("$." + toManufacturePlaceId(), equalTo(PLACE)))
+      .andExpect(jsonPath("$." + toManufacturePlaceLabel(), equalTo("Manufacture: New York (State)")))
+      .andExpect(jsonPath("$." + toManufacturePlaceUri(), equalTo(PLACE_URL)))
+      .andExpect(jsonPath("$." + toManufactureDate(), equalTo("Manufacture: 1921")))
+      .andExpect(jsonPath("$." + toProductionSimpleAgent(), equalTo("Production: Charles Scribner's Sons")))
+      .andExpect(jsonPath("$." + toProductionSimpleDate(), equalTo("Production: 1921")))
+      .andExpect(jsonPath("$." + toProductionSimplePlace(), equalTo("Production: New York")))
+      .andExpect(jsonPath("$." + toProductionPlaceId(), equalTo(PLACE)))
+      .andExpect(jsonPath("$." + toProductionPlaceLabel(), equalTo("Production: New York (State)")))
+      .andExpect(jsonPath("$." + toProductionPlaceUri(), equalTo(PLACE_URL)))
+      .andExpect(jsonPath("$." + toProductionDate(), equalTo("Production: 1921")))
+      .andExpect(jsonPath("$." + toPublicationSimpleAgent(), equalTo("Publication: Charles Scribner's Sons")))
+      .andExpect(jsonPath("$." + toPublicationSimpleDate(), equalTo("Publication: 1921")))
+      .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("Publication: New York")))
       .andExpect(jsonPath("$." + toPublicationPlaceId(), equalTo(PLACE)))
-      .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("New York (State)")))
+      .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("Publication: New York (State)")))
       .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)))
-      .andExpect(jsonPath("$." + toPublicationDate(), equalTo("1921")));
+      .andExpect(jsonPath("$." + toPublicationDate(), equalTo("Publication: 1921")));
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
@@ -284,32 +320,42 @@ class BibframeControllerIT {
     assertThat(instance.getDoc().size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
-    assertThat(instance.getOutgoingEdges().size()).isEqualTo(10);
+    assertThat(instance.getOutgoingEdges().size()).isEqualTo(17);
 
     var instanceEdgeIterator = instance.getOutgoingEdges().iterator();
-    validateSampleInstanceTitle(instanceEdgeIterator.next(), instance);
-    validateSampleParallelTitle(instanceEdgeIterator.next(), instance);
-    validateSampleVariantTitle(instanceEdgeIterator.next(), instance);
-    validateSamplePublication(instanceEdgeIterator.next(), instance);
+    validateSampleTitle(instanceEdgeIterator.next(), instance, INSTANCE_TITLE_URL, INSTANCE_TITLE, "Instance: ");
+    validateSampleTitle(instanceEdgeIterator.next(), instance, PARALLEL_TITLE_URL, PARALLEL_TITLE, "Parallel: ");
+    validateSampleTitle(instanceEdgeIterator.next(), instance, VARIANT_TITLE_URL, VARIANT_TITLE, "Variant: ");
+    validateSampleProvision(instanceEdgeIterator.next(), instance, DISTRIBUTION_URL, DISTRIBUTION, "Distribution: ");
+    validateSampleProvision(instanceEdgeIterator.next(), instance, MANUFACTURE_URL, MANUFACTURE, "Manufacture: ");
+    validateSampleProvision(instanceEdgeIterator.next(), instance, PRODUCTION_URL, PRODUCTION, "Production: ");
+    validateSampleProvision(instanceEdgeIterator.next(), instance, PUBLICATION_URL, PUBLICATION, "Publication: ");
     validateSampleContribution(instanceEdgeIterator.next(), instance);
-    validateSampleIdentifiedByLccn(instanceEdgeIterator.next(), instance);
+    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_EAN_URL, IDENTIFIERS_EAN, "12345670");
+    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_ISBN_URL, IDENTIFIERS_ISBN, "12345671");
+    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_LCCN_URL, IDENTIFIERS_LCCN, "12345672");
+    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_LOCAL_URL, IDENTIFIERS_LOCAL,
+      "12345673");
+    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_OTHER_URL, IDENTIFIERS_OTHER,
+      "12345674");
     validateSampleExtent(instanceEdgeIterator.next(), instance);
     validateSampleIssuance(instanceEdgeIterator.next(), instance);
     validateSampleMedia(instanceEdgeIterator.next(), instance);
     validateSampleCarrier(instanceEdgeIterator.next(), instance);
   }
 
-  private void validateSampleIdentifiedByLccn(ResourceEdge identifiedByLccnEdge, Resource instance) {
+  private void validateSampleIdentified(ResourceEdge identifiedByLccnEdge, Resource instance, String label,
+                                        String type, String value) {
     assertThat(identifiedByLccnEdge.getId()).isNotNull();
     assertThat(identifiedByLccnEdge.getSource()).isEqualTo(instance);
     assertThat(identifiedByLccnEdge.getPredicate().getLabel()).isEqualTo(IDENTIFIED_BY_PRED);
     var identifiedByLccn = identifiedByLccnEdge.getTarget();
-    assertThat(identifiedByLccn.getLabel()).isEqualTo(IDENTIFIERS_LCCN_URL);
-    assertThat(identifiedByLccn.getType().getSimpleLabel()).isEqualTo(IDENTIFIERS_LCCN);
+    assertThat(identifiedByLccn.getLabel()).isEqualTo(label);
+    assertThat(identifiedByLccn.getType().getSimpleLabel()).isEqualTo(type);
     assertThat(identifiedByLccn.getResourceHash()).isNotNull();
     assertThat(identifiedByLccn.getDoc().size()).isEqualTo(1);
     assertThat(identifiedByLccn.getDoc().get(VALUE_URL).size()).isEqualTo(1);
-    assertThat(identifiedByLccn.getDoc().get(VALUE_URL).get(0).asText()).isEqualTo("21014542");
+    assertThat(identifiedByLccn.getDoc().get(VALUE_URL).get(0).asText()).isEqualTo(value);
     assertThat(identifiedByLccn.getOutgoingEdges().isEmpty()).isTrue();
   }
 
@@ -327,46 +373,19 @@ class BibframeControllerIT {
     assertThat(carrier.getOutgoingEdges().isEmpty()).isTrue();
   }
 
-  private void validateSampleInstanceTitle(ResourceEdge instanceTitleEdge, Resource instance) {
-    assertThat(instanceTitleEdge.getId()).isNotNull();
-    assertThat(instanceTitleEdge.getSource()).isEqualTo(instance);
-    assertThat(instanceTitleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
-    var instanceTitle = instanceTitleEdge.getTarget();
-    assertThat(instanceTitle.getLabel()).isEqualTo(INSTANCE_TITLE_URL);
-    assertThat(instanceTitle.getType().getSimpleLabel()).isEqualTo(INSTANCE_TITLE);
-    assertThat(instanceTitle.getResourceHash()).isNotNull();
-    assertThat(instanceTitle.getDoc().size()).isEqualTo(1);
-    assertThat(instanceTitle.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
-    assertThat(instanceTitle.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo("Laramie holds the range");
-    assertThat(instanceTitle.getOutgoingEdges().isEmpty()).isTrue();
-  }
-
-  private void validateSampleParallelTitle(ResourceEdge parallelTitleEdge, Resource instance) {
-    assertThat(parallelTitleEdge.getId()).isNotNull();
-    assertThat(parallelTitleEdge.getSource()).isEqualTo(instance);
-    assertThat(parallelTitleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
-    var parallelTitle = parallelTitleEdge.getTarget();
-    assertThat(parallelTitle.getLabel()).isEqualTo(PARALLEL_TITLE_URL);
-    assertThat(parallelTitle.getType().getSimpleLabel()).isEqualTo(PARALLEL_TITLE);
-    assertThat(parallelTitle.getResourceHash()).isNotNull();
-    assertThat(parallelTitle.getDoc().size()).isEqualTo(1);
-    assertThat(parallelTitle.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
-    assertThat(parallelTitle.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo("Parallel: Laramie holds the range");
-    assertThat(parallelTitle.getOutgoingEdges().isEmpty()).isTrue();
-  }
-
-  private void validateSampleVariantTitle(ResourceEdge variantTitleEdge, Resource instance) {
-    assertThat(variantTitleEdge.getId()).isNotNull();
-    assertThat(variantTitleEdge.getSource()).isEqualTo(instance);
-    assertThat(variantTitleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
-    var variantTitle = variantTitleEdge.getTarget();
-    assertThat(variantTitle.getLabel()).isEqualTo(VARIANT_TITLE_URL);
-    assertThat(variantTitle.getType().getSimpleLabel()).isEqualTo(VARIANT_TITLE);
-    assertThat(variantTitle.getResourceHash()).isNotNull();
-    assertThat(variantTitle.getDoc().size()).isEqualTo(1);
-    assertThat(variantTitle.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
-    assertThat(variantTitle.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo("Variant: Laramie holds the range");
-    assertThat(variantTitle.getOutgoingEdges().isEmpty()).isTrue();
+  private void validateSampleTitle(ResourceEdge titleEdge, Resource instance, String label, String type,
+                                   String prefix) {
+    assertThat(titleEdge.getId()).isNotNull();
+    assertThat(titleEdge.getSource()).isEqualTo(instance);
+    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(TITLE_PRED);
+    var title = titleEdge.getTarget();
+    assertThat(title.getLabel()).isEqualTo(label);
+    assertThat(title.getType().getSimpleLabel()).isEqualTo(type);
+    assertThat(title.getResourceHash()).isNotNull();
+    assertThat(title.getDoc().size()).isEqualTo(1);
+    assertThat(title.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo(prefix + "Laramie holds the range");
+    assertThat(title.getOutgoingEdges().isEmpty()).isTrue();
   }
 
   private void validateSampleMedia(ResourceEdge mediaEdge, Resource instance) {
@@ -458,39 +477,40 @@ class BibframeControllerIT {
     assertThat(contributionAgent.getOutgoingEdges().isEmpty()).isTrue();
   }
 
-  private void validateSamplePublication(ResourceEdge publicationEdge, Resource instance) {
-    assertThat(publicationEdge.getId()).isNotNull();
-    assertThat(publicationEdge.getSource()).isEqualTo(instance);
-    assertThat(publicationEdge.getPredicate().getLabel()).isEqualTo(PROVISION_ACTIVITY_PRED);
-    var publication = publicationEdge.getTarget();
-    assertThat(publication.getLabel()).isEqualTo(PUBLICATION_URL);
-    assertThat(publication.getType().getSimpleLabel()).isEqualTo(PUBLICATION);
-    assertThat(publication.getResourceHash()).isNotNull();
-    assertThat(publication.getDoc().size()).isEqualTo(4);
-    assertThat(publication.getDoc().get(SIMPLE_DATE_PRED).size()).isEqualTo(1);
-    assertThat(publication.getDoc().get(SIMPLE_DATE_PRED).get(0).asText()).isEqualTo("1921");
-    assertThat(publication.getDoc().get(SIMPLE_AGENT_PRED).size()).isEqualTo(1);
-    assertThat(publication.getDoc().get(SIMPLE_AGENT_PRED).get(0).asText()).isEqualTo("Charles Scribner's Sons");
-    assertThat(publication.getDoc().get(SIMPLE_PLACE_PRED).size()).isEqualTo(1);
-    assertThat(publication.getDoc().get(SIMPLE_PLACE_PRED).get(0).asText()).isEqualTo("New York");
-    assertThat(publication.getDoc().get(DATE_URL).size()).isEqualTo(1);
-    assertThat(publication.getDoc().get(DATE_URL).get(0).asText()).isEqualTo("1921");
-    assertThat(publication.getOutgoingEdges().size()).isEqualTo(1);
-    validateSamplePublicationPlace(publication.getOutgoingEdges().iterator().next(), publication);
+  private void validateSampleProvision(ResourceEdge provisionEdge, Resource instance, String label, String type,
+                                       String prefix) {
+    assertThat(provisionEdge.getId()).isNotNull();
+    assertThat(provisionEdge.getSource()).isEqualTo(instance);
+    assertThat(provisionEdge.getPredicate().getLabel()).isEqualTo(PROVISION_ACTIVITY_PRED);
+    var provision = provisionEdge.getTarget();
+    assertThat(provision.getLabel()).isEqualTo(label);
+    assertThat(provision.getType().getSimpleLabel()).isEqualTo(type);
+    assertThat(provision.getResourceHash()).isNotNull();
+    assertThat(provision.getDoc().size()).isEqualTo(4);
+    assertThat(provision.getDoc().get(SIMPLE_DATE_PRED).size()).isEqualTo(1);
+    assertThat(provision.getDoc().get(SIMPLE_DATE_PRED).get(0).asText()).isEqualTo(prefix + "1921");
+    assertThat(provision.getDoc().get(SIMPLE_AGENT_PRED).size()).isEqualTo(1);
+    assertThat(provision.getDoc().get(SIMPLE_AGENT_PRED).get(0).asText()).isEqualTo(prefix + "Charles Scribner's Sons");
+    assertThat(provision.getDoc().get(SIMPLE_PLACE_PRED).size()).isEqualTo(1);
+    assertThat(provision.getDoc().get(SIMPLE_PLACE_PRED).get(0).asText()).isEqualTo(prefix + "New York");
+    assertThat(provision.getDoc().get(DATE_URL).size()).isEqualTo(1);
+    assertThat(provision.getDoc().get(DATE_URL).get(0).asText()).isEqualTo(prefix + "1921");
+    assertThat(provision.getOutgoingEdges().size()).isEqualTo(1);
+    validateSamplePublicationPlace(provision.getOutgoingEdges().iterator().next(), provision, prefix);
   }
 
-  private void validateSamplePublicationPlace(ResourceEdge publicationPlaceEdge, Resource publication) {
+  private void validateSamplePublicationPlace(ResourceEdge publicationPlaceEdge, Resource publication, String prefix) {
     assertThat(publicationPlaceEdge.getSource()).isEqualTo(publication);
     assertThat(publicationPlaceEdge.getId()).isNotNull();
     assertThat(publicationPlaceEdge.getSource()).isEqualTo(publication);
     assertThat(publicationPlaceEdge.getPredicate().getLabel()).isEqualTo(PLACE_PRED);
     var publicationPlace = publicationPlaceEdge.getTarget();
-    assertThat(publicationPlace.getLabel()).isEqualTo("New York (State)");
+    assertThat(publicationPlace.getLabel()).isEqualTo(prefix + "New York (State)");
     assertThat(publicationPlace.getType().getSimpleLabel()).isEqualTo(PLACE_COMPONENTS);
     assertThat(publicationPlace.getResourceHash()).isNotNull();
     assertThat(publicationPlace.getDoc().size()).isEqualTo(3);
     assertThat(publicationPlace.getDoc().get(PROPERTY_URI).asText()).isEqualTo(PLACE_URL);
-    assertThat(publicationPlace.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("New York (State)");
+    assertThat(publicationPlace.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(prefix + "New York (State)");
     assertThat(publicationPlace.getDoc().get(PROPERTY_ID).asText()).isEqualTo(PLACE);
     assertThat(publicationPlace.getOutgoingEdges().isEmpty()).isTrue();
   }
@@ -566,38 +586,143 @@ class BibframeControllerIT {
       arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_URI));
   }
 
-  private String toPublicationDate() {
+  private String toDistributionDate() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+      path(DISTRIBUTION_URL), arrayPath(DATE_PRED));
+  }
+
+  private String toDistributionPlaceUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+      path(DISTRIBUTION_URL), arrayPath(PLACE_PRED), path(PROPERTY_URI));
+  }
+
+  private String toDistributionPlaceLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+      path(DISTRIBUTION_URL), arrayPath(PLACE_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toDistributionPlaceId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+      path(DISTRIBUTION_URL), arrayPath(PLACE_PRED), path(PROPERTY_ID));
+  }
+
+  private String toDistributionSimplePlace() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+      path(DISTRIBUTION_URL), arrayPath(SIMPLE_PLACE_PRED));
+  }
+
+  private String toDistributionSimpleAgent() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+      path(DISTRIBUTION_URL), arrayPath(SIMPLE_AGENT_PRED));
+  }
+
+  private String toDistributionSimpleDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+      path(DISTRIBUTION_URL), arrayPath(SIMPLE_DATE_PRED));
+  }
+
+  private String toManufactureDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 1),
+      path(MANUFACTURE_URL), arrayPath(DATE_PRED));
+  }
+
+  private String toManufacturePlaceUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 1),
+      path(MANUFACTURE_URL), arrayPath(PLACE_PRED), path(PROPERTY_URI));
+  }
+
+  private String toManufacturePlaceLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 1),
+      path(MANUFACTURE_URL), arrayPath(PLACE_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toManufacturePlaceId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 1),
+      path(MANUFACTURE_URL), arrayPath(PLACE_PRED), path(PROPERTY_ID));
+  }
+
+  private String toManufactureSimplePlace() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 1),
+      path(MANUFACTURE_URL), arrayPath(SIMPLE_PLACE_PRED));
+  }
+
+  private String toManufactureSimpleAgent() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 1),
+      path(MANUFACTURE_URL), arrayPath(SIMPLE_AGENT_PRED));
+  }
+
+  private String toManufactureSimpleDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 1),
+      path(MANUFACTURE_URL), arrayPath(SIMPLE_DATE_PRED));
+  }
+
+  private String toProductionDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 2),
+      path(PRODUCTION_URL), arrayPath(DATE_PRED));
+  }
+
+  private String toProductionPlaceUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 2),
+      path(PRODUCTION_URL), arrayPath(PLACE_PRED), path(PROPERTY_URI));
+  }
+
+  private String toProductionPlaceLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 2),
+      path(PRODUCTION_URL), arrayPath(PLACE_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toProductionPlaceId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 2),
+      path(PRODUCTION_URL), arrayPath(PLACE_PRED), path(PROPERTY_ID));
+  }
+
+  private String toProductionSimplePlace() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 2),
+      path(PRODUCTION_URL), arrayPath(SIMPLE_PLACE_PRED));
+  }
+
+  private String toProductionSimpleAgent() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 2),
+      path(PRODUCTION_URL), arrayPath(SIMPLE_AGENT_PRED));
+  }
+
+  private String toProductionSimpleDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 2),
+      path(PRODUCTION_URL), arrayPath(SIMPLE_DATE_PRED));
+  }
+
+  private String toPublicationDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 3),
       path(PUBLICATION_URL), arrayPath(DATE_PRED));
   }
 
   private String toPublicationPlaceUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 3),
       path(PUBLICATION_URL), arrayPath(PLACE_PRED), path(PROPERTY_URI));
   }
 
   private String toPublicationPlaceLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 3),
       path(PUBLICATION_URL), arrayPath(PLACE_PRED), path(PROPERTY_LABEL));
   }
 
   private String toPublicationPlaceId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 3),
       path(PUBLICATION_URL), arrayPath(PLACE_PRED), path(PROPERTY_ID));
   }
 
   private String toPublicationSimplePlace() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 3),
       path(PUBLICATION_URL), arrayPath(SIMPLE_PLACE_PRED));
   }
 
   private String toPublicationSimpleAgent() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 3),
       path(PUBLICATION_URL), arrayPath(SIMPLE_AGENT_PRED));
   }
 
   private String toPublicationSimpleDate() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROVISION_ACTIVITY_PRED, 3),
       path(PUBLICATION_URL), arrayPath(SIMPLE_DATE_PRED));
   }
 
@@ -616,8 +741,28 @@ class BibframeControllerIT {
       arrayPath(MAIN_TITLE_PRED));
   }
 
+  private String toIdentifiedByEan() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED), path(IDENTIFIERS_EAN_URL),
+      arrayPath(VALUE_URL));
+  }
+
+  private String toIdentifiedByIsbn() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 1), path(IDENTIFIERS_ISBN_URL),
+      arrayPath(VALUE_URL));
+  }
+
   private String toIdentifiedByLccn() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED), path(IDENTIFIERS_LCCN_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 2), path(IDENTIFIERS_LCCN_URL),
+      arrayPath(VALUE_URL));
+  }
+
+  private String toIdentifiedByLocal() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 3), path(IDENTIFIERS_LOCAL_URL),
+      arrayPath(VALUE_URL));
+  }
+
+  private String toIdentifiedByOther() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 4), path(IDENTIFIERS_OTHER_URL),
       arrayPath(VALUE_URL));
   }
 

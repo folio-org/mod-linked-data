@@ -1,4 +1,4 @@
-package org.folio.linked.data.configuration.json.deserialization;
+package org.folio.linked.data.configuration.json.deserialization.instance;
 
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
@@ -16,7 +16,7 @@ import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.exception.JsonException;
 
-public class InstanceTitleDeserializer extends JsonDeserializer<InstanceTitleInner> {
+public class TitleDeserializer extends JsonDeserializer<InstanceTitleInner> {
 
   @Override
   public InstanceTitleInner deserialize(JsonParser jp, DeserializationContext deserializationContext)

@@ -7,7 +7,7 @@
         {
           "http://id.loc.gov/ontologies/bibframe/Title": {
             "http://id.loc.gov/ontologies/bibframe/mainTitle": [
-              "Laramie holds the range"
+              "Instance: Laramie holds the range"
             ]
           }
         },
@@ -28,25 +28,94 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/provisionActivity": [
         {
-          "http://id.loc.gov/ontologies/bibframe/Publication": {
+          "http://id.loc.gov/ontologies/bibframe/Distribution": {
             "http://id.loc.gov/ontologies/bflc/simpleDate": [
-              "1921"
+              "Distribution: 1921"
             ],
             "http://id.loc.gov/ontologies/bflc/simpleAgent": [
-              "Charles Scribner's Sons"
+              "Distribution: Charles Scribner's Sons"
             ],
             "http://id.loc.gov/ontologies/bflc/simplePlace": [
-              "New York"
+              "Distribution: New York"
             ],
             "http://id.loc.gov/ontologies/bibframe/place": [
               {
                 "id": "lc:RT:bf2:Place",
                 "uri": "http://id.loc.gov/ontologies/bibframe/Place",
-                "label": "New York (State)"
+                "label": "Distribution: New York (State)"
               }
             ],
             "http://id.loc.gov/ontologies/bibframe/date": [
-              "1921"
+              "Distribution: 1921"
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Manufacture": {
+            "http://id.loc.gov/ontologies/bflc/simpleDate": [
+              "Manufacture: 1921"
+            ],
+            "http://id.loc.gov/ontologies/bflc/simpleAgent": [
+              "Manufacture: Charles Scribner's Sons"
+            ],
+            "http://id.loc.gov/ontologies/bflc/simplePlace": [
+              "Manufacture: New York"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/place": [
+              {
+                "id": "lc:RT:bf2:Place",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Place",
+                "label": "Manufacture: New York (State)"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/date": [
+              "Manufacture: 1921"
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Production": {
+            "http://id.loc.gov/ontologies/bflc/simpleDate": [
+              "Production: 1921"
+            ],
+            "http://id.loc.gov/ontologies/bflc/simpleAgent": [
+              "Production: Charles Scribner's Sons"
+            ],
+            "http://id.loc.gov/ontologies/bflc/simplePlace": [
+              "Production: New York"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/place": [
+              {
+                "id": "lc:RT:bf2:Place",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Place",
+                "label": "Production: New York (State)"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/date": [
+              "Production: 1921"
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Publication": {
+            "http://id.loc.gov/ontologies/bflc/simpleDate": [
+              "Publication: 1921"
+            ],
+            "http://id.loc.gov/ontologies/bflc/simpleAgent": [
+              "Publication: Charles Scribner's Sons"
+            ],
+            "http://id.loc.gov/ontologies/bflc/simplePlace": [
+              "Publication: New York"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/place": [
+              {
+                "id": "lc:RT:bf2:Place",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Place",
+                "label": "Publication: New York (State)"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/date": [
+              "Publication: 1921"
             ]
           }
         }
@@ -78,9 +147,37 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/identifiedBy": [
         {
+          "http://id.loc.gov/ontologies/bibframe/Ean": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "12345670"
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Isbn": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "12345671"
+            ]
+          }
+        },
+        {
           "http://id.loc.gov/ontologies/bibframe/Lccn": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
-              "21014542"
+              "12345672"
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Local": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "12345673"
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Identifier": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "12345674"
             ]
           }
         }
@@ -109,7 +206,6 @@
           "label": "unmediated"
         }
       ],
-
       "http://id.loc.gov/ontologies/bibframe/carrier": [
         {
           "uri": "http://id.loc.gov/ontologies/bibframe/Carrier",

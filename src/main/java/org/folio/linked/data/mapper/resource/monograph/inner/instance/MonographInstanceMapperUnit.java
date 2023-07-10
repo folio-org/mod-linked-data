@@ -10,7 +10,6 @@ import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
@@ -19,6 +18,7 @@ import static org.folio.linked.data.util.BibframeConstants.PROJECT_PROVISION_DAT
 import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.TITLE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
