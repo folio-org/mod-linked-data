@@ -23,8 +23,8 @@ public class SubResourceMapperImpl implements SubResourceMapper {
   private final List<SubResourceMapperUnit<?>> mapperUnits;
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
-    return getMapperUnit(null, predicate, null, dto.getClass())
+  public <P> Resource toEntity(Object dto, String predicate, Class<P> parentDtoClass) {
+    return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
       .map(mapper -> mapper.toEntity(dto, predicate))
       .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + dto.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR + PREDICATE + predicate + RIGHT_SQUARE_BRACKET)
