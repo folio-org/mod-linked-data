@@ -57,18 +57,22 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
     resource.setLabel(INSTANCE_URL);
     resource.setType(resourceTypeService.get(INSTANCE));
     resource.setDoc(getDoc(dto));
-    coreMapper.mapResourceEdges(dto.getTitle(), resource, null, INSTANCE_TITLE_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getProvisionActivity(), resource, null, PROVISION_ACTIVITY_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getContribution(), resource, null, CONTRIBUTION_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, null, IDENTIFIED_BY_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getNote(), resource, null, NOTE_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getSupplementaryContent(), resource, null, SUPP_CONTENT_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getImmediateAcquisition(), resource, null, IMM_ACQUISITION_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getExtent(), resource, null, EXTENT_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getElectronicLocator(), resource, null, ELECTRONIC_LOCATOR_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getIssuance(), resource, null, ISSUANCE_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMedia(), resource, null, MEDIA_PRED, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCarrier(), resource, null, CARRIER_PRED, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getProvisionActivity(), resource, PROVISION_ACTIVITY_PRED, Instance.class,
+      mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getContribution(), resource, CONTRIBUTION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, IDENTIFIED_BY_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getNote(), resource, NOTE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getSupplementaryContent(), resource, SUPP_CONTENT_PRED, Instance.class,
+      mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getImmediateAcquisition(), resource, IMM_ACQUISITION_PRED, Instance.class,
+      mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getExtent(), resource, EXTENT_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getElectronicLocator(), resource, ELECTRONIC_LOCATOR_PRED, Instance.class,
+      mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getIssuance(), resource, ISSUANCE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, Instance.class, mapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

@@ -7,5 +7,5 @@ public interface SubResourceMapper {
 
   <T> void toDto(ResourceEdge source, T destination);
 
-  Resource toEntity(Object dto, String predicate);
+  <P> Resource toEntity(Object dto, String predicate, Class<P> parentDtoClass);
 }

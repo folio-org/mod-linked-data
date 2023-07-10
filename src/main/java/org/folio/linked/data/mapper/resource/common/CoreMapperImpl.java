@@ -29,6 +29,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.function.TriFunction;
 import org.folio.linked.data.domain.dto.Lookup;
 import org.folio.linked.data.domain.dto.Person;
 import org.folio.linked.data.domain.dto.PersonField;
@@ -70,7 +71,7 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public <T> void addMappedResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
-    @NonNull Consumer<T> consumer, @NonNull Class<T> destination) {
+                                     @NonNull Consumer<T> consumer, @NonNull Class<T> destination) {
     T item = readResourceDoc(resource, destination);
     resource.getOutgoingEdges().forEach(re -> subResourceMapper.toDto(re, item));
     consumer.accept(item);
@@ -78,7 +79,7 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public void addMappedProperties(@NonNull Resource resource, @NonNull String predicate,
-    @NonNull Consumer<Property> consumer) {
+                                  @NonNull Consumer<Property> consumer) {
     resource.getOutgoingEdges().stream()
       .filter(re -> predicate.equals(re.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
@@ -94,7 +95,7 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public void addMappedPersonLookups(@NonNull Resource resource, @NonNull String predicate,
-    @NonNull Consumer<PersonField> personConsumer) {
+                                     @NonNull Consumer<PersonField> personConsumer) {
     var person = new Person();
     addMappedLookups(resource, predicate, person::addSameAsItem);
     if (nonNull(person.getSameAs())) {
@@ -129,7 +130,8 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public <T> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, String type,
-    @NonNull String predicateLabel, @NonNull BiFunction<T, String, Resource> mappingFunction) {
+                                   @NonNull String predicateLabel,
+                                   @NonNull BiFunction<T, String, Resource> mappingFunction) {
     if (nonNull(dtoList)) {
       var predicate = predicateService.get(predicateLabel);
       dtoList.stream()
@@ -140,8 +142,21 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
+  public <T, P> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, @NonNull String predicateLabel,
+                                      @NonNull Class<P> parent,
+                                      @NonNull TriFunction<T, String, Class<P>, Resource> mapping) {
+    if (nonNull(dtoList)) {
+      var predicate = predicateService.get(predicateLabel);
+      dtoList.stream()
+        .map(dto -> mapping.apply(dto, predicateLabel, parent))
+        .map(resource -> new ResourceEdge(source, resource, predicate))
+        .forEach(source.getOutgoingEdges()::add);
+    }
+  }
+
+  @Override
   public void mapPropertyEdges(List<Property> subProperties, @NonNull Resource source, @NonNull String predicateLabel,
-    @NonNull String resourceType) {
+                               @NonNull String resourceType) {
     if (nonNull(subProperties)) {
       var predicate = predicateService.get(predicateLabel);
       subProperties.forEach(property -> {
@@ -163,7 +178,7 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public Resource provisionActivityToEntity(@NonNull ProvisionActivity dto, String label,
-    @NonNull String resourceType) {
+                                            @NonNull String resourceType) {
     Resource resource = new Resource();
     resource.setLabel(label);
     resource.setType(resourceTypeService.get(resourceType));

@@ -25,7 +25,7 @@ import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
-import org.folio.linked.data.configuration.ObjectMapperConfig;
+import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.model.entity.Resource;

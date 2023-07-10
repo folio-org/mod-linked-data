@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import lombok.NonNull;
+import org.apache.commons.lang3.function.TriFunction;
 import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
@@ -36,6 +37,10 @@ public interface CoreMapper {
 
   <T> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, String type, @NonNull String predicate,
                             @NonNull BiFunction<T, String, Resource> mappingFunction);
+
+  <T, P> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, @NonNull String predicate,
+                               @NonNull Class<P> parentClass,
+                               @NonNull TriFunction<T, String, Class<P>, Resource> mapping);
 
   void mapPropertyEdges(List<Property> subProperties, @NonNull Resource source, @NonNull String predicate,
                         @NonNull String resourceType);
