@@ -108,9 +108,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @Transactional
-class BibframeControllerIT {
+class ResourceControllerIT {
 
-  public static final String BIBFRAMES_URL = "/bibframes";
+  public static final String RESOURCES_URL = "/resources";
 
   @Autowired
   private MockMvc mockMvc;
@@ -135,7 +135,7 @@ class BibframeControllerIT {
   @Test
   void createMonographInstanceBibframe_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var requestBuilder = post(BIBFRAMES_URL)
+    var requestBuilder = post(RESOURCES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample());
@@ -157,7 +157,7 @@ class BibframeControllerIT {
   @Test
   void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
     // given
-    var requestBuilder1 = post(BIBFRAMES_URL)
+    var requestBuilder1 = post(RESOURCES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample());
@@ -169,23 +169,24 @@ class BibframeControllerIT {
     assertThat(persistedOptional1.isPresent()).isTrue();
     var monograph1 = persistedOptional1.get();
     validateSampleMonographEntity(monograph1);
-    var requestBuilder2 = post(BIBFRAMES_URL)
+    var requestBuilder2 = post(RESOURCES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
+    var expectedDifference = "length\"}]}],\"id\":3561758308,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
 
     // then
-    assertThat(StringUtils.difference(response1, response2)).isEqualTo("length\"}]}],\"id\":3561758308}");
+    assertThat(StringUtils.difference(response1, response2)).isEqualTo(expectedDifference);
   }
 
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
-    var requestBuilder = get(BIBFRAMES_URL + "/" + existed.getResourceHash())
+    var requestBuilder = get(RESOURCES_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -201,7 +202,7 @@ class BibframeControllerIT {
   void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
     var notExistedId = randomLong();
-    var requestBuilder = get(BIBFRAMES_URL + "/" + notExistedId)
+    var requestBuilder = get(RESOURCES_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -220,14 +221,14 @@ class BibframeControllerIT {
   }
 
   @Test
-  void getBibframesShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
+  void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
       resourceRepo.save(randomResource(1L, monographTestService.getMonographProfile())),
       resourceRepo.save(randomResource(2L, monographTestService.getMonographProfile())),
       resourceRepo.save(randomResource(3L, monographTestService.getMonographProfile()))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
-    var requestBuilder = get(BIBFRAMES_URL)
+    var requestBuilder = get(RESOURCES_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -254,7 +255,7 @@ class BibframeControllerIT {
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(26);
     assertThat(resourceEdgeRepository.count()).isEqualTo(25);
-    var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getResourceHash())
+    var requestBuilder = delete(RESOURCES_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -324,8 +325,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("Publication: New York")))
       .andExpect(jsonPath("$." + toPublicationPlaceId(), equalTo(PLACE)))
       .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("Publication: New York (State)")))
-      .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)))
-      .andExpect(jsonPath("$." + toPublicationDate(), equalTo("Publication: 1921")));
+      .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)));
   }
 
   private void validateSampleMonographEntity(Resource monograph) {

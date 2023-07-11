@@ -5,7 +5,7 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.Iterator;
 import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.mapper.resource.common.BibframeProfiledMapper;
+import org.folio.linked.data.mapper.resource.common.ProfiledMapper;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -19,16 +19,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class BibframeMapperTest {
+class ResourceMapperTest {
 
-  private BibframeMapper bibframeMapper;
+  private ResourceMapper resourceMapper;
   @Mock
-  private BibframeProfiledMapper profiledMapper;
+  private ProfiledMapper profiledMapper;
 
   @BeforeEach
   void setUp() {
-    bibframeMapper = new BibframeMapperImpl();
-    ReflectionTestUtils.setField(bibframeMapper, "bibframeProfiledMapper", profiledMapper);
+    resourceMapper = new ResourceMapperImpl();
+    ReflectionTestUtils.setField(resourceMapper, "profiledMapper", profiledMapper);
   }
 
   @Test
@@ -49,7 +49,7 @@ class BibframeMapperTest {
     doReturn(expectedResource).when(profiledMapper).toEntity(dto);
 
     // when
-    Resource resource = bibframeMapper.map(dto);
+    Resource resource = resourceMapper.map(dto);
 
     // then
     Iterator<ResourceEdge> resourceEdgeIterator = resource.getOutgoingEdges().iterator();

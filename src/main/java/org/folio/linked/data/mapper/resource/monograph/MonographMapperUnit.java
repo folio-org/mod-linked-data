@@ -11,9 +11,9 @@ import static org.folio.linked.data.util.BibframeConstants.WORK_URL;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
-import org.folio.linked.data.mapper.resource.common.BibframeProfiledMapperUnit;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.ProfiledMapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = MONOGRAPH)
-public class MonographMapperUnit implements BibframeProfiledMapperUnit {
+public class MonographMapperUnit implements ProfiledMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final InnerResourceMapper innerMapper;
