@@ -88,6 +88,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
@@ -153,6 +154,32 @@ class BibframeControllerIT {
     validateSampleMonographEntity(monograph);
   }
 
+  @Test
+  void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
+    // given
+    var requestBuilder1 = post(BIBFRAMES_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getResourceSample());
+    var resultActions1 = mockMvc.perform(requestBuilder1);
+    var response1 = validateSampleBibframeResponse(resultActions1)
+      .andReturn().getResponse().getContentAsString();
+    var bibframeResponse1 = objectMapper.readValue(response1, BibframeResponse.class);
+    var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
+    assertThat(persistedOptional1.isPresent()).isTrue();
+    var monograph1 = persistedOptional1.get();
+    validateSampleMonographEntity(monograph1);
+    var requestBuilder2 = post(BIBFRAMES_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getResourceSample().replace("volume", "length"));
+
+    // when
+    var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
+
+    // then
+    assertThat(StringUtils.difference(response1, response2)).isEqualTo("length\"}]}],\"id\":3561758308}");
+  }
 
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
