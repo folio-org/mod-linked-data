@@ -1,9 +1,6 @@
 package org.folio.linked.data.model.entity;
 
-import static jakarta.persistence.CascadeType.DETACH;
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.CascadeType.REFRESH;
+import static jakarta.persistence.CascadeType.ALL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -47,7 +44,7 @@ public class Resource {
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "source", cascade = {PERSIST, MERGE, REFRESH, DETACH}, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "source", cascade = ALL, fetch = FetchType.EAGER)
   private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
 
   @ManyToOne

@@ -94,9 +94,9 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestService;
+import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -248,10 +248,10 @@ class BibframeControllerIT {
   }
 
   @Test
-  void deleteBibframeById_shouldDeleteRootResourceAndAllEdges() throws Exception {
+  void deleteBibframeById_shouldDeleteRootResourceAndRootEdge() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
-    assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isTrue();
+    assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(26);
     assertThat(resourceEdgeRepository.count()).isEqualTo(25);
     var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getResourceHash())
@@ -262,9 +262,10 @@ class BibframeControllerIT {
     mockMvc.perform(requestBuilder);
 
     // then
-    assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isFalse();
+    assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
     assertThat(resourceRepo.count()).isEqualTo(25);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(0);
+    assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceEdgeRepository.count()).isEqualTo(24);
   }
 
   @NotNull

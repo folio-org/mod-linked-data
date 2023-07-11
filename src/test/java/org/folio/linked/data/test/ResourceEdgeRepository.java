@@ -1,4 +1,4 @@
-package org.folio.linked.data.repo;
+package org.folio.linked.data.test;
 
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
