@@ -1,13 +1,15 @@
 package org.folio.linked.data.e2e;
 
 import static java.util.Comparator.comparing;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.test.TestUtil.randomResource;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
@@ -32,6 +34,9 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER_URL;
+import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION;
+import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_URI;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
@@ -166,18 +171,15 @@ class BibframeControllerIT {
       .headers(defaultHeaders(env))
       .content(getResourceSample());
     var resultActions1 = mockMvc.perform(requestBuilder1);
-    var response1 = validateSampleBibframeResponse(resultActions1)
-      .andReturn().getResponse().getContentAsString();
+    var response1 = resultActions1.andReturn().getResponse().getContentAsString();
     var bibframeResponse1 = objectMapper.readValue(response1, BibframeResponse.class);
     var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
     assertThat(persistedOptional1).isPresent();
-    var monograph1 = persistedOptional1.get();
-    validateSampleMonographEntity(monograph1);
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":1706396892,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":989321229,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -257,8 +259,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(26);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(25);
+    assertThat(resourceRepo.count()).isEqualTo(27);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(26);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -268,9 +270,9 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(25);
+    assertThat(resourceRepo.count()).isEqualTo(26);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(24);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(25);
   }
 
   @NotNull
@@ -306,6 +308,9 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toNoteLabel(), equalTo("some note")))
       .andExpect(jsonPath("$." + toNoteUri(), equalTo(NOTE_URL)))
+      .andExpect(jsonPath("$." + toImmediateAcquisitionLabel(), equalTo("some immediateAcquisition")))
+      .andExpect(jsonPath("$." + toApplicableInstitutionUri(), equalTo(APPLICABLE_INSTITUTION_URL)))
+      .andExpect(jsonPath("$." + toApplicableInstitutionLabel(), equalTo("some applicableInstitution")))
       .andExpect(jsonPath("$." + toDistributionSimpleAgent(), equalTo("Distribution: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toDistributionSimpleDate(), equalTo("Distribution: 1921")))
       .andExpect(jsonPath("$." + toDistributionSimplePlace(), equalTo("Distribution: New York")))
@@ -343,7 +348,7 @@ class BibframeControllerIT {
     assertThat(monograph.getLabel()).isEqualTo(MONOGRAPH);
     assertThat(monograph.getDoc()).isNull();
     assertThat(monograph.getResourceHash()).isNotNull();
-    assertThat(monograph.getOutgoingEdges().size()).isEqualTo(1);
+    assertThat(monograph.getOutgoingEdges()).hasSize(1);
     validateSampleInstance(monograph.getOutgoingEdges().iterator().next(), monograph);
   }
 
@@ -358,7 +363,7 @@ class BibframeControllerIT {
     assertThat(instance.getDoc().size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
-    assertThat(instance.getOutgoingEdges().size()).isEqualTo(18);
+    assertThat(instance.getOutgoingEdges()).hasSize(19);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateSampleTitle(edgeIterator.next(), instance, INSTANCE_TITLE_URL, INSTANCE_TITLE, "Instance: ");
@@ -375,10 +380,12 @@ class BibframeControllerIT {
     validateSampleIdentified(edgeIterator.next(), instance, IDENTIFIERS_LOCAL_URL, IDENTIFIERS_LOCAL, "12345673");
     validateSampleIdentified(edgeIterator.next(), instance, IDENTIFIERS_OTHER_URL, IDENTIFIERS_OTHER, "12345674");
     validateSampleProperty(edgeIterator.next(), instance, NOTE_PRED, NOTE, "some note", NOTE_URL);
+    validateSampleImmediateAcquisition(edgeIterator.next(), instance);
     validateSampleExtent(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, null, "single unit", ISSUANCE_URL);
     validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, null, "unmediated", MEDIA_URL);
     validateSampleProperty(edgeIterator.next(), instance, CARRIER_PRED, null, "volume", CARRIER_URL);
+    assertThat(edgeIterator.hasNext()).isFalse();
   }
 
   private void validateSampleIdentified(ResourceEdge identifiedByLccnEdge, Resource instance, String label,
@@ -393,7 +400,7 @@ class BibframeControllerIT {
     assertThat(identifiedByLccn.getDoc().size()).isEqualTo(1);
     assertThat(identifiedByLccn.getDoc().get(VALUE_URL).size()).isEqualTo(1);
     assertThat(identifiedByLccn.getDoc().get(VALUE_URL).get(0).asText()).isEqualTo(value);
-    assertThat(identifiedByLccn.getOutgoingEdges().isEmpty()).isTrue();
+    assertThat(identifiedByLccn.getOutgoingEdges()).isEmpty();
   }
 
   private void validateSampleTitle(ResourceEdge titleEdge, Resource instance, String label, String type,
@@ -408,13 +415,13 @@ class BibframeControllerIT {
     assertThat(title.getDoc().size()).isEqualTo(1);
     assertThat(title.getDoc().get(MAIN_TITLE_URL).size()).isEqualTo(1);
     assertThat(title.getDoc().get(MAIN_TITLE_URL).get(0).asText()).isEqualTo(prefix + "Laramie holds the range");
-    assertThat(title.getOutgoingEdges().isEmpty()).isTrue();
+    assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateSampleProperty(ResourceEdge propertyEdge, Resource instance, String propertyPred,
+  private void validateSampleProperty(ResourceEdge propertyEdge, Resource source, String propertyPred,
                                       String propertyId, String propertyLabel, String propertyUrl) {
     assertThat(propertyEdge.getId()).isNotNull();
-    assertThat(propertyEdge.getSource()).isEqualTo(instance);
+    assertThat(propertyEdge.getSource()).isEqualTo(source);
     assertThat(propertyEdge.getPredicate().getLabel()).isEqualTo(propertyPred);
     var property = propertyEdge.getTarget();
     assertThat(property.getLabel()).isEqualTo(propertyLabel);
@@ -425,7 +432,7 @@ class BibframeControllerIT {
     }
     assertThat(property.getDoc().get(PROPERTY_URI).asText()).isEqualTo(propertyUrl);
     assertThat(property.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(propertyLabel);
-    assertThat(property.getOutgoingEdges().isEmpty()).isTrue();
+    assertThat(property.getOutgoingEdges()).isEmpty();
   }
 
   private void validateSampleExtent(ResourceEdge extentEdge, Resource instance) {
@@ -440,7 +447,26 @@ class BibframeControllerIT {
     assertThat(extent.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
     assertThat(extent.getDoc().get(LABEL_PRED).get(0).asText())
       .isEqualTo("vi, 374 pages, 4 unnumbered leaves of plates");
-    assertThat(extent.getOutgoingEdges().isEmpty()).isTrue();
+    assertThat(extent.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateSampleImmediateAcquisition(ResourceEdge edge, Resource instance) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(instance);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(IMM_ACQUISITION_PRED);
+    var immediateAcquisition = edge.getTarget();
+    assertThat(immediateAcquisition.getLabel()).isEqualTo(IMM_ACQUISITION_URI);
+    assertThat(immediateAcquisition.getType().getSimpleLabel()).isEqualTo(IMM_ACQUISITION);
+    assertThat(immediateAcquisition.getResourceHash()).isNotNull();
+    assertThat(immediateAcquisition.getDoc().size()).isEqualTo(1);
+    assertThat(immediateAcquisition.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
+    assertThat(immediateAcquisition.getDoc().get(LABEL_PRED).get(0).asText())
+      .isEqualTo("some immediateAcquisition");
+    assertThat(immediateAcquisition.getOutgoingEdges()).hasSize(1);
+    var edgeIterator = immediateAcquisition.getOutgoingEdges().iterator();
+    validateSampleProperty(edgeIterator.next(), immediateAcquisition, APPLICABLE_INSTITUTION_PRED, null,
+      "some applicableInstitution", APPLICABLE_INSTITUTION_URL);
+    assertThat(edgeIterator.hasNext()).isFalse();
   }
 
   private void validateSampleContribution(ResourceEdge contributionEdge, Resource instance) {
@@ -452,10 +478,11 @@ class BibframeControllerIT {
     assertThat(contribution.getType().getTypeUri()).isEqualTo(CONTRIBUTION_URL);
     assertThat(contribution.getResourceHash()).isNotNull();
     assertThat(contribution.getDoc()).isNull();
-    assertThat(contribution.getOutgoingEdges().size()).isEqualTo(2);
-    var contributionEdgeIterator = contribution.getOutgoingEdges().iterator();
-    validateSampleContributionAgent(contributionEdgeIterator.next(), contribution);
-    validateSampleContributionRole(contributionEdgeIterator.next(), contribution);
+    assertThat(contribution.getOutgoingEdges()).hasSize(2);
+    var edgeIterator = contribution.getOutgoingEdges().iterator();
+    validateSampleContributionAgent(edgeIterator.next(), contribution);
+    validateSampleContributionRole(edgeIterator.next(), contribution);
+    assertThat(edgeIterator.hasNext()).isFalse();
   }
 
   private void validateSampleContributionRole(ResourceEdge contributionRoleEdge, Resource contribution) {
@@ -470,7 +497,7 @@ class BibframeControllerIT {
     assertThat(contributionRole.getDoc().get(PROPERTY_URI).asText()).isEqualTo(ROLE_URL);
     assertThat(contributionRole.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("Author");
     assertThat(contributionRole.getDoc().get(PROPERTY_ID).asText()).isEqualTo(ROLE);
-    assertThat(contributionRole.getOutgoingEdges().isEmpty()).isTrue();
+    assertThat(contributionRole.getOutgoingEdges()).isEmpty();
   }
 
   private void validateSampleContributionAgent(ResourceEdge contributionAgentEdge, Resource contribution) {
@@ -486,7 +513,7 @@ class BibframeControllerIT {
       .isEqualTo("Test and Evaluation Year-2000 Team (U.S.)");
     assertThat(contributionAgent.getDoc().get(SAME_AS_PRED).get(0).get(PROPERTY_URI).asText())
       .isEqualTo("http://id.loc.gov/authorities/names/no98072015");
-    assertThat(contributionAgent.getOutgoingEdges().isEmpty()).isTrue();
+    assertThat(contributionAgent.getOutgoingEdges()).isEmpty();
   }
 
   private void validateSampleProvision(ResourceEdge provisionEdge, Resource instance, String label, String type,
@@ -507,7 +534,7 @@ class BibframeControllerIT {
     assertThat(provision.getDoc().get(SIMPLE_PLACE_PRED).get(0).asText()).isEqualTo(prefix + "New York");
     assertThat(provision.getDoc().get(DATE_URL).size()).isEqualTo(1);
     assertThat(provision.getDoc().get(DATE_URL).get(0).asText()).isEqualTo(prefix + "1921");
-    assertThat(provision.getOutgoingEdges().size()).isEqualTo(1);
+    assertThat(provision.getOutgoingEdges()).hasSize(1);
     validateSamplePublicationPlace(provision.getOutgoingEdges().iterator().next(), provision, prefix);
   }
 
@@ -524,7 +551,7 @@ class BibframeControllerIT {
     assertThat(publicationPlace.getDoc().get(PROPERTY_URI).asText()).isEqualTo(PLACE_URL);
     assertThat(publicationPlace.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(prefix + "New York (State)");
     assertThat(publicationPlace.getDoc().get(PROPERTY_ID).asText()).isEqualTo(PLACE);
-    assertThat(publicationPlace.getOutgoingEdges().isEmpty()).isTrue();
+    assertThat(publicationPlace.getOutgoingEdges()).isEmpty();
   }
 
   private String toCarrierLabel() {
@@ -554,6 +581,21 @@ class BibframeControllerIT {
 
   private String toNoteUri() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(PROPERTY_URI));
+  }
+
+  private String toImmediateAcquisitionLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IMM_ACQUISITION_PRED),
+      path(IMM_ACQUISITION_URI), arrayPath(LABEL_PRED));
+  }
+
+  private String toApplicableInstitutionUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IMM_ACQUISITION_PRED),
+      path(IMM_ACQUISITION_URI), arrayPath(APPLICABLE_INSTITUTION_PRED), path(PROPERTY_URI));
+  }
+
+  private String toApplicableInstitutionLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IMM_ACQUISITION_PRED),
+      path(IMM_ACQUISITION_URI), arrayPath(APPLICABLE_INSTITUTION_PRED), path(PROPERTY_LABEL));
   }
 
   private String toIssuanceLabel() {

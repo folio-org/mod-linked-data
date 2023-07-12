@@ -213,6 +213,21 @@
           "label": "some note"
         }
       ],
+      "http://id.loc.gov/ontologies/bibframe/immediateAcquisition": [
+        {
+          "http://id.loc.gov/ontologies/bibframe/ImmediateAcquisition": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "some immediateAcquisition"
+            ],
+            "http://id.loc.gov/ontologies/bflc/applicableInstitution": [
+              {
+                "uri": "http://id.loc.gov/ontologies/bflc/ApplicableInstitution",
+                "label": "some applicableInstitution"
+              }
+            ]
+          }
+        }
+      ],
       "http://id.loc.gov/ontologies/bibframe/carrier": [
         {
           "uri": "http://id.loc.gov/ontologies/bibframe/Carrier",

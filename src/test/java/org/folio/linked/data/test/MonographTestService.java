@@ -2,6 +2,8 @@ package org.folio.linked.data.test;
 
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION;
@@ -17,6 +19,8 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
+import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION;
+import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
@@ -158,6 +162,18 @@ public class MonographTestService {
       MEDIA_URL
     );
 
+    var immediateAcquisition = createResource(
+      Map.of(
+        APPLICABLE_INSTITUTION_PRED, List.of(Map.of(
+          PROPERTY_LABEL, "some applicableInstitution",
+          PROPERTY_URI, APPLICABLE_INSTITUTION_URL
+        )),
+        LABEL_PRED, List.of("some immediateAcquisition")
+      ),
+      IMM_ACQUISITION,
+      Collections.emptyMap()
+    );
+
     return createResource(
       Map.of(DIMENSIONS_URL, List.of("20 cm")),
       INSTANCE,
@@ -170,7 +186,8 @@ public class MonographTestService {
         EXTENT_PRED, List.of(extent),
         ISSUANCE_PRED, List.of(issuance),
         CARRIER_PRED, List.of(carrier),
-        MEDIA_PRED, List.of(media)
+        MEDIA_PRED, List.of(media),
+        IMM_ACQUISITION_PRED, List.of(immediateAcquisition)
       )
     );
   }

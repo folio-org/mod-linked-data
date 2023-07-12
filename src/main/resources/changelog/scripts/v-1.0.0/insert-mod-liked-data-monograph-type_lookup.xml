@@ -239,4 +239,16 @@
 
     </changeSet>
 
+  <changeSet id="02_insert_type_lookup" author="Pavel_Bobylev@epam.com">
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-9303335596"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/ImmediateAcquisition"/>
+      <column name="simple_label" value="lc:RT:bf2:ImmAcqSource"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="6068781499"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bflc/ApplicableInstitution"/>
+    </insert>
+  </changeSet>
+
 </databaseChangeLog>
