@@ -48,7 +48,9 @@ import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_URL;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
@@ -168,14 +170,14 @@ class BibframeControllerIT {
       .andReturn().getResponse().getContentAsString();
     var bibframeResponse1 = objectMapper.readValue(response1, BibframeResponse.class);
     var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
-    assertThat(persistedOptional1.isPresent()).isTrue();
+    assertThat(persistedOptional1).isPresent();
     var monograph1 = persistedOptional1.get();
     validateSampleMonographEntity(monograph1);
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3561758308,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":1706396892,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -301,6 +303,9 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toVariantTitle(), equalTo("Variant: Laramie holds the range")))
       .andExpect(jsonPath("$." + toMediaLabel(), equalTo("unmediated")))
       .andExpect(jsonPath("$." + toMediaUri(), equalTo(MEDIA_URL)))
+      .andExpect(jsonPath("$." + toNoteId(), equalTo(NOTE)))
+      .andExpect(jsonPath("$." + toNoteLabel(), equalTo("some note")))
+      .andExpect(jsonPath("$." + toNoteUri(), equalTo(NOTE_URL)))
       .andExpect(jsonPath("$." + toDistributionSimpleAgent(), equalTo("Distribution: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toDistributionSimpleDate(), equalTo("Distribution: 1921")))
       .andExpect(jsonPath("$." + toDistributionSimplePlace(), equalTo("Distribution: New York")))
@@ -353,28 +358,27 @@ class BibframeControllerIT {
     assertThat(instance.getDoc().size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
-    assertThat(instance.getOutgoingEdges().size()).isEqualTo(17);
+    assertThat(instance.getOutgoingEdges().size()).isEqualTo(18);
 
-    var instanceEdgeIterator = instance.getOutgoingEdges().iterator();
-    validateSampleTitle(instanceEdgeIterator.next(), instance, INSTANCE_TITLE_URL, INSTANCE_TITLE, "Instance: ");
-    validateSampleTitle(instanceEdgeIterator.next(), instance, PARALLEL_TITLE_URL, PARALLEL_TITLE, "Parallel: ");
-    validateSampleTitle(instanceEdgeIterator.next(), instance, VARIANT_TITLE_URL, VARIANT_TITLE, "Variant: ");
-    validateSampleProvision(instanceEdgeIterator.next(), instance, DISTRIBUTION_URL, DISTRIBUTION, "Distribution: ");
-    validateSampleProvision(instanceEdgeIterator.next(), instance, MANUFACTURE_URL, MANUFACTURE, "Manufacture: ");
-    validateSampleProvision(instanceEdgeIterator.next(), instance, PRODUCTION_URL, PRODUCTION, "Production: ");
-    validateSampleProvision(instanceEdgeIterator.next(), instance, PUBLICATION_URL, PUBLICATION, "Publication: ");
-    validateSampleContribution(instanceEdgeIterator.next(), instance);
-    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_EAN_URL, IDENTIFIERS_EAN, "12345670");
-    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_ISBN_URL, IDENTIFIERS_ISBN, "12345671");
-    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_LCCN_URL, IDENTIFIERS_LCCN, "12345672");
-    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_LOCAL_URL, IDENTIFIERS_LOCAL,
-      "12345673");
-    validateSampleIdentified(instanceEdgeIterator.next(), instance, IDENTIFIERS_OTHER_URL, IDENTIFIERS_OTHER,
-      "12345674");
-    validateSampleExtent(instanceEdgeIterator.next(), instance);
-    validateSampleIssuance(instanceEdgeIterator.next(), instance);
-    validateSampleMedia(instanceEdgeIterator.next(), instance);
-    validateSampleCarrier(instanceEdgeIterator.next(), instance);
+    var edgeIterator = instance.getOutgoingEdges().iterator();
+    validateSampleTitle(edgeIterator.next(), instance, INSTANCE_TITLE_URL, INSTANCE_TITLE, "Instance: ");
+    validateSampleTitle(edgeIterator.next(), instance, PARALLEL_TITLE_URL, PARALLEL_TITLE, "Parallel: ");
+    validateSampleTitle(edgeIterator.next(), instance, VARIANT_TITLE_URL, VARIANT_TITLE, "Variant: ");
+    validateSampleProvision(edgeIterator.next(), instance, DISTRIBUTION_URL, DISTRIBUTION, "Distribution: ");
+    validateSampleProvision(edgeIterator.next(), instance, MANUFACTURE_URL, MANUFACTURE, "Manufacture: ");
+    validateSampleProvision(edgeIterator.next(), instance, PRODUCTION_URL, PRODUCTION, "Production: ");
+    validateSampleProvision(edgeIterator.next(), instance, PUBLICATION_URL, PUBLICATION, "Publication: ");
+    validateSampleContribution(edgeIterator.next(), instance);
+    validateSampleIdentified(edgeIterator.next(), instance, IDENTIFIERS_EAN_URL, IDENTIFIERS_EAN, "12345670");
+    validateSampleIdentified(edgeIterator.next(), instance, IDENTIFIERS_ISBN_URL, IDENTIFIERS_ISBN, "12345671");
+    validateSampleIdentified(edgeIterator.next(), instance, IDENTIFIERS_LCCN_URL, IDENTIFIERS_LCCN, "12345672");
+    validateSampleIdentified(edgeIterator.next(), instance, IDENTIFIERS_LOCAL_URL, IDENTIFIERS_LOCAL, "12345673");
+    validateSampleIdentified(edgeIterator.next(), instance, IDENTIFIERS_OTHER_URL, IDENTIFIERS_OTHER, "12345674");
+    validateSampleProperty(edgeIterator.next(), instance, NOTE_PRED, NOTE, "some note", NOTE_URL);
+    validateSampleExtent(edgeIterator.next(), instance);
+    validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, null, "single unit", ISSUANCE_URL);
+    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, null, "unmediated", MEDIA_URL);
+    validateSampleProperty(edgeIterator.next(), instance, CARRIER_PRED, null, "volume", CARRIER_URL);
   }
 
   private void validateSampleIdentified(ResourceEdge identifiedByLccnEdge, Resource instance, String label,
@@ -392,20 +396,6 @@ class BibframeControllerIT {
     assertThat(identifiedByLccn.getOutgoingEdges().isEmpty()).isTrue();
   }
 
-  private void validateSampleCarrier(ResourceEdge carrierEdge, Resource instance) {
-    assertThat(carrierEdge.getId()).isNotNull();
-    assertThat(carrierEdge.getSource()).isEqualTo(instance);
-    assertThat(carrierEdge.getPredicate().getLabel()).isEqualTo(CARRIER_PRED);
-    var carrier = carrierEdge.getTarget();
-    assertThat(carrier.getLabel()).isEqualTo("volume");
-    assertThat(carrier.getType().getTypeUri()).isEqualTo(CARRIER_URL);
-    assertThat(carrier.getResourceHash()).isNotNull();
-    assertThat(carrier.getDoc().size()).isEqualTo(2);
-    assertThat(carrier.getDoc().get(PROPERTY_URI).asText()).isEqualTo(CARRIER_URL);
-    assertThat(carrier.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("volume");
-    assertThat(carrier.getOutgoingEdges().isEmpty()).isTrue();
-  }
-
   private void validateSampleTitle(ResourceEdge titleEdge, Resource instance, String label, String type,
                                    String prefix) {
     assertThat(titleEdge.getId()).isNotNull();
@@ -421,32 +411,21 @@ class BibframeControllerIT {
     assertThat(title.getOutgoingEdges().isEmpty()).isTrue();
   }
 
-  private void validateSampleMedia(ResourceEdge mediaEdge, Resource instance) {
-    assertThat(mediaEdge.getId()).isNotNull();
-    assertThat(mediaEdge.getSource()).isEqualTo(instance);
-    assertThat(mediaEdge.getPredicate().getLabel()).isEqualTo(MEDIA_PRED);
-    var media = mediaEdge.getTarget();
-    assertThat(media.getLabel()).isEqualTo("unmediated");
-    assertThat(media.getType().getTypeUri()).isEqualTo(MEDIA_URL);
-    assertThat(media.getResourceHash()).isNotNull();
-    assertThat(media.getDoc().size()).isEqualTo(2);
-    assertThat(media.getDoc().get(PROPERTY_URI).asText()).isEqualTo(MEDIA_URL);
-    assertThat(media.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("unmediated");
-    assertThat(media.getOutgoingEdges().isEmpty()).isTrue();
-  }
-
-  private void validateSampleIssuance(ResourceEdge issuanceEdge, Resource instance) {
-    assertThat(issuanceEdge.getId()).isNotNull();
-    assertThat(issuanceEdge.getSource()).isEqualTo(instance);
-    assertThat(issuanceEdge.getPredicate().getLabel()).isEqualTo(ISSUANCE_PRED);
-    var issuance = issuanceEdge.getTarget();
-    assertThat(issuance.getLabel()).isEqualTo("single unit");
-    assertThat(issuance.getType().getTypeUri()).isEqualTo(ISSUANCE_URL);
-    assertThat(issuance.getResourceHash()).isNotNull();
-    assertThat(issuance.getDoc().size()).isEqualTo(2);
-    assertThat(issuance.getDoc().get(PROPERTY_URI).asText()).isEqualTo(ISSUANCE_URL);
-    assertThat(issuance.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("single unit");
-    assertThat(issuance.getOutgoingEdges().isEmpty()).isTrue();
+  private void validateSampleProperty(ResourceEdge propertyEdge, Resource instance, String propertyPred,
+                                      String propertyId, String propertyLabel, String propertyUrl) {
+    assertThat(propertyEdge.getId()).isNotNull();
+    assertThat(propertyEdge.getSource()).isEqualTo(instance);
+    assertThat(propertyEdge.getPredicate().getLabel()).isEqualTo(propertyPred);
+    var property = propertyEdge.getTarget();
+    assertThat(property.getLabel()).isEqualTo(propertyLabel);
+    assertThat(property.getType().getTypeUri()).isEqualTo(propertyUrl);
+    assertThat(property.getResourceHash()).isNotNull();
+    if (property.getDoc().has(PROPERTY_ID)) {
+      assertThat(property.getDoc().get(PROPERTY_ID).asText()).isEqualTo(propertyId);
+    }
+    assertThat(property.getDoc().get(PROPERTY_URI).asText()).isEqualTo(propertyUrl);
+    assertThat(property.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(propertyLabel);
+    assertThat(property.getOutgoingEdges().isEmpty()).isTrue();
   }
 
   private void validateSampleExtent(ResourceEdge extentEdge, Resource instance) {

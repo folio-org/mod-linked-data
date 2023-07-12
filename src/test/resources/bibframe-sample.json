@@ -206,6 +206,13 @@
           "label": "unmediated"
         }
       ],
+      "http://id.loc.gov/ontologies/bibframe/note": [
+        {
+          "id": "lc:RT:bf2:Note",
+          "uri": "http://id.loc.gov/ontologies/bibframe/Note",
+          "label": "some note"
+        }
+      ],
       "http://id.loc.gov/ontologies/bibframe/carrier": [
         {
           "uri": "http://id.loc.gov/ontologies/bibframe/Carrier",
