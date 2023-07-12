@@ -9,14 +9,13 @@ import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapper;
 import org.folio.linked.data.model.ResourceHashAndLabel;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = SPRING)
-public abstract class ResourceMapper {
+public abstract class BibframeMapper {
 
   @Autowired
   private ProfiledMapper profiledMapper;
@@ -37,12 +36,12 @@ public abstract class ResourceMapper {
   }
 
   private void setEdgesId(Resource resource) {
-    for (ResourceEdge edge : resource.getOutgoingEdges()) {
+    resource.getOutgoingEdges().forEach(edge -> {
       edge.getId().setSourceHash(edge.getSource().getResourceHash());
       edge.getId().setTargetHash(edge.getTarget().getResourceHash());
       edge.getId().setPredicateHash(edge.getPredicate().getPredicateHash());
       setEdgesId(edge.getTarget());
-    }
+    });
   }
 
 }

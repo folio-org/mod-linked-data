@@ -19,10 +19,10 @@ import org.springframework.http.HttpStatus;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceControllerTest {
+class BibframeControllerTest {
 
   @InjectMocks
-  private ResourceController resourceController;
+  private BibframeController bibframeController;
 
   @Mock
   private ResourceService resourceService;
@@ -36,7 +36,7 @@ class ResourceControllerTest {
     when(resourceService.getBibframeById(id)).thenReturn(response);
 
     // when
-    var result = resourceController.getBibframeById(id, tenant);
+    var result = bibframeController.getBibframeById(id, tenant);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -53,7 +53,7 @@ class ResourceControllerTest {
     when(resourceService.getBibframeShortInfoPage(page, size)).thenReturn(expectedResponse);
 
     // when
-    var result = resourceController.getBibframeShortInfoPage(tenant, page, size);
+    var result = bibframeController.getBibframeShortInfoPage(tenant, page, size);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

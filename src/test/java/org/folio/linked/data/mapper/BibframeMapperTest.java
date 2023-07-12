@@ -19,16 +19,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceMapperTest {
+class BibframeMapperTest {
 
-  private ResourceMapper resourceMapper;
+  private BibframeMapper bibframeMapper;
   @Mock
   private ProfiledMapper profiledMapper;
 
   @BeforeEach
   void setUp() {
-    resourceMapper = new ResourceMapperImpl();
-    ReflectionTestUtils.setField(resourceMapper, "profiledMapper", profiledMapper);
+    bibframeMapper = new BibframeMapperImpl();
+    ReflectionTestUtils.setField(bibframeMapper, "profiledMapper", profiledMapper);
   }
 
   @Test
@@ -49,7 +49,7 @@ class ResourceMapperTest {
     doReturn(expectedResource).when(profiledMapper).toEntity(dto);
 
     // when
-    Resource resource = resourceMapper.map(dto);
+    Resource resource = bibframeMapper.map(dto);
 
     // then
     Iterator<ResourceEdge> resourceEdgeIterator = resource.getOutgoingEdges().iterator();

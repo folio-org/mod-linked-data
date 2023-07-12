@@ -5,7 +5,7 @@ info:
   description: Linked Data service API
 
 paths:
-  /resources:
+  /bibframe:
     post:
       operationId: createBibframe
       description: Create a Bibframe resource
@@ -45,7 +45,7 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resources/{id}:
+  /bibframe/{id}:
     get:
       operationId: getBibframeById
       description: Get a Bibframe resource by id

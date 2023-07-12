@@ -15,7 +15,7 @@ import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -31,7 +31,7 @@ public class ResourceServiceImpl implements ResourceService {
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "resourceHash");
   private final ResourceRepository resourceRepo;
-  private final ResourceMapper resourceMapper;
+  private final BibframeMapper bibframeMapper;
   private final BibframeProperties bibframeProperties;
 
   @Override
@@ -40,19 +40,19 @@ public class ResourceServiceImpl implements ResourceService {
       throw new NotSupportedException(BIBFRAME_PROFILE + bibframeRequest.getProfile()
         + IS_NOT_IN_THE_LIST_OF_SUPPORTED + String.join(", ", bibframeProperties.getProfiles()));
     }
-    var mapped = resourceMapper.map(bibframeRequest);
+    var mapped = bibframeMapper.map(bibframeRequest);
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(BIBFRAME_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     var persisted = resourceRepo.save(mapped);
-    return resourceMapper.map(persisted);
+    return bibframeMapper.map(persisted);
   }
 
   @Override
   public BibframeResponse getBibframeById(Long id) {
     var resource = resourceRepo.findById(id).orElseThrow(() ->
       new NotFoundException(BIBFRAME_WITH_GIVEN_ID + id + IS_NOT_FOUND));
-    return resourceMapper.map(resource);
+    return bibframeMapper.map(resource);
   }
 
   @Override
@@ -79,8 +79,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
     var page = resourceRepo.findResourcesByType(bibframeProperties.getProfiles(),
       PageRequest.of(pageNumber, pageSize, DEFAULT_SORT));
-    var pageOfDto = page.map(resourceMapper::map);
-    return resourceMapper.map(pageOfDto);
+    var pageOfDto = page.map(bibframeMapper::map);
+    return bibframeMapper.map(pageOfDto);
   }
 
 }

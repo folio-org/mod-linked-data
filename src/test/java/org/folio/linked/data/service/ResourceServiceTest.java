@@ -16,7 +16,7 @@ import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.ResourceHashAndLabel;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.spring.test.type.UnitTest;
@@ -41,7 +41,7 @@ class ResourceServiceTest {
   private ResourceRepository resourceRepo;
 
   @Mock
-  private ResourceMapper resourceMapper;
+  private BibframeMapper bibframeMapper;
 
   @Mock
   private BibframeProperties bibframeProperties;
@@ -53,7 +53,7 @@ class ResourceServiceTest {
     var existedResource = randomResource();
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
     var expectedResponse = random(BibframeResponse.class);
-    when(resourceMapper.map(existedResource)).thenReturn(expectedResponse);
+    when(bibframeMapper.map(existedResource)).thenReturn(expectedResponse);
 
     // when
     var result = resourceService.getBibframeById(id);
@@ -92,7 +92,7 @@ class ResourceServiceTest {
     doReturn(pageOfDto).when(pageOfShortEntities)
       .map(ArgumentMatchers.<Function<ResourceHashAndLabel, BibframeShort>>any());
     var expectedResult = random(BibframeShortInfoPage.class);
-    doReturn(expectedResult).when(resourceMapper).map(pageOfDto);
+    doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
 
     // when
     var result = resourceService.getBibframeShortInfoPage(pageNumber, pageSize);
@@ -113,7 +113,7 @@ class ResourceServiceTest {
     doReturn(pageOfDto).when(pageOfShortEntities)
       .map(ArgumentMatchers.<Function<ResourceHashAndLabel, BibframeShort>>any());
     var expectedResult = random(BibframeShortInfoPage.class);
-    doReturn(expectedResult).when(resourceMapper).map(pageOfDto);
+    doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
 
     // when
     var result = resourceService.getBibframeShortInfoPage(null, null);

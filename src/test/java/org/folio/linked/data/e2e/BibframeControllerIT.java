@@ -110,9 +110,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @Transactional
-class ResourceControllerIT {
+class BibframeControllerIT {
 
-  public static final String RESOURCES_URL = "/resources";
+  public static final String BIBFRAME_URL = "/bibframe";
 
   @Autowired
   private MockMvc mockMvc;
@@ -137,7 +137,7 @@ class ResourceControllerIT {
   @Test
   void createMonographInstanceBibframe_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var requestBuilder = post(RESOURCES_URL)
+    var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample());
@@ -159,7 +159,7 @@ class ResourceControllerIT {
   @Test
   void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
     // given
-    var requestBuilder1 = post(RESOURCES_URL)
+    var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample());
@@ -171,7 +171,7 @@ class ResourceControllerIT {
     assertThat(persistedOptional1.isPresent()).isTrue();
     var monograph1 = persistedOptional1.get();
     validateSampleMonographEntity(monograph1);
-    var requestBuilder2 = post(RESOURCES_URL)
+    var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
@@ -188,7 +188,7 @@ class ResourceControllerIT {
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
-    var requestBuilder = get(RESOURCES_URL + "/" + existed.getResourceHash())
+    var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -204,7 +204,7 @@ class ResourceControllerIT {
   void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
     var notExistedId = randomLong();
-    var requestBuilder = get(RESOURCES_URL + "/" + notExistedId)
+    var requestBuilder = get(BIBFRAME_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -230,7 +230,7 @@ class ResourceControllerIT {
       resourceRepo.save(randomResource(2L, monographTestService.getMonographProfile())),
       resourceRepo.save(randomResource(3L, monographTestService.getMonographProfile()))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
-    var requestBuilder = get(RESOURCES_URL)
+    var requestBuilder = get(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -257,7 +257,7 @@ class ResourceControllerIT {
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(26);
     assertThat(resourceEdgeRepository.count()).isEqualTo(25);
-    var requestBuilder = delete(RESOURCES_URL + "/" + existed.getResourceHash())
+    var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
