@@ -53,7 +53,7 @@ class BibframeControllerTest {
     when(resourceService.getBibframeShortInfoPage(page, size)).thenReturn(expectedResponse);
 
     // when
-    var result = bibframeController.getBibframesShortInfoPage(tenant, page, size);
+    var result = bibframeController.getBibframeShortInfoPage(tenant, page, size);
 
     // then
     assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

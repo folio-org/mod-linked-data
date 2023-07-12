@@ -16,8 +16,6 @@ import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.BibframeMapper;
-import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -33,7 +31,6 @@ public class ResourceServiceImpl implements ResourceService {
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "resourceHash");
   private final ResourceRepository resourceRepo;
-  private final ResourceEdgeRepository resourceEdgeRepository;
   private final BibframeMapper bibframeMapper;
   private final BibframeProperties bibframeProperties;
 
@@ -69,19 +66,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public void deleteBibframe(Long id) {
-    resourceRepo.findById(id)
-      .ifPresent(resource -> {
-        deleteEdges(resource);
-        resourceRepo.delete(resource);
-      });
-  }
-
-  private void deleteEdges(Resource resource) {
-    resource.getOutgoingEdges().forEach(edge -> {
-      deleteEdges(edge.getTarget());
-      resourceEdgeRepository.delete(edge);
-    });
-    resource.setOutgoingEdges(null);
+    resourceRepo.deleteById(id);
   }
 
   @Override

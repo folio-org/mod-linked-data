@@ -3,36 +3,36 @@
   "name": "Linked Data Module",
   "provides": [
     {
-      "id": "bibframes",
+      "id": "bibframe",
       "version": "0.1",
       "handlers": [
         {
           "methods": [ "POST" ],
-          "pathPattern": "/bibframes",
+          "pathPattern": "/bibframe",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/bibframes",
+          "pathPattern": "/bibframe",
           "permissionsRequired": [ "linked.data.bibframe.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/bibframes/{id}",
+          "pathPattern": "/bibframe/{id}",
           "permissionsRequired": [ "linked.data.bibframe.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "PUT" ],
-          "pathPattern": "/bibframes/{id}",
+          "pathPattern": "/bibframe/{id}",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []
         },
         {
           "methods": [ "DELETE" ],
-          "pathPattern": "/bibframes/{id}",
+          "pathPattern": "/bibframe/{id}",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []
         }

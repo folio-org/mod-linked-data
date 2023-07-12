@@ -9,10 +9,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
 @Entity
 @NoArgsConstructor
+@Accessors(chain = true)
 @RequiredArgsConstructor
 @Table(name = "predicate_lookup")
 @EqualsAndHashCode(of = "predicateHash")

@@ -14,11 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BibframeProfiledMapperImpl implements BibframeProfiledMapper {
+public class ProfiledMapperImpl implements ProfiledMapper {
 
-  private final Map<String, BibframeProfiledMapperUnit> mappers = new HashMap<>();
+  private final Map<String, ProfiledMapperUnit> mappers = new HashMap<>();
 
-  public BibframeProfiledMapperImpl(@Autowired List<BibframeProfiledMapperUnit> mapperUnits) {
+  public ProfiledMapperImpl(@Autowired List<ProfiledMapperUnit> mapperUnits) {
     mapperUnits.forEach(mapperUnit -> {
       var annotation = mapperUnit.getClass().getAnnotation(MapperUnit.class);
       this.mappers.put(annotation.type(), mapperUnit);
@@ -32,10 +32,13 @@ public class BibframeProfiledMapperImpl implements BibframeProfiledMapper {
 
   @Override
   public BibframeResponse toDto(Resource resource) {
-    return getMapperUnit(resource.getType().getSimpleLabel()).toDto(resource);
+    var type = resource.getType().getSimpleLabel();
+    var response = getMapperUnit(type).toDto(resource);
+    response.setProfile(type);
+    return response;
   }
 
-  private BibframeProfiledMapperUnit getMapperUnit(String profile) {
+  private ProfiledMapperUnit getMapperUnit(String profile) {
     return mappers.computeIfAbsent(profile, k -> {
       throw new NotSupportedException(RESOURCE_TYPE + k + IS_NOT_BIBFRAME_ROOT);
     });

@@ -4,10 +4,9 @@ import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.model.entity.Resource;
 
-public interface BibframeProfiledMapper {
-
-  BibframeResponse toDto(Resource resource);
+public interface ProfiledMapperUnit {
 
   Resource toEntity(BibframeRequest dto);
 
+  BibframeResponse toDto(Resource resource);
 }

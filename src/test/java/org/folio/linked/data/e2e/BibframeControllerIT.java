@@ -20,6 +20,7 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
+import static org.folio.linked.data.util.BibframeConstants.ID;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN_URL;
@@ -58,6 +59,7 @@ import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.PROFILE;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
@@ -88,14 +90,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestService;
+import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -109,7 +112,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class BibframeControllerIT {
 
-  public static final String BIBFRAMES_URL = "/bibframes";
+  public static final String BIBFRAME_URL = "/bibframe";
 
   @Autowired
   private MockMvc mockMvc;
@@ -134,7 +137,7 @@ class BibframeControllerIT {
   @Test
   void createMonographInstanceBibframe_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var requestBuilder = post(BIBFRAMES_URL)
+    var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample());
@@ -153,12 +156,39 @@ class BibframeControllerIT {
     validateSampleMonographEntity(monograph);
   }
 
+  @Test
+  void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
+    // given
+    var requestBuilder1 = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getResourceSample());
+    var resultActions1 = mockMvc.perform(requestBuilder1);
+    var response1 = validateSampleBibframeResponse(resultActions1)
+      .andReturn().getResponse().getContentAsString();
+    var bibframeResponse1 = objectMapper.readValue(response1, BibframeResponse.class);
+    var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
+    assertThat(persistedOptional1.isPresent()).isTrue();
+    var monograph1 = persistedOptional1.get();
+    validateSampleMonographEntity(monograph1);
+    var requestBuilder2 = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getResourceSample().replace("volume", "length"));
+    var expectedDifference = "length\"}]}],\"id\":3561758308,\"profile\":\"lc:profile:bf2:Monograph\"}";
+
+    // when
+    var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
+
+    // then
+    assertThat(StringUtils.difference(response1, response2)).isEqualTo(expectedDifference);
+  }
 
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
-    var requestBuilder = get(BIBFRAMES_URL + "/" + existed.getResourceHash())
+    var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -174,7 +204,7 @@ class BibframeControllerIT {
   void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
     var notExistedId = randomLong();
-    var requestBuilder = get(BIBFRAMES_URL + "/" + notExistedId)
+    var requestBuilder = get(BIBFRAME_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -193,14 +223,14 @@ class BibframeControllerIT {
   }
 
   @Test
-  void getBibframesShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
+  void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
       resourceRepo.save(randomResource(1L, monographTestService.getMonographProfile())),
       resourceRepo.save(randomResource(2L, monographTestService.getMonographProfile())),
       resourceRepo.save(randomResource(3L, monographTestService.getMonographProfile()))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
-    var requestBuilder = get(BIBFRAMES_URL)
+    var requestBuilder = get(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -221,13 +251,13 @@ class BibframeControllerIT {
   }
 
   @Test
-  void deleteBibframeById_shouldDeleteRootResourceAndAllEdges() throws Exception {
+  void deleteBibframeById_shouldDeleteRootResourceAndRootEdge() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
-    assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isTrue();
+    assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(26);
     assertThat(resourceEdgeRepository.count()).isEqualTo(25);
-    var requestBuilder = delete(BIBFRAMES_URL + "/" + existed.getResourceHash())
+    var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -235,9 +265,10 @@ class BibframeControllerIT {
     mockMvc.perform(requestBuilder);
 
     // then
-    assertThat(resourceRepo.findById(existed.getResourceHash()).isPresent()).isFalse();
+    assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
     assertThat(resourceRepo.count()).isEqualTo(25);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(0);
+    assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceEdgeRepository.count()).isEqualTo(24);
   }
 
   @NotNull
@@ -297,7 +328,9 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toPublicationPlaceId(), equalTo(PLACE)))
       .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("Publication: New York (State)")))
       .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)))
-      .andExpect(jsonPath("$." + toPublicationDate(), equalTo("Publication: 1921")));
+      .andExpect(jsonPath("$." + toPublicationDate(), equalTo("Publication: 1921")))
+      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH)))
+      .andExpect(jsonPath("$." + toId(), notNullValue()));
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
@@ -766,6 +799,14 @@ class BibframeControllerIT {
       arrayPath(VALUE_URL));
   }
 
+  private String toId() {
+    return path(ID);
+  }
+
+  private String toProfile() {
+    return path(PROFILE);
+  }
+
   private String path(String path) {
     return String.format("['%s']", path);
   }
@@ -777,6 +818,5 @@ class BibframeControllerIT {
   private String arrayPath(String path) {
     return arrayPath(path, 0);
   }
-
 
 }

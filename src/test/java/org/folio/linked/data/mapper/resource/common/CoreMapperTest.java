@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper;
+package org.folio.linked.data.mapper.resource.common;
 
 import static org.folio.linked.data.test.IsEqualJson.equalToJson;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
@@ -47,8 +47,6 @@ import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.domain.dto.Url;
-import org.folio.linked.data.mapper.resource.common.CoreMapper;
-import org.folio.linked.data.mapper.resource.common.CoreMapperImpl;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Predicate;
