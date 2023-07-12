@@ -20,6 +20,7 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
+import static org.folio.linked.data.util.BibframeConstants.ID;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN_URL;
@@ -58,6 +59,7 @@ import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.PROFILE;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
@@ -325,7 +327,10 @@ class ResourceControllerIT {
       .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("Publication: New York")))
       .andExpect(jsonPath("$." + toPublicationPlaceId(), equalTo(PLACE)))
       .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("Publication: New York (State)")))
-      .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)));
+      .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)))
+      .andExpect(jsonPath("$." + toPublicationDate(), equalTo("Publication: 1921")))
+      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH)))
+      .andExpect(jsonPath("$." + toId(), notNullValue()));
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
@@ -794,6 +799,14 @@ class ResourceControllerIT {
       arrayPath(VALUE_URL));
   }
 
+  private String toId() {
+    return path(ID);
+  }
+
+  private String toProfile() {
+    return path(PROFILE);
+  }
+
   private String path(String path) {
     return String.format("['%s']", path);
   }
@@ -805,6 +818,5 @@ class ResourceControllerIT {
   private String arrayPath(String path) {
     return arrayPath(path, 0);
   }
-
 
 }

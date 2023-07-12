@@ -158,4 +158,7 @@ public class BibframeConstants {
   public static final String SIMPLE_DATE_PRED = "http://id.loc.gov/ontologies/bflc/simpleDate";
   public static final String LABEL_PRED = "http://www.w3.org/2000/01/rdf-schema#label";
 
+  // fields
+  public static final String ID = "id";
+  public static final String PROFILE = "profile";
 }
