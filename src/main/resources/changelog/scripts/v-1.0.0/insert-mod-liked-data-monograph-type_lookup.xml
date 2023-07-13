@@ -249,6 +249,14 @@
       <column name="type_hash" value="6068781499"/>
       <column name="type_uri" value="http://id.loc.gov/ontologies/bflc/ApplicableInstitution"/>
     </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="7353037772"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Status"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="6575245800"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Assigner"/>
+    </insert>
   </changeSet>
 
 </databaseChangeLog>

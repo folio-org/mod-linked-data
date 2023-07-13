@@ -150,6 +150,9 @@
           "http://id.loc.gov/ontologies/bibframe/Ean": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345670"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/qualifier": [
+              "07654321"
             ]
           }
         },
@@ -157,6 +160,16 @@
           "http://id.loc.gov/ontologies/bibframe/Isbn": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345671"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/qualifier": [
+              "17654321"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/status": [
+              {
+                "id": "isbnStatusId",
+                "uri": "isbnStatusUri",
+                "label": "isbnStatusLabel"
+              }
             ]
           }
         },
@@ -164,6 +177,13 @@
           "http://id.loc.gov/ontologies/bibframe/Lccn": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345672"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/status": [
+              {
+                "id": "lccnStatusId",
+                "uri": "lccnStatusUri",
+                "label": "lccnStatusLabel"
+              }
             ]
           }
         },
@@ -171,6 +191,13 @@
           "http://id.loc.gov/ontologies/bibframe/Local": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345673"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/assigner": [
+              {
+                "id": "assignerId",
+                "uri": "assignerUri",
+                "label": "assignerLabel"
+              }
             ]
           }
         },
@@ -178,6 +205,9 @@
           "http://id.loc.gov/ontologies/bibframe/Identifier": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345674"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/qualifier": [
+              "47654321"
             ]
           }
         }

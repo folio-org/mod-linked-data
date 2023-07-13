@@ -93,6 +93,7 @@ public class BibframeConstants {
   public static final String SUPP_CONTENT_URL = "http://id.loc.gov/ontologies/bibframe/SupplementaryContent";
   public static final String APPLICABLE_INSTITUTION_URL = "http://id.loc.gov/ontologies/bflc/ApplicableInstitution";
   public static final String APPLIES_TO_URL = "http://id.loc.gov/ontologies/bflc/AppliesTo";
+  public static final String ASSIGNER_URL = "http://id.loc.gov/ontologies/bibframe/Assigner";
 
   //Literal URLs
   public static final String RESPONSIBILITY_STATEMENT_URL =

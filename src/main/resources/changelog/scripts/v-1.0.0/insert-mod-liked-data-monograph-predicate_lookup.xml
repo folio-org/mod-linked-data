@@ -232,6 +232,10 @@
       <column name="predicate_hash" value="-9041209901"/>
       <column name="predicate" value="http://id.loc.gov/ontologies/bflc/applicableInstitution"/>
     </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="9048075215"/>
+      <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/status"/>
+    </insert>
   </changeSet>
 
 </databaseChangeLog>

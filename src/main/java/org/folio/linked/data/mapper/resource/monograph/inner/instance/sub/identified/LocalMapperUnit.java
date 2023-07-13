@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.identified;
 
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL_URL;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -45,7 +45,7 @@ public class LocalMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(IDENTIFIERS_LOCAL_URL);
     resource.setType(resourceTypeService.get(IDENTIFIERS_LOCAL));
     resource.setDoc(getDoc(local));
-    coreMapper.mapPropertyEdges(local.getAssigner(), resource, ASSIGNER_PRED, STATUS_URL);
+    coreMapper.mapPropertyEdges(local.getAssigner(), resource, ASSIGNER_PRED, ASSIGNER_URL);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

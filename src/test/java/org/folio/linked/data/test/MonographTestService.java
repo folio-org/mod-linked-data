@@ -4,6 +4,7 @@ import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION;
@@ -45,6 +46,7 @@ import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
 import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
+import static org.folio.linked.data.util.BibframeConstants.QUALIFIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.ROLE;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
@@ -52,6 +54,7 @@ import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 
@@ -126,11 +129,59 @@ public class MonographTestService {
       )
     );
 
-    var ean = identifiedBy(IDENTIFIERS_EAN, "12345670");
-    var isbn = identifiedBy(IDENTIFIERS_ISBN, "12345671");
-    var lccn = identifiedBy(IDENTIFIERS_LCCN, "12345672");
-    var local = identifiedBy(IDENTIFIERS_LOCAL, "12345673");
-    var other = identifiedBy(IDENTIFIERS_OTHER, "12345674");
+    var ean = createResource(
+      Map.of(
+        VALUE_URL, List.of("12345670"),
+        QUALIFIER_URL, List.of("07654321")
+      ),
+      IDENTIFIERS_EAN,
+      Collections.emptyMap()
+    );
+    var isbn = createResource(
+      Map.of(
+        VALUE_URL, List.of("12345671"),
+        QUALIFIER_URL, List.of("17654321"),
+        STATUS_PRED, List.of(Map.of(
+          PROPERTY_ID, "isbnStatusId",
+          PROPERTY_LABEL, "isbnStatusLabel",
+          PROPERTY_URI, "isbnStatusUri")
+        )
+      ),
+      IDENTIFIERS_ISBN,
+      Collections.emptyMap()
+    );
+    var lccn = createResource(
+      Map.of(
+        VALUE_URL, List.of("12345672"),
+        STATUS_PRED, List.of(Map.of(
+          PROPERTY_ID, "lccnStatusId",
+          PROPERTY_LABEL, "lccnStatusLabel",
+          PROPERTY_URI, "lccnStatusUri")
+        )
+      ),
+      IDENTIFIERS_LCCN,
+      Collections.emptyMap()
+    );
+    var local = createResource(
+      Map.of(
+        VALUE_URL, List.of("12345673"),
+        ASSIGNER_PRED, List.of(Map.of(
+          PROPERTY_ID, "assignerId",
+          PROPERTY_LABEL, "assignerLabel",
+          PROPERTY_URI, "assignerUri")
+        )
+      ),
+      IDENTIFIERS_LOCAL,
+      Collections.emptyMap()
+    );
+    var other = createResource(
+      Map.of(
+        VALUE_URL, List.of("12345674"),
+        QUALIFIER_URL, List.of("47654321")
+      ),
+      IDENTIFIERS_OTHER,
+      Collections.emptyMap()
+    );
 
     var note = createSimpleResource(
       "some note",
@@ -218,14 +269,6 @@ public class MonographTestService {
       prefix + "New York (State)",
       "lc:RT:bf2:Place",
       "http://id.loc.gov/ontologies/bibframe/Place"
-    );
-  }
-
-  private Resource identifiedBy(String type, String value) {
-    return createResource(
-      Map.of(VALUE_URL, List.of(value)),
-      type,
-      Collections.emptyMap()
     );
   }
 
