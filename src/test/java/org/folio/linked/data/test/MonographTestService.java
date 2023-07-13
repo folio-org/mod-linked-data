@@ -10,6 +10,7 @@ import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
@@ -34,10 +35,13 @@ import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
+import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
@@ -55,8 +59,10 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,9 +103,48 @@ public class MonographTestService {
   }
 
   private Resource createSampleInstance() {
-    var instanceTitle = title("Instance: ", INSTANCE_TITLE);
-    var parallelTitle = title("Parallel: ", PARALLEL_TITLE);
-    var variantTitle = title("Variant: ", VARIANT_TITLE);
+    var instanceTitle = createResource(
+      Map.of(
+        PART_NAME_URL, List.of("Instance: partName"),
+        PART_NUMBER_URL, List.of("Instance: partNumber"),
+        MAIN_TITLE_PRED, List.of("Instance: Laramie holds the range"),
+        NON_SORT_NUM_URL, List.of("Instance: nonSortNum"),
+        SUBTITLE_URL, List.of("Instance: subtitle")
+      ),
+      INSTANCE_TITLE,
+      Collections.emptyMap()
+    );
+    var parallelTitle = createResource(
+      Map.of(
+        PART_NAME_URL, List.of("Parallel: partName"),
+        PART_NUMBER_URL, List.of("Parallel: partNumber"),
+        MAIN_TITLE_PRED, List.of("Parallel: Laramie holds the range"),
+        DATE_URL, List.of("Parallel: date"),
+        SUBTITLE_URL, List.of("Parallel: subtitle")
+      ),
+      PARALLEL_TITLE,
+      Map.of(NOTE_PRED, List.of(createSimpleResource(
+        "Parallel: noteLabel",
+        NOTE,
+        "Parallel: noteUri"
+      )))
+    );
+    var variantTitle = createResource(
+      Map.of(
+        PART_NAME_URL, List.of("Variant: partName"),
+        PART_NUMBER_URL, List.of("Variant: partNumber"),
+        MAIN_TITLE_PRED, List.of("Variant: Laramie holds the range"),
+        DATE_URL, List.of("Variant: date"),
+        SUBTITLE_URL, List.of("Variant: subtitle"),
+        VARIANT_TYPE_URL, List.of("Variant: variantType")
+      ),
+      VARIANT_TITLE,
+      Map.of(NOTE_PRED, List.of(createSimpleResource(
+        "Variant: noteLabel",
+        NOTE,
+        "Variant: noteUri"
+      )))
+    );
 
     var distribution = provisionActivity("Distribution: ", DISTRIBUTION);
     var manufacture = provisionActivity("Manufacture: ", MANUFACTURE);
@@ -240,14 +285,6 @@ public class MonographTestService {
         MEDIA_PRED, List.of(media),
         IMM_ACQUISITION_PRED, List.of(immediateAcquisition)
       )
-    );
-  }
-
-  private Resource title(String prefix, String url) {
-    return createResource(
-      Map.of(MAIN_TITLE_PRED, List.of(prefix + "Laramie holds the range")),
-      url,
-      Collections.emptyMap()
     );
   }
 

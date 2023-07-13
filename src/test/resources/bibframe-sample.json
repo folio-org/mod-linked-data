@@ -6,22 +6,75 @@
       "http://id.loc.gov/ontologies/bibframe/title": [
         {
           "http://id.loc.gov/ontologies/bibframe/Title": {
+            "http://id.loc.gov/ontologies/bibframe/partName": [
+              "Instance: partName"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/partNumber": [
+              "Instance: partNumber"
+            ],
             "http://id.loc.gov/ontologies/bibframe/mainTitle": [
               "Instance: Laramie holds the range"
+            ],
+            "http://id.loc.gov/ontologies/bflc/nonSortNum": [
+              "Instance: nonSortNum"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/subtitle": [
+              "Instance: subtitle"
             ]
           }
         },
         {
           "http://id.loc.gov/ontologies/bibframe/ParallelTitle": {
+            "http://id.loc.gov/ontologies/bibframe/partName": [
+              "Parallel: partName"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/partNumber": [
+              "Parallel: partNumber"
+            ],
             "http://id.loc.gov/ontologies/bibframe/mainTitle": [
               "Parallel: Laramie holds the range"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "label": "Parallel: noteLabel",
+                "uri": "Parallel: noteUri"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/date": [
+              "Parallel: date"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/subtitle": [
+              "Parallel: subtitle"
             ]
           }
         },
         {
           "http://id.loc.gov/ontologies/bibframe/VariantTitle": {
+            "http://id.loc.gov/ontologies/bibframe/partName": [
+              "Variant: partName"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/partNumber": [
+              "Variant: partNumber"
+            ],
             "http://id.loc.gov/ontologies/bibframe/mainTitle": [
               "Variant: Laramie holds the range"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "label": "Variant: noteLabel",
+                "uri": "Variant: noteUri"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/date": [
+              "Variant: date"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/subtitle": [
+              "Variant: subtitle"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/variantType": [
+              "Variant: variantType"
             ]
           }
         }
