@@ -341,6 +341,22 @@
           "uri": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent",
           "label": "supplementaryContentLabel"
         }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/electronicLocator": [
+        {
+          "http://www.w3.org/2000/01/rdf-schema#Bibframe": {
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "uri": "electronicLocatorNoteUri",
+                "label": "electronicLocatorNoteLabel"
+              }
+            ],
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "electronicLocatorValue"
+            ]
+          }
+        }
       ]
     }
   ],

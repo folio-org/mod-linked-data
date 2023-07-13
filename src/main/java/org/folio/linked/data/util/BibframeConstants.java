@@ -48,7 +48,7 @@ public class BibframeConstants {
   public static final String PERSON = "lc:RT:bf2:Agent:bfPerson";
   public static final String ROLE = "lc:RT:bf2:Agent:bfRole";
   public static final String PLACE = "lc:RT:bf2:Place";
-  public static final String URL = "http://www.w3.org/2000/01/rdf-schema#Bibframe";
+  public static final String URL = "lc:RT:bf2:URL";
   public static final String IMM_ACQUISITION = "lc:RT:bf2:ImmAcqSource";
 
   //Type URLs
@@ -85,6 +85,7 @@ public class BibframeConstants {
   public static final String MANUFACTURE_URL = "http://id.loc.gov/ontologies/bibframe/Manufacture";
   public static final String PRODUCTION_URL = "http://id.loc.gov/ontologies/bibframe/Production";
   public static final String IMM_ACQUISITION_URI = "http://id.loc.gov/ontologies/bibframe/ImmediateAcquisition";
+  public static final String URL_URL = "http://www.w3.org/2000/01/rdf-schema#Bibframe";
 
   //Property type URLs
   public static final String PERSON_URL = "http://id.loc.gov/ontologies/bibframe/Person";

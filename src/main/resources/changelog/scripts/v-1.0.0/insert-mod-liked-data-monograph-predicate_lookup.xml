@@ -236,6 +236,10 @@
       <column name="predicate_hash" value="9048075215"/>
       <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/status"/>
     </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="6564325613"/>
+      <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/electronicLocator"/>
+    </insert>
   </changeSet>
 
 </databaseChangeLog>

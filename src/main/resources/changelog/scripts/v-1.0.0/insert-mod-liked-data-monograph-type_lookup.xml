@@ -265,6 +265,11 @@
       <column name="type_hash" value="5979038995"/>
       <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/SupplementaryContent"/>
     </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="662456909"/>
+      <column name="type_uri" value="http://www.w3.org/2000/01/rdf-schema#Bibframe"/>
+      <column name="simple_label" value="lc:RT:bf2:URL"/>
+    </insert>
   </changeSet>
 
 </databaseChangeLog>

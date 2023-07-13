@@ -23,6 +23,7 @@ import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
@@ -93,6 +94,8 @@ import static org.folio.linked.data.util.BibframeConstants.STATUS_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
+import static org.folio.linked.data.util.BibframeConstants.URL;
+import static org.folio.linked.data.util.BibframeConstants.URL_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
@@ -193,7 +196,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3068832050,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":3565444008,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -273,8 +276,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(32);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(31);
+    assertThat(resourceRepo.count()).isEqualTo(33);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(32);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -284,9 +287,9 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(31);
+    assertThat(resourceRepo.count()).isEqualTo(32);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(30);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(31);
   }
 
   @NotNull
@@ -310,6 +313,10 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toContributionRoleUri(), equalTo(ROLE_URL)))
       .andExpect(jsonPath("$." + toContributionRoleLabel(), equalTo("Author")))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
+      .andExpect(jsonPath("$." + toElectronicLocatorNoteId(), equalTo(NOTE)))
+      .andExpect(jsonPath("$." + toElectronicLocatorNoteLabel(), equalTo("electronicLocatorNoteLabel")))
+      .andExpect(jsonPath("$." + toElectronicLocatorNoteUri(), equalTo("electronicLocatorNoteUri")))
+      .andExpect(jsonPath("$." + toElectronicLocatorValue(), equalTo("electronicLocatorValue")))
       .andExpect(jsonPath("$." + toExtentNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toExtentNoteLabel(), equalTo("extent note label")))
       .andExpect(jsonPath("$." + toExtentNoteUri(), equalTo("extent note uri")))
@@ -421,7 +428,7 @@ class BibframeControllerIT {
     assertThat(instance.getDoc().size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
-    assertThat(instance.getOutgoingEdges()).hasSize(20);
+    assertThat(instance.getOutgoingEdges()).hasSize(21);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateSampleInstanceTitle(edgeIterator.next(), instance);
@@ -442,6 +449,7 @@ class BibframeControllerIT {
       "supplementaryContentLabel", SUPP_CONTENT_URL);
     validateSampleImmediateAcquisition(edgeIterator.next(), instance);
     validateSampleExtent(edgeIterator.next(), instance);
+    validateSampleElectronicLocator(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, ISSUANCE_URL, "issuanceId", "single unit",
       ISSUANCE_URL);
     validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, "mediaId", "unmediated", MEDIA_URL);
@@ -706,6 +714,25 @@ class BibframeControllerIT {
     assertThat(publicationPlace.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(prefix + "New York (State)");
     assertThat(publicationPlace.getDoc().get(PROPERTY_ID).asText()).isEqualTo(PLACE);
     assertThat(publicationPlace.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateSampleElectronicLocator(ResourceEdge edge, Resource instance) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(instance);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(ELECTRONIC_LOCATOR_PRED);
+    var locator = edge.getTarget();
+    assertThat(locator.getLabel()).isEqualTo(URL_URL);
+    assertThat(locator.getType().getSimpleLabel()).isEqualTo(URL);
+    assertThat(locator.getResourceHash()).isNotNull();
+    assertThat(locator.getDoc().size()).isEqualTo(1);
+    assertThat(locator.getDoc().get(VALUE_URL).size()).isEqualTo(1);
+    assertThat(locator.getDoc().get(VALUE_URL).get(0).asText())
+      .isEqualTo("electronicLocatorValue");
+    assertThat(locator.getOutgoingEdges()).hasSize(1);
+    var edgeIterator = locator.getOutgoingEdges().iterator();
+    validateSampleProperty(edgeIterator.next(), locator, NOTE_PRED, NOTE_URL, NOTE, "electronicLocatorNoteLabel",
+      "electronicLocatorNoteUri");
+    assertThat(edgeIterator.hasNext()).isFalse();
   }
 
   private String toCarrierLabel() {
@@ -1185,6 +1212,26 @@ class BibframeControllerIT {
   private String toIdentifiedByOtherQualifier() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 4), path(IDENTIFIERS_OTHER_URL),
       arrayPath(QUALIFIER_URL));
+  }
+
+  private String toElectronicLocatorNoteId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
+      arrayPath(NOTE_PRED), path(PROPERTY_ID));
+  }
+
+  private String toElectronicLocatorNoteLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
+      arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toElectronicLocatorNoteUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
+      arrayPath(NOTE_PRED), path(PROPERTY_URI));
+  }
+
+  private String toElectronicLocatorValue() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
+      arrayPath(VALUE_URL));
   }
 
   private String toId() {

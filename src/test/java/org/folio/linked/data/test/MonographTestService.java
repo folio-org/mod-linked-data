@@ -15,6 +15,7 @@ import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
+import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
@@ -64,6 +65,7 @@ import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
+import static org.folio.linked.data.util.BibframeConstants.URL_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
@@ -285,6 +287,19 @@ public class MonographTestService {
       Collections.emptyMap()
     );
 
+    var electronicLocator = createResource(
+      Map.of(
+        NOTE_PRED, List.of(Map.of(
+          PROPERTY_ID, NOTE,
+          PROPERTY_LABEL, "electronicLocatorNoteLabel",
+          PROPERTY_URI, "electronicLocatorNoteUri"
+        )),
+        VALUE_URL, List.of("electronicLocatorValue")
+      ),
+      URL_URL,
+      Collections.emptyMap()
+    );
+
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
     pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
     pred2OutgoingResources.put(PROVISION_ACTIVITY_PRED, List.of(distribution, manufacture, production, publication));
@@ -297,6 +312,7 @@ public class MonographTestService {
     pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
     pred2OutgoingResources.put(IMM_ACQUISITION_PRED, List.of(immediateAcquisition));
     pred2OutgoingResources.put(SUPP_CONTENT_PRED, List.of(supplementaryContent));
+    pred2OutgoingResources.put(ELECTRONIC_LOCATOR_PRED, List.of(electronicLocator));
 
     return createResource(
       Map.of(DIMENSIONS_URL, List.of("20 cm")),
