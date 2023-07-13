@@ -268,8 +268,22 @@
       "http://id.loc.gov/ontologies/bibframe/extent": [
         {
           "http://id.loc.gov/ontologies/bibframe/Extent": {
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "uri": "extent note uri",
+                "label": "extent note label"
+              }
+            ],
             "http://www.w3.org/2000/01/rdf-schema#label": [
               "vi, 374 pages, 4 unnumbered leaves of plates"
+            ],
+            "http://id.loc.gov/ontologies/bflc/appliesTo": [
+              {
+                "id": "http://id.loc.gov/ontologies/bflc/AppliesTo",
+                "uri": "extent appliesTo uri",
+                "label": "extent appliesTo label"
+              }
             ]
           }
         }

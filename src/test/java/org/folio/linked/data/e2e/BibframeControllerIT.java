@@ -10,6 +10,8 @@ import static org.folio.linked.data.test.TestUtil.randomResource;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
+import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
@@ -189,7 +191,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3247215876,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":2129463123,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -269,8 +271,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(29);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(28);
+    assertThat(resourceRepo.count()).isEqualTo(31);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(30);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -280,9 +282,9 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(28);
+    assertThat(resourceRepo.count()).isEqualTo(30);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(27);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(29);
   }
 
   @NotNull
@@ -303,7 +305,13 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toContributionRoleUri(), equalTo(ROLE_URL)))
       .andExpect(jsonPath("$." + toContributionRoleLabel(), equalTo("Author")))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
+      .andExpect(jsonPath("$." + toExtentNoteId(), equalTo(NOTE)))
+      .andExpect(jsonPath("$." + toExtentNoteLabel(), equalTo("extent note label")))
+      .andExpect(jsonPath("$." + toExtentNoteUri(), equalTo("extent note uri")))
       .andExpect(jsonPath("$." + toExtentLabel(), equalTo("vi, 374 pages, 4 unnumbered leaves of plates")))
+      .andExpect(jsonPath("$." + toExtentAppliesToId(), equalTo(APPLIES_TO_URL)))
+      .andExpect(jsonPath("$." + toExtentAppliesToLabel(), equalTo("extent appliesTo label")))
+      .andExpect(jsonPath("$." + toExtentAppliesToUri(), equalTo("extent appliesTo uri")))
       .andExpect(jsonPath("$." + toIdentifiedByEanValue(), equalTo("12345670")))
       .andExpect(jsonPath("$." + toIdentifiedByEanQualifier(), equalTo("07654321")))
       .andExpect(jsonPath("$." + toIdentifiedByIsbnValue(), equalTo("12345671")))
@@ -580,7 +588,13 @@ class BibframeControllerIT {
     assertThat(extent.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
     assertThat(extent.getDoc().get(LABEL_PRED).get(0).asText())
       .isEqualTo("vi, 374 pages, 4 unnumbered leaves of plates");
-    assertThat(extent.getOutgoingEdges()).isEmpty();
+    assertThat(extent.getOutgoingEdges()).hasSize(2);
+    var edgeIterator = extent.getOutgoingEdges().iterator();
+    validateSampleProperty(edgeIterator.next(), extent, APPLIES_TO_PRED, APPLIES_TO_URL, APPLIES_TO_URL,
+      "extent appliesTo label", "extent appliesTo uri");
+    validateSampleProperty(edgeIterator.next(), extent, NOTE_PRED, NOTE_URL, NOTE, "extent note label",
+      "extent note uri");
+    assertThat(edgeIterator.hasNext()).isFalse();
   }
 
   private void validateSampleImmediateAcquisition(ResourceEdge edge, Resource instance) {
@@ -759,9 +773,39 @@ class BibframeControllerIT {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(DIMENSIONS_URL));
   }
 
+  private String toExtentNoteId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
+      path(EXTENT_URL), arrayPath(NOTE_PRED), path(PROPERTY_ID));
+  }
+
+  private String toExtentNoteLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
+      path(EXTENT_URL), arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toExtentNoteUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
+      path(EXTENT_URL), arrayPath(NOTE_PRED), path(PROPERTY_URI));
+  }
+
   private String toExtentLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
       path(EXTENT_URL), arrayPath(LABEL_PRED));
+  }
+
+  private String toExtentAppliesToId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
+      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_ID));
+  }
+
+  private String toExtentAppliesToLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
+      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toExtentAppliesToUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
+      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_URI));
   }
 
   private String toContributionRoleLabel() {

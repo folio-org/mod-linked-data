@@ -257,6 +257,10 @@
       <column name="type_hash" value="6575245800"/>
       <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Assigner"/>
     </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="3689705478"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bflc/AppliesTo"/>
+    </insert>
   </changeSet>
 
 </databaseChangeLog>

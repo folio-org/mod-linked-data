@@ -4,6 +4,8 @@ import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
+import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
@@ -237,7 +239,10 @@ public class MonographTestService {
     var extent = createResource(
       Map.of(LABEL_PRED, List.of("vi, 374 pages, 4 unnumbered leaves of plates")),
       EXTENT,
-      Collections.emptyMap()
+      Map.of(
+        NOTE_PRED, List.of(createSimpleResource("extent note label", NOTE, "extent note uri")),
+        APPLIES_TO_PRED, List.of(createSimpleResource("extent appliesTo label", APPLIES_TO_URL, "extent appliesTo uri"))
+      )
     );
 
     var issuance = createSimpleResource(

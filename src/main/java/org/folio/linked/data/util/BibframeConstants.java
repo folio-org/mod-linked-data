@@ -153,7 +153,7 @@ public class BibframeConstants {
   public static final String RELATION_PRED = "http://id.loc.gov/ontologies/bflc/relation";
   public static final String RELATED_TO_PRED = "http://id.loc.gov/ontologies/bibframe/relatedTo";
   public static final String PLACE_PRED = "http://id.loc.gov/ontologies/bibframe/place";
-  public static final String APPLIES_TO = "http://id.loc.gov/ontologies/bflc/appliesTo";
+  public static final String APPLIES_TO_PRED = "http://id.loc.gov/ontologies/bflc/appliesTo";
   public static final String MAIN_TITLE_PRED = "http://id.loc.gov/ontologies/bibframe/mainTitle";
   public static final String SIMPLE_PLACE_PRED = "http://id.loc.gov/ontologies/bflc/simplePlace";
   public static final String SIMPLE_AGENT_PRED = "http://id.loc.gov/ontologies/bflc/simpleAgent";
