@@ -279,12 +279,14 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/issuance": [
         {
+          "id": "issuanceId",
           "uri": "http://id.loc.gov/ontologies/bibframe/Issuance",
           "label": "single unit"
         }
       ],
       "http://id.loc.gov/ontologies/bibframe/media": [
         {
+          "id": "mediaId",
           "uri": "http://id.loc.gov/ontologies/bibframe/Media",
           "label": "unmediated"
         }
@@ -304,6 +306,7 @@
             ],
             "http://id.loc.gov/ontologies/bflc/applicableInstitution": [
               {
+                "id": "applicableInstitutionId",
                 "uri": "http://id.loc.gov/ontologies/bflc/ApplicableInstitution",
                 "label": "some applicableInstitution"
               }
@@ -313,6 +316,7 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/carrier": [
         {
+          "id": "carrierId",
           "uri": "http://id.loc.gov/ontologies/bibframe/Carrier",
           "label": "volume"
         }

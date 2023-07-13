@@ -242,25 +242,26 @@ public class MonographTestService {
 
     var issuance = createSimpleResource(
       "single unit",
-      null,
+      "issuanceId",
       ISSUANCE_URL
     );
 
     var carrier = createSimpleResource(
       "volume",
-      null,
+      "carrierId",
       CARRIER_URL
     );
 
     var media = createSimpleResource(
       "unmediated",
-      null,
+      "mediaId",
       MEDIA_URL
     );
 
     var immediateAcquisition = createResource(
       Map.of(
         APPLICABLE_INSTITUTION_PRED, List.of(Map.of(
+          PROPERTY_ID, "applicableInstitutionId",
           PROPERTY_LABEL, "some applicableInstitution",
           PROPERTY_URI, APPLICABLE_INSTITUTION_URL
         )),

@@ -189,7 +189,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":2836568680,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":3247215876,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -294,6 +294,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + path(WORK_URL)).doesNotExist())
       .andExpect(jsonPath("$." + path(ITEM_URL)).doesNotExist())
       .andExpect(jsonPath("$." + path(INSTANCE_URL), notNullValue()))
+      .andExpect(jsonPath("$." + toCarrierId(), equalTo("carrierId")))
       .andExpect(jsonPath("$." + toCarrierUri(), equalTo(CARRIER_URL)))
       .andExpect(jsonPath("$." + toCarrierLabel(), equalTo("volume")))
       .andExpect(jsonPath("$." + toContributionAgentUri(), equalTo("http://id.loc.gov/authorities/names/no98072015")))
@@ -320,6 +321,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toIdentifiedByLocalAssignerUri(), equalTo("assignerUri")))
       .andExpect(jsonPath("$." + toIdentifiedByOtherValue(), equalTo("12345674")))
       .andExpect(jsonPath("$." + toIdentifiedByOtherQualifier(), equalTo("47654321")))
+      .andExpect(jsonPath("$." + toIssuanceId(), equalTo("issuanceId")))
       .andExpect(jsonPath("$." + toIssuanceLabel(), equalTo("single unit")))
       .andExpect(jsonPath("$." + toIssuanceUri(), equalTo(ISSUANCE_URL)))
       .andExpect(jsonPath("$." + toInstanceTitlePartName(), equalTo("Instance: partName")))
@@ -344,12 +346,14 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toVariantTitleNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toVariantTitleNoteLabel(), equalTo("Variant: noteLabel")))
       .andExpect(jsonPath("$." + toVariantTitleNoteUri(), equalTo("Variant: noteUri")))
+      .andExpect(jsonPath("$." + toMediaId(), equalTo("mediaId")))
       .andExpect(jsonPath("$." + toMediaLabel(), equalTo("unmediated")))
       .andExpect(jsonPath("$." + toMediaUri(), equalTo(MEDIA_URL)))
       .andExpect(jsonPath("$." + toNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toNoteLabel(), equalTo("some note")))
       .andExpect(jsonPath("$." + toNoteUri(), equalTo(NOTE_URL)))
       .andExpect(jsonPath("$." + toImmediateAcquisitionLabel(), equalTo("some immediateAcquisition")))
+      .andExpect(jsonPath("$." + toApplicableInstitutionId(), equalTo("applicableInstitutionId")))
       .andExpect(jsonPath("$." + toApplicableInstitutionUri(), equalTo(APPLICABLE_INSTITUTION_URL)))
       .andExpect(jsonPath("$." + toApplicableInstitutionLabel(), equalTo("some applicableInstitution")))
       .andExpect(jsonPath("$." + toDistributionSimpleAgent(), equalTo("Distribution: Charles Scribner's Sons")))
@@ -423,10 +427,11 @@ class BibframeControllerIT {
     validateSampleProperty(edgeIterator.next(), instance, NOTE_PRED, NOTE_URL, NOTE, "some note", NOTE_URL);
     validateSampleImmediateAcquisition(edgeIterator.next(), instance);
     validateSampleExtent(edgeIterator.next(), instance);
-    validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, ISSUANCE_URL, null, "single unit",
+    validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, ISSUANCE_URL, "issuanceId", "single unit",
       ISSUANCE_URL);
-    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, null, "unmediated", MEDIA_URL);
-    validateSampleProperty(edgeIterator.next(), instance, CARRIER_PRED, CARRIER_URL, null, "volume", CARRIER_URL);
+    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, "mediaId", "unmediated", MEDIA_URL);
+    validateSampleProperty(edgeIterator.next(), instance, CARRIER_PRED, CARRIER_URL, "carrierId", "volume",
+      CARRIER_URL);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -557,9 +562,7 @@ class BibframeControllerIT {
     assertThat(property.getLabel()).isEqualTo(propertyLabel);
     assertThat(property.getType().getTypeUri()).isEqualTo(type);
     assertThat(property.getResourceHash()).isNotNull();
-    if (property.getDoc().has(PROPERTY_ID)) {
-      assertThat(property.getDoc().get(PROPERTY_ID).asText()).isEqualTo(propertyId);
-    }
+    assertThat(property.getDoc().get(PROPERTY_ID).asText()).isEqualTo(propertyId);
     assertThat(property.getDoc().get(PROPERTY_URI).asText()).isEqualTo(propertyUri);
     assertThat(property.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(propertyLabel);
     assertThat(property.getOutgoingEdges()).isEmpty();
@@ -595,7 +598,7 @@ class BibframeControllerIT {
     assertThat(immediateAcquisition.getOutgoingEdges()).hasSize(1);
     var edgeIterator = immediateAcquisition.getOutgoingEdges().iterator();
     validateSampleProperty(edgeIterator.next(), immediateAcquisition, APPLICABLE_INSTITUTION_PRED,
-      APPLICABLE_INSTITUTION_URL, null, "some applicableInstitution", APPLICABLE_INSTITUTION_URL);
+      APPLICABLE_INSTITUTION_URL, "applicableInstitutionId", "some applicableInstitution", APPLICABLE_INSTITUTION_URL);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -688,10 +691,17 @@ class BibframeControllerIT {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_LABEL));
   }
 
+  private String toCarrierId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_ID));
+  }
+
   private String toCarrierUri() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_URI));
   }
 
+  private String toMediaId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA_PRED), path(PROPERTY_ID));
+  }
 
   private String toMediaLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA_PRED), path(PROPERTY_LABEL));
@@ -718,6 +728,11 @@ class BibframeControllerIT {
       path(IMM_ACQUISITION_URI), arrayPath(LABEL_PRED));
   }
 
+  private String toApplicableInstitutionId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IMM_ACQUISITION_PRED),
+      path(IMM_ACQUISITION_URI), arrayPath(APPLICABLE_INSTITUTION_PRED), path(PROPERTY_ID));
+  }
+
   private String toApplicableInstitutionUri() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IMM_ACQUISITION_PRED),
       path(IMM_ACQUISITION_URI), arrayPath(APPLICABLE_INSTITUTION_PRED), path(PROPERTY_URI));
@@ -726,6 +741,10 @@ class BibframeControllerIT {
   private String toApplicableInstitutionLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IMM_ACQUISITION_PRED),
       path(IMM_ACQUISITION_URI), arrayPath(APPLICABLE_INSTITUTION_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toIssuanceId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ISSUANCE_PRED), path(PROPERTY_ID));
   }
 
   private String toIssuanceLabel() {
