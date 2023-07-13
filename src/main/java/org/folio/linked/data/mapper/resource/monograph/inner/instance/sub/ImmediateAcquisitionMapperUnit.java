@@ -2,9 +2,10 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_URI;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
+import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(predicate = IMM_ACQUISITION_PRED, dtoClass = ImmediateAcquisitionField.class)
+@MapperUnit(type = IMM_ACQUISITION, predicate = IMM_ACQUISITION_PRED, dtoClass = ImmediateAcquisitionField.class)
 public class ImmediateAcquisitionMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
@@ -41,7 +42,7 @@ public class ImmediateAcquisitionMapperUnit implements InstanceSubResourceMapper
     var immediateAcquisition = ((ImmediateAcquisitionField) dto).getImmediateAcquisition();
     var resource = new Resource();
     resource.setLabel(IMM_ACQUISITION_URI);
-    resource.setType(resourceTypeService.get(IMM_ACQUISITION_URI));
+    resource.setType(resourceTypeService.get(IMM_ACQUISITION));
     resource.setDoc(getDoc(immediateAcquisition));
     coreMapper.mapPropertyEdges(immediateAcquisition.getApplicableInstitution(), resource,
       APPLICABLE_INSTITUTION_PRED, APPLICABLE_INSTITUTION_URL);
@@ -51,7 +52,7 @@ public class ImmediateAcquisitionMapperUnit implements InstanceSubResourceMapper
 
   private JsonNode getDoc(ImmediateAcquisition dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(PROPERTY_LABEL, dto.getLabel());
+    map.put(LABEL_PRED, dto.getLabel());
     return coreMapper.toJson(map);
   }
 }

@@ -6,22 +6,75 @@
       "http://id.loc.gov/ontologies/bibframe/title": [
         {
           "http://id.loc.gov/ontologies/bibframe/Title": {
+            "http://id.loc.gov/ontologies/bibframe/partName": [
+              "Instance: partName"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/partNumber": [
+              "Instance: partNumber"
+            ],
             "http://id.loc.gov/ontologies/bibframe/mainTitle": [
               "Instance: Laramie holds the range"
+            ],
+            "http://id.loc.gov/ontologies/bflc/nonSortNum": [
+              "Instance: nonSortNum"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/subtitle": [
+              "Instance: subtitle"
             ]
           }
         },
         {
           "http://id.loc.gov/ontologies/bibframe/ParallelTitle": {
+            "http://id.loc.gov/ontologies/bibframe/partName": [
+              "Parallel: partName"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/partNumber": [
+              "Parallel: partNumber"
+            ],
             "http://id.loc.gov/ontologies/bibframe/mainTitle": [
               "Parallel: Laramie holds the range"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "label": "Parallel: noteLabel",
+                "uri": "Parallel: noteUri"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/date": [
+              "Parallel: date"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/subtitle": [
+              "Parallel: subtitle"
             ]
           }
         },
         {
           "http://id.loc.gov/ontologies/bibframe/VariantTitle": {
+            "http://id.loc.gov/ontologies/bibframe/partName": [
+              "Variant: partName"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/partNumber": [
+              "Variant: partNumber"
+            ],
             "http://id.loc.gov/ontologies/bibframe/mainTitle": [
               "Variant: Laramie holds the range"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "label": "Variant: noteLabel",
+                "uri": "Variant: noteUri"
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/date": [
+              "Variant: date"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/subtitle": [
+              "Variant: subtitle"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/variantType": [
+              "Variant: variantType"
             ]
           }
         }
@@ -150,6 +203,9 @@
           "http://id.loc.gov/ontologies/bibframe/Ean": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345670"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/qualifier": [
+              "07654321"
             ]
           }
         },
@@ -157,6 +213,16 @@
           "http://id.loc.gov/ontologies/bibframe/Isbn": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345671"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/qualifier": [
+              "17654321"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/status": [
+              {
+                "id": "isbnStatusId",
+                "uri": "isbnStatusUri",
+                "label": "isbnStatusLabel"
+              }
             ]
           }
         },
@@ -164,6 +230,13 @@
           "http://id.loc.gov/ontologies/bibframe/Lccn": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345672"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/status": [
+              {
+                "id": "lccnStatusId",
+                "uri": "lccnStatusUri",
+                "label": "lccnStatusLabel"
+              }
             ]
           }
         },
@@ -171,6 +244,13 @@
           "http://id.loc.gov/ontologies/bibframe/Local": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345673"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/assigner": [
+              {
+                "id": "assignerId",
+                "uri": "assignerUri",
+                "label": "assignerLabel"
+              }
             ]
           }
         },
@@ -178,6 +258,9 @@
           "http://id.loc.gov/ontologies/bibframe/Identifier": {
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
               "12345674"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/qualifier": [
+              "47654321"
             ]
           }
         }
@@ -185,8 +268,22 @@
       "http://id.loc.gov/ontologies/bibframe/extent": [
         {
           "http://id.loc.gov/ontologies/bibframe/Extent": {
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "uri": "extent note uri",
+                "label": "extent note label"
+              }
+            ],
             "http://www.w3.org/2000/01/rdf-schema#label": [
               "vi, 374 pages, 4 unnumbered leaves of plates"
+            ],
+            "http://id.loc.gov/ontologies/bflc/appliesTo": [
+              {
+                "id": "http://id.loc.gov/ontologies/bflc/AppliesTo",
+                "uri": "extent appliesTo uri",
+                "label": "extent appliesTo label"
+              }
             ]
           }
         }
@@ -196,20 +293,69 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/issuance": [
         {
+          "id": "issuanceId",
           "uri": "http://id.loc.gov/ontologies/bibframe/Issuance",
           "label": "single unit"
         }
       ],
       "http://id.loc.gov/ontologies/bibframe/media": [
         {
+          "id": "mediaId",
           "uri": "http://id.loc.gov/ontologies/bibframe/Media",
           "label": "unmediated"
         }
       ],
+      "http://id.loc.gov/ontologies/bibframe/note": [
+        {
+          "id": "lc:RT:bf2:Note",
+          "uri": "http://id.loc.gov/ontologies/bibframe/Note",
+          "label": "some note"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/immediateAcquisition": [
+        {
+          "http://id.loc.gov/ontologies/bibframe/ImmediateAcquisition": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "some immediateAcquisition"
+            ],
+            "http://id.loc.gov/ontologies/bflc/applicableInstitution": [
+              {
+                "id": "applicableInstitutionId",
+                "uri": "http://id.loc.gov/ontologies/bflc/ApplicableInstitution",
+                "label": "some applicableInstitution"
+              }
+            ]
+          }
+        }
+      ],
       "http://id.loc.gov/ontologies/bibframe/carrier": [
         {
+          "id": "carrierId",
           "uri": "http://id.loc.gov/ontologies/bibframe/Carrier",
           "label": "volume"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/supplementaryContent": [
+        {
+          "id": "supplementaryContentId",
+          "uri": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent",
+          "label": "supplementaryContentLabel"
+        }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/electronicLocator": [
+        {
+          "http://www.w3.org/2000/01/rdf-schema#Bibframe": {
+            "http://id.loc.gov/ontologies/bibframe/note": [
+              {
+                "id": "lc:RT:bf2:Note",
+                "uri": "electronicLocatorNoteUri",
+                "label": "electronicLocatorNoteLabel"
+              }
+            ],
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "electronicLocatorValue"
+            ]
+          }
         }
       ]
     }

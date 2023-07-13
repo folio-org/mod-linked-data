@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.URL;
+import static org.folio.linked.data.util.BibframeConstants.URL_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(predicate = ELECTRONIC_LOCATOR_PRED, dtoClass = UrlField.class)
+@MapperUnit(type = URL, predicate = ELECTRONIC_LOCATOR_PRED, dtoClass = UrlField.class)
 public class InstanceElectronicLocatorMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -40,7 +41,7 @@ public class InstanceElectronicLocatorMapperUnit implements InstanceSubResourceM
   public Resource toEntity(Object dto, String predicate) {
     var url = ((UrlField) dto).getUrl();
     var resource = new Resource();
-    resource.setLabel(URL);
+    resource.setLabel(URL_URL);
     resource.setType(resourceTypeService.get(URL));
     resource.setDoc(getDoc(url));
     coreMapper.mapResourceEdges(url.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);

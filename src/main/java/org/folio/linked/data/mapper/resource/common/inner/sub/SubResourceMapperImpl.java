@@ -32,6 +32,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
   }
 
   @Override
+  @SuppressWarnings("java:S2201")
   public <T> void toDto(ResourceEdge source, T destination) {
     getMapperUnit(source.getTarget().getType().getSimpleLabel(), source.getPredicate().getLabel(),
       destination.getClass(), null)

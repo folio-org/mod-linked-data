@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = NOTE, predicate = NOTE_PRED)
+@MapperUnit(type = NOTE, predicate = NOTE_PRED, dtoClass = Property.class)
 public class InstanceNoteMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
