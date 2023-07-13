@@ -91,6 +91,8 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
@@ -191,7 +193,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":2129463123,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":3068832050,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -271,8 +273,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(31);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(30);
+    assertThat(resourceRepo.count()).isEqualTo(32);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(31);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -282,9 +284,9 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(30);
+    assertThat(resourceRepo.count()).isEqualTo(31);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(29);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(30);
   }
 
   @NotNull
@@ -296,6 +298,9 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + path(WORK_URL)).doesNotExist())
       .andExpect(jsonPath("$." + path(ITEM_URL)).doesNotExist())
       .andExpect(jsonPath("$." + path(INSTANCE_URL), notNullValue()))
+      .andExpect(jsonPath("$." + toApplicableInstitutionId(), equalTo("applicableInstitutionId")))
+      .andExpect(jsonPath("$." + toApplicableInstitutionUri(), equalTo(APPLICABLE_INSTITUTION_URL)))
+      .andExpect(jsonPath("$." + toApplicableInstitutionLabel(), equalTo("some applicableInstitution")))
       .andExpect(jsonPath("$." + toCarrierId(), equalTo("carrierId")))
       .andExpect(jsonPath("$." + toCarrierUri(), equalTo(CARRIER_URL)))
       .andExpect(jsonPath("$." + toCarrierLabel(), equalTo("volume")))
@@ -312,6 +317,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toExtentAppliesToId(), equalTo(APPLIES_TO_URL)))
       .andExpect(jsonPath("$." + toExtentAppliesToLabel(), equalTo("extent appliesTo label")))
       .andExpect(jsonPath("$." + toExtentAppliesToUri(), equalTo("extent appliesTo uri")))
+      .andExpect(jsonPath("$." + toId(), notNullValue()))
       .andExpect(jsonPath("$." + toIdentifiedByEanValue(), equalTo("12345670")))
       .andExpect(jsonPath("$." + toIdentifiedByEanQualifier(), equalTo("07654321")))
       .andExpect(jsonPath("$." + toIdentifiedByIsbnValue(), equalTo("12345671")))
@@ -329,41 +335,21 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toIdentifiedByLocalAssignerUri(), equalTo("assignerUri")))
       .andExpect(jsonPath("$." + toIdentifiedByOtherValue(), equalTo("12345674")))
       .andExpect(jsonPath("$." + toIdentifiedByOtherQualifier(), equalTo("47654321")))
-      .andExpect(jsonPath("$." + toIssuanceId(), equalTo("issuanceId")))
-      .andExpect(jsonPath("$." + toIssuanceLabel(), equalTo("single unit")))
-      .andExpect(jsonPath("$." + toIssuanceUri(), equalTo(ISSUANCE_URL)))
+      .andExpect(jsonPath("$." + toImmediateAcquisitionLabel(), equalTo("some immediateAcquisition")))
       .andExpect(jsonPath("$." + toInstanceTitlePartName(), equalTo("Instance: partName")))
       .andExpect(jsonPath("$." + toInstanceTitlePartNumber(), equalTo("Instance: partNumber")))
       .andExpect(jsonPath("$." + toInstanceTitleMain(), equalTo("Instance: Laramie holds the range")))
       .andExpect(jsonPath("$." + toInstanceTitleNonSortNum(), equalTo("Instance: nonSortNum")))
       .andExpect(jsonPath("$." + toInstanceTitleSubtitle(), equalTo("Instance: subtitle")))
-      .andExpect(jsonPath("$." + toParallelTitlePartName(), equalTo("Parallel: partName")))
-      .andExpect(jsonPath("$." + toParallelTitlePartNumber(), equalTo("Parallel: partNumber")))
-      .andExpect(jsonPath("$." + toParallelTitleMain(), equalTo("Parallel: Laramie holds the range")))
-      .andExpect(jsonPath("$." + toParallelTitleDate(), equalTo("Parallel: date")))
-      .andExpect(jsonPath("$." + toParallelTitleSubtitle(), equalTo("Parallel: subtitle")))
-      .andExpect(jsonPath("$." + toParallelTitleNoteId(), equalTo(NOTE)))
-      .andExpect(jsonPath("$." + toParallelTitleNoteLabel(), equalTo("Parallel: noteLabel")))
-      .andExpect(jsonPath("$." + toParallelTitleNoteUri(), equalTo("Parallel: noteUri")))
-      .andExpect(jsonPath("$." + toVariantTitlePartName(), equalTo("Variant: partName")))
-      .andExpect(jsonPath("$." + toVariantTitlePartNumber(), equalTo("Variant: partNumber")))
-      .andExpect(jsonPath("$." + toVariantTitleMain(), equalTo("Variant: Laramie holds the range")))
-      .andExpect(jsonPath("$." + toVariantTitleDate(), equalTo("Variant: date")))
-      .andExpect(jsonPath("$." + toVariantTitleSubtitle(), equalTo("Variant: subtitle")))
-      .andExpect(jsonPath("$." + toVariantTitleType(), equalTo("Variant: variantType")))
-      .andExpect(jsonPath("$." + toVariantTitleNoteId(), equalTo(NOTE)))
-      .andExpect(jsonPath("$." + toVariantTitleNoteLabel(), equalTo("Variant: noteLabel")))
-      .andExpect(jsonPath("$." + toVariantTitleNoteUri(), equalTo("Variant: noteUri")))
+      .andExpect(jsonPath("$." + toIssuanceId(), equalTo("issuanceId")))
+      .andExpect(jsonPath("$." + toIssuanceLabel(), equalTo("single unit")))
+      .andExpect(jsonPath("$." + toIssuanceUri(), equalTo(ISSUANCE_URL)))
       .andExpect(jsonPath("$." + toMediaId(), equalTo("mediaId")))
       .andExpect(jsonPath("$." + toMediaLabel(), equalTo("unmediated")))
       .andExpect(jsonPath("$." + toMediaUri(), equalTo(MEDIA_URL)))
       .andExpect(jsonPath("$." + toNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toNoteLabel(), equalTo("some note")))
       .andExpect(jsonPath("$." + toNoteUri(), equalTo(NOTE_URL)))
-      .andExpect(jsonPath("$." + toImmediateAcquisitionLabel(), equalTo("some immediateAcquisition")))
-      .andExpect(jsonPath("$." + toApplicableInstitutionId(), equalTo("applicableInstitutionId")))
-      .andExpect(jsonPath("$." + toApplicableInstitutionUri(), equalTo(APPLICABLE_INSTITUTION_URL)))
-      .andExpect(jsonPath("$." + toApplicableInstitutionLabel(), equalTo("some applicableInstitution")))
       .andExpect(jsonPath("$." + toDistributionSimpleAgent(), equalTo("Distribution: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toDistributionSimpleDate(), equalTo("Distribution: 1921")))
       .andExpect(jsonPath("$." + toDistributionSimplePlace(), equalTo("Distribution: New York")))
@@ -378,6 +364,14 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toManufacturePlaceLabel(), equalTo("Manufacture: New York (State)")))
       .andExpect(jsonPath("$." + toManufacturePlaceUri(), equalTo(PLACE_URL)))
       .andExpect(jsonPath("$." + toManufactureDate(), equalTo("Manufacture: 1921")))
+      .andExpect(jsonPath("$." + toParallelTitlePartName(), equalTo("Parallel: partName")))
+      .andExpect(jsonPath("$." + toParallelTitlePartNumber(), equalTo("Parallel: partNumber")))
+      .andExpect(jsonPath("$." + toParallelTitleMain(), equalTo("Parallel: Laramie holds the range")))
+      .andExpect(jsonPath("$." + toParallelTitleDate(), equalTo("Parallel: date")))
+      .andExpect(jsonPath("$." + toParallelTitleSubtitle(), equalTo("Parallel: subtitle")))
+      .andExpect(jsonPath("$." + toParallelTitleNoteId(), equalTo(NOTE)))
+      .andExpect(jsonPath("$." + toParallelTitleNoteLabel(), equalTo("Parallel: noteLabel")))
+      .andExpect(jsonPath("$." + toParallelTitleNoteUri(), equalTo("Parallel: noteUri")))
       .andExpect(jsonPath("$." + toProductionSimpleAgent(), equalTo("Production: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toProductionSimpleDate(), equalTo("Production: 1921")))
       .andExpect(jsonPath("$." + toProductionSimplePlace(), equalTo("Production: New York")))
@@ -385,6 +379,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toProductionPlaceLabel(), equalTo("Production: New York (State)")))
       .andExpect(jsonPath("$." + toProductionPlaceUri(), equalTo(PLACE_URL)))
       .andExpect(jsonPath("$." + toProductionDate(), equalTo("Production: 1921")))
+      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH)))
       .andExpect(jsonPath("$." + toPublicationSimpleAgent(), equalTo("Publication: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toPublicationSimpleDate(), equalTo("Publication: 1921")))
       .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("Publication: New York")))
@@ -392,8 +387,18 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("Publication: New York (State)")))
       .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)))
       .andExpect(jsonPath("$." + toPublicationDate(), equalTo("Publication: 1921")))
-      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH)))
-      .andExpect(jsonPath("$." + toId(), notNullValue()));
+      .andExpect(jsonPath("$." + toSupplementaryContentId(), equalTo("supplementaryContentId")))
+      .andExpect(jsonPath("$." + toSupplementaryContentLabel(), equalTo("supplementaryContentLabel")))
+      .andExpect(jsonPath("$." + toSupplementaryContentUri(), equalTo(SUPP_CONTENT_URL)))
+      .andExpect(jsonPath("$." + toVariantTitlePartName(), equalTo("Variant: partName")))
+      .andExpect(jsonPath("$." + toVariantTitlePartNumber(), equalTo("Variant: partNumber")))
+      .andExpect(jsonPath("$." + toVariantTitleMain(), equalTo("Variant: Laramie holds the range")))
+      .andExpect(jsonPath("$." + toVariantTitleDate(), equalTo("Variant: date")))
+      .andExpect(jsonPath("$." + toVariantTitleSubtitle(), equalTo("Variant: subtitle")))
+      .andExpect(jsonPath("$." + toVariantTitleType(), equalTo("Variant: variantType")))
+      .andExpect(jsonPath("$." + toVariantTitleNoteId(), equalTo(NOTE)))
+      .andExpect(jsonPath("$." + toVariantTitleNoteLabel(), equalTo("Variant: noteLabel")))
+      .andExpect(jsonPath("$." + toVariantTitleNoteUri(), equalTo("Variant: noteUri")));
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
@@ -416,7 +421,7 @@ class BibframeControllerIT {
     assertThat(instance.getDoc().size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
-    assertThat(instance.getOutgoingEdges()).hasSize(19);
+    assertThat(instance.getOutgoingEdges()).hasSize(20);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateSampleInstanceTitle(edgeIterator.next(), instance);
@@ -433,6 +438,8 @@ class BibframeControllerIT {
     validateSampleIdentifiedByLocal(edgeIterator.next(), instance);
     validateSampleIdentifiedByOther(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, NOTE_PRED, NOTE_URL, NOTE, "some note", NOTE_URL);
+    validateSampleProperty(edgeIterator.next(), instance, SUPP_CONTENT_PRED, SUPP_CONTENT_URL, "supplementaryContentId",
+      "supplementaryContentLabel", SUPP_CONTENT_URL);
     validateSampleImmediateAcquisition(edgeIterator.next(), instance);
     validateSampleExtent(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, ISSUANCE_URL, "issuanceId", "single unit",
@@ -711,6 +718,18 @@ class BibframeControllerIT {
 
   private String toCarrierUri() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_URI));
+  }
+
+  private String toSupplementaryContentId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(PROPERTY_ID));
+  }
+
+  private String toSupplementaryContentLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(PROPERTY_LABEL));
+  }
+
+  private String toSupplementaryContentUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(PROPERTY_URI));
   }
 
   private String toMediaId() {

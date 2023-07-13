@@ -261,6 +261,10 @@
       <column name="type_hash" value="3689705478"/>
       <column name="type_uri" value="http://id.loc.gov/ontologies/bflc/AppliesTo"/>
     </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="5979038995"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/SupplementaryContent"/>
+    </insert>
   </changeSet>
 
 </databaseChangeLog>

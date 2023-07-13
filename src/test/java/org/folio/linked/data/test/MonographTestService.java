@@ -62,12 +62,15 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -263,6 +266,12 @@ public class MonographTestService {
       MEDIA_URL
     );
 
+    var supplementaryContent = createSimpleResource(
+      "supplementaryContentLabel",
+      "supplementaryContentId",
+      SUPP_CONTENT_URL
+    );
+
     var immediateAcquisition = createResource(
       Map.of(
         APPLICABLE_INSTITUTION_PRED, List.of(Map.of(
@@ -276,21 +285,23 @@ public class MonographTestService {
       Collections.emptyMap()
     );
 
+    var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
+    pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
+    pred2OutgoingResources.put(PROVISION_ACTIVITY_PRED, List.of(distribution, manufacture, production, publication));
+    pred2OutgoingResources.put(CONTRIBUTION_PRED, List.of(contrib));
+    pred2OutgoingResources.put(IDENTIFIED_BY_PRED, List.of(ean, isbn, lccn, local, other));
+    pred2OutgoingResources.put(NOTE_PRED, List.of(note));
+    pred2OutgoingResources.put(EXTENT_PRED, List.of(extent));
+    pred2OutgoingResources.put(ISSUANCE_PRED, List.of(issuance));
+    pred2OutgoingResources.put(CARRIER_PRED, List.of(carrier));
+    pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
+    pred2OutgoingResources.put(IMM_ACQUISITION_PRED, List.of(immediateAcquisition));
+    pred2OutgoingResources.put(SUPP_CONTENT_PRED, List.of(supplementaryContent));
+
     return createResource(
       Map.of(DIMENSIONS_URL, List.of("20 cm")),
       INSTANCE,
-      Map.of(
-        INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle),
-        PROVISION_ACTIVITY_PRED, List.of(distribution, manufacture, production, publication),
-        CONTRIBUTION_PRED, List.of(contrib),
-        IDENTIFIED_BY_PRED, List.of(ean, isbn, lccn, local, other),
-        NOTE_PRED, List.of(note),
-        EXTENT_PRED, List.of(extent),
-        ISSUANCE_PRED, List.of(issuance),
-        CARRIER_PRED, List.of(carrier),
-        MEDIA_PRED, List.of(media),
-        IMM_ACQUISITION_PRED, List.of(immediateAcquisition)
-      )
+      pred2OutgoingResources
     );
   }
 

@@ -334,6 +334,13 @@
           "uri": "http://id.loc.gov/ontologies/bibframe/Carrier",
           "label": "volume"
         }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/supplementaryContent": [
+        {
+          "id": "supplementaryContentId",
+          "uri": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent",
+          "label": "supplementaryContentLabel"
+        }
       ]
     }
   ],
