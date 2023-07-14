@@ -216,7 +216,7 @@ class BibframeControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getResource("bibframe-wrong-sample.json"));
+      .content(getResource("samples/bibframe-wrong-field.json"));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -238,9 +238,7 @@ class BibframeControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getResourceSample()
-        .replace(",\n          \"label\": \"supplementaryContentLabel\"", "")
-      );
+      .content(getResource("samples/bibframe-property-no-label.json"));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);

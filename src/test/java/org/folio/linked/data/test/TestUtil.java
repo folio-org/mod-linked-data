@@ -42,7 +42,7 @@ public class TestUtil {
 
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
-  private static final String BIBFRAME_SAMPLE = loadResourceAsString("bibframe-sample.json");
+  private static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
 
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
