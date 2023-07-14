@@ -50,6 +50,7 @@ public class BibframeConstants {
   public static final String PLACE = "lc:RT:bf2:Place";
   public static final String URL = "lc:RT:bf2:URL";
   public static final String IMM_ACQUISITION = "lc:RT:bf2:ImmAcqSource";
+  public static final String SUPP_CONTENT = "lc:RT:bf2:SupplContentNote";
 
   //Type URLs
   public static final String WORK_URL = "http://id.loc.gov/ontologies/bibframe/Work";
@@ -70,7 +71,6 @@ public class BibframeConstants {
   public static final String SUBTITLE_URL = "http://id.loc.gov/ontologies/bibframe/subtitle";
   public static final String NON_SORT_NUM_URL = "http://id.loc.gov/ontologies/bflc/nonSortNum";
   public static final String VARIANT_TYPE_URL = "http://id.loc.gov/ontologies/bibframe/variantType";
-  public static final String VALUE_URL = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
   public static final String QUALIFIER_URL = "http://id.loc.gov/ontologies/bibframe/qualifier";
   public static final String INSTANCE_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/Title";
   public static final String PARALLEL_TITLE_URL = "http://id.loc.gov/ontologies/bibframe/ParallelTitle";
@@ -160,6 +160,7 @@ public class BibframeConstants {
   public static final String SIMPLE_AGENT_PRED = "http://id.loc.gov/ontologies/bflc/simpleAgent";
   public static final String SIMPLE_DATE_PRED = "http://id.loc.gov/ontologies/bflc/simpleDate";
   public static final String LABEL_PRED = "http://www.w3.org/2000/01/rdf-schema#label";
+  public static final String VALUE_PRED = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
 
   // fields
   public static final String ID = "id";

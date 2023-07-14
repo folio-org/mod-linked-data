@@ -1,0 +1,17 @@
+{
+  "profile": "lc:profile:bf2:Monograph",
+  "http://id.loc.gov/ontologies/bibframe/Instance": [
+    {
+      "http://id.loc.gov/ontologies/bibframe/supplementaryContent": [
+        {
+          "http://id.loc.gov/ontologies/bibframe/SupplementaryContent": {
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "supplementaryContentValue"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "http://id.loc.gov/ontologies/bibframe/Item": []
+}

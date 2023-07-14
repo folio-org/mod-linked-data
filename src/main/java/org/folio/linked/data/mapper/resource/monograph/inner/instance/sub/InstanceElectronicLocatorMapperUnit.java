@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PR
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.URL;
 import static org.folio.linked.data.util.BibframeConstants.URL_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class InstanceElectronicLocatorMapperUnit implements InstanceSubResourceM
 
   private JsonNode getDoc(Url dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(VALUE_URL, dto.getValue());
+    map.put(VALUE_PRED, dto.getValue());
     return coreMapper.toJson(map);
   }
 }

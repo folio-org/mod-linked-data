@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER_URL;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class IdentifierOtherMapperUnit implements InstanceSubResourceMapperUnit 
 
   private JsonNode getDoc(IdentifierOther dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(VALUE_URL, dto.getValue());
+    map.put(VALUE_PRED, dto.getValue());
     map.put(QUALIFIER_URL, dto.getQualifier());
     return coreMapper.toJson(map);
   }

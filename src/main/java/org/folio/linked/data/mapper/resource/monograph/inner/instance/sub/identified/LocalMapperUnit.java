@@ -5,7 +5,7 @@ import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class LocalMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(IdentifierLocal dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(VALUE_URL, dto.getValue());
+    map.put(VALUE_PRED, dto.getValue());
     return coreMapper.toJson(map);
   }
 }

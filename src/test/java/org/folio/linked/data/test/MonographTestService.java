@@ -63,10 +63,10 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.URL_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
 
@@ -183,7 +183,7 @@ public class MonographTestService {
 
     var ean = createResource(
       Map.of(
-        VALUE_URL, List.of("12345670"),
+        VALUE_PRED, List.of("12345670"),
         QUALIFIER_URL, List.of("07654321")
       ),
       IDENTIFIERS_EAN,
@@ -191,7 +191,7 @@ public class MonographTestService {
     );
     var isbn = createResource(
       Map.of(
-        VALUE_URL, List.of("12345671"),
+        VALUE_PRED, List.of("12345671"),
         QUALIFIER_URL, List.of("17654321"),
         STATUS_PRED, List.of(Map.of(
           PROPERTY_ID, "isbnStatusId",
@@ -204,7 +204,7 @@ public class MonographTestService {
     );
     var lccn = createResource(
       Map.of(
-        VALUE_URL, List.of("12345672"),
+        VALUE_PRED, List.of("12345672"),
         STATUS_PRED, List.of(Map.of(
           PROPERTY_ID, "lccnStatusId",
           PROPERTY_LABEL, "lccnStatusLabel",
@@ -216,7 +216,7 @@ public class MonographTestService {
     );
     var local = createResource(
       Map.of(
-        VALUE_URL, List.of("12345673"),
+        VALUE_PRED, List.of("12345673"),
         ASSIGNER_PRED, List.of(Map.of(
           PROPERTY_ID, "assignerId",
           PROPERTY_LABEL, "assignerLabel",
@@ -228,7 +228,7 @@ public class MonographTestService {
     );
     var other = createResource(
       Map.of(
-        VALUE_URL, List.of("12345674"),
+        VALUE_PRED, List.of("12345674"),
         QUALIFIER_URL, List.of("47654321")
       ),
       IDENTIFIERS_OTHER,
@@ -268,10 +268,13 @@ public class MonographTestService {
       MEDIA_URL
     );
 
-    var supplementaryContent = createSimpleResource(
-      "supplementaryContentLabel",
-      "supplementaryContentId",
-      SUPP_CONTENT_URL
+    var supplementaryContent = createResource(
+      Map.of(
+        LABEL_PRED, List.of("supplementaryContentLabel"),
+        VALUE_PRED, List.of("supplementaryContentValue")
+      ),
+      SUPP_CONTENT,
+      Collections.emptyMap()
     );
 
     var immediateAcquisition = createResource(
@@ -294,7 +297,7 @@ public class MonographTestService {
           PROPERTY_LABEL, "electronicLocatorNoteLabel",
           PROPERTY_URI, "electronicLocatorNoteUri"
         )),
-        VALUE_URL, List.of("electronicLocatorValue")
+        VALUE_PRED, List.of("electronicLocatorValue")
       ),
       URL_URL,
       Collections.emptyMap()
