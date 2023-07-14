@@ -3,7 +3,9 @@ package org.folio.linked.data.e2e;
 import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
+import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getResource;
 import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.test.TestUtil.randomResource;
@@ -104,6 +106,7 @@ import static org.folio.linked.data.util.BibframeConstants.WORK_URL;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -118,6 +121,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -203,6 +207,28 @@ class BibframeControllerIT {
 
     // then
     assertThat(StringUtils.difference(response1, response2)).isEqualTo(expectedDifference);
+  }
+
+  @Test
+  void createMonographInstanceWithNotCorrectStructure_shouldReturnValidationError() throws Exception {
+    // given
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getResource("bibframe-wrong-sample.json"));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+
+    // then
+    resultActions.andExpect(status().is(UNPROCESSABLE_ENTITY.value()))
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors", notNullValue()))
+      .andExpect(jsonPath("$." + toErrorType(), equalTo(ValidationException.class.getSimpleName())))
+      .andExpect(jsonPath("$." + toErrorCode(), equalTo(VALIDATION_ERROR.getValue())))
+      .andExpect(jsonPath("$." + toErrorKey(), equalTo(ELECTRONIC_LOCATOR_PRED)))
+      .andExpect(jsonPath("$." + toErrorValue(), equalTo("{}")));
   }
 
   @Test
@@ -1232,6 +1258,22 @@ class BibframeControllerIT {
   private String toElectronicLocatorValue() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
       arrayPath(VALUE_URL));
+  }
+
+  private String toErrorType() {
+    return String.join(".", arrayPath("errors"), path("type"));
+  }
+
+  private String toErrorCode() {
+    return String.join(".", arrayPath("errors"), path("code"));
+  }
+
+  private String toErrorKey() {
+    return String.join(".", arrayPath("errors"), arrayPath("parameters"), path("key"));
+  }
+
+  private String toErrorValue() {
+    return String.join(".", arrayPath("errors"), arrayPath("parameters"), path("value"));
   }
 
   private String toId() {
