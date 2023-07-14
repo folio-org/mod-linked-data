@@ -169,7 +169,7 @@ public class CoreMapperImpl implements CoreMapper {
   @Override
   public Resource propertyToEntity(@NonNull Property property, @NonNull String resourceType) {
     var resource = new Resource();
-    resource.setLabel(property.getLabel());
+    resource.setLabel(nonNull(property.getLabel()) ? property.getLabel() : resourceType);
     resource.setType(resourceTypeService.get(resourceType));
     resource.setDoc(propertyToDoc(property));
     resource.setResourceHash(hash(resource));
@@ -180,7 +180,7 @@ public class CoreMapperImpl implements CoreMapper {
   public Resource provisionActivityToEntity(@NonNull ProvisionActivity dto, String label,
                                             @NonNull String resourceType) {
     Resource resource = new Resource();
-    resource.setLabel(label);
+    resource.setLabel(nonNull(label) ? label : resourceType);
     resource.setType(resourceTypeService.get(resourceType));
     resource.setDoc(provisionActivityToDoc(dto));
     mapPropertyEdges(dto.getPlace(), resource, PLACE_PRED, PLACE_COMPONENTS);

@@ -1218,6 +1218,24 @@ class CoreMapperTest {
   }
 
   @Test
+  void propertyToEntity_shouldReturnCorrectEntity_ifGivenPropertyIsEmptyAndTypeNotNull() {
+    // given
+    var property = new Property();
+    var type = "type";
+    var expectedType = new ResourceType().setSimpleLabel(type);
+    doReturn(expectedType).when(resourceTypeService).get(type);
+
+    // when
+    var resource = coreMapper.propertyToEntity(property, type);
+
+    // then
+    assertThat(resource.getLabel(), is(type));
+    assertThat(resource.getType(), is(expectedType));
+    assertThat(resource.getDoc(), is(propertyToDoc(property)));
+    assertThat(resource.getResourceHash(), notNullValue());
+  }
+
+  @Test
   void provisionActivityToEntity_shouldThrowNpe_ifGivenProvisionActivityIsNull() {
     // given
     ProvisionActivity dto = null;
@@ -1248,7 +1266,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void provisionActivityToEntity_shouldReturnCorrectEntity_ifGivenPropertyAndTypeNotNull() {
+  void provisionActivityToEntity_shouldReturnCorrectEntity_ifGivenDtoAndTypeNotNull() {
     // given
     var place1 = new Property().id("id1").label("label1").uri("uri1");
     var type = "type";
@@ -1284,6 +1302,54 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(label));
+    assertThat(resource.getType(), is(expectedType));
+    assertThat(resource.getDoc(), is(provisionActivityToDoc(dto)));
+    assertThat(resource.getResourceHash(), notNullValue());
+    assertThat(resource.getOutgoingEdges(), hasSize(2));
+    var edgesAreExpected = resource.getOutgoingEdges().stream().allMatch(edge ->
+      edge.getPredicate().equals(expectedPlacePredicate)
+        && edge.getSource().equals(resource)
+        && (edge.getTarget().equals(expectedTarget1)) || edge.getTarget().equals(expectedTarget2));
+    assertThat(edgesAreExpected, is(true));
+  }
+
+  @Test
+  void provisionActivityToEntity_shouldReturnCorrectEntity_ifGivenDtoAndTypeNotNullButLabelIsNull() {
+    // given
+    var place1 = new Property().id("id1").uri("uri1");
+    var type = "type";
+    var expectedType = new ResourceType().setSimpleLabel(type);
+    doReturn(expectedType).when(resourceTypeService).get(type);
+    var expectedPlaceType = new ResourceType().setSimpleLabel(PLACE_COMPONENTS);
+    doReturn(expectedPlaceType).when(resourceTypeService).get(PLACE_COMPONENTS);
+    var expectedPlacePredicate = new Predicate(PLACE_PRED);
+    doReturn(expectedPlacePredicate).when(predicateService).get(PLACE_PRED);
+    var expectedTarget1 = new Resource()
+      .setType(expectedPlaceType)
+      .setLabel(PLACE_COMPONENTS)
+      .setDoc(propertyToDoc(place1));
+    expectedTarget1
+      .setResourceHash(coreMapper.hash(expectedTarget1));
+    var place2 = new Property().id("id2").uri("uri2");
+    var expectedTarget2 = new Resource()
+      .setType(expectedPlaceType)
+      .setLabel(PLACE_COMPONENTS)
+      .setDoc(propertyToDoc(place2));
+    expectedTarget2
+      .setResourceHash(coreMapper.hash(expectedTarget2));
+    var dto = new ProvisionActivity()
+      .date(List.of("date1", "date2"))
+      .simpleAgent(List.of("agent1", "agent2"))
+      .simpleDate(List.of("s-date1", "s-date2"))
+      .simplePlace(List.of("place1", "place2"))
+      .place(List.of(place1, place2));
+    String label = null;
+
+    // when
+    var resource = coreMapper.provisionActivityToEntity(dto, label, type);
+
+    // then
+    assertThat(resource.getLabel(), is(type));
     assertThat(resource.getType(), is(expectedType));
     assertThat(resource.getDoc(), is(provisionActivityToDoc(dto)));
     assertThat(resource.getResourceHash(), notNullValue());
