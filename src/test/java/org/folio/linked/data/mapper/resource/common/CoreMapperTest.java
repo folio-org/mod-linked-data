@@ -18,7 +18,7 @@ import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -200,7 +200,7 @@ class CoreMapperTest {
   void toUrl_shouldReturnCorrectProperty_ifGivenResourceContainsCorrectDoc() {
     // given
     var map = Map.of(
-      VALUE_URL, List.of("value", "value2")
+        VALUE_PRED, List.of("value", "value2")
     );
     var node = getJsonNode(map);
     var resource = new Resource().setDoc(node);

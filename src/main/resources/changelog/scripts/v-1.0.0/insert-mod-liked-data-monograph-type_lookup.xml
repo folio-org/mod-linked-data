@@ -272,4 +272,11 @@
     </insert>
   </changeSet>
 
+  <changeSet id="03_insert_type_lookup" author="Pavel_Bobylev@epam.com">
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="5973506301"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/SupplementaryContent"/>
+      <column name="simple_label" value="lc:RT:bf2:SupplContentNote"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

@@ -337,9 +337,14 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/supplementaryContent": [
         {
-          "id": "supplementaryContentId",
-          "uri": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent",
-          "label": "supplementaryContentLabel"
+          "http://id.loc.gov/ontologies/bibframe/SupplementaryContent": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "supplementaryContentLabel"
+            ],
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+              "supplementaryContentValue"
+            ]
+          }
         }
       ],
       "http://id.loc.gov/ontologies/bibframe/electronicLocator": [

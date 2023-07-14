@@ -214,7 +214,15 @@
     "supplementaryContent": {
       "type": "array",
       "items": {
-        "$ref": "../property.json"
+        "type": "object",
+        "title": "SupplementaryContentField",
+        "properties": {
+          "SupplementaryContent": {
+            "type": "object",
+            "$ref": "SupplementaryContent.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent"
+          }
+        }
       },
       "x-json-property": "http://id.loc.gov/ontologies/bibframe/supplementaryContent"
     },

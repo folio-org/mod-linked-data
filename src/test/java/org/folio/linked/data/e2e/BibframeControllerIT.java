@@ -94,11 +94,12 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.URL;
 import static org.folio.linked.data.util.BibframeConstants.URL_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
@@ -200,7 +201,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3565444008,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":3386980124,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -441,9 +442,8 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toPublicationPlaceLabel(), equalTo("Publication: New York (State)")))
       .andExpect(jsonPath("$." + toPublicationPlaceUri(), equalTo(PLACE_URL)))
       .andExpect(jsonPath("$." + toPublicationDate(), equalTo("Publication: 1921")))
-      .andExpect(jsonPath("$." + toSupplementaryContentId(), equalTo("supplementaryContentId")))
       .andExpect(jsonPath("$." + toSupplementaryContentLabel(), equalTo("supplementaryContentLabel")))
-      .andExpect(jsonPath("$." + toSupplementaryContentUri(), equalTo(SUPP_CONTENT_URL)))
+      .andExpect(jsonPath("$." + toSupplementaryContentValue(), equalTo("supplementaryContentValue")))
       .andExpect(jsonPath("$." + toVariantTitlePartName(), equalTo("Variant: partName")))
       .andExpect(jsonPath("$." + toVariantTitlePartNumber(), equalTo("Variant: partNumber")))
       .andExpect(jsonPath("$." + toVariantTitleMain(), equalTo("Variant: Laramie holds the range")))
@@ -492,8 +492,7 @@ class BibframeControllerIT {
     validateSampleIdentifiedByLocal(edgeIterator.next(), instance);
     validateSampleIdentifiedByOther(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, NOTE_PRED, NOTE_URL, NOTE, "some note", NOTE_URL);
-    validateSampleProperty(edgeIterator.next(), instance, SUPP_CONTENT_PRED, SUPP_CONTENT_URL, "supplementaryContentId",
-      "supplementaryContentLabel", SUPP_CONTENT_URL);
+    validateSampleSupplementaryContent(edgeIterator.next(), instance);
     validateSampleImmediateAcquisition(edgeIterator.next(), instance);
     validateSampleExtent(edgeIterator.next(), instance);
     validateSampleElectronicLocator(edgeIterator.next(), instance);
@@ -563,8 +562,8 @@ class BibframeControllerIT {
     assertThat(identifiedBy.getLabel()).isEqualTo(url);
     assertThat(identifiedBy.getType().getSimpleLabel()).isEqualTo(type);
     assertThat(identifiedBy.getResourceHash()).isNotNull();
-    assertThat(identifiedBy.getDoc().get(VALUE_URL).size()).isEqualTo(1);
-    assertThat(identifiedBy.getDoc().get(VALUE_URL).get(0).asText()).isEqualTo(value);
+    assertThat(identifiedBy.getDoc().get(VALUE_PRED).size()).isEqualTo(1);
+    assertThat(identifiedBy.getDoc().get(VALUE_PRED).get(0).asText()).isEqualTo(value);
   }
 
   private void validateSampleInstanceTitle(ResourceEdge titleEdge, Resource instance) {
@@ -657,6 +656,22 @@ class BibframeControllerIT {
     validateSampleProperty(edgeIterator.next(), extent, NOTE_PRED, NOTE_URL, NOTE, "extent note label",
       "extent note uri");
     assertThat(edgeIterator.hasNext()).isFalse();
+  }
+
+  private void validateSampleSupplementaryContent(ResourceEdge edge, Resource instance) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(instance);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(SUPP_CONTENT_PRED);
+    var suppContent = edge.getTarget();
+    assertThat(suppContent.getLabel()).isEqualTo(SUPP_CONTENT_URL);
+    assertThat(suppContent.getType().getSimpleLabel()).isEqualTo(SUPP_CONTENT);
+    assertThat(suppContent.getResourceHash()).isNotNull();
+    assertThat(suppContent.getDoc().size()).isEqualTo(2);
+    assertThat(suppContent.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
+    assertThat(suppContent.getDoc().get(LABEL_PRED).get(0).asText()).isEqualTo("supplementaryContentLabel");
+    assertThat(suppContent.getDoc().get(VALUE_PRED).size()).isEqualTo(1);
+    assertThat(suppContent.getDoc().get(VALUE_PRED).get(0).asText()).isEqualTo("supplementaryContentValue");
+    assertThat(suppContent.getOutgoingEdges()).isEmpty();
   }
 
   private void validateSampleImmediateAcquisition(ResourceEdge edge, Resource instance) {
@@ -772,8 +787,8 @@ class BibframeControllerIT {
     assertThat(locator.getType().getSimpleLabel()).isEqualTo(URL);
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(VALUE_URL).size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(VALUE_URL).get(0).asText())
+    assertThat(locator.getDoc().get(VALUE_PRED).size()).isEqualTo(1);
+    assertThat(locator.getDoc().get(VALUE_PRED).get(0).asText())
       .isEqualTo("electronicLocatorValue");
     assertThat(locator.getOutgoingEdges()).hasSize(1);
     var edgeIterator = locator.getOutgoingEdges().iterator();
@@ -794,16 +809,14 @@ class BibframeControllerIT {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_URI));
   }
 
-  private String toSupplementaryContentId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(PROPERTY_ID));
-  }
-
   private String toSupplementaryContentLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(PROPERTY_LABEL));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(SUPP_CONTENT_URL),
+      arrayPath(LABEL_PRED));
   }
 
-  private String toSupplementaryContentUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(PROPERTY_URI));
+  private String toSupplementaryContentValue() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(SUPP_CONTENT_PRED), path(SUPP_CONTENT_URL),
+      arrayPath(VALUE_PRED));
   }
 
   private String toMediaId() {
@@ -1178,7 +1191,7 @@ class BibframeControllerIT {
 
   private String toIdentifiedByEanValue() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED), path(IDENTIFIERS_EAN_URL),
-      arrayPath(VALUE_URL));
+      arrayPath(VALUE_PRED));
   }
 
   private String toIdentifiedByEanQualifier() {
@@ -1188,7 +1201,7 @@ class BibframeControllerIT {
 
   private String toIdentifiedByIsbnValue() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 1), path(IDENTIFIERS_ISBN_URL),
-      arrayPath(VALUE_URL));
+      arrayPath(VALUE_PRED));
   }
 
   private String toIdentifiedByIsbnQualifier() {
@@ -1213,7 +1226,7 @@ class BibframeControllerIT {
 
   private String toIdentifiedByLccnValue() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 2), path(IDENTIFIERS_LCCN_URL),
-      arrayPath(VALUE_URL));
+      arrayPath(VALUE_PRED));
   }
 
   private String toIdentifiedByLccnStatusId() {
@@ -1233,7 +1246,7 @@ class BibframeControllerIT {
 
   private String toIdentifiedByLocalValue() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 3), path(IDENTIFIERS_LOCAL_URL),
-      arrayPath(VALUE_URL));
+      arrayPath(VALUE_PRED));
   }
 
   private String toIdentifiedByLocalAssignerId() {
@@ -1253,7 +1266,7 @@ class BibframeControllerIT {
 
   private String toIdentifiedByOtherValue() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(IDENTIFIED_BY_PRED, 4), path(IDENTIFIERS_OTHER_URL),
-      arrayPath(VALUE_URL));
+      arrayPath(VALUE_PRED));
   }
 
   private String toIdentifiedByOtherQualifier() {
@@ -1278,7 +1291,7 @@ class BibframeControllerIT {
 
   private String toElectronicLocatorValue() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
-      arrayPath(VALUE_URL));
+      arrayPath(VALUE_PRED));
   }
 
   private String toErrorType() {
