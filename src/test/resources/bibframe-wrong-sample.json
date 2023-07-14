@@ -1,0 +1,27 @@
+{
+  "http://id.loc.gov/ontologies/bibframe/Instance": [
+    {
+      "http://id.loc.gov/ontologies/bibframe/electronicLocator": [
+        {
+          "http://www.w3.org/2000/01/rdf-schema#ResourceWrong": [
+            {
+              "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [
+                "test"
+              ],
+              "http://id.loc.gov/ontologies/bibframe/note": [
+                {
+                  "http://id.loc.gov/ontologies/bibframe/Note": {
+                    "http://www.w3.org/2000/01/rdf-schema#label": [
+                      "note"
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "profile": "lc:profile:bf2:Monograph"
+}

@@ -3,11 +3,16 @@ package org.folio.linked.data.mapper.resource.common.inner;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
+import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +21,33 @@ import org.springframework.stereotype.Service;
 @Service
 public class InnerResourceMapperImpl implements InnerResourceMapper {
 
+  private final ObjectMapper objectMapper;
   private final Map<String, InnerResourceMapperUnit> mapperUnits = new HashMap<>();
 
   @Autowired
-  public InnerResourceMapperImpl(List<InnerResourceMapperUnit> mapperUnits) {
+  public InnerResourceMapperImpl(List<InnerResourceMapperUnit> mapperUnits, ObjectMapper objectMapper) {
     mapperUnits.forEach(mapperUnit -> {
       var annotation = mapperUnit.getClass().getAnnotation(MapperUnit.class);
       this.mapperUnits.put(annotation.type(), mapperUnit);
     });
+    this.objectMapper = objectMapper;
   }
 
   @Override
-  public BibframeResponse toDto(Resource source, BibframeResponse destination) {
+  public BibframeResponse toDto(@NonNull Resource source, @NonNull BibframeResponse destination) {
     return getMapperUnit(source.getType().getSimpleLabel()).toDto(source, destination);
   }
 
+  @SneakyThrows
   @Override
-  public Resource toEntity(Object dto, String resourceType) {
-    return getMapperUnit(resourceType).toEntity(dto);
+  public Resource toEntity(@NonNull Object dto, @NonNull String resourceType) {
+    try {
+      return getMapperUnit(resourceType).toEntity(dto);
+    } catch (BaseLinkedDataException blde) {
+      throw blde;
+    } catch (Exception e) {
+      throw new ValidationException(dto.getClass().getSimpleName(), objectMapper.writeValueAsString(dto));
+    }
   }
 
   private InnerResourceMapperUnit getMapperUnit(String type) {

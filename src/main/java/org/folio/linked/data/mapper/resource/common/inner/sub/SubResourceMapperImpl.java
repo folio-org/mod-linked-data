@@ -7,10 +7,15 @@ import static org.folio.linked.data.util.Constants.PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
+import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -20,20 +25,28 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SubResourceMapperImpl implements SubResourceMapper {
 
+  private final ObjectMapper objectMapper;
   private final List<SubResourceMapperUnit<?>> mapperUnits;
 
+  @SneakyThrows
   @Override
-  public <P> Resource toEntity(Object dto, String predicate, Class<P> parentDtoClass) {
-    return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
-      .map(mapper -> mapper.toEntity(dto, predicate))
-      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + dto.getClass().getSimpleName()
-        + IS_NOT_SUPPORTED_FOR + PREDICATE + predicate + RIGHT_SQUARE_BRACKET)
-      );
+  public <P> Resource toEntity(@NonNull Object dto, @NonNull String predicate, @NonNull Class<P> parentDtoClass) {
+    try {
+      return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
+        .map(mapper -> mapper.toEntity(dto, predicate))
+        .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + dto.getClass().getSimpleName()
+          + IS_NOT_SUPPORTED_FOR + PREDICATE + predicate + RIGHT_SQUARE_BRACKET)
+        );
+    } catch (BaseLinkedDataException blde) {
+      throw blde;
+    } catch (Exception e) {
+      throw new ValidationException(predicate, objectMapper.writeValueAsString(dto));
+    }
   }
 
   @Override
   @SuppressWarnings("java:S2201")
-  public <T> void toDto(ResourceEdge source, T destination) {
+  public <T> void toDto(@NonNull ResourceEdge source, @NonNull T destination) {
     getMapperUnit(source.getTarget().getType().getSimpleLabel(), source.getPredicate().getLabel(),
       destination.getClass(), null)
       .map(mapper -> ((SubResourceMapperUnit<T>) mapper).toDto(source.getTarget(), destination))

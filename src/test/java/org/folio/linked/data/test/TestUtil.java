@@ -81,6 +81,10 @@ public class TestUtil {
     return BIBFRAME_SAMPLE;
   }
 
+  public static String getResource(String fileName) {
+    return loadResourceAsString(fileName);
+  }
+
   @SneakyThrows
   public static JsonNode getResourceJsonNodeSample() {
     return OBJECT_MAPPER.readTree(BIBFRAME_SAMPLE);
