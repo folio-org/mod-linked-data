@@ -279,4 +279,24 @@
       <column name="simple_label" value="lc:RT:bf2:SupplContentNote"/>
     </insert>
   </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="04_update_type_lookup">
+    <update tableName="type_lookup">
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Local"/>
+      <where>simple_label='lc:RT:bf2:Identifiers:Local'</where>
+    </update>
+
+    <update tableName="type_lookup">
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Ean"/>
+      <where>simple_label='lc:RT:bf2:Identifiers:EAN'</where>
+    </update>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="05_insert_type_lookup">
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="3613636194"/>
+      <column name="type_uri" value="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+      <column name="simple_label" value="lc:RT:bf2:URL"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

@@ -349,7 +349,7 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/electronicLocator": [
         {
-          "http://www.w3.org/2000/01/rdf-schema#Bibframe": {
+          "http://www.w3.org/2000/01/rdf-schema#Resource": {
             "http://id.loc.gov/ontologies/bibframe/note": [
               {
                 "id": "lc:RT:bf2:Note",
