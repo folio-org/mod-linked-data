@@ -455,7 +455,7 @@ class BibframeControllerIT {
 
   private void validateSampleMonographEntity(Resource monograph) {
     assertThat(monograph.getType().getSimpleLabel()).isEqualTo(MONOGRAPH);
-    assertThat(monograph.getLabel()).isEqualTo(MONOGRAPH);
+    assertThat(monograph.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(monograph.getDoc()).isNull();
     assertThat(monograph.getResourceHash()).isNotNull();
     assertThat(monograph.getOutgoingEdges()).hasSize(1);
@@ -467,7 +467,7 @@ class BibframeControllerIT {
     assertThat(instanceEdge.getSource()).isEqualTo(monograph);
     assertThat(instanceEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_URL);
     var instance = instanceEdge.getTarget();
-    assertThat(instance.getLabel()).isEqualTo(INSTANCE_URL);
+    assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(1);

@@ -17,7 +17,7 @@ import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.BibframeMapper;
-import org.folio.linked.data.model.ResourceHashAndLabel;
+import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -80,7 +80,7 @@ class ResourceServiceTest {
 
   @Test
   void getResourceShortInfoPageWithParams_shouldReturnExistedEntitiesShortInfoMapped(
-    @Mock Page<ResourceHashAndLabel> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
+      @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
     // given
     var pageNumber = 0;
     var pageSize = 10;
@@ -90,7 +90,7 @@ class ResourceServiceTest {
     doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(profiles,
       PageRequest.of(pageNumber, pageSize, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
-      .map(ArgumentMatchers.<Function<ResourceHashAndLabel, BibframeShort>>any());
+      .map(ArgumentMatchers.<Function<ResourceShortInfo, BibframeShort>>any());
     var expectedResult = random(BibframeShortInfoPage.class);
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
 
@@ -103,7 +103,7 @@ class ResourceServiceTest {
 
   @Test
   void getResourceShortInfoPageWithNoParams_shouldReturnExistedEntitiesShortInfoMapped(
-    @Mock Page<ResourceHashAndLabel> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
+      @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
     // given
     var sort = Sort.by(Sort.Direction.ASC, "resourceHash");
     var profiles = Set.of("profile");
@@ -111,7 +111,7 @@ class ResourceServiceTest {
     doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(profiles,
       PageRequest.of(0, 100, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
-      .map(ArgumentMatchers.<Function<ResourceHashAndLabel, BibframeShort>>any());
+      .map(ArgumentMatchers.<Function<ResourceShortInfo, BibframeShort>>any());
     var expectedResult = random(BibframeShortInfoPage.class);
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
 
