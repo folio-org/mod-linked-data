@@ -293,10 +293,9 @@
   </changeSet>
 
   <changeSet author="Victor_Bodrov@epam.com" id="05_insert_type_lookup">
-    <insert tableName="type_lookup">
-      <column name="type_hash" value="3613636194"/>
+    <update tableName="type_lookup">
       <column name="type_uri" value="http://www.w3.org/2000/01/rdf-schema#Resource"/>
-      <column name="simple_label" value="lc:RT:bf2:URL"/>
-    </insert>
+      <where>simple_label='lc:RT:bf2:URL'</where>
+    </update>
   </changeSet>
 </databaseChangeLog>

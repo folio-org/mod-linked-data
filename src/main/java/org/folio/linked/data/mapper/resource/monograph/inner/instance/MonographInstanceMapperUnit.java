@@ -22,6 +22,7 @@ import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Instance;
@@ -83,7 +84,7 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
   private String getLabel(Instance dto) {
     var emptyString = "";
     var title = getTitle(dto, InstanceTitleField.class);
-    if (title != null) {
+    if (!Objects.isNull(title)) {
       return title.getInstanceTitle().getMainTitle().stream().findFirst().orElse(emptyString);
     }
 
@@ -101,7 +102,7 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
   }
 
   private <T extends InstanceTitleInner> T getTitle(Instance dto, Class<T> titleClass) {
-    if (dto.getTitle() == null) {
+    if (Objects.isNull(dto.getTitle())) {
       return null;
     } else {
       return dto.getTitle().stream()

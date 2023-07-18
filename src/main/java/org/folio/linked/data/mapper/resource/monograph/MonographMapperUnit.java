@@ -46,7 +46,7 @@ public class MonographMapperUnit implements ProfiledMapperUnit {
 
   private String getInstanceLabel(Resource  bibframe) {
     return bibframe.getOutgoingEdges().stream()
-      .filter(re -> predicateService.get(INSTANCE_URL).equals(re.getPredicate()))
+      .filter(re -> INSTANCE_URL.equals(re.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
       .map(Resource::getLabel)
       .findFirst().orElse("");

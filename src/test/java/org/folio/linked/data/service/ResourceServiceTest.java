@@ -80,7 +80,7 @@ class ResourceServiceTest {
 
   @Test
   void getResourceShortInfoPageWithParams_shouldReturnExistedEntitiesShortInfoMapped(
-      @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
+    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
     // given
     var pageNumber = 0;
     var pageSize = 10;
@@ -103,7 +103,7 @@ class ResourceServiceTest {
 
   @Test
   void getResourceShortInfoPageWithNoParams_shouldReturnExistedEntitiesShortInfoMapped(
-      @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
+    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<BibframeShort> pageOfDto) {
     // given
     var sort = Sort.by(Sort.Direction.ASC, "resourceHash");
     var profiles = Set.of("profile");
