@@ -207,7 +207,15 @@
     "note": {
       "type": "array",
       "items": {
-        "$ref": "../property.json"
+        "type": "object",
+        "title": "NoteField",
+        "properties": {
+          "Note": {
+            "type": "object",
+            "$ref": "Note.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Note"
+          }
+        }
       },
       "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
     },

@@ -29,6 +29,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.commons.lang3.function.TriFunction;
 import org.folio.linked.data.domain.dto.Lookup;
 import org.folio.linked.data.domain.dto.Person;
@@ -205,6 +206,7 @@ public class CoreMapperImpl implements CoreMapper {
     return toJson(map);
   }
 
+  @SneakyThrows
   private JsonNode resourceToJson(Resource res) {
     ObjectNode node;
     if (nonNull(res.getDoc()) && !res.getDoc().isEmpty()) {
@@ -212,6 +214,8 @@ public class CoreMapperImpl implements CoreMapper {
     } else {
       node = mapper.createObjectNode();
     }
+    node.put(PROPERTY_LABEL, res.getLabel());
+    node.put("type", res.getType().getTypeHash());
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getLabel();
       if (!node.has(predicate)) {

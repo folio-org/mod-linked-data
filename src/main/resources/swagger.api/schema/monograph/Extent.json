@@ -3,19 +3,27 @@
   "description": "Extent Info",
   "type": "object",
   "properties": {
-    "note": {
-      "type": "array",
-      "items": {
-        "$ref": "../property.json"
-      },
-      "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
-    },
     "label": {
       "type": "array",
       "items": {
         "type": "string"
       },
       "x-json-property": "http://www.w3.org/2000/01/rdf-schema#label"
+    },
+    "note": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "NoteField",
+        "properties": {
+          "Note": {
+            "type": "object",
+            "$ref": "Note.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Note"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
     },
     "appliesTo": {
       "type": "array",
