@@ -42,7 +42,7 @@ public class InstanceElectronicLocatorMapperUnit implements InstanceSubResourceM
     var url = ((UrlField) dto).getUrl();
     var resource = new Resource();
     resource.setLabel(URL_URL);
-    resource.setType(resourceTypeService.get(URL));
+    resource.setType(resourceTypeService.get(URL_URL));
     resource.setDoc(getDoc(url));
     coreMapper.mapResourceEdges(url.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));

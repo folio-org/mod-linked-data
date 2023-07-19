@@ -11,7 +11,6 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
@@ -23,9 +22,14 @@ import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceTitleField;
+import org.folio.linked.data.domain.dto.InstanceTitleInner;
+import org.folio.linked.data.domain.dto.ParallelTitleField;
+import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapperUnit;
@@ -54,9 +58,9 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
   public Resource toEntity(Object innerResourceDto) {
     Instance dto = (Instance) innerResourceDto;
     var resource = new Resource();
-    resource.setLabel(INSTANCE_URL);
     resource.setType(resourceTypeService.get(INSTANCE));
     resource.setDoc(getDoc(dto));
+    resource.setLabel(getLabel(dto));
     coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getProvisionActivity(), resource, PROVISION_ACTIVITY_PRED, Instance.class,
       mapper::toEntity);
@@ -75,6 +79,38 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
     coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, Instance.class, mapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
+  }
+
+  private String getLabel(Instance dto) {
+    var emptyString = "";
+    var title = getTitle(dto, InstanceTitleField.class);
+    if (!Objects.isNull(title)) {
+      return title.getInstanceTitle().getMainTitle().stream().findFirst().orElse(emptyString);
+    }
+
+    var parTitle = getTitle(dto, ParallelTitleField.class);
+    if (parTitle != null) {
+      return parTitle.getParallelTitle().getMainTitle().stream().findFirst().orElse(emptyString);
+    }
+
+    var varTitle = getTitle(dto, VariantTitleField.class);
+    if (varTitle != null) {
+      return varTitle.getVariantTitle().getMainTitle().stream().findFirst().orElse(emptyString);
+    }
+
+    return emptyString;
+  }
+
+  private <T extends InstanceTitleInner> T getTitle(Instance dto, Class<T> titleClass) {
+    if (Objects.isNull(dto.getTitle())) {
+      return null;
+    } else {
+      return dto.getTitle().stream()
+        .filter(titleClass::isInstance)
+        .findFirst()
+        .map(titleClass::cast)
+        .orElse(null);
+    }
   }
 
   private JsonNode getDoc(Instance dto) {

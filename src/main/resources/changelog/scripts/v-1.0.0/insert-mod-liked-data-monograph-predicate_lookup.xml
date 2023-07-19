@@ -242,4 +242,11 @@
     </insert>
   </changeSet>
 
+  <changeSet author="Victor_Bodrov@epam.com" id="04_insert_predicate_lookup">
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="169733162"/>
+      <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/editionStatement"/>
+    </insert>
+  </changeSet>
+
 </databaseChangeLog>

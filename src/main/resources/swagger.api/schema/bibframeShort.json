@@ -10,7 +10,11 @@
     },
     "label": {
       "type": "string",
-      "description": "The label of the bibframe."
+      "description": "The label of the bibframe"
+    },
+    "profile": {
+      "type": "string",
+      "description": "The profile of the bibframe"
     }
   }
 }

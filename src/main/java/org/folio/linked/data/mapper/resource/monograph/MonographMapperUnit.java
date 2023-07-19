@@ -15,6 +15,7 @@ import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
+import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -27,19 +28,28 @@ import org.springframework.stereotype.Component;
 public class MonographMapperUnit implements ProfiledMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
+  private final DictionaryService<Predicate> predicateService;
   private final InnerResourceMapper innerMapper;
   private final CoreMapper coreMapper;
 
   @Override
   public Resource toEntity(BibframeRequest bibframeRequest) {
     var bibframe = new Resource();
-    bibframe.setLabel(MONOGRAPH);
     bibframe.setType(resourceTypeService.get(MONOGRAPH));
     coreMapper.mapResourceEdges(bibframeRequest.getWork(), bibframe, WORK, WORK_URL, innerMapper::toEntity);
     coreMapper.mapResourceEdges(bibframeRequest.getInstance(), bibframe, INSTANCE, INSTANCE_URL, innerMapper::toEntity);
     coreMapper.mapResourceEdges(bibframeRequest.getItem(), bibframe, ITEM, ITEM_URL, innerMapper::toEntity);
     bibframe.setResourceHash(coreMapper.hash(bibframe));
+    bibframe.setLabel(getInstanceLabel(bibframe));
     return bibframe;
+  }
+
+  private String getInstanceLabel(Resource  bibframe) {
+    return bibframe.getOutgoingEdges().stream()
+      .filter(re -> INSTANCE_URL.equals(re.getPredicate().getLabel()))
+      .map(ResourceEdge::getTarget)
+      .map(Resource::getLabel)
+      .findFirst().orElse("");
   }
 
   @Override

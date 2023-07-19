@@ -7,7 +7,7 @@ import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapper;
-import org.folio.linked.data.model.ResourceHashAndLabel;
+import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -21,7 +21,8 @@ public abstract class BibframeMapper {
   private ProfiledMapper profiledMapper;
 
   @Mapping(target = "id", source = "resourceHash")
-  public abstract BibframeShort map(ResourceHashAndLabel resourceHashAndLabel);
+  @Mapping(target = "profile", expression = "java(resourceShortInfo.getType().getSimpleLabel())")
+  public abstract BibframeShort map(ResourceShortInfo resourceShortInfo);
 
   public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
 
