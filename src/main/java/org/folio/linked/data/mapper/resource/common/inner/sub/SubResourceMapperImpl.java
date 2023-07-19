@@ -57,7 +57,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
 
   private Optional<SubResourceMapperUnit<?>> getMapperUnit(String type, String pred, Class<?> parentDto, Class<?> dto) {
     return mapperUnits.stream()
-      .filter(m -> isNull(parentDto) || parentDto.equals(m.getParentDto()))
+      .filter(m -> isNull(parentDto) || m.getParentDto().contains(parentDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
         return (isNull(type) || type.equals(annotation.type()))

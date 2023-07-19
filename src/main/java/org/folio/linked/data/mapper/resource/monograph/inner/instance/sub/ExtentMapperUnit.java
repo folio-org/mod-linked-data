@@ -9,7 +9,6 @@ import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -20,10 +19,9 @@ import org.folio.linked.data.domain.dto.AppliesToField;
 import org.folio.linked.data.domain.dto.Extent;
 import org.folio.linked.data.domain.dto.ExtentField;
 import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Note;
-import org.folio.linked.data.domain.dto.NoteField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -37,13 +35,13 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final InstanceNoteMapperUnit noteMapper;
+  private final NoteMapperUnit<Extent> noteMapper;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var extent = coreMapper.readResourceDoc(source, Extent.class);
     addMappedAppliesTo(source, extent);
-    addMappedNote(source, extent);
+    coreMapper.addMappedResources(noteMapper, source, NOTE_PRED, extent);
     destination.addExtentItem(new ExtentField().extent(extent));
     return destination;
   }
@@ -54,18 +52,6 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
       .map(ResourceEdge::getTarget)
       .map(r -> coreMapper.readResourceDoc(r, AppliesTo.class))
       .forEach(at -> extent.addAppliesToItem(new AppliesToField().appliesTo(at)));
-  }
-
-  private void addMappedNote(Resource resource, Extent extent) {
-    resource.getOutgoingEdges().stream()
-      .filter(resourceEdge -> NOTE_PRED.equals(resourceEdge.getPredicate().getLabel()))
-      .map(ResourceEdge::getTarget)
-      .map(r -> {
-        Note note = coreMapper.readResourceDoc(r, Note.class);
-        coreMapper.addMappedProperties(r, NOTE_TYPE_PRED, note::addNoteTypeItem);
-        return note;
-      })
-      .forEach(n -> extent.addNoteItem(new NoteField().note(n)));
   }
 
   @Override
