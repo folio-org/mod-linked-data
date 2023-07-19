@@ -12,6 +12,7 @@ import static org.folio.linked.data.test.TestUtil.randomResource;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
@@ -201,7 +202,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3386980124,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":2999110896,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -367,9 +368,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toExtentNoteLabel(), equalTo("extent note label")))
       .andExpect(jsonPath("$." + toExtentNoteUri(), equalTo("extent note uri")))
       .andExpect(jsonPath("$." + toExtentLabel(), equalTo("vi, 374 pages, 4 unnumbered leaves of plates")))
-      .andExpect(jsonPath("$." + toExtentAppliesToId(), equalTo(APPLIES_TO_URL)))
       .andExpect(jsonPath("$." + toExtentAppliesToLabel(), equalTo("extent appliesTo label")))
-      .andExpect(jsonPath("$." + toExtentAppliesToUri(), equalTo("extent appliesTo uri")))
       .andExpect(jsonPath("$." + toId(), notNullValue()))
       .andExpect(jsonPath("$." + toIdentifiedByEanValue(), equalTo("12345670")))
       .andExpect(jsonPath("$." + toIdentifiedByEanQualifier(), equalTo("07654321")))
@@ -649,11 +648,24 @@ class BibframeControllerIT {
       .isEqualTo("vi, 374 pages, 4 unnumbered leaves of plates");
     assertThat(extent.getOutgoingEdges()).hasSize(2);
     var edgeIterator = extent.getOutgoingEdges().iterator();
-    validateSampleProperty(edgeIterator.next(), extent, APPLIES_TO_PRED, APPLIES_TO_URL, APPLIES_TO_URL,
-      "extent appliesTo label", "extent appliesTo uri");
+    validateAppliesTo(edgeIterator.next(), extent);
     validateSampleProperty(edgeIterator.next(), extent, NOTE_PRED, NOTE_URL, NOTE, "extent note label",
       "extent note uri");
     assertThat(edgeIterator.hasNext()).isFalse();
+  }
+
+  private void validateAppliesTo(ResourceEdge appliesToEdge, Resource extent) {
+    assertThat(appliesToEdge.getId()).isNotNull();
+    assertThat(appliesToEdge.getSource()).isEqualTo(extent);
+    assertThat(appliesToEdge.getPredicate().getLabel()).isEqualTo(APPLIES_TO_PRED);
+    var appliesTo = appliesToEdge.getTarget();
+    assertThat(appliesTo.getLabel()).isEqualTo(APPLIES_TO_URL);
+    assertThat(appliesTo.getType().getSimpleLabel()).isEqualTo(APPLIES_TO);
+    assertThat(appliesTo.getResourceHash()).isNotNull();
+    assertThat(appliesTo.getDoc().size()).isEqualTo(1);
+    assertThat(appliesTo.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
+    assertThat(appliesTo.getDoc().get(LABEL_PRED).get(0).asText()).isEqualTo("extent appliesTo label");
+    assertThat(appliesTo.getOutgoingEdges()).isEmpty();
   }
 
   private void validateSampleSupplementaryContent(ResourceEdge edge, Resource instance) {
@@ -897,19 +909,9 @@ class BibframeControllerIT {
       path(EXTENT_URL), arrayPath(LABEL_PRED));
   }
 
-  private String toExtentAppliesToId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_ID));
-  }
-
   private String toExtentAppliesToLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_LABEL));
-  }
-
-  private String toExtentAppliesToUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_URI));
+      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(APPLIES_TO_URL), arrayPath(LABEL_PRED));
   }
 
   private String toContributionRoleLabel() {

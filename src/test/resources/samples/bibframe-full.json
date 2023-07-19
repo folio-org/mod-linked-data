@@ -280,9 +280,11 @@
             ],
             "http://id.loc.gov/ontologies/bflc/appliesTo": [
               {
-                "id": "http://id.loc.gov/ontologies/bflc/AppliesTo",
-                "uri": "extent appliesTo uri",
-                "label": "extent appliesTo label"
+                "http://id.loc.gov/ontologies/bflc/AppliesTo": {
+                  "http://www.w3.org/2000/01/rdf-schema#label": [
+                    "extent appliesTo label"
+                  ]
+                }
               }
             ]
           }

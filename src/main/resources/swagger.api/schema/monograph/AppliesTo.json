@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Applies to",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://www.w3.org/2000/01/rdf-schema#label"
+    }
+  }
+}

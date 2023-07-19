@@ -20,7 +20,15 @@
     "appliesTo": {
       "type": "array",
       "items": {
-        "$ref": "../property.json"
+        "type": "object",
+        "title": "AppliesToField",
+        "properties": {
+          "AppliesTo": {
+            "type": "object",
+            "$ref": "AppliesTo.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bflc/AppliesTo"
+          }
+        }
       },
       "x-json-property": "http://id.loc.gov/ontologies/bflc/appliesTo"
     }

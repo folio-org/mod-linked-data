@@ -51,6 +51,7 @@ public class BibframeConstants {
   public static final String URL = "lc:RT:bf2:URL";
   public static final String IMM_ACQUISITION = "lc:RT:bf2:ImmAcqSource";
   public static final String SUPP_CONTENT = "lc:RT:bf2:SupplContentNote";
+  public static final String APPLIES_TO = "lc:RT:bf2:AppliesTo";
 
   //Type URLs
   public static final String WORK_URL = "http://id.loc.gov/ontologies/bibframe/Work";
