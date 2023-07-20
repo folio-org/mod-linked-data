@@ -6,6 +6,9 @@ import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
+import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
+import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
+import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -19,6 +22,7 @@ import org.folio.linked.data.domain.dto.NoteField;
 import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.Url;
 import org.folio.linked.data.domain.dto.VariantTitle;
+import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
@@ -52,6 +56,9 @@ public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
       variantTitle.addNoteItem(noteField);
     } else if (destination instanceof Url url) {
       url.addNoteItem(noteField);
+    } else {
+      throw new NotSupportedException(RESOURCE_TYPE + destination.getClass().getSimpleName()
+        + IS_NOT_SUPPORTED_FOR_PREDICATE + NOTE_PRED + RIGHT_SQUARE_BRACKET);
     }
     return destination;
   }

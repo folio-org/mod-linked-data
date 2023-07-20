@@ -2,7 +2,6 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
@@ -14,16 +13,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.AppliesTo;
-import org.folio.linked.data.domain.dto.AppliesToField;
 import org.folio.linked.data.domain.dto.Extent;
 import org.folio.linked.data.domain.dto.ExtentField;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.AppliesToMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
@@ -36,22 +33,15 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final DictionaryService<ResourceType> resourceTypeService;
   private final NoteMapperUnit<Extent> noteMapper;
+  private final AppliesToMapperUnit<Extent> appliesToMapper;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var extent = coreMapper.readResourceDoc(source, Extent.class);
-    addMappedAppliesTo(source, extent);
+    coreMapper.addMappedResources(appliesToMapper, source, APPLIES_TO_PRED, extent);
     coreMapper.addMappedResources(noteMapper, source, NOTE_PRED, extent);
     destination.addExtentItem(new ExtentField().extent(extent));
     return destination;
-  }
-
-  private void addMappedAppliesTo(Resource resource, Extent extent) {
-    resource.getOutgoingEdges().stream()
-      .filter(resourceEdge -> APPLIES_TO_PRED.equals(resourceEdge.getPredicate().getLabel()))
-      .map(ResourceEdge::getTarget)
-      .map(r -> coreMapper.readResourceDoc(r, AppliesTo.class))
-      .forEach(at -> extent.addAppliesToItem(new AppliesToField().appliesTo(at)));
   }
 
   @Override
@@ -61,17 +51,9 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(EXTENT_URL);
     resource.setType(resourceTypeService.get(EXTENT));
     resource.setDoc(getDoc(extent.getLabel()));
-    coreMapper.mapResourceEdges(extent.getAppliesTo(), resource, APPLIES_TO, APPLIES_TO_PRED, this::appliesToToEntity);
+    coreMapper.mapResourceEdges(extent.getAppliesTo(), resource, APPLIES_TO, APPLIES_TO_PRED,
+      appliesToMapper::toEntity);
     coreMapper.mapResourceEdges(extent.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
-    resource.setResourceHash(coreMapper.hash(resource));
-    return resource;
-  }
-
-  private Resource appliesToToEntity(AppliesToField dto, String predicate) {
-    var resource = new Resource();
-    resource.setLabel(APPLIES_TO_URL);
-    resource.setType(resourceTypeService.get(APPLIES_TO));
-    resource.setDoc(getDoc(dto.getAppliesTo().getLabel()));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
