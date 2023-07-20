@@ -255,6 +255,25 @@ class BibframeControllerIT {
   }
 
   @Test
+  void createMonographInstanceBibframeWithMultipleIdenticalResources_shouldSaveEntityCorrectly() throws Exception {
+    // given
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getResource("samples/bibframe-multiple-identical-resources.json"));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+
+    // then
+    resultActions.andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("id", notNullValue()))
+      .andExpect(jsonPath("$." + path(INSTANCE_URL), notNullValue()));
+  }
+
+  @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());

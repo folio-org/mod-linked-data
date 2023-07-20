@@ -21,6 +21,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        event:
+          merge:
+            entity_copy_observer: allow
     open-in-view: false
 
 folio:
