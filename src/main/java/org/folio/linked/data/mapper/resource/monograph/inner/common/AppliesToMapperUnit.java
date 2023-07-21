@@ -37,7 +37,7 @@ public class AppliesToMapperUnit<T> implements SubResourceMapperUnit<T> {
   @Override
   public T toDto(Resource source, T destination) {
     var appliesTo = coreMapper.readResourceDoc(source, AppliesTo.class);
-    AppliesToField appliesToField = new AppliesToField().appliesTo(appliesTo);
+    var appliesToField = new AppliesToField().appliesTo(appliesTo);
     if (destination instanceof Extent extent) {
       extent.addAppliesToItem(appliesToField);
     } else {

@@ -45,7 +45,7 @@ public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
   public T toDto(Resource source, T destination) {
     var note = coreMapper.readResourceDoc(source, Note.class);
     coreMapper.addMappedProperties(source, NOTE_TYPE_PRED, note::addNoteTypeItem);
-    NoteField noteField = new NoteField().note(note);
+    var noteField = new NoteField().note(note);
     if (destination instanceof Instance instance) {
       instance.addNoteItem(noteField);
     } else if (destination instanceof Extent extent) {

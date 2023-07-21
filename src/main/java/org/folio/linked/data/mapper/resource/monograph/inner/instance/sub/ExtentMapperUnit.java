@@ -58,9 +58,9 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
     return resource;
   }
 
-  private JsonNode getDoc(List<String> labelsDto) {
+  private JsonNode getDoc(List<String> labels) {
     var map = new HashMap<String, List<String>>();
-    map.put(LABEL_PRED, labelsDto);
+    map.put(LABEL_PRED, labels);
     return coreMapper.toJson(map);
   }
 }
