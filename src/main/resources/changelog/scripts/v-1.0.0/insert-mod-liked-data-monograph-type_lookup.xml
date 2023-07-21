@@ -298,4 +298,15 @@
       <where>simple_label='lc:RT:bf2:URL'</where>
     </update>
   </changeSet>
+
+  <changeSet author="Pavel_Bobylev@epam.com" id="06_update_and_insert_type_lookup">
+    <update tableName="type_lookup">
+      <column name="simple_label" value="lc:RT:bf2:AppliesTo"/>
+      <where>type_uri='http://id.loc.gov/ontologies/bflc/AppliesTo'</where>
+    </update>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-2389941372"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/NoteType"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

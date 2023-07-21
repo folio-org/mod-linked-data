@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
@@ -20,7 +21,7 @@ import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceNoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -33,13 +34,13 @@ import org.springframework.stereotype.Component;
 public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final InstanceNoteMapperUnit noteMapper;
+  private final NoteMapperUnit<VariantTitle> noteMapper;
   private final CoreMapper coreMapper;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var variantTitle = coreMapper.readResourceDoc(source, VariantTitle.class);
-    coreMapper.addMappedProperties(source, NOTE_PRED, variantTitle::addNoteItem);
+    coreMapper.addMappedResources(noteMapper, source, NOTE_PRED, variantTitle);
     destination.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     return destination;
   }
@@ -51,7 +52,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
     resource.setLabel(VARIANT_TITLE_URL);
     resource.setType(resourceTypeService.get(VARIANT_TITLE));
     resource.setDoc(getDoc(variantTitle));
-    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

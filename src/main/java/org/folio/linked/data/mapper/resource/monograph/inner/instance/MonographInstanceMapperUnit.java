@@ -50,7 +50,7 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
 
   @Override
   public BibframeResponse toDto(Resource resource, BibframeResponse destination) {
-    coreMapper.addMappedResources(mapper, resource, destination::addInstanceItem, Instance.class);
+    coreMapper.mapWithResources(mapper, resource, destination::addInstanceItem, Instance.class);
     return destination;
   }
 

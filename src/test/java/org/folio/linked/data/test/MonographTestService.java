@@ -1,11 +1,12 @@
 package org.folio.linked.data.test;
 
+import static java.util.Collections.emptyMap;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
@@ -41,12 +42,15 @@ import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
 import static org.folio.linked.data.util.BibframeConstants.PERSON;
+import static org.folio.linked.data.util.BibframeConstants.PLACE;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
@@ -70,20 +74,18 @@ import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -103,7 +105,7 @@ public class MonographTestService {
   public Resource createSampleMonograph() {
     var instance = createSampleInstance();
     return createResource(
-      Collections.emptyMap(),
+      emptyMap(),
       MONOGRAPH,
       Map.of(INSTANCE_URL, List.of(instance))
     );
@@ -119,7 +121,7 @@ public class MonographTestService {
         SUBTITLE_URL, List.of("Instance: subtitle")
       ),
       INSTANCE_TITLE,
-      Collections.emptyMap()
+      emptyMap()
     );
     var parallelTitle = createResource(
       Map.of(
@@ -130,11 +132,7 @@ public class MonographTestService {
         SUBTITLE_URL, List.of("Parallel: subtitle")
       ),
       PARALLEL_TITLE,
-      Map.of(NOTE_PRED, List.of(createSimpleResource(
-        "Parallel: noteLabel",
-        NOTE,
-        "Parallel: noteUri"
-      )))
+      Map.of(NOTE_PRED, List.of(getSimpleNote("Parallel: noteLabel")))
     );
     var variantTitle = createResource(
       Map.of(
@@ -146,11 +144,7 @@ public class MonographTestService {
         VARIANT_TYPE_URL, List.of("Variant: variantType")
       ),
       VARIANT_TITLE,
-      Map.of(NOTE_PRED, List.of(createSimpleResource(
-        "Variant: noteLabel",
-        NOTE,
-        "Variant: noteUri"
-      )))
+      Map.of(NOTE_PRED, List.of(getSimpleNote("Variant: noteLabel")))
     );
 
     var distribution = provisionActivity("Distribution: ", DISTRIBUTION);
@@ -164,16 +158,17 @@ public class MonographTestService {
           PROPERTY_URI, "http://id.loc.gov/authorities/names/no98072015")
         )
       ), PERSON,
-      Collections.emptyMap());
+      emptyMap());
 
-    var role = createSimpleResource(
-      "Author",
+    var role = createPropertyResource(
       ROLE,
+      "Author",
+      ROLE_URL,
       ROLE_URL
     );
 
     var contrib = createResource(
-      Collections.emptyMap(),
+      emptyMap(),
       CONTRIBUTION,
       Map.of(
         AGENT_PRED, List.of(person),
@@ -187,7 +182,7 @@ public class MonographTestService {
         QUALIFIER_URL, List.of("07654321")
       ),
       IDENTIFIERS_EAN,
-      Collections.emptyMap()
+      emptyMap()
     );
     var isbn = createResource(
       Map.of(
@@ -200,7 +195,7 @@ public class MonographTestService {
         )
       ),
       IDENTIFIERS_ISBN,
-      Collections.emptyMap()
+      emptyMap()
     );
     var lccn = createResource(
       Map.of(
@@ -212,7 +207,7 @@ public class MonographTestService {
         )
       ),
       IDENTIFIERS_LCCN,
-      Collections.emptyMap()
+      emptyMap()
     );
     var local = createResource(
       Map.of(
@@ -224,7 +219,7 @@ public class MonographTestService {
         )
       ),
       IDENTIFIERS_LOCAL,
-      Collections.emptyMap()
+      emptyMap()
     );
     var other = createResource(
       Map.of(
@@ -232,39 +227,53 @@ public class MonographTestService {
         QUALIFIER_URL, List.of("47654321")
       ),
       IDENTIFIERS_OTHER,
-      Collections.emptyMap()
+      emptyMap()
     );
 
-    var note = createSimpleResource(
-      "some note",
+    var note = createResource(
+      Map.of(LABEL_PRED, List.of("note label")),
       NOTE,
-      NOTE_URL
+      Map.of(NOTE_TYPE_PRED, List.of(createPropertyResource(
+        "noteTypeId",
+        "Accompanying material",
+        "http://id.loc.gov/vocabulary/mnotetype/accmat",
+        NOTE_TYPE_URI
+      )))
+    );
+
+    var appliesTo = createResource(
+      Map.of(LABEL_PRED, List.of("extent appliesTo label")),
+      APPLIES_TO,
+      emptyMap()
     );
 
     var extent = createResource(
-      Map.of(LABEL_PRED, List.of("vi, 374 pages, 4 unnumbered leaves of plates")),
+      Map.of(LABEL_PRED, List.of("extent label")),
       EXTENT,
       Map.of(
-        NOTE_PRED, List.of(createSimpleResource("extent note label", NOTE, "extent note uri")),
-        APPLIES_TO_PRED, List.of(createSimpleResource("extent appliesTo label", APPLIES_TO_URL, "extent appliesTo uri"))
+        NOTE_PRED, List.of(getSimpleNote("extent note label")),
+        APPLIES_TO_PRED, List.of(appliesTo)
       )
     );
 
-    var issuance = createSimpleResource(
-      "single unit",
+    var issuance = createPropertyResource(
       "issuanceId",
+      "single unit",
+      ISSUANCE_URL,
       ISSUANCE_URL
     );
 
-    var carrier = createSimpleResource(
-      "volume",
+    var carrier = createPropertyResource(
       "carrierId",
+      "volume",
+      CARRIER_URL,
       CARRIER_URL
     );
 
-    var media = createSimpleResource(
-      "unmediated",
+    var media = createPropertyResource(
       "mediaId",
+      "unmediated",
+      MEDIA_URL,
       MEDIA_URL
     );
 
@@ -274,7 +283,7 @@ public class MonographTestService {
         VALUE_PRED, List.of("supplementaryContentValue")
       ),
       SUPP_CONTENT,
-      Collections.emptyMap()
+      emptyMap()
     );
 
     var immediateAcquisition = createResource(
@@ -287,20 +296,13 @@ public class MonographTestService {
         LABEL_PRED, List.of("some immediateAcquisition")
       ),
       IMM_ACQUISITION,
-      Collections.emptyMap()
+      emptyMap()
     );
 
     var electronicLocator = createResource(
-      Map.of(
-        NOTE_PRED, List.of(Map.of(
-          PROPERTY_ID, NOTE,
-          PROPERTY_LABEL, "electronicLocatorNoteLabel",
-          PROPERTY_URI, "electronicLocatorNoteUri"
-        )),
-        VALUE_PRED, List.of("electronicLocatorValue")
-      ),
+      Map.of(VALUE_PRED, List.of("electronicLocatorValue")),
       URL_URL,
-      Collections.emptyMap()
+      Map.of(NOTE_PRED, List.of(getSimpleNote("electronicLocatorNoteLabel")))
     );
 
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
@@ -324,6 +326,14 @@ public class MonographTestService {
     );
   }
 
+  @NotNull
+  private Resource getSimpleNote(String label) {
+    return createResource(
+      Map.of(LABEL_PRED, List.of(label)),
+      NOTE,
+      emptyMap());
+  }
+
   private Resource provisionActivity(String prefix, String url) {
     return createResource(
       Map.of(
@@ -338,10 +348,11 @@ public class MonographTestService {
   }
 
   private Resource place(String prefix) {
-    return createSimpleResource(
+    return createPropertyResource(
+      PLACE,
       prefix + "New York (State)",
-      "lc:RT:bf2:Place",
-      "http://id.loc.gov/ontologies/bibframe/Place"
+      PLACE_URL,
+      PLACE_URL
     );
   }
 
@@ -357,35 +368,23 @@ public class MonographTestService {
       .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
     resource.setDoc(getJsonNode(properties));
-    resource.setResourceHash(coreMapper.hash(resource));
     resource.setType(resourceTypeService.get(typeLabel));
-    return resource;
-  }
-
-  private Resource createSimpleResource(String label, String typeLabel, String typeUri) {
-    var resource = new Resource();
-
-    var map = new HashMap<>(Map.of(PROPERTY_URI, typeUri, PROPERTY_LABEL, label));
-    if (StringUtils.isNoneBlank(typeLabel)) {
-      map.put(PROPERTY_ID, typeLabel);
-      resource.setType(findTypeByLabelOfUri(typeLabel, typeUri));
-    } else {
-      resource.setType(resourceTypeService.get(typeUri));
-    }
-    var doc = getJsonNode(map);
-    resource.setDoc(doc);
     resource.setResourceHash(coreMapper.hash(resource));
-    resource.setLabel(label);
-
     return resource;
   }
 
-  private ResourceType findTypeByLabelOfUri(String label, String uri) {
-    try {
-      return resourceTypeService.get(label);
-    } catch (NotSupportedException nse) {
-      return resourceTypeService.get(uri);
-    }
+  private Resource createPropertyResource(String id, String label, String uri, String typeUri) {
+    var resource = new Resource();
+    resource.setType(resourceTypeService.get(typeUri));
+    var doc = getJsonNode(new HashMap<>(Map.of(
+      PROPERTY_ID, id,
+      PROPERTY_URI, uri,
+      PROPERTY_LABEL, label)
+    ));
+    resource.setDoc(doc);
+    resource.setLabel(label);
+    resource.setResourceHash(coreMapper.hash(resource));
+    return resource;
   }
 
 }

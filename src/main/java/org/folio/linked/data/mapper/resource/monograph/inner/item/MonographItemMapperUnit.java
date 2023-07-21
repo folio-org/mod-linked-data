@@ -22,7 +22,7 @@ public class MonographItemMapperUnit implements InnerResourceMapperUnit {
 
   @Override
   public BibframeResponse toDto(Resource resource, BibframeResponse destination) {
-    coreMapper.addMappedResources(subResourceMapper, resource, destination::addItemItem, Item.class);
+    coreMapper.mapWithResources(subResourceMapper, resource, destination::addItemItem, Item.class);
     return destination;
   }
 

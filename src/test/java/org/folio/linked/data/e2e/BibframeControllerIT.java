@@ -1,6 +1,7 @@
 package org.folio.linked.data.e2e;
 
 import static java.util.Comparator.comparing;
+import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
@@ -12,6 +13,7 @@ import static org.folio.linked.data.test.TestUtil.randomResource;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
@@ -63,6 +65,8 @@ import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
@@ -156,7 +160,6 @@ class BibframeControllerIT {
   @Autowired
   private Environment env;
 
-
   @AfterEach
   public void clean() {
     resourceEdgeRepository.deleteAll();
@@ -201,7 +204,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3386980124,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":1453927885,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -252,6 +255,25 @@ class BibframeControllerIT {
   }
 
   @Test
+  void createMonographInstanceBibframeWithMultipleIdenticalResources_shouldSaveEntityCorrectly() throws Exception {
+    // given
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getResource("samples/bibframe-multiple-identical-resources.json"));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+
+    // then
+    resultActions.andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("id", notNullValue()))
+      .andExpect(jsonPath("$." + path(INSTANCE_URL), notNullValue()));
+  }
+
+  @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
@@ -265,7 +287,6 @@ class BibframeControllerIT {
     // then
     validateSampleBibframeResponse(resultActions);
   }
-
 
   @Test
   void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
@@ -322,8 +343,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(33);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(32);
+    assertThat(resourceRepo.count()).isEqualTo(35);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(34);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -333,9 +354,9 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(32);
+    assertThat(resourceRepo.count()).isEqualTo(34);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(31);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(33);
   }
 
   @NotNull
@@ -359,17 +380,11 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toContributionRoleUri(), equalTo(ROLE_URL)))
       .andExpect(jsonPath("$." + toContributionRoleLabel(), equalTo("Author")))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
-      .andExpect(jsonPath("$." + toElectronicLocatorNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toElectronicLocatorNoteLabel(), equalTo("electronicLocatorNoteLabel")))
-      .andExpect(jsonPath("$." + toElectronicLocatorNoteUri(), equalTo("electronicLocatorNoteUri")))
       .andExpect(jsonPath("$." + toElectronicLocatorValue(), equalTo("electronicLocatorValue")))
-      .andExpect(jsonPath("$." + toExtentNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toExtentNoteLabel(), equalTo("extent note label")))
-      .andExpect(jsonPath("$." + toExtentNoteUri(), equalTo("extent note uri")))
-      .andExpect(jsonPath("$." + toExtentLabel(), equalTo("vi, 374 pages, 4 unnumbered leaves of plates")))
-      .andExpect(jsonPath("$." + toExtentAppliesToId(), equalTo(APPLIES_TO_URL)))
+      .andExpect(jsonPath("$." + toExtentLabel(), equalTo("extent label")))
       .andExpect(jsonPath("$." + toExtentAppliesToLabel(), equalTo("extent appliesTo label")))
-      .andExpect(jsonPath("$." + toExtentAppliesToUri(), equalTo("extent appliesTo uri")))
       .andExpect(jsonPath("$." + toId(), notNullValue()))
       .andExpect(jsonPath("$." + toIdentifiedByEanValue(), equalTo("12345670")))
       .andExpect(jsonPath("$." + toIdentifiedByEanQualifier(), equalTo("07654321")))
@@ -400,9 +415,10 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toMediaId(), equalTo("mediaId")))
       .andExpect(jsonPath("$." + toMediaLabel(), equalTo("unmediated")))
       .andExpect(jsonPath("$." + toMediaUri(), equalTo(MEDIA_URL)))
-      .andExpect(jsonPath("$." + toNoteId(), equalTo(NOTE)))
-      .andExpect(jsonPath("$." + toNoteLabel(), equalTo("some note")))
-      .andExpect(jsonPath("$." + toNoteUri(), equalTo(NOTE_URL)))
+      .andExpect(jsonPath("$." + toNoteLabel(), equalTo("note label")))
+      .andExpect(jsonPath("$." + toNoteTypeId(), equalTo("noteTypeId")))
+      .andExpect(jsonPath("$." + toNoteTypeLabel(), equalTo("Accompanying material")))
+      .andExpect(jsonPath("$." + toNoteTypeUri(), equalTo("http://id.loc.gov/vocabulary/mnotetype/accmat")))
       .andExpect(jsonPath("$." + toDistributionSimpleAgent(), equalTo("Distribution: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toDistributionSimpleDate(), equalTo("Distribution: 1921")))
       .andExpect(jsonPath("$." + toDistributionSimplePlace(), equalTo("Distribution: New York")))
@@ -422,9 +438,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toParallelTitleMain(), equalTo("Parallel: Laramie holds the range")))
       .andExpect(jsonPath("$." + toParallelTitleDate(), equalTo("Parallel: date")))
       .andExpect(jsonPath("$." + toParallelTitleSubtitle(), equalTo("Parallel: subtitle")))
-      .andExpect(jsonPath("$." + toParallelTitleNoteId(), equalTo(NOTE)))
       .andExpect(jsonPath("$." + toParallelTitleNoteLabel(), equalTo("Parallel: noteLabel")))
-      .andExpect(jsonPath("$." + toParallelTitleNoteUri(), equalTo("Parallel: noteUri")))
       .andExpect(jsonPath("$." + toProductionSimpleAgent(), equalTo("Production: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toProductionSimpleDate(), equalTo("Production: 1921")))
       .andExpect(jsonPath("$." + toProductionSimplePlace(), equalTo("Production: New York")))
@@ -448,9 +462,7 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toVariantTitleDate(), equalTo("Variant: date")))
       .andExpect(jsonPath("$." + toVariantTitleSubtitle(), equalTo("Variant: subtitle")))
       .andExpect(jsonPath("$." + toVariantTitleType(), equalTo("Variant: variantType")))
-      .andExpect(jsonPath("$." + toVariantTitleNoteId(), equalTo(NOTE)))
-      .andExpect(jsonPath("$." + toVariantTitleNoteLabel(), equalTo("Variant: noteLabel")))
-      .andExpect(jsonPath("$." + toVariantTitleNoteUri(), equalTo("Variant: noteUri")));
+      .andExpect(jsonPath("$." + toVariantTitleNoteLabel(), equalTo("Variant: noteLabel")));
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
@@ -489,7 +501,8 @@ class BibframeControllerIT {
     validateSampleIdentifiedByLccn(edgeIterator.next(), instance);
     validateSampleIdentifiedByLocal(edgeIterator.next(), instance);
     validateSampleIdentifiedByOther(edgeIterator.next(), instance);
-    validateSampleProperty(edgeIterator.next(), instance, NOTE_PRED, NOTE_URL, NOTE, "some note", NOTE_URL);
+    validateNote(edgeIterator.next(), instance, "note label", "noteTypeId", "Accompanying material",
+      "http://id.loc.gov/vocabulary/mnotetype/accmat");
     validateSampleSupplementaryContent(edgeIterator.next(), instance);
     validateSampleImmediateAcquisition(edgeIterator.next(), instance);
     validateSampleExtent(edgeIterator.next(), instance);
@@ -581,8 +594,7 @@ class BibframeControllerIT {
     assertThat(title.getDoc().get(DATE_URL).get(0).asText()).isEqualTo("Parallel: date");
     assertThat(title.getOutgoingEdges()).hasSize(1);
     var edgeIterator = title.getOutgoingEdges().iterator();
-    validateSampleProperty(edgeIterator.next(), title, NOTE_PRED,
-      NOTE_URL, NOTE, "Parallel: noteLabel", "Parallel: noteUri");
+    validateNote(edgeIterator.next(), title, "Parallel: noteLabel", null, null, null);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -596,8 +608,7 @@ class BibframeControllerIT {
     assertThat(title.getDoc().get(VARIANT_TYPE_URL).get(0).asText()).isEqualTo("Variant: variantType");
     assertThat(title.getOutgoingEdges()).hasSize(1);
     var edgeIterator = title.getOutgoingEdges().iterator();
-    validateSampleProperty(edgeIterator.next(), title, NOTE_PRED,
-      NOTE_URL, NOTE, "Variant: noteLabel", "Variant: noteUri");
+    validateNote(edgeIterator.next(), title, "Variant: noteLabel", null, null, null);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -646,14 +657,48 @@ class BibframeControllerIT {
     assertThat(extent.getDoc().size()).isEqualTo(1);
     assertThat(extent.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
     assertThat(extent.getDoc().get(LABEL_PRED).get(0).asText())
-      .isEqualTo("vi, 374 pages, 4 unnumbered leaves of plates");
+      .isEqualTo("extent label");
     assertThat(extent.getOutgoingEdges()).hasSize(2);
     var edgeIterator = extent.getOutgoingEdges().iterator();
-    validateSampleProperty(edgeIterator.next(), extent, APPLIES_TO_PRED, APPLIES_TO_URL, APPLIES_TO_URL,
-      "extent appliesTo label", "extent appliesTo uri");
-    validateSampleProperty(edgeIterator.next(), extent, NOTE_PRED, NOTE_URL, NOTE, "extent note label",
-      "extent note uri");
+    validateAppliesTo(edgeIterator.next(), extent);
+    validateNote(edgeIterator.next(), extent, "extent note label", null, null, null);
     assertThat(edgeIterator.hasNext()).isFalse();
+  }
+
+  private void validateNote(ResourceEdge noteEdge, Resource source, String noteLabel, String noteTypeId,
+                            String noteTypeLabel, String noteTypeUri) {
+    assertThat(noteEdge.getId()).isNotNull();
+    assertThat(noteEdge.getSource()).isEqualTo(source);
+    assertThat(noteEdge.getPredicate().getLabel()).isEqualTo(NOTE_PRED);
+    var note = noteEdge.getTarget();
+    assertThat(note.getLabel()).isEqualTo(NOTE_URL);
+    assertThat(note.getType().getSimpleLabel()).isEqualTo(NOTE);
+    assertThat(note.getResourceHash()).isNotNull();
+    assertThat(note.getDoc().size()).isEqualTo(1);
+    assertThat(note.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
+    assertThat(note.getDoc().get(LABEL_PRED).get(0).asText()).isEqualTo(noteLabel);
+    if (nonNull(noteTypeId) || nonNull(noteTypeLabel) || nonNull(noteTypeUri)) {
+      var edgeIterator = note.getOutgoingEdges().iterator();
+      validateSampleProperty(edgeIterator.next(), note, NOTE_TYPE_PRED, NOTE_TYPE_URI, noteTypeId, noteTypeLabel,
+        noteTypeUri);
+      assertThat(edgeIterator.hasNext()).isFalse();
+    } else {
+      assertThat(note.getOutgoingEdges()).isEmpty();
+    }
+  }
+
+  private void validateAppliesTo(ResourceEdge appliesToEdge, Resource extent) {
+    assertThat(appliesToEdge.getId()).isNotNull();
+    assertThat(appliesToEdge.getSource()).isEqualTo(extent);
+    assertThat(appliesToEdge.getPredicate().getLabel()).isEqualTo(APPLIES_TO_PRED);
+    var appliesTo = appliesToEdge.getTarget();
+    assertThat(appliesTo.getLabel()).isEqualTo(APPLIES_TO_URL);
+    assertThat(appliesTo.getType().getSimpleLabel()).isEqualTo(APPLIES_TO);
+    assertThat(appliesTo.getResourceHash()).isNotNull();
+    assertThat(appliesTo.getDoc().size()).isEqualTo(1);
+    assertThat(appliesTo.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
+    assertThat(appliesTo.getDoc().get(LABEL_PRED).get(0).asText()).isEqualTo("extent appliesTo label");
+    assertThat(appliesTo.getOutgoingEdges()).isEmpty();
   }
 
   private void validateSampleSupplementaryContent(ResourceEdge edge, Resource instance) {
@@ -790,8 +835,7 @@ class BibframeControllerIT {
       .isEqualTo("electronicLocatorValue");
     assertThat(locator.getOutgoingEdges()).hasSize(1);
     var edgeIterator = locator.getOutgoingEdges().iterator();
-    validateSampleProperty(edgeIterator.next(), locator, NOTE_PRED, NOTE_URL, NOTE, "electronicLocatorNoteLabel",
-      "electronicLocatorNoteUri");
+    validateNote(edgeIterator.next(), locator, "electronicLocatorNoteLabel", null, null, null);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -829,16 +873,23 @@ class BibframeControllerIT {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA_PRED), path(PROPERTY_URI));
   }
 
-  private String toNoteId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(PROPERTY_ID));
-  }
-
   private String toNoteLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 
-  private String toNoteUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(PROPERTY_URI));
+  private String toNoteTypeId() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+      path(PROPERTY_ID));
+  }
+
+  private String toNoteTypeLabel() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+      path(PROPERTY_LABEL));
+  }
+
+  private String toNoteTypeUri() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+      path(PROPERTY_URI));
   }
 
   private String toImmediateAcquisitionLabel() {
@@ -877,19 +928,9 @@ class BibframeControllerIT {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(DIMENSIONS_URL));
   }
 
-  private String toExtentNoteId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(NOTE_PRED), path(PROPERTY_ID));
-  }
-
   private String toExtentNoteLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
-  }
-
-  private String toExtentNoteUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(NOTE_PRED), path(PROPERTY_URI));
+      path(EXTENT_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 
   private String toExtentLabel() {
@@ -897,19 +938,9 @@ class BibframeControllerIT {
       path(EXTENT_URL), arrayPath(LABEL_PRED));
   }
 
-  private String toExtentAppliesToId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_ID));
-  }
-
   private String toExtentAppliesToLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_LABEL));
-  }
-
-  private String toExtentAppliesToUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EXTENT_PRED),
-      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(PROPERTY_URI));
+      path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(APPLIES_TO_URL), arrayPath(LABEL_PRED));
   }
 
   private String toContributionRoleLabel() {
@@ -1127,19 +1158,9 @@ class BibframeControllerIT {
       arrayPath(SUBTITLE_URL));
   }
 
-  private String toParallelTitleNoteId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_ID));
-  }
-
   private String toParallelTitleNoteLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
-  }
-
-  private String toParallelTitleNoteUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_URI));
+      arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 
   private String toVariantTitlePartName() {
@@ -1172,19 +1193,9 @@ class BibframeControllerIT {
       arrayPath(VARIANT_TYPE_URL));
   }
 
-  private String toVariantTitleNoteId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_ID));
-  }
-
   private String toVariantTitleNoteLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
-  }
-
-  private String toVariantTitleNoteUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_URI));
+      arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 
   private String toIdentifiedByEanValue() {
@@ -1272,19 +1283,9 @@ class BibframeControllerIT {
       arrayPath(QUALIFIER_URL));
   }
 
-  private String toElectronicLocatorNoteId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_ID));
-  }
-
   private String toElectronicLocatorNoteLabel() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_LABEL));
-  }
-
-  private String toElectronicLocatorNoteUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(ELECTRONIC_LOCATOR_PRED), path(URL_URL),
-      arrayPath(NOTE_PRED), path(PROPERTY_URI));
+      arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 
   private String toElectronicLocatorValue() {

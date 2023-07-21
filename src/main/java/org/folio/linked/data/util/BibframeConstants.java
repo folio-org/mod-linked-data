@@ -51,6 +51,7 @@ public class BibframeConstants {
   public static final String URL = "lc:RT:bf2:URL";
   public static final String IMM_ACQUISITION = "lc:RT:bf2:ImmAcqSource";
   public static final String SUPP_CONTENT = "lc:RT:bf2:SupplContentNote";
+  public static final String APPLIES_TO = "lc:RT:bf2:AppliesTo";
 
   //Type URLs
   public static final String WORK_URL = "http://id.loc.gov/ontologies/bibframe/Work";
@@ -61,8 +62,6 @@ public class BibframeConstants {
   public static final String PUBLICATION_URL = "http://id.loc.gov/ontologies/bibframe/Publication";
   public static final String EXTENT_URL = "http://id.loc.gov/ontologies/bibframe/Extent";
   public static final String ISSUANCE_URL = "http://id.loc.gov/ontologies/bibframe/Issuance";
-  public static final String CARRIER_URL = "http://id.loc.gov/ontologies/bibframe/Carrier";
-  public static final String MEDIA_URL = "http://id.loc.gov/ontologies/bibframe/Media";
   public static final String ORGANIZATION_URL = "http://id.loc.gov/ontologies/bibframe/Organization";
   public static final String PART_NAME_URL = "http://id.loc.gov/ontologies/bibframe/partName";
   public static final String PART_NUMBER_URL = "http://id.loc.gov/ontologies/bibframe/partNumber";
@@ -88,6 +87,8 @@ public class BibframeConstants {
   public static final String URL_URL = "http://www.w3.org/2000/01/rdf-schema#Resource";
 
   //Property type URLs
+  public static final String CARRIER_URL = "http://id.loc.gov/ontologies/bibframe/Carrier";
+  public static final String MEDIA_URL = "http://id.loc.gov/ontologies/bibframe/Media";
   public static final String PERSON_URL = "http://id.loc.gov/ontologies/bibframe/Person";
   public static final String ROLE_URL = "http://id.loc.gov/ontologies/bibframe/Role";
   public static final String STATUS_URL = "http://id.loc.gov/ontologies/bibframe/Status";
@@ -95,6 +96,7 @@ public class BibframeConstants {
   public static final String APPLICABLE_INSTITUTION_URL = "http://id.loc.gov/ontologies/bflc/ApplicableInstitution";
   public static final String APPLIES_TO_URL = "http://id.loc.gov/ontologies/bflc/AppliesTo";
   public static final String ASSIGNER_URL = "http://id.loc.gov/ontologies/bibframe/Assigner";
+  public static final String NOTE_TYPE_URI = "http://id.loc.gov/ontologies/bibframe/NoteType";
 
   //Literal URLs
   public static final String RESPONSIBILITY_STATEMENT_URL =
@@ -161,6 +163,7 @@ public class BibframeConstants {
   public static final String SIMPLE_DATE_PRED = "http://id.loc.gov/ontologies/bflc/simpleDate";
   public static final String LABEL_PRED = "http://www.w3.org/2000/01/rdf-schema#label";
   public static final String VALUE_PRED = "http://www.w3.org/1999/02/22-rdf-syntax-ns#value";
+  public static final String NOTE_TYPE_PRED = "http://id.loc.gov/ontologies/bibframe/noteType";
 
   // fields
   public static final String ID = "id";

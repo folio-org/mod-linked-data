@@ -249,4 +249,11 @@
     </insert>
   </changeSet>
 
+  <changeSet id="05_insert_predicate_lookup" author="Pavel_Bobylev@epam.com">
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="2679604537"/>
+      <column name="predicate" value="http://id.loc.gov/ontologies/bibframe/noteType"/>
+    </insert>
+  </changeSet>
+
 </databaseChangeLog>

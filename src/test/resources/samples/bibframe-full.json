@@ -36,9 +36,11 @@
             ],
             "http://id.loc.gov/ontologies/bibframe/note": [
               {
-                "id": "lc:RT:bf2:Note",
-                "label": "Parallel: noteLabel",
-                "uri": "Parallel: noteUri"
+                "http://id.loc.gov/ontologies/bibframe/Note": {
+                  "http://www.w3.org/2000/01/rdf-schema#label": [
+                    "Parallel: noteLabel"
+                  ]
+                }
               }
             ],
             "http://id.loc.gov/ontologies/bibframe/date": [
@@ -62,9 +64,11 @@
             ],
             "http://id.loc.gov/ontologies/bibframe/note": [
               {
-                "id": "lc:RT:bf2:Note",
-                "label": "Variant: noteLabel",
-                "uri": "Variant: noteUri"
+                "http://id.loc.gov/ontologies/bibframe/Note": {
+                  "http://www.w3.org/2000/01/rdf-schema#label": [
+                    "Variant: noteLabel"
+                  ]
+                }
               }
             ],
             "http://id.loc.gov/ontologies/bibframe/date": [
@@ -268,21 +272,25 @@
       "http://id.loc.gov/ontologies/bibframe/extent": [
         {
           "http://id.loc.gov/ontologies/bibframe/Extent": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "extent label"
+            ],
             "http://id.loc.gov/ontologies/bibframe/note": [
               {
-                "id": "lc:RT:bf2:Note",
-                "uri": "extent note uri",
-                "label": "extent note label"
+                "http://id.loc.gov/ontologies/bibframe/Note": {
+                  "http://www.w3.org/2000/01/rdf-schema#label": [
+                    "extent note label"
+                  ]
+                }
               }
-            ],
-            "http://www.w3.org/2000/01/rdf-schema#label": [
-              "vi, 374 pages, 4 unnumbered leaves of plates"
             ],
             "http://id.loc.gov/ontologies/bflc/appliesTo": [
               {
-                "id": "http://id.loc.gov/ontologies/bflc/AppliesTo",
-                "uri": "extent appliesTo uri",
-                "label": "extent appliesTo label"
+                "http://id.loc.gov/ontologies/bflc/AppliesTo": {
+                  "http://www.w3.org/2000/01/rdf-schema#label": [
+                    "extent appliesTo label"
+                  ]
+                }
               }
             ]
           }
@@ -307,9 +315,18 @@
       ],
       "http://id.loc.gov/ontologies/bibframe/note": [
         {
-          "id": "lc:RT:bf2:Note",
-          "uri": "http://id.loc.gov/ontologies/bibframe/Note",
-          "label": "some note"
+          "http://id.loc.gov/ontologies/bibframe/Note": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "note label"
+            ],
+            "http://id.loc.gov/ontologies/bibframe/noteType": [
+              {
+                "id": "noteTypeId",
+                "label": "Accompanying material",
+                "uri": "http://id.loc.gov/vocabulary/mnotetype/accmat"
+              }
+            ]
+          }
         }
       ],
       "http://id.loc.gov/ontologies/bibframe/immediateAcquisition": [
@@ -352,9 +369,11 @@
           "http://www.w3.org/2000/01/rdf-schema#Resource": {
             "http://id.loc.gov/ontologies/bibframe/note": [
               {
-                "id": "lc:RT:bf2:Note",
-                "uri": "electronicLocatorNoteUri",
-                "label": "electronicLocatorNoteLabel"
+                "http://id.loc.gov/ontologies/bibframe/Note": {
+                  "http://www.w3.org/2000/01/rdf-schema#label": [
+                    "electronicLocatorNoteLabel"
+                  ]
+                }
               }
             ],
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#value": [

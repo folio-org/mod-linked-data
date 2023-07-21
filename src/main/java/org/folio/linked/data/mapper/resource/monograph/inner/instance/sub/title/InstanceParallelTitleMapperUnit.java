@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
+import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
@@ -19,7 +20,7 @@ import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceNoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -33,12 +34,12 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
-  private final InstanceNoteMapperUnit noteMapper;
+  private final NoteMapperUnit<ParallelTitle> noteMapper;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var parallelTitle = coreMapper.readResourceDoc(source, ParallelTitle.class);
-    coreMapper.addMappedProperties(source, NOTE_PRED, parallelTitle::addNoteItem);
+    coreMapper.addMappedResources(noteMapper, source, NOTE_PRED, parallelTitle);
     destination.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     return destination;
   }
@@ -50,7 +51,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
     resource.setLabel(PARALLEL_TITLE_URL);
     resource.setType(resourceTypeService.get(PARALLEL_TITLE));
     resource.setDoc(getDoc(parallelTitle));
-    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

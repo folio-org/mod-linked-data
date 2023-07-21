@@ -3,13 +3,6 @@
   "description": "Extent Info",
   "type": "object",
   "properties": {
-    "note": {
-      "type": "array",
-      "items": {
-        "$ref": "../property.json"
-      },
-      "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
-    },
     "label": {
       "type": "array",
       "items": {
@@ -17,10 +10,26 @@
       },
       "x-json-property": "http://www.w3.org/2000/01/rdf-schema#label"
     },
+    "note": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "NoteField.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
+    },
     "appliesTo": {
       "type": "array",
       "items": {
-        "$ref": "../property.json"
+        "type": "object",
+        "title": "AppliesToField",
+        "properties": {
+          "AppliesTo": {
+            "type": "object",
+            "$ref": "AppliesTo.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bflc/AppliesTo"
+          }
+        }
       },
       "x-json-property": "http://id.loc.gov/ontologies/bflc/appliesTo"
     }

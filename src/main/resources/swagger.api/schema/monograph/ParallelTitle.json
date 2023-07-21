@@ -11,7 +11,8 @@
         "note": {
           "type": "array",
           "items": {
-            "$ref": "../property.json"
+            "type": "object",
+            "$ref": "NoteField.json"
           },
           "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
         },

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = ITEM_ACCESS)
-public class AccessMapperUnitUnit implements ItemSubResourceMapperUnit {
+public class AccessMapperUnit implements ItemSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
 

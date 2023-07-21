@@ -38,6 +38,7 @@ import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.domain.dto.Url;
 import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -70,11 +71,19 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public <T> void addMappedResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
-                                     @NonNull Consumer<T> consumer, @NonNull Class<T> destination) {
+  public <T> void mapWithResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
+                                   @NonNull Consumer<T> consumer, @NonNull Class<T> destination) {
     T item = readResourceDoc(resource, destination);
     resource.getOutgoingEdges().forEach(re -> subResourceMapper.toDto(re, item));
     consumer.accept(item);
+  }
+
+  public <T> void addMappedResources(@NonNull SubResourceMapperUnit<T> subResourceMapperUnit, @NonNull Resource source,
+                                     @NonNull String predicate, @NonNull T destination) {
+    source.getOutgoingEdges().stream()
+      .filter(re -> re.getPredicate().getLabel().equals(predicate))
+      .map(ResourceEdge::getTarget)
+      .forEach(r -> subResourceMapperUnit.toDto(r, destination));
   }
 
   @Override
@@ -212,6 +221,8 @@ public class CoreMapperImpl implements CoreMapper {
     } else {
       node = mapper.createObjectNode();
     }
+    node.put(PROPERTY_LABEL, res.getLabel());
+    node.put("type", res.getType().getTypeHash());
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getLabel();
       if (!node.has(predicate)) {

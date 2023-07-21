@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
 import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.URL;
 import static org.folio.linked.data.util.BibframeConstants.URL_URL;
@@ -15,6 +16,7 @@ import org.folio.linked.data.domain.dto.Url;
 import org.folio.linked.data.domain.dto.UrlField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
@@ -27,12 +29,12 @@ public class InstanceElectronicLocatorMapperUnit implements InstanceSubResourceM
 
   private final CoreMapper coreMapper;
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final InstanceNoteMapperUnit noteMapper;
+  private final NoteMapperUnit<Url> noteMapper;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var url = coreMapper.toUrl(source);
-    coreMapper.addMappedProperties(source, NOTE_PRED, url::addNoteItem);
+    coreMapper.addMappedResources(noteMapper, source, NOTE_PRED, url);
     destination.addElectronicLocatorItem(new UrlField().url(url));
     return destination;
   }
@@ -44,7 +46,7 @@ public class InstanceElectronicLocatorMapperUnit implements InstanceSubResourceM
     resource.setLabel(URL_URL);
     resource.setType(resourceTypeService.get(URL_URL));
     resource.setDoc(getDoc(url));
-    coreMapper.mapResourceEdges(url.getNote(), resource, null, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(url.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
