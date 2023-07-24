@@ -309,4 +309,24 @@
       <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/NoteType"/>
     </insert>
   </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="06_insert_type_lookup">
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="1568446907"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Family"/>
+      <column name="simple_label" value="lc:RT:bf2:Agent:bfFamily"/>
+    </insert>
+
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="97934059"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Jurisdiction"/>
+      <column name="simple_label" value="lc:RT:bf2:Agent:bfJurisdiction"/>
+    </insert>
+
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="1075406187"/>
+      <column name="type_uri" value="http://id.loc.gov/ontologies/bibframe/Meeting"/>
+      <column name="simple_label" value="lc:RT:bf2:Agent:bfConf"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

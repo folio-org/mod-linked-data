@@ -9,6 +9,6 @@ public interface SubResourceMapperUnit<T> {
 
   Set<Class> getParentDto();
 
-  Resource toEntity(Object dto, String predicate);
+  Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper);
 
 }

@@ -6,15 +6,63 @@
     "agent": {
       "type": "array",
       "items": {
-        "type": "object",
-        "title": "PersonField",
-        "properties": {
-          "Person": {
+        "oneOf": [
+          {
             "type": "object",
-            "$ref": "Person.json",
-            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Person"
+            "title": "PersonField",
+            "properties": {
+              "Person": {
+                "type": "object",
+                "$ref": "Agent.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Person"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "FamilyField",
+            "properties": {
+              "Family": {
+                "type": "object",
+                "$ref": "Agent.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Family"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "OrganizationField",
+            "properties": {
+              "Organization": {
+                "type": "object",
+                "$ref": "Agent.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Organization"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "JurisdictionField",
+            "properties": {
+              "Jurisdiction": {
+                "type": "object",
+                "$ref": "Agent.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Jurisdiction"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "MeetingField",
+            "properties": {
+              "Meeting": {
+                "type": "object",
+                "$ref": "Agent.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Meeting"
+              }
+            }
           }
-        }
+        ]
       },
       "x-json-property": "http://id.loc.gov/ontologies/bibframe/agent"
     },

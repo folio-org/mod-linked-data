@@ -15,6 +15,7 @@ import org.folio.linked.data.domain.dto.SupplementaryContent;
 import org.folio.linked.data.domain.dto.SupplementaryContentField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
@@ -36,7 +37,7 @@ public class InstanceSupplementaryContentMapperUnit implements InstanceSubResour
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var supplementaryContent = ((SupplementaryContentField) dto).getSupplementaryContent();
     var resource = new Resource();
     resource.setLabel(SUPP_CONTENT_URL);

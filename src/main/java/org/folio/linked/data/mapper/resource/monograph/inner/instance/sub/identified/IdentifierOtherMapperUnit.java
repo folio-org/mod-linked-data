@@ -15,6 +15,7 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.OtherIdentifierField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -37,7 +38,7 @@ public class IdentifierOtherMapperUnit implements InstanceSubResourceMapperUnit 
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var other = ((OtherIdentifierField) dto).getIdentifier();
     var resource = new Resource();
     resource.setLabel(IDENTIFIERS_OTHER_URL);

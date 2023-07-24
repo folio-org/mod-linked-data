@@ -710,9 +710,9 @@ class CoreMapperTest {
 
     // then
     assertThat(contribution.getAgent(), hasSize(1));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs(), hasSize(1));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getLabel(), is(label));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getUri(), is(uri));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs(), hasSize(1));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs().get(0).getLabel(), is(label));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs().get(0).getUri(), is(uri));
   }
 
   @Test
@@ -733,11 +733,11 @@ class CoreMapperTest {
 
     // then
     assertThat(contribution.getAgent(), hasSize(1));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs(), hasSize(2));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getLabel(), is(label));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getUri(), is(uri));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(1).getLabel(), is(label2));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(1).getUri(), is(uri2));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs(), hasSize(2));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs().get(0).getLabel(), is(label));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs().get(0).getUri(), is(uri));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs().get(1).getLabel(), is(label2));
+    assertThat(((PersonField) contribution.getAgent().get(0)).getPerson().getSameAs().get(1).getUri(), is(uri2));
   }
 
   @Test

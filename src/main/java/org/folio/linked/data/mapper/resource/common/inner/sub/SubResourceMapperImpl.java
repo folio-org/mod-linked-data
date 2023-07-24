@@ -32,7 +32,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
   public <P> Resource toEntity(@NonNull Object dto, @NonNull String predicate, @NonNull Class<P> parentDtoClass) {
     try {
       return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
-        .map(mapper -> mapper.toEntity(dto, predicate))
+        .map(mapper -> mapper.toEntity(dto, predicate, this))
         .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + dto.getClass().getSimpleName()
           + IS_NOT_SUPPORTED_FOR_PREDICATE + predicate + RIGHT_SQUARE_BRACKET)
         );

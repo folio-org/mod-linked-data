@@ -19,6 +19,7 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
 import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.FAMILY;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN;
@@ -33,17 +34,20 @@ import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_URL;
+import static org.folio.linked.data.util.BibframeConstants.JURISDICTION;
 import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
+import static org.folio.linked.data.util.BibframeConstants.MEETING;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
+import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
@@ -152,27 +156,123 @@ public class MonographTestService {
     var production = provisionActivity("Production: ", PRODUCTION);
     var publication = provisionActivity("Publication: ", PUBLICATION);
 
-    var person = createResource(Map.of(
+    var agentPerson = createResource(Map.of(
         SAME_AS_PRED, List.of(Map.of(
-          PROPERTY_LABEL, "Test and Evaluation Year-2000 Team (U.S.)",
-          PROPERTY_URI, "http://id.loc.gov/authorities/names/no98072015")
+          PROPERTY_LABEL, "Spearman, Frank H. (Frank Hamilton), 1859-1937",
+          PROPERTY_URI, "http://id.loc.gov/authorities/names/n87914389")
         )
       ), PERSON,
       emptyMap());
 
-    var role = createPropertyResource(
+    var roleAuthor = createPropertyResource(
       ROLE,
       "Author",
       ROLE_URL,
       ROLE_URL
     );
 
-    var contrib = createResource(
+    var contribPerson = createResource(
       emptyMap(),
       CONTRIBUTION,
       Map.of(
-        AGENT_PRED, List.of(person),
-        ROLE_PRED, List.of(role)
+        AGENT_PRED, List.of(agentPerson),
+        ROLE_PRED, List.of(roleAuthor)
+      )
+    );
+
+    var agentFamily = createResource(Map.of(
+        SAME_AS_PRED, List.of(Map.of(
+          PROPERTY_LABEL, "Hopwood family",
+          PROPERTY_URI, "http://id.loc.gov/authorities/subjects/sh85061960")
+        )
+      ), FAMILY,
+      emptyMap());
+
+    var roleContributor = createPropertyResource(
+      ROLE,
+      "Contributor",
+      ROLE_URL,
+      ROLE_URL
+    );
+
+    var contribFamily = createResource(
+      emptyMap(),
+      CONTRIBUTION,
+      Map.of(
+        AGENT_PRED, List.of(agentFamily),
+        ROLE_PRED, List.of(roleContributor)
+      )
+    );
+
+    var agentOrganization = createResource(Map.of(
+        SAME_AS_PRED, List.of(Map.of(
+          PROPERTY_LABEL, "Charles Scribner's Sons",
+          PROPERTY_URI, "http://id.loc.gov/authorities/names/n81050810")
+        )
+      ), ORGANIZATION,
+      emptyMap());
+
+    var roleProvider = createPropertyResource(
+      ROLE,
+      "Provider",
+      ROLE_URL,
+      ROLE_URL
+    );
+
+    var contribOrganization = createResource(
+      emptyMap(),
+      CONTRIBUTION,
+      Map.of(
+        AGENT_PRED, List.of(agentOrganization),
+        ROLE_PRED, List.of(roleProvider)
+      )
+    );
+
+    var agentJurisdiction = createResource(Map.of(
+        SAME_AS_PRED, List.of(Map.of(
+          PROPERTY_LABEL, "United States. Congress. House. Library",
+          PROPERTY_URI, "http://id.loc.gov/authorities/names/n87837615")
+        )
+      ), JURISDICTION,
+      emptyMap());
+
+    var roleContrator = createPropertyResource(
+      ROLE,
+      "Contractor",
+      ROLE_URL,
+      ROLE_URL
+    );
+
+    var contibJurisdiction = createResource(
+      emptyMap(),
+      CONTRIBUTION,
+      Map.of(
+        AGENT_PRED, List.of(agentJurisdiction),
+        ROLE_PRED, List.of(roleContrator)
+      )
+    );
+
+    var agentMeeting = createResource(Map.of(
+        SAME_AS_PRED, List.of(Map.of(
+          PROPERTY_LABEL, "Workshop on Electronic Texts (1992 : Library of Congress)",
+          PROPERTY_URI, "http://id.loc.gov/authorities/names/nr93009771")
+        )
+      ), MEETING,
+      emptyMap());
+
+    var roleOther = createPropertyResource(
+      ROLE,
+      "Other",
+      ROLE_URL,
+      ROLE_URL
+    );
+
+    var contibMeeting = createResource(
+      emptyMap(),
+      CONTRIBUTION,
+      Map.of(
+        AGENT_PRED, List.of(agentMeeting),
+        ROLE_PRED, List.of(roleOther)
       )
     );
 
@@ -308,7 +408,8 @@ public class MonographTestService {
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
     pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
     pred2OutgoingResources.put(PROVISION_ACTIVITY_PRED, List.of(distribution, manufacture, production, publication));
-    pred2OutgoingResources.put(CONTRIBUTION_PRED, List.of(contrib));
+    pred2OutgoingResources.put(CONTRIBUTION_PRED, List.of(contribPerson, contribFamily, contribOrganization,
+      contibJurisdiction, contibMeeting));
     pred2OutgoingResources.put(IDENTIFIED_BY_PRED, List.of(ean, isbn, lccn, local, other));
     pred2OutgoingResources.put(NOTE_PRED, List.of(note));
     pred2OutgoingResources.put(EXTENT_PRED, List.of(extent));

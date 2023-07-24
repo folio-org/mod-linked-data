@@ -46,6 +46,9 @@ public class BibframeConstants {
   public static final String ORGANIZATION = "lc:RT:bf2:Agent:bfCorp";
   public static final String EXTENT = "lc:RT:bf2:Extent";
   public static final String PERSON = "lc:RT:bf2:Agent:bfPerson";
+  public static final String FAMILY = "lc:RT:bf2:Agent:bfFamily";
+  public static final String JURISDICTION = "lc:RT:bf2:Agent:bfJurisdiction";
+  public static final String MEETING = "lc:RT:bf2:Agent:bfConf";
   public static final String ROLE = "lc:RT:bf2:Agent:bfRole";
   public static final String PLACE = "lc:RT:bf2:Place";
   public static final String URL = "lc:RT:bf2:URL";
@@ -90,6 +93,11 @@ public class BibframeConstants {
   public static final String CARRIER_URL = "http://id.loc.gov/ontologies/bibframe/Carrier";
   public static final String MEDIA_URL = "http://id.loc.gov/ontologies/bibframe/Media";
   public static final String PERSON_URL = "http://id.loc.gov/ontologies/bibframe/Person";
+  public static final String FAMILY_URL = "http://id.loc.gov/ontologies/bibframe/Family";
+  public static final String JURISDICTION_URL = "http://id.loc.gov/ontologies/bibframe/Jurisdiction";
+  public static final String MEETING_URL = "http://id.loc.gov/ontologies/bibframe/Meeting";
+
+  //Property type URLs
   public static final String ROLE_URL = "http://id.loc.gov/ontologies/bibframe/Role";
   public static final String STATUS_URL = "http://id.loc.gov/ontologies/bibframe/Status";
   public static final String SUPP_CONTENT_URL = "http://id.loc.gov/ontologies/bibframe/SupplementaryContent";

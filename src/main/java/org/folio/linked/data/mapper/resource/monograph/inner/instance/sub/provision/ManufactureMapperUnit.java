@@ -10,6 +10,7 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.ManufactureField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ public class ManufactureMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var manufacture = ((ManufactureField) dto).getManufacture();
     return coreMapper.provisionActivityToEntity(manufacture, MANUFACTURE_URL, MANUFACTURE);
   }

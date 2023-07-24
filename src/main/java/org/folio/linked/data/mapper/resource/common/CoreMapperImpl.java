@@ -30,8 +30,8 @@ import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.function.TriFunction;
+import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.domain.dto.Lookup;
-import org.folio.linked.data.domain.dto.Person;
 import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
@@ -54,6 +54,7 @@ public class CoreMapperImpl implements CoreMapper {
   private final DictionaryService<ResourceType> resourceTypeService;
   private final DictionaryService<Predicate> predicateService;
   private final ObjectMapper mapper;
+
 
   @Override
   public Property toProperty(@NonNull Resource resource) {
@@ -105,7 +106,7 @@ public class CoreMapperImpl implements CoreMapper {
   @Override
   public void addMappedPersonLookups(@NonNull Resource resource, @NonNull String predicate,
                                      @NonNull Consumer<PersonField> personConsumer) {
-    var person = new Person();
+    var person = new Agent();
     addMappedLookups(resource, predicate, person::addSameAsItem);
     if (nonNull(person.getSameAs())) {
       personConsumer.accept(new PersonField().person(person));
