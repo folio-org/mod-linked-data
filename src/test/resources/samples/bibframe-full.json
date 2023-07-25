@@ -388,9 +388,6 @@
           }
         }
       ],
-      "http://id.loc.gov/ontologies/bibframe/dimensions": [
-        "20 cm"
-      ],
       "http://id.loc.gov/ontologies/bibframe/issuance": [
         {
           "id": "issuanceId",
@@ -473,6 +470,21 @@
             ]
           }
         }
+      ],
+      "http://id.loc.gov/ontologies/bibframe/dimensions": [
+        "20 cm"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/responsibilityStatement": [
+        "responsibility statement"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/editionStatement": [
+        "edition statement"
+      ],
+      "http://id.loc.gov/ontologies/bibframe/copyrightDate": [
+        "copyright date"
+      ],
+      "http://id.loc.gov/ontologies/bflc/projectedProvisionDate": [
+        "projected provision date"
       ]
     }
   ],

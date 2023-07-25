@@ -272,12 +272,13 @@
       },
       "x-json-property": "http://id.loc.gov/ontologies/bibframe/electronicLocator"
     },
-    "responsiblityStatement": {
+    "responsibilityStatement": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "x-json-property": "http://id.loc.gov/ontologies/bibframe/responsiblityStatement"
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/responsibilityStatement",
+      "description": "Statement of responsibility"
     },
     "editionStatement": {
       "type": "array",
@@ -305,7 +306,8 @@
       "items": {
         "type": "string"
       },
-      "x-json-property": "http://id.loc.gov/ontologies/bibframe/bflc/projectProvisionDate"
+      "x-json-property": "http://id.loc.gov/ontologies/bflc/projectedProvisionDate",
+      "description": "Projected publication date (YYMM)"
     },
     "issuance": {
       "type": "array",

@@ -22,11 +22,13 @@ import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
+import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
@@ -89,6 +91,7 @@ import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.PROFILE;
+import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
@@ -96,6 +99,7 @@ import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PR
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_URL;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER_URL;
+import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.ROLE;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
@@ -212,7 +216,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3924103163,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":3057919254,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -418,6 +422,10 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toContributionRoleProperty(MEETING_URL, PROPERTY_URI)).value(ROLE_URL))
       .andExpect(jsonPath("$." + toContributionRoleProperty(MEETING_URL, PROPERTY_LABEL)).value("Other"))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
+      .andExpect(jsonPath("$." + toResponsibilityStatement(), equalTo("responsibility statement")))
+      .andExpect(jsonPath("$." + toEditionStatement(), equalTo("edition statement")))
+      .andExpect(jsonPath("$." + toCopyrightDate(), equalTo("copyright date")))
+      .andExpect(jsonPath("$." + toProjectedProvisionDate(), equalTo("projected provision date")))
       .andExpect(jsonPath("$." + toElectronicLocatorNoteLabel(), equalTo("electronicLocatorNoteLabel")))
       .andExpect(jsonPath("$." + toElectronicLocatorValue(), equalTo("electronicLocatorValue")))
       .andExpect(jsonPath("$." + toExtentNoteLabel(), equalTo("extent note label")))
@@ -520,9 +528,19 @@ class BibframeControllerIT {
     assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE);
     assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getDoc().size()).isEqualTo(1);
+    assertThat(instance.getDoc().size()).isEqualTo(5);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
+    assertThat(instance.getDoc().get(EDITION_STATEMENT_URL).size()).isEqualTo(1);
+    assertThat(instance.getDoc().get(EDITION_STATEMENT_URL).get(0).asText()).isEqualTo("edition statement");
+    assertThat(instance.getDoc().get(RESPONSIBILITY_STATEMENT_URL).size()).isEqualTo(1);
+    assertThat(instance.getDoc().get(RESPONSIBILITY_STATEMENT_URL).get(0).asText()).isEqualTo(
+      "responsibility statement");
+    assertThat(instance.getDoc().get(COPYRIGHT_DATE_URL).size()).isEqualTo(1);
+    assertThat(instance.getDoc().get(COPYRIGHT_DATE_URL).get(0).asText()).isEqualTo("copyright date");
+    assertThat(instance.getDoc().get(PROJECTED_PROVISION_DATE_URL).size()).isEqualTo(1);
+    assertThat(instance.getDoc().get(PROJECTED_PROVISION_DATE_URL).get(0).asText()).isEqualTo(
+      "projected provision date");
     assertThat(instance.getOutgoingEdges()).hasSize(25);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
@@ -542,7 +560,8 @@ class BibframeControllerIT {
     validateSampleContribution(edgeIterator.next(), instance, JURISDICTION_URL, JURISDICTION,
       "United States. Congress. House. Library", "http://id.loc.gov/authorities/names/n87837615", "Contractor");
     validateSampleContribution(edgeIterator.next(), instance, MEETING_URL, MEETING,
-      "Workshop on Electronic Texts (1992 : Library of Congress)", "http://id.loc.gov/authorities/names/nr93009771", "Other");
+      "Workshop on Electronic Texts (1992 : Library of Congress)", "http://id.loc.gov/authorities/names/nr93009771",
+      "Other");
     validateSampleIdentifiedByEan(edgeIterator.next(), instance);
     validateSampleIdentifiedByIsbn(edgeIterator.next(), instance);
     validateSampleIdentifiedByLccn(edgeIterator.next(), instance);
@@ -982,6 +1001,22 @@ class BibframeControllerIT {
 
   private String toDimensions() {
     return String.join(".", arrayPath(INSTANCE_URL), arrayPath(DIMENSIONS_URL));
+  }
+
+  private String toEditionStatement() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(EDITION_STATEMENT_URL));
+  }
+
+  private String toResponsibilityStatement() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(RESPONSIBILITY_STATEMENT_URL));
+  }
+
+  private String toCopyrightDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(COPYRIGHT_DATE_URL));
+  }
+
+  private String toProjectedProvisionDate() {
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(PROJECTED_PROVISION_DATE_URL));
   }
 
   private String toExtentNoteLabel() {
