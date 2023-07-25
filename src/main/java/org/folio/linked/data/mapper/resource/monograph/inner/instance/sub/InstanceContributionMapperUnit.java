@@ -40,9 +40,9 @@ public class InstanceContributionMapperUnit implements InstanceSubResourceMapper
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var contribution = coreMapper.readResourceDoc(source, Contribution.class);
-    getResouceEdge(source).ifPresent(re -> {
-      var label = re.getTarget().getType().getSimpleLabel();
-      var mapper = getMapperUnit(source, label, destination);
+    getResourceEdge(source).ifPresent(re -> {
+      var typeLabel = re.getTarget().getType().getSimpleLabel();
+      var mapper = getMapperUnit(source, typeLabel, destination);
       coreMapper.addMappedResources(mapper, source, AGENT_PRED, contribution);
     });
     coreMapper.addMappedProperties(source, ROLE_PRED, contribution::addRoleItem);
@@ -77,7 +77,7 @@ public class InstanceContributionMapperUnit implements InstanceSubResourceMapper
         + destination.getClass().getSimpleName()));
   }
 
-  private Optional<ResourceEdge> getResouceEdge(Resource source) {
+  private Optional<ResourceEdge> getResourceEdge(Resource source) {
     return source.getOutgoingEdges().stream()
       .filter(re -> AGENT_PRED.equals(re.getPredicate().getLabel()))
       .findFirst();

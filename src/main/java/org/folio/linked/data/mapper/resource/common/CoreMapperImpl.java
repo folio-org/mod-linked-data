@@ -2,14 +2,12 @@ package org.folio.linked.data.mapper.resource.common;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.StreamSupport.stream;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_COMPONENTS;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
@@ -24,15 +22,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.function.TriFunction;
-import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.domain.dto.Lookup;
-import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.domain.dto.Url;
@@ -101,16 +95,6 @@ public class CoreMapperImpl implements CoreMapper {
   @Override
   public <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass) {
     return readDoc(resource.getDoc(), dtoClass);
-  }
-
-  @Override
-  public void addMappedPersonLookups(@NonNull Resource resource, @NonNull String predicate,
-                                     @NonNull Consumer<PersonField> personConsumer) {
-    var person = new Agent();
-    addMappedLookups(resource, predicate, person::addSameAsItem);
-    if (nonNull(person.getSameAs())) {
-      personConsumer.accept(new PersonField().person(person));
-    }
   }
 
   @Override
@@ -232,22 +216,6 @@ public class CoreMapperImpl implements CoreMapper {
       ((ArrayNode) node.get(predicate)).add(resourceToJson(edge.getTarget()));
     });
     return node;
-  }
-
-  private void addMappedLookups(Resource resource, String predicate, Consumer<Lookup> consumer) {
-    resource.getOutgoingEdges().stream()
-      .filter(resourceEdge -> predicate.equals(resourceEdge.getPredicate().getLabel()))
-      .map(ResourceEdge::getTarget)
-      .map(Resource::getDoc)
-      .filter(Objects::nonNull)
-      .map(docNode -> docNode.get(SAME_AS_PRED))
-      .filter(Objects::nonNull)
-      .map(sameAsNode -> readDoc(sameAsNode, ArrayNode.class))
-      .map(ArrayNode::elements)
-      .map(elementIterator -> (Iterable<JsonNode>) () -> elementIterator)
-      .flatMap(iterable -> stream(iterable.spliterator(), false))
-      .map(lookupNode -> readDoc(lookupNode, Lookup.class))
-      .forEach(consumer);
   }
 
   private <T> T readDoc(JsonNode node, Class<T> dtoClass) {

@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
+package org.folio.linked.data.mapper.resource.monograph.inner.common.contribution;
 
 import java.util.Set;
 import org.folio.linked.data.domain.dto.Contribution;

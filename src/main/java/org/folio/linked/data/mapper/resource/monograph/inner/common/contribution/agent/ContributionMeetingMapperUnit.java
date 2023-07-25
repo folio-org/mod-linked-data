@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.agent;
+package org.folio.linked.data.mapper.resource.monograph.inner.common.contribution.agent;
 
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEETING;
@@ -16,7 +16,7 @@ import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.ContributionSubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.contribution.ContributionSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = MEETING, predicate = AGENT_PRED, dtoClass = MeetingField.class)
-public class ContributioMeetingMapperUnit implements ContributionSubResourceMapperUnit {
+public class ContributionMeetingMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
