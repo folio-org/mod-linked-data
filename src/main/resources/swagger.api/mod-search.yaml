@@ -1,0 +1,20 @@
+openapi: 3.0.0
+info:
+  title: Search API
+  version: v2.1.0
+  description: Search API
+
+paths: {}
+
+components:
+  schemas:
+    searchCreateIndexRequest:
+      $ref: search/createIndexRequest.json
+    searchCreateIndexResponse:
+      $ref: search/folioCreateIndexResponse.json
+    searchResourceEvent:
+      $ref: search/resourceEvent.json
+    searchResourceEventType:
+      $ref: search/resourceEventType.json
+    searchInstance:
+      $ref: search/instanceSearch.json
