@@ -14,7 +14,7 @@ import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PROJECT_PROVISION_DATE_URL;
+import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
@@ -116,10 +116,10 @@ public class MonographInstanceMapperUnit implements InnerResourceMapperUnit {
   private JsonNode getDoc(Instance dto) {
     var map = new HashMap<String, List<String>>();
     map.put(DIMENSIONS_URL, dto.getDimensions());
-    map.put(RESPONSIBILITY_STATEMENT_URL, dto.getResponsiblityStatement());
+    map.put(RESPONSIBILITY_STATEMENT_URL, dto.getResponsibilityStatement());
     map.put(EDITION_STATEMENT_URL, dto.getEditionStatement());
     map.put(COPYRIGHT_DATE_URL, dto.getCopyrightDate());
-    map.put(PROJECT_PROVISION_DATE_URL, dto.getProjectProvisionDate());
+    map.put(PROJECTED_PROVISION_DATE_URL, dto.getProjectProvisionDate());
     return coreMapper.toJson(map);
   }
 

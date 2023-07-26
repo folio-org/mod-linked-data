@@ -112,8 +112,7 @@ public class BibframeConstants {
   public static final String EDITION_STATEMENT_URL = "http://id.loc.gov/ontologies/bibframe/editionStatement";
   public static final String COPYRIGHT_DATE_URL = "http://id.loc.gov/ontologies/bibframe/copyrightDate";
   public static final String DIMENSIONS_URL = "http://id.loc.gov/ontologies/bibframe/dimensions";
-  public static final String PROJECT_PROVISION_DATE_URL =
-    "http://id.loc.gov/ontologies/bibframe/bflc/projectProvisionDate";
+  public static final String PROJECTED_PROVISION_DATE_URL = "http://id.loc.gov/ontologies/bflc/projectedProvisionDate";
 
   //Predicates
   public static final String CLASSIFICATION_PRED = "http://id.loc.gov/ontologies/bibframe/classification";

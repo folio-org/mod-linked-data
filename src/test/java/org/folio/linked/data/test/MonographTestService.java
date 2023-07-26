@@ -12,10 +12,12 @@ import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
+import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
@@ -56,12 +58,14 @@ import static org.folio.linked.data.util.BibframeConstants.PLACE;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
+import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
 import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER_URL;
+import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.ROLE;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
@@ -421,7 +425,13 @@ public class MonographTestService {
     pred2OutgoingResources.put(ELECTRONIC_LOCATOR_PRED, List.of(electronicLocator));
 
     return createResource(
-      Map.of(DIMENSIONS_URL, List.of("20 cm")),
+      Map.of(
+        DIMENSIONS_URL, List.of("20 cm"),
+        RESPONSIBILITY_STATEMENT_URL, List.of("responsibility statement"),
+        EDITION_STATEMENT_URL, List.of("edition statement"),
+        COPYRIGHT_DATE_URL, List.of("copyright date"),
+        PROJECTED_PROVISION_DATE_URL, List.of("projected provision date")
+      ),
       INSTANCE,
       pred2OutgoingResources
     );
