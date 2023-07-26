@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common.contribution.agent;
 
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
+import static org.folio.linked.data.util.BibframeConstants.MEETING;
+import static org.folio.linked.data.util.BibframeConstants.MEETING_URL;
 import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.domain.dto.Contribution;
 import org.folio.linked.data.domain.dto.Lookup;
-import org.folio.linked.data.domain.dto.OrganizationField;
+import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
@@ -24,8 +24,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ORGANIZATION, predicate = AGENT_PRED, dtoClass = OrganizationField.class)
-public class ContributionOrganizationMapperUnit implements ContributionSubResourceMapperUnit {
+@MapperUnit(type = MEETING, predicate = AGENT_PRED, dtoClass = MeetingField.class)
+public class MeetingMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
@@ -33,16 +33,16 @@ public class ContributionOrganizationMapperUnit implements ContributionSubResour
   @Override
   public Contribution toDto(Resource source, Contribution destination) {
     var agent = coreMapper.readResourceDoc(source, Agent.class);
-    destination.addAgentItem(new OrganizationField().organization(agent));
+    destination.addAgentItem(new MeetingField().meeting(agent));
     return destination;
   }
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    var agent = ((OrganizationField) dto).getOrganization();
+    var agent = ((MeetingField) dto).getMeeting();
     var resource = new Resource();
-    resource.setLabel(ORGANIZATION_URL);
-    resource.setType(resourceTypeService.get(ORGANIZATION));
+    resource.setLabel(MEETING_URL);
+    resource.setType(resourceTypeService.get(MEETING));
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

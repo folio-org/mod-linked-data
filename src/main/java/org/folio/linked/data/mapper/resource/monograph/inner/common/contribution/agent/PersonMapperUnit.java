@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common.contribution.agent;
 
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.FAMILY;
-import static org.folio.linked.data.util.BibframeConstants.FAMILY_URL;
+import static org.folio.linked.data.util.BibframeConstants.PERSON;
+import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
 import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,8 +11,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.domain.dto.Contribution;
-import org.folio.linked.data.domain.dto.FamilyField;
 import org.folio.linked.data.domain.dto.Lookup;
+import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
@@ -24,8 +24,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = FAMILY, predicate = AGENT_PRED, dtoClass = FamilyField.class)
-public class ContributionFamilyMapperUnit implements ContributionSubResourceMapperUnit {
+@MapperUnit(type = PERSON, predicate = AGENT_PRED, dtoClass = PersonField.class)
+public class PersonMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
@@ -33,16 +33,16 @@ public class ContributionFamilyMapperUnit implements ContributionSubResourceMapp
   @Override
   public Contribution toDto(Resource source, Contribution destination) {
     var agent = coreMapper.readResourceDoc(source, Agent.class);
-    destination.addAgentItem(new FamilyField().family(agent));
+    destination.addAgentItem(new PersonField().person(agent));
     return destination;
   }
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    var agent = ((FamilyField) dto).getFamily();
+    var agent = ((PersonField) dto).getPerson();
     var resource = new Resource();
-    resource.setLabel(FAMILY_URL);
-    resource.setType(resourceTypeService.get(FAMILY));
+    resource.setLabel(PERSON_URL);
+    resource.setType(resourceTypeService.get(PERSON));
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
