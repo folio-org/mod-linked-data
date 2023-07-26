@@ -19,6 +19,7 @@ import org.folio.linked.data.domain.dto.Extent;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -53,7 +54,7 @@ public class AppliesToMapperUnit<T> implements SubResourceMapperUnit<T> {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var appliesTo = ((AppliesToField) dto).getAppliesTo();
     var resource = new Resource();
     resource.setLabel(APPLIES_TO_URL);

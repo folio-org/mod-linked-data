@@ -25,6 +25,7 @@ import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -69,7 +70,7 @@ public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var note = ((NoteField) dto).getNote();
     var resource = new Resource();
     resource.setLabel(NOTE_URL);

@@ -5,17 +5,13 @@ import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.getPropertyNode;
 import static org.folio.linked.data.test.TestUtil.getResourceSample;
-import static org.folio.linked.data.test.TestUtil.getSameAsJsonNode;
 import static org.folio.linked.data.test.TestUtil.propertyToDoc;
 import static org.folio.linked.data.test.TestUtil.provisionActivityToDoc;
 import static org.folio.linked.data.test.TestUtil.random;
-import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_COMPONENTS;
 import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
@@ -35,18 +31,15 @@ import static org.mockito.Mockito.verify;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import org.folio.linked.data.domain.dto.BibframeResponse;
-import org.folio.linked.data.domain.dto.Contribution;
 import org.folio.linked.data.domain.dto.Extent;
 import org.folio.linked.data.domain.dto.ImmediateAcquisition;
 import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.domain.dto.Url;
@@ -571,173 +564,6 @@ class CoreMapperTest {
     assertThat(result.getId(), is("id"));
     assertThat(result.getLabel(), is("label"));
     assertThat(result.getUri(), is("uri"));
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldThrowNpe_ifGivenResourceIsNull(@Mock Consumer<PersonField> personConsumer) {
-    // given
-    Resource resource = null;
-    var predicate = "predicate";
-
-    // when
-    NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addMappedPersonLookups(resource, predicate, personConsumer));
-
-    // then
-    assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldThrowNpe_ifGivenPredicateIsNull(@Mock Consumer<PersonField> personConsumer) {
-    // given
-    var resource = new Resource();
-    String predicate = null;
-
-    // when
-    NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addMappedPersonLookups(resource, predicate, personConsumer));
-
-    // then
-    assertThat(thrown.getMessage(), is("predicate is marked non-null but is null"));
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldThrowNpe_ifGivenConsumerIsNull() {
-    // given
-    var resource = new Resource();
-    var predicate = "predicate";
-    Consumer<PersonField> personConsumer = null;
-
-    // when
-    NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addMappedPersonLookups(resource, predicate, personConsumer));
-
-    // then
-    assertThat(thrown.getMessage(), is("personConsumer is marked non-null but is null"));
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldAddNothing_ifTargetContainsNoEdges() {
-    // given
-    var source = new Resource();
-    var contribution = new Contribution();
-
-    // when
-    coreMapper.addMappedPersonLookups(source, AGENT_PRED, contribution::addAgentItem);
-
-    // then
-    assertThat(contribution.getAgent(), nullValue());
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldAddNothing_ifTargetContainsEdgeWithDifferentPredicate() {
-    // given
-    var source = new Resource();
-    var target = new Resource();
-    source.getOutgoingEdges().add(new ResourceEdge(source, target, new Predicate(ROLE_PRED)));
-    var contribution = new Contribution();
-
-    // when
-    coreMapper.addMappedPersonLookups(source, AGENT_PRED, contribution::addAgentItem);
-
-    // then
-    assertThat(contribution.getAgent(), nullValue());
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldAddNothing_ifTargetContainsEdgeWithNoDoc() {
-    // given
-    var source = new Resource();
-    var target = new Resource();
-    source.getOutgoingEdges().add(new ResourceEdge(source, target, new Predicate(AGENT_PRED)));
-    var contribution = new Contribution();
-
-    // when
-    coreMapper.addMappedPersonLookups(source, AGENT_PRED, contribution::addAgentItem);
-
-    // then
-    assertThat(contribution.getAgent(), nullValue());
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldAddNothing_ifTargetContainsNotSameAsDocInEdge() {
-    // given
-    var source = new Resource();
-    var target = new Resource();
-    target.setDoc(new TextNode("abc"));
-    source.getOutgoingEdges().add(new ResourceEdge(source, target, new Predicate(AGENT_PRED)));
-    var contribution = new Contribution();
-
-    // when
-    coreMapper.addMappedPersonLookups(source, AGENT_PRED, contribution::addAgentItem);
-
-    // then
-    assertThat(contribution.getAgent(), nullValue());
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldAddNothing_ifTargetContainsEmptySameAsDocInEdge() {
-    // given
-    var source = new Resource();
-    var target = new Resource();
-    var arrayNode = OBJECT_MAPPER.createArrayNode();
-    var node = OBJECT_MAPPER.createObjectNode();
-    node.set(SAME_AS_PRED, arrayNode);
-    target.setDoc(node);
-    source.getOutgoingEdges().add(new ResourceEdge(source, target, new Predicate(AGENT_PRED)));
-    var contribution = new Contribution();
-
-    // when
-    coreMapper.addMappedPersonLookups(source, AGENT_PRED, contribution::addAgentItem);
-
-    // then
-    assertThat(contribution.getAgent(), nullValue());
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldAddPerson_ifTargetContainsCorrectSameAsDocInEdge() {
-    // given
-    var target = new Resource();
-    var label = "label";
-    var uri = "uri";
-    target.setDoc(getSameAsJsonNode(getPropertyNode(null, label, uri)));
-    var source = new Resource();
-    source.getOutgoingEdges().add(new ResourceEdge(source, target, new Predicate(AGENT_PRED)));
-    var contribution = new Contribution();
-
-    // when
-    coreMapper.addMappedPersonLookups(source, AGENT_PRED, contribution::addAgentItem);
-
-    // then
-    assertThat(contribution.getAgent(), hasSize(1));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs(), hasSize(1));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getLabel(), is(label));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getUri(), is(uri));
-  }
-
-  @Test
-  void addMappedPersonLookups_shouldAddPersons_ifTargetContainsCorrectManeSameAsDocInEdge() {
-    // given
-    var target = new Resource();
-    var label = "label";
-    var uri = "uri";
-    var label2 = "label2";
-    var uri2 = "uri2";
-    target.setDoc(getSameAsJsonNode(getPropertyNode(null, label, uri), getPropertyNode(null, label2, uri2)));
-    var source = new Resource();
-    source.getOutgoingEdges().add(new ResourceEdge(source, target, new Predicate(AGENT_PRED)));
-    var contribution = new Contribution();
-
-    // when
-    coreMapper.addMappedPersonLookups(source, AGENT_PRED, contribution::addAgentItem);
-
-    // then
-    assertThat(contribution.getAgent(), hasSize(1));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs(), hasSize(2));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getLabel(), is(label));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(0).getUri(), is(uri));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(1).getLabel(), is(label2));
-    assertThat(contribution.getAgent().get(0).getPerson().getSameAs().get(1).getUri(), is(uri2));
   }
 
   @Test

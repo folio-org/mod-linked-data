@@ -6,7 +6,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import lombok.NonNull;
 import org.apache.commons.lang3.function.TriFunction;
-import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.domain.dto.ProvisionActivity;
 import org.folio.linked.data.domain.dto.Url;
@@ -31,9 +30,6 @@ public interface CoreMapper {
   void addMappedProperties(@NonNull Resource s, @NonNull String pred, @NonNull Consumer<Property> consumer);
 
   <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass);
-
-  void addMappedPersonLookups(@NonNull Resource source, @NonNull String predicate,
-                              @NonNull Consumer<PersonField> personConsumer);
 
   long hash(@NonNull Resource resource);
 

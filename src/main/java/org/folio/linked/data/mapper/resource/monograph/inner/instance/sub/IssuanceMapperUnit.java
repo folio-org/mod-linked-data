@@ -8,6 +8,7 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Property;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,7 @@ public class IssuanceMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     return coreMapper.propertyToEntity((Property) dto, ISSUANCE_URL);
   }
 }

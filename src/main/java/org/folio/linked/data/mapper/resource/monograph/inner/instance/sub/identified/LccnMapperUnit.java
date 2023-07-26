@@ -16,6 +16,7 @@ import org.folio.linked.data.domain.dto.Lccn;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -39,7 +40,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var lccn = ((LccnField) dto).getLccn();
     var resource = new Resource();
     resource.setLabel(IDENTIFIERS_LCCN_URL);

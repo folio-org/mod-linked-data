@@ -31,6 +31,8 @@ import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PR
 import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
+import static org.folio.linked.data.util.BibframeConstants.FAMILY;
+import static org.folio.linked.data.util.BibframeConstants.FAMILY_URL;
 import static org.folio.linked.data.util.BibframeConstants.ID;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN;
@@ -54,6 +56,8 @@ import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ITEM_URL;
+import static org.folio.linked.data.util.BibframeConstants.JURISDICTION;
+import static org.folio.linked.data.util.BibframeConstants.JURISDICTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
@@ -61,6 +65,8 @@ import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_URL;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
+import static org.folio.linked.data.util.BibframeConstants.MEETING;
+import static org.folio.linked.data.util.BibframeConstants.MEETING_URL;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
@@ -68,6 +74,8 @@ import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
+import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
+import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
@@ -204,7 +212,7 @@ class BibframeControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(getResourceSample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":1453927885,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":3924103163,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
@@ -343,8 +351,8 @@ class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(35);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(34);
+    assertThat(resourceRepo.count()).isEqualTo(47);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(46);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -354,9 +362,9 @@ class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(34);
+    assertThat(resourceRepo.count()).isEqualTo(46);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(33);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(45);
   }
 
   @NotNull
@@ -374,11 +382,41 @@ class BibframeControllerIT {
       .andExpect(jsonPath("$." + toCarrierId(), equalTo("carrierId")))
       .andExpect(jsonPath("$." + toCarrierUri(), equalTo(CARRIER_URL)))
       .andExpect(jsonPath("$." + toCarrierLabel(), equalTo("volume")))
-      .andExpect(jsonPath("$." + toContributionAgentUri(), equalTo("http://id.loc.gov/authorities/names/no98072015")))
-      .andExpect(jsonPath("$." + toContributionAgentLabel(), equalTo("Test and Evaluation Year-2000 Team (U.S.)")))
-      .andExpect(jsonPath("$." + toContributionRoleId(), equalTo(ROLE)))
-      .andExpect(jsonPath("$." + toContributionRoleUri(), equalTo(ROLE_URL)))
-      .andExpect(jsonPath("$." + toContributionRoleLabel(), equalTo("Author")))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(PERSON_URL, PROPERTY_URI)).value(
+        "http://id.loc.gov/authorities/names/n87914389"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(PERSON_URL, PROPERTY_LABEL)).value(
+        "Spearman, Frank H. (Frank Hamilton), 1859-1937"))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(PERSON_URL, PROPERTY_ID)).value(ROLE))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(PERSON_URL, PROPERTY_URI)).value(ROLE_URL))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(PERSON_URL, PROPERTY_LABEL)).value("Author"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(FAMILY_URL, PROPERTY_URI)).value(
+        "http://id.loc.gov/authorities/subjects/sh85061960"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(FAMILY_URL, PROPERTY_LABEL)).value(
+        "Hopwood family"))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(FAMILY_URL, PROPERTY_ID)).value(ROLE))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(FAMILY_URL, PROPERTY_URI)).value(ROLE_URL))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(FAMILY_URL, PROPERTY_LABEL)).value("Contributor"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(ORGANIZATION_URL, PROPERTY_URI)).value(
+        "http://id.loc.gov/authorities/names/n81050810"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(ORGANIZATION_URL, PROPERTY_LABEL)).value(
+        "Charles Scribner's Sons"))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(ORGANIZATION_URL, PROPERTY_ID)).value(ROLE))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(ORGANIZATION_URL, PROPERTY_URI)).value(ROLE_URL))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(ORGANIZATION_URL, PROPERTY_LABEL)).value("Provider"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(JURISDICTION_URL, PROPERTY_URI)).value(
+        "http://id.loc.gov/authorities/names/n87837615"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(JURISDICTION_URL, PROPERTY_LABEL)).value(
+        "United States. Congress. House. Library"))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(JURISDICTION_URL, PROPERTY_ID)).value(ROLE))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(JURISDICTION_URL, PROPERTY_URI)).value(ROLE_URL))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(JURISDICTION_URL, PROPERTY_LABEL)).value("Contractor"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(MEETING_URL, PROPERTY_URI)).value(
+        "http://id.loc.gov/authorities/names/nr93009771"))
+      .andExpect(jsonPath("$." + toContributionAgentProperty(MEETING_URL, PROPERTY_LABEL)).value(
+        "Workshop on Electronic Texts (1992 : Library of Congress)"))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(MEETING_URL, PROPERTY_ID)).value(ROLE))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(MEETING_URL, PROPERTY_URI)).value(ROLE_URL))
+      .andExpect(jsonPath("$." + toContributionRoleProperty(MEETING_URL, PROPERTY_LABEL)).value("Other"))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
       .andExpect(jsonPath("$." + toElectronicLocatorNoteLabel(), equalTo("electronicLocatorNoteLabel")))
       .andExpect(jsonPath("$." + toElectronicLocatorValue(), equalTo("electronicLocatorValue")))
@@ -485,7 +523,7 @@ class BibframeControllerIT {
     assertThat(instance.getDoc().size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).get(0).asText()).isEqualTo("20 cm");
-    assertThat(instance.getOutgoingEdges()).hasSize(21);
+    assertThat(instance.getOutgoingEdges()).hasSize(25);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateSampleInstanceTitle(edgeIterator.next(), instance);
@@ -495,7 +533,16 @@ class BibframeControllerIT {
     validateSampleProvision(edgeIterator.next(), instance, MANUFACTURE_URL, MANUFACTURE, "Manufacture: ");
     validateSampleProvision(edgeIterator.next(), instance, PRODUCTION_URL, PRODUCTION, "Production: ");
     validateSampleProvision(edgeIterator.next(), instance, PUBLICATION_URL, PUBLICATION, "Publication: ");
-    validateSampleContribution(edgeIterator.next(), instance);
+    validateSampleContribution(edgeIterator.next(), instance, PERSON_URL, PERSON,
+      "Spearman, Frank H. (Frank Hamilton), 1859-1937", "http://id.loc.gov/authorities/names/n87914389", "Author");
+    validateSampleContribution(edgeIterator.next(), instance, FAMILY_URL, FAMILY,
+      "Hopwood family", "http://id.loc.gov/authorities/subjects/sh85061960", "Contributor");
+    validateSampleContribution(edgeIterator.next(), instance, ORGANIZATION_URL, ORGANIZATION,
+      "Charles Scribner's Sons", "http://id.loc.gov/authorities/names/n81050810", "Provider");
+    validateSampleContribution(edgeIterator.next(), instance, JURISDICTION_URL, JURISDICTION,
+      "United States. Congress. House. Library", "http://id.loc.gov/authorities/names/n87837615", "Contractor");
+    validateSampleContribution(edgeIterator.next(), instance, MEETING_URL, MEETING,
+      "Workshop on Electronic Texts (1992 : Library of Congress)", "http://id.loc.gov/authorities/names/nr93009771", "Other");
     validateSampleIdentifiedByEan(edgeIterator.next(), instance);
     validateSampleIdentifiedByIsbn(edgeIterator.next(), instance);
     validateSampleIdentifiedByLccn(edgeIterator.next(), instance);
@@ -736,7 +783,9 @@ class BibframeControllerIT {
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
-  private void validateSampleContribution(ResourceEdge contributionEdge, Resource instance) {
+  private void validateSampleContribution(ResourceEdge contributionEdge, Resource instance, String agenTypeUrl,
+                                          String agentTypeLabel, String agentSameAsLabel, String agentSameAsUri,
+                                          String roleLabel) {
     assertThat(contributionEdge.getId()).isNotNull();
     assertThat(contributionEdge.getSource()).isEqualTo(instance);
     assertThat(contributionEdge.getPredicate().getLabel()).isEqualTo(CONTRIBUTION_PRED);
@@ -747,39 +796,46 @@ class BibframeControllerIT {
     assertThat(contribution.getDoc()).isNull();
     assertThat(contribution.getOutgoingEdges()).hasSize(2);
     var edgeIterator = contribution.getOutgoingEdges().iterator();
-    validateSampleContributionAgent(edgeIterator.next(), contribution);
-    validateSampleContributionRole(edgeIterator.next(), contribution);
+    validateSampleContributionAgent(edgeIterator.next(), contribution, agenTypeUrl, agentTypeLabel, agentSameAsLabel,
+      agentSameAsUri);
+    validateSampleContributionRole(edgeIterator.next(), contribution, roleLabel);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
-  private void validateSampleContributionRole(ResourceEdge contributionRoleEdge, Resource contribution) {
+  private void validateSampleContributionRole(ResourceEdge contributionRoleEdge, Resource contribution,
+                                              String roleLabel) {
     assertThat(contributionRoleEdge.getId()).isNotNull();
     assertThat(contributionRoleEdge.getSource()).isEqualTo(contribution);
     assertThat(contributionRoleEdge.getPredicate().getLabel()).isEqualTo(ROLE_PRED);
     var contributionRole = contributionRoleEdge.getTarget();
-    assertThat(contributionRole.getLabel()).isEqualTo("Author");
+    assertThat(contributionRole.getLabel()).isEqualTo(roleLabel);
     assertThat(contributionRole.getType().getTypeUri()).isEqualTo(ROLE_URL);
     assertThat(contributionRole.getResourceHash()).isNotNull();
     assertThat(contributionRole.getDoc().size()).isEqualTo(3);
     assertThat(contributionRole.getDoc().get(PROPERTY_URI).asText()).isEqualTo(ROLE_URL);
-    assertThat(contributionRole.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo("Author");
+    assertThat(contributionRole.getDoc().get(PROPERTY_LABEL).asText()).isEqualTo(roleLabel);
     assertThat(contributionRole.getDoc().get(PROPERTY_ID).asText()).isEqualTo(ROLE);
     assertThat(contributionRole.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateSampleContributionAgent(ResourceEdge contributionAgentEdge, Resource contribution) {
+  private void validateSampleContributionAgent(ResourceEdge contributionAgentEdge,
+                                               Resource contribution,
+                                               String agenTypeUrl,
+                                               String agenTypeLabel,
+                                               String agentSameAsLabel,
+                                               String agentSameAsUri) {
     assertThat(contributionAgentEdge.getId()).isNotNull();
     assertThat(contributionAgentEdge.getSource()).isEqualTo(contribution);
     assertThat(contributionAgentEdge.getPredicate().getLabel()).isEqualTo(AGENT_PRED);
     var contributionAgent = contributionAgentEdge.getTarget();
-    assertThat(contributionAgent.getLabel()).isEqualTo(PERSON_URL);
-    assertThat(contributionAgent.getType().getSimpleLabel()).isEqualTo(PERSON);
+    assertThat(contributionAgent.getLabel()).isEqualTo(agenTypeUrl);
+    assertThat(contributionAgent.getType().getSimpleLabel()).isEqualTo(agenTypeLabel);
     assertThat(contributionAgent.getResourceHash()).isNotNull();
     assertThat(contributionAgent.getDoc().size()).isEqualTo(1);
     assertThat(contributionAgent.getDoc().get(SAME_AS_PRED).get(0).get(PROPERTY_LABEL).asText())
-      .isEqualTo("Test and Evaluation Year-2000 Team (U.S.)");
+      .isEqualTo(agentSameAsLabel);
     assertThat(contributionAgent.getDoc().get(SAME_AS_PRED).get(0).get(PROPERTY_URI).asText())
-      .isEqualTo("http://id.loc.gov/authorities/names/no98072015");
+      .isEqualTo(agentSameAsUri);
     assertThat(contributionAgent.getOutgoingEdges()).isEmpty();
   }
 
@@ -943,29 +999,13 @@ class BibframeControllerIT {
       path(EXTENT_URL), arrayPath(APPLIES_TO_PRED), path(APPLIES_TO_URL), arrayPath(LABEL_PRED));
   }
 
-  private String toContributionRoleLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-      path(CONTRIBUTION_URL), arrayPath(ROLE_PRED), path(PROPERTY_LABEL));
+  private String toContributionRoleProperty(String agentUrl, String property) {
+    return String.join(".", toContributionByAgent(agentUrl), arrayPath(ROLE_PRED), path(property));
   }
 
-  private String toContributionRoleUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-      path(CONTRIBUTION_URL), arrayPath(ROLE_PRED), path(PROPERTY_URI));
-  }
-
-  private String toContributionRoleId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED),
-      path(CONTRIBUTION_URL), arrayPath(ROLE_PRED), path(PROPERTY_ID));
-  }
-
-  private String toContributionAgentLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED), path(CONTRIBUTION_URL),
-      arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_LABEL));
-  }
-
-  private String toContributionAgentUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CONTRIBUTION_PRED), path(CONTRIBUTION_URL),
-      arrayPath(AGENT_PRED), path(PERSON_URL), arrayPath(SAME_AS_PRED), path(PROPERTY_URI));
+  private String toContributionAgentProperty(String agentUrl, String property) {
+    return String.join(".", toContributionByAgent(agentUrl), arrayPath(AGENT_PRED), path(agentUrl),
+      arrayPath(SAME_AS_PRED), path(property));
   }
 
   private String toDistributionDate() {
@@ -1315,6 +1355,16 @@ class BibframeControllerIT {
 
   private String toProfile() {
     return path(PROFILE);
+  }
+
+  private String toContributionByAgent(String agentTypeUrl) {
+    return String.join(".", arrayPath(INSTANCE_URL), path(CONTRIBUTION_PRED) + filterPath(
+        path(CONTRIBUTION_URL), arrayPath(AGENT_PRED), path(agentTypeUrl)),
+      path(CONTRIBUTION_URL));
+  }
+
+  private String filterPath(String... paths) {
+    return String.format("[?(@.%s)]", String.join(".", paths));
   }
 
   private String path(String path) {

@@ -16,6 +16,7 @@ import org.folio.linked.data.domain.dto.Url;
 import org.folio.linked.data.domain.dto.UrlField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -40,13 +41,14 @@ public class InstanceElectronicLocatorMapperUnit implements InstanceSubResourceM
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var url = ((UrlField) dto).getUrl();
     var resource = new Resource();
     resource.setLabel(URL_URL);
     resource.setType(resourceTypeService.get(URL_URL));
     resource.setDoc(getDoc(url));
-    coreMapper.mapResourceEdges(url.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(url.getNote(), resource, NOTE, NOTE_PRED,
+      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

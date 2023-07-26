@@ -20,6 +20,7 @@ import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -45,13 +46,16 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var parallelTitle = ((ParallelTitleField) dto).getParallelTitle();
     var resource = new Resource();
     resource.setLabel(PARALLEL_TITLE_URL);
     resource.setType(resourceTypeService.get(PARALLEL_TITLE));
     resource.setDoc(getDoc(parallelTitle));
-    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, null, NOTE_PRED,
+      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
+    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, NOTE, NOTE_PRED,
+      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

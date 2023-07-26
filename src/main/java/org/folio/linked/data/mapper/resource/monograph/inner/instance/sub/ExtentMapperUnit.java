@@ -18,6 +18,7 @@ import org.folio.linked.data.domain.dto.ExtentField;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.AppliesToMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -45,15 +46,16 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var extent = ((ExtentField) dto).getExtent();
     var resource = new Resource();
     resource.setLabel(EXTENT_URL);
     resource.setType(resourceTypeService.get(EXTENT));
     resource.setDoc(getDoc(extent.getLabel()));
     coreMapper.mapResourceEdges(extent.getAppliesTo(), resource, APPLIES_TO, APPLIES_TO_PRED,
-      appliesToMapper::toEntity);
-    coreMapper.mapResourceEdges(extent.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
+      (fieldDto, pred) -> appliesToMapper.toEntity(fieldDto, pred, null));
+    coreMapper.mapResourceEdges(extent.getNote(), resource, NOTE, NOTE_PRED,
+      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

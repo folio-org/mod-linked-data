@@ -185,8 +185,8 @@
                 "http://id.loc.gov/ontologies/bibframe/Person": {
                   "http://www.w3.org/2002/07/owl#sameAs": [
                     {
-                      "label": "Test and Evaluation Year-2000 Team (U.S.)",
-                      "uri": "http://id.loc.gov/authorities/names/no98072015"
+                      "label": "Spearman, Frank H. (Frank Hamilton), 1859-1937",
+                      "uri": "http://id.loc.gov/authorities/names/n87914389"
                     }
                   ]
                 }
@@ -197,6 +197,98 @@
                 "id": "lc:RT:bf2:Agent:bfRole",
                 "uri": "http://id.loc.gov/ontologies/bibframe/Role",
                 "label": "Author"
+              }
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Contribution": {
+            "http://id.loc.gov/ontologies/bibframe/agent": [
+              {
+                "http://id.loc.gov/ontologies/bibframe/Family": {
+                  "http://www.w3.org/2002/07/owl#sameAs": [
+                    {
+                      "label": "Hopwood family",
+                      "uri": "http://id.loc.gov/authorities/subjects/sh85061960"
+                    }
+                  ]
+                }
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/role": [
+              {
+                "id": "lc:RT:bf2:Agent:bfRole",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Role",
+                "label": "Contributor"
+              }
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Contribution": {
+            "http://id.loc.gov/ontologies/bibframe/agent": [
+              {
+                "http://id.loc.gov/ontologies/bibframe/Organization": {
+                  "http://www.w3.org/2002/07/owl#sameAs": [
+                    {
+                      "label": "Charles Scribner's Sons",
+                      "uri": "http://id.loc.gov/authorities/names/n81050810"
+                    }
+                  ]
+                }
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/role": [
+              {
+                "id": "lc:RT:bf2:Agent:bfRole",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Role",
+                "label": "Provider"
+              }
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Contribution": {
+            "http://id.loc.gov/ontologies/bibframe/agent": [
+              {
+                "http://id.loc.gov/ontologies/bibframe/Jurisdiction": {
+                  "http://www.w3.org/2002/07/owl#sameAs": [
+                    {
+                      "label": "United States. Congress. House. Library",
+                      "uri": "http://id.loc.gov/authorities/names/n87837615"
+                    }
+                  ]
+                }
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/role": [
+              {
+                "id": "lc:RT:bf2:Agent:bfRole",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Role",
+                "label": "Contractor"
+              }
+            ]
+          }
+        },
+        {
+          "http://id.loc.gov/ontologies/bibframe/Contribution": {
+            "http://id.loc.gov/ontologies/bibframe/agent": [
+              {
+                "http://id.loc.gov/ontologies/bibframe/Meeting": {
+                  "http://www.w3.org/2002/07/owl#sameAs": [
+                    {
+                      "label": "Workshop on Electronic Texts (1992 : Library of Congress)",
+                      "uri": "http://id.loc.gov/authorities/names/nr93009771"
+                    }
+                  ]
+                }
+              }
+            ],
+            "http://id.loc.gov/ontologies/bibframe/role": [
+              {
+                "id": "lc:RT:bf2:Agent:bfRole",
+                "uri": "http://id.loc.gov/ontologies/bibframe/Role",
+                "label": "Other"
               }
             ]
           }

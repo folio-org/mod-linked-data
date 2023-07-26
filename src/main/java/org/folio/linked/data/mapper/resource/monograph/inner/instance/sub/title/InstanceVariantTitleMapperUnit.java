@@ -21,6 +21,7 @@ import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -46,13 +47,16 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate) {
+  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
     resource.setLabel(VARIANT_TITLE_URL);
     resource.setType(resourceTypeService.get(VARIANT_TITLE));
     resource.setDoc(getDoc(variantTitle));
-    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, NOTE, NOTE_PRED, noteMapper::toEntity);
+    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, NOTE, NOTE_PRED,
+      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
+    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, null, NOTE_PRED,
+      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
