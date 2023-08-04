@@ -21,5 +21,5 @@ public class Constants {
   public static final String EXISTS_ALREADY = "] exists already";
   public static final String BIBFRAME_PROFILE = "Bibframe profile [";
   public static final String IS_NOT_IN_THE_LIST_OF_SUPPORTED = "] is not in the list of supported: ";
-  public static final String INDEX_NAME = "instance";
+  public static final String SEARCH_RESOURCE_NAME = "bibframe";
 }

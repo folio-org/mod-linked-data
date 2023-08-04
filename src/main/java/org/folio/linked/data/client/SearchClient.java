@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(value = "search", url = "http://localhost:8085")
+@FeignClient(name = "search")
 @Profile(SEARCH_PROFILE)
 public interface SearchClient {
 

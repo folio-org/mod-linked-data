@@ -36,7 +36,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final KafkaSender kafkaSender;
 
   @Override
-  public BibframeResponse createBibframe(BibframeRequest bibframeRequest, String tenant) {
+  public BibframeResponse createBibframe(BibframeRequest bibframeRequest) {
     if (!bibframeProperties.getProfiles().contains(bibframeRequest.getProfile())) {
       throw new NotSupportedException(BIBFRAME_PROFILE + bibframeRequest.getProfile()
         + IS_NOT_IN_THE_LIST_OF_SUPPORTED + String.join(", ", bibframeProperties.getProfiles()));
@@ -46,7 +46,7 @@ public class ResourceServiceImpl implements ResourceService {
       throw new AlreadyExistsException(BIBFRAME_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     var persisted = resourceRepo.save(mapped);
-    kafkaSender.sendResourceCreated(tenant, bibframeRequest, persisted.getResourceHash());
+    kafkaSender.sendResourceCreated(bibframeMapper.mapToIndex(persisted));
     return bibframeMapper.map(persisted);
   }
 
@@ -58,17 +58,18 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
-  public BibframeResponse updateBibframe(Long id, BibframeRequest bibframeRequest, String tenant) {
+  public BibframeResponse updateBibframe(Long id, BibframeRequest bibframeRequest) {
     if (!resourceRepo.existsById(id)) {
       throw new NotFoundException(BIBFRAME_WITH_GIVEN_ID + id + IS_NOT_FOUND);
     }
-    deleteBibframe(id, tenant);
-    return createBibframe(bibframeRequest, tenant);
+    deleteBibframe(id);
+    return createBibframe(bibframeRequest);
   }
 
   @Override
-  public void deleteBibframe(Long id, String tenant) {
+  public void deleteBibframe(Long id) {
     resourceRepo.deleteById(id);
+    kafkaSender.sendResourceDeleted(id);
   }
 
   @Override

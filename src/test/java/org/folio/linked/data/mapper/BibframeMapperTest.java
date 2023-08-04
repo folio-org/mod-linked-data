@@ -49,7 +49,7 @@ class BibframeMapperTest {
     doReturn(expectedResource).when(profiledMapper).toEntity(dto);
 
     // when
-    Resource resource = bibframeMapper.map(dto, id);
+    Resource resource = bibframeMapper.map(dto);
 
     // then
     Iterator<ResourceEdge> resourceEdgeIterator = resource.getOutgoingEdges().iterator();

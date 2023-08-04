@@ -7,7 +7,6 @@ import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.folio.search.domain.dto.ResourceEvent;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -19,7 +18,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
-@Log4j2
 @Configuration
 @RequiredArgsConstructor
 @Profile(SEARCH_PROFILE)

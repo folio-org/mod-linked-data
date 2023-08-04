@@ -16,5 +16,5 @@ components:
       $ref: search/resourceEvent.json
     searchResourceEventType:
       $ref: search/resourceEventType.json
-    searchInstance:
-      $ref: search/instanceSearch.json
+    bibframe:
+      $ref: search/bibframeIndex.json

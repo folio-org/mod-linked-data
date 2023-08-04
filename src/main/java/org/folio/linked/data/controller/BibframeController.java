@@ -20,8 +20,8 @@ public class BibframeController implements BibframeApi {
   private final ResourceService resourceService;
 
   @Override
-  public ResponseEntity<BibframeResponse> createBibframe(String tenant, BibframeRequest bibframeRequest) {
-    return ResponseEntity.ok(resourceService.createBibframe(bibframeRequest, tenant));
+  public ResponseEntity<BibframeResponse> createBibframe(String okapiTenant, BibframeRequest bibframeRequest) {
+    return ResponseEntity.ok(resourceService.createBibframe(bibframeRequest));
   }
 
   @Override
@@ -30,13 +30,13 @@ public class BibframeController implements BibframeApi {
   }
 
   @Override
-  public ResponseEntity<BibframeResponse> updateBibframe(Long id, String tenant, BibframeRequest bibframeRequest) {
-    return ResponseEntity.ok(resourceService.updateBibframe(id, bibframeRequest, tenant));
+  public ResponseEntity<BibframeResponse> updateBibframe(Long id, String okapiTenant, BibframeRequest bibframeRequest) {
+    return ResponseEntity.ok(resourceService.updateBibframe(id, bibframeRequest));
   }
 
   @Override
-  public ResponseEntity<Void> deleteBibframe(Long id, String tenant) {
-    resourceService.deleteBibframe(id, tenant);
+  public ResponseEntity<Void> deleteBibframe(Long id, String okapiTenant) {
+    resourceService.deleteBibframe(id);
     return noContent().build();
   }
 

@@ -6,13 +6,13 @@ import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 
 public interface ResourceService {
 
-  BibframeResponse createBibframe(BibframeRequest bibframeRequest, String tenant);
+  BibframeResponse createBibframe(BibframeRequest bibframeRequest);
 
   BibframeResponse getBibframeById(Long id);
 
-  BibframeResponse updateBibframe(Long id, BibframeRequest bibframeUpdateRequest, String tenant);
+  BibframeResponse updateBibframe(Long id, BibframeRequest bibframeUpdateRequest);
 
-  void deleteBibframe(Long id, String tenant);
+  void deleteBibframe(Long id);
 
   BibframeShortInfoPage getBibframeShortInfoPage(Integer pageNumber, Integer pageSize);
 
