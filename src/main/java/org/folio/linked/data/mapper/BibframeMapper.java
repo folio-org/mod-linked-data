@@ -17,6 +17,7 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.NonNull;
 import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShort;
@@ -57,7 +58,7 @@ public abstract class BibframeMapper {
     return profiledMapper.toDto(resource);
   }
 
-  public BibframeIndex mapToIndex(Resource resource) {
+  public BibframeIndex mapToIndex(@NonNull Resource resource) {
     Resource instance = extractInstance(resource);
     BibframeIndex bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
     bibframeIndex.setTitle(instance.getLabel());

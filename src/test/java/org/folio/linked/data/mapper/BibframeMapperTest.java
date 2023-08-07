@@ -1,15 +1,36 @@
 package org.folio.linked.data.mapper;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.folio.linked.data.test.TestUtil.getJsonNode;
+import static org.folio.linked.data.test.TestUtil.random;
+import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
+import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
+import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import org.folio.linked.data.domain.dto.BibframeRequest;
+import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapper;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceType;
+import org.folio.search.domain.dto.BibframeIdentifiersInner;
+import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,6 +86,69 @@ class BibframeMapperTest {
     assertThat(result3.getId().getSourceHash()).isEqualTo(re3.getSource().getResourceHash());
     assertThat(result3.getId().getTargetHash()).isEqualTo(re3.getTarget().getResourceHash());
     assertThat(result3.getId().getPredicateHash()).isEqualTo(re3.getPredicate().getPredicateHash());
+  }
+
+  @Test
+  void mapToIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
+    // given
+    Resource resource = null;
+
+    // when
+    NullPointerException thrown = assertThrows(NullPointerException.class, () -> bibframeMapper.mapToIndex(resource));
+
+    // then
+    MatcherAssert.assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
+  }
+
+  @Test
+  void mapToIndex_shouldThrowNotSupportedException_ifGivenResourceContainsNoInstance() {
+    // given
+    var resource = new Resource();
+
+    // when
+    NotSupportedException thrown = assertThrows(NotSupportedException.class, () -> bibframeMapper.mapToIndex(resource));
+
+    // then
+    MatcherAssert.assertThat(thrown.getMessage(),
+      is("Only Monograph.Instance bibframe is supported for now, and there is no Instance found"));
+  }
+
+  @Test
+  void mapToIndex_shouldReturnCorrectlyMappedObject() {
+    // given
+    var resource = new Resource();
+    resource.setResourceHash(randomLong());
+    var instance = new Resource();
+    resource.getOutgoingEdges().add(new ResourceEdge(resource, instance, new Predicate(INSTANCE_URL)));
+    instance.setLabel(UUID.randomUUID().toString());
+    var identifier = new Resource();
+    identifier.setResourceHash(randomLong());
+    identifier.setDoc(getJsonNode(Map.of(VALUE_PRED, List.of(randomLong()))));
+    identifier.setType(new ResourceType().setSimpleLabel(random(BibframeIdentifiersInner.TypeEnum.class).getValue()));
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, identifier, new Predicate(IDENTIFIED_BY_PRED)));
+    var publication = new Resource();
+    publication.setResourceHash(randomLong());
+    publication.setDoc(
+      getJsonNode(Map.of(SIMPLE_DATE_PRED, List.of("2023"), SIMPLE_AGENT_PRED, List.of(UUID.randomUUID().toString()))));
+    publication.setType(new ResourceType().setSimpleLabel(PUBLICATION));
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, publication, new Predicate(PROVISION_ACTIVITY_PRED)));
+    instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT_URL, List.of(UUID.randomUUID().toString()))));
+
+    // when
+    BibframeIndex result = bibframeMapper.mapToIndex(resource);
+
+    // then
+    assertThat(result.getId()).isEqualTo(resource.getResourceHash().toString());
+    assertThat(result.getTitle()).isEqualTo(instance.getLabel());
+    assertThat(result.getIdentifiers().get(0).getValue()).isEqualTo(
+      identifier.getDoc().get(VALUE_PRED).get(0).textValue());
+    assertThat(result.getIdentifiers().get(0).getType()).isEqualTo(
+      BibframeIdentifiersInner.TypeEnum.fromValue(identifier.getType().getSimpleLabel()));
+    assertThat(result.getPublications().get(0).getDateOfPublication()).isEqualTo(
+      publication.getDoc().get(SIMPLE_DATE_PRED).get(0).textValue());
+    assertThat(result.getPublications().get(0).getPublisher()).isEqualTo(
+      publication.getDoc().get(SIMPLE_AGENT_PRED).get(0).textValue());
+    assertThat(result.getEditionStatement()).isEqualTo(instance.getDoc().get(EDITION_STATEMENT_URL).get(0).textValue());
   }
 
 }

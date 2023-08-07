@@ -4,21 +4,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.test.TestUtil.randomResource;
+import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,6 +50,33 @@ class ResourceServiceTest {
 
   @Mock
   private BibframeProperties bibframeProperties;
+
+  @Mock
+  private KafkaSender kafkaSender;
+
+  @Test
+  void create_shouldPersistMappedBibframeAndSendItToKafka() {
+    // given
+    var request = new BibframeRequest();
+    request.setProfile(MONOGRAPH);
+    when(bibframeProperties.getProfiles()).thenReturn(Set.of(MONOGRAPH));
+    var mapped = new Resource().setResourceHash(12345L);
+    when(bibframeMapper.map(request)).thenReturn(mapped);
+    var persisted = new Resource().setResourceHash(67890L);
+    when(resourceRepo.save(mapped)).thenReturn(persisted);
+    var expectedIndex = new BibframeIndex(persisted.getResourceHash().toString());
+    when(bibframeMapper.mapToIndex(persisted)).thenReturn(expectedIndex);
+    var expectedResponse = new BibframeResponse();
+    expectedResponse.setId(persisted.getResourceHash());
+    when(bibframeMapper.map(persisted)).thenReturn(expectedResponse);
+
+    // when
+    BibframeResponse response = resourceService.createBibframe(request);
+
+    // then
+    verify(kafkaSender).sendResourceCreated(expectedIndex);
+    assertThat(response).isEqualTo(expectedResponse);
+  }
 
   @Test
   void getResourceById_shouldReturnExistedEntity() {
@@ -120,6 +152,19 @@ class ResourceServiceTest {
 
     // then
     assertThat(result).isEqualTo(expectedResult);
+  }
+
+  @Test
+  void delete_shouldDeleteBibframeAndSendItToKafka() {
+    // given
+    var id = randomLong();
+
+    // when
+    resourceService.deleteBibframe(id);
+
+    // then
+    verify(resourceRepo).deleteById(id);
+    verify(kafkaSender).sendResourceDeleted(id);
   }
 
 }
