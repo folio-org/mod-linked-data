@@ -2,3 +2,17 @@ spring:
   jpa:
     properties:
       hibernate.default_schema: ${mod-linked-data.default-schema}
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: search
+
+folio:
+  kafka:
+    topics:
+      - name: search.bibframe
+        numPartitions: 1
+
+test:
+  topic:
+    search: folio.test_tenant.search.bibframe

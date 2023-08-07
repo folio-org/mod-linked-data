@@ -1,8 +1,6 @@
 package org.folio.linked.data.configuration;
 
-import static java.util.Arrays.asList;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.springframework.http.ResponseEntity.notFound;
 
 import jakarta.servlet.FilterChain;
@@ -15,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
-import org.folio.linked.data.service.SearchTenantService;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
-import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.folio.tenant.rest.resource.TenantApi;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +34,6 @@ import org.springframework.web.filter.GenericFilterBean;
 public class StandaloneConfig implements ApplicationListener<ContextRefreshedEvent> {
 
   private final FolioSpringLiquibase folioSpringLiquibase;
-  private final TenantService tenantService;
   @Value("${mod-linked-data.default-schema}")
   private String defaultSchema;
 
@@ -48,12 +43,6 @@ public class StandaloneConfig implements ApplicationListener<ContextRefreshedEve
     log.log(Level.INFO, "Standalone mode is on, activating default DB schema [{}]", defaultSchema);
     folioSpringLiquibase.setDefaultSchema(defaultSchema);
     folioSpringLiquibase.performLiquibaseUpdate();
-    var context = event.getApplicationContext();
-    if (asList(context.getEnvironment().getActiveProfiles()).contains(SEARCH_PROFILE)) {
-      log.log(Level.INFO, "Search is on, creating search index for default tenant [{}]", defaultSchema);
-      SearchTenantService searchTenantService = context.getBean(SearchTenantService.class);
-      searchTenantService.afterTenantUpdate(null);
-    }
   }
 
   @Bean(name = "folioTenantController")

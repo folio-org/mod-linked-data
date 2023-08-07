@@ -49,7 +49,7 @@ public abstract class BibframeMapper {
   public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
 
   public Resource map(BibframeRequest dto) {
-    Resource resource = profiledMapper.toEntity(dto);
+    var resource = profiledMapper.toEntity(dto);
     setEdgesId(resource);
     return resource;
   }
@@ -59,8 +59,8 @@ public abstract class BibframeMapper {
   }
 
   public BibframeIndex mapToIndex(@NonNull Resource resource) {
-    Resource instance = extractInstance(resource);
-    BibframeIndex bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
+    var instance = extractInstance(resource);
+    var bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
     bibframeIndex.setTitle(instance.getLabel());
     bibframeIndex.setIdentifiers(extractIdentifiers(instance));
     bibframeIndex.setContributors(extractContributors(instance));
@@ -82,12 +82,9 @@ public abstract class BibframeMapper {
     return resource.getOutgoingEdges().stream()
       .filter(re -> IDENTIFIED_BY_PRED.equals(re.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
-      .map(ir -> {
-        BibframeIdentifiersInner bii = new BibframeIdentifiersInner();
-        bii.setValue(getValue(ir.getDoc(), VALUE_PRED));
-        bii.setType(TypeEnum.fromValue(ir.getType().getSimpleLabel().replace("lc:RT:bf2:Identifiers:", "")));
-        return bii;
-      })
+      .map(ir -> new BibframeIdentifiersInner()
+        .value(getValue(ir.getDoc(), VALUE_PRED))
+        .type(TypeEnum.fromValue(ir.getType().getSimpleLabel().replace("lc:RT:bf2:Identifiers:", ""))))
       .toList();
   }
 
@@ -101,12 +98,10 @@ public abstract class BibframeMapper {
       .map(ResourceEdge::getTarget)
       .filter(r -> PUBLICATION.equals(r.getType().getSimpleLabel()))
       .map(Resource::getDoc)
-      .map(doc -> {
-        BibframePublicationsInner bpi = new BibframePublicationsInner();
-        bpi.setDateOfPublication(firstNonNull(getValue(doc, SIMPLE_DATE_PRED), getValue(doc, DATE_URL)));
-        bpi.setPublisher(firstNonNull(getValue(doc, SIMPLE_AGENT_PRED), getValue(doc, SIMPLE_PLACE_PRED)));
-        return bpi;
-      })
+      .map(doc -> new BibframePublicationsInner()
+        .dateOfPublication(firstNonNull(getValue(doc, SIMPLE_DATE_PRED), getValue(doc, DATE_URL)))
+        .publisher(firstNonNull(getValue(doc, SIMPLE_AGENT_PRED), getValue(doc, SIMPLE_PLACE_PRED)))
+      )
       .toList();
   }
 

@@ -15,9 +15,9 @@ public class CorsConfig {
   public CorsFilter corsFilter() {
     CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-    corsConfiguration.addAllowedOrigin("*");
-    corsConfiguration.addAllowedMethod("*");
-    corsConfiguration.addAllowedHeader("*");
+    corsConfiguration.addAllowedOrigin("*"); //NOSONAR
+    corsConfiguration.addAllowedMethod("*"); //NOSONAR
+    corsConfiguration.addAllowedHeader("*"); //NOSONAR
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", corsConfiguration);
