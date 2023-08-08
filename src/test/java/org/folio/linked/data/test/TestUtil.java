@@ -62,10 +62,17 @@ public class TestUtil {
   }
 
   public static HttpHeaders defaultHeaders(Environment env) {
+    return defaultHeaders(env, null);
+  }
+
+  public static HttpHeaders defaultHeaders(Environment env, String okapiUrl) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
     if (Arrays.asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
       httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
+    }
+    if (nonNull(okapiUrl)) {
+      httpHeaders.add(XOkapiHeaders.URL, okapiUrl);
     }
     return httpHeaders;
   }

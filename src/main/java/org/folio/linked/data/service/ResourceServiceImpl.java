@@ -33,6 +33,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceRepository resourceRepo;
   private final BibframeMapper bibframeMapper;
   private final BibframeProperties bibframeProperties;
+  private final KafkaSender kafkaSender;
 
   @Override
   public BibframeResponse createBibframe(BibframeRequest bibframeRequest) {
@@ -45,6 +46,7 @@ public class ResourceServiceImpl implements ResourceService {
       throw new AlreadyExistsException(BIBFRAME_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     var persisted = resourceRepo.save(mapped);
+    kafkaSender.sendResourceCreated(bibframeMapper.mapToIndex(persisted));
     return bibframeMapper.map(persisted);
   }
 
@@ -67,6 +69,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public void deleteBibframe(Long id) {
     resourceRepo.deleteById(id);
+    kafkaSender.sendResourceDeleted(id);
   }
 
   @Override

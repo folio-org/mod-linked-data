@@ -1,3 +1,9 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/okapi_modules
+  cloud:
+    openfeign:
+      client:
+        config:
+          search:
+            url: http://localhost:8085

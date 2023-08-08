@@ -5,6 +5,7 @@ import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
+import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getResource;
 import static org.folio.linked.data.test.TestUtil.getResourceSample;
@@ -144,8 +145,11 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
+import org.folio.spring.test.extension.impl.OkapiConfiguration;
+import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -155,9 +159,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @Transactional
-class BibframeControllerIT {
+public class BibframeControllerIT {
 
   public static final String BIBFRAME_URL = "/bibframe";
+  public static OkapiConfiguration okapi;
 
   @Autowired
   private MockMvc mockMvc;
@@ -172,6 +177,11 @@ class BibframeControllerIT {
   @Autowired
   private Environment env;
 
+  @BeforeAll
+  static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
+    kafkaAdminService.createTopics(TENANT_ID);
+  }
+
   @AfterEach
   public void clean() {
     resourceEdgeRepository.deleteAll();
@@ -183,7 +193,7 @@ class BibframeControllerIT {
     // given
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getResourceSample());
 
     // when
@@ -198,6 +208,7 @@ class BibframeControllerIT {
     assertThat(persistedOptional).isPresent();
     var monograph = persistedOptional.get();
     validateSampleMonographEntity(monograph);
+    checkKafkaMessageSent(monograph, null);
   }
 
   @Test
@@ -205,7 +216,7 @@ class BibframeControllerIT {
     // given
     var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getResourceSample());
     var resultActions1 = mockMvc.perform(requestBuilder1);
     var response1 = resultActions1.andReturn().getResponse().getContentAsString();
@@ -214,7 +225,7 @@ class BibframeControllerIT {
     assertThat(persistedOptional1).isPresent();
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getResourceSample().replace("volume", "length"));
     var expectedDifference = "length\"}]}],\"id\":3057919254,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
@@ -230,7 +241,7 @@ class BibframeControllerIT {
     // given
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getResource("samples/bibframe-wrong-field.json"));
 
     // when
@@ -252,7 +263,7 @@ class BibframeControllerIT {
     // given
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getResource("samples/bibframe-property-no-label.json"));
 
     // when
@@ -271,7 +282,7 @@ class BibframeControllerIT {
     // given
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getResource("samples/bibframe-multiple-identical-resources.json"));
 
     // when
@@ -291,7 +302,7 @@ class BibframeControllerIT {
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -306,7 +317,7 @@ class BibframeControllerIT {
     var notExistedId = randomLong();
     var requestBuilder = get(BIBFRAME_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -332,7 +343,7 @@ class BibframeControllerIT {
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
     var requestBuilder = get(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -359,7 +370,7 @@ class BibframeControllerIT {
     assertThat(resourceEdgeRepository.count()).isEqualTo(46);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
     // when
     mockMvc.perform(requestBuilder);
@@ -369,6 +380,11 @@ class BibframeControllerIT {
     assertThat(resourceRepo.count()).isEqualTo(46);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(45);
+    checkKafkaMessageSent(null, existed.getResourceHash());
+  }
+
+  protected void checkKafkaMessageSent(Resource persisted, Long deleted) {
+    // nothing to check without Folio profile
   }
 
   @NotNull

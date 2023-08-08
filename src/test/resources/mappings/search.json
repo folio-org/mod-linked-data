@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "url": "/search/search/index/indices"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n    \"indices\": [\n        \"folio_bibframe_public\"\n    ],\n    \"status\": \"success\"\n}"
+      }
+    }
+  ]
+}

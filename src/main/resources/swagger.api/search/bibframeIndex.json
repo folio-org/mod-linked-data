@@ -1,0 +1,75 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "bibframe search dto",
+  "properties": {
+    "id": {
+      "description": "The unique ID of the bibframe record",
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "The primary title (or label) associated with the record"
+    },
+    "identifiers": {
+      "type": "array",
+      "description": "Resource identifier value array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Value of Identifier"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["EAN", "ISBN", "LCCN", "Local", "Other"]
+          }
+        }
+      }
+    },
+    "contributors": {
+      "type": "array",
+      "description": "List of contributors names",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of contributor"
+          },
+          "primary": {
+            "type": "boolean",
+            "description": "Is primary contributor"
+          },
+          "authorityId": {
+            "type": "string",
+            "description": "Authority ID"
+          }
+        }
+      }
+    },
+    "publications": {
+      "type": "array",
+      "description": "List of publication items",
+      "items": {
+        "type": "object",
+        "properties": {
+          "publisher": {
+            "type": "string",
+            "description": "Name of publisher, distributor, etc."
+          },
+          "dateOfPublication": {
+            "type": "string",
+            "description": "Date (year YYYY) of publication, distribution, etc."
+          }
+        }
+      }
+    },
+      "editionStatement": {
+      "type": "string"
+    }
+  },
+  "required": ["id"]
+}
+
