@@ -35,7 +35,7 @@
     </sonar.exclusions>
 
     <!-- Dependencies versions -->
-    <folio-spring-base.version>7.0.0</folio-spring-base.version>
+    <folio-spring-base.version>7.1.2</folio-spring-base.version>
     <apache-commons-io.version>2.11.0</apache-commons-io.version>
     <apache-commons-collections.version>4.4</apache-commons-collections.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
