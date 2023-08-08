@@ -46,7 +46,7 @@
         {
           "methods": [ "POST" ],
           "pathPattern": "/_/tenant",
-          "modulePermissions": []
+          "modulePermissions": ["search.index.indices.item.post"]
         },
         {
           "methods": [ "DELETE", "GET" ],
