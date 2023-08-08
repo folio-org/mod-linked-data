@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Profile(SEARCH_PROFILE)
 public interface SearchClient {
 
-  @PostMapping(value = "/search/index/indices", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/index/indices", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   ResponseEntity<FolioCreateIndexResponse> createIndex(@RequestBody CreateIndexRequest createIndexRequest);
 
 }

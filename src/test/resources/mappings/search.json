@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "POST",
-        "url": "/search/search/index/indices"
+        "url": "/search/index/indices"
       },
       "response": {
         "status": 200,
