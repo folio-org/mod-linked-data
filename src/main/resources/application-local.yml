@@ -8,4 +8,4 @@ spring:
       client:
         config:
           search:
-            url: http://localhost:8085
+            url: http://localhost:8085/search

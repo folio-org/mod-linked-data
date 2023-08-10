@@ -2,7 +2,7 @@
   <configuration default="false" name="LinkedDataApplication [Local-Folio]" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.folio.linked.data.LinkedDataApplication" />
     <module name="mod-linked-data" />
-    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=folio,local,search" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=folio,search,local" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="org.folio.linked.data.*" />
