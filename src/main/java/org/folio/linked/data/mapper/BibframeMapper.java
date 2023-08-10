@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper;
 
-import static org.apache.commons.lang3.ObjectUtils.firstNonNull;
+import static org.apache.commons.lang3.StringUtils.firstNonEmpty;
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
@@ -99,8 +99,8 @@ public abstract class BibframeMapper {
       .filter(r -> PUBLICATION.equals(r.getType().getSimpleLabel()))
       .map(Resource::getDoc)
       .map(doc -> new BibframePublicationsInner()
-        .dateOfPublication(firstNonNull(getValue(doc, SIMPLE_DATE_PRED), getValue(doc, DATE_URL)))
-        .publisher(firstNonNull(getValue(doc, SIMPLE_AGENT_PRED), getValue(doc, SIMPLE_PLACE_PRED)))
+        .dateOfPublication(firstNonEmpty(getValue(doc, SIMPLE_DATE_PRED), getValue(doc, DATE_URL)))
+        .publisher(firstNonEmpty(getValue(doc, SIMPLE_AGENT_PRED), getValue(doc, SIMPLE_PLACE_PRED)))
       )
       .toList();
   }
