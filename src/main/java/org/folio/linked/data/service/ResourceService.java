@@ -1,19 +1,19 @@
 package org.folio.linked.data.service;
 
-import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 
 public interface ResourceService {
 
-  BibframeResponse createBibframe(BibframeRequest bibframeRequest);
+  Bibframe2Response createBibframe2(Bibframe2Request bibframeRequest);
 
-  BibframeResponse getBibframeById(Long id);
+  Bibframe2Response getBibframe2ById(Long id);
 
-  BibframeResponse updateBibframe(Long id, BibframeRequest bibframeUpdateRequest);
+  Bibframe2Response updateBibframe2(Long id, Bibframe2Request bibframeUpdateRequest);
 
-  void deleteBibframe(Long id);
+  void deleteBibframe2(Long id);
 
-  BibframeShortInfoPage getBibframeShortInfoPage(Integer pageNumber, Integer pageSize);
+  BibframeShortInfoPage getBibframe2ShortInfoPage(Integer pageNumber, Integer pageSize);
 
 }

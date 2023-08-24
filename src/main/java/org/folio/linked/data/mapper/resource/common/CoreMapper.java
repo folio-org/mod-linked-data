@@ -6,20 +6,20 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import lombok.NonNull;
 import org.apache.commons.lang3.function.TriFunction;
-import org.folio.linked.data.domain.dto.Property;
-import org.folio.linked.data.domain.dto.ProvisionActivity;
-import org.folio.linked.data.domain.dto.Url;
+import org.folio.linked.data.domain.dto.Property2;
+import org.folio.linked.data.domain.dto.ProvisionActivity2;
+import org.folio.linked.data.domain.dto.Url2;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 
 public interface CoreMapper {
 
-  Property toProperty(@NonNull Resource resource);
+  Property2 toProperty(@NonNull Resource resource);
 
-  ProvisionActivity toProvisionActivity(@NonNull Resource resource);
+  ProvisionActivity2 toProvisionActivity(@NonNull Resource resource);
 
-  Url toUrl(@NonNull Resource resource);
+  Url2 toUrl(@NonNull Resource resource);
 
   <T> void mapWithResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
                             @NonNull Consumer<T> consumer, @NonNull Class<T> destination);
@@ -27,7 +27,7 @@ public interface CoreMapper {
   <T> void addMappedResources(@NonNull SubResourceMapperUnit<T> subResourceMapperUnit, @NonNull Resource resource,
                               @NonNull String predicate, @NonNull T destination);
 
-  void addMappedProperties(@NonNull Resource s, @NonNull String pred, @NonNull Consumer<Property> consumer);
+  void addMappedProperties(@NonNull Resource s, @NonNull String pred, @NonNull Consumer<Property2> consumer);
 
   <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass);
 
@@ -42,11 +42,11 @@ public interface CoreMapper {
                                @NonNull Class<P> parentClass,
                                @NonNull TriFunction<T, String, Class<P>, Resource> mapping);
 
-  void mapPropertyEdges(List<Property> subProperties, @NonNull Resource source, @NonNull String predicate,
+  void mapPropertyEdges(List<Property2> subProperties, @NonNull Resource source, @NonNull String predicate,
                         @NonNull String resourceType);
 
-  Resource propertyToEntity(@NonNull Property property, String resourceType);
+  Resource propertyToEntity(@NonNull Property2 property, String resourceType);
 
-  Resource provisionActivityToEntity(@NonNull ProvisionActivity dto, String label, @NonNull String resourceType);
+  Resource provisionActivityToEntity(@NonNull ProvisionActivity2 dto, String label, @NonNull String resourceType);
 
 }

@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.domain.dto.Contribution;
-import org.folio.linked.data.domain.dto.Lookup;
-import org.folio.linked.data.domain.dto.PersonField;
+import org.folio.linked.data.domain.dto.Agent2;
+import org.folio.linked.data.domain.dto.Contribution2;
+import org.folio.linked.data.domain.dto.Lookup2;
+import org.folio.linked.data.domain.dto.PersonField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
@@ -24,22 +24,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PERSON, predicate = AGENT_PRED, dtoClass = PersonField.class)
+@MapperUnit(type = PERSON, predicate = AGENT_PRED, dtoClass = PersonField2.class)
 public class PersonMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
 
   @Override
-  public Contribution toDto(Resource source, Contribution destination) {
-    var agent = coreMapper.readResourceDoc(source, Agent.class);
-    destination.addAgentItem(new PersonField().person(agent));
+  public Contribution2 toDto(Resource source, Contribution2 destination) {
+    var agent = coreMapper.readResourceDoc(source, Agent2.class);
+    destination.addAgentItem(new PersonField2().person(agent));
     return destination;
   }
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    var agent = ((PersonField) dto).getPerson();
+    var agent = ((PersonField2) dto).getPerson();
     var resource = new Resource();
     resource.setLabel(PERSON_URL);
     resource.setType(resourceTypeService.get(PERSON));
@@ -48,8 +48,8 @@ public class PersonMapperUnit implements ContributionSubResourceMapperUnit {
     return resource;
   }
 
-  private JsonNode getDoc(Agent dto) {
-    var map = new HashMap<String, List<Lookup>>();
+  private JsonNode getDoc(Agent2 dto) {
+    var map = new HashMap<String, List<Lookup2>>();
     map.put(SAME_AS_PRED, dto.getSameAs());
     return coreMapper.toJson(map);
   }

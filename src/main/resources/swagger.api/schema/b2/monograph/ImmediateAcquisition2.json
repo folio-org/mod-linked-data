@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Immediate Acquisition Info",
+  "type": "object",
+  "properties": {
+    "applicableInstitution": {
+      "type": "array",
+      "items": {
+        "$ref": "property2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bflc/applicableInstitution"
+    },
+    "label": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://www.w3.org/2000/01/rdf-schema#label"
+    }
+  }
+}

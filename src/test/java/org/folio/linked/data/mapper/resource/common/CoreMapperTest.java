@@ -36,13 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.folio.linked.data.domain.dto.BibframeResponse;
-import org.folio.linked.data.domain.dto.Extent;
-import org.folio.linked.data.domain.dto.ImmediateAcquisition;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Property;
-import org.folio.linked.data.domain.dto.ProvisionActivity;
-import org.folio.linked.data.domain.dto.Url;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
+import org.folio.linked.data.domain.dto.Extent2;
+import org.folio.linked.data.domain.dto.ImmediateAcquisition2;
+import org.folio.linked.data.domain.dto.Instance2;
+import org.folio.linked.data.domain.dto.Property2;
+import org.folio.linked.data.domain.dto.ProvisionActivity2;
+import org.folio.linked.data.domain.dto.Url2;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
@@ -96,7 +96,7 @@ class CoreMapperTest {
     var property = coreMapper.toProperty(resource);
 
     // then
-    assertThat(property, is(new Property()));
+    assertThat(property, is(new Property2()));
   }
 
   @Test
@@ -136,7 +136,7 @@ class CoreMapperTest {
     var provisionActivity = coreMapper.toProvisionActivity(resource);
 
     // then
-    assertThat(provisionActivity, is(new ProvisionActivity()));
+    assertThat(provisionActivity, is(new ProvisionActivity2()));
   }
 
   @Test
@@ -191,7 +191,7 @@ class CoreMapperTest {
     var url = coreMapper.toUrl(resource);
 
     // then
-    assertThat(url, is(new Url()));
+    assertThat(url, is(new Url2()));
   }
 
   @Test
@@ -218,7 +218,7 @@ class CoreMapperTest {
     // given
     SubResourceMapperUnit subResourceMapperUnit = null;
     String predicate = null;
-    var destination = new Extent();
+    var destination = new Extent2();
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -233,7 +233,7 @@ class CoreMapperTest {
     // given
     Resource source = null;
     var predicate = "predicate";
-    var destination = new Extent();
+    var destination = new Extent2();
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -248,7 +248,7 @@ class CoreMapperTest {
                                                                 @Mock Resource source) {
     // given
     String predicate = null;
-    var destination = new Extent();
+    var destination = new Extent2();
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -275,7 +275,7 @@ class CoreMapperTest {
 
   @Test
   void addMappedResources_shouldAddMappedResources_ifGivenDataIsCorrect(
-    @Mock NoteMapperUnit<Extent> subResourceMapperUnit) {
+    @Mock NoteMapperUnit<Extent2> subResourceMapperUnit) {
     // given
     var predicate = "predicate";
     var targetResource = new Resource().setLabel("target");
@@ -285,7 +285,7 @@ class CoreMapperTest {
       .add(new ResourceEdge(source, targetResource, new Predicate(predicate)));
     source.getOutgoingEdges()
       .add(new ResourceEdge(source, notTargetResource, new Predicate("not " + predicate)));
-    var destination = new Extent();
+    var destination = new Extent2();
 
     // when
     coreMapper.addMappedResources(subResourceMapperUnit, source, predicate, destination);
@@ -296,13 +296,13 @@ class CoreMapperTest {
 
   @Test
   void mapWithResources_shouldThrowNpe_ifGivenSubResourceMapperIsNull(@Mock Resource resource,
-                                                                      @Mock Consumer<Instance> consumer) {
+                                                                      @Mock Consumer<Instance2> consumer) {
     // given
     SubResourceMapper subResourceMapper = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapWithResources(subResourceMapper, resource, consumer, Instance.class));
+      () -> coreMapper.mapWithResources(subResourceMapper, resource, consumer, Instance2.class));
 
     // then
     assertThat(thrown.getMessage(), is("subResourceMapper is marked non-null but is null"));
@@ -310,13 +310,13 @@ class CoreMapperTest {
 
   @Test
   void mapWithResources_shouldThrowNpe_ifGivenResourceIsNull(@Mock SubResourceMapper subResourceMapper,
-                                                             @Mock Consumer<Instance> consumer) {
+                                                             @Mock Consumer<Instance2> consumer) {
     // given
     Resource resource = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapWithResources(subResourceMapper, resource, consumer, Instance.class));
+      () -> coreMapper.mapWithResources(subResourceMapper, resource, consumer, Instance2.class));
 
     // then
     assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
@@ -326,11 +326,11 @@ class CoreMapperTest {
   void mapWithResources_shouldThrowNpe_ifGivenConsumerIsNull(@Mock SubResourceMapper subResourceMapper,
                                                              @Mock Resource resource) {
     // given
-    Consumer<Instance> consumer = null;
+    Consumer<Instance2> consumer = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapWithResources(subResourceMapper, resource, consumer, Instance.class));
+      () -> coreMapper.mapWithResources(subResourceMapper, resource, consumer, Instance2.class));
 
     // then
     assertThat(thrown.getMessage(), is("consumer is marked non-null but is null"));
@@ -338,7 +338,7 @@ class CoreMapperTest {
 
   @Test
   void mapWithResources_shouldThrowNpe_ifGivenDestinationIsNull(@Mock SubResourceMapper subResourceMapper,
-                                                                @Mock Consumer<Instance> consumer,
+                                                                @Mock Consumer<Instance2> consumer,
                                                                 @Mock Resource resource) {
     // given
     Class destination = null;
@@ -355,11 +355,11 @@ class CoreMapperTest {
   void mapWithResources_shouldAddDestinationObjectToGivenConsumer_ifGivenResourceIsEmpty(
     @Mock SubResourceMapper subResourceMapper) {
     // given
-    var bibframeResponse = new BibframeResponse();
+    var bibframeResponse = new Bibframe2Response();
     var resource = new Resource();
 
     // when
-    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance.class);
+    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance2.class);
 
     // then
     assertThat(bibframeResponse.getInstance(), hasSize(1));
@@ -369,12 +369,12 @@ class CoreMapperTest {
   void mapWithResources_shouldAddDestinationObjectToGivenConsumer_ifGivenResourceContainsDoc(
     @Mock SubResourceMapper subResourceMapper) {
     // given
-    var bibframeResponse = new BibframeResponse();
+    var bibframeResponse = new Bibframe2Response();
     var node = OBJECT_MAPPER.createObjectNode();
     var resource = new Resource().setDoc(node);
 
     // when
-    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance.class);
+    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance2.class);
 
     // then
     assertThat(bibframeResponse.getInstance(), hasSize(1));
@@ -384,7 +384,7 @@ class CoreMapperTest {
   void mapWithResources_shouldAddDestinationObjectToGivenConsumerAndMapEdge_ifGivenResourceContainsDocAndEdge(
     @Mock SubResourceMapper subResourceMapper) {
     // given
-    var bibframeResponse = new BibframeResponse();
+    var bibframeResponse = new Bibframe2Response();
     var node = OBJECT_MAPPER.createObjectNode();
     var resource = new Resource().setDoc(node);
     var target = new Resource().setLabel("target");
@@ -392,15 +392,15 @@ class CoreMapperTest {
     resource.setOutgoingEdges(Set.of(edge));
 
     // when
-    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance.class);
+    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance2.class);
 
     // then
     assertThat(bibframeResponse.getInstance(), hasSize(1));
-    verify(subResourceMapper).toDto(eq(edge), any(Instance.class));
+    verify(subResourceMapper).toDto(eq(edge), any(Instance2.class));
   }
 
   @Test
-  void addMappedProperties_shouldThrowNpe_ifGivenResourceIsNull(@Mock Consumer<Property> consumer) {
+  void addMappedProperties_shouldThrowNpe_ifGivenResourceIsNull(@Mock Consumer<Property2> consumer) {
     // given
     Resource resource = null;
     var predicate = "predicate";
@@ -414,7 +414,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void addMappedProperties_shouldThrowNpe_ifGivenPredicateIsNull(@Mock Consumer<Property> consumer) {
+  void addMappedProperties_shouldThrowNpe_ifGivenPredicateIsNull(@Mock Consumer<Property2> consumer) {
     // given
     var resource = new Resource();
     String predicate = null;
@@ -432,7 +432,7 @@ class CoreMapperTest {
     // given
     var resource = new Resource();
     var predicate = "predicate";
-    Consumer<Property> consumer = null;
+    Consumer<Property2> consumer = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -447,7 +447,7 @@ class CoreMapperTest {
     // given
     var resource = new Resource();
     var predicate = "predicate";
-    var immediateAcquisition = new ImmediateAcquisition();
+    var immediateAcquisition = new ImmediateAcquisition2();
 
     // when
     coreMapper.addMappedProperties(resource, predicate, immediateAcquisition::addApplicableInstitutionItem);
@@ -463,7 +463,7 @@ class CoreMapperTest {
     resource.setOutgoingEdges(
       Set.of(new ResourceEdge(resource, new Resource(), new Predicate("notExpectedPredicate"))));
     var predicate = "predicate";
-    var immediateAcquisition = new ImmediateAcquisition();
+    var immediateAcquisition = new ImmediateAcquisition2();
 
     // when
     coreMapper.addMappedProperties(resource, predicate, immediateAcquisition::addApplicableInstitutionItem);
@@ -480,7 +480,7 @@ class CoreMapperTest {
     var target = new Resource();
     resource.setOutgoingEdges(Set.of(new ResourceEdge(resource, target, new Predicate(predicate))));
 
-    var immediateAcquisition = new ImmediateAcquisition();
+    var immediateAcquisition = new ImmediateAcquisition2();
 
     // when
     coreMapper.addMappedProperties(resource, predicate, immediateAcquisition::addApplicableInstitutionItem);
@@ -497,7 +497,7 @@ class CoreMapperTest {
     var target = new Resource().setDoc(getPropertyNode("id", "label", "uri"));
     resource.setOutgoingEdges(Set.of(new ResourceEdge(resource, target, new Predicate(predicate))));
 
-    var immediateAcquisition = new ImmediateAcquisition();
+    var immediateAcquisition = new ImmediateAcquisition2();
 
     // when
     coreMapper.addMappedProperties(resource, predicate, immediateAcquisition::addApplicableInstitutionItem);
@@ -513,7 +513,7 @@ class CoreMapperTest {
   void readResourceDoc_shouldThrowNpe_ifGivenResourceIsNull() {
     // given
     Resource resource = null;
-    var dtoClass = Instance.class;
+    var dtoClass = Instance2.class;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -541,13 +541,13 @@ class CoreMapperTest {
   void readResourceDoc_shouldReturnEmptyDto_ifGivenResourceHasNoDoc() {
     // given
     var resource = new Resource();
-    var dtoClass = Property.class;
+    var dtoClass = Property2.class;
 
     // when
     var result = coreMapper.readResourceDoc(resource, dtoClass);
 
     // then
-    assertThat(result, is(new Property()));
+    assertThat(result, is(new Property2()));
   }
 
   @Test
@@ -555,7 +555,7 @@ class CoreMapperTest {
     // given
     var node = getPropertyNode("id", "label", "uri");
     var resource = new Resource().setDoc(node);
-    var dtoClass = Property.class;
+    var dtoClass = Property2.class;
 
     // when
     var result = coreMapper.readResourceDoc(resource, dtoClass);
@@ -819,8 +819,8 @@ class CoreMapperTest {
   void mapResourceEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndNoType(
     @Mock InnerResourceMapper mapper) {
     // given
-    var dto1 = new Property().id("id").label("label").uri("uri");
-    var dto2 = new Property().id("id2").label("label2").uri("uri2");
+    var dto1 = new Property2().id("id").label("label").uri("uri");
+    var dto2 = new Property2().id("id2").label("label2").uri("uri2");
     var predicate = "predicate";
     var expectedPredicate = new Predicate(predicate);
     doReturn(expectedPredicate).when(predicateService).get(predicate);
@@ -847,8 +847,8 @@ class CoreMapperTest {
   void mapResourceEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndType(
     @Mock InnerResourceMapper mapper) {
     // given
-    var dto1 = new Property().id("id").label("label").uri("uri");
-    var dto2 = new Property().id("id2").label("label2").uri("uri2");
+    var dto1 = new Property2().id("id").label("label").uri("uri");
+    var dto2 = new Property2().id("id2").label("label2").uri("uri2");
     var predicate = "predicate";
     var expectedPredicate = new Predicate(predicate);
     doReturn(expectedPredicate).when(predicateService).get(predicate);
@@ -878,7 +878,7 @@ class CoreMapperTest {
     var dtoList = new ArrayList<>();
     Resource source = null;
     var predicate = "predicate";
-    var parent = Instance.class;
+    var parent = Instance2.class;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -894,7 +894,7 @@ class CoreMapperTest {
     var dtoList = new ArrayList<>();
     var source = new Resource();
     String predicate = null;
-    var parent = Instance.class;
+    var parent = Instance2.class;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -926,7 +926,7 @@ class CoreMapperTest {
     var dtoList = new ArrayList<>();
     var source = new Resource();
     var predicate = "predicate";
-    var parent = Instance.class;
+    var parent = Instance2.class;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -942,7 +942,7 @@ class CoreMapperTest {
     List dtoList = null;
     var source = new Resource();
     var predicate = "predicate";
-    var parent = Instance.class;
+    var parent = Instance2.class;
 
     // when
     coreMapper.mapResourceEdges(dtoList, source, predicate, parent, mapper::toEntity);
@@ -958,7 +958,7 @@ class CoreMapperTest {
     var dtoList = new ArrayList<>();
     var source = new Resource();
     var predicate = "predicate";
-    var parent = Instance.class;
+    var parent = Instance2.class;
 
     // when
     coreMapper.mapResourceEdges(dtoList, source, predicate, parent, mapper::toEntity);
@@ -972,10 +972,10 @@ class CoreMapperTest {
   void mapResourceEdges2_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmpty(
     @Mock SubResourceMapper mapper) {
     // given
-    var dto1 = new Property().id("id").label("label").uri("uri");
-    var dto2 = new Property().id("id2").label("label2").uri("uri2");
+    var dto1 = new Property2().id("id").label("label").uri("uri");
+    var dto2 = new Property2().id("id2").label("label2").uri("uri2");
     var predicate = "predicate";
-    var parent = Instance.class;
+    var parent = Instance2.class;
     var expectedPredicate = new Predicate(predicate);
     doReturn(expectedPredicate).when(predicateService).get(predicate);
     var expectedTarget1 = new Resource().setLabel("expectedTarget1").setResourceHash(111L);
@@ -1000,7 +1000,7 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldThrowNpe_ifGivenSourceIsNull() {
     // given
-    var subProperties = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property2>();
     Resource source = null;
     var predicate = "predicate";
     var type = "type";
@@ -1016,7 +1016,7 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldThrowNpe_ifGivenPredicateIsNull() {
     // given
-    var subProperties = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property2>();
     var source = new Resource();
     String predicate = null;
     var type = "type";
@@ -1032,7 +1032,7 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldThrowNpe_ifGivenTypeIsNull() {
     // given
-    var subProperties = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property2>();
     var source = new Resource();
     var predicate = "predicate";
     String type = null;
@@ -1048,7 +1048,7 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldDoNothing_ifGivenDtoListIsNull() {
     // given
-    List<Property> subProperties = null;
+    List<Property2> subProperties = null;
     var source = new Resource();
     var predicate = "predicate";
     var type = "type";
@@ -1063,7 +1063,7 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldDoNothing_ifGivenDtoListIsEmpty() {
     // given
-    var subProperties = new ArrayList<Property>();
+    var subProperties = new ArrayList<Property2>();
     var source = new Resource();
     var predicate = "predicate";
     var type = "type";
@@ -1078,7 +1078,7 @@ class CoreMapperTest {
   @Test
   void mapPropertyEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmpty() {
     // given
-    var dto1 = new Property().id("id").label("label").uri("uri");
+    var dto1 = new Property2().id("id").label("label").uri("uri");
     var predicate = "predicate";
     var expectedPredicate = new Predicate(predicate);
     doReturn(expectedPredicate).when(predicateService).get(predicate);
@@ -1090,7 +1090,7 @@ class CoreMapperTest {
       .setType(expectedType)
       .setDoc(propertyToDoc(dto1));
     expectedTarget1.setResourceHash(coreMapper.hash(expectedTarget1));
-    var dto2 = new Property().id("id2").label("label2").uri("uri2");
+    var dto2 = new Property2().id("id2").label("label2").uri("uri2");
     var expectedTarget2 = new Resource()
       .setLabel(dto2.getLabel())
       .setType(expectedType)
@@ -1114,7 +1114,7 @@ class CoreMapperTest {
   @Test
   void propertyToEntity_shouldThrowNpe_ifGivenPropertyIsNull() {
     // given
-    Property property = null;
+    Property2 property = null;
     var type = "type";
 
     // when
@@ -1128,7 +1128,7 @@ class CoreMapperTest {
   @Test
   void propertyToEntity_shouldThrowNpe_ifGivenResourceTypeIsNull() {
     // given
-    var property = new Property();
+    var property = new Property2();
     String type = null;
 
     // when
@@ -1142,7 +1142,7 @@ class CoreMapperTest {
   @Test
   void propertyToEntity_shouldReturnCorrectEntity_ifGivenPropertyAndTypeNotNull() {
     // given
-    var property = random(Property.class);
+    var property = random(Property2.class);
     var type = "type";
     var expectedType = new ResourceType().setSimpleLabel(type);
     doReturn(expectedType).when(resourceTypeService).get(type);
@@ -1160,7 +1160,7 @@ class CoreMapperTest {
   @Test
   void propertyToEntity_shouldReturnCorrectEntity_ifGivenPropertyIsEmptyAndTypeNotNull() {
     // given
-    var property = new Property();
+    var property = new Property2();
     var type = "type";
     var expectedType = new ResourceType().setSimpleLabel(type);
     doReturn(expectedType).when(resourceTypeService).get(type);
@@ -1178,7 +1178,7 @@ class CoreMapperTest {
   @Test
   void provisionActivityToEntity_shouldThrowNpe_ifGivenProvisionActivityIsNull() {
     // given
-    ProvisionActivity dto = null;
+    ProvisionActivity2 dto = null;
     var label = "label";
     var type = "type";
 
@@ -1193,7 +1193,7 @@ class CoreMapperTest {
   @Test
   void provisionActivityToEntity_shouldThrowNpe_ifGivenResourceTypeIsNull() {
     // given
-    var dto = new ProvisionActivity();
+    var dto = new ProvisionActivity2();
     var label = "label";
     String type = null;
 
@@ -1208,7 +1208,7 @@ class CoreMapperTest {
   @Test
   void provisionActivityToEntity_shouldReturnCorrectEntity_ifGivenDtoAndTypeNotNull() {
     // given
-    var place1 = new Property().id("id1").label("label1").uri("uri1");
+    var place1 = new Property2().id("id1").label("label1").uri("uri1");
     var type = "type";
     var expectedType = new ResourceType().setSimpleLabel(type);
     doReturn(expectedType).when(resourceTypeService).get(type);
@@ -1222,14 +1222,14 @@ class CoreMapperTest {
       .setDoc(propertyToDoc(place1));
     expectedTarget1
       .setResourceHash(coreMapper.hash(expectedTarget1));
-    var place2 = new Property().id("id2").label("label2").uri("uri2");
+    var place2 = new Property2().id("id2").label("label2").uri("uri2");
     var expectedTarget2 = new Resource()
       .setType(expectedPlaceType)
       .setLabel(place2.getLabel())
       .setDoc(propertyToDoc(place2));
     expectedTarget2
       .setResourceHash(coreMapper.hash(expectedTarget2));
-    var dto = new ProvisionActivity()
+    var dto = new ProvisionActivity2()
       .date(List.of("date1", "date2"))
       .simpleAgent(List.of("agent1", "agent2"))
       .simpleDate(List.of("s-date1", "s-date2"))
@@ -1256,7 +1256,7 @@ class CoreMapperTest {
   @Test
   void provisionActivityToEntity_shouldReturnCorrectEntity_ifGivenDtoAndTypeNotNullButLabelIsNull() {
     // given
-    var place1 = new Property().id("id1").uri("uri1");
+    var place1 = new Property2().id("id1").uri("uri1");
     var type = "type";
     var expectedType = new ResourceType().setSimpleLabel(type);
     doReturn(expectedType).when(resourceTypeService).get(type);
@@ -1270,14 +1270,14 @@ class CoreMapperTest {
       .setDoc(propertyToDoc(place1));
     expectedTarget1
       .setResourceHash(coreMapper.hash(expectedTarget1));
-    var place2 = new Property().id("id2").uri("uri2");
+    var place2 = new Property2().id("id2").uri("uri2");
     var expectedTarget2 = new Resource()
       .setType(expectedPlaceType)
       .setLabel(PLACE_COMPONENTS)
       .setDoc(propertyToDoc(place2));
     expectedTarget2
       .setResourceHash(coreMapper.hash(expectedTarget2));
-    var dto = new ProvisionActivity()
+    var dto = new ProvisionActivity2()
       .date(List.of("date1", "date2"))
       .simpleAgent(List.of("agent1", "agent2"))
       .simpleDate(List.of("s-date1", "s-date2"))

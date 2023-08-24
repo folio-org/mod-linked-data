@@ -26,8 +26,8 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
-import org.folio.linked.data.domain.dto.Property;
-import org.folio.linked.data.domain.dto.ProvisionActivity;
+import org.folio.linked.data.domain.dto.Property2;
+import org.folio.linked.data.domain.dto.ProvisionActivity2;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.spring.integration.XOkapiHeaders;
@@ -148,7 +148,7 @@ public class TestUtil {
     return OBJECT_MAPPER.convertValue(map, JsonNode.class);
   }
 
-  public static JsonNode propertyToDoc(Property property) {
+  public static JsonNode propertyToDoc(Property2 property) {
     var map = new HashMap<String, String>();
     map.put(PROPERTY_ID, property.getId());
     map.put(PROPERTY_LABEL, property.getLabel());
@@ -156,7 +156,7 @@ public class TestUtil {
     return OBJECT_MAPPER.convertValue(map, JsonNode.class);
   }
 
-  public static JsonNode provisionActivityToDoc(ProvisionActivity dto) {
+  public static JsonNode provisionActivityToDoc(ProvisionActivity2 dto) {
     var map = new HashMap<String, List<String>>();
     map.put(DATE_URL, dto.getDate());
     map.put(SIMPLE_AGENT_PRED, dto.getSimpleAgent());

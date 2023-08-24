@@ -5,9 +5,9 @@ import static org.folio.linked.data.util.BibframeConstants.LCC;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.ClassificationLcc;
-import org.folio.linked.data.domain.dto.ClassificationLccField;
-import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.ClassificationLcc2;
+import org.folio.linked.data.domain.dto.ClassificationLccField2;
+import org.folio.linked.data.domain.dto.Work2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.work.sub.WorkSubResourceMapperUnit;
@@ -22,11 +22,11 @@ public class LccMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Work toDto(Resource source, Work destination) {
-    var lcc = coreMapper.readResourceDoc(source, ClassificationLcc.class);
+  public Work2 toDto(Resource source, Work2 destination) {
+    var lcc = coreMapper.readResourceDoc(source, ClassificationLcc2.class);
     coreMapper.addMappedProperties(source, ASSIGNER_PRED, lcc::addAssignerItem);
     coreMapper.addMappedProperties(source, STATUS_PRED, lcc::addStatusItem);
-    destination.addClassificationItem(new ClassificationLccField().classificationLcc(lcc));
+    destination.addClassificationItem(new ClassificationLccField2().classificationLcc(lcc));
     return destination;
   }
 

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.ValidationException;
@@ -34,7 +34,7 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
   }
 
   @Override
-  public BibframeResponse toDto(@NonNull Resource source, @NonNull BibframeResponse destination) {
+  public Bibframe2Response toDto(@NonNull Resource source, @NonNull Bibframe2Response destination) {
     return getMapperUnit(source.getType().getSimpleLabel()).toDto(source, destination);
   }
 

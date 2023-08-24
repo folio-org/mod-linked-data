@@ -27,9 +27,9 @@ import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.function.TriFunction;
-import org.folio.linked.data.domain.dto.Property;
-import org.folio.linked.data.domain.dto.ProvisionActivity;
-import org.folio.linked.data.domain.dto.Url;
+import org.folio.linked.data.domain.dto.Property2;
+import org.folio.linked.data.domain.dto.ProvisionActivity2;
+import org.folio.linked.data.domain.dto.Url2;
 import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
@@ -51,18 +51,18 @@ public class CoreMapperImpl implements CoreMapper {
 
 
   @Override
-  public Property toProperty(@NonNull Resource resource) {
-    return readResourceDoc(resource, Property.class);
+  public Property2 toProperty(@NonNull Resource resource) {
+    return readResourceDoc(resource, Property2.class);
   }
 
   @Override
-  public ProvisionActivity toProvisionActivity(@NonNull Resource resource) {
-    return readResourceDoc(resource, ProvisionActivity.class);
+  public ProvisionActivity2 toProvisionActivity(@NonNull Resource resource) {
+    return readResourceDoc(resource, ProvisionActivity2.class);
   }
 
   @Override
-  public Url toUrl(@NonNull Resource resource) {
-    return readResourceDoc(resource, Url.class);
+  public Url2 toUrl(@NonNull Resource resource) {
+    return readResourceDoc(resource, Url2.class);
   }
 
   @Override
@@ -83,12 +83,12 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public void addMappedProperties(@NonNull Resource resource, @NonNull String predicate,
-                                  @NonNull Consumer<Property> consumer) {
+                                  @NonNull Consumer<Property2> consumer) {
     resource.getOutgoingEdges().stream()
       .filter(re -> predicate.equals(re.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
       .filter(r -> nonNull(r.getDoc()))
-      .map(r -> readResourceDoc(r, Property.class))
+      .map(r -> readResourceDoc(r, Property2.class))
       .forEach(consumer);
   }
 
@@ -149,7 +149,7 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public void mapPropertyEdges(List<Property> subProperties, @NonNull Resource source, @NonNull String predicateLabel,
+  public void mapPropertyEdges(List<Property2> subProperties, @NonNull Resource source, @NonNull String predicateLabel,
                                @NonNull String resourceType) {
     if (nonNull(subProperties)) {
       var predicate = predicateService.get(predicateLabel);
@@ -161,7 +161,7 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public Resource propertyToEntity(@NonNull Property property, @NonNull String resourceType) {
+  public Resource propertyToEntity(@NonNull Property2 property, @NonNull String resourceType) {
     var resource = new Resource();
     resource.setLabel(nonNull(property.getLabel()) ? property.getLabel() : resourceType);
     resource.setType(resourceTypeService.get(resourceType));
@@ -171,7 +171,7 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public Resource provisionActivityToEntity(@NonNull ProvisionActivity dto, String label,
+  public Resource provisionActivityToEntity(@NonNull ProvisionActivity2 dto, String label,
                                             @NonNull String resourceType) {
     Resource resource = new Resource();
     resource.setLabel(nonNull(label) ? label : resourceType);
@@ -182,7 +182,7 @@ public class CoreMapperImpl implements CoreMapper {
     return resource;
   }
 
-  private JsonNode provisionActivityToDoc(ProvisionActivity dto) {
+  private JsonNode provisionActivityToDoc(ProvisionActivity2 dto) {
     var map = new HashMap<String, List<String>>();
     map.put(DATE_URL, dto.getDate());
     map.put(SIMPLE_AGENT_PRED, dto.getSimpleAgent());
@@ -191,7 +191,7 @@ public class CoreMapperImpl implements CoreMapper {
     return toJson(map);
   }
 
-  private JsonNode propertyToDoc(Property property) {
+  private JsonNode propertyToDoc(Property2 property) {
     var map = new HashMap<String, String>();
     map.put(PROPERTY_ID, property.getId());
     map.put(PROPERTY_LABEL, property.getLabel());

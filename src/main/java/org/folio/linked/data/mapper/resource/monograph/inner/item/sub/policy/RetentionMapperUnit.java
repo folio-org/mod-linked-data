@@ -3,9 +3,9 @@ package org.folio.linked.data.mapper.resource.monograph.inner.item.sub.policy;
 import static org.folio.linked.data.util.BibframeConstants.ITEM_RETENTION;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Item;
-import org.folio.linked.data.domain.dto.RetentionPolicy;
-import org.folio.linked.data.domain.dto.RetentionPolicyField;
+import org.folio.linked.data.domain.dto.Item2;
+import org.folio.linked.data.domain.dto.RetentionPolicy2;
+import org.folio.linked.data.domain.dto.RetentionPolicyField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.item.sub.ItemSubResourceMapperUnit;
@@ -20,9 +20,9 @@ public class RetentionMapperUnit implements ItemSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Item toDto(Resource source, Item destination) {
-    var policy = coreMapper.readResourceDoc(source, RetentionPolicy.class);
-    destination.addUsageAndAccessPolicyItem(new RetentionPolicyField().retentionPolicy(policy));
+  public Item2 toDto(Resource source, Item2 destination) {
+    var policy = coreMapper.readResourceDoc(source, RetentionPolicy2.class);
+    destination.addUsageAndAccessPolicyItem(new RetentionPolicyField2().retentionPolicy(policy));
     return destination;
   }
 }

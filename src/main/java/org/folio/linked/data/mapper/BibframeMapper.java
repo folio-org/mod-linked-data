@@ -18,8 +18,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;
-import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -48,13 +48,13 @@ public abstract class BibframeMapper {
 
   public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
 
-  public Resource map(BibframeRequest dto) {
+  public Resource map(Bibframe2Request dto) {
     var resource = profiledMapper.toEntity(dto);
     setEdgesId(resource);
     return resource;
   }
 
-  public BibframeResponse map(Resource resource) {
+  public Bibframe2Response map(Resource resource) {
     return profiledMapper.toDto(resource);
   }
 

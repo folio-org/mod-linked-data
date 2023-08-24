@@ -1,0 +1,340 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Instance info",
+  "type": "object",
+  "properties": {
+    "instanceOf": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "WorkField2",
+        "properties": {
+          "Work": {
+            "type": "object",
+            "$ref": "Work2.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Work"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/instanceOf"
+    },
+    "hasItem": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "ItemField2",
+        "properties": {
+          "Item": {
+            "type": "object",
+            "$ref": "Item2.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Item"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/hasItem"
+    },
+    "title": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "InstanceTitleField2",
+            "properties": {
+              "InstanceTitle": {
+                "type": "object",
+                "$ref": "InstanceTitle2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Title"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "VariantTitleField2",
+            "properties": {
+              "VariantTitle": {
+                "type": "object",
+                "$ref": "VariantTitle2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/VariantTitle"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ParallelTitleField2",
+            "properties": {
+              "ParallelTitle": {
+                "type": "object",
+                "$ref": "ParallelTitle2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/ParallelTitle"
+              }
+            }
+          }
+        ]
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/title"
+    },
+    "provisionActivity": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "PublicationField2",
+            "properties": {
+              "Publication": {
+                "type": "object",
+                "$ref": "ProvisionActivity2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Publication"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "DistributionField2",
+            "properties": {
+              "Distribution": {
+                "type": "object",
+                "$ref": "ProvisionActivity2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Distribution"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ManufactureField2",
+            "properties": {
+              "Manufacture": {
+                "type": "object",
+                "$ref": "ProvisionActivity2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Manufacture"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ProductionField2",
+            "properties": {
+              "Production": {
+                "type": "object",
+                "$ref": "ProvisionActivity2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Production"
+              }
+            }
+          }
+        ]
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/provisionActivity"
+    },
+    "contribution": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "ContributionField2",
+        "properties": {
+          "Contribution": {
+            "type": "object",
+            "$ref": "Contribution2.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Contribution"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/contribution"
+    },
+    "identifiedBy": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "LccnField2",
+            "properties": {
+              "Lccn": {
+                "type": "object",
+                "$ref": "Lccn2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Lccn"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "IsbnField2",
+            "properties": {
+              "Isbn": {
+                "type": "object",
+                "$ref": "Isbn2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Isbn"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "OtherIdentifierField2",
+            "properties": {
+              "Identifier": {
+                "type": "object",
+                "$ref": "IdentifierOther2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Identifier"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "LocalIdentifierField2",
+            "properties": {
+              "Local": {
+                "type": "object",
+                "$ref": "IdentifierLocal2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Local"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "EanField2",
+            "properties": {
+              "Ean": {
+                "type": "object",
+                "$ref": "Ean2.json",
+                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Ean"
+              }
+            }
+          }
+        ]
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/identifiedBy"
+    },
+    "note": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "NoteField2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
+    },
+    "supplementaryContent": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "SupplementaryContentField2",
+        "properties": {
+          "SupplementaryContent": {
+            "type": "object",
+            "$ref": "SupplementaryContent2.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/supplementaryContent"
+    },
+    "immediateAcquisition": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "ImmediateAcquisitionField2",
+        "properties": {
+          "ImmediateAcquisition": {
+            "type": "object",
+            "$ref": "ImmediateAcquisition2.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/ImmediateAcquisition"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/immediateAcquisition"
+    },
+    "extent": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "ExtentField2",
+        "properties": {
+          "Extent": {
+            "type": "object",
+            "$ref": "Extent2.json",
+            "x-json-property": "http://id.loc.gov/ontologies/bibframe/Extent"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/extent"
+    },
+    "electronicLocator": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "title": "UrlField2",
+        "properties": {
+          "Url": {
+            "type": "object",
+            "$ref": "Url2.json",
+            "x-json-property": "http://www.w3.org/2000/01/rdf-schema#Resource"
+          }
+        }
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/electronicLocator"
+    },
+    "responsibilityStatement": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/responsibilityStatement",
+      "description": "Statement of responsibility"
+    },
+    "editionStatement": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/editionStatement"
+    },
+    "copyrightDate": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/copyrightDate"
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/dimensions"
+    },
+    "projectProvisionDate": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bflc/projectedProvisionDate",
+      "description": "Projected publication date (YYMM)"
+    },
+    "issuance": {
+      "type": "array",
+      "items": {
+        "$ref": "property2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/issuance"
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "$ref": "property2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/media"
+    },
+    "carrier": {
+      "type": "array",
+      "items": {
+        "$ref": "property2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/carrier"
+    }
+  }
+}
+
+
+
+
+
+

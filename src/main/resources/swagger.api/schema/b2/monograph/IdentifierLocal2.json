@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Local Identifier Info",
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value"
+    },
+    "assigner": {
+      "type": "array",
+      "items": {
+        "$ref": "property2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/assigner"
+    }
+  }
+}

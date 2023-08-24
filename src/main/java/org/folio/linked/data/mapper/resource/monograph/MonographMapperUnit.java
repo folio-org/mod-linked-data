@@ -9,8 +9,8 @@ import static org.folio.linked.data.util.BibframeConstants.WORK;
 import static org.folio.linked.data.util.BibframeConstants.WORK_URL;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapperUnit;
@@ -33,7 +33,7 @@ public class MonographMapperUnit implements ProfiledMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Resource toEntity(BibframeRequest bibframeRequest) {
+  public Resource toEntity(Bibframe2Request bibframeRequest) {
     var bibframe = new Resource();
     bibframe.setType(resourceTypeService.get(MONOGRAPH));
     coreMapper.mapResourceEdges(bibframeRequest.getWork(), bibframe, WORK, WORK_URL, innerMapper::toEntity);
@@ -44,7 +44,7 @@ public class MonographMapperUnit implements ProfiledMapperUnit {
     return bibframe;
   }
 
-  private String getInstanceLabel(Resource  bibframe) {
+  private String getInstanceLabel(Resource bibframe) {
     return bibframe.getOutgoingEdges().stream()
       .filter(re -> INSTANCE_URL.equals(re.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
@@ -53,8 +53,8 @@ public class MonographMapperUnit implements ProfiledMapperUnit {
   }
 
   @Override
-  public BibframeResponse toDto(Resource resource) {
-    var response = new BibframeResponse().id(resource.getResourceHash());
+  public Bibframe2Response toDto(Resource resource) {
+    var response = new Bibframe2Response().id(resource.getResourceHash());
     resource.getOutgoingEdges().stream()
       .map(ResourceEdge::getTarget)
       .forEach(r -> innerMapper.toDto(r, response));

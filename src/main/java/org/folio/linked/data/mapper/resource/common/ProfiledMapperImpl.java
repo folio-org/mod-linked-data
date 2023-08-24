@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.SneakyThrows;
-import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.ValidationException;
@@ -34,7 +34,7 @@ public class ProfiledMapperImpl implements ProfiledMapper {
 
   @SneakyThrows
   @Override
-  public Resource toEntity(@NonNull BibframeRequest dto) {
+  public Resource toEntity(@NonNull Bibframe2Request dto) {
     try {
       return getMapperUnit(dto.getProfile()).toEntity(dto);
     } catch (BaseLinkedDataException blde) {
@@ -45,7 +45,7 @@ public class ProfiledMapperImpl implements ProfiledMapper {
   }
 
   @Override
-  public BibframeResponse toDto(@NonNull Resource resource) {
+  public Bibframe2Response toDto(@NonNull Resource resource) {
     var type = resource.getType().getSimpleLabel();
     var response = getMapperUnit(type).toDto(resource);
     response.setProfile(type);

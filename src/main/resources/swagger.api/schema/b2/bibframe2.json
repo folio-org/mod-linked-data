@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Bibframe base properties",
+  "type": "object",
+  "properties": {
+    "Work": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "monograph/Work2.json"
+          }
+        ]
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/Work"
+    },
+    "Instance": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "monograph/Instance2.json"
+          }
+        ]
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/Instance"
+    },
+    "Item": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "monograph/Item2.json"
+          }
+        ]
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/Item"
+    }
+  }
+}

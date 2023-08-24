@@ -12,10 +12,6 @@
           "type": "integer",
           "format": "int64",
           "description": "ID of the bibframe"
-        },
-        "profile": {
-          "type": "string",
-          "description": "Text ID of the bibframe profile"
         }
       }
     }
