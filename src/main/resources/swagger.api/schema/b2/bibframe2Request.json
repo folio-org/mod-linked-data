@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Create bibframe record request",
+  "allOf": [
+    {
+      "$ref": "bibframe2.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "profile": {
+          "type": "string",
+          "description": "Text ID of the bibframe profile"
+        }
+      }
+    }
+  ]
+}

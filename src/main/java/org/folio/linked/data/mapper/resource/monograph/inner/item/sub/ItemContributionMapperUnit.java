@@ -5,9 +5,9 @@ import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTIO
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Collection;
-import org.folio.linked.data.domain.dto.Item;
-import org.folio.linked.data.domain.dto.ItemContributionField;
+import org.folio.linked.data.domain.dto.Collection2;
+import org.folio.linked.data.domain.dto.Item2;
+import org.folio.linked.data.domain.dto.ItemContributionField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -15,17 +15,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(predicate = CONTRIBUTION_PRED, dtoClass = ItemContributionField.class)
+@MapperUnit(predicate = CONTRIBUTION_PRED, dtoClass = ItemContributionField2.class)
 public class ItemContributionMapperUnit implements ItemSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
 
   @Override
-  public Item toDto(Resource source, Item destination) {
-    var contribution = coreMapper.readResourceDoc(source, Collection.class);
+  public Item2 toDto(Resource source, Item2 destination) {
+    var contribution = coreMapper.readResourceDoc(source, Collection2.class);
     coreMapper.addMappedProperties(source, AGENT_PRED, contribution::addAgentItem);
     coreMapper.addMappedProperties(source, APPLICABLE_INSTITUTION_PRED, contribution::addApplicableInstitutionItem);
-    destination.addContributionItem(new ItemContributionField().contribution(contribution));
+    destination.addContributionItem(new ItemContributionField2().contribution(contribution));
     return destination;
   }
 

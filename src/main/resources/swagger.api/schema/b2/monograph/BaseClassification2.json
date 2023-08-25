@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Base Classification Fields",
+  "type": "object",
+  "properties": {
+    "assigner": {
+      "type": "array",
+      "items": {
+        "$ref": "property2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/assigner"
+    },
+    "classificationPortion": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/classificationPortion"
+    }
+  }
+}

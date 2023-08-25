@@ -9,8 +9,8 @@ import static org.folio.linked.data.util.Constants.IS_NOT_IN_THE_LIST_OF_SUPPORT
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
-import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
@@ -36,7 +36,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final KafkaSender kafkaSender;
 
   @Override
-  public BibframeResponse createBibframe(BibframeRequest bibframeRequest) {
+  public Bibframe2Response createBibframe2(Bibframe2Request bibframeRequest) {
     if (!bibframeProperties.getProfiles().contains(bibframeRequest.getProfile())) {
       throw new NotSupportedException(BIBFRAME_PROFILE + bibframeRequest.getProfile()
         + IS_NOT_IN_THE_LIST_OF_SUPPORTED + String.join(", ", bibframeProperties.getProfiles()));
@@ -51,29 +51,29 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
-  public BibframeResponse getBibframeById(Long id) {
+  public Bibframe2Response getBibframe2ById(Long id) {
     var resource = resourceRepo.findById(id).orElseThrow(() ->
       new NotFoundException(BIBFRAME_WITH_GIVEN_ID + id + IS_NOT_FOUND));
     return bibframeMapper.map(resource);
   }
 
   @Override
-  public BibframeResponse updateBibframe(Long id, BibframeRequest bibframeRequest) {
+  public Bibframe2Response updateBibframe2(Long id, Bibframe2Request bibframeRequest) {
     if (!resourceRepo.existsById(id)) {
       throw new NotFoundException(BIBFRAME_WITH_GIVEN_ID + id + IS_NOT_FOUND);
     }
-    deleteBibframe(id);
-    return createBibframe(bibframeRequest);
+    deleteBibframe2(id);
+    return createBibframe2(bibframeRequest);
   }
 
   @Override
-  public void deleteBibframe(Long id) {
+  public void deleteBibframe2(Long id) {
     resourceRepo.deleteById(id);
     kafkaSender.sendResourceDeleted(id);
   }
 
   @Override
-  public BibframeShortInfoPage getBibframeShortInfoPage(Integer pageNumber, Integer pageSize) {
+  public BibframeShortInfoPage getBibframe2ShortInfoPage(Integer pageNumber, Integer pageSize) {
     if (isNull(pageNumber)) {
       pageNumber = DEFAULT_PAGE_NUMBER;
     }

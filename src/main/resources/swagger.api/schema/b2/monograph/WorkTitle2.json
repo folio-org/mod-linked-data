@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Work Title Info",
+  "allOf": [
+    {
+      "$ref": "BaseTitle2.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "nonSortNum": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bflc/nonSortNum"
+        }
+      }
+    }
+  ]
+}

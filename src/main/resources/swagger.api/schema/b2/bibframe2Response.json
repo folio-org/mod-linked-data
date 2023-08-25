@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Bibframe base properties",
+  "allOf": [
+    {
+      "$ref": "bibframe2.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "ID of the bibframe"
+        },
+        "profile": {
+          "type": "string",
+          "description": "Text ID of the bibframe profile"
+        }
+      }
+    }
+  ]
+}

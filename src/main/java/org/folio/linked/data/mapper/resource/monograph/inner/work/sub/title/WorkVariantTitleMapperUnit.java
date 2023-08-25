@@ -4,9 +4,9 @@ import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.VariantTitle;
-import org.folio.linked.data.domain.dto.VariantTitleField;
-import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.VariantTitle2;
+import org.folio.linked.data.domain.dto.VariantTitleField2;
+import org.folio.linked.data.domain.dto.Work2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
@@ -20,13 +20,13 @@ import org.springframework.stereotype.Component;
 public class WorkVariantTitleMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final NoteMapperUnit<VariantTitle> noteMapper;
+  private final NoteMapperUnit<VariantTitle2> noteMapper;
 
   @Override
-  public Work toDto(Resource source, Work destination) {
-    var variantTitle = coreMapper.readResourceDoc(source, VariantTitle.class);
+  public Work2 toDto(Resource source, Work2 destination) {
+    var variantTitle = coreMapper.readResourceDoc(source, VariantTitle2.class);
     coreMapper.addMappedResources(noteMapper, source, NOTE_PRED, variantTitle);
-    destination.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    destination.addTitleItem(new VariantTitleField2().variantTitle(variantTitle));
     return destination;
   }
 

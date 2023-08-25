@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Other Classification Info",
+  "allOf": [
+    {
+      "$ref": "BaseClassification2.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "itemPortion": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/itemPortion"
+        }
+      }
+    }
+  ]
+}

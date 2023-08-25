@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Item Classification LLC Info",
+  "type": "object",
+  "properties": {
+    "classificationPortion": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/classificationPortion"
+    },
+    "itemPortion": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/itemPortion"
+    },
+    "note": {
+      "type": "array",
+      "items": {
+        "$ref": "property2.json"
+      },
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
+    }
+  }
+}

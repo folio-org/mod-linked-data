@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
-import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
@@ -57,7 +57,7 @@ class ResourceServiceTest {
   @Test
   void create_shouldPersistMappedBibframeAndSendItToKafka() {
     // given
-    var request = new BibframeRequest();
+    var request = new Bibframe2Request();
     request.setProfile(MONOGRAPH);
     when(bibframeProperties.getProfiles()).thenReturn(Set.of(MONOGRAPH));
     var mapped = new Resource().setResourceHash(12345L);
@@ -66,12 +66,12 @@ class ResourceServiceTest {
     when(resourceRepo.save(mapped)).thenReturn(persisted);
     var expectedIndex = new BibframeIndex(persisted.getResourceHash().toString());
     when(bibframeMapper.mapToIndex(persisted)).thenReturn(expectedIndex);
-    var expectedResponse = new BibframeResponse();
+    var expectedResponse = new Bibframe2Response();
     expectedResponse.setId(persisted.getResourceHash());
     when(bibframeMapper.map(persisted)).thenReturn(expectedResponse);
 
     // when
-    BibframeResponse response = resourceService.createBibframe(request);
+    Bibframe2Response response = resourceService.createBibframe2(request);
 
     // then
     verify(kafkaSender).sendResourceCreated(expectedIndex);
@@ -84,11 +84,11 @@ class ResourceServiceTest {
     var id = randomLong();
     var existedResource = randomResource();
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
-    var expectedResponse = random(BibframeResponse.class);
+    var expectedResponse = random(Bibframe2Response.class);
     when(bibframeMapper.map(existedResource)).thenReturn(expectedResponse);
 
     // when
-    var result = resourceService.getBibframeById(id);
+    var result = resourceService.getBibframe2ById(id);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -103,7 +103,7 @@ class ResourceServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> resourceService.getBibframeById(notExistedId)
+      () -> resourceService.getBibframe2ById(notExistedId)
     );
 
     // then
@@ -127,7 +127,7 @@ class ResourceServiceTest {
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
 
     // when
-    var result = resourceService.getBibframeShortInfoPage(pageNumber, pageSize);
+    var result = resourceService.getBibframe2ShortInfoPage(pageNumber, pageSize);
 
     // then
     assertThat(result).isEqualTo(expectedResult);
@@ -148,7 +148,7 @@ class ResourceServiceTest {
     doReturn(expectedResult).when(bibframeMapper).map(pageOfDto);
 
     // when
-    var result = resourceService.getBibframeShortInfoPage(null, null);
+    var result = resourceService.getBibframe2ShortInfoPage(null, null);
 
     // then
     assertThat(result).isEqualTo(expectedResult);
@@ -160,7 +160,7 @@ class ResourceServiceTest {
     var id = randomLong();
 
     // when
-    resourceService.deleteBibframe(id);
+    resourceService.deleteBibframe2(id);
 
     // then
     verify(resourceRepo).deleteById(id);

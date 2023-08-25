@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.domain.dto.Contribution;
-import org.folio.linked.data.domain.dto.JurisdictionField;
-import org.folio.linked.data.domain.dto.Lookup;
+import org.folio.linked.data.domain.dto.Agent2;
+import org.folio.linked.data.domain.dto.Contribution2;
+import org.folio.linked.data.domain.dto.JurisdictionField2;
+import org.folio.linked.data.domain.dto.Lookup2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
@@ -24,22 +24,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = JURISDICTION, predicate = AGENT_PRED, dtoClass = JurisdictionField.class)
+@MapperUnit(type = JURISDICTION, predicate = AGENT_PRED, dtoClass = JurisdictionField2.class)
 public class JurisdictionMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
 
   @Override
-  public Contribution toDto(Resource source, Contribution destination) {
-    var agent = coreMapper.readResourceDoc(source, Agent.class);
-    destination.addAgentItem(new JurisdictionField().jurisdiction(agent));
+  public Contribution2 toDto(Resource source, Contribution2 destination) {
+    var agent = coreMapper.readResourceDoc(source, Agent2.class);
+    destination.addAgentItem(new JurisdictionField2().jurisdiction(agent));
     return destination;
   }
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    var agent = ((JurisdictionField) dto).getJurisdiction();
+    var agent = ((JurisdictionField2) dto).getJurisdiction();
     var resource = new Resource();
     resource.setLabel(JURISDICTION_URL);
     resource.setType(resourceTypeService.get(JURISDICTION));
@@ -48,8 +48,8 @@ public class JurisdictionMapperUnit implements ContributionSubResourceMapperUnit
     return resource;
   }
 
-  private JsonNode getDoc(Agent dto) {
-    var map = new HashMap<String, List<Lookup>>();
+  private JsonNode getDoc(Agent2 dto) {
+    var map = new HashMap<String, List<Lookup2>>();
     map.put(SAME_AS_PRED, dto.getSameAs());
     return coreMapper.toJson(map);
   }

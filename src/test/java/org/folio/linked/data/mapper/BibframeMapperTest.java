@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.folio.linked.data.domain.dto.BibframeRequest;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapper;
 import org.folio.linked.data.model.entity.Predicate;
@@ -55,7 +55,7 @@ class BibframeMapperTest {
   @Test
   void map_shouldFillEdgesPk() {
     // given
-    var dto = new BibframeRequest();
+    var dto = new Bibframe2Request();
     var re1 = new ResourceEdge(new Resource().setResourceHash(111L), new Resource().setResourceHash(222L),
       new Predicate().setPredicateHash(333L));
     var re2 = new ResourceEdge(new Resource().setResourceHash(444L), new Resource().setResourceHash(555L),

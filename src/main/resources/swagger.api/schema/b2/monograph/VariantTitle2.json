@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Variant Title Info",
+  "allOf": [
+    {
+      "$ref": "BaseTitle2.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "NoteField2.json"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/note"
+        },
+        "date": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/date"
+        },
+        "subtitle": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/subtitle"
+        },
+        "variantType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://id.loc.gov/ontologies/bibframe/variantType"
+        }
+      }
+    }
+  ]
+}

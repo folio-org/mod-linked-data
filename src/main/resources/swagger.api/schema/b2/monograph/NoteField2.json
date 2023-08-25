@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "Note": {
+      "type": "object",
+      "$ref": "Note2.json",
+      "x-json-property": "http://id.loc.gov/ontologies/bibframe/Note"
+    }
+  }
+}

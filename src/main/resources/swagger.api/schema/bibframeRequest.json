@@ -4,15 +4,6 @@
   "allOf": [
     {
       "$ref": "bibframe.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "profile": {
-          "type": "string",
-          "description": "Text ID of the bibframe profile"
-        }
-      }
     }
   ]
 }

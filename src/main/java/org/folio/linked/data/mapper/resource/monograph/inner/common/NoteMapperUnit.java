@@ -15,13 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Extent;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Note;
-import org.folio.linked.data.domain.dto.NoteField;
-import org.folio.linked.data.domain.dto.ParallelTitle;
-import org.folio.linked.data.domain.dto.Url;
-import org.folio.linked.data.domain.dto.VariantTitle;
+import org.folio.linked.data.domain.dto.Extent2;
+import org.folio.linked.data.domain.dto.Instance2;
+import org.folio.linked.data.domain.dto.Note2;
+import org.folio.linked.data.domain.dto.NoteField2;
+import org.folio.linked.data.domain.dto.ParallelTitle2;
+import org.folio.linked.data.domain.dto.Url2;
+import org.folio.linked.data.domain.dto.VariantTitle2;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
@@ -34,28 +34,28 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = NOTE, predicate = NOTE_PRED, dtoClass = NoteField.class)
+@MapperUnit(type = NOTE, predicate = NOTE_PRED, dtoClass = NoteField2.class)
 public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private static final Set<Class> SUPPORTED_PARENTS =
-    Set.of(Instance.class, Extent.class, ParallelTitle.class, VariantTitle.class, Url.class);
+    Set.of(Instance2.class, Extent2.class, ParallelTitle2.class, VariantTitle2.class, Url2.class);
   private final CoreMapper coreMapper;
   private final DictionaryService<ResourceType> resourceTypeService;
 
   @Override
   public T toDto(Resource source, T destination) {
-    var note = coreMapper.readResourceDoc(source, Note.class);
+    var note = coreMapper.readResourceDoc(source, Note2.class);
     coreMapper.addMappedProperties(source, NOTE_TYPE_PRED, note::addNoteTypeItem);
-    var noteField = new NoteField().note(note);
-    if (destination instanceof Instance instance) {
+    var noteField = new NoteField2().note(note);
+    if (destination instanceof Instance2 instance) {
       instance.addNoteItem(noteField);
-    } else if (destination instanceof Extent extent) {
+    } else if (destination instanceof Extent2 extent) {
       extent.addNoteItem(noteField);
-    } else if (destination instanceof ParallelTitle parallelTitle) {
+    } else if (destination instanceof ParallelTitle2 parallelTitle) {
       parallelTitle.addNoteItem(noteField);
-    } else if (destination instanceof VariantTitle variantTitle) {
+    } else if (destination instanceof VariantTitle2 variantTitle) {
       variantTitle.addNoteItem(noteField);
-    } else if (destination instanceof Url url) {
+    } else if (destination instanceof Url2 url) {
       url.addNoteItem(noteField);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + destination.getClass().getSimpleName()
@@ -71,7 +71,7 @@ public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    var note = ((NoteField) dto).getNote();
+    var note = ((NoteField2) dto).getNote();
     var resource = new Resource();
     resource.setLabel(NOTE_URL);
     resource.setType(resourceTypeService.get(NOTE));
@@ -81,7 +81,7 @@ public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
     return resource;
   }
 
-  private JsonNode getDoc(Note note) {
+  private JsonNode getDoc(Note2 note) {
     var map = new HashMap<String, List<String>>();
     map.put(LABEL_PRED, note.getLabel());
     return coreMapper.toJson(map);

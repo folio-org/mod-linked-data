@@ -4,9 +4,9 @@ import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PR
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Item;
-import org.folio.linked.data.domain.dto.Url;
-import org.folio.linked.data.domain.dto.UrlField;
+import org.folio.linked.data.domain.dto.Item2;
+import org.folio.linked.data.domain.dto.Url2;
+import org.folio.linked.data.domain.dto.UrlField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
@@ -19,13 +19,13 @@ import org.springframework.stereotype.Component;
 public class ItemElectronicLocatorMapperUnit implements ItemSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final NoteMapperUnit<Url> noteMapper;
+  private final NoteMapperUnit<Url2> noteMapper;
 
   @Override
-  public Item toDto(Resource source, Item destination) {
+  public Item2 toDto(Resource source, Item2 destination) {
     var url = coreMapper.toUrl(source);
     coreMapper.addMappedResources(noteMapper, source, NOTE_PRED, url);
-    destination.addElectronicLocatorItem(new UrlField().url(url));
+    destination.addElectronicLocatorItem(new UrlField2().url(url));
     return destination;
   }
 }

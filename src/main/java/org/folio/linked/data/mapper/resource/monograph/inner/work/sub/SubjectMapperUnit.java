@@ -12,11 +12,11 @@ import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.PlaceField;
-import org.folio.linked.data.domain.dto.Subject;
-import org.folio.linked.data.domain.dto.TopicField;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkSubjectInner;
+import org.folio.linked.data.domain.dto.PlaceField2;
+import org.folio.linked.data.domain.dto.Subject2;
+import org.folio.linked.data.domain.dto.TopicField2;
+import org.folio.linked.data.domain.dto.Work2;
+import org.folio.linked.data.domain.dto.Work2SubjectInner;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
@@ -31,19 +31,19 @@ public class SubjectMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Work toDto(Resource source, Work destination) {
-    var subject = coreMapper.readResourceDoc(source, Subject.class);
+  public Work2 toDto(Resource source, Work2 destination) {
+    var subject = coreMapper.readResourceDoc(source, Subject2.class);
     coreMapper.addMappedProperties(source, SOURCE_PRED, subject::addSourceItem);
     coreMapper.addMappedProperties(source, COMPONENT_LIST_PRED, subject::addComponentListItem);
     destination.addSubjectItem(toWorkSubjectInner(source, subject));
     return destination;
   }
 
-  private WorkSubjectInner toWorkSubjectInner(Resource source, Subject subject) {
+  private Work2SubjectInner toWorkSubjectInner(Resource source, Subject2 subject) {
     if (Set.of(COMPONENTS, CHILDRENS_COMPONENTS, SUBJECT_WORK).contains(source.getType().getSimpleLabel())) {
-      return new TopicField().topic(subject);
+      return new TopicField2().topic(subject);
     } else if (PLACE_COMPONENTS.equals(source.getType().getSimpleLabel())) {
-      return new PlaceField().place(subject);
+      return new PlaceField2().place(subject);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + source.getType().getSimpleLabel() + IS_NOT_SUPPORTED);
     }
