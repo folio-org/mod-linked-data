@@ -3,7 +3,40 @@
   "description": "Bibframe base properties",
   "type": "object",
   "properties": {
-    "placeholder": {
+    "Work": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "monograph/Work.json"
+          }
+        ]
+      },
+      "x-json-property": "http://bibfra.me/vocab/lite/Work"
+    },
+    "Instance": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "monograph/Instance.json"
+          }
+        ]
+      },
+      "x-json-property": "http://bibfra.me/vocab/lite/Instance"
+    },
+    "Item": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "monograph/Item.json"
+          }
+        ]
+      },
+      "x-json-property": "http://bibfra.me/vocab/lite/Item"
+    },
+    "type": {
       "type": "string"
     }
   }

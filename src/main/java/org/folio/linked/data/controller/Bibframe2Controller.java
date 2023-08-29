@@ -37,7 +37,7 @@ public class Bibframe2Controller implements Bibframe2Api {
 
   @Override
   public ResponseEntity<Void> deleteBibframe2(Long id, String okapiTenant) {
-    resourceService.deleteBibframe2(id);
+    resourceService.deleteBibframe(id);
     return noContent().build();
   }
 

@@ -2,9 +2,9 @@ package org.folio.linked.data.mapper.resource.common;
 
 import static org.folio.linked.data.test.IsEqualJson.equalToJson;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.getBibframe2Sample;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.getPropertyNode;
-import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.folio.linked.data.test.TestUtil.propertyToDoc;
 import static org.folio.linked.data.test.TestUtil.provisionActivityToDoc;
 import static org.folio.linked.data.test.TestUtil.random;
@@ -705,19 +705,19 @@ class CoreMapperTest {
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromString() throws JsonProcessingException {
     // given
-    var json = getResourceSample();
+    var json = getBibframe2Sample();
 
     // when
     var jsonNode = coreMapper.toJson(json);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getResourceSample()));
+    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframe2Sample()));
   }
 
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromMap() throws JsonProcessingException {
     // given
-    var json = getResourceSample();
+    var json = getBibframe2Sample();
     var map = OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {
     });
 
@@ -725,7 +725,7 @@ class CoreMapperTest {
     var jsonNode = coreMapper.toJson(map);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getResourceSample()));
+    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframe2Sample()));
   }
 
   @Test

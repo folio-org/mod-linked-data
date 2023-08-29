@@ -1,14 +1,14 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
 import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_2;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
 
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = VARIANT_TITLE, predicate = INSTANCE_TITLE_PRED, dtoClass = VariantTitleField2.class)
+@MapperUnit(type = VARIANT_TITLE_URL, predicate = INSTANCE_TITLE_2_PRED, dtoClass = VariantTitleField2.class)
 public class InstanceVariantTitle2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
@@ -51,11 +51,9 @@ public class InstanceVariantTitle2MapperUnit implements Instance2SubResourceMapp
     var variantTitle = ((VariantTitleField2) dto).getVariantTitle();
     var resource = new Resource();
     resource.setLabel(VARIANT_TITLE_URL);
-    resource.setType(resourceTypeService.get(VARIANT_TITLE));
+    resource.setType(resourceTypeService.get(VARIANT_TITLE_2));
     resource.setDoc(getDoc(variantTitle));
-    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, NOTE, NOTE_PRED,
-      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
-    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, null, NOTE_PRED,
+    coreMapper.mapResourceEdges(variantTitle.getNote(), resource, NOTE_URL, NOTE_PRED,
       (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

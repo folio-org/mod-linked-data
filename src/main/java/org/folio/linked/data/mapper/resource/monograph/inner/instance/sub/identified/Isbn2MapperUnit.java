@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = IDENTIFIERS_ISBN, predicate = IDENTIFIED_BY_PRED, dtoClass = IsbnField2.class)
+@MapperUnit(type = IDENTIFIERS_ISBN_URL, predicate = IDENTIFIED_BY_PRED, dtoClass = IsbnField2.class)
 public class Isbn2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

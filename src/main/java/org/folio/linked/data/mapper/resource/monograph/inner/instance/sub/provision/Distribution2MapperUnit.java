@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = DISTRIBUTION, predicate = PROVISION_ACTIVITY_PRED, dtoClass = DistributionField2.class)
+@MapperUnit(type = DISTRIBUTION_URL, predicate = PROVISION_ACTIVITY_PRED, dtoClass = DistributionField2.class)
 public class Distribution2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

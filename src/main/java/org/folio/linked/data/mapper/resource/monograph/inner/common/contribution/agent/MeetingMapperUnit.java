@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = MEETING, predicate = AGENT_PRED, dtoClass = MeetingField2.class)
+@MapperUnit(type = MEETING_URL, predicate = AGENT_PRED, dtoClass = MeetingField2.class)
 public class MeetingMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

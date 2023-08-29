@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
 import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_2;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = NOTE, predicate = NOTE_PRED, dtoClass = NoteField2.class)
+@MapperUnit(type = NOTE_URL, predicate = NOTE_PRED, dtoClass = NoteField2.class)
 public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private static final Set<Class> SUPPORTED_PARENTS =
@@ -74,7 +74,7 @@ public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
     var note = ((NoteField2) dto).getNote();
     var resource = new Resource();
     resource.setLabel(NOTE_URL);
-    resource.setType(resourceTypeService.get(NOTE));
+    resource.setType(resourceTypeService.get(NOTE_2));
     resource.setDoc(getDoc(note));
     coreMapper.mapPropertyEdges(note.getNoteType(), resource, NOTE_TYPE_PRED, NOTE_TYPE_URI);
     resource.setResourceHash(coreMapper.hash(resource));

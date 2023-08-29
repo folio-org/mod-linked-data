@@ -9,21 +9,29 @@ import org.folio.linked.data.configuration.json.deserialization.instance.Contrib
 import org.folio.linked.data.configuration.json.deserialization.instance.IdentifiedBy2Deserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.ProvisionActivity2Deserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.Title2Deserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.TitleDeserializer;
 import org.folio.linked.data.domain.dto.AccessPolicyField2;
 import org.folio.linked.data.domain.dto.Bibframe2InstanceInner;
 import org.folio.linked.data.domain.dto.Bibframe2ItemInner;
 import org.folio.linked.data.domain.dto.Bibframe2WorkInner;
+import org.folio.linked.data.domain.dto.BibframeInstanceInner;
+import org.folio.linked.data.domain.dto.BibframeItemInner;
+import org.folio.linked.data.domain.dto.BibframeWorkInner;
 import org.folio.linked.data.domain.dto.ClassificationLccField2;
 import org.folio.linked.data.domain.dto.Contribution2AgentInner;
+import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Instance2;
 import org.folio.linked.data.domain.dto.Instance2IdentifiedByInner;
 import org.folio.linked.data.domain.dto.Instance2ProvisionActivityInner;
 import org.folio.linked.data.domain.dto.Instance2TitleInner;
+import org.folio.linked.data.domain.dto.InstanceTitleInner;
+import org.folio.linked.data.domain.dto.Item;
 import org.folio.linked.data.domain.dto.Item2;
 import org.folio.linked.data.domain.dto.Item2UsageAndAccessPolicyInner;
 import org.folio.linked.data.domain.dto.PlaceField2;
 import org.folio.linked.data.domain.dto.PrimaryContributionField2;
 import org.folio.linked.data.domain.dto.RelatedWorkField2;
+import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.Work2;
 import org.folio.linked.data.domain.dto.Work2ClassificationInner;
 import org.folio.linked.data.domain.dto.Work2ContributionInner;
@@ -48,6 +56,11 @@ public class ObjectMapperConfig {
 
   private Module monographModule() {
     var module = new SimpleModule();
+    module.addAbstractTypeMapping(BibframeWorkInner.class, Work.class);
+    module.addAbstractTypeMapping(BibframeInstanceInner.class, Instance.class);
+    module.addAbstractTypeMapping(BibframeItemInner.class, Item.class);
+    module.addDeserializer(InstanceTitleInner.class, new TitleDeserializer());
+
     module.addAbstractTypeMapping(Bibframe2WorkInner.class, Work2.class);
     module.addAbstractTypeMapping(Bibframe2InstanceInner.class, Instance2.class);
     module.addAbstractTypeMapping(Bibframe2ItemInner.class, Item2.class);

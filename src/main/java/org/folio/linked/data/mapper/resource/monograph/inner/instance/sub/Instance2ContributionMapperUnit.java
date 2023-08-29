@@ -1,7 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_URL;
 import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
@@ -30,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = CONTRIBUTION, predicate = CONTRIBUTION_PRED, dtoClass = ContributionField2.class)
+@MapperUnit(type = CONTRIBUTION_URL, predicate = CONTRIBUTION_PRED, dtoClass = ContributionField2.class)
 public class Instance2ContributionMapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
@@ -41,8 +40,8 @@ public class Instance2ContributionMapperUnit implements Instance2SubResourceMapp
   public Instance2 toDto(Resource source, Instance2 destination) {
     var contribution = coreMapper.readResourceDoc(source, Contribution2.class);
     getResourceEdge(source).ifPresent(re -> {
-      var typeLabel = re.getTarget().getType().getSimpleLabel();
-      var mapper = getMapperUnit(source, typeLabel, destination);
+      var typeUri = re.getTarget().getType().getTypeUri();
+      var mapper = getMapperUnit(source, typeUri, destination);
       coreMapper.addMappedResources(mapper, source, AGENT_PRED, contribution);
     });
     coreMapper.addMappedProperties(source, ROLE_PRED, contribution::addRoleItem);
@@ -64,15 +63,15 @@ public class Instance2ContributionMapperUnit implements Instance2SubResourceMapp
     return resource;
   }
 
-  private SubResourceMapperUnit<Contribution2> getMapperUnit(Resource source, String label, Instance2 destination) {
+  private SubResourceMapperUnit<Contribution2> getMapperUnit(Resource source, String type, Instance2 destination) {
     return mapperUnits.stream()
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
-        return AGENT_PRED.equals(annotation.predicate()) && label.equals(annotation.type());
+        return AGENT_PRED.equals(annotation.predicate()) && type.equals(annotation.type());
       })
       .findFirst()
       .map(map -> (SubResourceMapperUnit<Contribution2>) map)
-      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + source.getType().getSimpleLabel()
+      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + source.getType().getTypeUri()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + AGENT_PRED + RIGHT_SQUARE_BRACKET + AND
         + destination.getClass().getSimpleName()));
   }

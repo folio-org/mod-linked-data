@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = INSTANCE_TITLE, predicate = INSTANCE_TITLE_PRED, dtoClass = InstanceTitleField2.class)
+@MapperUnit(type = INSTANCE_TITLE_URL, predicate = INSTANCE_TITLE_2_PRED, dtoClass = InstanceTitleField2.class)
 public class InstanceTitle2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
@@ -45,7 +45,7 @@ public class InstanceTitle2MapperUnit implements Instance2SubResourceMapperUnit 
     var instanceTitle = ((InstanceTitleField2) dto).getInstanceTitle();
     var resource = new Resource();
     resource.setLabel(INSTANCE_TITLE_URL);
-    resource.setType(resourceTypeService.get(INSTANCE_TITLE));
+    resource.setType(resourceTypeService.get(INSTANCE_TITLE_2));
     resource.setDoc(getDoc(instanceTitle));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

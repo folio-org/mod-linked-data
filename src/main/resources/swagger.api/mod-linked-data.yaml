@@ -31,6 +31,7 @@ paths:
       operationId: getBibframeShortInfoPage
       description: Get page of bibframe short info
       parameters:
+        - $ref: '#/components/parameters/type'
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/pageNumber'
         - $ref: '#/components/parameters/pageSize'
@@ -233,6 +234,14 @@ components:
       description: Page size for paginated endpoint, default is 100
       schema:
         type: integer
+    type:
+      name: type
+      in: query
+      required: true
+      description: 'Bibframe resource type, for example: http://bibfra.me/vocab/marc/Monograph'
+      example: 'http://bibfra.me/vocab/marc/Monograph'
+      schema:
+        type: string
 
   schemas:
     errorResponse:

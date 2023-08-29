@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = FAMILY, predicate = AGENT_PRED, dtoClass = FamilyField2.class)
+@MapperUnit(type = FAMILY_URL, predicate = AGENT_PRED, dtoClass = FamilyField2.class)
 public class FamilyMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

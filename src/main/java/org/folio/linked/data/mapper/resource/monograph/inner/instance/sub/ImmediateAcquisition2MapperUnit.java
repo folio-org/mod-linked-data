@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = IMM_ACQUISITION, predicate = IMM_ACQUISITION_PRED, dtoClass = ImmediateAcquisitionField2.class)
+@MapperUnit(type = IMM_ACQUISITION_URI, predicate = IMM_ACQUISITION_PRED, dtoClass = ImmediateAcquisitionField2.class)
 public class ImmediateAcquisition2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

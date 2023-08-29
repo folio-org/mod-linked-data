@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = IDENTIFIERS_OTHER, predicate = IDENTIFIED_BY_PRED, dtoClass = OtherIdentifierField2.class)
+@MapperUnit(type = IDENTIFIERS_OTHER_URL, predicate = IDENTIFIED_BY_PRED, dtoClass = OtherIdentifierField2.class)
 public class IdentifierOther2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

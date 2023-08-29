@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = MANUFACTURE, predicate = PROVISION_ACTIVITY_PRED, dtoClass = ManufactureField2.class)
+@MapperUnit(type = MANUFACTURE_URL, predicate = PROVISION_ACTIVITY_PRED, dtoClass = ManufactureField2.class)
 public class Manufacture2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

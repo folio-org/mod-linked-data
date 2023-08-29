@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = SUPP_CONTENT, predicate = SUPP_CONTENT_PRED, dtoClass = SupplementaryContentField2.class)
+@MapperUnit(type = SUPP_CONTENT_URL, predicate = SUPP_CONTENT_PRED, dtoClass = SupplementaryContentField2.class)
 public class InstanceSupplementaryContent2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

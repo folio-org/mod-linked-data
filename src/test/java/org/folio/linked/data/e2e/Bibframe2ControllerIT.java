@@ -6,11 +6,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.bibframe2SampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getBibframe2Sample;
 import static org.folio.linked.data.test.TestUtil.getResource;
-import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.test.TestUtil.randomResource;
 import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
@@ -51,9 +51,9 @@ import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER_URL
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_URI;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_2;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2;
+import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
@@ -70,16 +70,16 @@ import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
 import static org.folio.linked.data.util.BibframeConstants.MEETING;
 import static org.folio.linked.data.util.BibframeConstants.MEETING_URL;
-import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH_2;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_2;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
 import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_2;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
@@ -117,7 +117,7 @@ import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
 import static org.folio.linked.data.util.BibframeConstants.URL;
 import static org.folio.linked.data.util.BibframeConstants.URL_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_2;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
 import static org.folio.linked.data.util.BibframeConstants.WORK_URL;
@@ -136,7 +136,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -194,7 +194,7 @@ public class Bibframe2ControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResourceSample());
+      .content(getBibframe2Sample());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -203,7 +203,7 @@ public class Bibframe2ControllerIT {
     var response = validateSampleBibframeResponse(resultActions)
       .andReturn().getResponse().getContentAsString();
 
-    var bibframeResponse = objectMapper.readValue(response, BibframeResponse.class);
+    var bibframeResponse = objectMapper.readValue(response, Bibframe2Response.class);
     var persistedOptional = resourceRepo.findById(bibframeResponse.getId());
     assertThat(persistedOptional).isPresent();
     var monograph = persistedOptional.get();
@@ -217,16 +217,16 @@ public class Bibframe2ControllerIT {
     var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResourceSample());
+      .content(getBibframe2Sample());
     var resultActions1 = mockMvc.perform(requestBuilder1);
     var response1 = resultActions1.andReturn().getResponse().getContentAsString();
-    var bibframeResponse1 = objectMapper.readValue(response1, BibframeResponse.class);
+    var bibframeResponse1 = objectMapper.readValue(response1, Bibframe2Response.class);
     var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
     assertThat(persistedOptional1).isPresent();
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResourceSample().replace("volume", "length"));
+      .content(getBibframe2Sample().replace("volume", "length"));
     var expectedDifference = "length\"}]}],\"id\":3057919254,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
@@ -299,7 +299,7 @@ public class Bibframe2ControllerIT {
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
-    var existed = resourceRepo.save(monographTestService.createSampleMonograph());
+    var existed = resourceRepo.save(monographTestService.createSampleMonograph_2());
     var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -337,9 +337,9 @@ public class Bibframe2ControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-      resourceRepo.save(randomResource(1L, monographTestService.getMonographProfile())),
-      resourceRepo.save(randomResource(2L, monographTestService.getMonographProfile())),
-      resourceRepo.save(randomResource(3L, monographTestService.getMonographProfile()))
+      resourceRepo.save(bibframe2SampleResource(1L, monographTestService.getMonograph2Type())),
+      resourceRepo.save(bibframe2SampleResource(2L, monographTestService.getMonograph2Type())),
+      resourceRepo.save(bibframe2SampleResource(3L, monographTestService.getMonograph2Type()))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
     var requestBuilder = get(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
@@ -364,7 +364,7 @@ public class Bibframe2ControllerIT {
   @Test
   void deleteBibframeById_shouldDeleteRootResourceAndRootEdge() throws Exception {
     // given
-    var existed = resourceRepo.save(monographTestService.createSampleMonograph());
+    var existed = resourceRepo.save(monographTestService.createSampleMonograph_2());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(47);
     assertThat(resourceEdgeRepository.count()).isEqualTo(46);
@@ -508,7 +508,7 @@ public class Bibframe2ControllerIT {
       .andExpect(jsonPath("$." + toProductionPlaceLabel(), equalTo("Production: New York (State)")))
       .andExpect(jsonPath("$." + toProductionPlaceUri(), equalTo(PLACE_URL)))
       .andExpect(jsonPath("$." + toProductionDate(), equalTo("Production: 1921")))
-      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH)))
+      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH_2)))
       .andExpect(jsonPath("$." + toPublicationSimpleAgent(), equalTo("Publication: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toPublicationSimpleDate(), equalTo("Publication: 1921")))
       .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("Publication: New York")))
@@ -528,7 +528,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
-    assertThat(monograph.getType().getSimpleLabel()).isEqualTo(MONOGRAPH);
+    assertThat(monograph.getType().getSimpleLabel()).isEqualTo(MONOGRAPH_2);
     assertThat(monograph.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(monograph.getDoc()).isNull();
     assertThat(monograph.getResourceHash()).isNotNull();
@@ -542,7 +542,7 @@ public class Bibframe2ControllerIT {
     assertThat(instanceEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_URL);
     var instance = instanceEdge.getTarget();
     assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
-    assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE);
+    assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE_2);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(5);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
@@ -591,7 +591,8 @@ public class Bibframe2ControllerIT {
     validateSampleElectronicLocator(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, ISSUANCE_URL, "issuanceId", "single unit",
       ISSUANCE_URL);
-    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, "mediaId", "unmediated", MEDIA_URL);
+    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, "mediaId", "unmediated",
+      MEDIA_URL);
     validateSampleProperty(edgeIterator.next(), instance, CARRIER_PRED, CARRIER_URL, "carrierId", "volume",
       CARRIER_URL);
     assertThat(edgeIterator.hasNext()).isFalse();
@@ -660,7 +661,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleInstanceTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, INSTANCE_TITLE_URL, INSTANCE_TITLE, "Instance: ");
+    validateSampleTitleBase(titleEdge, instance, INSTANCE_TITLE_URL, INSTANCE_TITLE_2, "Instance: ");
     var title = titleEdge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM_URL).size()).isEqualTo(1);
@@ -669,7 +670,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleParallelTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, PARALLEL_TITLE_URL, PARALLEL_TITLE, "Parallel: ");
+    validateSampleTitleBase(titleEdge, instance, PARALLEL_TITLE_URL, PARALLEL_TITLE_2, "Parallel: ");
     var title = titleEdge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(DATE_URL).size()).isEqualTo(1);
@@ -681,7 +682,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleVariantTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, VARIANT_TITLE_URL, VARIANT_TITLE, "Variant: ");
+    validateSampleTitleBase(titleEdge, instance, VARIANT_TITLE_URL, VARIANT_TITLE_2, "Variant: ");
     var title = titleEdge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(6);
     assertThat(title.getDoc().get(DATE_URL).size()).isEqualTo(1);
@@ -698,7 +699,7 @@ public class Bibframe2ControllerIT {
                                        String prefix) {
     assertThat(titleEdge.getId()).isNotNull();
     assertThat(titleEdge.getSource()).isEqualTo(instance);
-    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
+    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_2_PRED);
     var title = titleEdge.getTarget();
     assertThat(title.getLabel()).isEqualTo(label);
     assertThat(title.getType().getSimpleLabel()).isEqualTo(type);
@@ -754,7 +755,7 @@ public class Bibframe2ControllerIT {
     assertThat(noteEdge.getPredicate().getLabel()).isEqualTo(NOTE_PRED);
     var note = noteEdge.getTarget();
     assertThat(note.getLabel()).isEqualTo(NOTE_URL);
-    assertThat(note.getType().getSimpleLabel()).isEqualTo(NOTE);
+    assertThat(note.getType().getSimpleLabel()).isEqualTo(NOTE_2);
     assertThat(note.getResourceHash()).isNotNull();
     assertThat(note.getDoc().size()).isEqualTo(1);
     assertThat(note.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
@@ -969,17 +970,20 @@ public class Bibframe2ControllerIT {
   }
 
   private String toNoteTypeId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(
+        NOTE_TYPE_PRED),
       path(PROPERTY_ID));
   }
 
   private String toNoteTypeLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(
+        NOTE_TYPE_PRED),
       path(PROPERTY_LABEL));
   }
 
   private String toNoteTypeUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(
+        NOTE_TYPE_PRED),
       path(PROPERTY_URI));
   }
 
@@ -1200,92 +1204,92 @@ public class Bibframe2ControllerIT {
   }
 
   private String toInstanceTitlePartName() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(PART_NAME_URL));
   }
 
   private String toInstanceTitlePartNumber() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(PART_NUMBER_URL));
   }
 
   private String toInstanceTitleMain() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toInstanceTitleNonSortNum() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(NON_SORT_NUM_URL));
   }
 
   private String toInstanceTitleSubtitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(SUBTITLE_URL));
   }
 
   private String toParallelTitlePartName() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(PART_NAME_URL));
   }
 
   private String toParallelTitlePartNumber() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(PART_NUMBER_URL));
   }
 
   private String toParallelTitleMain() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toParallelTitleDate() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(DATE_URL));
   }
 
   private String toParallelTitleSubtitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(SUBTITLE_URL));
   }
 
   private String toParallelTitleNoteLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 
   private String toVariantTitlePartName() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(PART_NAME_URL));
   }
 
   private String toVariantTitlePartNumber() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(PART_NUMBER_URL));
   }
 
   private String toVariantTitleMain() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toVariantTitleDate() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(DATE_URL));
   }
 
   private String toVariantTitleSubtitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(SUBTITLE_URL));
   }
 
   private String toVariantTitleType() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(VARIANT_TYPE_URL));
   }
 
   private String toVariantTitleNoteLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 

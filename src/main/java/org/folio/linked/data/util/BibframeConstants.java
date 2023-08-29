@@ -5,35 +5,68 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class BibframeConstants {
 
-  //PROPERTY
+  // Types
+  public static final String MONOGRAPH = "http://bibfra.me/vocab/marc/Monograph";
+  public static final String INSTANCE = "http://bibfra.me/vocab/lite/Instance";
+  public static final String ITEM = "http://bibfra.me/vocab/lite/Item";
+  public static final String WORK = "http://bibfra.me/vocab/lite/Work";
+  public static final String INSTANCE_TITLE = "http://bibfra.me/vocab/marc/Title";
+  public static final String PARALLEL_TITLE = "http://bibfra.me/vocab/marc/ParallelTitle";
+  public static final String VARIANT_TITLE = "http://bibfra.me/vocab/marc/VariantTitle";
+
+  // Predicates
+  public static final String INSTANCE_TITLE_PRED = "http://bibfra.me/vocab/bf/title";
+
+  // Properties
+  public static final String NOTE = "http://bibfra.me/vocab/lite/note";
+  public static final String PART_NAME = "http://bibfra.me/vocab/marc/partName";
+  public static final String PART_NUMBER = "http://bibfra.me/vocab/marc/partNumber";
+  public static final String MAIN_TITLE = "http://bibfra.me/vocab/marc/mainTitle";
+  public static final String DATE = "http://bibfra.me/vocab/lite/date";
+  public static final String SUBTITLE = "http://bibfra.me/vocab/marc/subTitle";
+  public static final String NON_SORT_NUM = "http://bibfra.me/vocab/bflc/nonSortNum";
+  public static final String VARIANT_TYPE = "http://bibfra.me/vocab/marc/variantType";
+  public static final String RESPONSIBILITY_STATEMENT = "http://bibfra.me/vocab/marc/statementOfResponsibility";
+  public static final String EDITION_STATEMENT = "http://bibfra.me/vocab/marc/edition";
+  public static final String COPYRIGHT_DATE = "http://bibfra.me/vocab/lite/copyrightDate";
+  public static final String DIMENSIONS = "http://bibfra.me/vocab/lite/dimensions";
+  public static final String PROJECTED_PROVISION_DATE = "http://bibfra.me/vocab/marc/projectedProvisionDate";
+  public static final String MEDIA = "http://bibfra.me/vocab/marc/mediaType";
+  public static final String CARRIER = "http://bibfra.me/vocab/marc/carrier";
+
+  // fields
+  public static final String ID = "id";
+  public static final String TYPE = "type";
+
+  // ============================= Bibframe 2.0, to be removed =========================
   public static final String PROPERTY_URI = "uri";
   public static final String PROPERTY_ID = "id";
   public static final String PROPERTY_LABEL = "label";
 
   //Types
-  public static final String MONOGRAPH = "lc:profile:bf2:Monograph";
-  public static final String WORK = "lc:RT:bf2:Monograph:Work";
-  public static final String INSTANCE = "c:RT:bf2:Monograph:Instance";
-  public static final String ITEM = "lc:RT:bf2:Monograph:Item";
+  public static final String MONOGRAPH_2 = "lc:profile:bf2:Monograph";
+  public static final String WORK_2 = "lc:RT:bf2:Monograph:Work";
+  public static final String INSTANCE_2 = "c:RT:bf2:Monograph:Instance";
+  public static final String ITEM_2 = "lc:RT:bf2:Monograph:Item";
   public static final String LCC = "lc:RT:bf2:LCC";
   public static final String DDC = "lc:RT:bf2:DDC";
   public static final String NLM = "lc:RT:bf2:NLM";
   public static final String OTHER_CLASS = "lc:RT:bf2:OtherClass";
   public static final String PRIMARY_CONTRIBUTION = "lc:RT:bflc:Agents:PrimaryContribution";
   public static final String CONTRIBUTION = "lc:RT:bf2:Agents:Contribution";
-  public static final String NOTE = "lc:RT:bf2:Note";
+  public static final String NOTE_2 = "lc:RT:bf2:Note";
   public static final String REL_WORK_LOOKUP = "lc:RT:bf2:RelWorkLookup";
   public static final String COMPONENTS = "lc:RT:bf2:Components";
   public static final String PLACE_COMPONENTS = "lc:RT:bf2:Topic:Place:Components";
   public static final String CHILDRENS_COMPONENTS = "lc:RT:bf2:Topic:Childrens:Components";
   public static final String SUBJECT_WORK = "lc:RT:bf2:Topic:SubjectWork";
   public static final String WORK_TITLE = "lc:RT:bf2:WorkTitle";
-  public static final String VARIANT_TITLE = "lc:RT:bf2:Title:VarTitle";
-  public static final String PARALLEL_TITLE = "lc:RT:bf2:ParallelTitle";
+  public static final String VARIANT_TITLE_2 = "lc:RT:bf2:Title:VarTitle";
+  public static final String PARALLEL_TITLE_2 = "lc:RT:bf2:ParallelTitle";
   public static final String ITEM_ACCESS = "lc:RT:bf2:Item:Access";
   public static final String ITEM_USE = "lc:RT:bf2:Item:Use";
   public static final String ITEM_RETENTION = "lc:RT:bf2:Item:Retention";
-  public static final String INSTANCE_TITLE = "lc:RT:bf2:InstanceTitle";
+  public static final String INSTANCE_TITLE_2 = "lc:RT:bf2:InstanceTitle";
   public static final String PUBLICATION = "lc:RT:bf2:PubInfoNew";
   public static final String DISTRIBUTION = "lc:RT:bf2:DistInfoNew";
   public static final String MANUFACTURE = "lc:RT:bf2:ManuInfoNew";
@@ -133,7 +166,7 @@ public class BibframeConstants {
   public static final String SUBJECT_PRED = "http://id.loc.gov/ontologies/bibframe/subject";
   public static final String SUMMARY_PRED = "http://id.loc.gov/ontologies/bibframe/summary";
   public static final String SUPP_CONTENT_PRED = "http://id.loc.gov/ontologies/bibframe/supplementaryContent";
-  public static final String INSTANCE_TITLE_PRED = "http://id.loc.gov/ontologies/bibframe/title";
+  public static final String INSTANCE_TITLE_2_PRED = "http://id.loc.gov/ontologies/bibframe/title";
   public static final String OTHER_EDITION_PRED = "http://id.loc.gov/ontologies/bibframe/otherEdition";
   public static final String OTHER_PHYSICAL_FORMAT_PRED = "http://id.loc.gov/ontologies/bibframe/otherPhysicalFormat";
   public static final String PROVISION_ACTIVITY_PRED = "http://id.loc.gov/ontologies/bibframe/provisionActivity";
@@ -173,6 +206,5 @@ public class BibframeConstants {
   public static final String NOTE_TYPE_PRED = "http://id.loc.gov/ontologies/bibframe/noteType";
 
   // fields
-  public static final String ID = "id";
   public static final String PROFILE = "profile";
 }

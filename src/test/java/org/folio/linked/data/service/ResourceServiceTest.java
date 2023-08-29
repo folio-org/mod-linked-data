@@ -3,8 +3,7 @@ package org.folio.linked.data.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.test.TestUtil.randomResource;
-import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH_2;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -23,6 +22,7 @@ import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.test.TestUtil;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -58,17 +58,17 @@ class ResourceServiceTest {
   void create_shouldPersistMappedBibframeAndSendItToKafka() {
     // given
     var request = new Bibframe2Request();
-    request.setProfile(MONOGRAPH);
-    when(bibframeProperties.getProfiles()).thenReturn(Set.of(MONOGRAPH));
+    request.setProfile(MONOGRAPH_2);
+    when(bibframeProperties.getProfiles()).thenReturn(Set.of(MONOGRAPH_2));
     var mapped = new Resource().setResourceHash(12345L);
-    when(bibframeMapper.map(request)).thenReturn(mapped);
+    when(bibframeMapper.toEntity2(request)).thenReturn(mapped);
     var persisted = new Resource().setResourceHash(67890L);
     when(resourceRepo.save(mapped)).thenReturn(persisted);
     var expectedIndex = new BibframeIndex(persisted.getResourceHash().toString());
-    when(bibframeMapper.mapToIndex(persisted)).thenReturn(expectedIndex);
+    when(bibframeMapper.mapToIndex2(persisted)).thenReturn(expectedIndex);
     var expectedResponse = new Bibframe2Response();
     expectedResponse.setId(persisted.getResourceHash());
-    when(bibframeMapper.map(persisted)).thenReturn(expectedResponse);
+    when(bibframeMapper.toDto2(persisted)).thenReturn(expectedResponse);
 
     // when
     Bibframe2Response response = resourceService.createBibframe2(request);
@@ -82,10 +82,10 @@ class ResourceServiceTest {
   void getResourceById_shouldReturnExistedEntity() {
     // given
     var id = randomLong();
-    var existedResource = randomResource();
+    var existedResource = TestUtil.bibframe2SampleResource();
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
     var expectedResponse = random(Bibframe2Response.class);
-    when(bibframeMapper.map(existedResource)).thenReturn(expectedResponse);
+    when(bibframeMapper.toDto2(existedResource)).thenReturn(expectedResponse);
 
     // when
     var result = resourceService.getBibframe2ById(id);
@@ -160,7 +160,7 @@ class ResourceServiceTest {
     var id = randomLong();
 
     // when
-    resourceService.deleteBibframe2(id);
+    resourceService.deleteBibframe(id);
 
     // then
     verify(resourceRepo).deleteById(id);

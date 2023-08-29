@@ -1,9 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
 import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.URL;
+import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
 import static org.folio.linked.data.util.BibframeConstants.URL_URL;
 import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 
@@ -25,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = URL, predicate = ELECTRONIC_LOCATOR_PRED, dtoClass = UrlField2.class)
+@MapperUnit(type = URL_URL, predicate = ELECTRONIC_LOCATOR_PRED, dtoClass = UrlField2.class)
 public class InstanceElectronicLocator2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -47,7 +46,7 @@ public class InstanceElectronicLocator2MapperUnit implements Instance2SubResourc
     resource.setLabel(URL_URL);
     resource.setType(resourceTypeService.get(URL_URL));
     resource.setDoc(getDoc(url));
-    coreMapper.mapResourceEdges(url.getNote(), resource, NOTE, NOTE_PRED,
+    coreMapper.mapResourceEdges(url.getNote(), resource, NOTE_URL, NOTE_PRED,
       (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

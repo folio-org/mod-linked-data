@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(predicate = ISSUANCE_PRED, dtoClass = Property2.class)
+@MapperUnit(type = ISSUANCE_URL, predicate = ISSUANCE_PRED, dtoClass = Property2.class)
 public class Issuance2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

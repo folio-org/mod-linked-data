@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = IDENTIFIERS_EAN, predicate = IDENTIFIED_BY_PRED, dtoClass = EanField2.class)
+@MapperUnit(type = IDENTIFIERS_EAN_URL, predicate = IDENTIFIED_BY_PRED, dtoClass = EanField2.class)
 public class Ean2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

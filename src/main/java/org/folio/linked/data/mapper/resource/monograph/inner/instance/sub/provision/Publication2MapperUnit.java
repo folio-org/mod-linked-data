@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PUBLICATION, predicate = PROVISION_ACTIVITY_PRED, dtoClass = PublicationField2.class)
+@MapperUnit(type = PUBLICATION_URL, predicate = PROVISION_ACTIVITY_PRED, dtoClass = PublicationField2.class)
 public class Publication2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

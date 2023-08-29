@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(predicate = MEDIA_PRED, dtoClass = Property2.class)
+@MapperUnit(type = MEDIA_URL, predicate = MEDIA_PRED, dtoClass = Property2.class)
 public class Media2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

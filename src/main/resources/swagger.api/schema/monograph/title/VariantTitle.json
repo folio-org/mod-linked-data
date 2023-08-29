@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Variant Title Info",
+  "allOf": [
+    {
+      "$ref": "BaseTitle.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/note"
+        },
+        "date": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/date"
+        },
+        "variantType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/variantType"
+        }
+      }
+    }
+  ]
+}

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = IDENTIFIERS_LOCAL, predicate = IDENTIFIED_BY_PRED, dtoClass = LocalIdentifierField2.class)
+@MapperUnit(type = IDENTIFIERS_LOCAL_URL, predicate = IDENTIFIED_BY_PRED, dtoClass = LocalIdentifierField2.class)
 public class Local2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

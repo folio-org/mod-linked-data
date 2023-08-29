@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @Log4j2
 public class TenantInstallationExtension implements Extension, BeforeEachCallback {
 
-  private static final String TENANT_ENDPOINT_URL = "/_/tenant";
+  private static final String TENANT_ENDPOINT_URI = "/_/tenant";
   private static boolean init;
 
   @SneakyThrows
@@ -33,7 +33,7 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
       var env = context.getEnvironment();
       if (asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
         var mockMvc = context.getBean(MockMvc.class);
-        mockMvc.perform(post(TENANT_ENDPOINT_URL, randomString())
+        mockMvc.perform(post(TENANT_ENDPOINT_URI, randomString())
             .content(asJsonString(new TenantAttributes().moduleTo(env.getProperty("spring.application.name"))))
             .headers(defaultHeaders(env, extensionContext.getTestInstance().map(this::getOkapiUrl).orElse(null)))
             .contentType(APPLICATION_JSON))
