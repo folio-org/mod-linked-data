@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_URL;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance2;

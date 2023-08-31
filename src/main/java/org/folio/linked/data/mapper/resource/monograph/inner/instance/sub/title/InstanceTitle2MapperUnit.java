@@ -1,13 +1,13 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.NON_SORT_NUM_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NAME_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NUMBER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SUBTITLE_URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;

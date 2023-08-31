@@ -1,9 +1,9 @@
 package org.folio.linked.data.configuration.json.deserialization.instance;
 
-import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DISTRIBUTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION_URL;
 import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_SUB_ELEMENT;
 
 import com.fasterxml.jackson.core.JsonParser;

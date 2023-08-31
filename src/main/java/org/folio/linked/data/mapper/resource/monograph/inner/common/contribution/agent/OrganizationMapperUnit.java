@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common.contribution.agent;
 
-import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ORGANIZATION;
+import static org.folio.linked.data.util.Bibframe2Constants.ORGANIZATION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;

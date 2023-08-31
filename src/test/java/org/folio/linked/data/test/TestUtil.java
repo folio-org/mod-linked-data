@@ -1,14 +1,14 @@
 package org.folio.linked.data.test;
 
 import static java.util.Objects.nonNull;
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_ID;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;

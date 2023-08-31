@@ -25,7 +25,6 @@ import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
-import static org.folio.linked.data.util.BibframeConstants.PROFILE;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
@@ -468,10 +467,6 @@ public class BibframeControllerIT {
 
   private String toErrorValue() {
     return String.join(".", arrayPath("errors"), arrayPath("parameters"), path("value"));
-  }
-
-  private String toType() {
-    return path(PROFILE);
   }
 
   private String filterPath(String... paths) {

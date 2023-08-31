@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
-import static org.folio.linked.data.util.BibframeConstants.URL_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.URL_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;

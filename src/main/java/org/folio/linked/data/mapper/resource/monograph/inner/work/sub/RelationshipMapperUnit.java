@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.RELATED_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.RELATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.REL_WORK_LOOKUP;
+import static org.folio.linked.data.util.Bibframe2Constants.RELATED_TO_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.RELATION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.REL_WORK_LOOKUP;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Relationship2;

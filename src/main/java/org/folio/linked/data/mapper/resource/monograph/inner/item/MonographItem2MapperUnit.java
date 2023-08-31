@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.item;
 
-import static org.folio.linked.data.util.BibframeConstants.ITEM_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ITEM_URL;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Bibframe2Response;

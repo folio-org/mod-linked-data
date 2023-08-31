@@ -1,13 +1,13 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;

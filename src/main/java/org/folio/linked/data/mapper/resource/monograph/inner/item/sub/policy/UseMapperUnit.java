@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.item.sub.policy;
 
-import static org.folio.linked.data.util.BibframeConstants.ITEM_USE;
-import static org.folio.linked.data.util.BibframeConstants.SOURCE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ITEM_USE;
+import static org.folio.linked.data.util.Bibframe2Constants.SOURCE_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Item2;

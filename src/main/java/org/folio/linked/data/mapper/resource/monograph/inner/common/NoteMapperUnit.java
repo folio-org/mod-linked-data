@@ -1,11 +1,11 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_2;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_TYPE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_TYPE_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;

@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.contribution;
 
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PRIMARY_CONTRIBUTION;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PRIMARY_CONTRIBUTION;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Contribution2;

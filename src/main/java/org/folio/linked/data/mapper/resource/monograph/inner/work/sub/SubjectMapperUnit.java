@@ -1,12 +1,12 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.CHILDRENS_COMPONENTS;
-import static org.folio.linked.data.util.BibframeConstants.COMPONENTS;
-import static org.folio.linked.data.util.BibframeConstants.COMPONENT_LIST_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_COMPONENTS;
-import static org.folio.linked.data.util.BibframeConstants.SOURCE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUBJECT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUBJECT_WORK;
+import static org.folio.linked.data.util.Bibframe2Constants.CHILDRENS_COMPONENTS;
+import static org.folio.linked.data.util.Bibframe2Constants.COMPONENTS;
+import static org.folio.linked.data.util.Bibframe2Constants.COMPONENT_LIST_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_COMPONENTS;
+import static org.folio.linked.data.util.Bibframe2Constants.SOURCE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SUBJECT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SUBJECT_WORK;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 

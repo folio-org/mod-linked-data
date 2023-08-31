@@ -1,18 +1,18 @@
 package org.folio.linked.data.mapper;
 
 import static org.apache.commons.lang3.StringUtils.firstNonEmpty;
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.EDITION_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ITEM;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.WORK;
 import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;

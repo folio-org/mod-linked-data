@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.item.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.CLASSIFICATION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_2;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Item2;

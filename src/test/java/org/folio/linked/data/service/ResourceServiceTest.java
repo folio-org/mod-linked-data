@@ -3,7 +3,7 @@ package org.folio.linked.data.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH_2;
+import static org.folio.linked.data.util.Bibframe2Constants.MONOGRAPH_2;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;

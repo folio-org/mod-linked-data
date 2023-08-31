@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provision;
 
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION;
+import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance2;

@@ -1,15 +1,15 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_2_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_2;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NAME_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NUMBER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SUBTITLE_URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;

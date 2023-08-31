@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.classification;
 
-import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.LCC;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.LCC;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ClassificationLcc2;

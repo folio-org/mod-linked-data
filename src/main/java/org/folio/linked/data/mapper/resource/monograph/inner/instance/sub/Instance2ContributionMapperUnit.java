@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE_URL;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
