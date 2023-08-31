@@ -23,14 +23,14 @@ public class BibframeConstants {
   public static final String PART_NUMBER = "http://bibfra.me/vocab/marc/partNumber";
   public static final String MAIN_TITLE = "http://bibfra.me/vocab/marc/mainTitle";
   public static final String DATE = "http://bibfra.me/vocab/lite/date";
-  public static final String SUBTITLE = "http://bibfra.me/vocab/marc/subTitle";
+  public static final String SUBTITLE = "http://bibfra.me/vocab/marc/subtitle";
   public static final String NON_SORT_NUM = "http://bibfra.me/vocab/bflc/nonSortNum";
   public static final String VARIANT_TYPE = "http://bibfra.me/vocab/marc/variantType";
   public static final String RESPONSIBILITY_STATEMENT = "http://bibfra.me/vocab/marc/statementOfResponsibility";
   public static final String EDITION_STATEMENT = "http://bibfra.me/vocab/marc/edition";
   public static final String COPYRIGHT_DATE = "http://bibfra.me/vocab/lite/copyrightDate";
-  public static final String DIMENSIONS = "http://bibfra.me/vocab/lite/dimensions";
-  public static final String PROJECTED_PROVISION_DATE = "http://bibfra.me/vocab/marc/projectedProvisionDate";
+  public static final String DIMENSIONS = "http://bibfra.me/vocab/marc/dimensions";
+  public static final String PROJECTED_PROVISION_DATE = "http://bibfra.me/vocab/bflc/projectedProvisionDate";
   public static final String MEDIA = "http://bibfra.me/vocab/marc/mediaType";
   public static final String CARRIER = "http://bibfra.me/vocab/marc/carrier";
 

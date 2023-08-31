@@ -17,7 +17,7 @@
             "http://bibfra.me/vocab/bflc/nonSortNum": [
               "Instance: nonSortNum"
             ],
-            "http://bibfra.me/vocab/marc/subTitle": [
+            "http://bibfra.me/vocab/marc/subtitle": [
               "Instance: subtitle"
             ]
           }
@@ -39,7 +39,7 @@
             "http://bibfra.me/vocab/lite/date": [
               "Parallel: date"
             ],
-            "http://bibfra.me/vocab/marc/subTitle": [
+            "http://bibfra.me/vocab/marc/subtitle": [
               "Parallel: subtitle"
             ]
           }
@@ -61,7 +61,7 @@
             "http://bibfra.me/vocab/lite/date": [
               "Variant: date"
             ],
-            "http://bibfra.me/vocab/marc/subTitle": [
+            "http://bibfra.me/vocab/marc/subtitle": [
               "Variant: subtitle"
             ],
             "http://bibfra.me/vocab/marc/variantType": [
@@ -76,7 +76,7 @@
       "http://bibfra.me/vocab/marc/carrier": [
         "carrier"
       ],
-      "http://bibfra.me/vocab/lite/dimensions": [
+      "http://bibfra.me/vocab/marc/dimensions": [
         "20 cm"
       ],
       "http://bibfra.me/vocab/marc/statementOfResponsibility": [
@@ -88,7 +88,7 @@
       "http://bibfra.me/vocab/lite/copyrightDate": [
         "copyright date"
       ],
-      "http://bibfra.me/vocab/marc/projectedProvisionDate": [
+      "http://bibfra.me/vocab/bflc/projectedProvisionDate": [
         "projected provision date"
       ]
     }
