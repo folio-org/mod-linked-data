@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provision;
 
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE;
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE;
+import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance2;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = MANUFACTURE, predicate = PROVISION_ACTIVITY_PRED, dtoClass = ManufactureField2.class)
+@MapperUnit(type = MANUFACTURE_URL, predicate = PROVISION_ACTIVITY_PRED, dtoClass = ManufactureField2.class)
 public class Manufacture2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

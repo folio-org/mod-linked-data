@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = SUPP_CONTENT, predicate = SUPP_CONTENT_PRED, dtoClass = SupplementaryContentField2.class)
+@MapperUnit(type = SUPP_CONTENT_URL, predicate = SUPP_CONTENT_PRED, dtoClass = SupplementaryContentField2.class)
 public class InstanceSupplementaryContent2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

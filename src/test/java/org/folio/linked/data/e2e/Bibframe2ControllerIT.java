@@ -6,121 +6,121 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.bibframe2SampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getBibframe2Sample;
 import static org.folio.linked.data.test.TestUtil.getResource;
-import static org.folio.linked.data.test.TestUtil.getResourceSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.test.TestUtil.randomResource;
-import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
-import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_URL;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
-import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
-import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.FAMILY;
-import static org.folio.linked.data.util.BibframeConstants.FAMILY_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLICABLE_INSTITUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.COPYRIGHT_DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DIMENSIONS_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DISTRIBUTION;
+import static org.folio.linked.data.util.Bibframe2Constants.DISTRIBUTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.EDITION_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.FAMILY;
+import static org.folio.linked.data.util.Bibframe2Constants.FAMILY_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_EAN;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_EAN_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_ISBN;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_ISBN_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LCCN;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LCCN_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LOCAL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LOCAL_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_OTHER;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_OTHER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ITEM_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.JURISDICTION;
+import static org.folio.linked.data.util.Bibframe2Constants.JURISDICTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE;
+import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MEETING;
+import static org.folio.linked.data.util.Bibframe2Constants.MEETING_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MONOGRAPH_2;
+import static org.folio.linked.data.util.Bibframe2Constants.NON_SORT_NUM_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_TYPE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_TYPE_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ORGANIZATION;
+import static org.folio.linked.data.util.Bibframe2Constants.ORGANIZATION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NAME_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NUMBER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PERSON;
+import static org.folio.linked.data.util.Bibframe2Constants.PERSON_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_COMPONENTS;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION;
+import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROFILE;
+import static org.folio.linked.data.util.Bibframe2Constants.PROJECTED_PROVISION_DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_ID;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.QUALIFIER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.RESPONSIBILITY_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SUBTITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.URL;
+import static org.folio.linked.data.util.Bibframe2Constants.URL_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TYPE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.WORK_URL;
 import static org.folio.linked.data.util.BibframeConstants.ID;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN_URL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN_URL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN_URL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL_URL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER_URL;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_URI;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_URL;
-import static org.folio.linked.data.util.BibframeConstants.ITEM_URL;
-import static org.folio.linked.data.util.BibframeConstants.JURISDICTION;
-import static org.folio.linked.data.util.BibframeConstants.JURISDICTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE;
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_URL;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
-import static org.folio.linked.data.util.BibframeConstants.MEETING;
-import static org.folio.linked.data.util.BibframeConstants.MEETING_URL;
-import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
-import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_URL;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
-import static org.folio.linked.data.util.BibframeConstants.PERSON;
-import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
-import static org.folio.linked.data.util.BibframeConstants.PLACE;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_COMPONENTS;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROFILE;
-import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_URL;
-import static org.folio.linked.data.util.BibframeConstants.QUALIFIER_URL;
-import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.ROLE;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_URL;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.URL;
-import static org.folio.linked.data.util.BibframeConstants.URL_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
-import static org.folio.linked.data.util.BibframeConstants.WORK_URL;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -136,7 +136,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -194,7 +194,7 @@ public class Bibframe2ControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResourceSample());
+      .content(getBibframe2Sample());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -203,7 +203,7 @@ public class Bibframe2ControllerIT {
     var response = validateSampleBibframeResponse(resultActions)
       .andReturn().getResponse().getContentAsString();
 
-    var bibframeResponse = objectMapper.readValue(response, BibframeResponse.class);
+    var bibframeResponse = objectMapper.readValue(response, Bibframe2Response.class);
     var persistedOptional = resourceRepo.findById(bibframeResponse.getId());
     assertThat(persistedOptional).isPresent();
     var monograph = persistedOptional.get();
@@ -217,16 +217,16 @@ public class Bibframe2ControllerIT {
     var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResourceSample());
+      .content(getBibframe2Sample());
     var resultActions1 = mockMvc.perform(requestBuilder1);
     var response1 = resultActions1.andReturn().getResponse().getContentAsString();
-    var bibframeResponse1 = objectMapper.readValue(response1, BibframeResponse.class);
+    var bibframeResponse1 = objectMapper.readValue(response1, Bibframe2Response.class);
     var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
     assertThat(persistedOptional1).isPresent();
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResourceSample().replace("volume", "length"));
+      .content(getBibframe2Sample().replace("volume", "length"));
     var expectedDifference = "length\"}]}],\"id\":3057919254,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
@@ -299,7 +299,7 @@ public class Bibframe2ControllerIT {
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
-    var existed = resourceRepo.save(monographTestService.createSampleMonograph());
+    var existed = resourceRepo.save(monographTestService.createSampleMonograph_2());
     var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -337,9 +337,9 @@ public class Bibframe2ControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-      resourceRepo.save(randomResource(1L, monographTestService.getMonographProfile())),
-      resourceRepo.save(randomResource(2L, monographTestService.getMonographProfile())),
-      resourceRepo.save(randomResource(3L, monographTestService.getMonographProfile()))
+      resourceRepo.save(bibframe2SampleResource(1L, monographTestService.getMonograph2Type())),
+      resourceRepo.save(bibframe2SampleResource(2L, monographTestService.getMonograph2Type())),
+      resourceRepo.save(bibframe2SampleResource(3L, monographTestService.getMonograph2Type()))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
     var requestBuilder = get(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
@@ -364,7 +364,7 @@ public class Bibframe2ControllerIT {
   @Test
   void deleteBibframeById_shouldDeleteRootResourceAndRootEdge() throws Exception {
     // given
-    var existed = resourceRepo.save(monographTestService.createSampleMonograph());
+    var existed = resourceRepo.save(monographTestService.createSampleMonograph_2());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(47);
     assertThat(resourceEdgeRepository.count()).isEqualTo(46);
@@ -508,7 +508,7 @@ public class Bibframe2ControllerIT {
       .andExpect(jsonPath("$." + toProductionPlaceLabel(), equalTo("Production: New York (State)")))
       .andExpect(jsonPath("$." + toProductionPlaceUri(), equalTo(PLACE_URL)))
       .andExpect(jsonPath("$." + toProductionDate(), equalTo("Production: 1921")))
-      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH)))
+      .andExpect(jsonPath("$." + toProfile(), equalTo(MONOGRAPH_2)))
       .andExpect(jsonPath("$." + toPublicationSimpleAgent(), equalTo("Publication: Charles Scribner's Sons")))
       .andExpect(jsonPath("$." + toPublicationSimpleDate(), equalTo("Publication: 1921")))
       .andExpect(jsonPath("$." + toPublicationSimplePlace(), equalTo("Publication: New York")))
@@ -528,7 +528,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
-    assertThat(monograph.getType().getSimpleLabel()).isEqualTo(MONOGRAPH);
+    assertThat(monograph.getType().getSimpleLabel()).isEqualTo(MONOGRAPH_2);
     assertThat(monograph.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(monograph.getDoc()).isNull();
     assertThat(monograph.getResourceHash()).isNotNull();
@@ -542,7 +542,7 @@ public class Bibframe2ControllerIT {
     assertThat(instanceEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_URL);
     var instance = instanceEdge.getTarget();
     assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
-    assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE);
+    assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE_2);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(5);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
@@ -591,7 +591,8 @@ public class Bibframe2ControllerIT {
     validateSampleElectronicLocator(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, ISSUANCE_URL, "issuanceId", "single unit",
       ISSUANCE_URL);
-    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, "mediaId", "unmediated", MEDIA_URL);
+    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, "mediaId", "unmediated",
+      MEDIA_URL);
     validateSampleProperty(edgeIterator.next(), instance, CARRIER_PRED, CARRIER_URL, "carrierId", "volume",
       CARRIER_URL);
     assertThat(edgeIterator.hasNext()).isFalse();
@@ -660,7 +661,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleInstanceTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, INSTANCE_TITLE_URL, INSTANCE_TITLE, "Instance: ");
+    validateSampleTitleBase(titleEdge, instance, INSTANCE_TITLE_URL, INSTANCE_TITLE_2, "Instance: ");
     var title = titleEdge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM_URL).size()).isEqualTo(1);
@@ -669,7 +670,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleParallelTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, PARALLEL_TITLE_URL, PARALLEL_TITLE, "Parallel: ");
+    validateSampleTitleBase(titleEdge, instance, PARALLEL_TITLE_URL, PARALLEL_TITLE_2, "Parallel: ");
     var title = titleEdge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(DATE_URL).size()).isEqualTo(1);
@@ -681,7 +682,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleVariantTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, VARIANT_TITLE_URL, VARIANT_TITLE, "Variant: ");
+    validateSampleTitleBase(titleEdge, instance, VARIANT_TITLE_URL, VARIANT_TITLE_2, "Variant: ");
     var title = titleEdge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(6);
     assertThat(title.getDoc().get(DATE_URL).size()).isEqualTo(1);
@@ -698,7 +699,7 @@ public class Bibframe2ControllerIT {
                                        String prefix) {
     assertThat(titleEdge.getId()).isNotNull();
     assertThat(titleEdge.getSource()).isEqualTo(instance);
-    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
+    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_2_PRED);
     var title = titleEdge.getTarget();
     assertThat(title.getLabel()).isEqualTo(label);
     assertThat(title.getType().getSimpleLabel()).isEqualTo(type);
@@ -754,7 +755,7 @@ public class Bibframe2ControllerIT {
     assertThat(noteEdge.getPredicate().getLabel()).isEqualTo(NOTE_PRED);
     var note = noteEdge.getTarget();
     assertThat(note.getLabel()).isEqualTo(NOTE_URL);
-    assertThat(note.getType().getSimpleLabel()).isEqualTo(NOTE);
+    assertThat(note.getType().getSimpleLabel()).isEqualTo(NOTE_2);
     assertThat(note.getResourceHash()).isNotNull();
     assertThat(note.getDoc().size()).isEqualTo(1);
     assertThat(note.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
@@ -969,17 +970,20 @@ public class Bibframe2ControllerIT {
   }
 
   private String toNoteTypeId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(
+        NOTE_TYPE_PRED),
       path(PROPERTY_ID));
   }
 
   private String toNoteTypeLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(
+        NOTE_TYPE_PRED),
       path(PROPERTY_LABEL));
   }
 
   private String toNoteTypeUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(NOTE_TYPE_PRED),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(
+        NOTE_TYPE_PRED),
       path(PROPERTY_URI));
   }
 
@@ -1200,92 +1204,92 @@ public class Bibframe2ControllerIT {
   }
 
   private String toInstanceTitlePartName() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(PART_NAME_URL));
   }
 
   private String toInstanceTitlePartNumber() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(PART_NUMBER_URL));
   }
 
   private String toInstanceTitleMain() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toInstanceTitleNonSortNum() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(NON_SORT_NUM_URL));
   }
 
   private String toInstanceTitleSubtitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED), path(INSTANCE_TITLE_URL),
       arrayPath(SUBTITLE_URL));
   }
 
   private String toParallelTitlePartName() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(PART_NAME_URL));
   }
 
   private String toParallelTitlePartNumber() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(PART_NUMBER_URL));
   }
 
   private String toParallelTitleMain() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toParallelTitleDate() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(DATE_URL));
   }
 
   private String toParallelTitleSubtitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(SUBTITLE_URL));
   }
 
   private String toParallelTitleNoteLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 1), path(PARALLEL_TITLE_URL),
       arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 
   private String toVariantTitlePartName() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(PART_NAME_URL));
   }
 
   private String toVariantTitlePartNumber() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(PART_NUMBER_URL));
   }
 
   private String toVariantTitleMain() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(MAIN_TITLE_PRED));
   }
 
   private String toVariantTitleDate() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(DATE_URL));
   }
 
   private String toVariantTitleSubtitle() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(SUBTITLE_URL));
   }
 
   private String toVariantTitleType() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(VARIANT_TYPE_URL));
   }
 
   private String toVariantTitleNoteLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE_URL),
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(INSTANCE_TITLE_2_PRED, 2), path(VARIANT_TITLE_URL),
       arrayPath(NOTE_PRED), path(NOTE_URL), arrayPath(LABEL_PRED));
   }
 

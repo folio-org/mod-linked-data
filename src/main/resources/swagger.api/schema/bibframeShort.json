@@ -15,6 +15,10 @@
     "profile": {
       "type": "string",
       "description": "The profile of the bibframe"
+    },
+    "type": {
+      "type": "string",
+      "description": "The type of the resource"
     }
   }
 }

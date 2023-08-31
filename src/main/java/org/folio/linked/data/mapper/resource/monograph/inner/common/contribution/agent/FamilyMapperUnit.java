@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common.contribution.agent;
 
-import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.FAMILY;
-import static org.folio.linked.data.util.BibframeConstants.FAMILY_URL;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.FAMILY;
+import static org.folio.linked.data.util.Bibframe2Constants.FAMILY_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = FAMILY, predicate = AGENT_PRED, dtoClass = FamilyField2.class)
+@MapperUnit(type = FAMILY_URL, predicate = AGENT_PRED, dtoClass = FamilyField2.class)
 public class FamilyMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

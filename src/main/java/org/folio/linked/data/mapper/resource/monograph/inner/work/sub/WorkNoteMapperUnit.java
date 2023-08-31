@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Work2;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = NOTE, predicate = NOTE_PRED)
+@MapperUnit(type = NOTE_2, predicate = NOTE_PRED)
 public class WorkNoteMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

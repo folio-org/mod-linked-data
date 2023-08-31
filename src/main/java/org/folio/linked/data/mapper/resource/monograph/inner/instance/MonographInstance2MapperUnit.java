@@ -1,23 +1,24 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance;
 
-import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.COPYRIGHT_DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DIMENSIONS_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.EDITION_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PROJECTED_PROVISION_DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.RESPONSIBILITY_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
+import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Instance2;
 import org.folio.linked.data.domain.dto.Instance2TitleInner;
 import org.folio.linked.data.domain.dto.InstanceTitleField2;
@@ -41,12 +43,17 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = INSTANCE)
+@MapperUnit(type = INSTANCE_URL)
 public class MonographInstance2MapperUnit implements InnerResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
+
+  @Override
+  public BibframeResponse toDto(Resource source, BibframeResponse destination) {
+    return destination;
+  }
 
   @Override
   public Bibframe2Response toDto(Resource resource, Bibframe2Response destination) {
@@ -58,14 +65,15 @@ public class MonographInstance2MapperUnit implements InnerResourceMapperUnit {
   public Resource toEntity(Object innerResourceDto) {
     Instance2 dto = (Instance2) innerResourceDto;
     var resource = new Resource();
-    resource.setType(resourceTypeService.get(INSTANCE));
+    resource.setType(resourceTypeService.get(INSTANCE_2));
     resource.setDoc(getDoc(dto));
     resource.setLabel(getLabel(dto));
-    coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, Instance2.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_2_PRED, Instance2.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getProvisionActivity(), resource, PROVISION_ACTIVITY_PRED, Instance2.class,
       mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getContribution(), resource, CONTRIBUTION_PRED, Instance2.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, IDENTIFIED_BY_PRED, Instance2.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getIdentifiedBy(), resource, IDENTIFIED_BY_PRED, Instance2.class,
+      mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getNote(), resource, NOTE_PRED, Instance2.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getSupplementaryContent(), resource, SUPP_CONTENT_PRED, Instance2.class,
       mapper::toEntity);

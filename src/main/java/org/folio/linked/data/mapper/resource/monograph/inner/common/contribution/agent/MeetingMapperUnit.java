@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common.contribution.agent;
 
-import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEETING;
-import static org.folio.linked.data.util.BibframeConstants.MEETING_URL;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MEETING;
+import static org.folio.linked.data.util.Bibframe2Constants.MEETING_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = MEETING, predicate = AGENT_PRED, dtoClass = MeetingField2.class)
+@MapperUnit(type = MEETING_URL, predicate = AGENT_PRED, dtoClass = MeetingField2.class)
 public class MeetingMapperUnit implements ContributionSubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

@@ -4,14 +4,14 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.EDITION_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
@@ -70,7 +70,7 @@ class BibframeMapperTest {
     doReturn(expectedResource).when(profiledMapper).toEntity(dto);
 
     // when
-    Resource resource = bibframeMapper.map(dto);
+    Resource resource = bibframeMapper.toEntity2(dto);
 
     // then
     Iterator<ResourceEdge> resourceEdgeIterator = resource.getOutgoingEdges().iterator();
@@ -94,7 +94,7 @@ class BibframeMapperTest {
     Resource resource = null;
 
     // when
-    NullPointerException thrown = assertThrows(NullPointerException.class, () -> bibframeMapper.mapToIndex(resource));
+    NullPointerException thrown = assertThrows(NullPointerException.class, () -> bibframeMapper.mapToIndex2(resource));
 
     // then
     MatcherAssert.assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
@@ -106,7 +106,8 @@ class BibframeMapperTest {
     var resource = new Resource();
 
     // when
-    NotSupportedException thrown = assertThrows(NotSupportedException.class, () -> bibframeMapper.mapToIndex(resource));
+    NotSupportedException thrown =
+      assertThrows(NotSupportedException.class, () -> bibframeMapper.mapToIndex2(resource));
 
     // then
     MatcherAssert.assertThat(thrown.getMessage(),
@@ -135,7 +136,7 @@ class BibframeMapperTest {
     instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT_URL, List.of(UUID.randomUUID().toString()))));
 
     // when
-    BibframeIndex result = bibframeMapper.mapToIndex(resource);
+    BibframeIndex result = bibframeMapper.mapToIndex2(resource);
 
     // then
     assertThat(result.getId()).isEqualTo(resource.getResourceHash().toString());
@@ -148,7 +149,8 @@ class BibframeMapperTest {
       publication.getDoc().get(SIMPLE_DATE_PRED).get(0).textValue());
     assertThat(result.getPublications().get(0).getPublisher()).isEqualTo(
       publication.getDoc().get(SIMPLE_AGENT_PRED).get(0).textValue());
-    assertThat(result.getEditionStatement()).isEqualTo(instance.getDoc().get(EDITION_STATEMENT_URL).get(0).textValue());
+    assertThat(result.getEditionStatement()).isEqualTo(
+      instance.getDoc().get(EDITION_STATEMENT_URL).get(0).textValue());
   }
 
 }

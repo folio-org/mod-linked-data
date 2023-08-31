@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.GEOGRAPHIC_COVERAGE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.GEOGRAPHIC_COVERAGE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.GeographicCoverage2;

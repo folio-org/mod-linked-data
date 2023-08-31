@@ -1,14 +1,14 @@
 package org.folio.linked.data.test;
 
 import static java.util.Objects.nonNull;
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_ID;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -43,15 +43,16 @@ public class TestUtil {
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
+  private static final String BIBFRAME_2_SAMPLE = loadResourceAsString("samples/bibframe2-full.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
 
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
 
   static {
     PARAMETERS.excludeField(named("id"));
-    PARAMETERS.randomize(named("configuration"), TestUtil::getResourceJsonNodeSample);
-    PARAMETERS.randomize(named("_configuration"), TestUtil::getResourceSample);
-    PARAMETERS.randomize(Resource.class, TestUtil::randomResource);
+    PARAMETERS.randomize(named("configuration"), TestUtil::getBibframe2JsonNodeSample);
+    PARAMETERS.randomize(named("_configuration"), TestUtil::getBibframe2Sample);
+    PARAMETERS.randomize(Resource.class, TestUtil::bibframe2SampleResource);
     PARAMETERS.randomizationDepth(3);
     PARAMETERS.scanClasspathForConcreteTypes(true);
   }
@@ -84,8 +85,12 @@ public class TestUtil {
     return IOUtils.toString(is, StandardCharsets.UTF_8);
   }
 
-  public static String getResourceSample() {
+  public static String getBibframeSample() {
     return BIBFRAME_SAMPLE;
+  }
+
+  public static String getBibframe2Sample() {
+    return BIBFRAME_2_SAMPLE;
   }
 
   public static String getResource(String fileName) {
@@ -93,8 +98,13 @@ public class TestUtil {
   }
 
   @SneakyThrows
-  public static JsonNode getResourceJsonNodeSample() {
+  public static JsonNode getBibframeJsonNodeSample() {
     return OBJECT_MAPPER.readTree(BIBFRAME_SAMPLE);
+  }
+
+  @SneakyThrows
+  public static JsonNode getBibframe2JsonNodeSample() {
+    return OBJECT_MAPPER.readTree(BIBFRAME_2_SAMPLE);
   }
 
   public static <T> T random(Class<T> clazz) {
@@ -109,14 +119,27 @@ public class TestUtil {
     return GENERATOR.nextLong();
   }
 
-  public static Resource randomResource() {
+  public static Resource bibframeSampleResource() {
     var resource = new Resource();
-    resource.setDoc(getResourceJsonNodeSample());
+    resource.setDoc(getBibframeJsonNodeSample());
     return resource;
   }
 
-  public static Resource randomResource(Long resourceHash, ResourceType profile) {
-    var bibframe = randomResource();
+  public static Resource bibframeSampleResource(Long resourceHash, ResourceType type) {
+    var bibframe = bibframeSampleResource();
+    bibframe.setResourceHash(resourceHash);
+    bibframe.setType(type);
+    return bibframe;
+  }
+
+  public static Resource bibframe2SampleResource() {
+    var resource = new Resource();
+    resource.setDoc(getBibframe2JsonNodeSample());
+    return resource;
+  }
+
+  public static Resource bibframe2SampleResource(Long resourceHash, ResourceType profile) {
+    var bibframe = bibframe2SampleResource();
     bibframe.setResourceHash(resourceHash);
     bibframe.setType(profile);
     return bibframe;

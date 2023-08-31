@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.DISSERTATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.GRANTING_INSTITUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DISSERTATION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.GRANTING_INSTITUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Dissertation2;

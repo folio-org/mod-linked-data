@@ -1,11 +1,11 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_URI;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLICABLE_INSTITUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = IMM_ACQUISITION, predicate = IMM_ACQUISITION_PRED, dtoClass = ImmediateAcquisitionField2.class)
+@MapperUnit(type = IMM_ACQUISITION_URI, predicate = IMM_ACQUISITION_PRED, dtoClass = ImmediateAcquisitionField2.class)
 public class ImmediateAcquisition2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

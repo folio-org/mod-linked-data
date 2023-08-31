@@ -1,0 +1,37 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="07_insert_type_lookup" author="Pavel_Bobylev@epam.com">
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-851596152"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/Monograph"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-485016074"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Instance"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="966614720"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Item"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="556744214"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Work"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-934210966"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/Title"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-876383840"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/ParallelTitle"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-445575415"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/VariantTitle"/>
+    </insert>
+  </changeSet>
+</databaseChangeLog>

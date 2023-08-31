@@ -1,8 +1,8 @@
 package org.folio.linked.data.configuration.json.deserialization.instance;
 
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TITLE_URL;
 import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_SUB_ELEMENT;
 
 import com.fasterxml.jackson.core.JsonParser;

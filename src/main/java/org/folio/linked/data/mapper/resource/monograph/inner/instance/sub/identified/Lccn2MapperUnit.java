@@ -1,11 +1,11 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.identified;
 
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN_URL;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LCCN;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LCCN_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = IDENTIFIERS_LCCN, predicate = IDENTIFIED_BY_PRED, dtoClass = LccnField2.class)
+@MapperUnit(type = IDENTIFIERS_LCCN_URL, predicate = IDENTIFIED_BY_PRED, dtoClass = LccnField2.class)
 public class Lccn2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;

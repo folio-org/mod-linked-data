@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provision;
 
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION_URL;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance2;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PUBLICATION, predicate = PROVISION_ACTIVITY_PRED, dtoClass = PublicationField2.class)
+@MapperUnit(type = PUBLICATION_URL, predicate = PROVISION_ACTIVITY_PRED, dtoClass = PublicationField2.class)
 public class Publication2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

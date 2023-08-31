@@ -1,10 +1,10 @@
 package org.folio.linked.data.configuration.json.deserialization.instance;
 
-import static org.folio.linked.data.util.BibframeConstants.FAMILY_URL;
-import static org.folio.linked.data.util.BibframeConstants.JURISDICTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.MEETING_URL;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION_URL;
-import static org.folio.linked.data.util.BibframeConstants.PERSON_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.FAMILY_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.JURISDICTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MEETING_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ORGANIZATION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PERSON_URL;
 import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_SUB_ELEMENT;
 
 import com.fasterxml.jackson.core.JsonParser;

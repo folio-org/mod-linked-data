@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TITLE_2;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.VariantTitle2;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = VARIANT_TITLE)
+@MapperUnit(type = VARIANT_TITLE_2)
 public class WorkVariantTitleMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

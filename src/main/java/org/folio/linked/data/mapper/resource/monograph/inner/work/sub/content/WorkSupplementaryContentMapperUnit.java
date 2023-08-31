@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.content;
 
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Work2;

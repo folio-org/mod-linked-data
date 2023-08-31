@@ -1,15 +1,15 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NAME_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NUMBER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SUBTITLE_URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PARALLEL_TITLE, predicate = INSTANCE_TITLE_PRED, dtoClass = ParallelTitleField2.class)
+@MapperUnit(type = PARALLEL_TITLE_URL, predicate = INSTANCE_TITLE_2_PRED, dtoClass = ParallelTitleField2.class)
 public class InstanceParallelTitle2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
@@ -50,11 +50,9 @@ public class InstanceParallelTitle2MapperUnit implements Instance2SubResourceMap
     var parallelTitle = ((ParallelTitleField2) dto).getParallelTitle();
     var resource = new Resource();
     resource.setLabel(PARALLEL_TITLE_URL);
-    resource.setType(resourceTypeService.get(PARALLEL_TITLE));
+    resource.setType(resourceTypeService.get(PARALLEL_TITLE_2));
     resource.setDoc(getDoc(parallelTitle));
-    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, null, NOTE_PRED,
-      (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
-    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, NOTE, NOTE_PRED,
+    coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, NOTE_URL, NOTE_PRED,
       (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

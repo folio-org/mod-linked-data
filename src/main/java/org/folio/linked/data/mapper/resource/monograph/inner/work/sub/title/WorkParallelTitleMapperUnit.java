@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_2;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ParallelTitle2;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PARALLEL_TITLE)
+@MapperUnit(type = PARALLEL_TITLE_2)
 public class WorkParallelTitleMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

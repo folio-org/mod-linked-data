@@ -1,13 +1,13 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = EXTENT, predicate = EXTENT_PRED, dtoClass = ExtentField2.class)
+@MapperUnit(type = EXTENT_URL, predicate = EXTENT_PRED, dtoClass = ExtentField2.class)
 public class Extent2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -52,9 +52,9 @@ public class Extent2MapperUnit implements Instance2SubResourceMapperUnit {
     resource.setLabel(EXTENT_URL);
     resource.setType(resourceTypeService.get(EXTENT));
     resource.setDoc(getDoc(extent.getLabel()));
-    coreMapper.mapResourceEdges(extent.getAppliesTo(), resource, APPLIES_TO, APPLIES_TO_PRED,
+    coreMapper.mapResourceEdges(extent.getAppliesTo(), resource, APPLIES_TO_URL, APPLIES_TO_PRED,
       (fieldDto, pred) -> appliesToMapper.toEntity(fieldDto, pred, null));
-    coreMapper.mapResourceEdges(extent.getNote(), resource, NOTE, NOTE_PRED,
+    coreMapper.mapResourceEdges(extent.getNote(), resource, NOTE_URL, NOTE_PRED,
       (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

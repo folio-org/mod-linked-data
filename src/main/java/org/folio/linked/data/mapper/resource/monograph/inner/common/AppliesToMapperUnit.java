@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_URL;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = APPLIES_TO, predicate = APPLIES_TO_PRED, dtoClass = AppliesToField2.class)
+@MapperUnit(type = APPLIES_TO_URL, predicate = APPLIES_TO_PRED, dtoClass = AppliesToField2.class)
 public class AppliesToMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private static final Set<Class> SUPPORTED_PARENTS = Set.of(Extent2.class);

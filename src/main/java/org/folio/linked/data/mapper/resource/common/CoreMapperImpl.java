@@ -2,15 +2,15 @@ package org.folio.linked.data.mapper.resource.common;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_COMPONENTS;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_COMPONENTS;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_ID;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
 import static org.folio.linked.data.util.Constants.ERROR_JSON_PROCESSING;
 
 import com.fasterxml.jackson.core.JsonProcessingException;

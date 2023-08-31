@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.WORK_TITLE;
+import static org.folio.linked.data.util.Bibframe2Constants.WORK_TITLE;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Work2;

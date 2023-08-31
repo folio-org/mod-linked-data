@@ -2,85 +2,106 @@ package org.folio.linked.data.test;
 
 import static java.util.Collections.emptyMap;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
-import static org.folio.linked.data.util.BibframeConstants.AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.APPLICABLE_INSTITUTION_URL;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO;
-import static org.folio.linked.data.util.BibframeConstants.APPLIES_TO_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ASSIGNER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER_URL;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS_URL;
-import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.ELECTRONIC_LOCATOR_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.FAMILY;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIED_BY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_EAN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_ISBN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LCCN;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_LOCAL;
-import static org.folio.linked.data.util.BibframeConstants.IDENTIFIERS_OTHER;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION;
-import static org.folio.linked.data.util.BibframeConstants.IMM_ACQUISITION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLICABLE_INSTITUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLICABLE_INSTITUTION_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO;
+import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION;
+import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.COPYRIGHT_DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DIMENSIONS_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.DISTRIBUTION;
+import static org.folio.linked.data.util.Bibframe2Constants.EDITION_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT;
+import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.FAMILY;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_EAN;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_ISBN;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LCCN;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LOCAL;
+import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_OTHER;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION;
+import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.JURISDICTION;
+import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.MEETING;
+import static org.folio.linked.data.util.Bibframe2Constants.MONOGRAPH_2;
+import static org.folio.linked.data.util.Bibframe2Constants.NON_SORT_NUM_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_TYPE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.NOTE_TYPE_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.ORGANIZATION;
+import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NAME_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PART_NUMBER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PERSON;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION;
+import static org.folio.linked.data.util.Bibframe2Constants.PROJECTED_PROVISION_DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_ID;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
+import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
+import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PUBLICATION;
+import static org.folio.linked.data.util.Bibframe2Constants.QUALIFIER_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.RESPONSIBILITY_STATEMENT_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ROLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.SUBTITLE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT;
+import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.URL_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TITLE_2;
+import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TYPE_URL;
+import static org.folio.linked.data.util.BibframeConstants.CARRIER;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
+import static org.folio.linked.data.util.BibframeConstants.DATE;
+import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
+import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_URL;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE_URL;
-import static org.folio.linked.data.util.BibframeConstants.JURISDICTION;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA_URL;
-import static org.folio.linked.data.util.BibframeConstants.MEETING;
+import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.MEDIA;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
-import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM_URL;
+import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NOTE_TYPE_URI;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME_URL;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER_URL;
-import static org.folio.linked.data.util.BibframeConstants.PERSON;
-import static org.folio.linked.data.util.BibframeConstants.PLACE;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION;
-import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE_URL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_ID;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.BibframeConstants.PROPERTY_URI;
-import static org.folio.linked.data.util.BibframeConstants.PROVISION_ACTIVITY_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION;
-import static org.folio.linked.data.util.BibframeConstants.QUALIFIER_URL;
-import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT_URL;
-import static org.folio.linked.data.util.BibframeConstants.ROLE;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ROLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.SAME_AS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE_URL;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT;
-import static org.folio.linked.data.util.BibframeConstants.SUPP_CONTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.URL_URL;
-import static org.folio.linked.data.util.BibframeConstants.VALUE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
+import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
+import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
+import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE_URL;
+import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -106,8 +127,12 @@ public class MonographTestService {
   private final DictionaryService<Predicate> predicateService;
   private final CoreMapper coreMapper;
 
-  public ResourceType getMonographProfile() {
+  public ResourceType getMonographType() {
     return resourceTypeService.get(MONOGRAPH);
+  }
+
+  public ResourceType getMonograph2Type() {
+    return resourceTypeService.get(MONOGRAPH_2);
   }
 
   public Resource createSampleMonograph() {
@@ -115,11 +140,76 @@ public class MonographTestService {
     return createResource(
       emptyMap(),
       MONOGRAPH,
+      Map.of(INSTANCE, List.of(instance))
+    );
+  }
+
+  public Resource createSampleMonograph_2() {
+    var instance = createSampleInstance2();
+    return createResource(
+      emptyMap(),
+      MONOGRAPH_2,
       Map.of(INSTANCE_URL, List.of(instance))
     );
   }
 
   private Resource createSampleInstance() {
+    var instanceTitle = createResource(
+      Map.of(
+        PART_NAME, List.of("Instance: partName"),
+        PART_NUMBER, List.of("Instance: partNumber"),
+        MAIN_TITLE, List.of("Instance: Laramie holds the range"),
+        NON_SORT_NUM, List.of("Instance: nonSortNum"),
+        SUBTITLE, List.of("Instance: subtitle")
+      ),
+      INSTANCE_TITLE,
+      emptyMap()
+    );
+    var parallelTitle = createResource(
+      Map.of(
+        PART_NAME, List.of("Parallel: partName"),
+        PART_NUMBER, List.of("Parallel: partNumber"),
+        MAIN_TITLE, List.of("Parallel: Laramie holds the range"),
+        DATE, List.of("Parallel: date"),
+        SUBTITLE, List.of("Parallel: subtitle"),
+        NOTE, List.of("Parallel: noteLabel")
+      ),
+      PARALLEL_TITLE,
+      emptyMap()
+    );
+    var variantTitle = createResource(
+      Map.of(
+        PART_NAME, List.of("Variant: partName"),
+        PART_NUMBER, List.of("Variant: partNumber"),
+        MAIN_TITLE, List.of("Variant: Laramie holds the range"),
+        DATE, List.of("Variant: date"),
+        SUBTITLE, List.of("Variant: subtitle"),
+        VARIANT_TYPE, List.of("Variant: variantType"),
+        NOTE, List.of("Variant: noteLabel")
+      ),
+      VARIANT_TITLE,
+      emptyMap()
+    );
+
+    var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
+    pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
+
+    return createResource(
+      Map.of(
+        DIMENSIONS, List.of("20 cm"),
+        RESPONSIBILITY_STATEMENT, List.of("responsibility statement"),
+        EDITION_STATEMENT, List.of("edition statement"),
+        COPYRIGHT_DATE, List.of("copyright date"),
+        PROJECTED_PROVISION_DATE, List.of("projected provision date"),
+        CARRIER, List.of("carrier"),
+        MEDIA, List.of("unmediated")
+      ),
+      INSTANCE,
+      pred2OutgoingResources
+    );
+  }
+
+  private Resource createSampleInstance2() {
     var instanceTitle = createResource(
       Map.of(
         PART_NAME_URL, List.of("Instance: partName"),
@@ -128,7 +218,7 @@ public class MonographTestService {
         NON_SORT_NUM_URL, List.of("Instance: nonSortNum"),
         SUBTITLE_URL, List.of("Instance: subtitle")
       ),
-      INSTANCE_TITLE,
+      INSTANCE_TITLE_2,
       emptyMap()
     );
     var parallelTitle = createResource(
@@ -139,7 +229,7 @@ public class MonographTestService {
         DATE_URL, List.of("Parallel: date"),
         SUBTITLE_URL, List.of("Parallel: subtitle")
       ),
-      PARALLEL_TITLE,
+      PARALLEL_TITLE_2,
       Map.of(NOTE_PRED, List.of(getSimpleNote("Parallel: noteLabel")))
     );
     var variantTitle = createResource(
@@ -151,7 +241,7 @@ public class MonographTestService {
         SUBTITLE_URL, List.of("Variant: subtitle"),
         VARIANT_TYPE_URL, List.of("Variant: variantType")
       ),
-      VARIANT_TITLE,
+      VARIANT_TITLE_2,
       Map.of(NOTE_PRED, List.of(getSimpleNote("Variant: noteLabel")))
     );
 
@@ -336,7 +426,7 @@ public class MonographTestService {
 
     var note = createResource(
       Map.of(LABEL_PRED, List.of("note label")),
-      NOTE,
+      NOTE_2,
       Map.of(NOTE_TYPE_PRED, List.of(createPropertyResource(
         "noteTypeId",
         "Accompanying material",
@@ -410,7 +500,7 @@ public class MonographTestService {
     );
 
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
-    pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
+    pred2OutgoingResources.put(INSTANCE_TITLE_2_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
     pred2OutgoingResources.put(PROVISION_ACTIVITY_PRED, List.of(distribution, manufacture, production, publication));
     pred2OutgoingResources.put(CONTRIBUTION_PRED, List.of(contribPerson, contribFamily, contribOrganization,
       contibJurisdiction, contibMeeting));
@@ -432,7 +522,7 @@ public class MonographTestService {
         COPYRIGHT_DATE_URL, List.of("copyright date"),
         PROJECTED_PROVISION_DATE_URL, List.of("projected provision date")
       ),
-      INSTANCE,
+      INSTANCE_2,
       pred2OutgoingResources
     );
   }
@@ -441,7 +531,7 @@ public class MonographTestService {
   private Resource getSimpleNote(String label) {
     return createResource(
       Map.of(LABEL_PRED, List.of(label)),
-      NOTE,
+      NOTE_2,
       emptyMap());
   }
 

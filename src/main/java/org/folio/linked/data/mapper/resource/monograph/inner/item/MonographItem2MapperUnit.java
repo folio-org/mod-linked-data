@@ -1,9 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.item;
 
-import static org.folio.linked.data.util.BibframeConstants.ITEM;
+import static org.folio.linked.data.util.Bibframe2Constants.ITEM_URL;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
+import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Item2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
@@ -14,11 +15,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ITEM)
+@MapperUnit(type = ITEM_URL)
 public class MonographItem2MapperUnit implements InnerResourceMapperUnit {
 
   private final SubResourceMapper subResourceMapper;
   private final CoreMapper coreMapper;
+
+  @Override
+  public BibframeResponse toDto(Resource source, BibframeResponse destination) {
+    return destination;
+  }
 
   @Override
   public Bibframe2Response toDto(Resource resource, Bibframe2Response destination) {
