@@ -15,7 +15,7 @@ public class BibframeConstants {
   public static final String VARIANT_TITLE = "http://bibfra.me/vocab/marc/VariantTitle";
 
   // Predicates
-  public static final String INSTANCE_TITLE_PRED = "http://bibfra.me/vocab/bf/title";
+  public static final String INSTANCE_TITLE_PRED = "http://bibfra.me/vocab/marc/title";
 
   // Properties
   public static final String NOTE = "http://bibfra.me/vocab/lite/note";

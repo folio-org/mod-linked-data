@@ -11,7 +11,7 @@
     </insert>
     <insert tableName="predicate_lookup">
       <column name="predicate_hash" value="-888917082"/>
-      <column name="predicate" value="http://bibfra.me/vocab/bf/title"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/title"/>
     </insert>
   </changeSet>
 

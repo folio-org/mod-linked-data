@@ -42,7 +42,7 @@
           }
         ]
       },
-      "x-json-property": "http://bibfra.me/vocab/bf/title"
+      "x-json-property": "http://bibfra.me/vocab/marc/title"
     },
     "provisionActivity": {
       "type": "array",
