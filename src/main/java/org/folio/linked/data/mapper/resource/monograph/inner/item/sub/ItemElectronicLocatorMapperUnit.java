@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.item.sub;
 
-import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
 
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(predicate = ELECTRONIC_LOCATOR_PRED)
+@MapperUnit(predicate = ELECTRONIC_LOCATOR_2_PRED)
 public class ItemElectronicLocatorMapperUnit implements ItemSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

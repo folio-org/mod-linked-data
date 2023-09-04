@@ -44,59 +44,39 @@
       },
       "x-json-property": "http://bibfra.me/vocab/marc/title"
     },
-    "provisionActivity": {
+    "production": {
       "type": "array",
       "items": {
-        "oneOf": [
-          {
-            "type": "object",
-            "title": "PublicationField",
-            "properties": {
-              "Publication": {
-                "type": "object",
-                "$ref": "provision/ProvisionActivity.json",
-                "x-json-property": "https://bibfra.me/vocab/lite/ProviderEvent"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "DistributionField",
-            "properties": {
-              "Distribution": {
-                "type": "object",
-                "$ref": "provision/ProvisionActivity.json",
-                "x-json-property": "https://bibfra.me/vocab/lite/DistributionEvent"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "ManufactureField",
-            "properties": {
-              "Manufacture": {
-                "type": "object",
-                "$ref": "provision/ProvisionActivity.json",
-                "x-json-property": "https://bibfra.me/vocab/lite/ManufactureEvent"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "ProductionField",
-            "properties": {
-              "Production": {
-                "type": "object",
-                "$ref": "provision/ProvisionActivity.json",
-                "x-json-property": "https://bibfra.me/vocab/lite/ProductionEvent"
-              }
-            }
-          }
-        ]
+        "type": "object",
+        "$ref": "provision/ProviderEvent.json"
       },
-      "x-json-property": "https://bibfra.me/vocab/marc/provisionActivity"
+      "x-json-property": "http://bibfra.me/vocab/marc/production"
     },
-    "identifiedBy": {
+    "publication": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "provision/ProviderEvent.json"
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/publication"
+    },
+    "distribution": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "provision/ProviderEvent.json"
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/distribution"
+    },
+    "manufacture": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "provision/ProviderEvent.json"
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/manufacture"
+    },
+    "map": {
       "type": "array",
       "items": {
         "oneOf": [
@@ -107,7 +87,7 @@
               "Lccn": {
                 "type": "object",
                 "$ref": "identifier/Lccn.json",
-                "x-json-property": "http://library.link/identifier/Lccn"
+                "x-json-property": "http://library.link/identifier/LCCN"
               }
             }
           },
@@ -118,28 +98,17 @@
               "Isbn": {
                 "type": "object",
                 "$ref": "identifier/Isbn.json",
-                "x-json-property": "http://library.link/identifier/Isbn"
+                "x-json-property": "http://library.link/identifier/ISBN"
               }
             }
           },
           {
             "type": "object",
-            "title": "OtherIdentifierField",
-            "properties": {
-              "Identifier": {
-                "type": "object",
-                "$ref": "identifier/IdentifierOther.json",
-                "x-json-property": "http://bibfra.me/vocab/lite/Identifier"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "LocalIdentifierField",
+            "title": "LocalIdField",
             "properties": {
               "Local": {
                 "type": "object",
-                "$ref": "identifier/IdentifierLocal.json",
+                "$ref": "identifier/LocalId.json",
                 "x-json-property": "http://bibfra.me/vocab/lite/LocalId"
               }
             }
@@ -151,13 +120,79 @@
               "Ean": {
                 "type": "object",
                 "$ref": "identifier/Ean.json",
-                "x-json-property": "http://id.loc.gov/ontologies/bibframe/Ean"
+                "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "IsrcField",
+            "properties": {
+              "Identifier": {
+                "type": "object",
+                "$ref": "identifier/OtherId.json",
+                "x-json-property": "http://library.link/identifier/ISRC"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "UpcField",
+            "properties": {
+              "Identifier": {
+                "type": "object",
+                "$ref": "identifier/OtherId.json",
+                "x-json-property": "http://library.link/identifier/UPC"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "IsmnField",
+            "properties": {
+              "Identifier": {
+                "type": "object",
+                "$ref": "identifier/OtherId.json",
+                "x-json-property": "http://library.link/identifier/ISMN"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "IanField",
+            "properties": {
+              "Identifier": {
+                "type": "object",
+                "$ref": "identifier/OtherId.json",
+                "x-json-property": "http://library.link/identifier/IAN"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "SiciField",
+            "properties": {
+              "Identifier": {
+                "type": "object",
+                "$ref": "identifier/OtherId.json",
+                "x-json-property": "http://library.link/identifier/SICI"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "UnknownIdField",
+            "properties": {
+              "Identifier": {
+                "type": "object",
+                "$ref": "identifier/OtherId.json",
+                "x-json-property": "http://library.link/identifier/UNKNOWN"
               }
             }
           }
         ]
       },
-      "x-json-property": "http://bibfra.me/vocab/bf/IdentifiedBy"
+      "x-json-property": "http://bibfra.me/vocab/lite/map"
     },
     "electronicLocator": {
       "type": "array",
@@ -166,11 +201,17 @@
         "title": "ElectronicLocatorField",
         "properties": {
           "link": {
-            "type": "string",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "x-json-property": "http://bibfra.me/vocab/lite/link"
           },
           "note": {
-            "type": "string",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "x-json-property": "http://bibfra.me/vocab/lite/note"
           }
         }
@@ -227,6 +268,13 @@
         "type": "string"
       },
       "x-json-property": "http://bibfra.me/vocab/marc/carrier"
+    },
+    "issuance": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/issuance"
     }
   }
 }

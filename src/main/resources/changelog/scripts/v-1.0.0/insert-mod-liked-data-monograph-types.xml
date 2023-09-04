@@ -34,4 +34,28 @@
       <column name="type_uri" value="http://bibfra.me/vocab/marc/VariantTitle"/>
     </insert>
   </changeSet>
+
+  <changeSet id="08_insert_type_lookup" author="Pavel_Bobylev@epam.com">
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-333296910"/>
+      <column name="type_uri" value="https://bibfra.me/vocab/marc/ElectronicLocator"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="202384385"/>
+      <column name="type_uri" value="https://bibfra.me/vocab/lite/ProviderEvent"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="420072283"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Place"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="259361183"/>
+      <column name="type_uri" value="http://library.link/identifier/LCCN"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-104479936"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/Status"/>
+    </insert>
+
+  </changeSet>
 </databaseChangeLog>

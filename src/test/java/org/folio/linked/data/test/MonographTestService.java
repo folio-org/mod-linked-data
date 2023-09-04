@@ -18,7 +18,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.DIMENSIONS_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.DISTRIBUTION;
 import static org.folio.linked.data.util.Bibframe2Constants.EDITION_STATEMENT_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.EXTENT;
 import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.FAMILY;
@@ -54,8 +54,8 @@ import static org.folio.linked.data.util.Bibframe2Constants.PARALLEL_TITLE_2;
 import static org.folio.linked.data.util.Bibframe2Constants.PART_NAME_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.PART_NUMBER_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.PERSON;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE2;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PLACE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION;
 import static org.folio.linked.data.util.Bibframe2Constants.PROJECTED_PROVISION_DATE_URL;
@@ -73,7 +73,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.SAME_AS_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
-import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.SUBTITLE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT;
 import static org.folio.linked.data.util.Bibframe2Constants.SUPP_CONTENT_PRED;
@@ -85,20 +85,39 @@ import static org.folio.linked.data.util.BibframeConstants.CARRIER;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
+import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR;
+import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
+import static org.folio.linked.data.util.BibframeConstants.LABEL;
+import static org.folio.linked.data.util.BibframeConstants.LCCN;
+import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
+import static org.folio.linked.data.util.BibframeConstants.PLACE;
+import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
+import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
+import static org.folio.linked.data.util.BibframeConstants.STATUS;
+import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
@@ -191,8 +210,34 @@ public class MonographTestService {
       emptyMap()
     );
 
+    var production = providerEvent("production");
+    var publication = providerEvent("publication");
+    var distribution = providerEvent("distribution");
+    var manufacture = providerEvent("manufacture");
+
+    var electronicLocator = createResource(
+      Map.of(
+        LINK, List.of("electronicLocatorValue"),
+        NOTE, List.of("electronicLocatorNote")
+      ),
+      E_LOCATOR,
+      emptyMap()
+    );
+
+    var lccn = createResource(
+      Map.of(NAME, List.of("lccn value")),
+      LCCN,
+      Map.of(STATUS_PRED, List.of(status()))
+    );
+
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
     pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
+    pred2OutgoingResources.put(PRODUCTION_PRED, List.of(production));
+    pred2OutgoingResources.put(PUBLICATION_PRED, List.of(publication));
+    pred2OutgoingResources.put(DISTRIBUTION_PRED, List.of(distribution));
+    pred2OutgoingResources.put(MANUFACTURE_PRED, List.of(manufacture));
+    pred2OutgoingResources.put(E_LOCATOR_PRED, List.of(electronicLocator));
+    pred2OutgoingResources.put(MAP_PRED, List.of(lccn));
 
     return createResource(
       Map.of(
@@ -202,10 +247,46 @@ public class MonographTestService {
         COPYRIGHT_DATE, List.of("copyright date"),
         PROJECTED_PROVISION_DATE, List.of("projected provision date"),
         CARRIER, List.of("carrier"),
-        MEDIA, List.of("unmediated")
+        MEDIA, List.of("unmediated"),
+        ISSUANCE, List.of("single unit")
       ),
       INSTANCE,
       pred2OutgoingResources
+    );
+  }
+
+  private Resource status() {
+    return createResource(
+      Map.of(
+        LABEL, List.of("lccn status label"),
+        LINK, List.of("lccn status link")
+      ),
+      STATUS,
+      emptyMap()
+    );
+  }
+
+  private Resource providerEvent(String type) {
+    return createResource(
+      Map.of(
+        DATE, List.of(type + " date"),
+        NAME, List.of(type + " name"),
+        SIMPLE_DATE, List.of(type + " simple date"),
+        SIMPLE_PLACE, List.of(type + " simple place")
+      ),
+      PROVIDER_EVENT,
+      Map.of(PLACE_PRED, List.of(place(type)))
+    );
+  }
+
+  private Resource place(String providerEventType) {
+    return createResource(
+      Map.of(
+        NAME, List.of(providerEventType + " place name"),
+        LINK, List.of(providerEventType + " place link")
+      ),
+      PLACE,
+      emptyMap()
     );
   }
 
@@ -382,7 +463,7 @@ public class MonographTestService {
       Map.of(
         VALUE_PRED, List.of("12345671"),
         QUALIFIER_URL, List.of("17654321"),
-        STATUS_PRED, List.of(Map.of(
+        STATUS2_PRED, List.of(Map.of(
           PROPERTY_ID, "isbnStatusId",
           PROPERTY_LABEL, "isbnStatusLabel",
           PROPERTY_URI, "isbnStatusUri")
@@ -394,7 +475,7 @@ public class MonographTestService {
     var lccn = createResource(
       Map.of(
         VALUE_PRED, List.of("12345672"),
-        STATUS_PRED, List.of(Map.of(
+        STATUS2_PRED, List.of(Map.of(
           PROPERTY_ID, "lccnStatusId",
           PROPERTY_LABEL, "lccnStatusLabel",
           PROPERTY_URI, "lccnStatusUri")
@@ -512,7 +593,7 @@ public class MonographTestService {
     pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
     pred2OutgoingResources.put(IMM_ACQUISITION_PRED, List.of(immediateAcquisition));
     pred2OutgoingResources.put(SUPP_CONTENT_PRED, List.of(supplementaryContent));
-    pred2OutgoingResources.put(ELECTRONIC_LOCATOR_PRED, List.of(electronicLocator));
+    pred2OutgoingResources.put(ELECTRONIC_LOCATOR_2_PRED, List.of(electronicLocator));
 
     return createResource(
       Map.of(
@@ -544,13 +625,13 @@ public class MonographTestService {
         SIMPLE_PLACE_PRED, List.of(prefix + "New York")
       ),
       url,
-      Map.of(PLACE_PRED, List.of(place(prefix)))
+      Map.of(PLACE2_PRED, List.of(place2(prefix)))
     );
   }
 
-  private Resource place(String prefix) {
+  private Resource place2(String prefix) {
     return createPropertyResource(
-      PLACE,
+      PLACE2,
       prefix + "New York (State)",
       PLACE_URL,
       PLACE_URL

@@ -1,21 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Provider place",
+  "description": "Other Identifier Info",
   "type": "object",
   "properties": {
-    "name": {
+    "value": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "x-json-property": "http://bibfra.me/view/lite/name"
+      "x-json-property": "http://bibfra.me/vocab/lite/name"
     },
-    "link": {
+    "qualifier": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "x-json-property": "http://bibfra.me/vocab/lite/link"
+      "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
     }
   }
 }

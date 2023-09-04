@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.Bibframe2Request;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.exception.BaseLinkedDataException;
@@ -18,6 +19,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 public class ProfiledMapperImpl implements ProfiledMapper {
 
@@ -40,6 +42,7 @@ public class ProfiledMapperImpl implements ProfiledMapper {
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
+      log.error("Exception during toEntity mapping", e);
       throw new ValidationException(dto.getClass().getSimpleName(), objectMapper.writeValueAsString(dto));
     }
   }

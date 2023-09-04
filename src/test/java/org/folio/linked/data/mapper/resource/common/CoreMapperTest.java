@@ -9,8 +9,8 @@ import static org.folio.linked.data.test.TestUtil.propertyToDoc;
 import static org.folio.linked.data.test.TestUtil.provisionActivityToDoc;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.util.Bibframe2Constants.DATE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PLACE_COMPONENTS;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
@@ -1214,8 +1214,8 @@ class CoreMapperTest {
     doReturn(expectedType).when(resourceTypeService).get(type);
     var expectedPlaceType = new ResourceType().setSimpleLabel(PLACE_COMPONENTS);
     doReturn(expectedPlaceType).when(resourceTypeService).get(PLACE_COMPONENTS);
-    var expectedPlacePredicate = new Predicate(PLACE_PRED);
-    doReturn(expectedPlacePredicate).when(predicateService).get(PLACE_PRED);
+    var expectedPlacePredicate = new Predicate(PLACE2_PRED);
+    doReturn(expectedPlacePredicate).when(predicateService).get(PLACE2_PRED);
     var expectedTarget1 = new Resource()
       .setType(expectedPlaceType)
       .setLabel(place1.getLabel())
@@ -1262,8 +1262,8 @@ class CoreMapperTest {
     doReturn(expectedType).when(resourceTypeService).get(type);
     var expectedPlaceType = new ResourceType().setSimpleLabel(PLACE_COMPONENTS);
     doReturn(expectedPlaceType).when(resourceTypeService).get(PLACE_COMPONENTS);
-    var expectedPlacePredicate = new Predicate(PLACE_PRED);
-    doReturn(expectedPlacePredicate).when(predicateService).get(PLACE_PRED);
+    var expectedPlacePredicate = new Predicate(PLACE2_PRED);
+    doReturn(expectedPlacePredicate).when(predicateService).get(PLACE2_PRED);
     var expectedTarget1 = new Resource()
       .setType(expectedPlaceType)
       .setLabel(PLACE_COMPONENTS)

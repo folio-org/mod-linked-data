@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Status Info",
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://bibfra.me/vocab/lite/label"
+    },
+    "link": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://bibfra.me/vocab/lite/link"
+    }
+  }
+}

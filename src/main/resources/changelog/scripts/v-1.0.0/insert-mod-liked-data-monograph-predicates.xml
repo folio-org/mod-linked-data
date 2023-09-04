@@ -15,4 +15,39 @@
     </insert>
   </changeSet>
 
+  <changeSet id="07_insert_predicate_lookup" author="Pavel_Bobylev@epam.com">
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-637381504"/>
+      <column name="predicate" value="https://bibfra.me/vocab/marc/electronicLocator"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="601350478"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/production"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-222812102"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/publication"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="741027363"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/distribution"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-351856962"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/manufacture"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="934962851"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/place"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="424571330"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/map"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="385792812"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/status"/>
+    </insert>
+  </changeSet>
+
 </databaseChangeLog>

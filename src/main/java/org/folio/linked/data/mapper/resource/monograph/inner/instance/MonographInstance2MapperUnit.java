@@ -5,7 +5,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.COPYRIGHT_DATE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.DIMENSIONS_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.EDITION_STATEMENT_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.EXTENT_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.IMM_ACQUISITION_PRED;
@@ -80,7 +80,7 @@ public class MonographInstance2MapperUnit implements InnerResourceMapperUnit {
     coreMapper.mapResourceEdges(dto.getImmediateAcquisition(), resource, IMM_ACQUISITION_PRED, Instance2.class,
       mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getExtent(), resource, EXTENT_PRED, Instance2.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getElectronicLocator(), resource, ELECTRONIC_LOCATOR_PRED, Instance2.class,
+    coreMapper.mapResourceEdges(dto.getElectronicLocator(), resource, ELECTRONIC_LOCATOR_2_PRED, Instance2.class,
       mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getIssuance(), resource, ISSUANCE_PRED, Instance2.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, Instance2.class, mapper::toEntity);
