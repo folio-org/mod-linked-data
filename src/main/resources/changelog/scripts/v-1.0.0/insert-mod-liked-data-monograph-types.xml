@@ -53,6 +53,22 @@
       <column name="type_uri" value="http://library.link/identifier/LCCN"/>
     </insert>
     <insert tableName="type_lookup">
+      <column name="type_hash" value="140224042"/>
+      <column name="type_uri" value="http://library.link/identifier/ISBN"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="432379562"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/identifier/Ean"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="434142486"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/LocalId"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="424918821"/>
+      <column name="type_uri" value="http://library.link/identifier/UNKNOWN"/>
+    </insert>
+    <insert tableName="type_lookup">
       <column name="type_hash" value="-104479936"/>
       <column name="type_uri" value="http://bibfra.me/vocab/marc/Status"/>
     </insert>

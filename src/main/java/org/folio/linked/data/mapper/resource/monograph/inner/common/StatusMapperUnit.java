@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.domain.dto.Lccn;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = STATUS, predicate = STATUS_PRED, dtoClass = Status.class)
 public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
 
-  private static final Set<Class> SUPPORTED_PARENTS = Set.of(Lccn.class);
+  private static final Set<Class> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class);
   private final CoreMapper coreMapper;
   private final DictionaryService<ResourceType> resourceTypeService;
 
@@ -40,6 +41,8 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
     var status = coreMapper.readResourceDoc(source, Status.class);
     if (destination instanceof Lccn lccn) {
       lccn.addStatusItem(status);
+    } else if (destination instanceof Isbn isbn) {
+      isbn.addStatusItem(status);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + destination.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + STATUS_PRED + RIGHT_SQUARE_BRACKET);

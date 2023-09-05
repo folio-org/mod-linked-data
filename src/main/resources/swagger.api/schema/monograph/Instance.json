@@ -106,7 +106,7 @@
             "type": "object",
             "title": "LocalIdField",
             "properties": {
-              "Local": {
+              "LocalId": {
                 "type": "object",
                 "$ref": "identifier/LocalId.json",
                 "x-json-property": "http://bibfra.me/vocab/lite/LocalId"
@@ -126,62 +126,7 @@
           },
           {
             "type": "object",
-            "title": "IsrcField",
-            "properties": {
-              "Identifier": {
-                "type": "object",
-                "$ref": "identifier/OtherId.json",
-                "x-json-property": "http://library.link/identifier/ISRC"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "UpcField",
-            "properties": {
-              "Identifier": {
-                "type": "object",
-                "$ref": "identifier/OtherId.json",
-                "x-json-property": "http://library.link/identifier/UPC"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "IsmnField",
-            "properties": {
-              "Identifier": {
-                "type": "object",
-                "$ref": "identifier/OtherId.json",
-                "x-json-property": "http://library.link/identifier/ISMN"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "IanField",
-            "properties": {
-              "Identifier": {
-                "type": "object",
-                "$ref": "identifier/OtherId.json",
-                "x-json-property": "http://library.link/identifier/IAN"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "SiciField",
-            "properties": {
-              "Identifier": {
-                "type": "object",
-                "$ref": "identifier/OtherId.json",
-                "x-json-property": "http://library.link/identifier/SICI"
-              }
-            }
-          },
-          {
-            "type": "object",
-            "title": "UnknownIdField",
+            "title": "OtherIdField",
             "properties": {
               "Identifier": {
                 "type": "object",

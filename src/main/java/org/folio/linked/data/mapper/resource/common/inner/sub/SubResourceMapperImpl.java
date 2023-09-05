@@ -42,7 +42,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
-      log.error("Exception during toEntity mapping", e);
+      log.warn("Exception during toEntity mapping", e);
       throw new ValidationException(predicate, objectMapper.writeValueAsString(dto));
     }
   }

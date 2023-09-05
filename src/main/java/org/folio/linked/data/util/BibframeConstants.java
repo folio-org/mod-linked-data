@@ -17,6 +17,10 @@ public class BibframeConstants {
   public static final String PLACE = "http://bibfra.me/vocab/lite/Place";
   public static final String E_LOCATOR = "https://bibfra.me/vocab/marc/ElectronicLocator";
   public static final String LCCN = "http://library.link/identifier/LCCN";
+  public static final String ISBN = "http://library.link/identifier/ISBN";
+  public static final String EAN = "http://bibfra.me/vocab/identifier/Ean";
+  public static final String OTHER_ID = "http://library.link/identifier/UNKNOWN";
+  public static final String LOCAL_ID = "http://bibfra.me/vocab/lite/LocalId";
   public static final String STATUS = "http://bibfra.me/vocab/marc/Status";
 
   // Predicates
@@ -31,6 +35,8 @@ public class BibframeConstants {
   public static final String STATUS_PRED = "http://bibfra.me/vocab/marc/status";
 
   // Properties
+  public static final String ID = "id";
+  public static final String TYPE = "type";
   public static final String NOTE = "http://bibfra.me/vocab/lite/note";
   public static final String PART_NAME = "http://bibfra.me/vocab/marc/partName";
   public static final String PART_NUMBER = "http://bibfra.me/vocab/marc/partNumber";
@@ -52,8 +58,9 @@ public class BibframeConstants {
   public static final String SIMPLE_DATE = "http://bibfra.me/vocab/lite/simpleDate";
   public static final String SIMPLE_PLACE = "http://bibfra.me/vocab/bflc/simplePlace";
   public static final String LABEL = "http://bibfra.me/vocab/lite/label";
+  public static final String QUALIFIER = "http://bibfra.me/vocab/marc/qualifier";
+  public static final String EAN_VALUE = "http://bibfra.me/vocab/marc/ean";
+  public static final String LOCAL_ID_VALUE = "http://bibfra.me/vocab/marc/localId";
+  public static final String ASSIGNING_SOURCE = "http://bibfra.me/vocab/marc/localIdAssigningSource";
 
-  // fields
-  public static final String ID = "id";
-  public static final String TYPE = "type";
 }

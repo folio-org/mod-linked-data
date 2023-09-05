@@ -54,7 +54,7 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
-      log.error("Exception during toEntity mapping", e);
+      log.warn("Exception during toEntity mapping", e);
       throw new ValidationException(dto.getClass().getSimpleName(), objectMapper.writeValueAsString(dto));
     }
   }

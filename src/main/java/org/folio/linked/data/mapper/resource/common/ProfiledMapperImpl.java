@@ -42,7 +42,7 @@ public class ProfiledMapperImpl implements ProfiledMapper {
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
-      log.error("Exception during toEntity mapping", e);
+      log.warn("Exception during toEntity mapping", e);
       throw new ValidationException(dto.getClass().getSimpleName(), objectMapper.writeValueAsString(dto));
     }
   }

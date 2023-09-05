@@ -8,11 +8,14 @@ import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.EAN;
+import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR;
 import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR_PRED;
@@ -20,10 +23,13 @@ import static org.folio.linked.data.util.BibframeConstants.ID;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ISBN;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.LABEL;
 import static org.folio.linked.data.util.BibframeConstants.LCCN;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
+import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
+import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
@@ -32,6 +38,7 @@ import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeConstants.OTHER_ID;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
@@ -41,6 +48,7 @@ import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
@@ -208,8 +216,8 @@ public class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(16);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(15);
+    assertThat(resourceRepo.count()).isEqualTo(21);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(20);
     var requestBuilder = delete(BIBFRAME_URI + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -219,9 +227,9 @@ public class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(15);
+    assertThat(resourceRepo.count()).isEqualTo(20);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(14);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(19);
     checkKafkaMessageSent(null, existed.getResourceHash());
   }
 
@@ -240,6 +248,8 @@ public class BibframeControllerIT {
       .andExpect(jsonPath("$." + toCarrier(), equalTo("carrier")))
       .andExpect(jsonPath("$." + toCopyrightDate(), equalTo("copyright date")))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
+      .andExpect(jsonPath("$." + toEanValue(), equalTo("ean value")))
+      .andExpect(jsonPath("$." + toEanQualifier(), equalTo("ean qualifier")))
       .andExpect(jsonPath("$." + toEditionStatement(), equalTo("edition statement")))
       .andExpect(jsonPath("$." + toElectronicLocatorLink(), equalTo("electronicLocatorValue")))
       .andExpect(jsonPath("$." + toElectronicLocatorNote(), equalTo("electronicLocatorNote")))
@@ -248,11 +258,19 @@ public class BibframeControllerIT {
       .andExpect(jsonPath("$." + toInstanceTitleMain(), equalTo("Instance: Laramie holds the range")))
       .andExpect(jsonPath("$." + toInstanceTitleNonSortNum(), equalTo("Instance: nonSortNum")))
       .andExpect(jsonPath("$." + toInstanceTitleSubtitle(), equalTo("Instance: subtitle")))
+      .andExpect(jsonPath("$." + toIsbnValue(), equalTo("isbn value")))
+      .andExpect(jsonPath("$." + toIsbnQualifier(), equalTo("isbn qualifier")))
+      .andExpect(jsonPath("$." + toIsbnStatusValue(), equalTo("isbn status label")))
+      .andExpect(jsonPath("$." + toIsbnStatusLink(), equalTo("isbn status link")))
       .andExpect(jsonPath("$." + toIssuance(), equalTo("single unit")))
       .andExpect(jsonPath("$." + toLccnValue(), equalTo("lccn value")))
       .andExpect(jsonPath("$." + toLccnStatusValue(), equalTo("lccn status label")))
       .andExpect(jsonPath("$." + toLccnStatusLink(), equalTo("lccn status link")))
+      .andExpect(jsonPath("$." + toLocalIdValue(), equalTo("localId value")))
+      .andExpect(jsonPath("$." + toLocalIdAssigner(), equalTo("localId assigner")))
       .andExpect(jsonPath("$." + toMedia(), equalTo("unmediated")))
+      .andExpect(jsonPath("$." + toOtherIdValue(), equalTo("otherId value")))
+      .andExpect(jsonPath("$." + toOtherIdQualifier(), equalTo("otherId qualifier")))
       .andExpect(jsonPath("$." + toParallelTitlePartName(), equalTo("Parallel: partName")))
       .andExpect(jsonPath("$." + toParallelTitlePartNumber(), equalTo("Parallel: partNumber")))
       .andExpect(jsonPath("$." + toParallelTitleMain(), equalTo("Parallel: Laramie holds the range")))
@@ -320,7 +338,7 @@ public class BibframeControllerIT {
     validateLiteral(instance, MEDIA, "unmediated");
     validateLiteral(instance, CARRIER, "carrier");
     validateLiteral(instance, ISSUANCE, "single unit");
-    assertThat(instance.getOutgoingEdges()).hasSize(9);
+    assertThat(instance.getOutgoingEdges()).hasSize(13);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateInstanceTitle(edgeIterator.next(), instance);
@@ -332,6 +350,10 @@ public class BibframeControllerIT {
     validateProviderEvent(edgeIterator.next(), instance, MANUFACTURE_PRED);
     validateElectronicLocator(edgeIterator.next(), instance);
     validateLccn(edgeIterator.next(), instance);
+    validateIsbn(edgeIterator.next(), instance);
+    validateEan(edgeIterator.next(), instance);
+    validateLocalId(edgeIterator.next(), instance);
+    validateOtherId(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -442,6 +464,71 @@ public class BibframeControllerIT {
     assertThat(lccn.getDoc().get(NAME).get(0).asText()).isEqualTo("lccn value");
     assertThat(lccn.getOutgoingEdges()).hasSize(1);
     validateStatus(lccn.getOutgoingEdges().iterator().next(), lccn, "lccn");
+  }
+
+  private void validateIsbn(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var isbn = edge.getTarget();
+    assertThat(isbn.getLabel()).isEqualTo(isbn.getDoc().get(NAME).get(0).asText());
+    assertThat(isbn.getType().getTypeUri()).isEqualTo(ISBN);
+    assertThat(isbn.getResourceHash()).isNotNull();
+    assertThat(isbn.getDoc().size()).isEqualTo(2);
+    assertThat(isbn.getDoc().get(NAME).size()).isEqualTo(1);
+    assertThat(isbn.getDoc().get(NAME).get(0).asText()).isEqualTo("isbn value");
+    assertThat(isbn.getDoc().get(QUALIFIER).size()).isEqualTo(1);
+    assertThat(isbn.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("isbn qualifier");
+    assertThat(isbn.getOutgoingEdges()).hasSize(1);
+    validateStatus(isbn.getOutgoingEdges().iterator().next(), isbn, "isbn");
+  }
+
+  private void validateEan(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var ean = edge.getTarget();
+    assertThat(ean.getLabel()).isEqualTo(ean.getDoc().get(EAN_VALUE).get(0).asText());
+    assertThat(ean.getType().getTypeUri()).isEqualTo(EAN);
+    assertThat(ean.getResourceHash()).isNotNull();
+    assertThat(ean.getDoc().size()).isEqualTo(2);
+    assertThat(ean.getDoc().get(EAN_VALUE).size()).isEqualTo(1);
+    assertThat(ean.getDoc().get(EAN_VALUE).get(0).asText()).isEqualTo("ean value");
+    assertThat(ean.getDoc().get(QUALIFIER).size()).isEqualTo(1);
+    assertThat(ean.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("ean qualifier");
+    assertThat(ean.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateLocalId(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var localId = edge.getTarget();
+    assertThat(localId.getLabel()).isEqualTo(localId.getDoc().get(LOCAL_ID_VALUE).get(0).asText());
+    assertThat(localId.getType().getTypeUri()).isEqualTo(LOCAL_ID);
+    assertThat(localId.getResourceHash()).isNotNull();
+    assertThat(localId.getDoc().size()).isEqualTo(2);
+    assertThat(localId.getDoc().get(LOCAL_ID_VALUE).size()).isEqualTo(1);
+    assertThat(localId.getDoc().get(LOCAL_ID_VALUE).get(0).asText()).isEqualTo("localId value");
+    assertThat(localId.getDoc().get(ASSIGNING_SOURCE).size()).isEqualTo(1);
+    assertThat(localId.getDoc().get(ASSIGNING_SOURCE).get(0).asText()).isEqualTo("localId assigner");
+    assertThat(localId.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateOtherId(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var otherId = edge.getTarget();
+    assertThat(otherId.getLabel()).isEqualTo(otherId.getDoc().get(NAME).get(0).asText());
+    assertThat(otherId.getType().getTypeUri()).isEqualTo(OTHER_ID);
+    assertThat(otherId.getResourceHash()).isNotNull();
+    assertThat(otherId.getDoc().size()).isEqualTo(2);
+    assertThat(otherId.getDoc().get(NAME).size()).isEqualTo(1);
+    assertThat(otherId.getDoc().get(NAME).get(0).asText()).isEqualTo("otherId value");
+    assertThat(otherId.getDoc().get(QUALIFIER).size()).isEqualTo(1);
+    assertThat(otherId.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("otherId qualifier");
+    assertThat(otherId.getOutgoingEdges()).isEmpty();
   }
 
   private void validateStatus(ResourceEdge edge, Resource source, String prefix) {
@@ -644,6 +731,48 @@ public class BibframeControllerIT {
   private String toLccnStatusLink() {
     return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED), path(LCCN), arrayPath(STATUS_PRED),
       arrayPath(LINK));
+  }
+
+  private String toIsbnValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(NAME));
+  }
+
+  private String toIsbnQualifier() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(QUALIFIER));
+  }
+
+  private String toIsbnStatusValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(STATUS_PRED),
+      arrayPath(LABEL));
+  }
+
+  private String toIsbnStatusLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(STATUS_PRED),
+      arrayPath(LINK));
+  }
+
+  private String toEanValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(EAN_VALUE));
+  }
+
+  private String toEanQualifier() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(QUALIFIER));
+  }
+
+  private String toLocalIdValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 3), path(LOCAL_ID), arrayPath(LOCAL_ID_VALUE));
+  }
+
+  private String toLocalIdAssigner() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 3), path(LOCAL_ID), arrayPath(ASSIGNING_SOURCE));
+  }
+
+  private String toOtherIdValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(NAME));
+  }
+
+  private String toOtherIdQualifier() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(QUALIFIER));
   }
 
   private String toErrorType() {

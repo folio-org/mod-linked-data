@@ -81,21 +81,27 @@ import static org.folio.linked.data.util.Bibframe2Constants.URL_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TITLE_2;
 import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TYPE_URL;
+import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.EAN;
+import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR;
 import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ISBN;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.LABEL;
 import static org.folio.linked.data.util.BibframeConstants.LCCN;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
+import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
+import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
@@ -104,6 +110,7 @@ import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeConstants.OTHER_ID;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
@@ -113,6 +120,7 @@ import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
@@ -227,7 +235,43 @@ public class MonographTestService {
     var lccn = createResource(
       Map.of(NAME, List.of("lccn value")),
       LCCN,
-      Map.of(STATUS_PRED, List.of(status()))
+      Map.of(STATUS_PRED, List.of(status("lccn")))
+    );
+
+    var isbn = createResource(
+      Map.of(
+        NAME, List.of("isbn value"),
+        QUALIFIER, List.of("isbn qualifier")
+      ),
+      ISBN,
+      Map.of(STATUS_PRED, List.of(status("isbn")))
+    );
+
+    var ean = createResource(
+      Map.of(
+        EAN_VALUE, List.of("ean value"),
+        QUALIFIER, List.of("ean qualifier")
+      ),
+      EAN,
+      emptyMap()
+    );
+
+    var localId = createResource(
+      Map.of(
+        LOCAL_ID_VALUE, List.of("localId value"),
+        ASSIGNING_SOURCE, List.of("localId assigner")
+      ),
+      LOCAL_ID,
+      emptyMap()
+    );
+
+    var otherId = createResource(
+      Map.of(
+        NAME, List.of("otherId value"),
+        QUALIFIER, List.of("otherId qualifier")
+      ),
+      OTHER_ID,
+      emptyMap()
     );
 
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
@@ -237,7 +281,7 @@ public class MonographTestService {
     pred2OutgoingResources.put(DISTRIBUTION_PRED, List.of(distribution));
     pred2OutgoingResources.put(MANUFACTURE_PRED, List.of(manufacture));
     pred2OutgoingResources.put(E_LOCATOR_PRED, List.of(electronicLocator));
-    pred2OutgoingResources.put(MAP_PRED, List.of(lccn));
+    pred2OutgoingResources.put(MAP_PRED, List.of(lccn, isbn, ean, localId, otherId));
 
     return createResource(
       Map.of(
@@ -255,11 +299,11 @@ public class MonographTestService {
     );
   }
 
-  private Resource status() {
+  private Resource status(String prefix) {
     return createResource(
       Map.of(
-        LABEL, List.of("lccn status label"),
-        LINK, List.of("lccn status link")
+        LABEL, List.of(prefix + " status label"),
+        LINK, List.of(prefix + " status link")
       ),
       STATUS,
       emptyMap()
