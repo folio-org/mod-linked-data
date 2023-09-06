@@ -18,7 +18,7 @@
   <changeSet id="07_insert_predicate_lookup" author="Pavel_Bobylev@epam.com">
     <insert tableName="predicate_lookup">
       <column name="predicate_hash" value="-637381504"/>
-      <column name="predicate" value="https://bibfra.me/vocab/marc/electronicLocator"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/accessLocation"/>
     </insert>
     <insert tableName="predicate_lookup">
       <column name="predicate_hash" value="601350478"/>
@@ -47,6 +47,14 @@
     <insert tableName="predicate_lookup">
       <column name="predicate_hash" value="385792812"/>
       <column name="predicate" value="http://bibfra.me/vocab/marc/status"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="491609446"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/carrier"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-355325280"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/media"/>
     </insert>
   </changeSet>
 

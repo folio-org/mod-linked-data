@@ -1,7 +1,6 @@
 package org.folio.linked.data.mapper.resource.common.inner.sub;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
@@ -63,7 +62,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
       .filter(m -> isNull(parentDto) || m.getParentDto().contains(parentDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
-        return nonNull(annotation) && (isNull(type) || type.equals(annotation.type()))
+        return (isNull(type) || type.equals(annotation.type()))
           && (isNull(pred) || pred.equals(annotation.predicate()))
           && (isNull(dto) || dto.equals(annotation.dtoClass()));
       })

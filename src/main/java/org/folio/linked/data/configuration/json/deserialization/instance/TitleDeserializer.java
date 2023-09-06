@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import org.folio.linked.data.domain.dto.Instance2TitleInner;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
 import org.folio.linked.data.domain.dto.InstanceTitleInner;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
@@ -31,6 +30,6 @@ public class TitleDeserializer extends JsonDeserializer<InstanceTitleInner> {
       return jp.getCodec().treeToValue(node, VariantTitleField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(Instance2TitleInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(InstanceTitleInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

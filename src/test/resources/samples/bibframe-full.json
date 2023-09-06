@@ -243,21 +243,41 @@
           }
         }
       ],
-      "https://bibfra.me/vocab/marc/electronicLocator": [
+      "http://bibfra.me/vocab/marc/accessLocation": [
         {
           "http://bibfra.me/vocab/lite/link": [
-            "electronicLocatorValue"
+            "accessLocationValue"
           ],
           "http://bibfra.me/vocab/lite/note": [
-            "electronicLocatorNote"
+            "accessLocationNote"
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/mediaType": [
-        "unmediated"
+      "http://bibfra.me/vocab/marc/media": [
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "media code"
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+            "unmediated"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "media link"
+          ]
+        }
       ],
       "http://bibfra.me/vocab/marc/carrier": [
-        "carrier"
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "carrier code"
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+            "carrier 1"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "carrier link"
+          ]
+        }
       ],
       "http://bibfra.me/vocab/marc/dimensions": [
         "20 cm"

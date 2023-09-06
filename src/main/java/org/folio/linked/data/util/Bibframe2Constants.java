@@ -141,8 +141,8 @@ public class Bibframe2Constants {
   public static final String ELECTRONIC_LOCATOR_2_PRED = "http://id.loc.gov/ontologies/bibframe/electronicLocator";
   public static final String DATE_PRED = "http://id.loc.gov/ontologies/bibframe/date";
   public static final String ISSUANCE_PRED = "http://id.loc.gov/ontologies/bibframe/issuance";
-  public static final String MEDIA_PRED = "http://id.loc.gov/ontologies/bibframe/media";
-  public static final String CARRIER_PRED = "http://id.loc.gov/ontologies/bibframe/carrier";
+  public static final String MEDIA2_PRED = "http://id.loc.gov/ontologies/bibframe/media";
+  public static final String CARRIER2_PRED = "http://id.loc.gov/ontologies/bibframe/carrier";
   public static final String AGENT_PRED = "http://id.loc.gov/ontologies/bibframe/agent";
   public static final String ROLE_PRED = "http://id.loc.gov/ontologies/bibframe/role";
   public static final String ENUMERATION_AND_CHRONOLOGY_PRED =

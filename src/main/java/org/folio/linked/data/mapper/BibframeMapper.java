@@ -32,6 +32,7 @@ import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapper;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
+import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -57,6 +58,8 @@ public abstract class BibframeMapper {
   private InnerResourceMapper innerMapper;
   @Autowired
   private CoreMapper coreMapper;
+  @Autowired
+  private KafkaMessageMapper kafkaMessageMapper;
 
   @Mapping(target = "id", source = "resourceHash")
   @Mapping(target = "profile", expression = "java(resourceShortInfo.getType().getSimpleLabel())")
@@ -95,6 +98,10 @@ public abstract class BibframeMapper {
 
   public Bibframe2Response toDto2(Resource resource) {
     return profiledMapper.toDto(resource);
+  }
+
+  public BibframeIndex mapToIndex(@NonNull Resource resource) {
+    return kafkaMessageMapper.toIndex(resource);
   }
 
   public BibframeIndex mapToIndex2(@NonNull Resource resource) {

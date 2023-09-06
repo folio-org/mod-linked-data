@@ -19,7 +19,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_URL;
@@ -65,7 +65,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE;
 import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.MEETING;
 import static org.folio.linked.data.util.Bibframe2Constants.MEETING_URL;
@@ -591,9 +591,9 @@ public class Bibframe2ControllerIT {
     validateSampleElectronicLocator(edgeIterator.next(), instance);
     validateSampleProperty(edgeIterator.next(), instance, ISSUANCE_PRED, ISSUANCE_URL, "issuanceId", "single unit",
       ISSUANCE_URL);
-    validateSampleProperty(edgeIterator.next(), instance, MEDIA_PRED, MEDIA_URL, "mediaId", "unmediated",
+    validateSampleProperty(edgeIterator.next(), instance, MEDIA2_PRED, MEDIA_URL, "mediaId", "unmediated",
       MEDIA_URL);
-    validateSampleProperty(edgeIterator.next(), instance, CARRIER_PRED, CARRIER_URL, "carrierId", "volume",
+    validateSampleProperty(edgeIterator.next(), instance, CARRIER2_PRED, CARRIER_URL, "carrierId", "volume",
       CARRIER_URL);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
@@ -932,15 +932,15 @@ public class Bibframe2ControllerIT {
   }
 
   private String toCarrierLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_LABEL));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER2_PRED), path(PROPERTY_LABEL));
   }
 
   private String toCarrierId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_ID));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER2_PRED), path(PROPERTY_ID));
   }
 
   private String toCarrierUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER_PRED), path(PROPERTY_URI));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(CARRIER2_PRED), path(PROPERTY_URI));
   }
 
   private String toSupplementaryContentLabel() {
@@ -954,15 +954,15 @@ public class Bibframe2ControllerIT {
   }
 
   private String toMediaId() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA_PRED), path(PROPERTY_ID));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA2_PRED), path(PROPERTY_ID));
   }
 
   private String toMediaLabel() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA_PRED), path(PROPERTY_LABEL));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA2_PRED), path(PROPERTY_LABEL));
   }
 
   private String toMediaUri() {
-    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA_PRED), path(PROPERTY_URI));
+    return String.join(".", arrayPath(INSTANCE_URL), arrayPath(MEDIA2_PRED), path(PROPERTY_URI));
   }
 
   private String toNoteLabel() {

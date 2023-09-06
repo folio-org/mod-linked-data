@@ -139,11 +139,11 @@
       },
       "x-json-property": "http://bibfra.me/vocab/lite/map"
     },
-    "electronicLocator": {
+    "accessLocation": {
       "type": "array",
       "items": {
         "type": "object",
-        "title": "ElectronicLocatorField",
+        "title": "AccessLocationField",
         "properties": {
           "link": {
             "type": "array",
@@ -161,7 +161,23 @@
           }
         }
       },
-      "x-json-property": "https://bibfra.me/vocab/marc/electronicLocator"
+      "x-json-property": "http://bibfra.me/vocab/marc/accessLocation"
+    },
+    "media": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "Triple.json"
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/media"
+    },
+    "carrier": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "Triple.json"
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/carrier"
     },
     "responsibilityStatement": {
       "type": "array",
@@ -199,20 +215,6 @@
       },
       "x-json-property": "http://bibfra.me/vocab/bflc/projectedProvisionDate",
       "description": "Projected publication date (YYMM)"
-    },
-    "mediaType": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "x-json-property": "http://bibfra.me/vocab/marc/mediaType"
-    },
-    "carrier": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "x-json-property": "http://bibfra.me/vocab/marc/carrier"
     },
     "issuance": {
       "type": "array",

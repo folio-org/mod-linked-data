@@ -8,8 +8,12 @@ import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
+import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER;
+import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CODE;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
@@ -17,8 +21,6 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EAN;
 import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR;
-import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ID;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
@@ -34,6 +36,7 @@ import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA;
+import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
@@ -55,6 +58,7 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.linked.data.util.BibframeConstants.TERM;
 import static org.folio.linked.data.util.BibframeConstants.TYPE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
@@ -216,8 +220,8 @@ public class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(21);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(20);
+    assertThat(resourceRepo.count()).isEqualTo(23);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(22);
     var requestBuilder = delete(BIBFRAME_URI + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -227,9 +231,9 @@ public class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(20);
+    assertThat(resourceRepo.count()).isEqualTo(22);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(19);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(21);
     checkKafkaMessageSent(null, existed.getResourceHash());
   }
 
@@ -245,14 +249,16 @@ public class BibframeControllerIT {
       .andExpect(jsonPath(ID, notNullValue()))
       .andExpect(jsonPath(TYPE, equalTo(MONOGRAPH)))
       .andExpect(jsonPath("$." + path(INSTANCE), notNullValue()))
-      .andExpect(jsonPath("$." + toCarrier(), equalTo("carrier")))
+      .andExpect(jsonPath("$." + toAccessLocationLink(), equalTo("accessLocationValue")))
+      .andExpect(jsonPath("$." + toAccessLocationNote(), equalTo("accessLocationNote")))
+      .andExpect(jsonPath("$." + toCarrierCode(), equalTo("carrier code")))
+      .andExpect(jsonPath("$." + toCarrierLink(), equalTo("carrier link")))
+      .andExpect(jsonPath("$." + toCarrierTerm(), equalTo("carrier 1")))
       .andExpect(jsonPath("$." + toCopyrightDate(), equalTo("copyright date")))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
       .andExpect(jsonPath("$." + toEanValue(), equalTo("ean value")))
       .andExpect(jsonPath("$." + toEanQualifier(), equalTo("ean qualifier")))
       .andExpect(jsonPath("$." + toEditionStatement(), equalTo("edition statement")))
-      .andExpect(jsonPath("$." + toElectronicLocatorLink(), equalTo("electronicLocatorValue")))
-      .andExpect(jsonPath("$." + toElectronicLocatorNote(), equalTo("electronicLocatorNote")))
       .andExpect(jsonPath("$." + toInstanceTitlePartName(), equalTo("Instance: partName")))
       .andExpect(jsonPath("$." + toInstanceTitlePartNumber(), equalTo("Instance: partNumber")))
       .andExpect(jsonPath("$." + toInstanceTitleMain(), equalTo("Instance: Laramie holds the range")))
@@ -268,7 +274,9 @@ public class BibframeControllerIT {
       .andExpect(jsonPath("$." + toLccnStatusLink(), equalTo("lccn status link")))
       .andExpect(jsonPath("$." + toLocalIdValue(), equalTo("localId value")))
       .andExpect(jsonPath("$." + toLocalIdAssigner(), equalTo("localId assigner")))
-      .andExpect(jsonPath("$." + toMedia(), equalTo("unmediated")))
+      .andExpect(jsonPath("$." + toMediaCode(), equalTo("media code")))
+      .andExpect(jsonPath("$." + toMediaLink(), equalTo("media link")))
+      .andExpect(jsonPath("$." + toMediaTerm(), equalTo("unmediated")))
       .andExpect(jsonPath("$." + toOtherIdValue(), equalTo("otherId value")))
       .andExpect(jsonPath("$." + toOtherIdQualifier(), equalTo("otherId qualifier")))
       .andExpect(jsonPath("$." + toParallelTitlePartName(), equalTo("Parallel: partName")))
@@ -329,16 +337,14 @@ public class BibframeControllerIT {
     assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(instance.getType().getTypeUri()).isEqualTo(INSTANCE);
     assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getDoc().size()).isEqualTo(8);
+    assertThat(instance.getDoc().size()).isEqualTo(6);
     validateLiteral(instance, DIMENSIONS, "20 cm");
     validateLiteral(instance, EDITION_STATEMENT, "edition statement");
     validateLiteral(instance, RESPONSIBILITY_STATEMENT, "responsibility statement");
     validateLiteral(instance, COPYRIGHT_DATE, "copyright date");
     validateLiteral(instance, PROJECTED_PROVISION_DATE, "projected provision date");
-    validateLiteral(instance, MEDIA, "unmediated");
-    validateLiteral(instance, CARRIER, "carrier");
     validateLiteral(instance, ISSUANCE, "single unit");
-    assertThat(instance.getOutgoingEdges()).hasSize(13);
+    assertThat(instance.getOutgoingEdges()).hasSize(15);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateInstanceTitle(edgeIterator.next(), instance);
@@ -348,12 +354,14 @@ public class BibframeControllerIT {
     validateProviderEvent(edgeIterator.next(), instance, PUBLICATION_PRED);
     validateProviderEvent(edgeIterator.next(), instance, DISTRIBUTION_PRED);
     validateProviderEvent(edgeIterator.next(), instance, MANUFACTURE_PRED);
-    validateElectronicLocator(edgeIterator.next(), instance);
+    validateAccessLocation(edgeIterator.next(), instance);
     validateLccn(edgeIterator.next(), instance);
     validateIsbn(edgeIterator.next(), instance);
     validateEan(edgeIterator.next(), instance);
     validateLocalId(edgeIterator.next(), instance);
     validateOtherId(edgeIterator.next(), instance);
+    validateTriple(edgeIterator.next(), instance, MEDIA_PRED, MEDIA, "unmediated");
+    validateTriple(edgeIterator.next(), instance, CARRIER_PRED, CARRIER, "carrier 1");
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -547,28 +555,39 @@ public class BibframeControllerIT {
     assertThat(status.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateElectronicLocator(ResourceEdge edge, Resource source) {
+  private void validateAccessLocation(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(E_LOCATOR_PRED);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(ACCESS_LOCATION_PRED);
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo(locator.getDoc().get(LINK).get(0).asText());
-    assertThat(locator.getType().getTypeUri()).isEqualTo(E_LOCATOR);
+    assertThat(locator.getType().getTypeUri()).isEqualTo(ACCESS_LOCATION);
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK).size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(LINK).get(0).asText()).isEqualTo("electronicLocatorValue");
+    assertThat(locator.getDoc().get(LINK).get(0).asText()).isEqualTo("accessLocationValue");
     assertThat(locator.getDoc().get(NOTE).size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(NOTE).get(0).asText()).isEqualTo("electronicLocatorNote");
+    assertThat(locator.getDoc().get(NOTE).get(0).asText()).isEqualTo("accessLocationNote");
     assertThat(locator.getOutgoingEdges()).isEmpty();
   }
 
-  private String toCarrier() {
-    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER));
-  }
-
-  private String toMedia() {
-    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA));
+  private void validateTriple(ResourceEdge edge, Resource source, String pred, String type, String term) {
+    var prefix = pred.substring(pred.lastIndexOf("/") + 1);
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(pred);
+    var media = edge.getTarget();
+    assertThat(media.getLabel()).isEqualTo(media.getDoc().get(TERM).get(0).asText());
+    assertThat(media.getType().getTypeUri()).isEqualTo(type);
+    assertThat(media.getResourceHash()).isNotNull();
+    assertThat(media.getDoc().size()).isEqualTo(3);
+    assertThat(media.getDoc().get(CODE).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(CODE).get(0).asText()).isEqualTo(prefix + " code");
+    assertThat(media.getDoc().get(TERM).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(TERM).get(0).asText()).isEqualTo(term);
+    assertThat(media.getDoc().get(LINK).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(LINK).get(0).asText()).isEqualTo(prefix + " link");
+    assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
   private String toDimensions() {
@@ -579,12 +598,12 @@ public class BibframeControllerIT {
     return String.join(".", arrayPath(INSTANCE), arrayPath(EDITION_STATEMENT));
   }
 
-  private String toElectronicLocatorLink() {
-    return String.join(".", arrayPath(INSTANCE), arrayPath(E_LOCATOR_PRED), arrayPath(LINK));
+  private String toAccessLocationLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(ACCESS_LOCATION_PRED), arrayPath(LINK));
   }
 
-  private String toElectronicLocatorNote() {
-    return String.join(".", arrayPath(INSTANCE), arrayPath(E_LOCATOR_PRED), arrayPath(NOTE));
+  private String toAccessLocationNote() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(ACCESS_LOCATION_PRED), arrayPath(NOTE));
   }
 
   private String toResponsibilityStatement() {
@@ -773,6 +792,30 @@ public class BibframeControllerIT {
 
   private String toOtherIdQualifier() {
     return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(QUALIFIER));
+  }
+
+  private String toCarrierCode() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER_PRED, 0), arrayPath(CODE));
+  }
+
+  private String toCarrierLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER_PRED, 0), arrayPath(LINK));
+  }
+
+  private String toCarrierTerm() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER_PRED, 0), arrayPath(TERM));
+  }
+
+  private String toMediaCode() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA_PRED, 0), arrayPath(CODE));
+  }
+
+  private String toMediaLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA_PRED, 0), arrayPath(LINK));
+  }
+
+  private String toMediaTerm() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA_PRED, 0), arrayPath(TERM));
   }
 
   private String toErrorType() {

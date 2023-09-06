@@ -38,7 +38,7 @@
   <changeSet id="08_insert_type_lookup" author="Pavel_Bobylev@epam.com">
     <insert tableName="type_lookup">
       <column name="type_hash" value="-333296910"/>
-      <column name="type_uri" value="https://bibfra.me/vocab/marc/ElectronicLocator"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/AccessLocation"/>
     </insert>
     <insert tableName="type_lookup">
       <column name="type_hash" value="202384385"/>
@@ -72,6 +72,13 @@
       <column name="type_hash" value="-104479936"/>
       <column name="type_uri" value="http://bibfra.me/vocab/marc/Status"/>
     </insert>
-
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-281156614"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/Carrier"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="313573754"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/Media"/>
+    </insert>
   </changeSet>
 </databaseChangeLog>

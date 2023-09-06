@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.folio.linked.data.domain.dto.EanField;
-import org.folio.linked.data.domain.dto.Instance2TitleInner;
 import org.folio.linked.data.domain.dto.InstanceMapInner;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.LccnField;
@@ -39,6 +38,6 @@ public class MapDeserializer extends JsonDeserializer<InstanceMapInner> {
       return jp.getCodec().treeToValue(node, OtherIdField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(Instance2TitleInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(InstanceMapInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

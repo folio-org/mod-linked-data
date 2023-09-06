@@ -8,7 +8,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.APPLICABLE_INSTITUTI
 import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO;
 import static org.folio.linked.data.util.Bibframe2Constants.APPLIES_TO_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_PRED;
-import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION;
 import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
@@ -40,7 +40,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.JURISDICTION;
 import static org.folio.linked.data.util.Bibframe2Constants.LABEL_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.MAIN_TITLE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE;
-import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.MEETING;
 import static org.folio.linked.data.util.Bibframe2Constants.MONOGRAPH_2;
@@ -81,8 +81,12 @@ import static org.folio.linked.data.util.Bibframe2Constants.URL_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TITLE_2;
 import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TYPE_URL;
+import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
+import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER;
+import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CODE;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
@@ -90,8 +94,6 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EAN;
 import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR;
-import static org.folio.linked.data.util.BibframeConstants.E_LOCATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
@@ -106,6 +108,7 @@ import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA;
+import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
@@ -127,6 +130,7 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.linked.data.util.BibframeConstants.TERM;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
 
@@ -223,12 +227,12 @@ public class MonographTestService {
     var distribution = providerEvent("distribution");
     var manufacture = providerEvent("manufacture");
 
-    var electronicLocator = createResource(
+    var accessLocation = createResource(
       Map.of(
-        LINK, List.of("electronicLocatorValue"),
-        NOTE, List.of("electronicLocatorNote")
+        LINK, List.of("accessLocationValue"),
+        NOTE, List.of("accessLocationNote")
       ),
-      E_LOCATOR,
+      ACCESS_LOCATION,
       emptyMap()
     );
 
@@ -274,14 +278,36 @@ public class MonographTestService {
       emptyMap()
     );
 
+    var media = createResource(
+      Map.of(
+        CODE, List.of("media code"),
+        TERM, List.of("unmediated"),
+        LINK, List.of("media link")
+      ),
+      MEDIA,
+      emptyMap()
+    );
+
+    var carrier = createResource(
+      Map.of(
+        CODE, List.of("carrier code"),
+        TERM, List.of("carrier 1"),
+        LINK, List.of("carrier link")
+      ),
+      CARRIER,
+      emptyMap()
+    );
+
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
     pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
     pred2OutgoingResources.put(PRODUCTION_PRED, List.of(production));
     pred2OutgoingResources.put(PUBLICATION_PRED, List.of(publication));
     pred2OutgoingResources.put(DISTRIBUTION_PRED, List.of(distribution));
     pred2OutgoingResources.put(MANUFACTURE_PRED, List.of(manufacture));
-    pred2OutgoingResources.put(E_LOCATOR_PRED, List.of(electronicLocator));
+    pred2OutgoingResources.put(ACCESS_LOCATION_PRED, List.of(accessLocation));
     pred2OutgoingResources.put(MAP_PRED, List.of(lccn, isbn, ean, localId, otherId));
+    pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
+    pred2OutgoingResources.put(CARRIER_PRED, List.of(carrier));
 
     return createResource(
       Map.of(
@@ -290,8 +316,6 @@ public class MonographTestService {
         EDITION_STATEMENT, List.of("edition statement"),
         COPYRIGHT_DATE, List.of("copyright date"),
         PROJECTED_PROVISION_DATE, List.of("projected provision date"),
-        CARRIER, List.of("carrier"),
-        MEDIA, List.of("unmediated"),
         ISSUANCE, List.of("single unit")
       ),
       INSTANCE,
@@ -633,8 +657,8 @@ public class MonographTestService {
     pred2OutgoingResources.put(NOTE_PRED, List.of(note));
     pred2OutgoingResources.put(EXTENT_PRED, List.of(extent));
     pred2OutgoingResources.put(ISSUANCE_PRED, List.of(issuance));
-    pred2OutgoingResources.put(CARRIER_PRED, List.of(carrier));
-    pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
+    pred2OutgoingResources.put(CARRIER2_PRED, List.of(carrier));
+    pred2OutgoingResources.put(MEDIA2_PRED, List.of(media));
     pred2OutgoingResources.put(IMM_ACQUISITION_PRED, List.of(immediateAcquisition));
     pred2OutgoingResources.put(SUPP_CONTENT_PRED, List.of(supplementaryContent));
     pred2OutgoingResources.put(ELECTRONIC_LOCATOR_2_PRED, List.of(electronicLocator));

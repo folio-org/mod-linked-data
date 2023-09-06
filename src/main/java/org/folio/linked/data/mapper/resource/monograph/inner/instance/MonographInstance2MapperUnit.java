@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance;
 
-import static org.folio.linked.data.util.Bibframe2Constants.CARRIER_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.CARRIER2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.CONTRIBUTION_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.COPYRIGHT_DATE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.DIMENSIONS_URL;
@@ -13,7 +13,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_2;
 import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_TITLE_2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.INSTANCE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.ISSUANCE_PRED;
-import static org.folio.linked.data.util.Bibframe2Constants.MEDIA_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.MEDIA2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PROJECTED_PROVISION_DATE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
@@ -83,8 +83,8 @@ public class MonographInstance2MapperUnit implements InnerResourceMapperUnit {
     coreMapper.mapResourceEdges(dto.getElectronicLocator(), resource, ELECTRONIC_LOCATOR_2_PRED, Instance2.class,
       mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getIssuance(), resource, ISSUANCE_PRED, Instance2.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, Instance2.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, Instance2.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA2_PRED, Instance2.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER2_PRED, Instance2.class, mapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
