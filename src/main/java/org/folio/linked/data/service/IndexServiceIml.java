@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class IndexServiceIml implements IndexService{
+public class IndexServiceIml implements IndexService {
 
   private final ResourceRepository resourceRepository;
 
