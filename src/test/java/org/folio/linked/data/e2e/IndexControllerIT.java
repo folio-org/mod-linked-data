@@ -1,9 +1,25 @@
 package org.folio.linked.data.e2e;
 
+import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getBibframe2Sample;
+import static org.folio.linked.data.test.TestUtil.getIndexFalseSample;
+import static org.folio.linked.data.test.TestUtil.getIndexTrueSample;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.SneakyThrows;
-import org.folio.linked.data.domain.dto.Bibframe2Response;
+import org.folio.linked.data.configuration.properties.BibframeProperties;
+import org.folio.linked.data.domain.dto.Bibframe2Request;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestService;
@@ -11,8 +27,8 @@ import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -20,23 +36,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.TestUtil.*;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 @IntegrationTest
 @Transactional
 class IndexControllerIT {
 
   public static final String INDEX_URL = "/index";
-  public static final String BIBFRAME_URL = "/bibframe2";
   public static OkapiConfiguration okapi;
 
   @Autowired
@@ -48,9 +52,13 @@ class IndexControllerIT {
   @Autowired
   private ResourceEdgeRepository resourceEdgeRepository;
   @Autowired
+  private BibframeMapper bibframeMapper;
+  @Autowired
   private ObjectMapper objectMapper;
   @Autowired
   private MonographTestService monographTestService;
+  @Autowired
+  private BibframeProperties bibframeProperties;
 
 
   @BeforeAll
@@ -58,22 +66,22 @@ class IndexControllerIT {
     kafkaAdminService.createTopics(TENANT_ID);
   }
 
-  @AfterEach
+  @BeforeEach
   public void clean() {
     resourceEdgeRepository.deleteAll();
     resourceRepo.deleteAll();
   }
 
   @Test
-  void createIndexIfTrue_OK() throws Exception {
-    List<Resource> resources = createTwoMonographInstancesWithSharedResources();
+  void createIndexIfTrue_Ok() throws Exception {
+    List<Resource> resources = createMonograph();
 
     var requestBuilder = post(INDEX_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getIndexTrueSample());
 
-    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 54)
+    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 1)
       .andReturn()
       .getResponse()
       .getContentAsString();
@@ -82,55 +90,30 @@ class IndexControllerIT {
   }
 
   @Test
-  void createNoIndexIfFalse_OK() throws Exception {
-    List<Resource> resources = createTwoMonographInstancesWithSharedResources();
-    System.out.println("resoure size" + resources.size());
+  void createNoIndexIfFalse_Ok() throws Exception {
+    createMonograph();
 
     var requestBuilder = post(INDEX_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getIndexFalseSample());
 
-    var resultActions = validateSampleIndexResponse(mockMvc.perform(requestBuilder), 0)
+    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 0)
       .andReturn()
       .getResponse()
       .getContentAsString();
-
-    System.out.println("resultactions: " + resultActions);
   }
 
   @SneakyThrows
   protected void checkKafkaMessageSent(Resource persisted) {
   }
 
-  private List<Resource> createTwoMonographInstancesWithSharedResources() throws Exception {
-    List<Resource> resourceList = new ArrayList<>();
+  private List<Resource> createMonograph() throws Exception {
+    Bibframe2Request bibframe2Request = objectMapper.readValue(getBibframe2Sample(), Bibframe2Request.class);
+    var mapped1 = bibframeMapper.toEntity2(bibframe2Request);
+    resourceRepo.save(mapped1);
 
-    var requestBuilder1 = post(BIBFRAME_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getBibframe2Sample());
-    var resultActions1 = mockMvc.perform(requestBuilder1);
-    var response1 = resultActions1.andReturn().getResponse().getContentAsString();
-    var bibframeResponse1 = objectMapper.readValue(response1, Bibframe2Response.class);
-    var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
-    assertThat(persistedOptional1).isPresent();
-    resourceList.add(persistedOptional1.get());
-
-    var requestBuilder2 = post(BIBFRAME_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getBibframe2Sample().replace("volume", "length"));
-
-    // when
-    var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
-    var bibframeResponse2 = objectMapper.readValue(response2, Bibframe2Response.class);
-    var persistedOptional2 = resourceRepo.findById(bibframeResponse2.getId());
-
-    assertThat(persistedOptional2).isPresent();
-    resourceList.add(persistedOptional2.get());
-
-    return resourceList;
+    return resourceRepo.findResourcesByType(bibframeProperties.getProfiles());
   }
 
   @NotNull
