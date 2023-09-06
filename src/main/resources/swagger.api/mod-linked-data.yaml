@@ -5,6 +5,28 @@ info:
   description: Linked Data service API
 
 paths:
+  /index:
+    post:
+      operationId: createIndex
+      description: Create an index for all resources in db
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: schema/indexRequest.json
+      responses:
+        '200':
+          description: Created resource index
+          content:
+            application/json:
+              schema:
+                $ref: schema/indexResponse.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
   /bibframe:
     post:
       operationId: createBibframe
