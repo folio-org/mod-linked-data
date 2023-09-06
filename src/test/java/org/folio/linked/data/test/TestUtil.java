@@ -44,7 +44,6 @@ public class TestUtil {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
   private static final String BIBFRAME_2_SAMPLE = loadResourceAsString("samples/bibframe2-full.json");
-
   private static final String INDEX_TRUE_SAMPLE = loadResourceAsString("samples/index-true.json");
   private static final String INDEX_FALSE_SAMPLE = loadResourceAsString("samples/index-false.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
