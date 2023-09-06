@@ -1,14 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Provider place",
+  "description": "Triple element with code, term and link",
   "type": "object",
   "properties": {
-    "name": {
+    "code": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "x-json-property": "http://bibfra.me/view/lite/name"
+      "x-json-property": "http://bibfra.me/vocab/marc/code"
+    },
+    "term": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/term"
     },
     "link": {
       "type": "array",

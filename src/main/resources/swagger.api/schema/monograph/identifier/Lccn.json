@@ -1,21 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "LCCN Info",
-  "type": "object",
-  "properties": {
-    "value": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "x-json-property": "http://bibfra.me/vocab/marc/lccn"
-    },
-    "status": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "x-json-property": "http://bibfra.me/vocab/marc/status"
+  "allOf": [
+    {
+      "$ref": "BaseIdentifier.json"
     }
-  }
+  ]
 }

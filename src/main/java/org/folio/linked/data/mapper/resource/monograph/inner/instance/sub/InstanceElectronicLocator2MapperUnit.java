@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.ELECTRONIC_LOCATOR_2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.NOTE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.NOTE_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.URL_URL;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = URL_URL, predicate = ELECTRONIC_LOCATOR_PRED, dtoClass = UrlField2.class)
+@MapperUnit(type = URL_URL, predicate = ELECTRONIC_LOCATOR_2_PRED, dtoClass = UrlField2.class)
 public class InstanceElectronicLocator2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;

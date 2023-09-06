@@ -8,7 +8,7 @@
       "items": {
         "type": "string"
       },
-      "x-json-property": "http://bibfra.me/vocab/marc/otherIdentifier"
+      "x-json-property": "http://bibfra.me/vocab/lite/name"
     },
     "qualifier": {
       "type": "array",

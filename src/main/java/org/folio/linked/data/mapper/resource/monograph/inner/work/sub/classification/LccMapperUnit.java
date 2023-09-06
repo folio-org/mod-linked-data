@@ -2,7 +2,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.classific
 
 import static org.folio.linked.data.util.Bibframe2Constants.ASSIGNER_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.LCC;
-import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS2_PRED;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ClassificationLcc2;
@@ -25,7 +25,7 @@ public class LccMapperUnit implements WorkSubResourceMapperUnit {
   public Work2 toDto(Resource source, Work2 destination) {
     var lcc = coreMapper.readResourceDoc(source, ClassificationLcc2.class);
     coreMapper.addMappedProperties(source, ASSIGNER_PRED, lcc::addAssignerItem);
-    coreMapper.addMappedProperties(source, STATUS_PRED, lcc::addStatusItem);
+    coreMapper.addMappedProperties(source, STATUS2_PRED, lcc::addStatusItem);
     destination.addClassificationItem(new ClassificationLccField2().classificationLcc(lcc));
     return destination;
   }

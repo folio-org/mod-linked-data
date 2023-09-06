@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,7 +27,6 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.search.domain.dto.BibframeIdentifiersInner;
-import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,19 +68,19 @@ class BibframeMapperTest {
     doReturn(expectedResource).when(profiledMapper).toEntity(dto);
 
     // when
-    Resource resource = bibframeMapper.toEntity2(dto);
+    var resource = bibframeMapper.toEntity2(dto);
 
     // then
-    Iterator<ResourceEdge> resourceEdgeIterator = resource.getOutgoingEdges().iterator();
-    ResourceEdge result1 = resourceEdgeIterator.next();
+    var resourceEdgeIterator = resource.getOutgoingEdges().iterator();
+    var result1 = resourceEdgeIterator.next();
     assertThat(result1.getId().getSourceHash()).isEqualTo(re1.getSource().getResourceHash());
     assertThat(result1.getId().getTargetHash()).isEqualTo(re1.getTarget().getResourceHash());
     assertThat(result1.getId().getPredicateHash()).isEqualTo(re1.getPredicate().getPredicateHash());
-    ResourceEdge result2 = resourceEdgeIterator.next();
+    var result2 = resourceEdgeIterator.next();
     assertThat(result2.getId().getSourceHash()).isEqualTo(re2.getSource().getResourceHash());
     assertThat(result2.getId().getTargetHash()).isEqualTo(re2.getTarget().getResourceHash());
     assertThat(result2.getId().getPredicateHash()).isEqualTo(re2.getPredicate().getPredicateHash());
-    ResourceEdge result3 = result2.getTarget().getOutgoingEdges().iterator().next();
+    var result3 = result2.getTarget().getOutgoingEdges().iterator().next();
     assertThat(result3.getId().getSourceHash()).isEqualTo(re3.getSource().getResourceHash());
     assertThat(result3.getId().getTargetHash()).isEqualTo(re3.getTarget().getResourceHash());
     assertThat(result3.getId().getPredicateHash()).isEqualTo(re3.getPredicate().getPredicateHash());
@@ -94,7 +92,7 @@ class BibframeMapperTest {
     Resource resource = null;
 
     // when
-    NullPointerException thrown = assertThrows(NullPointerException.class, () -> bibframeMapper.mapToIndex2(resource));
+    var thrown = assertThrows(NullPointerException.class, () -> bibframeMapper.mapToIndex2(resource));
 
     // then
     MatcherAssert.assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
@@ -106,8 +104,7 @@ class BibframeMapperTest {
     var resource = new Resource();
 
     // when
-    NotSupportedException thrown =
-      assertThrows(NotSupportedException.class, () -> bibframeMapper.mapToIndex2(resource));
+    var thrown = assertThrows(NotSupportedException.class, () -> bibframeMapper.mapToIndex2(resource));
 
     // then
     MatcherAssert.assertThat(thrown.getMessage(),
@@ -136,7 +133,7 @@ class BibframeMapperTest {
     instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT_URL, List.of(UUID.randomUUID().toString()))));
 
     // when
-    BibframeIndex result = bibframeMapper.mapToIndex2(resource);
+    var result = bibframeMapper.mapToIndex2(resource);
 
     // then
     assertThat(result.getId()).isEqualTo(resource.getResourceHash().toString());

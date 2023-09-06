@@ -2,7 +2,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provi
 
 import static org.folio.linked.data.util.Bibframe2Constants.DISTRIBUTION;
 import static org.folio.linked.data.util.Bibframe2Constants.DISTRIBUTION_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class Distribution2MapperUnit implements Instance2SubResourceMapperUnit {
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {
     var distribution = coreMapper.toProvisionActivity(source);
-    coreMapper.addMappedProperties(source, PLACE_PRED, distribution::addPlaceItem);
+    coreMapper.addMappedProperties(source, PLACE2_PRED, distribution::addPlaceItem);
     return destination.addProvisionActivityItem(new DistributionField2().distribution(distribution));
   }
 

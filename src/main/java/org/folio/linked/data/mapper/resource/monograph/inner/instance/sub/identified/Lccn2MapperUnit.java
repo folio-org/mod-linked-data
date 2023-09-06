@@ -3,7 +3,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.ident
 import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LCCN;
 import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_LCCN_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.STATUS_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 
@@ -34,7 +34,7 @@ public class Lccn2MapperUnit implements Instance2SubResourceMapperUnit {
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {
     var lccn = coreMapper.readResourceDoc(source, Lccn2.class);
-    coreMapper.addMappedProperties(source, STATUS_PRED, lccn::addStatusItem);
+    coreMapper.addMappedProperties(source, STATUS2_PRED, lccn::addStatusItem);
     destination.addIdentifiedByItem(new LccnField2().lccn(lccn));
     return destination;
   }
@@ -46,7 +46,7 @@ public class Lccn2MapperUnit implements Instance2SubResourceMapperUnit {
     resource.setLabel(IDENTIFIERS_LCCN_URL);
     resource.setType(resourceTypeService.get(IDENTIFIERS_LCCN));
     resource.setDoc(getDoc(lccn));
-    coreMapper.mapPropertyEdges(lccn.getStatus(), resource, STATUS_PRED, STATUS_URL);
+    coreMapper.mapPropertyEdges(lccn.getStatus(), resource, STATUS2_PRED, STATUS_URL);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
