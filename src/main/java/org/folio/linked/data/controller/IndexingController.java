@@ -18,6 +18,6 @@ public class IndexingController implements IndexApi {
 
   @Override
   public ResponseEntity<IndexResponse> createIndex(String okapiTenant, IndexRequest request) {
-    return ResponseEntity.ok(indexService.creaetIndex(request));
+    return ResponseEntity.ok(indexService.createIndex(request));
   }
 }

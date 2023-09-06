@@ -20,7 +20,7 @@ public class IndexServiceIml implements IndexService {
   private final BibframeMapper bibframeMapper;
 
   @Override
-  public IndexResponse creaetIndex(IndexRequest request) {
+  public IndexResponse createIndex(IndexRequest request) {
     var indexResponse = new IndexResponse();
     if (request.getReindex()) {
       long count = resourceRepository.findAll()
