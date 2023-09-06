@@ -1,5 +1,6 @@
 package org.folio.linked.data.repo;
 
+import java.util.List;
 import java.util.Set;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
@@ -15,4 +16,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   @Query("SELECT r FROM Resource r JOIN r.type t WHERE t.typeUri IN :types OR t.simpleLabel IN :types")
   Page<ResourceShortInfo> findResourcesByType(@Param("types") Set<String> types, Pageable pageable);
 
+  @Query("SELECT r FROM Resource r JOIN r.type t WHERE t.typeUri IN :types OR t.simpleLabel IN :types")
+  List<Resource> findResourcesByType(@Param("types") Set<String> types);
 }
