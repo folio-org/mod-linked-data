@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Reindexing Request Response",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "description": "If all data is fetched from db and sent to Kafka -> ok, if there's an error -> failed",
+      "enum": ["ok", "failed"]
+    },
+    "count": {
+      "type": "integer",
+      "format": "int64",
+      "description": "The amount of indexed resources"
+    },
+    "message": {
+      "type": "string",
+      "description": "The error message"
+    }
+  }
+}
