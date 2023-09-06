@@ -5,6 +5,6 @@ import org.folio.linked.data.domain.dto.IndexResponse;
 
 public interface IndexService {
 
-  IndexResponse creaetIndex(IndexRequest request);
+  IndexResponse createIndex(IndexRequest request);
 
 }
