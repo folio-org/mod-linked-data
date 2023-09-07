@@ -5,7 +5,7 @@ info:
   description: Linked Data service API
 
 paths:
-  /index:
+  /reindex:
     post:
       operationId: createIndex
       description: Create an index for all resources in db
