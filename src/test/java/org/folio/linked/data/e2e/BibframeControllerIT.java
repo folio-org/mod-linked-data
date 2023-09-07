@@ -8,26 +8,57 @@ import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
+import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER;
+import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CODE;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
+import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.EAN;
+import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.ID;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ISBN;
+import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
+import static org.folio.linked.data.util.BibframeConstants.LABEL;
+import static org.folio.linked.data.util.BibframeConstants.LCCN;
+import static org.folio.linked.data.util.BibframeConstants.LINK;
+import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
+import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
+import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA;
+import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
+import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeConstants.OTHER_ID;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
+import static org.folio.linked.data.util.BibframeConstants.PLACE;
+import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
+import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
+import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
+import static org.folio.linked.data.util.BibframeConstants.STATUS;
+import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.linked.data.util.BibframeConstants.TERM;
 import static org.folio.linked.data.util.BibframeConstants.TYPE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
@@ -107,14 +138,14 @@ public class BibframeControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = validateSampleBibframeResponse(resultActions)
+    var response = validateBibframeResponse(resultActions)
       .andReturn().getResponse().getContentAsString();
 
     var bibframeResponse = objectMapper.readValue(response, BibframeResponse.class);
     var persistedOptional = resourceRepo.findById(bibframeResponse.getId());
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateSampleBibframeEntity(bibframe);
+    validateMonographResource(bibframe);
     checkKafkaMessageSent(bibframe, null);
   }
 
@@ -130,7 +161,7 @@ public class BibframeControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    validateSampleBibframeResponse(resultActions);
+    validateBibframeResponse(resultActions);
   }
 
   @Test
@@ -189,8 +220,8 @@ public class BibframeControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(5);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(4);
+    assertThat(resourceRepo.count()).isEqualTo(23);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(22);
     var requestBuilder = delete(BIBFRAME_URI + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -200,9 +231,9 @@ public class BibframeControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(4);
+    assertThat(resourceRepo.count()).isEqualTo(22);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(3);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(21);
     checkKafkaMessageSent(null, existed.getResourceHash());
   }
 
@@ -211,29 +242,73 @@ public class BibframeControllerIT {
   }
 
   @NotNull
-  private ResultActions validateSampleBibframeResponse(ResultActions resultActions) throws Exception {
+  private ResultActions validateBibframeResponse(ResultActions resultActions) throws Exception {
     return resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(ID, notNullValue()))
       .andExpect(jsonPath(TYPE, equalTo(MONOGRAPH)))
       .andExpect(jsonPath("$." + path(INSTANCE), notNullValue()))
-      .andExpect(jsonPath("$." + toCarrier(), equalTo("carrier")))
+      .andExpect(jsonPath("$." + toAccessLocationLink(), equalTo("accessLocationValue")))
+      .andExpect(jsonPath("$." + toAccessLocationNote(), equalTo("accessLocationNote")))
+      .andExpect(jsonPath("$." + toCarrierCode(), equalTo("carrier code")))
+      .andExpect(jsonPath("$." + toCarrierLink(), equalTo("carrier link")))
+      .andExpect(jsonPath("$." + toCarrierTerm(), equalTo("carrier 1")))
       .andExpect(jsonPath("$." + toCopyrightDate(), equalTo("copyright date")))
       .andExpect(jsonPath("$." + toDimensions(), equalTo("20 cm")))
+      .andExpect(jsonPath("$." + toEanValue(), equalTo("ean value")))
+      .andExpect(jsonPath("$." + toEanQualifier(), equalTo("ean qualifier")))
       .andExpect(jsonPath("$." + toEditionStatement(), equalTo("edition statement")))
       .andExpect(jsonPath("$." + toInstanceTitlePartName(), equalTo("Instance: partName")))
       .andExpect(jsonPath("$." + toInstanceTitlePartNumber(), equalTo("Instance: partNumber")))
       .andExpect(jsonPath("$." + toInstanceTitleMain(), equalTo("Instance: Laramie holds the range")))
       .andExpect(jsonPath("$." + toInstanceTitleNonSortNum(), equalTo("Instance: nonSortNum")))
       .andExpect(jsonPath("$." + toInstanceTitleSubtitle(), equalTo("Instance: subtitle")))
-      .andExpect(jsonPath("$." + toMedia(), equalTo("unmediated")))
+      .andExpect(jsonPath("$." + toIsbnValue(), equalTo("isbn value")))
+      .andExpect(jsonPath("$." + toIsbnQualifier(), equalTo("isbn qualifier")))
+      .andExpect(jsonPath("$." + toIsbnStatusValue(), equalTo("isbn status label")))
+      .andExpect(jsonPath("$." + toIsbnStatusLink(), equalTo("isbn status link")))
+      .andExpect(jsonPath("$." + toIssuance(), equalTo("single unit")))
+      .andExpect(jsonPath("$." + toLccnValue(), equalTo("lccn value")))
+      .andExpect(jsonPath("$." + toLccnStatusValue(), equalTo("lccn status label")))
+      .andExpect(jsonPath("$." + toLccnStatusLink(), equalTo("lccn status link")))
+      .andExpect(jsonPath("$." + toLocalIdValue(), equalTo("localId value")))
+      .andExpect(jsonPath("$." + toLocalIdAssigner(), equalTo("localId assigner")))
+      .andExpect(jsonPath("$." + toMediaCode(), equalTo("media code")))
+      .andExpect(jsonPath("$." + toMediaLink(), equalTo("media link")))
+      .andExpect(jsonPath("$." + toMediaTerm(), equalTo("unmediated")))
+      .andExpect(jsonPath("$." + toOtherIdValue(), equalTo("otherId value")))
+      .andExpect(jsonPath("$." + toOtherIdQualifier(), equalTo("otherId qualifier")))
       .andExpect(jsonPath("$." + toParallelTitlePartName(), equalTo("Parallel: partName")))
       .andExpect(jsonPath("$." + toParallelTitlePartNumber(), equalTo("Parallel: partNumber")))
       .andExpect(jsonPath("$." + toParallelTitleMain(), equalTo("Parallel: Laramie holds the range")))
       .andExpect(jsonPath("$." + toParallelTitleNote(), equalTo("Parallel: noteLabel")))
       .andExpect(jsonPath("$." + toParallelTitleDate(), equalTo("Parallel: date")))
       .andExpect(jsonPath("$." + toParallelTitleSubtitle(), equalTo("Parallel: subtitle")))
+      .andExpect(jsonPath("$." + toProviderEventDate(PRODUCTION_PRED), equalTo("production date")))
+      .andExpect(jsonPath("$." + toProviderEventName(PRODUCTION_PRED), equalTo("production name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceName(PRODUCTION_PRED), equalTo("production place name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceLink(PRODUCTION_PRED), equalTo("production place link")))
+      .andExpect(jsonPath("$." + toProviderEventSimpleDate(PRODUCTION_PRED), equalTo("production simple date")))
+      .andExpect(jsonPath("$." + toProviderEventSimplePlace(PRODUCTION_PRED), equalTo("production simple place")))
+      .andExpect(jsonPath("$." + toProviderEventDate(PUBLICATION_PRED), equalTo("publication date")))
+      .andExpect(jsonPath("$." + toProviderEventName(PUBLICATION_PRED), equalTo("publication name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceName(PUBLICATION_PRED), equalTo("publication place name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceLink(PUBLICATION_PRED), equalTo("publication place link")))
+      .andExpect(jsonPath("$." + toProviderEventSimpleDate(PUBLICATION_PRED), equalTo("publication simple date")))
+      .andExpect(jsonPath("$." + toProviderEventSimplePlace(PUBLICATION_PRED), equalTo("publication simple place")))
+      .andExpect(jsonPath("$." + toProviderEventDate(DISTRIBUTION_PRED), equalTo("distribution date")))
+      .andExpect(jsonPath("$." + toProviderEventName(DISTRIBUTION_PRED), equalTo("distribution name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceName(DISTRIBUTION_PRED), equalTo("distribution place name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceLink(DISTRIBUTION_PRED), equalTo("distribution place link")))
+      .andExpect(jsonPath("$." + toProviderEventSimpleDate(DISTRIBUTION_PRED), equalTo("distribution simple date")))
+      .andExpect(jsonPath("$." + toProviderEventSimplePlace(DISTRIBUTION_PRED), equalTo("distribution simple place")))
+      .andExpect(jsonPath("$." + toProviderEventDate(MANUFACTURE_PRED), equalTo("manufacture date")))
+      .andExpect(jsonPath("$." + toProviderEventName(MANUFACTURE_PRED), equalTo("manufacture name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceName(MANUFACTURE_PRED), equalTo("manufacture place name")))
+      .andExpect(jsonPath("$." + toProviderEventPlaceLink(MANUFACTURE_PRED), equalTo("manufacture place link")))
+      .andExpect(jsonPath("$." + toProviderEventSimpleDate(MANUFACTURE_PRED), equalTo("manufacture simple date")))
+      .andExpect(jsonPath("$." + toProviderEventSimplePlace(MANUFACTURE_PRED), equalTo("manufacture simple place")))
       .andExpect(jsonPath("$." + toProjectedProvisionDate(), equalTo("projected provision date")))
       .andExpect(jsonPath("$." + toResponsibilityStatement(), equalTo("responsibility statement")))
       .andExpect(jsonPath("$." + toVariantTitlePartName(), equalTo("Variant: partName")))
@@ -245,57 +320,68 @@ public class BibframeControllerIT {
       .andExpect(jsonPath("$." + toVariantTitleType(), equalTo("Variant: variantType")));
   }
 
-  private void validateSampleBibframeEntity(Resource bibframe) {
-    assertThat(bibframe.getType().getTypeUri()).isEqualTo(MONOGRAPH);
-    assertThat(bibframe.getLabel()).isEqualTo("Instance: Laramie holds the range");
-    assertThat(bibframe.getDoc()).isNull();
-    assertThat(bibframe.getResourceHash()).isNotNull();
-    assertThat(bibframe.getOutgoingEdges()).hasSize(1);
-    validateSampleInstance(bibframe.getOutgoingEdges().iterator().next(), bibframe);
+  private void validateMonographResource(Resource resource) {
+    assertThat(resource.getType().getTypeUri()).isEqualTo(MONOGRAPH);
+    assertThat(resource.getLabel()).isEqualTo("Instance: Laramie holds the range");
+    assertThat(resource.getDoc()).isNull();
+    assertThat(resource.getResourceHash()).isNotNull();
+    assertThat(resource.getOutgoingEdges()).hasSize(1);
+    validateInstance(resource.getOutgoingEdges().iterator().next(), resource);
   }
 
-  private void validateSampleInstance(ResourceEdge instanceEdge, Resource bibframe) {
-    assertThat(instanceEdge.getId()).isNotNull();
-    assertThat(instanceEdge.getSource()).isEqualTo(bibframe);
-    assertThat(instanceEdge.getPredicate().getLabel()).isEqualTo(INSTANCE);
-    var instance = instanceEdge.getTarget();
+  private void validateInstance(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(INSTANCE);
+    var instance = edge.getTarget();
     assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(instance.getType().getTypeUri()).isEqualTo(INSTANCE);
     assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getDoc().size()).isEqualTo(7);
+    assertThat(instance.getDoc().size()).isEqualTo(6);
     validateLiteral(instance, DIMENSIONS, "20 cm");
     validateLiteral(instance, EDITION_STATEMENT, "edition statement");
     validateLiteral(instance, RESPONSIBILITY_STATEMENT, "responsibility statement");
     validateLiteral(instance, COPYRIGHT_DATE, "copyright date");
     validateLiteral(instance, PROJECTED_PROVISION_DATE, "projected provision date");
-    validateLiteral(instance, MEDIA, "unmediated");
-    validateLiteral(instance, CARRIER, "carrier");
-    assertThat(instance.getOutgoingEdges()).hasSize(3);
+    validateLiteral(instance, ISSUANCE, "single unit");
+    assertThat(instance.getOutgoingEdges()).hasSize(15);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
-    validateSampleInstanceTitle(edgeIterator.next(), instance);
-    validateSampleParallelTitle(edgeIterator.next(), instance);
-    validateSampleVariantTitle(edgeIterator.next(), instance);
+    validateInstanceTitle(edgeIterator.next(), instance);
+    validateParallelTitle(edgeIterator.next(), instance);
+    validateVariantTitle(edgeIterator.next(), instance);
+    validateProviderEvent(edgeIterator.next(), instance, PRODUCTION_PRED);
+    validateProviderEvent(edgeIterator.next(), instance, PUBLICATION_PRED);
+    validateProviderEvent(edgeIterator.next(), instance, DISTRIBUTION_PRED);
+    validateProviderEvent(edgeIterator.next(), instance, MANUFACTURE_PRED);
+    validateAccessLocation(edgeIterator.next(), instance);
+    validateLccn(edgeIterator.next(), instance);
+    validateIsbn(edgeIterator.next(), instance);
+    validateEan(edgeIterator.next(), instance);
+    validateLocalId(edgeIterator.next(), instance);
+    validateOtherId(edgeIterator.next(), instance);
+    validateTriple(edgeIterator.next(), instance, MEDIA_PRED, MEDIA, "unmediated");
+    validateTriple(edgeIterator.next(), instance, CARRIER_PRED, CARRIER, "carrier 1");
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
-  private void validateLiteral(Resource instance, String field, String value) {
-    assertThat(instance.getDoc().get(field).size()).isEqualTo(1);
-    assertThat(instance.getDoc().get(field).get(0).asText()).isEqualTo(value);
+  private void validateLiteral(Resource resource, String field, String value) {
+    assertThat(resource.getDoc().get(field).size()).isEqualTo(1);
+    assertThat(resource.getDoc().get(field).get(0).asText()).isEqualTo(value);
   }
 
-  private void validateSampleInstanceTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, INSTANCE_TITLE, "Instance: ");
-    var title = titleEdge.getTarget();
+  private void validateInstanceTitle(ResourceEdge edge, Resource source) {
+    validateSampleTitleBase(edge, source, INSTANCE_TITLE, "Instance: ");
+    var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM).size()).isEqualTo(1);
     assertThat(title.getDoc().get(NON_SORT_NUM).get(0).asText()).isEqualTo("Instance: nonSortNum");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateSampleParallelTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, PARALLEL_TITLE, "Parallel: ");
-    var title = titleEdge.getTarget();
+  private void validateParallelTitle(ResourceEdge edge, Resource source) {
+    validateSampleTitleBase(edge, source, PARALLEL_TITLE, "Parallel: ");
+    var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(6);
     assertThat(title.getDoc().get(DATE).size()).isEqualTo(1);
     assertThat(title.getDoc().get(DATE).get(0).asText()).isEqualTo("Parallel: date");
@@ -304,9 +390,9 @@ public class BibframeControllerIT {
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateSampleVariantTitle(ResourceEdge titleEdge, Resource instance) {
-    validateSampleTitleBase(titleEdge, instance, VARIANT_TITLE, "Variant: ");
-    var title = titleEdge.getTarget();
+  private void validateVariantTitle(ResourceEdge edge, Resource source) {
+    validateSampleTitleBase(edge, source, VARIANT_TITLE, "Variant: ");
+    var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(7);
     assertThat(title.getDoc().get(DATE).size()).isEqualTo(1);
     assertThat(title.getDoc().get(DATE).get(0).asText()).isEqualTo("Variant: date");
@@ -317,11 +403,11 @@ public class BibframeControllerIT {
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateSampleTitleBase(ResourceEdge titleEdge, Resource instance, String type, String prefix) {
-    assertThat(titleEdge.getId()).isNotNull();
-    assertThat(titleEdge.getSource()).isEqualTo(instance);
-    assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
-    var title = titleEdge.getTarget();
+  private void validateSampleTitleBase(ResourceEdge edge, Resource source, String type, String prefix) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
+    var title = edge.getTarget();
     assertThat(title.getLabel()).isEqualTo(title.getDoc().get(MAIN_TITLE).get(0).asText());
     assertThat(title.getType().getTypeUri()).isEqualTo(type);
     assertThat(title.getResourceHash()).isNotNull();
@@ -335,12 +421,173 @@ public class BibframeControllerIT {
     assertThat(title.getDoc().get(SUBTITLE).get(0).asText()).isEqualTo(prefix + "subtitle");
   }
 
-  private String toCarrier() {
-    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER));
+  private void validateProviderEvent(ResourceEdge edge, Resource source, String predicate) {
+    var type = predicate.substring(predicate.indexOf("marc/") + 5);
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(predicate);
+    var providerEvent = edge.getTarget();
+    assertThat(providerEvent.getLabel()).isEqualTo(providerEvent.getDoc().get(SIMPLE_PLACE).get(0).asText());
+    assertThat(providerEvent.getType().getTypeUri()).isEqualTo(PROVIDER_EVENT);
+    assertThat(providerEvent.getResourceHash()).isNotNull();
+    assertThat(providerEvent.getDoc().size()).isEqualTo(4);
+    assertThat(providerEvent.getDoc().get(DATE).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(DATE).get(0).asText()).isEqualTo(type + " date");
+    assertThat(providerEvent.getDoc().get(NAME).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(NAME).get(0).asText()).isEqualTo(type + " name");
+    assertThat(providerEvent.getDoc().get(SIMPLE_DATE).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(SIMPLE_DATE).get(0).asText()).isEqualTo(type + " simple date");
+    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).get(0).asText()).isEqualTo(type + " simple place");
+    assertThat(providerEvent.getOutgoingEdges()).hasSize(1);
+    validatePlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, type);
   }
 
-  private String toMedia() {
-    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA));
+  private void validatePlace(ResourceEdge edge, Resource source, String prefix) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(PLACE_PRED);
+    var place = edge.getTarget();
+    assertThat(place.getLabel()).isEqualTo(place.getDoc().get(NAME).get(0).asText());
+    assertThat(place.getType().getTypeUri()).isEqualTo(PLACE);
+    assertThat(place.getResourceHash()).isNotNull();
+    assertThat(place.getDoc().size()).isEqualTo(2);
+    assertThat(place.getDoc().get(NAME).size()).isEqualTo(1);
+    assertThat(place.getDoc().get(NAME).get(0).asText()).isEqualTo(prefix + " place name");
+    assertThat(place.getDoc().get(LINK).size()).isEqualTo(1);
+    assertThat(place.getDoc().get(LINK).get(0).asText()).isEqualTo(prefix + " place link");
+    assertThat(place.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateLccn(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var lccn = edge.getTarget();
+    assertThat(lccn.getLabel()).isEqualTo(lccn.getDoc().get(NAME).get(0).asText());
+    assertThat(lccn.getType().getTypeUri()).isEqualTo(LCCN);
+    assertThat(lccn.getResourceHash()).isNotNull();
+    assertThat(lccn.getDoc().size()).isEqualTo(1);
+    assertThat(lccn.getDoc().get(NAME).size()).isEqualTo(1);
+    assertThat(lccn.getDoc().get(NAME).get(0).asText()).isEqualTo("lccn value");
+    assertThat(lccn.getOutgoingEdges()).hasSize(1);
+    validateStatus(lccn.getOutgoingEdges().iterator().next(), lccn, "lccn");
+  }
+
+  private void validateIsbn(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var isbn = edge.getTarget();
+    assertThat(isbn.getLabel()).isEqualTo(isbn.getDoc().get(NAME).get(0).asText());
+    assertThat(isbn.getType().getTypeUri()).isEqualTo(ISBN);
+    assertThat(isbn.getResourceHash()).isNotNull();
+    assertThat(isbn.getDoc().size()).isEqualTo(2);
+    assertThat(isbn.getDoc().get(NAME).size()).isEqualTo(1);
+    assertThat(isbn.getDoc().get(NAME).get(0).asText()).isEqualTo("isbn value");
+    assertThat(isbn.getDoc().get(QUALIFIER).size()).isEqualTo(1);
+    assertThat(isbn.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("isbn qualifier");
+    assertThat(isbn.getOutgoingEdges()).hasSize(1);
+    validateStatus(isbn.getOutgoingEdges().iterator().next(), isbn, "isbn");
+  }
+
+  private void validateEan(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var ean = edge.getTarget();
+    assertThat(ean.getLabel()).isEqualTo(ean.getDoc().get(EAN_VALUE).get(0).asText());
+    assertThat(ean.getType().getTypeUri()).isEqualTo(EAN);
+    assertThat(ean.getResourceHash()).isNotNull();
+    assertThat(ean.getDoc().size()).isEqualTo(2);
+    assertThat(ean.getDoc().get(EAN_VALUE).size()).isEqualTo(1);
+    assertThat(ean.getDoc().get(EAN_VALUE).get(0).asText()).isEqualTo("ean value");
+    assertThat(ean.getDoc().get(QUALIFIER).size()).isEqualTo(1);
+    assertThat(ean.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("ean qualifier");
+    assertThat(ean.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateLocalId(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var localId = edge.getTarget();
+    assertThat(localId.getLabel()).isEqualTo(localId.getDoc().get(LOCAL_ID_VALUE).get(0).asText());
+    assertThat(localId.getType().getTypeUri()).isEqualTo(LOCAL_ID);
+    assertThat(localId.getResourceHash()).isNotNull();
+    assertThat(localId.getDoc().size()).isEqualTo(2);
+    assertThat(localId.getDoc().get(LOCAL_ID_VALUE).size()).isEqualTo(1);
+    assertThat(localId.getDoc().get(LOCAL_ID_VALUE).get(0).asText()).isEqualTo("localId value");
+    assertThat(localId.getDoc().get(ASSIGNING_SOURCE).size()).isEqualTo(1);
+    assertThat(localId.getDoc().get(ASSIGNING_SOURCE).get(0).asText()).isEqualTo("localId assigner");
+    assertThat(localId.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateOtherId(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    var otherId = edge.getTarget();
+    assertThat(otherId.getLabel()).isEqualTo(otherId.getDoc().get(NAME).get(0).asText());
+    assertThat(otherId.getType().getTypeUri()).isEqualTo(OTHER_ID);
+    assertThat(otherId.getResourceHash()).isNotNull();
+    assertThat(otherId.getDoc().size()).isEqualTo(2);
+    assertThat(otherId.getDoc().get(NAME).size()).isEqualTo(1);
+    assertThat(otherId.getDoc().get(NAME).get(0).asText()).isEqualTo("otherId value");
+    assertThat(otherId.getDoc().get(QUALIFIER).size()).isEqualTo(1);
+    assertThat(otherId.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("otherId qualifier");
+    assertThat(otherId.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateStatus(ResourceEdge edge, Resource source, String prefix) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(STATUS_PRED);
+    var status = edge.getTarget();
+    assertThat(status.getLabel()).isEqualTo(status.getDoc().get(LABEL).get(0).asText());
+    assertThat(status.getType().getTypeUri()).isEqualTo(STATUS);
+    assertThat(status.getResourceHash()).isNotNull();
+    assertThat(status.getDoc().size()).isEqualTo(2);
+    assertThat(status.getDoc().get(LABEL).size()).isEqualTo(1);
+    assertThat(status.getDoc().get(LABEL).get(0).asText()).isEqualTo(prefix + " status label");
+    assertThat(status.getDoc().get(LINK).size()).isEqualTo(1);
+    assertThat(status.getDoc().get(LINK).get(0).asText()).isEqualTo(prefix + " status link");
+    assertThat(status.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateAccessLocation(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(ACCESS_LOCATION_PRED);
+    var locator = edge.getTarget();
+    assertThat(locator.getLabel()).isEqualTo(locator.getDoc().get(LINK).get(0).asText());
+    assertThat(locator.getType().getTypeUri()).isEqualTo(ACCESS_LOCATION);
+    assertThat(locator.getResourceHash()).isNotNull();
+    assertThat(locator.getDoc().size()).isEqualTo(2);
+    assertThat(locator.getDoc().get(LINK).size()).isEqualTo(1);
+    assertThat(locator.getDoc().get(LINK).get(0).asText()).isEqualTo("accessLocationValue");
+    assertThat(locator.getDoc().get(NOTE).size()).isEqualTo(1);
+    assertThat(locator.getDoc().get(NOTE).get(0).asText()).isEqualTo("accessLocationNote");
+    assertThat(locator.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateTriple(ResourceEdge edge, Resource source, String pred, String type, String term) {
+    var prefix = pred.substring(pred.lastIndexOf("/") + 1);
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getLabel()).isEqualTo(pred);
+    var media = edge.getTarget();
+    assertThat(media.getLabel()).isEqualTo(media.getDoc().get(TERM).get(0).asText());
+    assertThat(media.getType().getTypeUri()).isEqualTo(type);
+    assertThat(media.getResourceHash()).isNotNull();
+    assertThat(media.getDoc().size()).isEqualTo(3);
+    assertThat(media.getDoc().get(CODE).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(CODE).get(0).asText()).isEqualTo(prefix + " code");
+    assertThat(media.getDoc().get(TERM).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(TERM).get(0).asText()).isEqualTo(term);
+    assertThat(media.getDoc().get(LINK).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(LINK).get(0).asText()).isEqualTo(prefix + " link");
+    assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
   private String toDimensions() {
@@ -349,6 +596,14 @@ public class BibframeControllerIT {
 
   private String toEditionStatement() {
     return String.join(".", arrayPath(INSTANCE), arrayPath(EDITION_STATEMENT));
+  }
+
+  private String toAccessLocationLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(ACCESS_LOCATION_PRED), arrayPath(LINK));
+  }
+
+  private String toAccessLocationNote() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(ACCESS_LOCATION_PRED), arrayPath(NOTE));
   }
 
   private String toResponsibilityStatement() {
@@ -386,6 +641,10 @@ public class BibframeControllerIT {
   private String toInstanceTitleSubtitle() {
     return String.join(".", arrayPath(INSTANCE), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE),
       arrayPath(SUBTITLE));
+  }
+
+  private String toIssuance() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(ISSUANCE));
   }
 
   private String toParallelTitlePartName() {
@@ -451,6 +710,112 @@ public class BibframeControllerIT {
   private String toVariantTitleNote() {
     return String.join(".", arrayPath(INSTANCE), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
       arrayPath(NOTE));
+  }
+
+  private String toProviderEventDate(String predicate) {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(predicate), arrayPath(DATE));
+  }
+
+  private String toProviderEventName(String predicate) {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(predicate), arrayPath(NAME));
+  }
+
+  private String toProviderEventPlaceName(String predicate) {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(predicate), arrayPath(PLACE_PRED),
+      arrayPath(NAME));
+  }
+
+  private String toProviderEventPlaceLink(String predicate) {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(predicate), arrayPath(PLACE_PRED),
+      arrayPath(LINK));
+  }
+
+  private String toProviderEventSimpleDate(String predicate) {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(predicate), arrayPath(SIMPLE_DATE));
+  }
+
+  private String toProviderEventSimplePlace(String predicate) {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(predicate), arrayPath(SIMPLE_PLACE));
+  }
+
+  private String toLccnValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED), path(LCCN), arrayPath(NAME));
+  }
+
+  private String toLccnStatusValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED), path(LCCN), arrayPath(STATUS_PRED),
+      arrayPath(LABEL));
+  }
+
+  private String toLccnStatusLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED), path(LCCN), arrayPath(STATUS_PRED),
+      arrayPath(LINK));
+  }
+
+  private String toIsbnValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(NAME));
+  }
+
+  private String toIsbnQualifier() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(QUALIFIER));
+  }
+
+  private String toIsbnStatusValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(STATUS_PRED),
+      arrayPath(LABEL));
+  }
+
+  private String toIsbnStatusLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(STATUS_PRED),
+      arrayPath(LINK));
+  }
+
+  private String toEanValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(EAN_VALUE));
+  }
+
+  private String toEanQualifier() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(QUALIFIER));
+  }
+
+  private String toLocalIdValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 3), path(LOCAL_ID), arrayPath(LOCAL_ID_VALUE));
+  }
+
+  private String toLocalIdAssigner() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 3), path(LOCAL_ID), arrayPath(ASSIGNING_SOURCE));
+  }
+
+  private String toOtherIdValue() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(NAME));
+  }
+
+  private String toOtherIdQualifier() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(QUALIFIER));
+  }
+
+  private String toCarrierCode() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER_PRED, 0), arrayPath(CODE));
+  }
+
+  private String toCarrierLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER_PRED, 0), arrayPath(LINK));
+  }
+
+  private String toCarrierTerm() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(CARRIER_PRED, 0), arrayPath(TERM));
+  }
+
+  private String toMediaCode() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA_PRED, 0), arrayPath(CODE));
+  }
+
+  private String toMediaLink() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA_PRED, 0), arrayPath(LINK));
+  }
+
+  private String toMediaTerm() {
+    return String.join(".", arrayPath(INSTANCE), arrayPath(MEDIA_PRED, 0), arrayPath(TERM));
   }
 
   private String toErrorType() {

@@ -33,6 +33,7 @@ public class ResourceEdge {
   private ResourceEdgePk id = new ResourceEdgePk();
 
   @NonNull
+  @ToString.Exclude
   @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
   @MapsId("sourceHash")
   @JoinColumn(name = "source_hash", nullable = false)

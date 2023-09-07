@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIED_BY_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_ISBN;
 import static org.folio.linked.data.util.Bibframe2Constants.IDENTIFIERS_ISBN_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.QUALIFIER_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.STATUS_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.STATUS2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.STATUS_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.VALUE_PRED;
 
@@ -35,7 +35,7 @@ public class Isbn2MapperUnit implements Instance2SubResourceMapperUnit {
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {
     var isbn = coreMapper.readResourceDoc(source, Isbn2.class);
-    coreMapper.addMappedProperties(source, STATUS_PRED, isbn::addStatusItem);
+    coreMapper.addMappedProperties(source, STATUS2_PRED, isbn::addStatusItem);
     destination.addIdentifiedByItem(new IsbnField2().isbn(isbn));
     return destination;
   }
@@ -47,7 +47,7 @@ public class Isbn2MapperUnit implements Instance2SubResourceMapperUnit {
     resource.setLabel(IDENTIFIERS_ISBN_URL);
     resource.setType(resourceTypeService.get(IDENTIFIERS_ISBN));
     resource.setDoc(getDoc(isbn));
-    coreMapper.mapPropertyEdges(isbn.getStatus(), resource, STATUS_PRED, STATUS_URL);
+    coreMapper.mapPropertyEdges(isbn.getStatus(), resource, STATUS2_PRED, STATUS_URL);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

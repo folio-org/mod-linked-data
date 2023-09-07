@@ -3,8 +3,8 @@ package org.folio.linked.data.mapper.resource.common;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PLACE_COMPONENTS;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_ID;
 import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
 import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
@@ -177,7 +177,7 @@ public class CoreMapperImpl implements CoreMapper {
     resource.setLabel(nonNull(label) ? label : resourceType);
     resource.setType(resourceTypeService.get(resourceType));
     resource.setDoc(provisionActivityToDoc(dto));
-    mapPropertyEdges(dto.getPlace(), resource, PLACE_PRED, PLACE_COMPONENTS);
+    mapPropertyEdges(dto.getPlace(), resource, PLACE2_PRED, PLACE_COMPONENTS);
     resource.setResourceHash(hash(resource));
     return resource;
   }

@@ -45,7 +45,7 @@ public class ResourceServiceImpl implements ResourceService {
       throw new AlreadyExistsException(BIBFRAME_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     var persisted = resourceRepo.save(mapped);
-    //kafkaSender.sendResourceCreated(bibframeMapper.mapToIndex(persisted));
+    kafkaSender.sendResourceCreated(bibframeMapper.mapToIndex(persisted));
     return bibframeMapper.toDto(persisted);
   }
 

@@ -2,7 +2,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provi
 
 import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE;
 import static org.folio.linked.data.util.Bibframe2Constants.MANUFACTURE_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class Manufacture2MapperUnit implements Instance2SubResourceMapperUnit {
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {
     var manufacture = coreMapper.toProvisionActivity(source);
-    coreMapper.addMappedProperties(source, PLACE_PRED, manufacture::addPlaceItem);
+    coreMapper.addMappedProperties(source, PLACE2_PRED, manufacture::addPlaceItem);
     return destination.addProvisionActivityItem(new ManufactureField2().manufacture(manufacture));
   }
 

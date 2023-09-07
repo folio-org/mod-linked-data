@@ -12,6 +12,7 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.ValidationException;
@@ -20,6 +21,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class SubResourceMapperImpl implements SubResourceMapper {
@@ -39,6 +41,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
+      log.warn("Exception during toEntity mapping", e);
       throw new ValidationException(predicate, objectMapper.writeValueAsString(dto));
     }
   }

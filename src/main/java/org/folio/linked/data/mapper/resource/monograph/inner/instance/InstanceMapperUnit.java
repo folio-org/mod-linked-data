@@ -1,13 +1,20 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance;
 
-import static org.folio.linked.data.util.BibframeConstants.CARRIER;
+import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
+import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA;
+import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
+import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
+import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
+import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
+import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,13 +53,22 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object innerResourceDto) {
-    Instance dto = (Instance) innerResourceDto;
+  public Resource toEntity(Object resourceDto) {
+    Instance dto = (Instance) resourceDto;
     var resource = new Resource();
     resource.setType(resourceTypeService.get(INSTANCE));
     resource.setDoc(getDoc(dto));
     resource.setLabel(getLabel(dto));
     coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getProduction(), resource, PRODUCTION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getPublication(), resource, PUBLICATION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getDistribution(), resource, DISTRIBUTION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getManufacture(), resource, MANUFACTURE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getAccessLocation(), resource, ACCESS_LOCATION_PRED, Instance.class,
+      mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getMap(), resource, MAP_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, Instance.class, mapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
@@ -96,8 +112,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     map.put(EDITION_STATEMENT, dto.getEdition());
     map.put(COPYRIGHT_DATE, dto.getCopyrightDate());
     map.put(PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
-    map.put(MEDIA, dto.getMediaType());
-    map.put(CARRIER, dto.getCarrier());
+    map.put(ISSUANCE, dto.getIssuance());
     return coreMapper.toJson(map);
   }
 

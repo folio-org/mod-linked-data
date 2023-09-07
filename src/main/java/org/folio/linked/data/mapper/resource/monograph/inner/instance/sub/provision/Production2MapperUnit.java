@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provision;
 
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE_PRED;
+import static org.folio.linked.data.util.Bibframe2Constants.PLACE2_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION;
 import static org.folio.linked.data.util.Bibframe2Constants.PRODUCTION_URL;
 import static org.folio.linked.data.util.Bibframe2Constants.PROVISION_ACTIVITY_PRED;
@@ -25,7 +25,7 @@ public class Production2MapperUnit implements Instance2SubResourceMapperUnit {
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {
     var production = coreMapper.toProvisionActivity(source);
-    coreMapper.addMappedProperties(source, PLACE_PRED, production::addPlaceItem);
+    coreMapper.addMappedProperties(source, PLACE2_PRED, production::addPlaceItem);
     return destination.addProvisionActivityItem(new ProductionField2().production(production));
   }
 
