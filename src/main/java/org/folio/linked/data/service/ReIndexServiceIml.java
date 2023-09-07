@@ -28,7 +28,6 @@ public class ReIndexServiceIml implements ReIndexService {
 
   @Override
   public void reindex() {
-    log.info("The page size {}", pageSize);
     Pageable pageable = Pageable.ofSize(Integer.parseInt(pageSize));
     while (pageable.isPaged()) {
       Page<Resource> page = resourceRepository.findAllResourcesByType(bibframeProperties.getProfiles(), pageable);
