@@ -21,6 +21,8 @@ spring:
                 headers=false:
 
 mod-linked-data:
+  reindex:
+    page-size: 1000
   kafka:
     topic:
       bibframe-index: search.bibframe

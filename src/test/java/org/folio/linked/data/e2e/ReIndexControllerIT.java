@@ -2,22 +2,16 @@ package org.folio.linked.data.e2e;
 
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.getBibframe2Sample;
-import static org.folio.linked.data.test.TestUtil.getIndexFalseSample;
-import static org.folio.linked.data.test.TestUtil.getIndexTrueSample;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.folio.linked.data.test.TestUtil.getBibframeSample;
+import static org.folio.linked.data.test.TestUtil.getBibframeSampleTest;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
-import org.folio.linked.data.domain.dto.Bibframe2Request;
+import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -25,19 +19,18 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.folio.spring.tools.kafka.KafkaAdminService;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @Transactional
-class IndexControllerIT {
+class ReIndexControllerIT {
 
   public static final String INDEX_URL = "/reindex";
   public static OkapiConfiguration okapi;
@@ -72,26 +65,13 @@ class IndexControllerIT {
   void createIndexIfTrue_Ok() throws Exception {
     List<Resource> resources = createMonograph();
 
-    var requestBuilder = post(INDEX_URL)
+    var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getIndexTrueSample());
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
-    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 1);
+    mockMvc.perform(requestBuilder);
 
     resources.forEach(this::checkKafkaMessageSent);
-  }
-
-  @Test
-  void createNoIndexIfFalse_Ok() throws Exception {
-    createMonograph();
-
-    var requestBuilder = post(INDEX_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getIndexFalseSample());
-
-    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 0);
   }
 
   @SneakyThrows
@@ -99,20 +79,15 @@ class IndexControllerIT {
   }
 
   private List<Resource> createMonograph() throws Exception {
-    Bibframe2Request bibframe2Request = objectMapper.readValue(getBibframe2Sample(), Bibframe2Request.class);
-    var mapped1 = bibframeMapper.toEntity2(bibframe2Request);
-    resourceRepo.save(mapped1);
+    BibframeRequest bibframeRequest1 = objectMapper.readValue(getBibframeSample(), BibframeRequest.class);
+    Resource resource1 = bibframeMapper.toEntity(bibframeRequest1);
+    resourceRepo.save(resource1);
 
-    return resourceRepo.findResourcesByType(bibframeProperties.getProfiles());
+    BibframeRequest bibframeRequest2 = objectMapper.readValue(getBibframeSampleTest(), BibframeRequest.class);
+    Resource resource2 = bibframeMapper.toEntity(bibframeRequest2);
+    resourceRepo.save(resource2);
+
+    return resourceRepo.findAllResourcesByType(bibframeProperties.getProfiles(), Pageable.ofSize(10000))
+      .getContent();
   }
-
-  @NotNull
-  private ResultActions validateSampleIndexResponse(ResultActions resultActions, Integer count) throws Exception {
-    return resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("status", equalTo("ok")))
-      .andExpect(jsonPath("count", is(count)));
-  }
-
 }
