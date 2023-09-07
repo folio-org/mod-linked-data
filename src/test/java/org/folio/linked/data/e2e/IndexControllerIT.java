@@ -13,8 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
 import org.folio.linked.data.domain.dto.Bibframe2Request;
@@ -22,13 +22,12 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.test.MonographTestService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -40,13 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 class IndexControllerIT {
 
-  public static final String INDEX_URL = "/index";
+  public static final String INDEX_URL = "/reindex";
   public static OkapiConfiguration okapi;
 
   @Autowired
   private MockMvc mockMvc;
-  @Autowired
-  private Environment env;
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
@@ -56,17 +53,16 @@ class IndexControllerIT {
   @Autowired
   private ObjectMapper objectMapper;
   @Autowired
-  private MonographTestService monographTestService;
-  @Autowired
   private BibframeProperties bibframeProperties;
-
+  @Autowired
+  private Environment env;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
     kafkaAdminService.createTopics(TENANT_ID);
   }
 
-  @BeforeEach
+  @AfterEach
   public void clean() {
     resourceEdgeRepository.deleteAll();
     resourceRepo.deleteAll();
@@ -81,10 +77,7 @@ class IndexControllerIT {
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getIndexTrueSample());
 
-    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 1)
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
+    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 1);
 
     resources.forEach(this::checkKafkaMessageSent);
   }
@@ -98,10 +91,7 @@ class IndexControllerIT {
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getIndexFalseSample());
 
-    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 0)
-      .andReturn()
-      .getResponse()
-      .getContentAsString();
+    validateSampleIndexResponse(mockMvc.perform(requestBuilder), 0);
   }
 
   @SneakyThrows
