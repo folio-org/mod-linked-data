@@ -16,3 +16,6 @@ folio:
 test:
   topic:
     search: folio.test_tenant.search.bibframe
+mod-linked-data:
+  reindex:
+    page-size: 1

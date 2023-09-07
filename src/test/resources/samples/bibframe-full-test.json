@@ -1,0 +1,302 @@
+{
+  "type": "http://bibfra.me/vocab/marc/Monograph",
+  "http://bibfra.me/vocab/lite/Instance": [
+    {
+      "http://bibfra.me/vocab/marc/title": [
+        {
+          "http://bibfra.me/vocab/marc/Title": {
+            "http://bibfra.me/vocab/marc/partName": [
+              "Test: partName"
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+              "Test: partNumber"
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+              "Test: Laramie holds the range"
+            ],
+            "http://bibfra.me/vocab/bflc/nonSortNum": [
+              "Test: nonSortNum"
+            ],
+            "http://bibfra.me/vocab/marc/subtitle": [
+              "Test: subtitle"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/marc/ParallelTitle": {
+            "http://bibfra.me/vocab/marc/partName": [
+              "Test: partName"
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+              "Test: partNumber"
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+              "Test: Laramie holds the range"
+            ],
+            "http://bibfra.me/vocab/lite/note": [
+              "Test: noteLabel"
+            ],
+            "http://bibfra.me/vocab/lite/date": [
+              "Test: date"
+            ],
+            "http://bibfra.me/vocab/marc/subtitle": [
+              "Test: subtitle"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/marc/VariantTitle": {
+            "http://bibfra.me/vocab/marc/partName": [
+              "Test: partName"
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+              "Test: partNumber"
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+              "Test: Laramie holds the range"
+            ],
+            "http://bibfra.me/vocab/lite/note": [
+              "Test: noteLabel"
+            ],
+            "http://bibfra.me/vocab/lite/date": [
+              "Test: date"
+            ],
+            "http://bibfra.me/vocab/marc/subtitle": [
+              "Test: subtitle"
+            ],
+            "http://bibfra.me/vocab/marc/variantType": [
+              "Variant: variantType"
+            ]
+          }
+        }
+      ],
+      "http://bibfra.me/vocab/marc/production": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+            "Test production date"
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+                "Test production place name"
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+                "Test production place link"
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+            "Test production name"
+          ],
+          "http://bibfra.me/vocab/lite/simpleDate": [
+            "Test production simple date"
+          ],
+          "http://bibfra.me/vocab/bflc/simplePlace": [
+            "Test production simple place"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/publication": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+            "Test publication date"
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+                "Test publication place name"
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+                "Test publication place link"
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+            "Test publication name"
+          ],
+          "http://bibfra.me/vocab/lite/simpleDate": [
+            "Test publication simple date"
+          ],
+          "http://bibfra.me/vocab/bflc/simplePlace": [
+            "Test publication simple place"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/distribution": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+            "Test distribution date"
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+                "Test distribution place name"
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+                "Test distribution place link"
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+            "Test distribution name"
+          ],
+          "http://bibfra.me/vocab/lite/simpleDate": [
+            "Test distribution simple date"
+          ],
+          "http://bibfra.me/vocab/bflc/simplePlace": [
+            "Test distribution simple place"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/manufacture": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+            "Test manufacture date"
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+                "Test manufacture place name"
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+                "Test manufacture place link"
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+            "Test manufacture name"
+          ],
+          "http://bibfra.me/vocab/lite/simpleDate": [
+            "Test manufacture simple date"
+          ],
+          "http://bibfra.me/vocab/bflc/simplePlace": [
+            "Test manufacture simple place"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/lite/map": [
+        {
+          "http://library.link/identifier/LCCN": {
+            "http://bibfra.me/vocab/lite/name": [
+              "Test lccn value"
+            ],
+            "http://bibfra.me/vocab/marc/status": [
+              {
+                "http://bibfra.me/vocab/lite/label": [
+                  "Test lccn status label"
+                ],
+                "http://bibfra.me/vocab/lite/link": [
+                  "Test lccn status link"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "http://library.link/identifier/ISBN": {
+            "http://bibfra.me/vocab/lite/name": [
+              "Test isbn value"
+            ],
+            "http://bibfra.me/vocab/marc/qualifier": [
+              "Test isbn qualifier"
+            ],
+            "http://bibfra.me/vocab/marc/status": [
+              {
+                "http://bibfra.me/vocab/lite/label": [
+                  "Test isbn status label"
+                ],
+                "http://bibfra.me/vocab/lite/link": [
+                  "Test isbn status link"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/identifier/Ean": {
+            "http://bibfra.me/vocab/marc/ean": [
+              "Test ean value"
+            ],
+            "http://bibfra.me/vocab/marc/qualifier": [
+              "Test ean qualifier"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/LocalId": {
+            "http://bibfra.me/vocab/marc/localId": [
+              "Test localId value"
+            ],
+            "http://bibfra.me/vocab/marc/localIdAssigningSource": [
+              "Test localId assigner"
+            ]
+          }
+        },
+        {
+          "http://library.link/identifier/UNKNOWN": {
+            "http://bibfra.me/vocab/lite/name": [
+              "Test otherId value"
+            ],
+            "http://bibfra.me/vocab/marc/qualifier": [
+              "Test otherId qualifier"
+            ]
+          }
+        }
+      ],
+      "http://bibfra.me/vocab/marc/accessLocation": [
+        {
+          "http://bibfra.me/vocab/lite/link": [
+            "Test accessLocationValue"
+          ],
+          "http://bibfra.me/vocab/lite/note": [
+            "Test accessLocationNote"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/media": [
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "Test media code"
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+            "Test unmediated"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "Test media link"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/carrier": [
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "Test carrier code"
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+            "Test carrier 1"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "Test carrier link"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/dimensions": [
+        "test 20 cm"
+      ],
+      "http://bibfra.me/vocab/marc/statementOfResponsibility": [
+        "Test responsibility statement"
+      ],
+      "http://bibfra.me/vocab/marc/edition": [
+        "Test edition statement"
+      ],
+      "http://bibfra.me/vocab/lite/copyrightDate": [
+        "Test copyright date"
+      ],
+      "http://bibfra.me/vocab/bflc/projectedProvisionDate": [
+        "Test projected provision date"
+      ],
+      "http://bibfra.me/vocab/marc/issuance": [
+        "Test single unit"
+      ]
+    }
+  ]
+}

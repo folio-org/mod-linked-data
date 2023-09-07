@@ -6,23 +6,14 @@ info:
 
 paths:
   /reindex:
-    post:
-      operationId: createIndex
-      description: Create an index for all resources in db
+    put:
+      operationId: reindex
+      description: Start the process of reindexing of resources in the database
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: schema/indexRequest.json
       responses:
-        '200':
-          description: Created resource index
-          content:
-            application/json:
-              schema:
-                $ref: schema/indexResponse.json
+        '204':
+          description: Started the process of reindex
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
