@@ -13,8 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.SneakyThrows;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
 import org.folio.linked.data.domain.dto.Bibframe2Request;
