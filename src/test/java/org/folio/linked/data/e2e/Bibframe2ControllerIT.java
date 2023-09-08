@@ -227,7 +227,7 @@ public class Bibframe2ControllerIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getBibframe2Sample().replace("volume", "length"));
-    var expectedDifference = "length\"}]}],\"id\":3057919254,\"profile\":\"lc:profile:bf2:Monograph\"}";
+    var expectedDifference = "length\"}]}],\"id\":1574458046,\"profile\":\"lc:profile:bf2:Monograph\"}";
 
     // when
     var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
