@@ -1,6 +1,6 @@
 package org.folio.linked.data.service;
 
-public interface ReIndexService {
+public interface ReindexService {
 
   void reindex();
 
