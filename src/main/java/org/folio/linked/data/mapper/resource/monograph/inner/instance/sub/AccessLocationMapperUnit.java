@@ -40,7 +40,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
     var accessLocation = (AccessLocationField) dto;
     var resource = new Resource();
     resource.setLabel(getFirst(accessLocation.getLink(), ""));
-    resource.setType(resourceTypeService.get(ACCESS_LOCATION));
+    resource.addType(resourceTypeService.get(ACCESS_LOCATION));
     resource.setDoc(getDoc(accessLocation));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

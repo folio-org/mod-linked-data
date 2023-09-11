@@ -42,7 +42,7 @@ public class PersonMapperUnit implements ContributionSubResourceMapperUnit {
     var agent = ((PersonField2) dto).getPerson();
     var resource = new Resource();
     resource.setLabel(PERSON_URL);
-    resource.setType(resourceTypeService.get(PERSON));
+    resource.addType(resourceTypeService.get(PERSON));
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

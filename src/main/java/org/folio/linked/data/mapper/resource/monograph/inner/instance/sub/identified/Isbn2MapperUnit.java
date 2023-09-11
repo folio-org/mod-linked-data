@@ -45,7 +45,7 @@ public class Isbn2MapperUnit implements Instance2SubResourceMapperUnit {
     var isbn = ((IsbnField2) dto).getIsbn();
     var resource = new Resource();
     resource.setLabel(IDENTIFIERS_ISBN_URL);
-    resource.setType(resourceTypeService.get(IDENTIFIERS_ISBN));
+    resource.addType(resourceTypeService.get(IDENTIFIERS_ISBN));
     resource.setDoc(getDoc(isbn));
     coreMapper.mapPropertyEdges(isbn.getStatus(), resource, STATUS2_PRED, STATUS_URL);
     resource.setResourceHash(coreMapper.hash(resource));

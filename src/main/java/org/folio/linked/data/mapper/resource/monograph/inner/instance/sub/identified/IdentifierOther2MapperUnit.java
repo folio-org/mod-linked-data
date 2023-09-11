@@ -42,7 +42,7 @@ public class IdentifierOther2MapperUnit implements Instance2SubResourceMapperUni
     var other = ((OtherIdentifierField2) dto).getIdentifier();
     var resource = new Resource();
     resource.setLabel(IDENTIFIERS_OTHER_URL);
-    resource.setType(resourceTypeService.get(IDENTIFIERS_OTHER));
+    resource.addType(resourceTypeService.get(IDENTIFIERS_OTHER));
     resource.setDoc(getDoc(other));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

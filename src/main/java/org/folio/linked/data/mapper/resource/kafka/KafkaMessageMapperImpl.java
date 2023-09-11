@@ -54,7 +54,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME, EAN_VALUE, LOCAL_ID_VALUE))
-        .type(toTypeEnum(ir.getType())))
+        .type(toTypeEnum(ir.getLastType())))
       .toList();
   }
 

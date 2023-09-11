@@ -42,7 +42,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
     var ean = ((EanField) dto).getEan();
     var resource = new Resource();
     resource.setLabel(getFirst(ean.getValue(), ""));
-    resource.setType(resourceTypeService.get(EAN));
+    resource.addType(resourceTypeService.get(EAN));
     resource.setDoc(getDoc(ean));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

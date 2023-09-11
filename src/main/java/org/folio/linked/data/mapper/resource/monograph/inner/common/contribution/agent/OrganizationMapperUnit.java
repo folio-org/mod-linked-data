@@ -42,7 +42,7 @@ public class OrganizationMapperUnit implements ContributionSubResourceMapperUnit
     var agent = ((OrganizationField2) dto).getOrganization();
     var resource = new Resource();
     resource.setLabel(ORGANIZATION_URL);
-    resource.setType(resourceTypeService.get(ORGANIZATION));
+    resource.addType(resourceTypeService.get(ORGANIZATION));
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

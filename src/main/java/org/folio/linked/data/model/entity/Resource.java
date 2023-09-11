@@ -1,6 +1,7 @@
 package org.folio.linked.data.model.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -9,10 +10,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.Data;
@@ -47,8 +50,24 @@ public class Resource {
   @OneToMany(mappedBy = "source", cascade = ALL, fetch = FetchType.EAGER)
   private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
 
-  @ManyToOne
-  @JoinColumn(name = "type_hash")
-  private ResourceType type;
+  @OrderBy
+  @ManyToMany
+  @JoinTable(
+    name = "resource_type_map",
+    joinColumns = @JoinColumn(name = "resource_hash"),
+    inverseJoinColumns = @JoinColumn(name = "type_hash")
+  )
+  private Set<ResourceType> types;
 
+  public Resource addType(ResourceType type) {
+    if (isNull(types)) {
+      types = new LinkedHashSet<>();
+    }
+    types.add(type);
+    return this;
+  }
+
+  public ResourceType getLastType() {
+    return (isNull(types) || types.isEmpty()) ? null : new ArrayList<>(types).get(types.size() - 1);
+  }
 }

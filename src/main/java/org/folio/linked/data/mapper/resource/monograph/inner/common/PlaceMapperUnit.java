@@ -57,7 +57,7 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
     var place = (Place) dto;
     var resource = new Resource();
     resource.setLabel(getFirst(place.getName(), ""));
-    resource.setType(resourceTypeService.get(PLACE));
+    resource.addType(resourceTypeService.get(PLACE));
     resource.setDoc(getDoc(place));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

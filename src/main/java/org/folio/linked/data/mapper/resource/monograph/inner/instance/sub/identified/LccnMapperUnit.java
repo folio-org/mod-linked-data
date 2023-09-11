@@ -46,7 +46,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
     var lccn = ((LccnField) dto).getLccn();
     var resource = new Resource();
     resource.setLabel(getFirst(lccn.getValue(), ""));
-    resource.setType(resourceTypeService.get(LCCN));
+    resource.addType(resourceTypeService.get(LCCN));
     resource.setDoc(getDoc(lccn));
     coreMapper.mapResourceEdges(lccn.getStatus(), resource, STATUS, STATUS_PRED,
       (status, pred) -> statusMapper.toEntity(status, pred, null));

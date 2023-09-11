@@ -44,7 +44,7 @@ public class Lccn2MapperUnit implements Instance2SubResourceMapperUnit {
     var lccn = ((LccnField2) dto).getLccn();
     var resource = new Resource();
     resource.setLabel(IDENTIFIERS_LCCN_URL);
-    resource.setType(resourceTypeService.get(IDENTIFIERS_LCCN));
+    resource.addType(resourceTypeService.get(IDENTIFIERS_LCCN));
     resource.setDoc(getDoc(lccn));
     coreMapper.mapPropertyEdges(lccn.getStatus(), resource, STATUS2_PRED, STATUS_URL);
     resource.setResourceHash(coreMapper.hash(resource));

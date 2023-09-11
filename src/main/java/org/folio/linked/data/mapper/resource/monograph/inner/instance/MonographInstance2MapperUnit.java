@@ -65,7 +65,7 @@ public class MonographInstance2MapperUnit implements InnerResourceMapperUnit {
   public Resource toEntity(Object innerResourceDto) {
     Instance2 dto = (Instance2) innerResourceDto;
     var resource = new Resource();
-    resource.setType(resourceTypeService.get(INSTANCE_2));
+    resource.addType(resourceTypeService.get(INSTANCE_2));
     resource.setDoc(getDoc(dto));
     resource.setLabel(getLabel(dto));
     coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_2_PRED, Instance2.class, mapper::toEntity);

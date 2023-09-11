@@ -66,12 +66,12 @@ class KafkaMessageMapperTest {
     var identifier = new Resource();
     identifier.setResourceHash(randomLong());
     identifier.setDoc(getJsonNode(Map.of(NAME, List.of(randomLong()))));
-    identifier.setType(new ResourceType().setTypeUri(ISBN));
+    identifier.addType(new ResourceType().setTypeUri(ISBN));
     instance.getOutgoingEdges().add(new ResourceEdge(instance, identifier, new Predicate(MAP_PRED)));
     var publication = new Resource();
     publication.setResourceHash(randomLong());
     publication.setDoc(getJsonNode(Map.of(DATE, List.of("2023"), NAME, List.of(UUID.randomUUID().toString()))));
-    publication.setType(new ResourceType().setSimpleLabel(PROVIDER_EVENT));
+    publication.addType(new ResourceType().setSimpleLabel(PROVIDER_EVENT));
     instance.getOutgoingEdges().add(new ResourceEdge(instance, publication, new Predicate(PUBLICATION_PRED)));
     instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT, List.of(UUID.randomUUID().toString()))));
 

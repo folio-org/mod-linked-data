@@ -50,7 +50,7 @@ public class Extent2MapperUnit implements Instance2SubResourceMapperUnit {
     var extent = ((ExtentField2) dto).getExtent();
     var resource = new Resource();
     resource.setLabel(EXTENT_URL);
-    resource.setType(resourceTypeService.get(EXTENT));
+    resource.addType(resourceTypeService.get(EXTENT));
     resource.setDoc(getDoc(extent.getLabel()));
     coreMapper.mapResourceEdges(extent.getAppliesTo(), resource, APPLIES_TO_URL, APPLIES_TO_PRED,
       (fieldDto, pred) -> appliesToMapper.toEntity(fieldDto, pred, null));

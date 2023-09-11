@@ -582,10 +582,10 @@ class CoreMapperTest {
   void hash_shouldReturnHashUtilResultForResourceDocAndLabelAndType_ifGivenResourceContainsDoc() {
     // given
     var node = getPropertyNode("id", "label", "uri");
-    var resource = new Resource().setDoc(node).setType(new ResourceType());
+    var resource = new Resource().setDoc(node).addType(new ResourceType());
     ObjectNode expectedNodeForHash = resource.getDoc().deepCopy();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
 
     // when
     var result = coreMapper.hash(resource);
@@ -597,10 +597,10 @@ class CoreMapperTest {
   @Test
   void hash_shouldReturnHashUtilResultForLabelAndType_ifGivenResourceContainsNoDoc() {
     // given
-    var resource = new Resource().setType(new ResourceType());
+    var resource = new Resource().addType(new ResourceType());
     ObjectNode expectedNodeForHash = OBJECT_MAPPER.createObjectNode();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
 
     // when
     var result = coreMapper.hash(resource);
@@ -612,15 +612,15 @@ class CoreMapperTest {
   @Test
   void hash_shouldReturnHashUtilResultForNodeOfEdgeJsons_ifGivenResourceContainsNoDoc() {
     // given
-    var resource = new Resource().setType(new ResourceType());
+    var resource = new Resource().addType(new ResourceType());
     var targetNode1 = getPropertyNode("id", "label", "uri");
-    var target1 = new Resource().setDoc(targetNode1).setResourceHash(111L).setType(new ResourceType());
+    var target1 = new Resource().setDoc(targetNode1).setResourceHash(111L).addType(new ResourceType());
     var predicate1 = new Predicate("predicate1");
     var targetNode2 = getPropertyNode("id2", "label2", "uri2");
-    var target2 = new Resource().setDoc(targetNode2).setResourceHash(222L).setType(new ResourceType());
+    var target2 = new Resource().setDoc(targetNode2).setResourceHash(222L).addType(new ResourceType());
     var predicate2 = new Predicate("predicate2");
     var targetNode3 = getPropertyNode("id3", "label3", "uri3");
-    var target3 = new Resource().setDoc(targetNode3).setResourceHash(333L).setType(new ResourceType());
+    var target3 = new Resource().setDoc(targetNode3).setResourceHash(333L).addType(new ResourceType());
     resource.getOutgoingEdges()
       .add(new ResourceEdge(resource, target1, predicate1));
     resource.getOutgoingEdges()
@@ -630,21 +630,21 @@ class CoreMapperTest {
 
     var expectedNodeForHash = OBJECT_MAPPER.createObjectNode();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
     var arrayPredicate1 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate1.add(targetNode1.deepCopy()
       .put(PROPERTY_LABEL, target1.getLabel())
-      .put("type", target1.getType().getTypeHash())
+      .put("type", target1.getLastType().getTypeHash())
     );
     arrayPredicate1.add(targetNode2.deepCopy()
       .put(PROPERTY_LABEL, target2.getLabel())
-      .put("type", target2.getType().getTypeHash())
+      .put("type", target2.getLastType().getTypeHash())
     );
     expectedNodeForHash.set(predicate1.getLabel(), arrayPredicate1);
     var arrayPredicate2 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate2.add(targetNode3.deepCopy()
       .put(PROPERTY_LABEL, target3.getLabel())
-      .put("type", target3.getType().getTypeHash())
+      .put("type", target3.getLastType().getTypeHash())
     );
     expectedNodeForHash.set(predicate2.getLabel(), arrayPredicate2);
 
@@ -659,15 +659,15 @@ class CoreMapperTest {
   void hash_shouldReturnHashUtilResultForNodeOfDocAndEdgeJsons_ifGivenResourceContainsDocAndEdges() {
     // given
     var rootNode = getPropertyNode("rootId", "rootLabel", "rootUri");
-    var resource = new Resource().setDoc(rootNode).setType(new ResourceType());
+    var resource = new Resource().setDoc(rootNode).addType(new ResourceType());
     var targetNode1 = getPropertyNode("id", "label", "uri");
-    var target1 = new Resource().setDoc(targetNode1).setResourceHash(111L).setType(new ResourceType());
+    var target1 = new Resource().setDoc(targetNode1).setResourceHash(111L).addType(new ResourceType());
     var predicate1 = new Predicate("predicate1");
     var targetNode2 = getPropertyNode("id2", "label2", "uri2");
-    var target2 = new Resource().setDoc(targetNode2).setResourceHash(222L).setType(new ResourceType());
+    var target2 = new Resource().setDoc(targetNode2).setResourceHash(222L).addType(new ResourceType());
     var predicate2 = new Predicate("predicate2");
     var targetNode3 = getPropertyNode("id3", "label3", "uri3");
-    var target3 = new Resource().setDoc(targetNode3).setResourceHash(333L).setType(new ResourceType());
+    var target3 = new Resource().setDoc(targetNode3).setResourceHash(333L).addType(new ResourceType());
     resource.getOutgoingEdges()
       .add(new ResourceEdge(resource, target1, predicate1));
     resource.getOutgoingEdges()
@@ -677,21 +677,21 @@ class CoreMapperTest {
 
     var expectedNodeForHash = rootNode.deepCopy();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
     var arrayPredicate1 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate1.add(targetNode1.deepCopy()
       .put(PROPERTY_LABEL, target1.getLabel())
-      .put("type", target1.getType().getTypeHash())
+      .put("type", target1.getLastType().getTypeHash())
     );
     arrayPredicate1.add(targetNode2.deepCopy()
       .put(PROPERTY_LABEL, target2.getLabel())
-      .put("type", target2.getType().getTypeHash())
+      .put("type", target2.getLastType().getTypeHash())
     );
     expectedNodeForHash.set(predicate1.getLabel(), arrayPredicate1);
     var arrayPredicate2 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate2.add(targetNode3.deepCopy()
       .put(PROPERTY_LABEL, target3.getLabel())
-      .put("type", target3.getType().getTypeHash())
+      .put("type", target3.getLastType().getTypeHash())
     );
     expectedNodeForHash.set(predicate2.getLabel(), arrayPredicate2);
 
@@ -1087,13 +1087,13 @@ class CoreMapperTest {
     doReturn(expectedType).when(resourceTypeService).get(type);
     var expectedTarget1 = new Resource()
       .setLabel(dto1.getLabel())
-      .setType(expectedType)
+      .addType(expectedType)
       .setDoc(propertyToDoc(dto1));
     expectedTarget1.setResourceHash(coreMapper.hash(expectedTarget1));
     var dto2 = new Property2().id("id2").label("label2").uri("uri2");
     var expectedTarget2 = new Resource()
       .setLabel(dto2.getLabel())
-      .setType(expectedType)
+      .addType(expectedType)
       .setDoc(propertyToDoc(dto2));
     expectedTarget2.setResourceHash(coreMapper.hash(expectedTarget2));
     var subProperties = List.of(dto1, dto2);
@@ -1152,7 +1152,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(property.getLabel()));
-    assertThat(resource.getType(), is(expectedType));
+    assertThat(resource.getLastType(), is(expectedType));
     assertThat(resource.getDoc(), is(propertyToDoc(property)));
     assertThat(resource.getResourceHash(), notNullValue());
   }
@@ -1170,7 +1170,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(type));
-    assertThat(resource.getType(), is(expectedType));
+    assertThat(resource.getLastType(), is(expectedType));
     assertThat(resource.getDoc(), is(propertyToDoc(property)));
     assertThat(resource.getResourceHash(), notNullValue());
   }
@@ -1217,14 +1217,14 @@ class CoreMapperTest {
     var expectedPlacePredicate = new Predicate(PLACE2_PRED);
     doReturn(expectedPlacePredicate).when(predicateService).get(PLACE2_PRED);
     var expectedTarget1 = new Resource()
-      .setType(expectedPlaceType)
+      .addType(expectedPlaceType)
       .setLabel(place1.getLabel())
       .setDoc(propertyToDoc(place1));
     expectedTarget1
       .setResourceHash(coreMapper.hash(expectedTarget1));
     var place2 = new Property2().id("id2").label("label2").uri("uri2");
     var expectedTarget2 = new Resource()
-      .setType(expectedPlaceType)
+      .addType(expectedPlaceType)
       .setLabel(place2.getLabel())
       .setDoc(propertyToDoc(place2));
     expectedTarget2
@@ -1242,7 +1242,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(label));
-    assertThat(resource.getType(), is(expectedType));
+    assertThat(resource.getLastType(), is(expectedType));
     assertThat(resource.getDoc(), is(provisionActivityToDoc(dto)));
     assertThat(resource.getResourceHash(), notNullValue());
     assertThat(resource.getOutgoingEdges(), hasSize(2));
@@ -1265,14 +1265,14 @@ class CoreMapperTest {
     var expectedPlacePredicate = new Predicate(PLACE2_PRED);
     doReturn(expectedPlacePredicate).when(predicateService).get(PLACE2_PRED);
     var expectedTarget1 = new Resource()
-      .setType(expectedPlaceType)
+      .addType(expectedPlaceType)
       .setLabel(PLACE_COMPONENTS)
       .setDoc(propertyToDoc(place1));
     expectedTarget1
       .setResourceHash(coreMapper.hash(expectedTarget1));
     var place2 = new Property2().id("id2").uri("uri2");
     var expectedTarget2 = new Resource()
-      .setType(expectedPlaceType)
+      .addType(expectedPlaceType)
       .setLabel(PLACE_COMPONENTS)
       .setDoc(propertyToDoc(place2));
     expectedTarget2
@@ -1290,7 +1290,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(type));
-    assertThat(resource.getType(), is(expectedType));
+    assertThat(resource.getLastType(), is(expectedType));
     assertThat(resource.getDoc(), is(provisionActivityToDoc(dto)));
     assertThat(resource.getResourceHash(), notNullValue());
     assertThat(resource.getOutgoingEdges(), hasSize(2));

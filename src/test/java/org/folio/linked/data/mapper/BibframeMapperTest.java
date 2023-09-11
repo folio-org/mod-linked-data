@@ -122,13 +122,13 @@ class BibframeMapperTest {
     var identifier = new Resource();
     identifier.setResourceHash(randomLong());
     identifier.setDoc(getJsonNode(Map.of(VALUE_PRED, List.of(randomLong()))));
-    identifier.setType(new ResourceType().setSimpleLabel(random(BibframeIdentifiersInner.TypeEnum.class).getValue()));
+    identifier.addType(new ResourceType().setSimpleLabel(random(BibframeIdentifiersInner.TypeEnum.class).getValue()));
     instance.getOutgoingEdges().add(new ResourceEdge(instance, identifier, new Predicate(IDENTIFIED_BY_PRED)));
     var publication = new Resource();
     publication.setResourceHash(randomLong());
     publication.setDoc(
       getJsonNode(Map.of(SIMPLE_DATE_PRED, List.of("2023"), SIMPLE_AGENT_PRED, List.of(UUID.randomUUID().toString()))));
-    publication.setType(new ResourceType().setSimpleLabel(PUBLICATION));
+    publication.addType(new ResourceType().setSimpleLabel(PUBLICATION));
     instance.getOutgoingEdges().add(new ResourceEdge(instance, publication, new Predicate(PROVISION_ACTIVITY_PRED)));
     instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT_URL, List.of(UUID.randomUUID().toString()))));
 
@@ -141,7 +141,7 @@ class BibframeMapperTest {
     assertThat(result.getIdentifiers().get(0).getValue()).isEqualTo(
       identifier.getDoc().get(VALUE_PRED).get(0).textValue());
     assertThat(result.getIdentifiers().get(0).getType()).isEqualTo(
-      BibframeIdentifiersInner.TypeEnum.fromValue(identifier.getType().getSimpleLabel()));
+      BibframeIdentifiersInner.TypeEnum.fromValue(identifier.getLastType().getSimpleLabel()));
     assertThat(result.getPublications().get(0).getDateOfPublication()).isEqualTo(
       publication.getDoc().get(SIMPLE_DATE_PRED).get(0).textValue());
     assertThat(result.getPublications().get(0).getPublisher()).isEqualTo(

@@ -47,7 +47,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
     var isbn = ((IsbnField) dto).getIsbn();
     var resource = new Resource();
     resource.setLabel(getFirst(isbn.getValue(), ""));
-    resource.setType(resourceTypeService.get(ISBN));
+    resource.addType(resourceTypeService.get(ISBN));
     resource.setDoc(getDoc(isbn));
     coreMapper.mapResourceEdges(isbn.getStatus(), resource, STATUS, STATUS_PRED,
       (status, pred) -> statusMapper.toEntity(status, pred, null));

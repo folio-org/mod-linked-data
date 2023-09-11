@@ -42,7 +42,7 @@ public class FamilyMapperUnit implements ContributionSubResourceMapperUnit {
     var agent = ((FamilyField2) dto).getFamily();
     var resource = new Resource();
     resource.setLabel(FAMILY_URL);
-    resource.setType(resourceTypeService.get(FAMILY));
+    resource.addType(resourceTypeService.get(FAMILY));
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

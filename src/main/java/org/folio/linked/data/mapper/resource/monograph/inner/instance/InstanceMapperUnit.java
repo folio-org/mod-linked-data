@@ -56,7 +56,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
   public Resource toEntity(Object resourceDto) {
     Instance dto = (Instance) resourceDto;
     var resource = new Resource();
-    resource.setType(resourceTypeService.get(INSTANCE));
+    resource.addType(resourceTypeService.get(INSTANCE));
     resource.setDoc(getDoc(dto));
     resource.setLabel(getLabel(dto));
     coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);

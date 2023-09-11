@@ -42,7 +42,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
     var otherId = ((OtherIdField) dto).getIdentifier();
     var resource = new Resource();
     resource.setLabel(getFirst(otherId.getValue(), ""));
-    resource.setType(resourceTypeService.get(OTHER_ID));
+    resource.addType(resourceTypeService.get(OTHER_ID));
     resource.setDoc(getDoc(otherId));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

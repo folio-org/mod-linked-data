@@ -44,7 +44,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
     var production = (ProviderEvent) dto;
     Resource resource = new Resource();
     resource.setLabel(getFirst(production.getSimplePlace(), getPlaceName(production)));
-    resource.setType(resourceTypeService.get(PROVIDER_EVENT));
+    resource.addType(resourceTypeService.get(PROVIDER_EVENT));
     resource.setDoc(toDoc(production));
     coreMapper.mapResourceEdges(production.getPlace(), resource, PLACE, PLACE_PRED,
       (place, pred) -> placeMapper.toEntity(place, pred, null));

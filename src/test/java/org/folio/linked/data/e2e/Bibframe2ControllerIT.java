@@ -242,7 +242,7 @@ public class Bibframe2ControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResource("samples/bibframe-wrong-field.json"));
+      .content(getResource("samples/bibframe2-wrong-field.json"));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -264,7 +264,7 @@ public class Bibframe2ControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResource("samples/bibframe-property-no-label.json"));
+      .content(getResource("samples/bibframe2-property-no-label.json"));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -283,7 +283,7 @@ public class Bibframe2ControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResource("samples/bibframe-multiple-identical-resources.json"));
+      .content(getResource("samples/bibframe2-multiple-identical-resources.json"));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -528,7 +528,7 @@ public class Bibframe2ControllerIT {
   }
 
   private void validateSampleMonographEntity(Resource monograph) {
-    assertThat(monograph.getType().getSimpleLabel()).isEqualTo(MONOGRAPH_2);
+    assertThat(monograph.getLastType().getSimpleLabel()).isEqualTo(MONOGRAPH_2);
     assertThat(monograph.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(monograph.getDoc()).isNull();
     assertThat(monograph.getResourceHash()).isNotNull();
@@ -542,7 +542,7 @@ public class Bibframe2ControllerIT {
     assertThat(instanceEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_URL);
     var instance = instanceEdge.getTarget();
     assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
-    assertThat(instance.getType().getSimpleLabel()).isEqualTo(INSTANCE_2);
+    assertThat(instance.getLastType().getSimpleLabel()).isEqualTo(INSTANCE_2);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(5);
     assertThat(instance.getDoc().get(DIMENSIONS_URL).size()).isEqualTo(1);
@@ -654,7 +654,7 @@ public class Bibframe2ControllerIT {
     assertThat(identifiedByEdge.getPredicate().getLabel()).isEqualTo(IDENTIFIED_BY_PRED);
     var identifiedBy = identifiedByEdge.getTarget();
     assertThat(identifiedBy.getLabel()).isEqualTo(url);
-    assertThat(identifiedBy.getType().getSimpleLabel()).isEqualTo(type);
+    assertThat(identifiedBy.getLastType().getSimpleLabel()).isEqualTo(type);
     assertThat(identifiedBy.getResourceHash()).isNotNull();
     assertThat(identifiedBy.getDoc().get(VALUE_PRED).size()).isEqualTo(1);
     assertThat(identifiedBy.getDoc().get(VALUE_PRED).get(0).asText()).isEqualTo(value);
@@ -702,7 +702,7 @@ public class Bibframe2ControllerIT {
     assertThat(titleEdge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_2_PRED);
     var title = titleEdge.getTarget();
     assertThat(title.getLabel()).isEqualTo(label);
-    assertThat(title.getType().getSimpleLabel()).isEqualTo(type);
+    assertThat(title.getLastType().getSimpleLabel()).isEqualTo(type);
     assertThat(title.getResourceHash()).isNotNull();
     assertThat(title.getDoc().get(PART_NAME_URL).size()).isEqualTo(1);
     assertThat(title.getDoc().get(PART_NAME_URL).get(0).asText()).isEqualTo(prefix + "partName");
@@ -721,7 +721,7 @@ public class Bibframe2ControllerIT {
     assertThat(propertyEdge.getPredicate().getLabel()).isEqualTo(pred);
     var property = propertyEdge.getTarget();
     assertThat(property.getLabel()).isEqualTo(propertyLabel);
-    assertThat(property.getType().getTypeUri()).isEqualTo(type);
+    assertThat(property.getLastType().getTypeUri()).isEqualTo(type);
     assertThat(property.getResourceHash()).isNotNull();
     assertThat(property.getDoc().get(PROPERTY_ID).asText()).isEqualTo(propertyId);
     assertThat(property.getDoc().get(PROPERTY_URI).asText()).isEqualTo(propertyUri);
@@ -735,7 +735,7 @@ public class Bibframe2ControllerIT {
     assertThat(extentEdge.getPredicate().getLabel()).isEqualTo(EXTENT_PRED);
     var extent = extentEdge.getTarget();
     assertThat(extent.getLabel()).isEqualTo(EXTENT_URL);
-    assertThat(extent.getType().getSimpleLabel()).isEqualTo(EXTENT);
+    assertThat(extent.getLastType().getSimpleLabel()).isEqualTo(EXTENT);
     assertThat(extent.getResourceHash()).isNotNull();
     assertThat(extent.getDoc().size()).isEqualTo(1);
     assertThat(extent.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
@@ -755,7 +755,7 @@ public class Bibframe2ControllerIT {
     assertThat(noteEdge.getPredicate().getLabel()).isEqualTo(NOTE_PRED);
     var note = noteEdge.getTarget();
     assertThat(note.getLabel()).isEqualTo(NOTE_URL);
-    assertThat(note.getType().getSimpleLabel()).isEqualTo(NOTE_2);
+    assertThat(note.getLastType().getSimpleLabel()).isEqualTo(NOTE_2);
     assertThat(note.getResourceHash()).isNotNull();
     assertThat(note.getDoc().size()).isEqualTo(1);
     assertThat(note.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
@@ -776,7 +776,7 @@ public class Bibframe2ControllerIT {
     assertThat(appliesToEdge.getPredicate().getLabel()).isEqualTo(APPLIES_TO_PRED);
     var appliesTo = appliesToEdge.getTarget();
     assertThat(appliesTo.getLabel()).isEqualTo(APPLIES_TO_URL);
-    assertThat(appliesTo.getType().getSimpleLabel()).isEqualTo(APPLIES_TO);
+    assertThat(appliesTo.getLastType().getSimpleLabel()).isEqualTo(APPLIES_TO);
     assertThat(appliesTo.getResourceHash()).isNotNull();
     assertThat(appliesTo.getDoc().size()).isEqualTo(1);
     assertThat(appliesTo.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
@@ -790,7 +790,7 @@ public class Bibframe2ControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(SUPP_CONTENT_PRED);
     var suppContent = edge.getTarget();
     assertThat(suppContent.getLabel()).isEqualTo(SUPP_CONTENT_URL);
-    assertThat(suppContent.getType().getSimpleLabel()).isEqualTo(SUPP_CONTENT);
+    assertThat(suppContent.getLastType().getSimpleLabel()).isEqualTo(SUPP_CONTENT);
     assertThat(suppContent.getResourceHash()).isNotNull();
     assertThat(suppContent.getDoc().size()).isEqualTo(2);
     assertThat(suppContent.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
@@ -806,7 +806,7 @@ public class Bibframe2ControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(IMM_ACQUISITION_PRED);
     var immediateAcquisition = edge.getTarget();
     assertThat(immediateAcquisition.getLabel()).isEqualTo(IMM_ACQUISITION_URI);
-    assertThat(immediateAcquisition.getType().getSimpleLabel()).isEqualTo(IMM_ACQUISITION);
+    assertThat(immediateAcquisition.getLastType().getSimpleLabel()).isEqualTo(IMM_ACQUISITION);
     assertThat(immediateAcquisition.getResourceHash()).isNotNull();
     assertThat(immediateAcquisition.getDoc().size()).isEqualTo(1);
     assertThat(immediateAcquisition.getDoc().get(LABEL_PRED).size()).isEqualTo(1);
@@ -827,7 +827,7 @@ public class Bibframe2ControllerIT {
     assertThat(contributionEdge.getPredicate().getLabel()).isEqualTo(CONTRIBUTION_PRED);
     var contribution = contributionEdge.getTarget();
     assertThat(contribution.getLabel()).isEqualTo(CONTRIBUTION_URL);
-    assertThat(contribution.getType().getTypeUri()).isEqualTo(CONTRIBUTION_URL);
+    assertThat(contribution.getLastType().getTypeUri()).isEqualTo(CONTRIBUTION_URL);
     assertThat(contribution.getResourceHash()).isNotNull();
     assertThat(contribution.getDoc()).isNull();
     assertThat(contribution.getOutgoingEdges()).hasSize(2);
@@ -845,7 +845,7 @@ public class Bibframe2ControllerIT {
     assertThat(contributionRoleEdge.getPredicate().getLabel()).isEqualTo(ROLE_PRED);
     var contributionRole = contributionRoleEdge.getTarget();
     assertThat(contributionRole.getLabel()).isEqualTo(roleLabel);
-    assertThat(contributionRole.getType().getTypeUri()).isEqualTo(ROLE_URL);
+    assertThat(contributionRole.getLastType().getTypeUri()).isEqualTo(ROLE_URL);
     assertThat(contributionRole.getResourceHash()).isNotNull();
     assertThat(contributionRole.getDoc().size()).isEqualTo(3);
     assertThat(contributionRole.getDoc().get(PROPERTY_URI).asText()).isEqualTo(ROLE_URL);
@@ -865,7 +865,7 @@ public class Bibframe2ControllerIT {
     assertThat(contributionAgentEdge.getPredicate().getLabel()).isEqualTo(AGENT_PRED);
     var contributionAgent = contributionAgentEdge.getTarget();
     assertThat(contributionAgent.getLabel()).isEqualTo(agenTypeUrl);
-    assertThat(contributionAgent.getType().getSimpleLabel()).isEqualTo(agenTypeLabel);
+    assertThat(contributionAgent.getLastType().getSimpleLabel()).isEqualTo(agenTypeLabel);
     assertThat(contributionAgent.getResourceHash()).isNotNull();
     assertThat(contributionAgent.getDoc().size()).isEqualTo(1);
     assertThat(contributionAgent.getDoc().get(SAME_AS_PRED).get(0).get(PROPERTY_LABEL).asText())
@@ -882,7 +882,7 @@ public class Bibframe2ControllerIT {
     assertThat(provisionEdge.getPredicate().getLabel()).isEqualTo(PROVISION_ACTIVITY_PRED);
     var provision = provisionEdge.getTarget();
     assertThat(provision.getLabel()).isEqualTo(label);
-    assertThat(provision.getType().getSimpleLabel()).isEqualTo(type);
+    assertThat(provision.getLastType().getSimpleLabel()).isEqualTo(type);
     assertThat(provision.getResourceHash()).isNotNull();
     assertThat(provision.getDoc().size()).isEqualTo(4);
     assertThat(provision.getDoc().get(SIMPLE_DATE_PRED).size()).isEqualTo(1);
@@ -904,7 +904,7 @@ public class Bibframe2ControllerIT {
     assertThat(publicationPlaceEdge.getPredicate().getLabel()).isEqualTo(PLACE2_PRED);
     var publicationPlace = publicationPlaceEdge.getTarget();
     assertThat(publicationPlace.getLabel()).isEqualTo(prefix + "New York (State)");
-    assertThat(publicationPlace.getType().getSimpleLabel()).isEqualTo(PLACE_COMPONENTS);
+    assertThat(publicationPlace.getLastType().getSimpleLabel()).isEqualTo(PLACE_COMPONENTS);
     assertThat(publicationPlace.getResourceHash()).isNotNull();
     assertThat(publicationPlace.getDoc().size()).isEqualTo(3);
     assertThat(publicationPlace.getDoc().get(PROPERTY_URI).asText()).isEqualTo(PLACE_URL);
@@ -919,7 +919,7 @@ public class Bibframe2ControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(ELECTRONIC_LOCATOR_2_PRED);
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo(URL_URL);
-    assertThat(locator.getType().getSimpleLabel()).isEqualTo(URL);
+    assertThat(locator.getLastType().getSimpleLabel()).isEqualTo(URL);
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(1);
     assertThat(locator.getDoc().get(VALUE_PRED).size()).isEqualTo(1);

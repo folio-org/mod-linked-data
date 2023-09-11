@@ -718,14 +718,14 @@ public class MonographTestService {
       .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
     resource.setDoc(getJsonNode(properties));
-    resource.setType(resourceTypeService.get(typeLabel));
+    resource.addType(resourceTypeService.get(typeLabel));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
 
   private Resource createPropertyResource(String id, String label, String uri, String typeUri) {
     var resource = new Resource();
-    resource.setType(resourceTypeService.get(typeUri));
+    resource.addType(resourceTypeService.get(typeUri));
     var doc = getJsonNode(new HashMap<>(Map.of(
       PROPERTY_ID, id,
       PROPERTY_URI, uri,

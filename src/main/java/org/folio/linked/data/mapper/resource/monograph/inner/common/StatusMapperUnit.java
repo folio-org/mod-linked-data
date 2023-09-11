@@ -60,7 +60,7 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
     var status = (Status) dto;
     var resource = new Resource();
     resource.setLabel(getFirst(status.getValue(), ""));
-    resource.setType(resourceTypeService.get(STATUS));
+    resource.addType(resourceTypeService.get(STATUS));
     resource.setDoc(getDoc(status));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

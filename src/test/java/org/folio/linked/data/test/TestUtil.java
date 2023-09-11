@@ -128,7 +128,7 @@ public class TestUtil {
   public static Resource bibframeSampleResource(Long resourceHash, ResourceType type) {
     var bibframe = bibframeSampleResource();
     bibframe.setResourceHash(resourceHash);
-    bibframe.setType(type);
+    bibframe.addType(type);
     return bibframe;
   }
 
@@ -141,7 +141,7 @@ public class TestUtil {
   public static Resource bibframe2SampleResource(Long resourceHash, ResourceType profile) {
     var bibframe = bibframe2SampleResource();
     bibframe.setResourceHash(resourceHash);
-    bibframe.setType(profile);
+    bibframe.addType(profile);
     return bibframe;
   }
 
