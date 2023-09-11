@@ -13,7 +13,7 @@ public class BibframeConstants {
   public static final String INSTANCE_TITLE = "http://bibfra.me/vocab/marc/Title";
   public static final String PARALLEL_TITLE = "http://bibfra.me/vocab/marc/ParallelTitle";
   public static final String VARIANT_TITLE = "http://bibfra.me/vocab/marc/VariantTitle";
-  public static final String PROVIDER_EVENT = "https://bibfra.me/vocab/lite/ProviderEvent";
+  public static final String PROVIDER_EVENT = "http://bibfra.me/vocab/lite/ProviderEvent";
   public static final String PLACE = "http://bibfra.me/vocab/lite/Place";
   public static final String ACCESS_LOCATION = "http://bibfra.me/vocab/marc/AccessLocation";
   public static final String LCCN = "http://library.link/identifier/LCCN";

@@ -1,0 +1,444 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="01_create_hashing_schema" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";">
+      CREATE SCHEMA IF NOT EXISTS hashing;
+    </sql>
+  </changeSet>
+
+  <changeSet id="02_create_bit64_to_bytea_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      create or replace function hashing.bit64_to_bytea(a bit(64)) returns bytea as
+      $$
+      select decode(lpad(to_hex(a::int8), 16, '0'), 'hex');
+      $$
+
+      language sql
+      immutable strict;
+
+      comment on function hashing.bit64_to_bytea is 'Converts a bit(64) value to bytea, with padding to assure 8 bytes';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="03_create_bytea_add64_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      create or replace function hashing.bytea_add64(a bytea, b bytea) returns bytea as
+      $$
+      DECLARE
+      product bytea;
+      BEGIN
+      product := hashing.numeric_to_bytea(hashing.bytea_to_numeric(a) + hashing.bytea_to_numeric(b));
+      if length(product) &gt; 8 then
+      product := substring(product from length(product) - 7);
+      end if;
+      return product;
+      END;
+      $$
+
+      language plpgsql
+      immutable strict;
+
+      comment on function hashing.bytea_add64(bytea,bytea) is 'Sums two bytea values and discards overflow over 8 bytes';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="04_create_bytea_mult64_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      create or replace function hashing.bytea_mult64(a bytea, b bytea) returns bytea as
+      $$
+      DECLARE
+      product bytea;
+      BEGIN
+      product := hashing.numeric_to_bytea(hashing.bytea_to_numeric(a) * hashing.bytea_to_numeric(b));
+      if length(product) &gt; 8 then
+      product := substring(product from length(product) - 7);
+      end if;
+      return product;
+      END;
+      $$
+
+      language plpgsql
+      immutable strict;
+
+      comment on function hashing.bytea_mult64(bytea,bytea) is 'Multiplies two bytea values and discards overflow over 8 bytes';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="05_create_bytea_to_bit64_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      create or replace function hashing.bytea_to_bit64(a bytea) returns bit(64) as
+      $$
+      select ('x'||lpad(encode(a, 'hex'), 16, '0'))::bit(64);
+      $$
+      language sql immutable strict;
+
+      comment on function hashing.bytea_to_bit64(bytea) is 'Converts a bytea to a properly padded bit(64)';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="06_create_bytea_to_numeric_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      CREATE OR REPLACE FUNCTION hashing.bytea_to_numeric(_b BYTEA) RETURNS NUMERIC AS $$
+      DECLARE
+      _n NUMERIC(39,0) := 0;
+      BEGIN
+      FOR _i IN 0 .. LENGTH(_b)-1 LOOP
+      _n := _n*256+GET_BYTE(_b,_i);
+      END LOOP;
+      RETURN _n;
+      END;
+      $$ LANGUAGE PLPGSQL IMMUTABLE STRICT;
+
+      comment on function hashing.bytea_to_numeric(bytea) is 'Converts a bytea to a numeric value';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="07_create_fmix_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      create or replace function hashing.fmix(k bytea) returns bytea as
+      $$
+
+      DECLARE
+      bit_temp bit(64);
+      byte_temp bytea;
+      BEGIN
+      bit_temp := hashing.bytea_to_bit64(k);
+      bit_temp := bit_temp # (bit_temp &gt;&gt;33); -- k := k # (k &gt;&gt; 33);
+      byte_temp := hashing.bit64_to_bytea(bit_temp);
+      byte_temp := hashing.bytea_mult64(byte_temp, E'\\xff51afd7ed558ccd'::bytea); -- k := (k * 0xff51afd7ed558ccd) &amp; -1; -- 0xff51afd7ed558ccd
+      bit_temp := hashing.bytea_to_bit64(byte_temp);
+      bit_temp := bit_temp # (bit_temp &gt;&gt; 33); -- k := k # (k &gt;&gt; 33);
+      byte_temp := hashing.bit64_to_bytea(bit_temp);
+      byte_temp := hashing.bytea_mult64(byte_temp, E'\\xc4ceb9fe1a85ec53'::bytea); -- k := (k * -4265267296055464877) &amp; -1; -- 0xc4ceb9fe1a85ec53
+      bit_temp := hashing.bytea_to_bit64(byte_temp);
+      bit_temp := bit_temp # (bit_temp &gt;&gt; 33); -- k := k # (k &gt;&gt; 33);
+
+      return hashing.bit64_to_bytea(bit_temp);
+      END;
+      $$
+      language plpgsql
+      immutable
+      strict;
+
+      comment on function hashing.fmix(bytea) is 'Forces all bits of a mmh3 hash block to avalanche';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="08_create_murmurhash3_64_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+      create or replace function hashing.murmurhash3_64(input_value text, seed bytea default E'\\x0000000000000000'::bytea) returns bigint as
+      $$
+      DECLARE
+      encoded_value bytea;
+      value_length int;
+      nblocks int;
+      block_start int;
+      h1 bytea;
+      h2 bytea;
+
+      k1 bit(64);
+      k2 bit(64);
+
+      c1 bytea := E'\\x87c37b91114253d5'::bytea;
+      c2 bytea := E'\\x4cf5ad432745937f'::bytea;
+
+      tail_index int;
+      tail_size int;
+      BEGIN
+      h1 := seed;
+      h2 := seed;
+      encoded_value := convert_to(input_value, 'utf-8');
+      value_length := length(encoded_value);
+      nblocks := value_length/16;
+      --     if nblocks &gt; 0 then
+      for block_start in 0..(nblocks * 8 - 1) by 8 loop
+      -- convert to big endian
+      k1 := (get_byte(encoded_value, 2 * block_start + 7)::bit(64) &lt;&lt; 56) |
+      (get_byte(encoded_value, 2 * block_start + 6)::bit(64) &lt;&lt; 48) |
+      (get_byte(encoded_value, 2 * block_start + 5)::bit(64) &lt;&lt; 40) |
+      (get_byte(encoded_value, 2 * block_start + 4)::bit(64) &lt;&lt; 32) |
+      (get_byte(encoded_value, 2 * block_start + 3)::bit(64) &lt;&lt; 24) |
+      (get_byte(encoded_value, 2 * block_start + 2)::bit(64) &lt;&lt; 16) |
+      (get_byte(encoded_value, 2 * block_start + 1)::bit(64) &lt;&lt; 8)  |
+      (get_byte(encoded_value, 2 * block_start + 0)::bit(64));
+
+      k2 := (get_byte(encoded_value, 2 * block_start + 15)::bit(64) &lt;&lt; 56) |
+      (get_byte(encoded_value, 2 * block_start + 14)::bit(64) &lt;&lt; 48) |
+      (get_byte(encoded_value, 2 * block_start + 13)::bit(64) &lt;&lt; 40) |
+      (get_byte(encoded_value, 2 * block_start + 12)::bit(64) &lt;&lt; 32) |
+      (get_byte(encoded_value, 2 * block_start + 11)::bit(64) &lt;&lt; 24) |
+      (get_byte(encoded_value, 2 * block_start + 10)::bit(64) &lt;&lt; 16) |
+      (get_byte(encoded_value, 2 * block_start + 9)::bit(64) &lt;&lt; 8)   |
+      (get_byte(encoded_value, 2 * block_start + 8)::bit(64));
+
+      k1 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k1), c1));
+      --         k1 = (k1 * c1) &amp; 0xFFFFFFFFFFFFFFFF
+      k1 := ((k1 &lt;&lt; 31) | (k1 &gt;&gt;33));
+      --         k1 = (k1 &lt;&lt; 33 | k1 &gt;&gt; 31) &amp; 0xFFFFFFFFFFFFFFFF  # inlined ROTL64
+      k1 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k1), c2));
+      --         k1 = (k1 * c2) &amp; 0xFFFFFFFFFFFFFFFF
+      h1 := hashing.bit64_to_bytea(hashing.bytea_to_bit64(h1) # k1);
+      --         h1 ^= k1
+
+      h1 := hashing.bit64_to_bytea((hashing.bytea_to_bit64(h1) &lt;&lt; 27) | (hashing.bytea_to_bit64(h1) &gt;&gt; 37));
+      --         h1 = (h1 &lt;&lt; 27 | h1 &gt;&gt; 37) &amp; 0xFFFFFFFFFFFFFFFF  # inlined ROTL64
+      h1 := hashing.bytea_add64(h1, h2);
+      --         h1 = (h1 + h2) &amp; 0xFFFFFFFFFFFFFFFF
+      h1 := hashing.bytea_add64(hashing.bytea_mult64(h1, E'\\x05'::bytea), E'\\x52dce729'::bytea);
+      --         h1 = (h1 * 5 + 0x52dce729) &amp; 0xFFFFFFFFFFFFFFFF
+
+
+      k2 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k2), c2));
+      --         k2 = (k2 * c2) &amp; 0xFFFFFFFFFFFFFFFF
+      k2 := ((k2 &lt;&lt; 33) | (k2 &gt;&gt;31));
+      --         k2 = (k2 &lt;&lt; 33 | k2 &gt;&gt; 31) &amp; 0xFFFFFFFFFFFFFFFF  # inlined ROTL64
+      k2 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k2), c1));
+      --         k2 = (k2 * c1) &amp; 0xFFFFFFFFFFFFFFFF
+      h2 := hashing.bit64_to_bytea(hashing.bytea_to_bit64(h2) # k2);
+      --         h2 ^= k2
+
+      h2 := hashing.bit64_to_bytea((hashing.bytea_to_bit64(h2) &lt;&lt; 31) | (hashing.bytea_to_bit64(h2) &gt;&gt; 33));
+      --         h2 = (h2 &lt;&lt; 31 | h2 &gt;&gt; 33) &amp; 0xFFFFFFFFFFFFFFFF  # inlined ROTL64
+      h2 := hashing.bytea_add64(h1, h2);
+      --         h2 = (h1 + h2) &amp; 0xFFFFFFFFFFFFFFFF
+      h2 := hashing.bytea_add64(hashing.bytea_mult64(h2, E'\\x05'::bytea), E'\\x38495ab5'::bytea);
+      --         h2 = (h2 * 5 + 0x38495ab5) &amp; 0xFFFFFFFFFFFFFFFF
+      end loop;
+      --     end if;
+
+      -- tail
+      tail_index := nblocks * 16;
+      k1 := 0::bit(64); -- E'\\x0000000000000000'::bytea;
+      k2 := 0::bit(64); -- E'\\x0000000000000000'::bytea;
+      tail_size := value_length &amp; 15;
+
+      if tail_size &gt;= 15 then
+      k2 := k2 # (get_byte(encoded_value, tail_index + 14)::bit(64) &lt;&lt; 48);
+      --         k2 ^= encoded_value[tail_index + 14] &lt;&lt; 48
+      end if;
+      if tail_size &gt;= 14 then
+      k2 := k2 # (get_byte(encoded_value, tail_index + 13)::bit(64) &lt;&lt; 40);
+      --         k2 ^= encoded_value[tail_index + 13] &lt;&lt; 40
+      end if;
+      if tail_size &gt;= 13 then
+      k2 := k2 # (get_byte(encoded_value, tail_index + 12)::bit(64) &lt;&lt; 32);
+      --         k2 ^= encoded_value[tail_index + 12] &lt;&lt; 32
+      end if;
+      if tail_size &gt;= 12 then
+      k2 := k2 # (get_byte(encoded_value, tail_index + 11)::bit(64) &lt;&lt; 24);
+      --         k2 ^= encoded_value[tail_index + 11] &lt;&lt; 24
+      end if;
+      if tail_size &gt;= 11 then
+      k2 := k2 # (get_byte(encoded_value, tail_index + 10)::bit(64) &lt;&lt; 16);
+      --         k2 ^= encoded_value[tail_index + 10] &lt;&lt; 16
+      end if;
+      if tail_size &gt;= 10 then
+      k2 := k2 # (get_byte(encoded_value, tail_index + 9)::bit(64) &lt;&lt; 8);
+      --         k2 ^= encoded_value[tail_index + 9] &lt;&lt; 8
+      end if;
+      if tail_size &gt;= 9 then
+      k2 := k2 # (get_byte(encoded_value, tail_index + 8)::bit(64));
+      --         k2 ^= encoded_value[tail_index + 8]
+      end if;
+
+      if tail_size &gt; 8 then
+      k2 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k2), c2));
+      --         k2 = (k2 * c2) &amp; 0xFFFFFFFFFFFFFFFF
+      k2 := ((k2 &lt;&lt; 33) | (k2 &gt;&gt;31));
+      --         k2 = (k2 &lt;&lt; 33 | k2 &gt;&gt; 31) &amp; 0xFFFFFFFFFFFFFFFF  # inlined ROTL64
+      k2 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k2), c1));
+      --         k2 = (k2 * c1) &amp; 0xFFFFFFFFFFFFFFFF
+      h2 := hashing.bit64_to_bytea(hashing.bytea_to_bit64(h2) # k2);
+      --         h2 ^= k2
+      end if;
+
+      if tail_size &gt;= 8 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 7)::bit(64) &lt;&lt; 56);
+      --         k1 ^= encoded_value[tail_index + 7] &lt;&lt; 56
+      end if;
+      if tail_size &gt;= 7 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 6)::bit(64) &lt;&lt; 48);
+      --         k1 ^= encoded_value[tail_index + 6] &lt;&lt; 48
+      end if;
+      if tail_size &gt;= 6 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 5)::bit(64) &lt;&lt; 40);
+      --         k1 ^= encoded_value[tail_index + 5] &lt;&lt; 40
+      end if;
+      if tail_size &gt;= 5 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 4)::bit(64) &lt;&lt; 32);
+      --         k1 ^= encoded_value[tail_index + 4] &lt;&lt; 3
+      end if;
+      if tail_size &gt;= 4 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 3)::bit(64) &lt;&lt; 24);
+      --         k1 ^= encoded_value[tail_index + 3] &lt;&lt; 24
+      end if;
+      if tail_size &gt;= 3 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 2)::bit(64) &lt;&lt; 16);
+      --         k1 ^= encoded_value[tail_index + 2] &lt;&lt; 16
+      end if;
+      if tail_size &gt;= 2 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 1)::bit(64) &lt;&lt; 8);
+      --         k1 ^= encoded_value[tail_index + 1] &lt;&lt; 8
+      end if;
+      if tail_size &gt;= 1 then
+      k1 := k1 # (get_byte(encoded_value, tail_index + 0)::bit(64));
+      --         k1 ^= encoded_value[tail_index + 0]
+
+      end if;
+      if tail_size &gt; 0 then
+      k1 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k1), c1));
+      --         k1 = (k1 * c1) &amp; 0xFFFFFFFFFFFFFFFF
+      k1 := ((k1 &lt;&lt; 31) | (k1 &gt;&gt;33));
+      --         k1 = (k1 &lt;&lt; 33 | k1 &gt;&gt; 31) &amp; 0xFFFFFFFFFFFFFFFF  # inlined ROTL64
+      k1 := hashing.bytea_to_bit64(hashing.bytea_mult64(hashing.bit64_to_bytea(k1), c2));
+      --         k1 = (k1 * c2) &amp; 0xFFFFFFFFFFFFFFFF
+      h1 := hashing.bit64_to_bytea(hashing.bytea_to_bit64(h1) # k1);
+      --         h1 ^= k1
+      end if;
+
+      --  finalization
+      h1 := hashing.bit64_to_bytea(hashing.bytea_to_bit64(h1) # value_length::bit(64)); --     h1 ^= length
+      h2 := hashing.bit64_to_bytea(hashing.bytea_to_bit64(h2) # value_length::bit(64)); --     h1 ^= length
+
+      h1 := hashing.bytea_add64(h1, h2); -- h1 = (h1 + h2) &amp; 0xFFFFFFFFFFFFFFFF
+      h2 := hashing.bytea_add64(h1, h2); -- h2 = (h1 + h2) &amp; 0xFFFFFFFFFFFFFFFF
+
+      h1 := hashing.fmix(h1);
+      h2 := hashing.fmix(h2);
+
+      h1 := hashing.bytea_add64(h1, h2); -- h1 = (h1 + h2) &amp; 0xFFFFFFFFFFFFFFFF
+      h2 := hashing.bytea_add64(h1, h2); -- h2 = (h1 + h2) &amp; 0xFFFFFFFFFFFFFFFF
+
+      return (hashing.bytea_to_bit64(h2) &lt;&lt; 64 | hashing.bytea_to_bit64(h1))::int8;
+
+      END
+      $$
+      language plpgsql
+      immutable
+      strict;
+
+      comment on function hashing.murmurhash3_64(text,bytea) is 'Calculates 64-bit mmh3 hash for text input';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="09_create_hash_text_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      do $a$
+      BEGIN
+      if (select exists (select 1 from pg_extension where extname='hll')) then
+      create or replace function hashing.hash_text(text)
+      returns bigint
+      as
+      $$
+      select ('x' || substring(hll_out(hll_empty() || hll_hash_text($1, 0))::text from 9))::bit(64)::bigint;
+      $$
+      language sql strict immutable;
+      else
+      create or replace function hashing.hash_text(text) returns bigint
+      as
+      $$
+      select hashing.murmurhash3_64($1, E'\\x0000000000000000'::bytea);
+      $$
+      language sql strict immutable;
+      end if;
+      END
+      $a$
+      language plpgsql;
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="10_create_numeric_to_bytea_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      CREATE OR REPLACE FUNCTION hashing.numeric_to_bytea(_n NUMERIC) RETURNS BYTEA AS $$
+      DECLARE
+      _b BYTEA := '\x';
+      _v INTEGER;
+      BEGIN
+      WHILE _n &gt; 0 LOOP
+      _v := _n % 256;
+      _b := SET_BYTE(('\x00' || _b),0,_v);
+      _n := (_n-_v)/256;
+      END LOOP;
+      RETURN _b;
+      END;
+      $$ LANGUAGE PLPGSQL IMMUTABLE STRICT;
+
+      comment on function hashing.numeric_to_bytea(NUMERIC) is 'Converts a numeric to a bytea value';
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="11_create_to_int8_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      CREATE OR REPLACE FUNCTION hashing.to_int8(text)
+      RETURNS int8
+      AS $$
+      select trim(leading '\' from
+      decode(rpad(replace(replace($1, '-', '+'), '_', '/') , 12, '='),
+      'base64')::text)::bit(64)::bigint;
+      $$
+      LANGUAGE SQL STRICT IMMUTABLE;
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+  <changeSet id="12_create_to_text_function" author="Pavel_Bobylev@epam.com">
+    <sql dbms="postgresql" endDelimiter=";" splitStatements="false">
+      BEGIN;
+
+      CREATE OR REPLACE FUNCTION hashing.to_text(bigint)
+      RETURNS text
+      AS $$
+      select replace(replace((trim( trailing '=' from
+      encode(int8send($1), 'base64'))),
+      '/', '_'),
+      '+', '-');
+      $$
+      LANGUAGE SQL STRICT IMMUTABLE;
+
+      COMMIT;
+    </sql>
+  </changeSet>
+
+</databaseChangeLog>
