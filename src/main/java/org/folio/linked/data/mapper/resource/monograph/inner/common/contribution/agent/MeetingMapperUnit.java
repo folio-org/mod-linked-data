@@ -42,7 +42,7 @@ public class MeetingMapperUnit implements ContributionSubResourceMapperUnit {
     var agent = ((MeetingField2) dto).getMeeting();
     var resource = new Resource();
     resource.setLabel(MEETING_URL);
-    resource.setType(resourceTypeService.get(MEETING));
+    resource.addType(resourceTypeService.get(MEETING));
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

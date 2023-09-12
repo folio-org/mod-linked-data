@@ -38,12 +38,12 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
 
   @Override
   public BibframeResponse toDto(@NonNull Resource source, @NonNull BibframeResponse destination) {
-    return getMapperUnit(source.getType().getTypeUri()).toDto(source, destination);
+    return getMapperUnit(source.getLastType().getTypeUri()).toDto(source, destination);
   }
 
   @Override
   public Bibframe2Response toDto(@NonNull Resource source, @NonNull Bibframe2Response destination) {
-    return getMapperUnit(source.getType().getTypeUri()).toDto(source, destination);
+    return getMapperUnit(source.getLastType().getTypeUri()).toDto(source, destination);
   }
 
   @SneakyThrows

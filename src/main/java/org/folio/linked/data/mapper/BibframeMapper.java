@@ -22,13 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.Bibframe2Request;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.domain.dto.BibframeRequest;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.BibframeShort;
 import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
+import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
+import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.ProfiledMapper;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
@@ -47,6 +50,7 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+@Log4j2
 @Mapper(componentModel = SPRING)
 public abstract class BibframeMapper {
 
@@ -62,28 +66,36 @@ public abstract class BibframeMapper {
   private KafkaMessageMapper kafkaMessageMapper;
 
   @Mapping(target = "id", source = "resourceHash")
-  @Mapping(target = "profile", expression = "java(resourceShortInfo.getType().getSimpleLabel())")
-  @Mapping(target = "type", expression = "java(resourceShortInfo.getType().getSimpleLabel())")
+  @Mapping(target = "profile", expression = "java(resourceShortInfo.getLastType().getSimpleLabel())")
+  @Mapping(target = "type", expression = "java(resourceShortInfo.getLastType().getTypeUri())")
   public abstract BibframeShort map(ResourceShortInfo resourceShortInfo);
 
   public abstract BibframeShortInfoPage map(Page<BibframeShort> page);
 
   @SneakyThrows
   public Resource toEntity(BibframeRequest dto) {
-    var bibframe = new Resource();
-    bibframe.setType(resourceTypeService.get(dto.getType()));
-    coreMapper.mapResourceEdges(dto.getWork(), bibframe, WORK, WORK, innerMapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getInstance(), bibframe, INSTANCE, INSTANCE, innerMapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getItem(), bibframe, ITEM, ITEM, innerMapper::toEntity);
-    bibframe.setResourceHash(coreMapper.hash(bibframe));
-    bibframe.setLabel(getInstanceLabel(bibframe));
-    return bibframe;
+    try {
+      var bibframe = new Resource();
+      bibframe.addType(resourceTypeService.get(dto.getType()));
+      coreMapper.mapResourceEdges(dto.getWork(), bibframe, WORK, WORK, innerMapper::toEntity);
+      coreMapper.mapResourceEdges(dto.getInstance(), bibframe, INSTANCE, INSTANCE, innerMapper::toEntity);
+      coreMapper.mapResourceEdges(dto.getItem(), bibframe, ITEM, ITEM, innerMapper::toEntity);
+      bibframe.setLabel(getInstanceLabel(bibframe));
+      bibframe.setResourceHash(coreMapper.hash(bibframe));
+      setEdgesId(bibframe);
+      return bibframe;
+    } catch (BaseLinkedDataException blde) {
+      throw blde;
+    } catch (Exception e) {
+      log.warn("Exception during toEntity mapping", e);
+      throw new ValidationException(dto.getClass().getSimpleName(), dto.toString());
+    }
   }
 
   public BibframeResponse toDto(Resource resource) {
     var response = new BibframeResponse()
       .id(resource.getResourceHash())
-      .type(resource.getType().getTypeUri());
+      .type(resource.getLastType().getTypeUri());
     resource.getOutgoingEdges().stream()
       .map(ResourceEdge::getTarget)
       .forEach(r -> innerMapper.toDto(r, response));
@@ -138,7 +150,8 @@ public abstract class BibframeMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), VALUE_PRED))
-        .type(TypeEnum.fromValue(ir.getType().getSimpleLabel().replace("lc:RT:bf2:Identifiers:", ""))))
+        .type(TypeEnum.fromValue(ir.getLastType().getSimpleLabel().replace("lc:RT:bf2:Identifiers:",
+          ""))))
       .toList();
   }
 
@@ -150,7 +163,7 @@ public abstract class BibframeMapper {
     return resource.getOutgoingEdges().stream()
       .filter(re -> PROVISION_ACTIVITY_PRED.equals(re.getPredicate().getLabel()))
       .map(ResourceEdge::getTarget)
-      .filter(r -> PUBLICATION.equals(r.getType().getSimpleLabel()))
+      .filter(r -> PUBLICATION.equals(r.getLastType().getSimpleLabel()))
       .map(Resource::getDoc)
       .map(doc -> new BibframePublicationsInner()
         .dateOfPublication(firstNonEmpty(getValue(doc, SIMPLE_DATE_PRED), getValue(doc, DATE_URL)))

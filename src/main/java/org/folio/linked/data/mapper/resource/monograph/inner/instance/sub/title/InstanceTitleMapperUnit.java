@@ -45,7 +45,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
     var instanceTitle = ((InstanceTitleField) dto).getInstanceTitle();
     var resource = new Resource();
     resource.setLabel(getFirst(instanceTitle.getMainTitle(), ""));
-    resource.setType(resourceTypeService.get(INSTANCE_TITLE));
+    resource.addType(resourceTypeService.get(INSTANCE_TITLE));
     resource.setDoc(getDoc(instanceTitle));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

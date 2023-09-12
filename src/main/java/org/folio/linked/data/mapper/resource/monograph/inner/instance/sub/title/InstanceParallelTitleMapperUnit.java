@@ -46,7 +46,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
     var parallelTitle = ((ParallelTitleField) dto).getParallelTitle();
     var resource = new Resource();
     resource.setLabel(getFirst(parallelTitle.getMainTitle(), ""));
-    resource.setType(resourceTypeService.get(PARALLEL_TITLE));
+    resource.addType(resourceTypeService.get(PARALLEL_TITLE));
     resource.setDoc(getDoc(parallelTitle));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

@@ -49,7 +49,7 @@ public class ProfiledMapperImpl implements ProfiledMapper {
 
   @Override
   public Bibframe2Response toDto(@NonNull Resource resource) {
-    var type = resource.getType().getSimpleLabel();
+    var type = resource.getLastType().getSimpleLabel();
     var response = getMapperUnit(type).toDto(resource);
     response.setProfile(type);
     return response;

@@ -47,7 +47,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
     resource.setLabel(getFirst(variantTitle.getMainTitle(), ""));
-    resource.setType(resourceTypeService.get(VARIANT_TITLE));
+    resource.addType(resourceTypeService.get(VARIANT_TITLE));
     resource.setDoc(getDoc(variantTitle));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

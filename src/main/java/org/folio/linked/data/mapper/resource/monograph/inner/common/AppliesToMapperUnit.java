@@ -58,7 +58,7 @@ public class AppliesToMapperUnit<T> implements SubResourceMapperUnit<T> {
     var appliesTo = ((AppliesToField2) dto).getAppliesTo();
     var resource = new Resource();
     resource.setLabel(APPLIES_TO_URL);
-    resource.setType(resourceTypeService.get(APPLIES_TO));
+    resource.addType(resourceTypeService.get(APPLIES_TO));
     resource.setDoc(getDoc(appliesTo));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

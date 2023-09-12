@@ -3,6 +3,7 @@ package org.folio.linked.data.e2e;
 import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
+import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
@@ -65,6 +66,7 @@ import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -75,6 +77,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
@@ -91,6 +94,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -99,7 +103,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class BibframeControllerIT {
 
-  public static final String BIBFRAME_URI = "/bibframe";
+  public static final String BIBFRAME_URL = "/bibframe";
   public static OkapiConfiguration okapi;
 
   @Autowired
@@ -129,7 +133,7 @@ public class BibframeControllerIT {
   @Test
   void createMonographInstanceBibframe_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var requestBuilder = post(BIBFRAME_URI)
+    var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
       .content(getBibframeSample());
@@ -150,10 +154,58 @@ public class BibframeControllerIT {
   }
 
   @Test
+  void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
+    // given
+    var requestBuilder1 = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
+      .content(getBibframeSample());
+    var resultActions1 = mockMvc.perform(requestBuilder1);
+    var response1 = resultActions1.andReturn().getResponse().getContentAsString();
+    var bibframeResponse1 = objectMapper.readValue(response1, BibframeResponse.class);
+    var persistedOptional1 = resourceRepo.findById(bibframeResponse1.getId());
+    assertThat(persistedOptional1).isPresent();
+    var requestBuilder2 = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
+      .content(getBibframeSample().replace("single unit", "multiple unit"));
+    var expectedDifference = "multiple unit\"]}],\"type\":\"http://bibfra.me/vocab/marc/Monograph\",\"id\":3007022927}";
+
+    // when
+    var response2 = mockMvc.perform(requestBuilder2).andReturn().getResponse().getContentAsString();
+
+    // then
+    assertThat(StringUtils.difference(response1, response2)).isEqualTo(expectedDifference);
+  }
+
+  @Test
+  void createMonographInstanceWithNotCorrectStructure_shouldReturnValidationError() throws Exception {
+    // given
+    var wrongValue = "http://TitleWrong";
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
+      .content(getBibframeSample().replace("http://bibfra.me/vocab/marc/Title", wrongValue));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+
+    // then
+    resultActions.andExpect(status().is(UNPROCESSABLE_ENTITY.value()))
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors", notNullValue()))
+      .andExpect(jsonPath("$." + toErrorType(), equalTo(HttpMessageNotReadableException.class.getSimpleName())))
+      .andExpect(jsonPath("$." + toErrorCode(), equalTo(VALIDATION_ERROR.getValue())))
+      .andExpect(jsonPath("$." + toErrorMessage(), equalTo("JSON parse error: InstanceTitleInner dto"
+        + " class deserialization error: Unknown sub-element http://TitleWrong")));
+  }
+
+  @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleMonograph());
-    var requestBuilder = get(BIBFRAME_URI + "/" + existed.getResourceHash())
+    var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
@@ -168,7 +220,7 @@ public class BibframeControllerIT {
   void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
     var notExistedId = randomLong();
-    var requestBuilder = get(BIBFRAME_URI + "/" + notExistedId)
+    var requestBuilder = get(BIBFRAME_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
@@ -194,7 +246,7 @@ public class BibframeControllerIT {
       resourceRepo.save(bibframeSampleResource(2L, monographTestService.getMonographType())),
       resourceRepo.save(bibframeSampleResource(3L, monographTestService.getMonographType()))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
-    var requestBuilder = get(BIBFRAME_URI)
+    var requestBuilder = get(BIBFRAME_URL)
       .param(TYPE, monographTestService.getMonographType().getTypeUri())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -222,7 +274,7 @@ public class BibframeControllerIT {
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(23);
     assertThat(resourceEdgeRepository.count()).isEqualTo(22);
-    var requestBuilder = delete(BIBFRAME_URI + "/" + existed.getResourceHash())
+    var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
@@ -321,7 +373,7 @@ public class BibframeControllerIT {
   }
 
   private void validateMonographResource(Resource resource) {
-    assertThat(resource.getType().getTypeUri()).isEqualTo(MONOGRAPH);
+    assertThat(resource.getLastType().getTypeUri()).isEqualTo(MONOGRAPH);
     assertThat(resource.getLabel()).isEqualTo("Instance: Laramie holds the range");
     assertThat(resource.getDoc()).isNull();
     assertThat(resource.getResourceHash()).isNotNull();
@@ -335,7 +387,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(INSTANCE);
     var instance = edge.getTarget();
     assertThat(instance.getLabel()).isEqualTo("Instance: Laramie holds the range");
-    assertThat(instance.getType().getTypeUri()).isEqualTo(INSTANCE);
+    assertThat(instance.getLastType().getTypeUri()).isEqualTo(INSTANCE);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(6);
     validateLiteral(instance, DIMENSIONS, "20 cm");
@@ -409,7 +461,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
     var title = edge.getTarget();
     assertThat(title.getLabel()).isEqualTo(title.getDoc().get(MAIN_TITLE).get(0).asText());
-    assertThat(title.getType().getTypeUri()).isEqualTo(type);
+    assertThat(title.getLastType().getTypeUri()).isEqualTo(type);
     assertThat(title.getResourceHash()).isNotNull();
     assertThat(title.getDoc().get(PART_NAME).size()).isEqualTo(1);
     assertThat(title.getDoc().get(PART_NAME).get(0).asText()).isEqualTo(prefix + "partName");
@@ -428,7 +480,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(predicate);
     var providerEvent = edge.getTarget();
     assertThat(providerEvent.getLabel()).isEqualTo(providerEvent.getDoc().get(SIMPLE_PLACE).get(0).asText());
-    assertThat(providerEvent.getType().getTypeUri()).isEqualTo(PROVIDER_EVENT);
+    assertThat(providerEvent.getLastType().getTypeUri()).isEqualTo(PROVIDER_EVENT);
     assertThat(providerEvent.getResourceHash()).isNotNull();
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
     assertThat(providerEvent.getDoc().get(DATE).size()).isEqualTo(1);
@@ -449,7 +501,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(PLACE_PRED);
     var place = edge.getTarget();
     assertThat(place.getLabel()).isEqualTo(place.getDoc().get(NAME).get(0).asText());
-    assertThat(place.getType().getTypeUri()).isEqualTo(PLACE);
+    assertThat(place.getLastType().getTypeUri()).isEqualTo(PLACE);
     assertThat(place.getResourceHash()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(2);
     assertThat(place.getDoc().get(NAME).size()).isEqualTo(1);
@@ -465,7 +517,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var lccn = edge.getTarget();
     assertThat(lccn.getLabel()).isEqualTo(lccn.getDoc().get(NAME).get(0).asText());
-    assertThat(lccn.getType().getTypeUri()).isEqualTo(LCCN);
+    assertThat(lccn.getLastType().getTypeUri()).isEqualTo(LCCN);
     assertThat(lccn.getResourceHash()).isNotNull();
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME).size()).isEqualTo(1);
@@ -480,7 +532,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var isbn = edge.getTarget();
     assertThat(isbn.getLabel()).isEqualTo(isbn.getDoc().get(NAME).get(0).asText());
-    assertThat(isbn.getType().getTypeUri()).isEqualTo(ISBN);
+    assertThat(isbn.getLastType().getTypeUri()).isEqualTo(ISBN);
     assertThat(isbn.getResourceHash()).isNotNull();
     assertThat(isbn.getDoc().size()).isEqualTo(2);
     assertThat(isbn.getDoc().get(NAME).size()).isEqualTo(1);
@@ -497,7 +549,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var ean = edge.getTarget();
     assertThat(ean.getLabel()).isEqualTo(ean.getDoc().get(EAN_VALUE).get(0).asText());
-    assertThat(ean.getType().getTypeUri()).isEqualTo(EAN);
+    assertThat(ean.getLastType().getTypeUri()).isEqualTo(EAN);
     assertThat(ean.getResourceHash()).isNotNull();
     assertThat(ean.getDoc().size()).isEqualTo(2);
     assertThat(ean.getDoc().get(EAN_VALUE).size()).isEqualTo(1);
@@ -513,7 +565,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var localId = edge.getTarget();
     assertThat(localId.getLabel()).isEqualTo(localId.getDoc().get(LOCAL_ID_VALUE).get(0).asText());
-    assertThat(localId.getType().getTypeUri()).isEqualTo(LOCAL_ID);
+    assertThat(localId.getLastType().getTypeUri()).isEqualTo(LOCAL_ID);
     assertThat(localId.getResourceHash()).isNotNull();
     assertThat(localId.getDoc().size()).isEqualTo(2);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE).size()).isEqualTo(1);
@@ -529,7 +581,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var otherId = edge.getTarget();
     assertThat(otherId.getLabel()).isEqualTo(otherId.getDoc().get(NAME).get(0).asText());
-    assertThat(otherId.getType().getTypeUri()).isEqualTo(OTHER_ID);
+    assertThat(otherId.getLastType().getTypeUri()).isEqualTo(OTHER_ID);
     assertThat(otherId.getResourceHash()).isNotNull();
     assertThat(otherId.getDoc().size()).isEqualTo(2);
     assertThat(otherId.getDoc().get(NAME).size()).isEqualTo(1);
@@ -545,7 +597,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(STATUS_PRED);
     var status = edge.getTarget();
     assertThat(status.getLabel()).isEqualTo(status.getDoc().get(LABEL).get(0).asText());
-    assertThat(status.getType().getTypeUri()).isEqualTo(STATUS);
+    assertThat(status.getLastType().getTypeUri()).isEqualTo(STATUS);
     assertThat(status.getResourceHash()).isNotNull();
     assertThat(status.getDoc().size()).isEqualTo(2);
     assertThat(status.getDoc().get(LABEL).size()).isEqualTo(1);
@@ -561,7 +613,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(ACCESS_LOCATION_PRED);
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo(locator.getDoc().get(LINK).get(0).asText());
-    assertThat(locator.getType().getTypeUri()).isEqualTo(ACCESS_LOCATION);
+    assertThat(locator.getLastType().getTypeUri()).isEqualTo(ACCESS_LOCATION);
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK).size()).isEqualTo(1);
@@ -578,7 +630,7 @@ public class BibframeControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(pred);
     var media = edge.getTarget();
     assertThat(media.getLabel()).isEqualTo(media.getDoc().get(TERM).get(0).asText());
-    assertThat(media.getType().getTypeUri()).isEqualTo(type);
+    assertThat(media.getLastType().getTypeUri()).isEqualTo(type);
     assertThat(media.getResourceHash()).isNotNull();
     assertThat(media.getDoc().size()).isEqualTo(3);
     assertThat(media.getDoc().get(CODE).size()).isEqualTo(1);
@@ -826,16 +878,8 @@ public class BibframeControllerIT {
     return String.join(".", arrayPath("errors"), path("code"));
   }
 
-  private String toErrorKey() {
-    return String.join(".", arrayPath("errors"), arrayPath("parameters"), path("key"));
-  }
-
-  private String toErrorValue() {
-    return String.join(".", arrayPath("errors"), arrayPath("parameters"), path("value"));
-  }
-
-  private String filterPath(String... paths) {
-    return String.format("[?(@.%s)]", String.join(".", paths));
+  private String toErrorMessage() {
+    return String.join(".", arrayPath("errors"), path("message"));
   }
 
   private String path(String path) {

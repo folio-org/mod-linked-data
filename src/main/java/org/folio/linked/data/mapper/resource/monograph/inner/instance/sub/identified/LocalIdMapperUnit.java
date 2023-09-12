@@ -42,7 +42,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
     var localId = ((LocalIdField) dto).getLocalId();
     var resource = new Resource();
     resource.setLabel(getFirst(localId.getValue(), ""));
-    resource.setType(resourceTypeService.get(LOCAL_ID));
+    resource.addType(resourceTypeService.get(LOCAL_ID));
     resource.setDoc(getDoc(localId));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

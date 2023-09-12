@@ -50,7 +50,7 @@ public class InstanceParallelTitle2MapperUnit implements Instance2SubResourceMap
     var parallelTitle = ((ParallelTitleField2) dto).getParallelTitle();
     var resource = new Resource();
     resource.setLabel(PARALLEL_TITLE_URL);
-    resource.setType(resourceTypeService.get(PARALLEL_TITLE_2));
+    resource.addType(resourceTypeService.get(PARALLEL_TITLE_2));
     resource.setDoc(getDoc(parallelTitle));
     coreMapper.mapResourceEdges(parallelTitle.getNote(), resource, NOTE_URL, NOTE_PRED,
       (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));

@@ -11,6 +11,7 @@ import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
 import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.TYPE;
 import static org.folio.linked.data.util.Constants.ERROR_JSON_PROCESSING;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -164,7 +165,7 @@ public class CoreMapperImpl implements CoreMapper {
   public Resource propertyToEntity(@NonNull Property2 property, @NonNull String resourceType) {
     var resource = new Resource();
     resource.setLabel(nonNull(property.getLabel()) ? property.getLabel() : resourceType);
-    resource.setType(resourceTypeService.get(resourceType));
+    resource.addType(resourceTypeService.get(resourceType));
     resource.setDoc(propertyToDoc(property));
     resource.setResourceHash(hash(resource));
     return resource;
@@ -175,7 +176,7 @@ public class CoreMapperImpl implements CoreMapper {
                                             @NonNull String resourceType) {
     Resource resource = new Resource();
     resource.setLabel(nonNull(label) ? label : resourceType);
-    resource.setType(resourceTypeService.get(resourceType));
+    resource.addType(resourceTypeService.get(resourceType));
     resource.setDoc(provisionActivityToDoc(dto));
     mapPropertyEdges(dto.getPlace(), resource, PLACE2_PRED, PLACE_COMPONENTS);
     resource.setResourceHash(hash(resource));
@@ -207,7 +208,7 @@ public class CoreMapperImpl implements CoreMapper {
       node = mapper.createObjectNode();
     }
     node.put(PROPERTY_LABEL, res.getLabel());
-    node.put("type", res.getType().getTypeHash());
+    node.put(TYPE, res.getLastType().getTypeHash());
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getLabel();
       if (!node.has(predicate)) {

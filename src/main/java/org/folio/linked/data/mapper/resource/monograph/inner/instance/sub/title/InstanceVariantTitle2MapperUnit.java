@@ -51,7 +51,7 @@ public class InstanceVariantTitle2MapperUnit implements Instance2SubResourceMapp
     var variantTitle = ((VariantTitleField2) dto).getVariantTitle();
     var resource = new Resource();
     resource.setLabel(VARIANT_TITLE_URL);
-    resource.setType(resourceTypeService.get(VARIANT_TITLE_2));
+    resource.addType(resourceTypeService.get(VARIANT_TITLE_2));
     resource.setDoc(getDoc(variantTitle));
     coreMapper.mapResourceEdges(variantTitle.getNote(), resource, NOTE_URL, NOTE_PRED,
       (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));

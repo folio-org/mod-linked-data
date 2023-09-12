@@ -74,7 +74,7 @@ public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
     var note = ((NoteField2) dto).getNote();
     var resource = new Resource();
     resource.setLabel(NOTE_URL);
-    resource.setType(resourceTypeService.get(NOTE_2));
+    resource.addType(resourceTypeService.get(NOTE_2));
     resource.setDoc(getDoc(note));
     coreMapper.mapPropertyEdges(note.getNoteType(), resource, NOTE_TYPE_PRED, NOTE_TYPE_URI);
     resource.setResourceHash(coreMapper.hash(resource));

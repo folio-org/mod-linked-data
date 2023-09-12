@@ -49,12 +49,12 @@ public class SubResourceMapperImpl implements SubResourceMapper {
   @Override
   @SuppressWarnings("java:S2201")
   public <T> void toDto(@NonNull ResourceEdge source, @NonNull T destination) {
-    getMapperUnit(source.getTarget().getType().getTypeUri(), source.getPredicate().getLabel(),
+    var type = source.getTarget().getLastType().getTypeUri();
+    getMapperUnit(type, source.getPredicate().getLabel(),
       destination.getClass(), null)
       .map(mapper -> ((SubResourceMapperUnit<T>) mapper).toDto(source.getTarget(), destination))
-      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + source.getTarget().getType().getTypeUri()
-        + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getLabel() + RIGHT_SQUARE_BRACKET + AND
-        + destination.getClass().getSimpleName()));
+      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + type + IS_NOT_SUPPORTED_FOR_PREDICATE
+        + source.getPredicate().getLabel() + RIGHT_SQUARE_BRACKET + AND + destination.getClass().getSimpleName()));
   }
 
   private Optional<SubResourceMapperUnit<?>> getMapperUnit(String type, String pred, Class<?> parentDto, Class<?> dto) {

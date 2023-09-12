@@ -42,7 +42,7 @@ public class InstanceSupplementaryContent2MapperUnit implements Instance2SubReso
     var supplementaryContent = ((SupplementaryContentField2) dto).getSupplementaryContent();
     var resource = new Resource();
     resource.setLabel(SUPP_CONTENT_URL);
-    resource.setType(resourceTypeService.get(SUPP_CONTENT));
+    resource.addType(resourceTypeService.get(SUPP_CONTENT));
     resource.setDoc(getDoc(supplementaryContent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

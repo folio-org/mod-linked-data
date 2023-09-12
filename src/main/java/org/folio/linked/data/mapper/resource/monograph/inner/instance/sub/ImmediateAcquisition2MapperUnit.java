@@ -43,7 +43,7 @@ public class ImmediateAcquisition2MapperUnit implements Instance2SubResourceMapp
     var immediateAcquisition = ((ImmediateAcquisitionField2) dto).getImmediateAcquisition();
     var resource = new Resource();
     resource.setLabel(IMM_ACQUISITION_URI);
-    resource.setType(resourceTypeService.get(IMM_ACQUISITION));
+    resource.addType(resourceTypeService.get(IMM_ACQUISITION));
     resource.setDoc(getDoc(immediateAcquisition));
     coreMapper.mapPropertyEdges(immediateAcquisition.getApplicableInstitution(), resource,
       APPLICABLE_INSTITUTION_PRED, APPLICABLE_INSTITUTION_URL);

@@ -30,7 +30,7 @@ public class MonographMapperUnit implements ProfiledMapperUnit {
   @Override
   public Resource toEntity(Bibframe2Request dto) {
     var bibframe = new Resource();
-    bibframe.setType(resourceTypeService.get(MONOGRAPH_2));
+    bibframe.addType(resourceTypeService.get(MONOGRAPH_2));
     coreMapper.mapResourceEdges(dto.getWork(), bibframe, WORK_URL, WORK_URL, innerMapper::toEntity);
     coreMapper.mapResourceEdges(dto.getInstance(), bibframe, INSTANCE_URL, INSTANCE_URL, innerMapper::toEntity);
     coreMapper.mapResourceEdges(dto.getItem(), bibframe, ITEM_URL, ITEM_URL, innerMapper::toEntity);

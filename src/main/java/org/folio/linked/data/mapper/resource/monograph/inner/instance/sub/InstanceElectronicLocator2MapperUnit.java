@@ -44,7 +44,7 @@ public class InstanceElectronicLocator2MapperUnit implements Instance2SubResourc
     var url = ((UrlField2) dto).getUrl();
     var resource = new Resource();
     resource.setLabel(URL_URL);
-    resource.setType(resourceTypeService.get(URL_URL));
+    resource.addType(resourceTypeService.get(URL_URL));
     resource.setDoc(getDoc(url));
     coreMapper.mapResourceEdges(url.getNote(), resource, NOTE_URL, NOTE_PRED,
       (fieldDto, pred) -> noteMapper.toEntity(fieldDto, pred, null));

@@ -44,7 +44,7 @@ public class Local2MapperUnit implements Instance2SubResourceMapperUnit {
     var local = ((LocalIdentifierField2) dto).getLocal();
     var resource = new Resource();
     resource.setLabel(IDENTIFIERS_LOCAL_URL);
-    resource.setType(resourceTypeService.get(IDENTIFIERS_LOCAL));
+    resource.addType(resourceTypeService.get(IDENTIFIERS_LOCAL));
     resource.setDoc(getDoc(local));
     coreMapper.mapPropertyEdges(local.getAssigner(), resource, ASSIGNER_PRED, ASSIGNER_URL);
     resource.setResourceHash(coreMapper.hash(resource));

@@ -41,36 +41,18 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 public class ApiExceptionHandler {
 
-  /**
-   * Catches and handles all {@link LinkedDataServiceException} objects during code execution.
-   *
-   * @param exception {@link LinkedDataServiceException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(LinkedDataServiceException.class)
   public ResponseEntity<ErrorResponse> handleLinkedDataServiceException(LinkedDataServiceException exception) {
     logException(exception);
     return buildResponseEntity(exception, BAD_REQUEST, exception.getErrorCode());
   }
 
-  /**
-   * Catches and handles all {@link UnsupportedOperationException} objects during code execution.
-   *
-   * @param exception {@link UnsupportedOperationException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(UnsupportedOperationException.class)
   public ResponseEntity<ErrorResponse> handleUnsupportedOperationException(UnsupportedOperationException exception) {
     logException(exception);
     return buildResponseEntity(exception, BAD_REQUEST, SERVICE_ERROR);
   }
 
-  /**
-   * Catches and handles all exceptions of type {@link MethodArgumentNotValidException}.
-   *
-   * @param e {@link MethodArgumentNotValidException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
     var validationErrors = Optional.of(e.getBindingResult()).map(Errors::getAllErrors).orElse(emptyList());
@@ -88,12 +70,6 @@ public class ApiExceptionHandler {
     return buildResponseEntity(errorResponse, BAD_REQUEST);
   }
 
-  /**
-   * Catches and handles all exceptions of type {@link ConstraintViolationException}.
-   *
-   * @param exception {@link ConstraintViolationException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException exception) {
     logException(exception);
@@ -108,96 +84,48 @@ public class ApiExceptionHandler {
     return buildResponseEntity(errorResponse, BAD_REQUEST);
   }
 
-  /**
-   * Catches and handles all exceptions for type {@link ValidationException}.
-   *
-   * @param exception {@link ValidationException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(ValidationException.class)
   public ResponseEntity<ErrorResponse> handleValidationException(ValidationException exception) {
     var errorResponse = buildValidationError(exception, exception.getKey(), exception.getValue());
     return buildResponseEntity(errorResponse, UNPROCESSABLE_ENTITY);
   }
 
-  /**
-   * Catches and handles all exceptions for type {@link MethodArgumentTypeMismatchException}.
-   *
-   * @param exception {@link MethodArgumentTypeMismatchException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
     MethodArgumentTypeMismatchException exception) {
     return buildResponseEntity(exception, BAD_REQUEST, VALIDATION_ERROR);
   }
 
-  /**
-   * Catches and handles all {@link IllegalArgumentException} exceptions.
-   *
-   * @param exception {@link IllegalArgumentException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
     logException(exception);
     return buildResponseEntity(exception, BAD_REQUEST, VALIDATION_ERROR);
   }
 
-  /**
-   * Handles all {@link EntityNotFoundException} exceptions.
-   *
-   * @param exception {@link EntityNotFoundException} object
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body.
-   */
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
     logException(exception);
     return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
   }
 
-  /**
-   * Handles all {@link NotFoundException} exceptions.
-   *
-   * @param exception {@link NotFoundException} object
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body.
-   */
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NotFoundException exception) {
     logException(exception);
     return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
   }
 
-  /**
-   * Handles all {@link AlreadyExistsException} exceptions.
-   *
-   * @param exception {@link AlreadyExistsException} object
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body.
-   */
   @ExceptionHandler(AlreadyExistsException.class)
   public ResponseEntity<ErrorResponse> handleAlreadyExistsException(AlreadyExistsException exception) {
     logException(exception);
     return buildResponseEntity(exception, BAD_REQUEST, ALREADY_EXISTS_ERROR);
   }
 
-  /**
-   * Handles all {@link HttpMediaTypeNotSupportedException} exceptions.
-   *
-   * @param e {@link HttpMediaTypeNotSupportedException} object
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body.
-   */
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
   public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
     logException(e);
     return buildResponseEntity(e, BAD_REQUEST, VALIDATION_ERROR);
   }
 
-  /**
-   * Handles all {@link HttpMessageNotReadableException} exceptions.
-   *
-   * @param e {@link HttpMessageNotReadableException} object
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body.
-   */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorResponse> handlerHttpMessageNotReadableException(HttpMessageNotReadableException e) {
     return Optional.ofNullable(e.getCause())
@@ -207,16 +135,10 @@ public class ApiExceptionHandler {
       .map(this::handleIllegalArgumentException)
       .orElseGet(() -> {
         logException(e);
-        return buildResponseEntity(e, BAD_REQUEST, VALIDATION_ERROR);
+        return buildResponseEntity(e, UNPROCESSABLE_ENTITY, VALIDATION_ERROR);
       });
   }
 
-  /**
-   * Catches and handles all {@link MissingServletRequestParameterException} exceptions.
-   *
-   * @param exception {@link MissingServletRequestParameterException} to process
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body
-   */
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
     MissingServletRequestParameterException exception) {
@@ -224,12 +146,6 @@ public class ApiExceptionHandler {
     return buildResponseEntity(exception, BAD_REQUEST, VALIDATION_ERROR);
   }
 
-  /**
-   * Handles all uncaught exceptions.
-   *
-   * @param exception {@link Exception} object
-   * @return {@link ResponseEntity} with {@link ErrorResponse} body.
-   */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleAllOtherExceptions(Exception exception) {
     logException(exception);

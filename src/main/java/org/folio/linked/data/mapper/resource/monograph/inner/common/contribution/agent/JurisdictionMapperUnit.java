@@ -42,7 +42,7 @@ public class JurisdictionMapperUnit implements ContributionSubResourceMapperUnit
     var agent = ((JurisdictionField2) dto).getJurisdiction();
     var resource = new Resource();
     resource.setLabel(JURISDICTION_URL);
-    resource.setType(resourceTypeService.get(JURISDICTION));
+    resource.addType(resourceTypeService.get(JURISDICTION));
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

@@ -37,7 +37,7 @@ public abstract class TripleMapperUnit implements InstanceSubResourceMapperUnit 
     var triple = (Triple) dto;
     var resource = new Resource();
     resource.setLabel(getFirst(triple.getTerm(), ""));
-    resource.setType(resourceTypeService.get(type));
+    resource.addType(resourceTypeService.get(type));
     resource.setDoc(getDoc(triple));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
