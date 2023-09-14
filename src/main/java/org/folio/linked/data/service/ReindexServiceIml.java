@@ -32,7 +32,7 @@ public class ReindexServiceIml implements ReindexService {
   public void reindex() {
     Pageable pageable = Pageable.ofSize(Integer.parseInt(reindexPageSize));
     while (pageable.isPaged()) {
-      Page<Resource> page = resourceRepository.findAllResourcesByType(Set.of(BibframeConstants.MONOGRAPH), pageable);
+      Page<Resource> page = resourceRepository.findResourcesByTypeFull(Set.of(BibframeConstants.MONOGRAPH), pageable);
       page.get()
         .map(kafkaMessageMapper::toIndex)
         .map(bibframeIndex -> {

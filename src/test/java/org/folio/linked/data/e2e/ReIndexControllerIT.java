@@ -89,7 +89,7 @@ class ReIndexControllerIT {
     Resource resource2 = bibframeMapper.toEntity(bibframeRequest2);
     resourceRepo.save(resource2);
 
-    return resourceRepo.findAllResourcesByType(bibframeProperties.getProfiles(), Pageable.ofSize(10000))
+    return resourceRepo.findResourcesByTypeFull(bibframeProperties.getProfiles(), Pageable.ofSize(10000))
       .getContent();
   }
 }
