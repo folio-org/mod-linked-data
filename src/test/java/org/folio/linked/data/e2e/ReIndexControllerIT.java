@@ -80,10 +80,12 @@ class ReIndexControllerIT {
 
   private List<Resource> createMonograph() throws Exception {
     BibframeRequest bibframeRequest1 = objectMapper.readValue(getBibframeSample(), BibframeRequest.class);
+    System.out.println(bibframeRequest1);
     Resource resource1 = bibframeMapper.toEntity(bibframeRequest1);
     resourceRepo.save(resource1);
 
-    BibframeRequest bibframeRequest2 = objectMapper.readValue(getBibframeSampleTest(), BibframeRequest.class);
+    BibframeRequest bibframeRequest2 = objectMapper.readValue(getBibframeSampleTest("77 mm"), BibframeRequest.class);
+    System.out.println(bibframeRequest2);
     Resource resource2 = bibframeMapper.toEntity(bibframeRequest2);
     resourceRepo.save(resource2);
 

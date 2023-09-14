@@ -15,6 +15,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import com.fasterxml.jackson.databind.node.TextNode;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
@@ -30,6 +32,7 @@ import org.folio.linked.data.domain.dto.Property2;
 import org.folio.linked.data.domain.dto.ProvisionActivity2;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
+import org.folio.linked.data.util.BibframeConstants;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -43,7 +46,6 @@ public class TestUtil {
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
-  private static final String BIBFRAME_SAMPLE_TEST = loadResourceAsString("samples/bibframe-full-test.json");
   private static final String BIBFRAME_2_SAMPLE = loadResourceAsString("samples/bibframe2-full.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
 
@@ -90,8 +92,12 @@ public class TestUtil {
     return BIBFRAME_SAMPLE;
   }
 
-  public static String getBibframeSampleTest() {
-    return BIBFRAME_SAMPLE_TEST;
+  public static String getBibframeSampleTest(String changedField) {
+    JsonNode jsonNode = getBibframeJsonNodeSample();
+    JsonNode instance = jsonNode.get(BibframeConstants.INSTANCE).get(0);
+    ((ArrayNode) instance.withArray(BibframeConstants.DIMENSIONS)).set(0, new TextNode(changedField));
+
+    return jsonNode.toString();
   }
 
   public static String getBibframe2Sample() {
