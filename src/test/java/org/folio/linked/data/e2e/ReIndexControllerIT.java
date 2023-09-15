@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Set;
 import lombok.SneakyThrows;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
 import org.folio.linked.data.domain.dto.BibframeRequest;
@@ -17,6 +18,7 @@ import org.folio.linked.data.mapper.BibframeMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
+import org.folio.linked.data.util.BibframeConstants;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.AfterEach;
@@ -87,7 +89,7 @@ class ReIndexControllerIT {
     Resource resource2 = bibframeMapper.toEntity(bibframeRequest2);
     resourceRepo.save(resource2);
 
-    return resourceRepo.findResourcesByTypeFull(bibframeProperties.getProfiles(), Pageable.ofSize(10000))
+    return resourceRepo.findResourcesByTypeFull(Set.of(BibframeConstants.INSTANCE, BibframeConstants.MONOGRAPH), Pageable.ofSize(10000))
       .getContent();
   }
 }
