@@ -83,6 +83,16 @@
           "pathPattern": "/_/tenant/{id}"
         }
       ]
+    },
+    {
+      "id": "reindex",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "PUT" ],
+          "pathPattern": "/reindex"
+        }
+      ]
     }
   ],
   "requires": [],

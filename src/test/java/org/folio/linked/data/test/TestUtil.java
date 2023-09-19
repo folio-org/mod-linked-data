@@ -15,7 +15,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +32,7 @@ import org.folio.linked.data.domain.dto.Property2;
 import org.folio.linked.data.domain.dto.ProvisionActivity2;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
+import org.folio.linked.data.util.BibframeConstants;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -87,6 +90,14 @@ public class TestUtil {
 
   public static String getBibframeSample() {
     return BIBFRAME_SAMPLE;
+  }
+
+  public static String getBibframeSampleTest(String changedField) {
+    JsonNode jsonNode = getBibframeJsonNodeSample();
+    JsonNode instance = jsonNode.get(BibframeConstants.INSTANCE).get(0);
+    ((ArrayNode) instance.withArray(BibframeConstants.DIMENSIONS)).set(0, new TextNode(changedField));
+
+    return jsonNode.toString();
   }
 
   public static String getBibframe2Sample() {

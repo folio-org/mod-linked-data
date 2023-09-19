@@ -5,6 +5,19 @@ info:
   description: Linked Data service API
 
 paths:
+  /reindex:
+    put:
+      operationId: reindex
+      description: Start the process of reindexing of resources in the database
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+      responses:
+        '204':
+          description: Started the process of reindex
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
   /bibframe:
     post:
       operationId: createBibframe
