@@ -65,7 +65,7 @@ class ReIndexControllerIT {
 
   @Test
   void createIndexIfTrue_Ok() throws Exception {
-    List<Resource> resources = createMonograph();
+    var resources = createMonograph();
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)
@@ -81,13 +81,12 @@ class ReIndexControllerIT {
   }
 
   private List<Resource> createMonograph() throws Exception {
-    BibframeRequest bibframeRequest1 = objectMapper.readValue(getBibframeSample(), BibframeRequest.class);
-    Resource resource1 = bibframeMapper.toEntity(bibframeRequest1);
+    var bibframeRequest1 = objectMapper.readValue(getBibframeSample(), BibframeRequest.class);
+    var resource1 = bibframeMapper.toEntity(bibframeRequest1);
     resourceRepo.save(resource1);
 
-    BibframeRequest bibframeRequest2 =
-      objectMapper.readValue(getBibframeSampleTest("77 mm"), BibframeRequest.class);
-    Resource resource2 = bibframeMapper.toEntity(bibframeRequest2);
+    var bibframeRequest2 = objectMapper.readValue(getBibframeSampleTest("77 mm"), BibframeRequest.class);
+    var resource2 = bibframeMapper.toEntity(bibframeRequest2);
     resourceRepo.save(resource2);
 
     return resourceRepo.findResourcesByTypeFull(
