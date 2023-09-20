@@ -90,7 +90,9 @@
       "handlers": [
         {
           "methods": [ "PUT" ],
-          "pathPattern": "/reindex"
+          "pathPattern": "/reindex",
+          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "modulePermissions": []
         }
       ]
     }
