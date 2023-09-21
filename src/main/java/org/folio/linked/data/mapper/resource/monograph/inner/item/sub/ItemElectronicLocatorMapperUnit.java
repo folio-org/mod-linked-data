@@ -9,7 +9,7 @@ import org.folio.linked.data.domain.dto.Url2;
 import org.folio.linked.data.domain.dto.UrlField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class ItemElectronicLocatorMapperUnit implements ItemSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final NoteMapperUnit<Url2> noteMapper;
+  private final Note2MapperUnit<Url2> noteMapper;
 
   @Override
   public Item2 toDto(Resource source, Item2 destination) {

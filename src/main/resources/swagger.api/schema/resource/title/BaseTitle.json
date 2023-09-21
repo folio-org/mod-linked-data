@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Base Title Fields",
+  "allOf": [
+    {
+      "$ref": "../Topper.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "partName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/partName"
+        },
+        "partNumber": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/partNumber"
+        },
+        "mainTitle": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/mainTitle"
+        },
+        "subtitle": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/subtitle"
+        }
+      }
+    }
+  ]
+}

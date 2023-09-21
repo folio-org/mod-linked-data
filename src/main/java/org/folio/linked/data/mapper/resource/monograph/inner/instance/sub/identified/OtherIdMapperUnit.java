@@ -33,6 +33,8 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var otherId = coreMapper.readResourceDoc(source, OtherId.class);
+    otherId.setId(source.getResourceHash());
+    otherId.addLabelItem(source.getLabel());
     destination.addMapItem(new OtherIdField().identifier(otherId));
     return destination;
   }
@@ -41,7 +43,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var otherId = ((OtherIdField) dto).getIdentifier();
     var resource = new Resource();
-    resource.setLabel(getFirst(otherId.getValue(), ""));
+    resource.setLabel(getFirst(otherId.getLabel(), getFirst(otherId.getValue(), "")));
     resource.addType(resourceTypeService.get(OTHER_ID));
     resource.setDoc(getDoc(otherId));
     resource.setResourceHash(coreMapper.hash(resource));

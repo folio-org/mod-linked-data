@@ -33,6 +33,8 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var localId = coreMapper.readResourceDoc(source, LocalId.class);
+    localId.setId(source.getResourceHash());
+    localId.addLabelItem(source.getLabel());
     destination.addMapItem(new LocalIdField().localId(localId));
     return destination;
   }
@@ -41,7 +43,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var localId = ((LocalIdField) dto).getLocalId();
     var resource = new Resource();
-    resource.setLabel(getFirst(localId.getValue(), ""));
+    resource.setLabel(getFirst(localId.getLabel(), getFirst(localId.getValue(), "")));
     resource.addType(resourceTypeService.get(LOCAL_ID));
     resource.setDoc(getDoc(localId));
     resource.setResourceHash(coreMapper.hash(resource));

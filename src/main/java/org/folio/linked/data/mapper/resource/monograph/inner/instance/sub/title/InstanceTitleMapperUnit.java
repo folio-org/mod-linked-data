@@ -36,6 +36,8 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var instanceTitle = coreMapper.readResourceDoc(source, InstanceTitle.class);
+    instanceTitle.setId(source.getResourceHash());
+    instanceTitle.addLabelItem(source.getLabel());
     destination.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
     return destination;
   }
@@ -44,7 +46,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var instanceTitle = ((InstanceTitleField) dto).getInstanceTitle();
     var resource = new Resource();
-    resource.setLabel(getFirst(instanceTitle.getMainTitle(), ""));
+    resource.setLabel(getFirst(instanceTitle.getLabel(), getFirst(instanceTitle.getMainTitle(), "")));
     resource.addType(resourceTypeService.get(INSTANCE_TITLE));
     resource.setDoc(getDoc(instanceTitle));
     resource.setResourceHash(coreMapper.hash(resource));

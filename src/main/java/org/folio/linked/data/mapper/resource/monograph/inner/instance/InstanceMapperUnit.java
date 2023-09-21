@@ -1,8 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance;
 
+import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
@@ -22,11 +23,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceAllOfTitleInner;
+import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
-import org.folio.linked.data.domain.dto.InstanceTitleInner;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
+import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
@@ -47,30 +49,34 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
   private final SubResourceMapper mapper;
 
   @Override
-  public BibframeResponse toDto(Resource source, BibframeResponse destination) {
-    coreMapper.mapWithResources(mapper, source, destination::addInstanceItem, Instance.class);
-    return destination;
+  public ResourceDto toDto(Resource source, ResourceDto destination) {
+    var instanceField = new InstanceField();
+    coreMapper.mapWithResources(mapper, source, instanceField::setInstance, Instance.class);
+    instanceField.getInstance().setId(source.getResourceHash());
+    instanceField.getInstance().addLabelItem(source.getLabel());
+    return destination.resource(instanceField);
   }
 
   @Override
   public Resource toEntity(Object resourceDto) {
-    Instance dto = (Instance) resourceDto;
-    var resource = new Resource();
-    resource.addType(resourceTypeService.get(INSTANCE));
-    resource.setDoc(getDoc(dto));
-    resource.setLabel(getLabel(dto));
-    coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getProduction(), resource, PRODUCTION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getPublication(), resource, PUBLICATION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getDistribution(), resource, DISTRIBUTION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getManufacture(), resource, MANUFACTURE_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getAccessLocation(), resource, ACCESS_LOCATION_PRED, Instance.class,
+    Instance dto = ((InstanceField) resourceDto).getInstance();
+    var instance = new Resource();
+    instance.addType(resourceTypeService.get(INSTANCE));
+    instance.setDoc(getDoc(dto));
+    instance.setLabel(getFirst(dto.getLabel(), getLabel(dto)));
+    coreMapper.mapResourceEdges(dto.getTitle(), instance, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getProduction(), instance, PRODUCTION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getPublication(), instance, PUBLICATION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getDistribution(), instance, DISTRIBUTION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getManufacture(), instance, MANUFACTURE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION_PRED, Instance.class,
       mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMap(), resource, MAP_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, Instance.class, mapper::toEntity);
-    resource.setResourceHash(coreMapper.hash(resource));
-    return resource;
+    coreMapper.mapResourceEdges(dto.getMap(), instance, MAP_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getMedia(), instance, MEDIA_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCarrier(), instance, CARRIER_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCopyright(), instance, COPYRIGHT_DATE_PRED, Instance.class, mapper::toEntity);
+    instance.setResourceHash(coreMapper.hash(instance));
+    return instance;
   }
 
   private String getLabel(Instance dto) {
@@ -93,7 +99,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     return emptyString;
   }
 
-  private <T extends InstanceTitleInner> T getTitle(Instance dto, Class<T> titleClass) {
+  private <T extends InstanceAllOfTitleInner> T getTitle(Instance dto, Class<T> titleClass) {
     if (Objects.isNull(dto.getTitle())) {
       return null;
     } else {
@@ -110,7 +116,6 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     map.put(DIMENSIONS, dto.getDimensions());
     map.put(RESPONSIBILITY_STATEMENT, dto.getResponsibilityStatement());
     map.put(EDITION_STATEMENT, dto.getEdition());
-    map.put(COPYRIGHT_DATE, dto.getCopyrightDate());
     map.put(PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
     map.put(ISSUANCE, dto.getIssuance());
     return coreMapper.toJson(map);

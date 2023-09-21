@@ -84,10 +84,9 @@ import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TYPE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
@@ -107,7 +106,6 @@ import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
@@ -118,10 +116,10 @@ import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
@@ -284,7 +282,7 @@ public class MonographTestService {
         TERM, List.of("unmediated"),
         LINK, List.of("media link")
       ),
-      MEDIA,
+      CATEGORY,
       emptyMap()
     );
 
@@ -294,7 +292,7 @@ public class MonographTestService {
         TERM, List.of("carrier 1"),
         LINK, List.of("carrier link")
       ),
-      CARRIER,
+      CATEGORY,
       emptyMap()
     );
 
@@ -314,7 +312,6 @@ public class MonographTestService {
         DIMENSIONS, List.of("20 cm"),
         RESPONSIBILITY_STATEMENT, List.of("responsibility statement"),
         EDITION_STATEMENT, List.of("edition statement"),
-        COPYRIGHT_DATE, List.of("copyright date"),
         PROJECTED_PROVISION_DATE, List.of("projected provision date"),
         ISSUANCE, List.of("single unit")
       ),
@@ -343,7 +340,7 @@ public class MonographTestService {
         SIMPLE_PLACE, List.of(type + " simple place")
       ),
       PROVIDER_EVENT,
-      Map.of(PLACE_PRED, List.of(place(type)))
+      Map.of(PROVIDER_PLACE_PRED, List.of(place(type)))
     );
   }
 

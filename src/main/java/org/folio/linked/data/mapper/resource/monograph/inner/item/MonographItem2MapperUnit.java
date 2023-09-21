@@ -4,8 +4,8 @@ import static org.folio.linked.data.util.Bibframe2Constants.ITEM_URL;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
-import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Item2;
+import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapperUnit;
@@ -22,7 +22,7 @@ public class MonographItem2MapperUnit implements InnerResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public BibframeResponse toDto(Resource source, BibframeResponse destination) {
+  public ResourceDto toDto(Resource source, ResourceDto destination) {
     return destination;
   }
 

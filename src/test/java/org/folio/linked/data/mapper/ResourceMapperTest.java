@@ -38,16 +38,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class BibframeMapperTest {
+class ResourceMapperTest {
 
-  private BibframeMapper bibframeMapper;
+  private ResourceMapper resourceMapper;
   @Mock
   private ProfiledMapper profiledMapper;
 
   @BeforeEach
   void setUp() {
-    bibframeMapper = new BibframeMapperImpl();
-    ReflectionTestUtils.setField(bibframeMapper, "profiledMapper", profiledMapper);
+    resourceMapper = new ResourceMapperImpl();
+    ReflectionTestUtils.setField(resourceMapper, "profiledMapper", profiledMapper);
   }
 
   @Test
@@ -68,7 +68,7 @@ class BibframeMapperTest {
     doReturn(expectedResource).when(profiledMapper).toEntity(dto);
 
     // when
-    var resource = bibframeMapper.toEntity2(dto);
+    var resource = resourceMapper.toEntity2(dto);
 
     // then
     var resourceEdgeIterator = resource.getOutgoingEdges().iterator();
@@ -92,7 +92,7 @@ class BibframeMapperTest {
     Resource resource = null;
 
     // when
-    var thrown = assertThrows(NullPointerException.class, () -> bibframeMapper.mapToIndex2(resource));
+    var thrown = assertThrows(NullPointerException.class, () -> resourceMapper.mapToIndex2(resource));
 
     // then
     MatcherAssert.assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
@@ -104,7 +104,7 @@ class BibframeMapperTest {
     var resource = new Resource();
 
     // when
-    var thrown = assertThrows(NotSupportedException.class, () -> bibframeMapper.mapToIndex2(resource));
+    var thrown = assertThrows(NotSupportedException.class, () -> resourceMapper.mapToIndex2(resource));
 
     // then
     MatcherAssert.assertThat(thrown.getMessage(),
@@ -133,7 +133,7 @@ class BibframeMapperTest {
     instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT_URL, List.of(UUID.randomUUID().toString()))));
 
     // when
-    var result = bibframeMapper.mapToIndex2(resource);
+    var result = resourceMapper.mapToIndex2(resource);
 
     // then
     assertThat(result.getId()).isEqualTo(resource.getResourceHash().toString());
@@ -141,7 +141,7 @@ class BibframeMapperTest {
     assertThat(result.getIdentifiers().get(0).getValue()).isEqualTo(
       identifier.getDoc().get(VALUE_PRED).get(0).textValue());
     assertThat(result.getIdentifiers().get(0).getType()).isEqualTo(
-      BibframeIdentifiersInner.TypeEnum.fromValue(identifier.getLastType().getSimpleLabel()));
+      BibframeIdentifiersInner.TypeEnum.fromValue(identifier.getFirstType().getSimpleLabel()));
     assertThat(result.getPublications().get(0).getDateOfPublication()).isEqualTo(
       publication.getDoc().get(SIMPLE_DATE_PRED).get(0).textValue());
     assertThat(result.getPublications().get(0).getPublisher()).isEqualTo(

@@ -16,7 +16,7 @@ public class Constants {
   public static final String ERROR_JSON_PROCESSING = "Error while json processing";
   public static final String DTO_UNKNOWN_SUB_ELEMENT = " dto class deserialization error: Unknown sub-element ";
   public static final String AND = " and ";
-  public static final String BIBFRAME_WITH_GIVEN_ID = "Bibframe record with given id [";
+  public static final String RESOURCE_WITH_GIVEN_ID = "Resource with given id [";
   public static final String IS_NOT_FOUND = "] is not found";
   public static final String EXISTS_ALREADY = "] exists already";
   public static final String BIBFRAME_PROFILE = "Bibframe profile [";

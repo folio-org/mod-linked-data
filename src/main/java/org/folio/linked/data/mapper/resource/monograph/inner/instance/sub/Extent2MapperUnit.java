@@ -19,8 +19,8 @@ import org.folio.linked.data.domain.dto.Instance2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.AppliesToMapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.AppliesTo2MapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
@@ -33,8 +33,8 @@ public class Extent2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final NoteMapperUnit<Extent2> noteMapper;
-  private final AppliesToMapperUnit<Extent2> appliesToMapper;
+  private final Note2MapperUnit<Extent2> noteMapper;
+  private final AppliesTo2MapperUnit<Extent2> appliesToMapper;
 
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {

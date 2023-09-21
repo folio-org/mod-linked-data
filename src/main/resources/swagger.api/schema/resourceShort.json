@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource short info",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Resource id"
+    },
+    "label": {
+      "type": "string",
+      "description": "Resource label"
+    },
+    "type": {
+      "type": "string",
+      "description": "Resource type URI"
+    }
+  }
+}

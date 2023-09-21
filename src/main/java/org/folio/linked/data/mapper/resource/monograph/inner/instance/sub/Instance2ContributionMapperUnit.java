@@ -40,7 +40,7 @@ public class Instance2ContributionMapperUnit implements Instance2SubResourceMapp
   public Instance2 toDto(Resource source, Instance2 destination) {
     var contribution = coreMapper.readResourceDoc(source, Contribution2.class);
     getResourceEdge(source).ifPresent(re -> {
-      var typeUri = re.getTarget().getLastType().getTypeUri();
+      var typeUri = re.getTarget().getFirstType().getTypeUri();
       var mapper = getMapperUnit(source, typeUri, destination);
       coreMapper.addMappedResources(mapper, source, AGENT_PRED, contribution);
     });
@@ -71,7 +71,7 @@ public class Instance2ContributionMapperUnit implements Instance2SubResourceMapp
       })
       .findFirst()
       .map(map -> (SubResourceMapperUnit<Contribution2>) map)
-      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + source.getLastType().getTypeUri()
+      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + source.getFirstType().getTypeUri()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + AGENT_PRED + RIGHT_SQUARE_BRACKET + AND
         + destination.getClass().getSimpleName()));
   }

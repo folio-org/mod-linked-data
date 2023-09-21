@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
 import org.folio.linked.data.configuration.properties.BibframeProperties;
-import org.folio.linked.data.domain.dto.BibframeRequest;
+import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.mapper.BibframeMapper;
+import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
@@ -44,7 +44,7 @@ class ReIndexControllerIT {
   @Autowired
   private ResourceEdgeRepository resourceEdgeRepository;
   @Autowired
-  private BibframeMapper bibframeMapper;
+  private ResourceMapper resourceMapper;
   @Autowired
   private ObjectMapper objectMapper;
   @Autowired
@@ -81,16 +81,15 @@ class ReIndexControllerIT {
   }
 
   private List<Resource> createMonograph() throws Exception {
-    var bibframeRequest1 = objectMapper.readValue(getBibframeSample(), BibframeRequest.class);
-    var resource1 = bibframeMapper.toEntity(bibframeRequest1);
+    var bibframeRequest1 = objectMapper.readValue(getBibframeSample(), ResourceDto.class);
+    var resource1 = resourceMapper.toEntity(bibframeRequest1);
     resourceRepo.save(resource1);
 
-    var bibframeRequest2 = objectMapper.readValue(getBibframeSampleTest("77 mm"), BibframeRequest.class);
-    var resource2 = bibframeMapper.toEntity(bibframeRequest2);
+    var bibframeRequest2 = objectMapper.readValue(getBibframeSampleTest("77 mm"), ResourceDto.class);
+    var resource2 = resourceMapper.toEntity(bibframeRequest2);
     resourceRepo.save(resource2);
 
     return resourceRepo.findResourcesByTypeFull(
-      Set.of(BibframeConstants.INSTANCE, BibframeConstants.MONOGRAPH), Pageable.ofSize(10000))
-      .getContent();
+      Set.of(BibframeConstants.INSTANCE, BibframeConstants.MONOGRAPH), Pageable.ofSize(10000)).getContent();
   }
 }

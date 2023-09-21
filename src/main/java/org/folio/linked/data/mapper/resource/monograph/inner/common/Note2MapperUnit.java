@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = NOTE_URL, predicate = NOTE_PRED, dtoClass = NoteField2.class)
-public class NoteMapperUnit<T> implements SubResourceMapperUnit<T> {
+public class Note2MapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private static final Set<Class> SUPPORTED_PARENTS =
     Set.of(Instance2.class, Extent2.class, ParallelTitle2.class, VariantTitle2.class, Url2.class);

@@ -46,7 +46,7 @@ import org.folio.linked.data.domain.dto.Url2;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -229,7 +229,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void addMappedResources_shouldThrowNpe_ifGivenSourceIsNull(@Mock NoteMapperUnit subResourceMapperUnit) {
+  void addMappedResources_shouldThrowNpe_ifGivenSourceIsNull(@Mock Note2MapperUnit subResourceMapperUnit) {
     // given
     Resource source = null;
     var predicate = "predicate";
@@ -244,7 +244,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void addMappedResources_shouldThrowNpe_ifGivenPredicateIsNull(@Mock NoteMapperUnit subResourceMapperUnit,
+  void addMappedResources_shouldThrowNpe_ifGivenPredicateIsNull(@Mock Note2MapperUnit subResourceMapperUnit,
                                                                 @Mock Resource source) {
     // given
     String predicate = null;
@@ -259,7 +259,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void addMappedResources_shouldThrowNpe_ifGivenDestinationIsNull(@Mock NoteMapperUnit subResourceMapperUnit,
+  void addMappedResources_shouldThrowNpe_ifGivenDestinationIsNull(@Mock Note2MapperUnit subResourceMapperUnit,
                                                                   @Mock Resource source) {
     // given
     var predicate = "predicate";
@@ -275,7 +275,7 @@ class CoreMapperTest {
 
   @Test
   void addMappedResources_shouldAddMappedResources_ifGivenDataIsCorrect(
-    @Mock NoteMapperUnit<Extent2> subResourceMapperUnit) {
+    @Mock Note2MapperUnit<Extent2> subResourceMapperUnit) {
     // given
     var predicate = "predicate";
     var targetResource = new Resource().setLabel("target");
@@ -355,36 +355,36 @@ class CoreMapperTest {
   void mapWithResources_shouldAddDestinationObjectToGivenConsumer_ifGivenResourceIsEmpty(
     @Mock SubResourceMapper subResourceMapper) {
     // given
-    var bibframeResponse = new Bibframe2Response();
+    var bibframe2Response = new Bibframe2Response();
     var resource = new Resource();
 
     // when
-    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance2.class);
+    coreMapper.mapWithResources(subResourceMapper, resource, bibframe2Response::addInstanceItem, Instance2.class);
 
     // then
-    assertThat(bibframeResponse.getInstance(), hasSize(1));
+    assertThat(bibframe2Response.getInstance(), hasSize(1));
   }
 
   @Test
   void mapWithResources_shouldAddDestinationObjectToGivenConsumer_ifGivenResourceContainsDoc(
     @Mock SubResourceMapper subResourceMapper) {
     // given
-    var bibframeResponse = new Bibframe2Response();
+    var bibframe2Response = new Bibframe2Response();
     var node = OBJECT_MAPPER.createObjectNode();
     var resource = new Resource().setDoc(node);
 
     // when
-    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance2.class);
+    coreMapper.mapWithResources(subResourceMapper, resource, bibframe2Response::addInstanceItem, Instance2.class);
 
     // then
-    assertThat(bibframeResponse.getInstance(), hasSize(1));
+    assertThat(bibframe2Response.getInstance(), hasSize(1));
   }
 
   @Test
   void mapWithResources_shouldAddDestinationObjectToGivenConsumerAndMapEdge_ifGivenResourceContainsDocAndEdge(
     @Mock SubResourceMapper subResourceMapper) {
     // given
-    var bibframeResponse = new Bibframe2Response();
+    var bibframe2Response = new Bibframe2Response();
     var node = OBJECT_MAPPER.createObjectNode();
     var resource = new Resource().setDoc(node);
     var target = new Resource().setLabel("target");
@@ -392,10 +392,10 @@ class CoreMapperTest {
     resource.setOutgoingEdges(Set.of(edge));
 
     // when
-    coreMapper.mapWithResources(subResourceMapper, resource, bibframeResponse::addInstanceItem, Instance2.class);
+    coreMapper.mapWithResources(subResourceMapper, resource, bibframe2Response::addInstanceItem, Instance2.class);
 
     // then
-    assertThat(bibframeResponse.getInstance(), hasSize(1));
+    assertThat(bibframe2Response.getInstance(), hasSize(1));
     verify(subResourceMapper).toDto(eq(edge), any(Instance2.class));
   }
 
@@ -585,7 +585,7 @@ class CoreMapperTest {
     var resource = new Resource().setDoc(node).addType(new ResourceType());
     ObjectNode expectedNodeForHash = resource.getDoc().deepCopy();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getFirstType().getTypeHash());
 
     // when
     var result = coreMapper.hash(resource);
@@ -600,7 +600,7 @@ class CoreMapperTest {
     var resource = new Resource().addType(new ResourceType());
     ObjectNode expectedNodeForHash = OBJECT_MAPPER.createObjectNode();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getFirstType().getTypeHash());
 
     // when
     var result = coreMapper.hash(resource);
@@ -630,21 +630,21 @@ class CoreMapperTest {
 
     var expectedNodeForHash = OBJECT_MAPPER.createObjectNode();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getFirstType().getTypeHash());
     var arrayPredicate1 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate1.add(targetNode1.deepCopy()
       .put(PROPERTY_LABEL, target1.getLabel())
-      .put("type", target1.getLastType().getTypeHash())
+      .put("type", target1.getFirstType().getTypeHash())
     );
     arrayPredicate1.add(targetNode2.deepCopy()
       .put(PROPERTY_LABEL, target2.getLabel())
-      .put("type", target2.getLastType().getTypeHash())
+      .put("type", target2.getFirstType().getTypeHash())
     );
     expectedNodeForHash.set(predicate1.getLabel(), arrayPredicate1);
     var arrayPredicate2 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate2.add(targetNode3.deepCopy()
       .put(PROPERTY_LABEL, target3.getLabel())
-      .put("type", target3.getLastType().getTypeHash())
+      .put("type", target3.getFirstType().getTypeHash())
     );
     expectedNodeForHash.set(predicate2.getLabel(), arrayPredicate2);
 
@@ -677,21 +677,21 @@ class CoreMapperTest {
 
     var expectedNodeForHash = rootNode.deepCopy();
     expectedNodeForHash.put(PROPERTY_LABEL, resource.getLabel());
-    expectedNodeForHash.put("type", resource.getLastType().getTypeHash());
+    expectedNodeForHash.put("type", resource.getFirstType().getTypeHash());
     var arrayPredicate1 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate1.add(targetNode1.deepCopy()
       .put(PROPERTY_LABEL, target1.getLabel())
-      .put("type", target1.getLastType().getTypeHash())
+      .put("type", target1.getFirstType().getTypeHash())
     );
     arrayPredicate1.add(targetNode2.deepCopy()
       .put(PROPERTY_LABEL, target2.getLabel())
-      .put("type", target2.getLastType().getTypeHash())
+      .put("type", target2.getFirstType().getTypeHash())
     );
     expectedNodeForHash.set(predicate1.getLabel(), arrayPredicate1);
     var arrayPredicate2 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate2.add(targetNode3.deepCopy()
       .put(PROPERTY_LABEL, target3.getLabel())
-      .put("type", target3.getLastType().getTypeHash())
+      .put("type", target3.getFirstType().getTypeHash())
     );
     expectedNodeForHash.set(predicate2.getLabel(), arrayPredicate2);
 
@@ -1152,7 +1152,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(property.getLabel()));
-    assertThat(resource.getLastType(), is(expectedType));
+    assertThat(resource.getFirstType(), is(expectedType));
     assertThat(resource.getDoc(), is(propertyToDoc(property)));
     assertThat(resource.getResourceHash(), notNullValue());
   }
@@ -1170,7 +1170,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(type));
-    assertThat(resource.getLastType(), is(expectedType));
+    assertThat(resource.getFirstType(), is(expectedType));
     assertThat(resource.getDoc(), is(propertyToDoc(property)));
     assertThat(resource.getResourceHash(), notNullValue());
   }
@@ -1242,7 +1242,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(label));
-    assertThat(resource.getLastType(), is(expectedType));
+    assertThat(resource.getFirstType(), is(expectedType));
     assertThat(resource.getDoc(), is(provisionActivityToDoc(dto)));
     assertThat(resource.getResourceHash(), notNullValue());
     assertThat(resource.getOutgoingEdges(), hasSize(2));
@@ -1290,7 +1290,7 @@ class CoreMapperTest {
 
     // then
     assertThat(resource.getLabel(), is(type));
-    assertThat(resource.getLastType(), is(expectedType));
+    assertThat(resource.getFirstType(), is(expectedType));
     assertThat(resource.getDoc(), is(provisionActivityToDoc(dto)));
     assertThat(resource.getResourceHash(), notNullValue());
     assertThat(resource.getOutgoingEdges(), hasSize(2));

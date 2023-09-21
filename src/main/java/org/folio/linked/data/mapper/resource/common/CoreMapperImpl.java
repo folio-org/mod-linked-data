@@ -208,7 +208,7 @@ public class CoreMapperImpl implements CoreMapper {
       node = mapper.createObjectNode();
     }
     node.put(PROPERTY_LABEL, res.getLabel());
-    node.put(TYPE, res.getLastType().getTypeHash());
+    node.put(TYPE, res.getFirstType().getTypeHash());
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getLabel();
       if (!node.has(predicate)) {

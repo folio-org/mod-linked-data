@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Triple;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
@@ -19,31 +19,33 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.dictionary.ResourceTypeService;
 
 @RequiredArgsConstructor
-public abstract class TripleMapperUnit implements InstanceSubResourceMapperUnit {
+public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final ResourceTypeService resourceTypeService;
-  private final BiFunction<Triple, Instance, Instance> tripleConsumer;
+  private final BiFunction<Category, Instance, Instance> categoryConsumer;
   private final String type;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
-    var triple = coreMapper.readResourceDoc(source, Triple.class);
-    return tripleConsumer.apply(triple, destination);
+    var category = coreMapper.readResourceDoc(source, Category.class);
+    category.setId(source.getResourceHash());
+    category.addLabelItem(source.getLabel());
+    return categoryConsumer.apply(category, destination);
   }
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    var triple = (Triple) dto;
+    var category = (Category) dto;
     var resource = new Resource();
-    resource.setLabel(getFirst(triple.getTerm(), ""));
+    resource.setLabel(getFirst(category.getLabel(), getFirst(category.getTerm(), "")));
     resource.addType(resourceTypeService.get(type));
-    resource.setDoc(getDoc(triple));
+    resource.setDoc(getDoc(category));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(Triple dto) {
+  private JsonNode getDoc(Category dto) {
     var map = new HashMap<String, List<String>>();
     map.put(CODE, dto.getCode());
     map.put(TERM, dto.getTerm());

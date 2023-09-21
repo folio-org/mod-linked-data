@@ -1,11 +1,12 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provision;
 
 import static com.google.common.collect.Iterables.getFirst;
+import static java.util.Objects.nonNull;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 
@@ -35,25 +36,31 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var providerEvent = coreMapper.readResourceDoc(source, ProviderEvent.class);
-    coreMapper.addMappedResources(placeMapper, source, PLACE_PRED, providerEvent);
+    providerEvent.setId(source.getResourceHash());
+    providerEvent.addLabelItem(source.getLabel());
+    coreMapper.addMappedResources(placeMapper, source, PROVIDER_PLACE_PRED, providerEvent);
     return providerEventConsumer.apply(providerEvent, destination);
   }
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    var production = (ProviderEvent) dto;
+    var providerEvent = (ProviderEvent) dto;
     Resource resource = new Resource();
-    resource.setLabel(getFirst(production.getSimplePlace(), getPlaceName(production)));
+    resource.setLabel(getFirst(providerEvent.getLabel(), getFirst(providerEvent.getSimplePlace(),
+      getPlaceName(providerEvent))));
     resource.addType(resourceTypeService.get(PROVIDER_EVENT));
-    resource.setDoc(toDoc(production));
-    coreMapper.mapResourceEdges(production.getPlace(), resource, PLACE, PLACE_PRED,
+    resource.setDoc(toDoc(providerEvent));
+    coreMapper.mapResourceEdges(providerEvent.getProviderPlace(), resource, PLACE, PROVIDER_PLACE_PRED,
       (place, pred) -> placeMapper.toEntity(place, pred, null));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
 
   private String getPlaceName(ProviderEvent providerEvent) {
-    return getFirst(getFirst(providerEvent.getPlace(), new Place()).getName(), "");
+    if (nonNull(providerEvent.getProviderPlace())) {
+      return getFirst(getFirst(providerEvent.getProviderPlace(), new Place().addNameItem("")).getName(), "");
+    }
+    return "";
   }
 
   private JsonNode toDoc(ProviderEvent providerEvent) {

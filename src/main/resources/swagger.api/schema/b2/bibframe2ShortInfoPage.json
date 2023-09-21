@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Get page of bibframes short info",
+  "type": "object",
+  "properties": {
+    "content": {
+      "description": "Paginated list of bibframes short info",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "bibframe2Short.json"
+      }
+    },
+    "number": {
+      "type": "integer"
+    },
+    "total_pages" : {
+      "type": "integer"
+    },
+    "total_elements": {
+      "type": "integer"
+    }
+  }
+}

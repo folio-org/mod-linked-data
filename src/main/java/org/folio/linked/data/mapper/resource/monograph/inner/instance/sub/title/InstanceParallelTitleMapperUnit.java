@@ -37,6 +37,8 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var parallelTitle = coreMapper.readResourceDoc(source, ParallelTitle.class);
+    parallelTitle.setId(source.getResourceHash());
+    parallelTitle.addLabelItem(source.getLabel());
     destination.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     return destination;
   }
@@ -45,7 +47,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var parallelTitle = ((ParallelTitleField) dto).getParallelTitle();
     var resource = new Resource();
-    resource.setLabel(getFirst(parallelTitle.getMainTitle(), ""));
+    resource.setLabel(getFirst(parallelTitle.getLabel(), getFirst(parallelTitle.getMainTitle(), "")));
     resource.addType(resourceTypeService.get(PARALLEL_TITLE));
     resource.setDoc(getDoc(parallelTitle));
     resource.setResourceHash(coreMapper.hash(resource));

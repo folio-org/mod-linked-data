@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = MONOGRAPH_2)
-public class MonographMapperUnit implements ProfiledMapperUnit {
+public class Monograph2MapperUnit implements ProfiledMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final InnerResourceMapper innerMapper;

@@ -1,10 +1,15 @@
 {
-  "type": "http://bibfra.me/vocab/marc/Monograph",
-  "http://bibfra.me/vocab/lite/Instance": [
-    {
+  "resource": {
+    "http://bibfra.me/vocab/lite/Instance": {
+      "http://www.w3.org/2000/01/rdf-schema#label": [
+        "Instance: label"
+      ],
       "http://bibfra.me/vocab/marc/title": [
         {
           "http://bibfra.me/vocab/marc/Title": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "Instance: label"
+            ],
             "http://bibfra.me/vocab/marc/partName": [
               "Instance: partName"
             ],
@@ -24,6 +29,9 @@
         },
         {
           "http://bibfra.me/vocab/marc/ParallelTitle": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "Parallel: label"
+            ],
             "http://bibfra.me/vocab/marc/partName": [
               "Parallel: partName"
             ],
@@ -46,6 +54,9 @@
         },
         {
           "http://bibfra.me/vocab/marc/VariantTitle": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "Variant: label"
+            ],
             "http://bibfra.me/vocab/marc/partName": [
               "Variant: partName"
             ],
@@ -72,16 +83,22 @@
       ],
       "http://bibfra.me/vocab/marc/production": [
         {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "production label"
+          ],
           "http://bibfra.me/vocab/lite/date": [
             "production date"
           ],
-          "http://bibfra.me/vocab/lite/place": [
+          "http://bibfra.me/vocab/lite/providerPlace": [
             {
+              "http://www.w3.org/2000/01/rdf-schema#label": [
+                "production providerPlace label"
+              ],
               "http://bibfra.me/vocab/lite/name": [
-                "production place name"
+                "production providerPlace name"
               ],
               "http://bibfra.me/vocab/lite/link": [
-                "production place link"
+                "production providerPlace link"
               ]
             }
           ],
@@ -91,23 +108,29 @@
           "http://bibfra.me/vocab/lite/simpleDate": [
             "production simple date"
           ],
-          "http://bibfra.me/vocab/bflc/simplePlace": [
+          "http://bibfra.me/vocab/lite/place": [
             "production simple place"
           ]
         }
       ],
       "http://bibfra.me/vocab/marc/publication": [
         {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "publication label"
+          ],
           "http://bibfra.me/vocab/lite/date": [
             "publication date"
           ],
-          "http://bibfra.me/vocab/lite/place": [
+          "http://bibfra.me/vocab/lite/providerPlace": [
             {
+              "http://www.w3.org/2000/01/rdf-schema#label": [
+                "publication providerPlace label"
+              ],
               "http://bibfra.me/vocab/lite/name": [
-                "publication place name"
+                "publication providerPlace name"
               ],
               "http://bibfra.me/vocab/lite/link": [
-                "publication place link"
+                "publication providerPlace link"
               ]
             }
           ],
@@ -117,23 +140,29 @@
           "http://bibfra.me/vocab/lite/simpleDate": [
             "publication simple date"
           ],
-          "http://bibfra.me/vocab/bflc/simplePlace": [
+          "http://bibfra.me/vocab/lite/place": [
             "publication simple place"
           ]
         }
       ],
       "http://bibfra.me/vocab/marc/distribution": [
         {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "distribution label"
+          ],
           "http://bibfra.me/vocab/lite/date": [
             "distribution date"
           ],
-          "http://bibfra.me/vocab/lite/place": [
+          "http://bibfra.me/vocab/lite/providerPlace": [
             {
+              "http://www.w3.org/2000/01/rdf-schema#label": [
+                "distribution providerPlace label"
+              ],
               "http://bibfra.me/vocab/lite/name": [
-                "distribution place name"
+                "distribution providerPlace name"
               ],
               "http://bibfra.me/vocab/lite/link": [
-                "distribution place link"
+                "distribution providerPlace link"
               ]
             }
           ],
@@ -143,23 +172,29 @@
           "http://bibfra.me/vocab/lite/simpleDate": [
             "distribution simple date"
           ],
-          "http://bibfra.me/vocab/bflc/simplePlace": [
+          "http://bibfra.me/vocab/lite/place": [
             "distribution simple place"
           ]
         }
       ],
       "http://bibfra.me/vocab/marc/manufacture": [
         {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "manufacture label"
+          ],
           "http://bibfra.me/vocab/lite/date": [
             "manufacture date"
           ],
-          "http://bibfra.me/vocab/lite/place": [
+          "http://bibfra.me/vocab/lite/providerPlace": [
             {
+              "http://www.w3.org/2000/01/rdf-schema#label": [
+                "manufacture providerPlace label"
+              ],
               "http://bibfra.me/vocab/lite/name": [
-                "manufacture place name"
+                "manufacture providerPlace name"
               ],
               "http://bibfra.me/vocab/lite/link": [
-                "manufacture place link"
+                "manufacture providerPlace link"
               ]
             }
           ],
@@ -169,20 +204,23 @@
           "http://bibfra.me/vocab/lite/simpleDate": [
             "manufacture simple date"
           ],
-          "http://bibfra.me/vocab/bflc/simplePlace": [
+          "http://bibfra.me/vocab/lite/place": [
             "manufacture simple place"
           ]
         }
       ],
-      "http://bibfra.me/vocab/lite/map": [
+      "http://library.link/vocab/map": [
         {
           "http://library.link/identifier/LCCN": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "lccn label"
+            ],
             "http://bibfra.me/vocab/lite/name": [
               "lccn value"
             ],
             "http://bibfra.me/vocab/marc/status": [
               {
-                "http://bibfra.me/vocab/lite/label": [
+                "http://www.w3.org/2000/01/rdf-schema#label": [
                   "lccn status label"
                 ],
                 "http://bibfra.me/vocab/lite/link": [
@@ -194,6 +232,9 @@
         },
         {
           "http://library.link/identifier/ISBN": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "isbn label"
+            ],
             "http://bibfra.me/vocab/lite/name": [
               "isbn value"
             ],
@@ -202,7 +243,7 @@
             ],
             "http://bibfra.me/vocab/marc/status": [
               {
-                "http://bibfra.me/vocab/lite/label": [
+                "http://www.w3.org/2000/01/rdf-schema#label": [
                   "isbn status label"
                 ],
                 "http://bibfra.me/vocab/lite/link": [
@@ -214,6 +255,9 @@
         },
         {
           "http://bibfra.me/vocab/identifier/Ean": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "ean label"
+            ],
             "http://bibfra.me/vocab/marc/ean": [
               "ean value"
             ],
@@ -224,6 +268,9 @@
         },
         {
           "http://bibfra.me/vocab/lite/LocalId": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "localId label"
+            ],
             "http://bibfra.me/vocab/marc/localId": [
               "localId value"
             ],
@@ -234,6 +281,9 @@
         },
         {
           "http://library.link/identifier/UNKNOWN": {
+            "http://www.w3.org/2000/01/rdf-schema#label": [
+              "otherId label"
+            ],
             "http://bibfra.me/vocab/lite/name": [
               "otherId value"
             ],
@@ -255,11 +305,14 @@
       ],
       "http://bibfra.me/vocab/marc/media": [
         {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "media label"
+          ],
           "http://bibfra.me/vocab/marc/code": [
             "media code"
           ],
           "http://bibfra.me/vocab/marc/term": [
-            "unmediated"
+            "media term"
           ],
           "http://bibfra.me/vocab/lite/link": [
             "media link"
@@ -268,14 +321,27 @@
       ],
       "http://bibfra.me/vocab/marc/carrier": [
         {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "carrier label"
+          ],
           "http://bibfra.me/vocab/marc/code": [
             "carrier code"
           ],
           "http://bibfra.me/vocab/marc/term": [
-            "carrier 1"
+            "carrier term"
           ],
           "http://bibfra.me/vocab/lite/link": [
             "carrier link"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/copyright": [
+        {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "copyright date label"
+          ],
+          "http://bibfra.me/vocab/lite/date": [
+            "copyright date value"
           ]
         }
       ],
@@ -288,9 +354,6 @@
       "http://bibfra.me/vocab/marc/edition": [
         "edition statement"
       ],
-      "http://bibfra.me/vocab/lite/copyrightDate": [
-        "copyright date"
-      ],
       "http://bibfra.me/vocab/bflc/projectedProvisionDate": [
         "projected provision date"
       ],
@@ -298,5 +361,5 @@
         "single unit"
       ]
     }
-  ]
+  }
 }

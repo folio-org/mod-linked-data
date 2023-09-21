@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Common fields on top of each resource",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Hash / ID of the resource"
+    },
+    "label": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "http://www.w3.org/2000/01/rdf-schema#label"
+    }
+  }
+}

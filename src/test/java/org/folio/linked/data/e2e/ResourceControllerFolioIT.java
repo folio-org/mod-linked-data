@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles({"folio", "test-folio", "search"})
-public class BibframeControllerFolioIT extends BibframeControllerIT {
+public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @Autowired
   private KafkaSearchIndexTopicListener consumer;

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = APPLIES_TO_URL, predicate = APPLIES_TO_PRED, dtoClass = AppliesToField2.class)
-public class AppliesToMapperUnit<T> implements SubResourceMapperUnit<T> {
+public class AppliesTo2MapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private static final Set<Class> SUPPORTED_PARENTS = Set.of(Extent2.class);
   private final CoreMapper coreMapper;

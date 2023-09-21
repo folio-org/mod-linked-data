@@ -8,6 +8,36 @@
       "handlers": [
         {
           "methods": [ "POST" ],
+          "pathPattern": "/resource",
+          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/resource",
+          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/resource/{id}",
+          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "PUT" ],
+          "pathPattern": "/resource/{id}",
+          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "DELETE" ],
+          "pathPattern": "/resource/{id}",
+          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
           "pathPattern": "/bibframe",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []

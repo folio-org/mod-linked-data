@@ -22,8 +22,8 @@ public class BibframeConstants {
   public static final String OTHER_ID = "http://library.link/identifier/UNKNOWN";
   public static final String LOCAL_ID = "http://bibfra.me/vocab/lite/LocalId";
   public static final String STATUS = "http://bibfra.me/vocab/marc/Status";
-  public static final String MEDIA = "http://bibfra.me/vocab/marc/Media";
-  public static final String CARRIER = "http://bibfra.me/vocab/marc/Carrier";
+  public static final String CATEGORY = "http://bibfra.me/vocab/lite/Category";
+  public static final String COPYRIGHT_EVENT = "http://bibfra.me/vocab/lite/CopyrightEvent";
 
   // Predicates
   public static final String INSTANCE_TITLE_PRED = "http://bibfra.me/vocab/marc/title";
@@ -31,12 +31,13 @@ public class BibframeConstants {
   public static final String PUBLICATION_PRED = "http://bibfra.me/vocab/marc/publication";
   public static final String DISTRIBUTION_PRED = "http://bibfra.me/vocab/marc/distribution";
   public static final String MANUFACTURE_PRED = "http://bibfra.me/vocab/marc/manufacture";
-  public static final String PLACE_PRED = "http://bibfra.me/vocab/lite/place";
+  public static final String PROVIDER_PLACE_PRED = "http://bibfra.me/vocab/lite/providerPlace";
   public static final String ACCESS_LOCATION_PRED = "http://bibfra.me/vocab/marc/accessLocation";
-  public static final String MAP_PRED = "http://bibfra.me/vocab/lite/map";
+  public static final String MAP_PRED = "http://library.link/vocab/map";
   public static final String STATUS_PRED = "http://bibfra.me/vocab/marc/status";
   public static final String MEDIA_PRED = "http://bibfra.me/vocab/marc/media";
   public static final String CARRIER_PRED = "http://bibfra.me/vocab/marc/carrier";
+  public static final String COPYRIGHT_DATE_PRED = "http://bibfra.me/vocab/marc/copyright";
 
   // Properties
   public static final String ID = "id";
@@ -51,15 +52,14 @@ public class BibframeConstants {
   public static final String VARIANT_TYPE = "http://bibfra.me/vocab/marc/variantType";
   public static final String RESPONSIBILITY_STATEMENT = "http://bibfra.me/vocab/marc/statementOfResponsibility";
   public static final String EDITION_STATEMENT = "http://bibfra.me/vocab/marc/edition";
-  public static final String COPYRIGHT_DATE = "http://bibfra.me/vocab/lite/copyrightDate";
   public static final String DIMENSIONS = "http://bibfra.me/vocab/marc/dimensions";
   public static final String PROJECTED_PROVISION_DATE = "http://bibfra.me/vocab/bflc/projectedProvisionDate";
   public static final String ISSUANCE = "http://bibfra.me/vocab/marc/issuance";
   public static final String LINK = "http://bibfra.me/vocab/lite/link";
   public static final String NAME = "http://bibfra.me/vocab/lite/name";
   public static final String SIMPLE_DATE = "http://bibfra.me/vocab/lite/simpleDate";
-  public static final String SIMPLE_PLACE = "http://bibfra.me/vocab/bflc/simplePlace";
-  public static final String LABEL = "http://bibfra.me/vocab/lite/label";
+  public static final String SIMPLE_PLACE = "http://bibfra.me/vocab/lite/place";
+  public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
   public static final String QUALIFIER = "http://bibfra.me/vocab/marc/qualifier";
   public static final String EAN_VALUE = "http://bibfra.me/vocab/marc/ean";
   public static final String LOCAL_ID_VALUE = "http://bibfra.me/vocab/marc/localId";

@@ -9,7 +9,7 @@ import org.folio.linked.data.domain.dto.ParallelTitleField2;
 import org.folio.linked.data.domain.dto.Work2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.work.sub.WorkSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class WorkParallelTitleMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final NoteMapperUnit<ParallelTitle2> noteMapper;
+  private final Note2MapperUnit<ParallelTitle2> noteMapper;
 
   @Override
   public Work2 toDto(Resource source, Work2 destination) {

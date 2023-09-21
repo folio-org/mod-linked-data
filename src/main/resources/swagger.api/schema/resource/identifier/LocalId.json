@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Local Identifier Info",
+  "allOf": [
+    {
+      "$ref": "../Topper.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/localId"
+        },
+        "assigner": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/localIdAssigningSource"
+        }
+      }
+    }
+  ]
+}

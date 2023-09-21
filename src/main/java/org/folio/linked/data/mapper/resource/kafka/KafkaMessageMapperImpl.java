@@ -40,12 +40,13 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   private Resource extractInstance(Resource resource) {
-    return resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANCE.equals(re.getPredicate().getLabel()))
-      .map(ResourceEdge::getTarget)
-      .findFirst()
-      .orElseThrow(() -> new NotSupportedException("Only Monograph.Instance bibframe is supported for now, and there "
-        + "is no Instance found"));
+    return resource.getTypes().stream().anyMatch(t -> t.getTypeUri().equals(INSTANCE)) ? resource :
+      resource.getOutgoingEdges().stream()
+        .filter(re -> INSTANCE.equals(re.getPredicate().getLabel()))
+        .map(ResourceEdge::getTarget)
+        .findFirst()
+        .orElseThrow(() -> new NotSupportedException("Only Monograph.Instance bibframe is supported for now, and there "
+          + "is no Instance found"));
   }
 
   private List<BibframeIdentifiersInner> extractIdentifiers(Resource resource) {
@@ -54,7 +55,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME, EAN_VALUE, LOCAL_ID_VALUE))
-        .type(toTypeEnum(ir.getLastType())))
+        .type(toTypeEnum(ir.getFirstType())))
       .toList();
   }
 
