@@ -63,10 +63,14 @@
     </insert>
   </changeSet>
 
-  <changeSet id="10_insert_copyright_predicate" author="Pavel_Bobylev@epam.com">
-    <insert tableName="type_lookup">
+  <changeSet id="10_insert_copyright_and_provider_place_predicates" author="Pavel_Bobylev@epam.com">
+    <insert tableName="predicate_lookup">
       <column name="predicate" value="http://bibfra.me/vocab/marc/copyright"/>
       <column name="predicate_hash" valueComputed="hashing.hash_text('http://bibfra.me/vocab/marc/copyright')"/>
+    </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate" value="http://bibfra.me/vocab/lite/providerPlace"/>
+      <column name="predicate_hash" valueComputed="hashing.hash_text('http://bibfra.me/vocab/lite/providerPlace')"/>
     </insert>
   </changeSet>
 

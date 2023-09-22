@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
 import static com.google.common.collect.Iterables.getFirst;
+import static org.folio.linked.data.util.BibframeConstants.LABEL;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
@@ -60,7 +61,7 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var status = (Status) dto;
     var resource = new Resource();
-    resource.setLabel(getFirst(status.getLabel(), ""));
+    resource.setLabel(getFirst(status.getLabel(), getFirst(status.getValue(), "")));
     resource.addType(resourceTypeService.get(STATUS));
     resource.setDoc(getDoc(status));
     resource.setResourceHash(coreMapper.hash(resource));
@@ -70,6 +71,7 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
   private JsonNode getDoc(Status status) {
     var map = new HashMap<String, List<String>>();
     map.put(LINK, status.getLink());
+    map.put(LABEL, status.getValue());
     return coreMapper.toJson(map);
   }
 

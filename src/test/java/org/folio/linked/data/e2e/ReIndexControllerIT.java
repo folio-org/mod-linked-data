@@ -89,7 +89,7 @@ class ReIndexControllerIT {
     var resource2 = resourceMapper.toEntity(bibframeRequest2);
     resourceRepo.save(resource2);
 
-    return resourceRepo.findResourcesByTypeFull(
-      Set.of(BibframeConstants.INSTANCE, BibframeConstants.MONOGRAPH), Pageable.ofSize(10000)).getContent();
+    return resourceRepo.findResourcesByTypeFull(Set.of(BibframeConstants.INSTANCE), Pageable.ofSize(10000))
+      .getContent();
   }
 }

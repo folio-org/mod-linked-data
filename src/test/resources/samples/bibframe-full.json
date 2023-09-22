@@ -17,7 +17,7 @@
               "Instance: partNumber"
             ],
             "http://bibfra.me/vocab/marc/mainTitle": [
-              "Instance: Laramie holds the range"
+              "Instance: mainTitle"
             ],
             "http://bibfra.me/vocab/bflc/nonSortNum": [
               "Instance: nonSortNum"
@@ -39,7 +39,7 @@
               "Parallel: partNumber"
             ],
             "http://bibfra.me/vocab/marc/mainTitle": [
-              "Parallel: Laramie holds the range"
+              "Parallel: mainTitle"
             ],
             "http://bibfra.me/vocab/lite/note": [
               "Parallel: noteLabel"
@@ -64,7 +64,7 @@
               "Variant: partNumber"
             ],
             "http://bibfra.me/vocab/marc/mainTitle": [
-              "Variant: Laramie holds the range"
+              "Variant: mainTitle"
             ],
             "http://bibfra.me/vocab/lite/note": [
               "Variant: noteLabel"
@@ -223,6 +223,9 @@
                 "http://www.w3.org/2000/01/rdf-schema#label": [
                   "lccn status label"
                 ],
+                "http://bibfra.me/vocab/lite/label": [
+                  "lccn status value"
+                ],
                 "http://bibfra.me/vocab/lite/link": [
                   "lccn status link"
                 ]
@@ -245,6 +248,9 @@
               {
                 "http://www.w3.org/2000/01/rdf-schema#label": [
                   "isbn status label"
+                ],
+                "http://bibfra.me/vocab/lite/label": [
+                  "isbn status value"
                 ],
                 "http://bibfra.me/vocab/lite/link": [
                   "isbn status link"
@@ -295,11 +301,14 @@
       ],
       "http://bibfra.me/vocab/marc/accessLocation": [
         {
+          "http://www.w3.org/2000/01/rdf-schema#label": [
+            "accessLocation label"
+          ],
           "http://bibfra.me/vocab/lite/link": [
-            "accessLocationValue"
+            "accessLocation value"
           ],
           "http://bibfra.me/vocab/lite/note": [
-            "accessLocationNote"
+            "accessLocation note"
           ]
         }
       ],

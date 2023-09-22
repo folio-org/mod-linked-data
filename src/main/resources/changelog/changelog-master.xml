@@ -11,6 +11,6 @@
   <include file="scripts/v-1.0.0/insert-mod-liked-data-monograph-predicates.xml" relativeToChangelogFile="true"/>
   <include file="scripts/v-1.0.0/insert-mod-liked-data-monograph-types.xml" relativeToChangelogFile="true"/>
   <include file="scripts/v-1.0.0/create-mod-linked-data-hashing-schema.xml" relativeToChangelogFile="true"/>
-  <include file="scripts/v-1.0.0/update-mod-linked-data-types-and-predicate-hashes.xml" relativeToChangelogFile="true"/>
   <include file="scripts/v-1.0.0/modify-mod-liked-data-multiple-type-resource-model.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/update-mod-linked-data-types-and-predicate-hashes.xml" relativeToChangelogFile="true"/>
  </databaseChangeLog>

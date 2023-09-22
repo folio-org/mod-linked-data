@@ -3,7 +3,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance;
 import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
@@ -74,7 +74,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     coreMapper.mapResourceEdges(dto.getMap(), instance, MAP_PRED, Instance.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getMedia(), instance, MEDIA_PRED, Instance.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getCarrier(), instance, CARRIER_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCopyright(), instance, COPYRIGHT_DATE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCopyright(), instance, COPYRIGHT_PRED, Instance.class, mapper::toEntity);
     instance.setResourceHash(coreMapper.hash(instance));
     return instance;
   }

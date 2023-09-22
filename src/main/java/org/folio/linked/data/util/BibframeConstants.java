@@ -37,7 +37,7 @@ public class BibframeConstants {
   public static final String STATUS_PRED = "http://bibfra.me/vocab/marc/status";
   public static final String MEDIA_PRED = "http://bibfra.me/vocab/marc/media";
   public static final String CARRIER_PRED = "http://bibfra.me/vocab/marc/carrier";
-  public static final String COPYRIGHT_DATE_PRED = "http://bibfra.me/vocab/marc/copyright";
+  public static final String COPYRIGHT_PRED = "http://bibfra.me/vocab/marc/copyright";
 
   // Properties
   public static final String ID = "id";
@@ -59,7 +59,8 @@ public class BibframeConstants {
   public static final String NAME = "http://bibfra.me/vocab/lite/name";
   public static final String SIMPLE_DATE = "http://bibfra.me/vocab/lite/simpleDate";
   public static final String SIMPLE_PLACE = "http://bibfra.me/vocab/lite/place";
-  public static final String LABEL = "http://www.w3.org/2000/01/rdf-schema#label";
+  public static final String LABEL_RDF = "http://www.w3.org/2000/01/rdf-schema#label";
+  public static final String LABEL = "http://bibfra.me/vocab/lite/label";
   public static final String QUALIFIER = "http://bibfra.me/vocab/marc/qualifier";
   public static final String EAN_VALUE = "http://bibfra.me/vocab/marc/ean";
   public static final String LOCAL_ID_VALUE = "http://bibfra.me/vocab/marc/localId";

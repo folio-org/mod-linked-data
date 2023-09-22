@@ -94,9 +94,8 @@ public class TestUtil {
 
   public static String getBibframeSampleTest(String changedField) {
     JsonNode jsonNode = getBibframeJsonNodeSample();
-    JsonNode instance = jsonNode.get(BibframeConstants.INSTANCE).get(0);
+    JsonNode instance = jsonNode.get("resource").get(BibframeConstants.INSTANCE);
     ((ArrayNode) instance.withArray(BibframeConstants.DIMENSIONS)).set(0, new TextNode(changedField));
-
     return jsonNode.toString();
   }
 

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Status Info",
+  "description": "AccessLocation",
   "allOf": [
     {
       "$ref": "Topper.json"
@@ -15,12 +15,12 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/link"
         },
-        "value": {
+        "note": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/label"
+          "x-json-property": "http://bibfra.me/vocab/lite/note"
         }
       }
     }

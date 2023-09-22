@@ -148,23 +148,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "title": "AccessLocationField",
-            "properties": {
-              "link": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "x-json-property": "http://bibfra.me/vocab/lite/link"
-              },
-              "note": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "x-json-property": "http://bibfra.me/vocab/lite/note"
-              }
-            }
+            "$ref": "AccessLocation.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/accessLocation"
         },

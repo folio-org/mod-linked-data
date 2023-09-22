@@ -46,6 +46,7 @@ class KafkaMessageMapperTest {
   void toIndex_shouldThrowNotSupportedException_ifThereIsNoInstance() {
     // given
     var resource = new Resource();
+    resource.addType(new ResourceType().setTypeUri("www"));
 
     // when
     var thrown = assertThrows(NotSupportedException.class, () -> kafkaMessageMapper.toIndex(resource));
@@ -58,11 +59,10 @@ class KafkaMessageMapperTest {
   @Test
   void mapToIndex_shouldReturnCorrectlyMappedObject() {
     // given
-    var resource = new Resource();
-    resource.setResourceHash(randomLong());
     var instance = new Resource();
-    resource.getOutgoingEdges().add(new ResourceEdge(resource, instance, new Predicate(INSTANCE)));
+    instance.setResourceHash(randomLong());
     instance.setLabel(UUID.randomUUID().toString());
+    instance.addType(new ResourceType().setTypeUri(INSTANCE));
     var identifier = new Resource();
     identifier.setResourceHash(randomLong());
     identifier.setDoc(getJsonNode(Map.of(NAME, List.of(randomLong()))));
@@ -76,10 +76,10 @@ class KafkaMessageMapperTest {
     instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT, List.of(UUID.randomUUID().toString()))));
 
     // when
-    var result = kafkaMessageMapper.toIndex(resource);
+    var result = kafkaMessageMapper.toIndex(instance);
 
     // then
-    assertThat(result.getId()).isEqualTo(resource.getResourceHash().toString());
+    assertThat(result.getId()).isEqualTo(instance.getResourceHash().toString());
     assertThat(result.getTitle()).isEqualTo(instance.getLabel());
     assertThat(result.getIdentifiers().get(0).getValue()).isEqualTo(
       identifier.getDoc().get(NAME).get(0).textValue());
