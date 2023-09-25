@@ -35,66 +35,6 @@
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
           "modulePermissions": []
-        },
-        {
-          "methods": [ "POST" ],
-          "pathPattern": "/bibframe",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/bibframe",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/bibframe/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "PUT" ],
-          "pathPattern": "/bibframe/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "DELETE" ],
-          "pathPattern": "/bibframe/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "POST" ],
-          "pathPattern": "/bibframe2",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/bibframe2",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/bibframe2/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "PUT" ],
-          "pathPattern": "/bibframe2/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "DELETE" ],
-          "pathPattern": "/bibframe2/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
-          "modulePermissions": []
         }
       ]
     },

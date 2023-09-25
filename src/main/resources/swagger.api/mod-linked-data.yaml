@@ -18,6 +18,7 @@ paths:
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
+
   /resource:
     post:
       operationId: createResource
@@ -115,105 +116,6 @@ paths:
           description: Resource deleted
         '404':
           description: No resource is found by id
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
-
-  /bibframe2:
-    post:
-      operationId: createBibframe2
-      description: Create a Bibframe 2.0 resource
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: schema/b2/bibframe2Request.json
-      responses:
-        '200':
-          description: Created Bibframe 2.0 resource
-          content:
-            application/json:
-              schema:
-                $ref: schema/b2/bibframe2Response.json
-        '400':
-          $ref: '#/components/responses/badRequestResponse'
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
-    get:
-      operationId: getBibframe2ShortInfoPage
-      description: Get page of bibframe 2.0 short info
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
-        - $ref: '#/components/parameters/pageNumber'
-        - $ref: '#/components/parameters/pageSize'
-      responses:
-        '200':
-          description: Page of bibframe short info as json
-          content:
-            application/json:
-              example: example/Bibframe2ShortInfo.sample
-              schema:
-                $ref: schema/b2/bibframe2ShortInfoPage.json
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
-
-  /bibframe2/{id}:
-    get:
-      operationId: getBibframe2ById
-      description: Get a Bibframe 2.0 resource by id
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
-        - $ref: '#/components/parameters/id'
-      responses:
-        '200':
-          description: Bibframe 2.0 as json string
-          content:
-            application/json:
-              schema:
-                $ref: schema/b2/bibframe2Response.json
-        '400':
-            $ref: '#/components/responses/badRequestResponse'
-        '404':
-          description: No Bibframe is found by id
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
-    put:
-      operationId: updateBibframe2
-      description: Update a Bibframe 2.0 resource by id
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
-        - $ref: '#/components/parameters/id'
-      requestBody:
-        content:
-          application/json:
-            example: example/b2/bibframe2Request.sample
-            schema:
-              $ref: schema/b2/bibframe2Request.json
-      responses:
-        '200':
-          description: Updated Bibframe resource
-          content:
-            application/json:
-              schema:
-                $ref: schema/b2/bibframe2Response.json
-        '400':
-          $ref: '#/components/responses/badRequestResponse'
-        '404':
-          description: No bibframe is found by id
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
-    delete:
-      operationId: deleteBibframe2
-      description: Delete a Bibframe 2.0 resource by id
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
-        - $ref: '#/components/parameters/id'
-      responses:
-        '204':
-          description: Bibframe resource deleted
-        '404':
-          description: No bibframe is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 

@@ -1,9 +1,0 @@
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Classification NLM Info",
-  "allOf": [
-    {
-      "$ref": "BaseClassification2.json"
-    }
-  ]
-}

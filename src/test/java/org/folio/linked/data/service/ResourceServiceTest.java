@@ -3,7 +3,6 @@ package org.folio.linked.data.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.Bibframe2Constants.MONOGRAPH_2;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,20 +10,21 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.Sets;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
-import org.folio.linked.data.configuration.properties.BibframeProperties;
-import org.folio.linked.data.domain.dto.Bibframe2Request;
-import org.folio.linked.data.domain.dto.Bibframe2Response;
-import org.folio.linked.data.domain.dto.Bibframe2Short;
-import org.folio.linked.data.domain.dto.Bibframe2ShortInfoPage;
+import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceField;
+import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.ResourceShort;
+import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.TestUtil;
+import org.folio.linked.data.util.BibframeConstants;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -51,29 +51,24 @@ class ResourceServiceTest {
   private ResourceMapper resourceMapper;
 
   @Mock
-  private BibframeProperties bibframeProperties;
-
-  @Mock
   private KafkaSender kafkaSender;
 
   @Test
   void create_shouldPersistMappedBibframeAndSendItToKafka() {
     // given
-    var request = new Bibframe2Request();
-    request.setProfile(MONOGRAPH_2);
-    when(bibframeProperties.getProfiles()).thenReturn(Set.of(MONOGRAPH_2));
+    var request = new ResourceDto();
     var mapped = new Resource().setResourceHash(12345L);
-    when(resourceMapper.toEntity2(request)).thenReturn(mapped);
+    when(resourceMapper.toEntity(request)).thenReturn(mapped);
     var persisted = new Resource().setResourceHash(67890L);
     when(resourceRepo.save(mapped)).thenReturn(persisted);
     var expectedIndex = new BibframeIndex(persisted.getResourceHash().toString());
-    when(resourceMapper.mapToIndex2(persisted)).thenReturn(expectedIndex);
-    var expectedResponse = new Bibframe2Response();
-    expectedResponse.setId(persisted.getResourceHash());
-    when(resourceMapper.toDto2(persisted)).thenReturn(expectedResponse);
+    when(resourceMapper.mapToIndex(persisted)).thenReturn(expectedIndex);
+    var expectedResponse = new ResourceDto();
+    expectedResponse.setResource(new InstanceField().instance(new Instance().id(123L)));
+    when(resourceMapper.toDto(persisted)).thenReturn(expectedResponse);
 
     // when
-    Bibframe2Response response = resourceService.createBibframe2(request);
+    ResourceDto response = resourceService.createResource(request);
 
     // then
     verify(kafkaSender).sendResourceCreated(expectedIndex);
@@ -84,13 +79,13 @@ class ResourceServiceTest {
   void getResourceById_shouldReturnExistedEntity() {
     // given
     var id = randomLong();
-    var existedResource = TestUtil.bibframe2SampleResource();
+    var existedResource = TestUtil.bibframeSampleResource();
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
-    var expectedResponse = random(Bibframe2Response.class);
-    when(resourceMapper.toDto2(existedResource)).thenReturn(expectedResponse);
+    var expectedResponse = random(ResourceDto.class);
+    when(resourceMapper.toDto(existedResource)).thenReturn(expectedResponse);
 
     // when
-    var result = resourceService.getBibframe2ById(id);
+    var result = resourceService.getResourceById(id);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
@@ -105,7 +100,7 @@ class ResourceServiceTest {
     // when
     NotFoundException thrown = assertThrows(
       NotFoundException.class,
-      () -> resourceService.getBibframe2ById(notExistedId)
+      () -> resourceService.getResourceById(notExistedId)
     );
 
     // then
@@ -114,22 +109,21 @@ class ResourceServiceTest {
 
   @Test
   void getResourceShortInfoPageWithParams_shouldReturnExistedEntitiesShortInfoMapped(
-    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<Bibframe2Short> pageOfDto) {
+    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<ResourceShort> pageOfDto) {
     // given
     var pageNumber = 0;
     var pageSize = 10;
     var sort = Sort.by(Sort.Direction.ASC, "resourceHash");
-    var profiles = Set.of("profile");
-    doReturn(profiles).when(bibframeProperties).getProfiles();
-    doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(profiles,
+    var types = Sets.newHashSet(BibframeConstants.INSTANCE);
+    doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
       PageRequest.of(pageNumber, pageSize, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
-      .map(ArgumentMatchers.<Function<ResourceShortInfo, Bibframe2Short>>any());
-    var expectedResult = random(Bibframe2ShortInfoPage.class);
-    doReturn(expectedResult).when(resourceMapper).map2(pageOfDto);
+      .map(ArgumentMatchers.<Function<ResourceShortInfo, ResourceShort>>any());
+    var expectedResult = random(ResourceShortInfoPage.class);
+    doReturn(expectedResult).when(resourceMapper).map(pageOfDto);
 
     // when
-    var result = resourceService.getBibframe2ShortInfoPage(pageNumber, pageSize);
+    var result = resourceService.getResourceShortInfoPage(types.iterator().next(), pageNumber, pageSize);
 
     // then
     assertThat(result).isEqualTo(expectedResult);
@@ -137,20 +131,19 @@ class ResourceServiceTest {
 
   @Test
   void getResourceShortInfoPageWithNoParams_shouldReturnExistedEntitiesShortInfoMapped(
-    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<Bibframe2Short> pageOfDto) {
+    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<ResourceShort> pageOfDto) {
     // given
+    var types = Sets.newHashSet(BibframeConstants.INSTANCE);
     var sort = Sort.by(Sort.Direction.ASC, "resourceHash");
-    var profiles = Set.of("profile");
-    doReturn(profiles).when(bibframeProperties).getProfiles();
-    doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(profiles,
+    doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
       PageRequest.of(0, 100, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
-      .map(ArgumentMatchers.<Function<ResourceShortInfo, Bibframe2Short>>any());
-    var expectedResult = random(Bibframe2ShortInfoPage.class);
-    doReturn(expectedResult).when(resourceMapper).map2(pageOfDto);
+      .map(ArgumentMatchers.<Function<ResourceShortInfo, ResourceShort>>any());
+    var expectedResult = random(ResourceShortInfoPage.class);
+    doReturn(expectedResult).when(resourceMapper).map(pageOfDto);
 
     // when
-    var result = resourceService.getBibframe2ShortInfoPage(null, null);
+    var result = resourceService.getResourceShortInfoPage(types.iterator().next(), null, null);
 
     // then
     assertThat(result).isEqualTo(expectedResult);

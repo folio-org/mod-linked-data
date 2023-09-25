@@ -2,15 +2,7 @@ package org.folio.linked.data.mapper.resource.common;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.folio.linked.data.util.Bibframe2Constants.DATE_URL;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE2_PRED;
-import static org.folio.linked.data.util.Bibframe2Constants.PLACE_COMPONENTS;
-import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_ID;
-import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_LABEL;
-import static org.folio.linked.data.util.Bibframe2Constants.PROPERTY_URI;
-import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_AGENT_PRED;
-import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_DATE_PRED;
-import static org.folio.linked.data.util.Bibframe2Constants.SIMPLE_PLACE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.LABEL_RDF;
 import static org.folio.linked.data.util.BibframeConstants.TYPE;
 import static org.folio.linked.data.util.Constants.ERROR_JSON_PROCESSING;
 
@@ -20,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -28,9 +19,6 @@ import java.util.function.Consumer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.function.TriFunction;
-import org.folio.linked.data.domain.dto.Property2;
-import org.folio.linked.data.domain.dto.ProvisionActivity2;
-import org.folio.linked.data.domain.dto.Url2;
 import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
@@ -50,22 +38,6 @@ public class CoreMapperImpl implements CoreMapper {
   private final DictionaryService<Predicate> predicateService;
   private final ObjectMapper mapper;
 
-
-  @Override
-  public Property2 toProperty(@NonNull Resource resource) {
-    return readResourceDoc(resource, Property2.class);
-  }
-
-  @Override
-  public ProvisionActivity2 toProvisionActivity(@NonNull Resource resource) {
-    return readResourceDoc(resource, ProvisionActivity2.class);
-  }
-
-  @Override
-  public Url2 toUrl(@NonNull Resource resource) {
-    return readResourceDoc(resource, Url2.class);
-  }
-
   @Override
   public <T> void mapWithResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
                                    @NonNull Consumer<T> consumer, @NonNull Class<T> destination) {
@@ -74,23 +46,13 @@ public class CoreMapperImpl implements CoreMapper {
     consumer.accept(item);
   }
 
+  @Override
   public <T> void addMappedResources(@NonNull SubResourceMapperUnit<T> subResourceMapperUnit, @NonNull Resource source,
                                      @NonNull String predicate, @NonNull T destination) {
     source.getOutgoingEdges().stream()
       .filter(re -> re.getPredicate().getLabel().equals(predicate))
       .map(ResourceEdge::getTarget)
       .forEach(r -> subResourceMapperUnit.toDto(r, destination));
-  }
-
-  @Override
-  public void addMappedProperties(@NonNull Resource resource, @NonNull String predicate,
-                                  @NonNull Consumer<Property2> consumer) {
-    resource.getOutgoingEdges().stream()
-      .filter(re -> predicate.equals(re.getPredicate().getLabel()))
-      .map(ResourceEdge::getTarget)
-      .filter(r -> nonNull(r.getDoc()))
-      .map(r -> readResourceDoc(r, Property2.class))
-      .forEach(consumer);
   }
 
   @Override
@@ -149,57 +111,6 @@ public class CoreMapperImpl implements CoreMapper {
     }
   }
 
-  @Override
-  public void mapPropertyEdges(List<Property2> subProperties, @NonNull Resource source, @NonNull String predicateLabel,
-                               @NonNull String resourceType) {
-    if (nonNull(subProperties)) {
-      var predicate = predicateService.get(predicateLabel);
-      subProperties.forEach(property -> {
-        var edge = new ResourceEdge(source, propertyToEntity(property, resourceType), predicate);
-        source.getOutgoingEdges().add(edge);
-      });
-    }
-  }
-
-  @Override
-  public Resource propertyToEntity(@NonNull Property2 property, @NonNull String resourceType) {
-    var resource = new Resource();
-    resource.setLabel(nonNull(property.getLabel()) ? property.getLabel() : resourceType);
-    resource.addType(resourceTypeService.get(resourceType));
-    resource.setDoc(propertyToDoc(property));
-    resource.setResourceHash(hash(resource));
-    return resource;
-  }
-
-  @Override
-  public Resource provisionActivityToEntity(@NonNull ProvisionActivity2 dto, String label,
-                                            @NonNull String resourceType) {
-    Resource resource = new Resource();
-    resource.setLabel(nonNull(label) ? label : resourceType);
-    resource.addType(resourceTypeService.get(resourceType));
-    resource.setDoc(provisionActivityToDoc(dto));
-    mapPropertyEdges(dto.getPlace(), resource, PLACE2_PRED, PLACE_COMPONENTS);
-    resource.setResourceHash(hash(resource));
-    return resource;
-  }
-
-  private JsonNode provisionActivityToDoc(ProvisionActivity2 dto) {
-    var map = new HashMap<String, List<String>>();
-    map.put(DATE_URL, dto.getDate());
-    map.put(SIMPLE_AGENT_PRED, dto.getSimpleAgent());
-    map.put(SIMPLE_DATE_PRED, dto.getSimpleDate());
-    map.put(SIMPLE_PLACE_PRED, dto.getSimplePlace());
-    return toJson(map);
-  }
-
-  private JsonNode propertyToDoc(Property2 property) {
-    var map = new HashMap<String, String>();
-    map.put(PROPERTY_ID, property.getId());
-    map.put(PROPERTY_LABEL, property.getLabel());
-    map.put(PROPERTY_URI, property.getUri());
-    return toJson(map);
-  }
-
   private JsonNode resourceToJson(Resource res) {
     ObjectNode node;
     if (nonNull(res.getDoc()) && !res.getDoc().isEmpty()) {
@@ -207,7 +118,7 @@ public class CoreMapperImpl implements CoreMapper {
     } else {
       node = mapper.createObjectNode();
     }
-    node.put(PROPERTY_LABEL, res.getLabel());
+    node.put(LABEL_RDF, res.getLabel());
     node.put(TYPE, res.getFirstType().getTypeHash());
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getLabel();

@@ -47,6 +47,3 @@ management:
 
 mod-linked-data:
   default-schema: public
-  bibframe:
-    profiles:
-      - lc:profile:bf2:Monograph
