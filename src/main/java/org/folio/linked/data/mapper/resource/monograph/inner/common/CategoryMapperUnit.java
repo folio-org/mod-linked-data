@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.TERM;
+import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
   public Instance toDto(Resource source, Instance destination) {
     var category = coreMapper.readResourceDoc(source, Category.class);
     category.setId(source.getResourceHash());
-    category.addLabelItem(source.getLabel());
+    category.setLabel(source.getLabel());
     return categoryConsumer.apply(category, destination);
   }
 
@@ -38,7 +38,7 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var category = (Category) dto;
     var resource = new Resource();
-    resource.setLabel(getFirst(category.getLabel(), getFirst(category.getTerm(), "")));
+    resource.setLabel(getLabelOrFirstValue(category.getLabel(), category::getTerm));
     resource.addType(resourceTypeService.get(type));
     resource.setDoc(getDoc(category));
     resource.setResourceHash(coreMapper.hash(resource));

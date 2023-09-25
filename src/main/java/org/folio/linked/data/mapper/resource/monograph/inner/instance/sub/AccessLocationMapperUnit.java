@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -31,6 +31,8 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var accessLocation = coreMapper.readResourceDoc(source, AccessLocation.class);
+    accessLocation.setId(source.getResourceHash());
+    accessLocation.setLabel(source.getLabel());
     destination.addAccessLocationItem(accessLocation);
     return destination;
   }
@@ -39,7 +41,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var accessLocation = (AccessLocation) dto;
     var resource = new Resource();
-    resource.setLabel(getFirst(accessLocation.getLabel(), getFirst(accessLocation.getLink(), "")));
+    resource.setLabel(getLabelOrFirstValue(accessLocation.getLabel(), accessLocation::getLink));
     resource.addType(resourceTypeService.get(ACCESS_LOCATION));
     resource.setDoc(getDoc(accessLocation));
     resource.setResourceHash(coreMapper.hash(resource));

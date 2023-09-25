@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.identified;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
+import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var localId = coreMapper.readResourceDoc(source, LocalId.class);
     localId.setId(source.getResourceHash());
-    localId.addLabelItem(source.getLabel());
+    localId.setLabel(source.getLabel());
     destination.addMapItem(new LocalIdField().localId(localId));
     return destination;
   }
@@ -43,7 +43,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var localId = ((LocalIdField) dto).getLocalId();
     var resource = new Resource();
-    resource.setLabel(getFirst(localId.getLabel(), getFirst(localId.getValue(), "")));
+    resource.setLabel(getLabelOrFirstValue(localId.getLabel(), localId::getValue));
     resource.addType(resourceTypeService.get(LOCAL_ID));
     resource.setDoc(getDoc(localId));
     resource.setResourceHash(coreMapper.hash(resource));

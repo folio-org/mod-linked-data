@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
@@ -8,6 +7,7 @@ import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var instanceTitle = coreMapper.readResourceDoc(source, InstanceTitle.class);
     instanceTitle.setId(source.getResourceHash());
-    instanceTitle.addLabelItem(source.getLabel());
+    instanceTitle.setLabel(source.getLabel());
     destination.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
     return destination;
   }
@@ -46,7 +46,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var instanceTitle = ((InstanceTitleField) dto).getInstanceTitle();
     var resource = new Resource();
-    resource.setLabel(getFirst(instanceTitle.getLabel(), getFirst(instanceTitle.getMainTitle(), "")));
+    resource.setLabel(getLabelOrFirstValue(instanceTitle.getLabel(), instanceTitle::getMainTitle));
     resource.addType(resourceTypeService.get(INSTANCE_TITLE));
     resource.setDoc(getDoc(instanceTitle));
     resource.setResourceHash(coreMapper.hash(resource));

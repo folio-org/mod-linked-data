@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
@@ -10,6 +9,7 @@ import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
+import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   public Instance toDto(Resource source, Instance destination) {
     var variantTitle = coreMapper.readResourceDoc(source, VariantTitle.class);
     variantTitle.setId(source.getResourceHash());
-    variantTitle.addLabelItem(source.getLabel());
+    variantTitle.setLabel(source.getLabel());
     destination.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     return destination;
   }
@@ -48,7 +48,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
-    resource.setLabel(getFirst(variantTitle.getLabel(), getFirst(variantTitle.getMainTitle(), "")));
+    resource.setLabel(getLabelOrFirstValue(variantTitle.getLabel(), variantTitle::getMainTitle));
     resource.addType(resourceTypeService.get(VARIANT_TITLE));
     resource.setDoc(getDoc(variantTitle));
     resource.setResourceHash(coreMapper.hash(resource));

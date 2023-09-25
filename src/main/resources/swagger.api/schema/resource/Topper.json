@@ -9,10 +9,7 @@
       "description": "Hash / ID of the resource"
     },
     "label": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
+      "type": "string",
       "x-json-property": "http://www.w3.org/2000/01/rdf-schema#label"
     }
   }

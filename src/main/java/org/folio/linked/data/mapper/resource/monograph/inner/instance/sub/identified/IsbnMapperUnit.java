@@ -1,12 +1,12 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.identified;
 
-import static com.google.common.collect.Iterables.getFirst;
 import static org.folio.linked.data.util.BibframeConstants.ISBN;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
+import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -38,7 +38,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var isbn = coreMapper.readResourceDoc(source, Isbn.class);
     isbn.setId(source.getResourceHash());
-    isbn.addLabelItem(source.getLabel());
+    isbn.setLabel(source.getLabel());
     coreMapper.addMappedResources(statusMapper, source, STATUS_PRED, isbn);
     destination.addMapItem(new IsbnField().isbn(isbn));
     return destination;
@@ -48,7 +48,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var isbn = ((IsbnField) dto).getIsbn();
     var resource = new Resource();
-    resource.setLabel(getFirst(isbn.getLabel(), getFirst(isbn.getValue(), "")));
+    resource.setLabel(getLabelOrFirstValue(isbn.getLabel(), isbn::getValue));
     resource.addType(resourceTypeService.get(ISBN));
     resource.setDoc(getDoc(isbn));
     coreMapper.mapResourceEdges(isbn.getStatus(), resource, STATUS, STATUS_PRED,
