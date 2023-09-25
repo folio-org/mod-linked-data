@@ -2,21 +2,21 @@ package org.folio.linked.data.service;
 
 import org.folio.linked.data.domain.dto.Bibframe2Request;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
-import org.folio.linked.data.domain.dto.BibframeRequest;
-import org.folio.linked.data.domain.dto.BibframeResponse;
-import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
+import org.folio.linked.data.domain.dto.Bibframe2ShortInfoPage;
+import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 
 public interface ResourceService {
 
-  BibframeResponse createBibframe(BibframeRequest bibframeRequest);
+  ResourceDto createResource(ResourceDto resourceRequest);
 
-  BibframeResponse getBibframeById(Long id);
+  ResourceDto getResourceById(Long id);
 
-  BibframeResponse updateBibframe(Long id, BibframeRequest bibframeRequest);
+  ResourceDto updateResource(Long id, ResourceDto bibframeRequest);
 
-  void deleteBibframe(Long id);
+  void deleteResource(Long id);
 
-  BibframeShortInfoPage getBibframeShortInfoPage(String type, Integer pageNumber, Integer pageSize);
+  ResourceShortInfoPage getResourceShortInfoPage(String type, Integer pageNumber, Integer pageSize);
 
   Bibframe2Response createBibframe2(Bibframe2Request bibframeRequest);
 
@@ -24,5 +24,7 @@ public interface ResourceService {
 
   Bibframe2Response updateBibframe2(Long id, Bibframe2Request bibframeUpdateRequest);
 
-  BibframeShortInfoPage getBibframe2ShortInfoPage(Integer pageNumber, Integer pageSize);
+  Bibframe2ShortInfoPage getBibframe2ShortInfoPage(String type, Integer pageNumber, Integer pageSize);
+
+  Bibframe2ShortInfoPage getBibframe2ShortInfoPage(Integer pageNumber, Integer pageSize);
 }

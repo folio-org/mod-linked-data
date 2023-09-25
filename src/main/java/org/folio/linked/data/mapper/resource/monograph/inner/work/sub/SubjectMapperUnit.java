@@ -40,12 +40,12 @@ public class SubjectMapperUnit implements WorkSubResourceMapperUnit {
   }
 
   private Work2SubjectInner toWorkSubjectInner(Resource source, Subject2 subject) {
-    if (Set.of(COMPONENTS, CHILDRENS_COMPONENTS, SUBJECT_WORK).contains(source.getLastType().getSimpleLabel())) {
+    if (Set.of(COMPONENTS, CHILDRENS_COMPONENTS, SUBJECT_WORK).contains(source.getFirstType().getSimpleLabel())) {
       return new TopicField2().topic(subject);
-    } else if (PLACE_COMPONENTS.equals(source.getLastType().getSimpleLabel())) {
+    } else if (PLACE_COMPONENTS.equals(source.getFirstType().getSimpleLabel())) {
       return new PlaceField2().place(subject);
     } else {
-      throw new NotSupportedException(RESOURCE_TYPE + source.getLastType().getSimpleLabel() + IS_NOT_SUPPORTED);
+      throw new NotSupportedException(RESOURCE_TYPE + source.getFirstType().getSimpleLabel() + IS_NOT_SUPPORTED);
     }
   }
 }

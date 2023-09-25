@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource DTO",
+  "type": "object",
+  "properties": {
+    "resource": {
+      "type": "object",
+      "title": "resourceField",
+      "oneOf": [
+        {
+          "title": "InstanceField",
+          "properties": {
+            "Instance": {
+              "type": "object",
+              "$ref": "resource/Instance.json",
+              "x-json-property": "http://bibfra.me/vocab/lite/Instance"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -16,7 +16,7 @@ import org.folio.linked.data.domain.dto.UrlField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
 import org.folio.linked.data.service.dictionary.DictionaryService;
@@ -29,7 +29,7 @@ public class InstanceElectronicLocator2MapperUnit implements Instance2SubResourc
 
   private final CoreMapper coreMapper;
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final NoteMapperUnit<Url2> noteMapper;
+  private final Note2MapperUnit<Url2> noteMapper;
 
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {

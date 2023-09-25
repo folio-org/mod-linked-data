@@ -21,7 +21,7 @@ import org.folio.linked.data.domain.dto.ParallelTitleField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.Instance2SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -35,7 +35,7 @@ public class InstanceParallelTitle2MapperUnit implements Instance2SubResourceMap
 
   private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
-  private final NoteMapperUnit<ParallelTitle2> noteMapper;
+  private final Note2MapperUnit<ParallelTitle2> noteMapper;
 
   @Override
   public Instance2 toDto(Resource source, Instance2 destination) {

@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
-import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Instance2;
 import org.folio.linked.data.domain.dto.Instance2TitleInner;
 import org.folio.linked.data.domain.dto.InstanceTitleField2;
 import org.folio.linked.data.domain.dto.ParallelTitleField2;
+import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.VariantTitleField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
@@ -51,7 +51,7 @@ public class MonographInstance2MapperUnit implements InnerResourceMapperUnit {
   private final SubResourceMapper mapper;
 
   @Override
-  public BibframeResponse toDto(Resource source, BibframeResponse destination) {
+  public ResourceDto toDto(Resource source, ResourceDto destination) {
     return destination;
   }
 

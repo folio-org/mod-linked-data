@@ -18,31 +18,31 @@ paths:
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
-  /bibframe:
+  /resource:
     post:
-      operationId: createBibframe
-      description: Create a Bibframe resource
+      operationId: createResource
+      description: Create a Resource
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
       requestBody:
         content:
           application/json:
             schema:
-              $ref: schema/bibframeRequest.json
+              $ref: schema/resourceDto.json
       responses:
         '200':
-          description: Created Bibframe resource
+          description: Created resource
           content:
             application/json:
               schema:
-                $ref: schema/bibframeResponse.json
+                $ref: schema/resourceDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
     get:
-      operationId: getBibframeShortInfoPage
-      description: Get page of bibframe short info
+      operationId: getResourceShortInfoPage
+      description: Get page of resource short info
       parameters:
         - $ref: '#/components/parameters/type'
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -50,71 +50,71 @@ paths:
         - $ref: '#/components/parameters/pageSize'
       responses:
         '200':
-          description: Page of bibframe short info as json
+          description: Page of resource short info as json
           content:
             application/json:
-              example: example/bibframeShortInfo.sample
+              example: example/resourceShortInfo.sample
               schema:
-                $ref: schema/bibframeShortInfoPage.json
+                $ref: schema/resourceShortInfoPage.json
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /bibframe/{id}:
+  /resource/{id}:
     get:
-      operationId: getBibframeById
-      description: Get a Bibframe resource by id
+      operationId: getResourceById
+      description: Get a resource by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '200':
-          description: Bibframe as json string
+          description: Resource as json string
           content:
             application/json:
               schema:
-                $ref: schema/bibframeResponse.json
+                $ref: schema/resourceDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
-          description: No Bibframe is found by id
+          description: No Resource is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
     put:
-      operationId: updateBibframe
-      description: Update a Bibframe resource by id
+      operationId: updateResource
+      description: Update a resource by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       requestBody:
         content:
           application/json:
-            example: example/bibframeRequest.sample
+            example: example/resourceRequest.sample
             schema:
-              $ref: schema/bibframeRequest.json
+              $ref: schema/resourceDto.json
       responses:
         '200':
-          description: Updated Bibframe resource
+          description: Updated resource
           content:
             application/json:
               schema:
-                $ref: schema/bibframeResponse.json
+                $ref: schema/resourceDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
-          description: No bibframe is found by id
+         description: No resource is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
     delete:
-      operationId: deleteBibframe
-      description: Delete a Bibframe resource by id
+      operationId: deleteResource
+      description: Delete a resource by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '204':
-          description: Bibframe resource deleted
+          description: Resource deleted
         '404':
-          description: No bibframe is found by id
+          description: No resource is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
@@ -152,9 +152,9 @@ paths:
           description: Page of bibframe short info as json
           content:
             application/json:
-              example: example/bibframeShortInfo.sample
+              example: example/Bibframe2ShortInfo.sample
               schema:
-                $ref: schema/bibframeShortInfoPage.json
+                $ref: schema/b2/bibframe2ShortInfoPage.json
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
@@ -250,15 +250,15 @@ components:
     type:
       name: type
       in: query
-      required: true
-      description: 'Bibframe resource type, for example: http://bibfra.me/vocab/marc/Monograph'
-      example: 'http://bibfra.me/vocab/marc/Monograph'
+      required: false
+      description: 'Resource type, for example: http://bibfra.me/vocab/lite/Instance'
+      example: 'http://bibfra.me/vocab/lite/Instance'
       schema:
         type: string
 
   schemas:
     errorResponse:
-      $ref: schema/errors.json
+      $ref: schema/error/errors.json
 
   responses:
     badRequestResponse:

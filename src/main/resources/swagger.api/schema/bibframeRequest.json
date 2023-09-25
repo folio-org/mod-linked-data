@@ -1,9 +1,0 @@
-{
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Create bibframe record request",
-  "allOf": [
-    {
-      "$ref": "bibframe.json"
-    }
-  ]
-}

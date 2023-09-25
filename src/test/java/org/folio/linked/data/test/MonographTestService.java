@@ -84,10 +84,11 @@ import static org.folio.linked.data.util.Bibframe2Constants.VARIANT_TYPE_URL;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
@@ -107,9 +108,7 @@ import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA;
 import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MONOGRAPH;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
@@ -118,10 +117,10 @@ import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
-import static org.folio.linked.data.util.BibframeConstants.PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
@@ -158,21 +157,12 @@ public class MonographTestService {
   private final DictionaryService<Predicate> predicateService;
   private final CoreMapper coreMapper;
 
-  public ResourceType getMonographType() {
-    return resourceTypeService.get(MONOGRAPH);
+  public ResourceType getInstanceType() {
+    return resourceTypeService.get(INSTANCE);
   }
 
   public ResourceType getMonograph2Type() {
     return resourceTypeService.get(MONOGRAPH_2);
-  }
-
-  public Resource createSampleMonograph() {
-    var instance = createSampleInstance();
-    return createResource(
-      emptyMap(),
-      MONOGRAPH,
-      Map.of(INSTANCE, List.of(instance))
-    );
   }
 
   public Resource createSampleMonograph_2() {
@@ -184,35 +174,37 @@ public class MonographTestService {
     );
   }
 
-  private Resource createSampleInstance() {
+  public Resource createSampleInstance() {
     var instanceTitle = createResource(
       Map.of(
         PART_NAME, List.of("Instance: partName"),
         PART_NUMBER, List.of("Instance: partNumber"),
-        MAIN_TITLE, List.of("Instance: Laramie holds the range"),
+        MAIN_TITLE, List.of("Instance: mainTitle"),
         NON_SORT_NUM, List.of("Instance: nonSortNum"),
         SUBTITLE, List.of("Instance: subtitle")
       ),
       INSTANCE_TITLE,
       emptyMap()
-    );
+    ).setLabel("Instance: label");
+
     var parallelTitle = createResource(
       Map.of(
         PART_NAME, List.of("Parallel: partName"),
         PART_NUMBER, List.of("Parallel: partNumber"),
-        MAIN_TITLE, List.of("Parallel: Laramie holds the range"),
+        MAIN_TITLE, List.of("Parallel: mainTitle"),
         DATE, List.of("Parallel: date"),
         SUBTITLE, List.of("Parallel: subtitle"),
         NOTE, List.of("Parallel: noteLabel")
       ),
       PARALLEL_TITLE,
       emptyMap()
-    );
+    ).setLabel("Parallel: label");
+
     var variantTitle = createResource(
       Map.of(
         PART_NAME, List.of("Variant: partName"),
         PART_NUMBER, List.of("Variant: partNumber"),
-        MAIN_TITLE, List.of("Variant: Laramie holds the range"),
+        MAIN_TITLE, List.of("Variant: mainTitle"),
         DATE, List.of("Variant: date"),
         SUBTITLE, List.of("Variant: subtitle"),
         VARIANT_TYPE, List.of("Variant: variantType"),
@@ -220,7 +212,7 @@ public class MonographTestService {
       ),
       VARIANT_TITLE,
       emptyMap()
-    );
+    ).setLabel("Variant: label");
 
     var production = providerEvent("production");
     var publication = providerEvent("publication");
@@ -229,18 +221,18 @@ public class MonographTestService {
 
     var accessLocation = createResource(
       Map.of(
-        LINK, List.of("accessLocationValue"),
-        NOTE, List.of("accessLocationNote")
+        LINK, List.of("accessLocation value"),
+        NOTE, List.of("accessLocation note")
       ),
       ACCESS_LOCATION,
       emptyMap()
-    );
+    ).setLabel("accessLocation label");
 
     var lccn = createResource(
       Map.of(NAME, List.of("lccn value")),
       LCCN,
       Map.of(STATUS_PRED, List.of(status("lccn")))
-    );
+    ).setLabel("lccn label");
 
     var isbn = createResource(
       Map.of(
@@ -249,7 +241,7 @@ public class MonographTestService {
       ),
       ISBN,
       Map.of(STATUS_PRED, List.of(status("isbn")))
-    );
+    ).setLabel("isbn label");
 
     var ean = createResource(
       Map.of(
@@ -258,7 +250,7 @@ public class MonographTestService {
       ),
       EAN,
       emptyMap()
-    );
+    ).setLabel("ean label");
 
     var localId = createResource(
       Map.of(
@@ -267,7 +259,7 @@ public class MonographTestService {
       ),
       LOCAL_ID,
       emptyMap()
-    );
+    ).setLabel("localId label");
 
     var otherId = createResource(
       Map.of(
@@ -276,27 +268,35 @@ public class MonographTestService {
       ),
       OTHER_ID,
       emptyMap()
-    );
+    ).setLabel("otherId label");
 
     var media = createResource(
       Map.of(
         CODE, List.of("media code"),
-        TERM, List.of("unmediated"),
+        TERM, List.of("media term"),
         LINK, List.of("media link")
       ),
-      MEDIA,
+      CATEGORY,
       emptyMap()
-    );
+    ).setLabel("media label");
 
     var carrier = createResource(
       Map.of(
         CODE, List.of("carrier code"),
-        TERM, List.of("carrier 1"),
+        TERM, List.of("carrier term"),
         LINK, List.of("carrier link")
       ),
-      CARRIER,
+      CATEGORY,
       emptyMap()
-    );
+    ).setLabel("carrier label");
+
+    var copyrightEvent = createResource(
+      Map.of(
+        DATE, List.of("copyright date value")
+      ),
+      COPYRIGHT_EVENT,
+      emptyMap()
+    ).setLabel("copyright date label");
 
     var pred2OutgoingResources = new LinkedHashMap<String, List<Resource>>();
     pred2OutgoingResources.put(INSTANCE_TITLE_PRED, List.of(instanceTitle, parallelTitle, variantTitle));
@@ -308,13 +308,13 @@ public class MonographTestService {
     pred2OutgoingResources.put(MAP_PRED, List.of(lccn, isbn, ean, localId, otherId));
     pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
     pred2OutgoingResources.put(CARRIER_PRED, List.of(carrier));
+    pred2OutgoingResources.put(COPYRIGHT_PRED, List.of(copyrightEvent));
 
     return createResource(
       Map.of(
         DIMENSIONS, List.of("20 cm"),
         RESPONSIBILITY_STATEMENT, List.of("responsibility statement"),
         EDITION_STATEMENT, List.of("edition statement"),
-        COPYRIGHT_DATE, List.of("copyright date"),
         PROJECTED_PROVISION_DATE, List.of("projected provision date"),
         ISSUANCE, List.of("single unit")
       ),
@@ -326,12 +326,12 @@ public class MonographTestService {
   private Resource status(String prefix) {
     return createResource(
       Map.of(
-        LABEL, List.of(prefix + " status label"),
+        LABEL, List.of(prefix + " status value"),
         LINK, List.of(prefix + " status link")
       ),
       STATUS,
       emptyMap()
-    );
+    ).setLabel(prefix + " status label");
   }
 
   private Resource providerEvent(String type) {
@@ -343,19 +343,19 @@ public class MonographTestService {
         SIMPLE_PLACE, List.of(type + " simple place")
       ),
       PROVIDER_EVENT,
-      Map.of(PLACE_PRED, List.of(place(type)))
-    );
+      Map.of(PROVIDER_PLACE_PRED, List.of(providerPlace(type)))
+    ).setLabel(type + " label");
   }
 
-  private Resource place(String providerEventType) {
+  private Resource providerPlace(String providerEventType) {
     return createResource(
       Map.of(
-        NAME, List.of(providerEventType + " place name"),
-        LINK, List.of(providerEventType + " place link")
+        NAME, List.of(providerEventType + " providerPlace name"),
+        LINK, List.of(providerEventType + " providerPlace link")
       ),
       PLACE,
       emptyMap()
-    );
+    ).setLabel(providerEventType + " providerPlace label");
   }
 
   private Resource createSampleInstance2() {

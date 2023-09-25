@@ -9,7 +9,7 @@ import org.folio.linked.data.domain.dto.VariantTitleField2;
 import org.folio.linked.data.domain.dto.Work2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.work.sub.WorkSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 public class WorkVariantTitleMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final NoteMapperUnit<VariantTitle2> noteMapper;
+  private final Note2MapperUnit<VariantTitle2> noteMapper;
 
   @Override
   public Work2 toDto(Resource source, Work2 destination) {

@@ -7,7 +7,7 @@ import static org.folio.linked.data.test.TestUtil.randomString;
 import static org.mockito.Mockito.when;
 
 import org.folio.linked.data.domain.dto.Bibframe2Response;
-import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
+import org.folio.linked.data.domain.dto.Bibframe2ShortInfoPage;
 import org.folio.linked.data.service.ResourceService;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class Bibframe2ControllerTest {
     var tenant = randomString();
     var page = random(Integer.class);
     var size = random(Integer.class);
-    var expectedResponse = random(BibframeShortInfoPage.class);
+    var expectedResponse = random(Bibframe2ShortInfoPage.class);
     when(resourceService.getBibframe2ShortInfoPage(page, size)).thenReturn(expectedResponse);
 
     // when

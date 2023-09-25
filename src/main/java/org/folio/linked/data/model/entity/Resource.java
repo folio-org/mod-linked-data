@@ -15,7 +15,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.Data;
@@ -67,7 +66,7 @@ public class Resource {
     return this;
   }
 
-  public ResourceType getLastType() {
-    return (isNull(types) || types.isEmpty()) ? null : new ArrayList<>(types).get(types.size() - 1);
+  public ResourceType getFirstType() {
+    return (isNull(types) || types.isEmpty()) ? null : types.iterator().next();
   }
 }

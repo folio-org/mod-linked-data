@@ -7,11 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
-import org.folio.linked.data.domain.dto.BibframeResponse;
+import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.ValidationException;
@@ -37,20 +38,21 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
   }
 
   @Override
-  public BibframeResponse toDto(@NonNull Resource source, @NonNull BibframeResponse destination) {
-    return getMapperUnit(source.getLastType().getTypeUri()).toDto(source, destination);
+  public ResourceDto toDto(@NonNull Resource source, @NonNull ResourceDto destination) {
+    return getMapperUnit(source.getFirstType().getTypeUri()).map(m -> m.toDto(source, destination)).orElse(destination);
   }
 
   @Override
   public Bibframe2Response toDto(@NonNull Resource source, @NonNull Bibframe2Response destination) {
-    return getMapperUnit(source.getLastType().getTypeUri()).toDto(source, destination);
+    return getMapperUnit(source.getFirstType().getTypeUri()).map(m -> m.toDto(source, destination)).orElse(destination);
   }
 
   @SneakyThrows
   @Override
   public Resource toEntity(@NonNull Object dto, @NonNull String resourceType) {
     try {
-      return getMapperUnit(resourceType).toEntity(dto);
+      return getMapperUnit(resourceType).map(m -> m.toEntity(dto))
+        .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + resourceType + IS_NOT_SUPPORTED));
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
@@ -59,9 +61,10 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
     }
   }
 
-  private InnerResourceMapperUnit getMapperUnit(String type) {
-    return mapperUnits.computeIfAbsent(type, k -> {
-      throw new NotSupportedException(RESOURCE_TYPE + k + IS_NOT_SUPPORTED);
-    });
+  private Optional<InnerResourceMapperUnit> getMapperUnit(String type) {
+    return Optional.ofNullable(mapperUnits.computeIfAbsent(type, k -> {
+      log.warn(RESOURCE_TYPE + type + IS_NOT_SUPPORTED);
+      return null;
+    }));
   }
 }

@@ -22,7 +22,7 @@ import org.folio.linked.data.domain.dto.VariantTitleField2;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.NoteMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.inner.common.Note2MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.Instance2SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceType;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 public class InstanceVariantTitle2MapperUnit implements Instance2SubResourceMapperUnit {
 
   private final DictionaryService<ResourceType> resourceTypeService;
-  private final NoteMapperUnit<VariantTitle2> noteMapper;
+  private final Note2MapperUnit<VariantTitle2> noteMapper;
   private final CoreMapper coreMapper;
 
   @Override

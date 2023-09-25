@@ -2,7 +2,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance;
 
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_DATE;
+import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
@@ -16,17 +16,18 @@ import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
+import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.BibframeResponse;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
-import org.folio.linked.data.domain.dto.InstanceTitleInner;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
+import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
@@ -47,62 +48,54 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
   private final SubResourceMapper mapper;
 
   @Override
-  public BibframeResponse toDto(Resource source, BibframeResponse destination) {
-    coreMapper.mapWithResources(mapper, source, destination::addInstanceItem, Instance.class);
-    return destination;
+  public ResourceDto toDto(Resource source, ResourceDto destination) {
+    var instanceField = new InstanceField();
+    coreMapper.mapWithResources(mapper, source, instanceField::setInstance, Instance.class);
+    instanceField.getInstance().setId(source.getResourceHash());
+    instanceField.getInstance().setLabel(source.getLabel());
+    return destination.resource(instanceField);
   }
 
   @Override
   public Resource toEntity(Object resourceDto) {
-    Instance dto = (Instance) resourceDto;
-    var resource = new Resource();
-    resource.addType(resourceTypeService.get(INSTANCE));
-    resource.setDoc(getDoc(dto));
-    resource.setLabel(getLabel(dto));
-    coreMapper.mapResourceEdges(dto.getTitle(), resource, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getProduction(), resource, PRODUCTION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getPublication(), resource, PUBLICATION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getDistribution(), resource, DISTRIBUTION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getManufacture(), resource, MANUFACTURE_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getAccessLocation(), resource, ACCESS_LOCATION_PRED, Instance.class,
+    Instance dto = ((InstanceField) resourceDto).getInstance();
+    var instance = new Resource();
+    instance.addType(resourceTypeService.get(INSTANCE));
+    instance.setDoc(getDoc(dto));
+    instance.setLabel(getLabelOrFirstValue(dto.getLabel(), () -> getPossibleLabels(dto)));
+    coreMapper.mapResourceEdges(dto.getTitle(), instance, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getProduction(), instance, PRODUCTION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getPublication(), instance, PUBLICATION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getDistribution(), instance, DISTRIBUTION_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getManufacture(), instance, MANUFACTURE_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION_PRED, Instance.class,
       mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMap(), resource, MAP_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMedia(), resource, MEDIA_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCarrier(), resource, CARRIER_PRED, Instance.class, mapper::toEntity);
-    resource.setResourceHash(coreMapper.hash(resource));
-    return resource;
+    coreMapper.mapResourceEdges(dto.getMap(), instance, MAP_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getMedia(), instance, MEDIA_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCarrier(), instance, CARRIER_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getCopyright(), instance, COPYRIGHT_PRED, Instance.class, mapper::toEntity);
+    instance.setResourceHash(coreMapper.hash(instance));
+    return instance;
   }
 
-  private String getLabel(Instance dto) {
-    var emptyString = "";
-    var title = getTitle(dto, InstanceTitleField.class);
-    if (!Objects.isNull(title)) {
-      return title.getInstanceTitle().getMainTitle().stream().findFirst().orElse(emptyString);
-    }
-
-    var parTitle = getTitle(dto, ParallelTitleField.class);
-    if (parTitle != null) {
-      return parTitle.getParallelTitle().getMainTitle().stream().findFirst().orElse(emptyString);
-    }
-
-    var varTitle = getTitle(dto, VariantTitleField.class);
-    if (varTitle != null) {
-      return varTitle.getVariantTitle().getMainTitle().stream().findFirst().orElse(emptyString);
-    }
-
-    return emptyString;
-  }
-
-  private <T extends InstanceTitleInner> T getTitle(Instance dto, Class<T> titleClass) {
-    if (Objects.isNull(dto.getTitle())) {
-      return null;
-    } else {
-      return dto.getTitle().stream()
-        .filter(titleClass::isInstance)
-        .findFirst()
-        .map(titleClass::cast)
-        .orElse(null);
-    }
+  private List<String> getPossibleLabels(Instance instance) {
+    return instance.getTitle().stream()
+      .sorted(Comparator.comparing(o -> o.getClass().getSimpleName()))
+      .map(t -> {
+        if (t instanceof InstanceTitleField instanceTitleField) {
+          var instanceTitle = instanceTitleField.getInstanceTitle();
+          return getLabelOrFirstValue(instanceTitle.getLabel(), instanceTitle::getMainTitle);
+        }
+        if (t instanceof ParallelTitleField parallelTitleField) {
+          var parallelTitle = parallelTitleField.getParallelTitle();
+          return getLabelOrFirstValue(parallelTitle.getLabel(), parallelTitle::getMainTitle);
+        }
+        if (t instanceof VariantTitleField variantTitleField) {
+          var variantTitle = variantTitleField.getVariantTitle();
+          return getLabelOrFirstValue(variantTitle.getLabel(), variantTitle::getMainTitle);
+        }
+        return "";
+      }).toList();
   }
 
   private JsonNode getDoc(Instance dto) {
@@ -110,7 +103,6 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     map.put(DIMENSIONS, dto.getDimensions());
     map.put(RESPONSIBILITY_STATEMENT, dto.getResponsibilityStatement());
     map.put(EDITION_STATEMENT, dto.getEdition());
-    map.put(COPYRIGHT_DATE, dto.getCopyrightDate());
     map.put(PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
     map.put(ISSUANCE, dto.getIssuance());
     return coreMapper.toJson(map);

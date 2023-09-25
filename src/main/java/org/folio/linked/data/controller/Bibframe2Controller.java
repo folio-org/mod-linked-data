@@ -5,7 +5,7 @@ import static org.springframework.http.ResponseEntity.noContent;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Bibframe2Request;
 import org.folio.linked.data.domain.dto.Bibframe2Response;
-import org.folio.linked.data.domain.dto.BibframeShortInfoPage;
+import org.folio.linked.data.domain.dto.Bibframe2ShortInfoPage;
 import org.folio.linked.data.rest.resource.Bibframe2Api;
 import org.folio.linked.data.service.ResourceService;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +37,12 @@ public class Bibframe2Controller implements Bibframe2Api {
 
   @Override
   public ResponseEntity<Void> deleteBibframe2(Long id, String okapiTenant) {
-    resourceService.deleteBibframe(id);
+    resourceService.deleteResource(id);
     return noContent().build();
   }
 
   @Override
-  public ResponseEntity<BibframeShortInfoPage> getBibframe2ShortInfoPage(String okapiTenant, Integer pageNumber,
+  public ResponseEntity<Bibframe2ShortInfoPage> getBibframe2ShortInfoPage(String okapiTenant, Integer pageNumber,
                                                                          Integer pageSize) {
     return ResponseEntity.ok(resourceService.getBibframe2ShortInfoPage(pageNumber, pageSize));
   }

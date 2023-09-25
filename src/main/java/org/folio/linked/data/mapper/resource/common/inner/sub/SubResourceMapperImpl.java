@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
+import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,12 +50,16 @@ public class SubResourceMapperImpl implements SubResourceMapper {
   @Override
   @SuppressWarnings("java:S2201")
   public <T> void toDto(@NonNull ResourceEdge source, @NonNull T destination) {
-    var type = source.getTarget().getLastType().getTypeUri();
+    var type = source.getTarget().getFirstType().getTypeUri();
     getMapperUnit(type, source.getPredicate().getLabel(),
       destination.getClass(), null)
       .map(mapper -> ((SubResourceMapperUnit<T>) mapper).toDto(source.getTarget(), destination))
-      .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + type + IS_NOT_SUPPORTED_FOR_PREDICATE
-        + source.getPredicate().getLabel() + RIGHT_SQUARE_BRACKET + AND + destination.getClass().getSimpleName()));
+      .orElseGet(() -> {
+        log.warn(RESOURCE_WITH_GIVEN_ID + source.getTarget().getResourceHash() + RIGHT_SQUARE_BRACKET + AND
+          + RESOURCE_TYPE + type + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getLabel()
+          + RIGHT_SQUARE_BRACKET + AND + destination.getClass().getSimpleName());
+        return null;
+      });
   }
 
   private Optional<SubResourceMapperUnit<?>> getMapperUnit(String type, String pred, Class<?> parentDto, Class<?> dto) {
