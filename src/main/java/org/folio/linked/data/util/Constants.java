@@ -10,7 +10,6 @@ public class Constants {
   public static final String RIGHT_SQUARE_BRACKET = "]";
   public static final String IS_NOT_SUPPORTED = "] is not supported";
   public static final String IS_NOT_SUPPORTED_FOR_PREDICATE = IS_NOT_SUPPORTED + " for " + PREDICATE;
-  public static final String IS_NOT_BIBFRAME_ROOT = "] is not a Bibframe root";
   public static final String FOLIO_PROFILE = "folio";
   public static final String SEARCH_PROFILE = "search";
   public static final String ERROR_JSON_PROCESSING = "Error while json processing";
@@ -19,7 +18,5 @@ public class Constants {
   public static final String RESOURCE_WITH_GIVEN_ID = "Resource with given id [";
   public static final String IS_NOT_FOUND = "] is not found";
   public static final String EXISTS_ALREADY = "] exists already";
-  public static final String BIBFRAME_PROFILE = "Bibframe profile [";
-  public static final String IS_NOT_IN_THE_LIST_OF_SUPPORTED = "] is not in the list of supported: ";
   public static final String SEARCH_RESOURCE_NAME = "bibframe";
 }

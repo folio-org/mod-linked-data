@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
-import org.folio.linked.data.configuration.properties.BibframeProperties;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceMapper;
@@ -47,8 +46,6 @@ class ReIndexControllerIT {
   private ResourceMapper resourceMapper;
   @Autowired
   private ObjectMapper objectMapper;
-  @Autowired
-  private BibframeProperties bibframeProperties;
   @Autowired
   private Environment env;
 

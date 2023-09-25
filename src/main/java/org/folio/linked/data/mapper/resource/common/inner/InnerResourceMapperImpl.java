@@ -11,7 +11,6 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.Bibframe2Response;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -39,11 +38,6 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
 
   @Override
   public ResourceDto toDto(@NonNull Resource source, @NonNull ResourceDto destination) {
-    return getMapperUnit(source.getFirstType().getTypeUri()).map(m -> m.toDto(source, destination)).orElse(destination);
-  }
-
-  @Override
-  public Bibframe2Response toDto(@NonNull Resource source, @NonNull Bibframe2Response destination) {
     return getMapperUnit(source.getFirstType().getTypeUri()).map(m -> m.toDto(source, destination)).orElse(destination);
   }
 

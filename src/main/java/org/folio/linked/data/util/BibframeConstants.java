@@ -6,7 +6,6 @@ import lombok.experimental.UtilityClass;
 public class BibframeConstants {
 
   // Types
-  public static final String MONOGRAPH = "http://bibfra.me/vocab/marc/Monograph";
   public static final String INSTANCE = "http://bibfra.me/vocab/lite/Instance";
   public static final String ITEM = "http://bibfra.me/vocab/lite/Item";
   public static final String WORK = "http://bibfra.me/vocab/lite/Work";
