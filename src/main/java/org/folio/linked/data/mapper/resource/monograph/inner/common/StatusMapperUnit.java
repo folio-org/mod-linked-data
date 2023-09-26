@@ -39,7 +39,7 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
   @Override
   public T toDto(Resource source, T destination) {
     var status = coreMapper.readResourceDoc(source, Status.class);
-    status.setId(source.getResourceHash());
+    status.setId(String.valueOf(source.getResourceHash()));
     status.setLabel(source.getLabel());
     if (destination instanceof Lccn lccn) {
       lccn.addStatusItem(status);

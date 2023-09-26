@@ -36,7 +36,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var providerEvent = coreMapper.readResourceDoc(source, ProviderEvent.class);
-    providerEvent.setId(source.getResourceHash());
+    providerEvent.setId(String.valueOf(source.getResourceHash()));
     providerEvent.setLabel(source.getLabel());
     coreMapper.addMappedResources(placeMapper, source, PROVIDER_PLACE_PRED, providerEvent);
     return providerEventConsumer.apply(providerEvent, destination);

@@ -149,7 +149,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(id);
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
     validateMonographInstanceResource(bibframe, true);
@@ -173,7 +173,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(id);
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
     validateMonographInstanceResource(bibframe, false);
@@ -191,7 +191,7 @@ public class ResourceControllerIT {
     var response1 = resultActions1.andReturn().getResponse().getContentAsString();
     var resourceResponse1 = objectMapper.readValue(response1, ResourceDto.class);
     var id1 = ((InstanceField) resourceResponse1.getResource()).getInstance().getId();
-    var persistedOptional1 = resourceRepo.findById(id1);
+    var persistedOptional1 = resourceRepo.findById(Long.parseLong(id1));
     assertThat(persistedOptional1).isPresent();
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
@@ -292,9 +292,9 @@ public class ResourceControllerIT {
       .andExpect(jsonPath("total_pages", equalTo(1)))
       .andExpect(jsonPath("total_elements", equalTo(3)))
       .andExpect(jsonPath("content", hasSize(3)))
-      .andExpect(jsonPath("content[0].id", equalTo(existed.get(0).getResourceHash().intValue())))
-      .andExpect(jsonPath("content[1].id", equalTo(existed.get(1).getResourceHash().intValue())))
-      .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getResourceHash().intValue())));
+      .andExpect(jsonPath("content[0].id", equalTo(existed.get(0).getResourceHash().toString())))
+      .andExpect(jsonPath("content[1].id", equalTo(existed.get(1).getResourceHash().toString())))
+      .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getResourceHash().toString())));
   }
 
   @Test

@@ -38,7 +38,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var variantTitle = coreMapper.readResourceDoc(source, VariantTitle.class);
-    variantTitle.setId(source.getResourceHash());
+    variantTitle.setId(String.valueOf(source.getResourceHash()));
     variantTitle.setLabel(source.getLabel());
     destination.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     return destination;
