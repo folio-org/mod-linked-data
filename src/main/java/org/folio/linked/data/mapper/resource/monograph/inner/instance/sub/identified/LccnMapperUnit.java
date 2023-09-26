@@ -36,7 +36,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var lccn = coreMapper.readResourceDoc(source, Lccn.class);
-    lccn.setId(source.getResourceHash());
+    lccn.setId(String.valueOf(source.getResourceHash()));
     lccn.setLabel(source.getLabel());
     coreMapper.addMappedResources(statusMapper, source, STATUS_PRED, lccn);
     destination.addMapItem(new LccnField().lccn(lccn));

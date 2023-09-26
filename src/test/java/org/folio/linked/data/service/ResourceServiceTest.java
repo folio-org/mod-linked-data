@@ -64,7 +64,7 @@ class ResourceServiceTest {
     var expectedIndex = new BibframeIndex(persisted.getResourceHash().toString());
     when(resourceMapper.mapToIndex(persisted)).thenReturn(expectedIndex);
     var expectedResponse = new ResourceDto();
-    expectedResponse.setResource(new InstanceField().instance(new Instance().id(123L)));
+    expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
     when(resourceMapper.toDto(persisted)).thenReturn(expectedResponse);
 
     // when

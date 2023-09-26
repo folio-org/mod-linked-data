@@ -564,8 +564,8 @@ class CoreMapperTest {
   void mapResourceEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndNoType(
     @Mock InnerResourceMapper mapper) {
     // given
-    var dto1 = new Isbn().id(randomLong()).label("label");
-    var dto2 = new Isbn().id(randomLong()).label("label2");
+    var dto1 = new Isbn().id(randomLong().toString()).label("label");
+    var dto2 = new Isbn().id(randomLong().toString()).label("label2");
     var predicate = "predicate";
     var expectedPredicate = new Predicate(predicate);
     doReturn(expectedPredicate).when(predicateService).get(predicate);
@@ -592,8 +592,8 @@ class CoreMapperTest {
   void mapResourceEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndType(
     @Mock InnerResourceMapper mapper) {
     // given
-    var dto1 = new Isbn().id(randomLong()).label("label");
-    var dto2 = new Isbn().id(randomLong()).label("label2");
+    var dto1 = new Isbn().id(randomLong().toString()).label("label");
+    var dto2 = new Isbn().id(randomLong().toString()).label("label2");
     var predicate = "predicate";
     var expectedPredicate = new Predicate(predicate);
     doReturn(expectedPredicate).when(predicateService).get(predicate);
@@ -717,8 +717,8 @@ class CoreMapperTest {
   void mapResourceEdges2_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmpty(
     @Mock SubResourceMapper mapper) {
     // given
-    var dto1 = new Isbn().id(randomLong()).label("label");
-    var dto2 = new Isbn().id(randomLong()).label("label2");
+    var dto1 = new Isbn().id(randomLong().toString()).label("label");
+    var dto2 = new Isbn().id(randomLong().toString()).label("label2");
     var predicate = "predicate";
     var parent = Instance.class;
     var expectedPredicate = new Predicate(predicate);

@@ -33,7 +33,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var ean = coreMapper.readResourceDoc(source, Ean.class);
-    ean.setId(source.getResourceHash());
+    ean.setId(String.valueOf(source.getResourceHash()));
     ean.setLabel(source.getLabel());
     destination.addMapItem(new EanField().ean(ean));
     return destination;

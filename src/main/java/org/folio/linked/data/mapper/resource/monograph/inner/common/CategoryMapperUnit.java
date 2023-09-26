@@ -29,7 +29,7 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var category = coreMapper.readResourceDoc(source, Category.class);
-    category.setId(source.getResourceHash());
+    category.setId(String.valueOf(source.getResourceHash()));
     category.setLabel(source.getLabel());
     return categoryConsumer.apply(category, destination);
   }

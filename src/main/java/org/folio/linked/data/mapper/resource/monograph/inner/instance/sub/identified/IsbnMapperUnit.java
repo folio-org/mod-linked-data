@@ -37,7 +37,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var isbn = coreMapper.readResourceDoc(source, Isbn.class);
-    isbn.setId(source.getResourceHash());
+    isbn.setId(String.valueOf(source.getResourceHash()));
     isbn.setLabel(source.getLabel());
     coreMapper.addMappedResources(statusMapper, source, STATUS_PRED, isbn);
     destination.addMapItem(new IsbnField().isbn(isbn));

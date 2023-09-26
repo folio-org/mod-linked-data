@@ -38,7 +38,7 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
   @Override
   public T toDto(Resource source, T destination) {
     var place = coreMapper.readResourceDoc(source, Place.class);
-    place.setId(source.getResourceHash());
+    place.setId(String.valueOf(source.getResourceHash()));
     place.setLabel(source.getLabel());
     if (destination instanceof ProviderEvent providerEvent) {
       providerEvent.addProviderPlaceItem(place);

@@ -51,7 +51,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
   public ResourceDto toDto(Resource source, ResourceDto destination) {
     var instanceField = new InstanceField();
     coreMapper.mapWithResources(mapper, source, instanceField::setInstance, Instance.class);
-    instanceField.getInstance().setId(source.getResourceHash());
+    instanceField.getInstance().setId(String.valueOf(source.getResourceHash()));
     instanceField.getInstance().setLabel(source.getLabel());
     return destination.resource(instanceField);
   }

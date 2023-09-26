@@ -33,7 +33,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Instance toDto(Resource source, Instance destination) {
     var otherId = coreMapper.readResourceDoc(source, OtherId.class);
-    otherId.setId(source.getResourceHash());
+    otherId.setId(String.valueOf(source.getResourceHash()));
     otherId.setLabel(source.getLabel());
     destination.addMapItem(new OtherIdField().identifier(otherId));
     return destination;

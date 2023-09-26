@@ -4,9 +4,8 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "integer",
-      "format": "int64",
-      "description": "Resource id"
+      "type": "string",
+      "description": "Hash / ID of the resource"
     },
     "label": {
       "type": "string",
