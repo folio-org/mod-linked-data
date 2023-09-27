@@ -40,7 +40,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   private Resource extractInstance(Resource resource) {
-    return resource.getFirstType().getTypeUri().equals(INSTANCE) ? resource :
+    return resource.getTypes().stream().anyMatch(t -> t.getTypeUri().equals(INSTANCE)) ? resource :
       resource.getOutgoingEdges().stream()
         .filter(re -> INSTANCE.equals(re.getPredicate().getLabel()))
         .map(ResourceEdge::getTarget)

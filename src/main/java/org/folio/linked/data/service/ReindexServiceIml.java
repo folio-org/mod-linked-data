@@ -36,16 +36,17 @@ public class ReindexServiceIml implements ReindexService {
     while (pageable.isPaged()) {
       var page = resourceRepository.findResourcesByTypeFull(Set.of(BibframeConstants.INSTANCE), pageable);
       page.get()
-        .map(kafkaMessageMapper::toIndex)
-        .map(bibframeIndex -> {
-          try {
-            kafkaSender.sendResourceCreated(bibframeIndex);
-          } catch (Exception e) {
-            log.warn("Failed to send resource for reindexing with id {}", bibframeIndex.getId());
+        .forEach(resource -> {
+            try {
+              var bibframeIndex = kafkaMessageMapper.toIndex(resource);
+              kafkaSender.sendResourceCreated(kafkaMessageMapper.toIndex(resource));
+              log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
+            } catch (Exception e) {
+              log.warn("Failed to send resource for reindexing with id {}",
+                kafkaMessageMapper.toIndex(resource).getId());
+            }
           }
-          return bibframeIndex;
-        })
-        .forEach(bibframeIndex -> log.info("Sending resource for reindexing with id {}", bibframeIndex.getId()));
+        );
       pageable = page.nextPageable();
     }
   }
