@@ -39,11 +39,10 @@ public class ReindexServiceIml implements ReindexService {
         .forEach(resource -> {
             try {
               var bibframeIndex = kafkaMessageMapper.toIndex(resource);
-              kafkaSender.sendResourceCreated(kafkaMessageMapper.toIndex(resource));
+              kafkaSender.sendResourceCreated(bibframeIndex);
               log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
             } catch (Exception e) {
-              log.warn("Failed to send resource for reindexing with id {}",
-                kafkaMessageMapper.toIndex(resource).getId());
+              log.warn("Failed to send resource for reindexing with id {}", resource.getResourceHash());
             }
           }
         );
