@@ -12,6 +12,7 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import lombok.NonNull;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -52,6 +53,15 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   private List<BibframeIdentifiersInner> extractIdentifiers(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> MAP_PRED.equals(re.getPredicate().getLabel()))
+      .filter(re -> {
+        var typeUri = re.getTarget().getFirstType().getTypeUri();
+        return Arrays.stream(BibframeIdentifiersInner.TypeEnum.values())
+          .anyMatch(typeEnum -> typeUri.contains(typeEnum.getValue())
+            // to be removed after mod-search-ld DTO alignment
+            || typeUri.contains("Ean")
+            || typeUri.contains("LocalId")
+            || typeUri.contains("UNKNOWN"));
+      })
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME, EAN_VALUE, LOCAL_ID_VALUE))
@@ -72,6 +82,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     var typeUri = resourceType.getTypeUri();
     var extractedTypeWord = typeUri.substring(typeUri.lastIndexOf("/") + 1);
     var reworded = extractedTypeWord
+      // to be removed after mod-search-ld DTO alignment
       .replace("Ean", "EAN")
       .replace("LocalId", "Local")
       .replace("UNKNOWN", "Other");
