@@ -7,7 +7,7 @@ import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -37,7 +37,6 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var instanceTitle = coreMapper.readResourceDoc(source, InstanceTitle.class);
     instanceTitle.setId(String.valueOf(source.getResourceHash()));
-    instanceTitle.setLabel(source.getLabel());
     destination.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
     return destination;
   }
@@ -46,7 +45,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var instanceTitle = ((InstanceTitleField) dto).getInstanceTitle();
     var resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(instanceTitle.getLabel(), instanceTitle::getMainTitle));
+    resource.setLabel(getFirstValue(instanceTitle::getMainTitle));
     resource.addType(resourceTypeService.get(INSTANCE_TITLE));
     resource.setDoc(getDoc(instanceTitle));
     resource.setResourceHash(coreMapper.hash(resource));

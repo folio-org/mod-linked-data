@@ -5,7 +5,7 @@ import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -37,7 +37,6 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var lccn = coreMapper.readResourceDoc(source, Lccn.class);
     lccn.setId(String.valueOf(source.getResourceHash()));
-    lccn.setLabel(source.getLabel());
     coreMapper.addMappedResources(statusMapper, source, STATUS_PRED, lccn);
     destination.addMapItem(new LccnField().lccn(lccn));
     return destination;
@@ -47,7 +46,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var lccn = ((LccnField) dto).getLccn();
     var resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(lccn.getLabel(), lccn::getValue));
+    resource.setLabel(getFirstValue(lccn::getValue));
     resource.addType(resourceTypeService.get(LCCN));
     resource.setDoc(getDoc(lccn));
     coreMapper.mapResourceEdges(lccn.getStatus(), resource, STATUS, STATUS_PRED,

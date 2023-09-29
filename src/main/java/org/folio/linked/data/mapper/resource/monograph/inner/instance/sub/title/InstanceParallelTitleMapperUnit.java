@@ -8,7 +8,7 @@ import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -38,7 +38,6 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   public Instance toDto(Resource source, Instance destination) {
     var parallelTitle = coreMapper.readResourceDoc(source, ParallelTitle.class);
     parallelTitle.setId(String.valueOf(source.getResourceHash()));
-    parallelTitle.setLabel(source.getLabel());
     destination.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     return destination;
   }
@@ -47,7 +46,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var parallelTitle = ((ParallelTitleField) dto).getParallelTitle();
     var resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(parallelTitle.getLabel(), parallelTitle::getMainTitle));
+    resource.setLabel(getFirstValue(parallelTitle::getMainTitle));
     resource.addType(resourceTypeService.get(PARALLEL_TITLE));
     resource.setDoc(getDoc(parallelTitle));
     resource.setResourceHash(coreMapper.hash(resource));

@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.OTHER_ID;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -34,7 +34,6 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var otherId = coreMapper.readResourceDoc(source, OtherId.class);
     otherId.setId(String.valueOf(source.getResourceHash()));
-    otherId.setLabel(source.getLabel());
     destination.addMapItem(new OtherIdField().identifier(otherId));
     return destination;
   }
@@ -43,7 +42,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var otherId = ((OtherIdField) dto).getIdentifier();
     var resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(otherId.getLabel(), otherId::getValue));
+    resource.setLabel(getFirstValue(otherId::getValue));
     resource.addType(resourceTypeService.get(OTHER_ID));
     resource.setDoc(getDoc(otherId));
     resource.setResourceHash(coreMapper.hash(resource));

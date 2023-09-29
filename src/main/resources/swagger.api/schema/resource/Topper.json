@@ -6,10 +6,6 @@
     "id": {
       "type": "string",
       "description": "Hash / ID of the resource"
-    },
-    "label": {
-      "type": "string",
-      "x-json-property": "http://www.w3.org/2000/01/rdf-schema#label"
     }
   }
 }

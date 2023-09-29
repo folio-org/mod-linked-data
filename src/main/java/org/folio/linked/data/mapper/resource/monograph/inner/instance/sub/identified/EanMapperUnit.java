@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.BibframeConstants.EAN;
 import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -34,7 +34,6 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var ean = coreMapper.readResourceDoc(source, Ean.class);
     ean.setId(String.valueOf(source.getResourceHash()));
-    ean.setLabel(source.getLabel());
     destination.addMapItem(new EanField().ean(ean));
     return destination;
   }
@@ -43,7 +42,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var ean = ((EanField) dto).getEan();
     var resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(ean.getLabel(), ean::getValue));
+    resource.setLabel(getFirstValue(ean::getValue));
     resource.addType(resourceTypeService.get(EAN));
     resource.setDoc(getDoc(ean));
     resource.setResourceHash(coreMapper.hash(resource));

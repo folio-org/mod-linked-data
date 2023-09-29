@@ -14,21 +14,19 @@ import org.junit.jupiter.api.Test;
 class BibframeUtilsTest {
 
   @Test
-  void getLabelOrFirstValue_shouldReturnGivenLabel() {
+  void getFirstValue_shouldReturnEmptyString_ifGivenSupplierIsNull() {
     // given
-    var label = UUID.randomUUID().toString();
 
     // when
-    var result = BibframeUtils.getLabelOrFirstValue(label, null);
+    var result = BibframeUtils.getFirstValue(null);
 
     // then
-    assertThat(result).isEqualTo(label);
+    assertThat(result).isEqualTo("");
   }
 
   @Test
-  void getLabelOrFirstValue_shouldReturnFirstValue_ifLabelIsNull() {
+  void getFirstValue_shouldReturnFirstValue() {
     // given
-    String label = null;
     var first = UUID.randomUUID().toString();
     var second = UUID.randomUUID().toString();
     var valuesSupplier = new Supplier<List<String>>() {
@@ -39,36 +37,15 @@ class BibframeUtilsTest {
     };
 
     // when
-    var result = BibframeUtils.getLabelOrFirstValue(label, valuesSupplier);
+    var result = BibframeUtils.getFirstValue(valuesSupplier);
 
     // then
     assertThat(result).isEqualTo(first);
   }
 
   @Test
-  void getLabelOrFirstValue_shouldReturnFirstValue_ifLabelIsEmpty() {
+  void getFirstValue_shouldReturnSecondValue_ifFirstValueIsEmpty() {
     // given
-    var label = "";
-    var first = UUID.randomUUID().toString();
-    var second = UUID.randomUUID().toString();
-    var valuesSupplier = new Supplier<List<String>>() {
-      @Override
-      public List<String> get() {
-        return Lists.newArrayList(first, second);
-      }
-    };
-
-    // when
-    var result = BibframeUtils.getLabelOrFirstValue(label, valuesSupplier);
-
-    // then
-    assertThat(result).isEqualTo(first);
-  }
-
-  @Test
-  void getLabelOrFirstValue_shouldReturnSecondValue_ifLabelAndFirstValueAreEmpty() {
-    // given
-    var label = "";
     var first = "";
     var second = UUID.randomUUID().toString();
     var valuesSupplier = new Supplier<List<String>>() {
@@ -79,16 +56,15 @@ class BibframeUtilsTest {
     };
 
     // when
-    var result = BibframeUtils.getLabelOrFirstValue(label, valuesSupplier);
+    var result = BibframeUtils.getFirstValue(valuesSupplier);
 
     // then
     assertThat(result).isEqualTo(second);
   }
 
   @Test
-  void getLabelOrFirstValue_shouldReturnEmptyString_ifLabelAndAllValuesAreNull() {
+  void getFirstValue_shouldReturnEmptyString_ifAllValuesAreNull() {
     // given
-    String label = null;
     String first = null;
     String second = null;
     var valuesSupplier = new Supplier<List<String>>() {
@@ -99,9 +75,10 @@ class BibframeUtilsTest {
     };
 
     // when
-    var result = BibframeUtils.getLabelOrFirstValue(label, valuesSupplier);
+    var result = BibframeUtils.getFirstValue(valuesSupplier);
 
     // then
     assertThat(result).isEqualTo("");
   }
+
 }
