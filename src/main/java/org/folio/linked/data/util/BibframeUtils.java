@@ -1,7 +1,7 @@
 package org.folio.linked.data.util;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -11,9 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 @UtilityClass
 public class BibframeUtils {
 
-  public static String getLabelOrFirstValue(String label, Supplier<List<String>> valuesSupplier) {
-    if (isNotBlank(label)) {
-      return label;
+  public static String getFirstValue(Supplier<List<String>> valuesSupplier) {
+    if (isNull(valuesSupplier)) {
+      return "";
     }
     var values = valuesSupplier.get();
     if (isNotEmpty(values)) {

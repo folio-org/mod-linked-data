@@ -8,7 +8,6 @@ import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
-import static org.folio.linked.data.test.TestUtil.getResource;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
@@ -30,7 +29,6 @@ import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISBN;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.LABEL;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_RDF;
 import static org.folio.linked.data.util.BibframeConstants.LCCN;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
@@ -144,7 +142,7 @@ public class ResourceControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = validateResourceResponse(resultActions, true)
+    var response = validateResourceResponse(resultActions)
       .andReturn().getResponse().getContentAsString();
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
@@ -152,31 +150,7 @@ public class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateMonographInstanceResource(bibframe, true);
-    checkKafkaMessageSent(bibframe, null);
-  }
-
-  @Test
-  void createMonographInstanceBibframeWithNoLabels_shouldSaveEntityCorrectly() throws Exception {
-    // given
-    var requestBuilder = post(BIBFRAME_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getResource("samples/bibframe-full-no-labels.json"));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    var response = validateResourceResponse(resultActions, false)
-      .andReturn().getResponse().getContentAsString();
-
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var bibframe = persistedOptional.get();
-    validateMonographInstanceResource(bibframe, false);
+    validateMonographInstanceResource(bibframe);
     checkKafkaMessageSent(bibframe, null);
   }
 
@@ -196,7 +170,7 @@ public class ResourceControllerIT {
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()))
-      .content(getBibframeSample().replace("Instance: label", "Instance: label2"));
+      .content(getBibframeSample().replace("Instance: partName", "Instance: partName2"));
 
     // when
     var response2 = mockMvc.perform(requestBuilder2);
@@ -243,7 +217,7 @@ public class ResourceControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    validateResourceResponse(resultActions, true);
+    validateResourceResponse(resultActions);
   }
 
   @Test
@@ -324,101 +298,73 @@ public class ResourceControllerIT {
   }
 
   @NotNull
-  private ResultActions validateResourceResponse(ResultActions resultActions, boolean withLabels) throws Exception {
+  private ResultActions validateResourceResponse(ResultActions resultActions) throws Exception {
     return resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(toInstance(), notNullValue()))
-      .andExpect(jsonPath(toAccessLocationLabel(), equalTo("accessLocation " + (withLabels ? "label" : "value"))))
       .andExpect(jsonPath(toAccessLocationLink(), equalTo("accessLocation value")))
       .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
-      .andExpect(jsonPath(toCarrierLabel(), equalTo("carrier " + (withLabels ? "label" : "term"))))
       .andExpect(jsonPath(toCarrierCode(), equalTo("carrier code")))
       .andExpect(jsonPath(toCarrierLink(), equalTo("carrier link")))
       .andExpect(jsonPath(toCarrierTerm(), equalTo("carrier term")))
-      .andExpect(jsonPath(toCopyrightLabel(), equalTo("copyright date " + (withLabels ? "label" : "value"))))
       .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
       .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
-      .andExpect(jsonPath(toEanLabel(), equalTo("ean " + (withLabels ? "label" : "value"))))
       .andExpect(jsonPath(toEanValue(), equalTo("ean value")))
       .andExpect(jsonPath(toEanQualifier(), equalTo("ean qualifier")))
       .andExpect(jsonPath(toEditionStatement(), equalTo("edition statement")))
-      .andExpect(jsonPath(toInstanceTitleLabel(), equalTo("Instance: " + (withLabels ? "label" : "mainTitle"))))
       .andExpect(jsonPath(toInstanceTitlePartName(), equalTo("Instance: partName")))
       .andExpect(jsonPath(toInstanceTitlePartNumber(), equalTo("Instance: partNumber")))
       .andExpect(jsonPath(toInstanceTitleMain(), equalTo("Instance: mainTitle")))
       .andExpect(jsonPath(toInstanceTitleNonSortNum(), equalTo("Instance: nonSortNum")))
       .andExpect(jsonPath(toInstanceTitleSubtitle(), equalTo("Instance: subtitle")))
-      .andExpect(jsonPath(toIsbnLabel(), equalTo("isbn " + (withLabels ? "label" : "value"))))
       .andExpect(jsonPath(toIsbnValue(), equalTo("isbn value")))
       .andExpect(jsonPath(toIsbnQualifier(), equalTo("isbn qualifier")))
       .andExpect(jsonPath(toIsbnStatusValue(), equalTo("isbn status value")))
       .andExpect(jsonPath(toIsbnStatusLink(), equalTo("isbn status link")))
       .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
-      .andExpect(jsonPath(toLccnLabel(), equalTo("lccn " + (withLabels ? "label" : "value"))))
       .andExpect(jsonPath(toLccnValue(), equalTo("lccn value")))
       .andExpect(jsonPath(toLccnStatusValue(), equalTo("lccn status value")))
       .andExpect(jsonPath(toLccnStatusLink(), equalTo("lccn status link")))
-      .andExpect(jsonPath(toLocalIdLabel(), equalTo("localId " + (withLabels ? "label" : "value"))))
       .andExpect(jsonPath(toLocalIdValue(), equalTo("localId value")))
       .andExpect(jsonPath(toLocalIdAssigner(), equalTo("localId assigner")))
-      .andExpect(jsonPath(toMediaLabel(), equalTo("media " + (withLabels ? "label" : "term"))))
       .andExpect(jsonPath(toMediaCode(), equalTo("media code")))
       .andExpect(jsonPath(toMediaLink(), equalTo("media link")))
       .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
-      .andExpect(jsonPath(toOtherIdLabel(), equalTo("otherId " + (withLabels ? "label" : "value"))))
       .andExpect(jsonPath(toOtherIdValue(), equalTo("otherId value")))
       .andExpect(jsonPath(toOtherIdQualifier(), equalTo("otherId qualifier")))
-      .andExpect(jsonPath(toParallelTitleLabel(), equalTo("Parallel: " + (withLabels ? "label" : "mainTitle"))))
       .andExpect(jsonPath(toParallelTitlePartName(), equalTo("Parallel: partName")))
       .andExpect(jsonPath(toParallelTitlePartNumber(), equalTo("Parallel: partNumber")))
       .andExpect(jsonPath(toParallelTitleMain(), equalTo("Parallel: mainTitle")))
       .andExpect(jsonPath(toParallelTitleNote(), equalTo("Parallel: noteLabel")))
       .andExpect(jsonPath(toParallelTitleDate(), equalTo("Parallel: date")))
       .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo("Parallel: subtitle")))
-      .andExpect(
-        jsonPath(toProviderEventLabel(PRODUCTION_PRED), equalTo("production " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventDate(PRODUCTION_PRED), equalTo("production date")))
       .andExpect(jsonPath(toProviderEventName(PRODUCTION_PRED), equalTo("production name")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(PRODUCTION_PRED),
-        equalTo("production providerPlace " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventPlaceName(PRODUCTION_PRED), equalTo("production providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PRODUCTION_PRED), equalTo("production providerPlace link")))
       .andExpect(jsonPath(toProviderEventSimpleDate(PRODUCTION_PRED), equalTo("production simple date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PRODUCTION_PRED), equalTo("production simple place")))
-      .andExpect(
-        jsonPath(toProviderEventLabel(PUBLICATION_PRED), equalTo("publication " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventDate(PUBLICATION_PRED), equalTo("publication date")))
       .andExpect(jsonPath(toProviderEventName(PUBLICATION_PRED), equalTo("publication name")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(PUBLICATION_PRED),
-        equalTo("publication providerPlace " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventPlaceName(PUBLICATION_PRED), equalTo("publication providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PUBLICATION_PRED), equalTo("publication providerPlace link")))
       .andExpect(jsonPath(toProviderEventSimpleDate(PUBLICATION_PRED), equalTo("publication simple date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PUBLICATION_PRED), equalTo("publication simple place")))
-      .andExpect(
-        jsonPath(toProviderEventLabel(DISTRIBUTION_PRED), equalTo("distribution " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventDate(DISTRIBUTION_PRED), equalTo("distribution date")))
       .andExpect(jsonPath(toProviderEventName(DISTRIBUTION_PRED), equalTo("distribution name")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(DISTRIBUTION_PRED),
-        equalTo("distribution providerPlace " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventPlaceName(DISTRIBUTION_PRED), equalTo("distribution providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(DISTRIBUTION_PRED), equalTo("distribution providerPlace link")))
       .andExpect(jsonPath(toProviderEventSimpleDate(DISTRIBUTION_PRED), equalTo("distribution simple date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(DISTRIBUTION_PRED), equalTo("distribution simple place")))
-      .andExpect(
-        jsonPath(toProviderEventLabel(MANUFACTURE_PRED), equalTo("manufacture " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventDate(MANUFACTURE_PRED), equalTo("manufacture date")))
       .andExpect(jsonPath(toProviderEventName(MANUFACTURE_PRED), equalTo("manufacture name")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(MANUFACTURE_PRED),
-        equalTo("manufacture providerPlace " + (withLabels ? "label" : "name"))))
       .andExpect(jsonPath(toProviderEventPlaceName(MANUFACTURE_PRED), equalTo("manufacture providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(MANUFACTURE_PRED), equalTo("manufacture providerPlace link")))
       .andExpect(jsonPath(toProviderEventSimpleDate(MANUFACTURE_PRED), equalTo("manufacture simple date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(MANUFACTURE_PRED), equalTo("manufacture simple place")))
       .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
       .andExpect(jsonPath(toResponsibilityStatement(), equalTo("responsibility statement")))
-      .andExpect(jsonPath(toVariantTitleLabel(), equalTo("Variant: " + (withLabels ? "label" : "mainTitle"))))
       .andExpect(jsonPath(toVariantTitlePartName(), equalTo("Variant: partName")))
       .andExpect(jsonPath(toVariantTitlePartNumber(), equalTo("Variant: partNumber")))
       .andExpect(jsonPath(toVariantTitleMain(), equalTo("Variant: mainTitle")))
@@ -428,14 +374,14 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toVariantTitleType(), equalTo("Variant: variantType")));
   }
 
-  private void validateMonographInstanceResource(Resource resource, boolean withLabels) {
+  private void validateMonographInstanceResource(Resource resource) {
     assertThat(resource.getFirstType().getTypeUri()).isEqualTo(INSTANCE);
-    validateInstance(resource, withLabels);
+    validateInstance(resource);
   }
 
-  private void validateInstance(Resource instance, boolean withLabels) {
+  private void validateInstance(Resource instance) {
     assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getLabel()).isEqualTo("Instance: " + (withLabels ? "label" : "mainTitle"));
+    assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getFirstType().getTypeUri()).isEqualTo(INSTANCE);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(5);
@@ -447,22 +393,22 @@ public class ResourceControllerIT {
     assertThat(instance.getOutgoingEdges()).hasSize(16);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
-    validateInstanceTitle(edgeIterator.next(), instance, withLabels);
-    validateParallelTitle(edgeIterator.next(), instance, withLabels);
-    validateVariantTitle(edgeIterator.next(), instance, withLabels);
-    validateProviderEvent(edgeIterator.next(), instance, PRODUCTION_PRED, withLabels);
-    validateProviderEvent(edgeIterator.next(), instance, PUBLICATION_PRED, withLabels);
-    validateProviderEvent(edgeIterator.next(), instance, DISTRIBUTION_PRED, withLabels);
-    validateProviderEvent(edgeIterator.next(), instance, MANUFACTURE_PRED, withLabels);
-    validateAccessLocation(edgeIterator.next(), instance, withLabels);
-    validateLccn(edgeIterator.next(), instance, withLabels);
-    validateIsbn(edgeIterator.next(), instance, withLabels);
-    validateEan(edgeIterator.next(), instance, withLabels);
-    validateLocalId(edgeIterator.next(), instance, withLabels);
-    validateOtherId(edgeIterator.next(), instance, withLabels);
-    validateCategory(edgeIterator.next(), instance, MEDIA_PRED, CATEGORY, withLabels);
-    validateCategory(edgeIterator.next(), instance, CARRIER_PRED, CATEGORY, withLabels);
-    validateCopyrightDate(edgeIterator.next(), instance, withLabels);
+    validateInstanceTitle(edgeIterator.next(), instance);
+    validateParallelTitle(edgeIterator.next(), instance);
+    validateVariantTitle(edgeIterator.next(), instance);
+    validateProviderEvent(edgeIterator.next(), instance, PRODUCTION_PRED);
+    validateProviderEvent(edgeIterator.next(), instance, PUBLICATION_PRED);
+    validateProviderEvent(edgeIterator.next(), instance, DISTRIBUTION_PRED);
+    validateProviderEvent(edgeIterator.next(), instance, MANUFACTURE_PRED);
+    validateAccessLocation(edgeIterator.next(), instance);
+    validateLccn(edgeIterator.next(), instance);
+    validateIsbn(edgeIterator.next(), instance);
+    validateEan(edgeIterator.next(), instance);
+    validateLocalId(edgeIterator.next(), instance);
+    validateOtherId(edgeIterator.next(), instance);
+    validateCategory(edgeIterator.next(), instance, MEDIA_PRED, CATEGORY);
+    validateCategory(edgeIterator.next(), instance, CARRIER_PRED, CATEGORY);
+    validateCopyrightDate(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -471,8 +417,8 @@ public class ResourceControllerIT {
     assertThat(resource.getDoc().get(field).get(0).asText()).isEqualTo(value);
   }
 
-  private void validateInstanceTitle(ResourceEdge edge, Resource source, boolean withLabels) {
-    validateSampleTitleBase(edge, source, INSTANCE_TITLE, "Instance: ", withLabels);
+  private void validateInstanceTitle(ResourceEdge edge, Resource source) {
+    validateSampleTitleBase(edge, source, INSTANCE_TITLE, "Instance: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM).size()).isEqualTo(1);
@@ -480,8 +426,8 @@ public class ResourceControllerIT {
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateParallelTitle(ResourceEdge edge, Resource source, boolean withLabels) {
-    validateSampleTitleBase(edge, source, PARALLEL_TITLE, "Parallel: ", withLabels);
+  private void validateParallelTitle(ResourceEdge edge, Resource source) {
+    validateSampleTitleBase(edge, source, PARALLEL_TITLE, "Parallel: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(6);
     assertThat(title.getDoc().get(DATE).size()).isEqualTo(1);
@@ -491,8 +437,8 @@ public class ResourceControllerIT {
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateVariantTitle(ResourceEdge edge, Resource source, boolean withLabels) {
-    validateSampleTitleBase(edge, source, VARIANT_TITLE, "Variant: ", withLabels);
+  private void validateVariantTitle(ResourceEdge edge, Resource source) {
+    validateSampleTitleBase(edge, source, VARIANT_TITLE, "Variant: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(7);
     assertThat(title.getDoc().get(DATE).size()).isEqualTo(1);
@@ -504,13 +450,12 @@ public class ResourceControllerIT {
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateSampleTitleBase(ResourceEdge edge, Resource source, String type, String prefix,
-                                       boolean withLabels) {
+  private void validateSampleTitleBase(ResourceEdge edge, Resource source, String type, String prefix) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
     var title = edge.getTarget();
-    assertThat(title.getLabel()).isEqualTo(prefix + (withLabels ? "label" : "mainTitle"));
+    assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle");
     assertThat(title.getFirstType().getTypeUri()).isEqualTo(type);
     assertThat(title.getResourceHash()).isNotNull();
     assertThat(title.getDoc().get(PART_NAME).size()).isEqualTo(1);
@@ -523,13 +468,13 @@ public class ResourceControllerIT {
     assertThat(title.getDoc().get(SUBTITLE).get(0).asText()).isEqualTo(prefix + "subtitle");
   }
 
-  private void validateProviderEvent(ResourceEdge edge, Resource source, String predicate, boolean withLabels) {
+  private void validateProviderEvent(ResourceEdge edge, Resource source, String predicate) {
     var type = predicate.substring(predicate.indexOf("marc/") + 5);
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(predicate);
     var providerEvent = edge.getTarget();
-    assertThat(providerEvent.getLabel()).isEqualTo(type + (withLabels ? " label" : " name"));
+    assertThat(providerEvent.getLabel()).isEqualTo(type + " name");
     assertThat(providerEvent.getFirstType().getTypeUri()).isEqualTo(PROVIDER_EVENT);
     assertThat(providerEvent.getResourceHash()).isNotNull();
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
@@ -542,15 +487,15 @@ public class ResourceControllerIT {
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).get(0).asText()).isEqualTo(type + " simple place");
     assertThat(providerEvent.getOutgoingEdges()).hasSize(1);
-    validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, type, withLabels);
+    validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, type);
   }
 
-  private void validateProviderPlace(ResourceEdge edge, Resource source, String prefix, boolean withLabels) {
+  private void validateProviderPlace(ResourceEdge edge, Resource source, String prefix) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(PROVIDER_PLACE_PRED);
     var place = edge.getTarget();
-    assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace " + (withLabels ? "label" : "name"));
+    assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace name");
     assertThat(place.getFirstType().getTypeUri()).isEqualTo(PLACE);
     assertThat(place.getResourceHash()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(2);
@@ -561,27 +506,27 @@ public class ResourceControllerIT {
     assertThat(place.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateLccn(ResourceEdge edge, Resource source, boolean withLabels) {
+  private void validateLccn(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var lccn = edge.getTarget();
-    assertThat(lccn.getLabel()).isEqualTo("lccn " + (withLabels ? "label" : "value"));
+    assertThat(lccn.getLabel()).isEqualTo("lccn value");
     assertThat(lccn.getFirstType().getTypeUri()).isEqualTo(LCCN);
     assertThat(lccn.getResourceHash()).isNotNull();
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME).size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME).get(0).asText()).isEqualTo("lccn value");
     assertThat(lccn.getOutgoingEdges()).hasSize(1);
-    validateStatus(lccn.getOutgoingEdges().iterator().next(), lccn, "lccn", withLabels);
+    validateStatus(lccn.getOutgoingEdges().iterator().next(), lccn, "lccn");
   }
 
-  private void validateIsbn(ResourceEdge edge, Resource source, boolean withLabels) {
+  private void validateIsbn(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var isbn = edge.getTarget();
-    assertThat(isbn.getLabel()).isEqualTo("isbn " + (withLabels ? "label" : "value"));
+    assertThat(isbn.getLabel()).isEqualTo("isbn value");
     assertThat(isbn.getFirstType().getTypeUri()).isEqualTo(ISBN);
     assertThat(isbn.getResourceHash()).isNotNull();
     assertThat(isbn.getDoc().size()).isEqualTo(2);
@@ -590,15 +535,15 @@ public class ResourceControllerIT {
     assertThat(isbn.getDoc().get(QUALIFIER).size()).isEqualTo(1);
     assertThat(isbn.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("isbn qualifier");
     assertThat(isbn.getOutgoingEdges()).hasSize(1);
-    validateStatus(isbn.getOutgoingEdges().iterator().next(), isbn, "isbn", withLabels);
+    validateStatus(isbn.getOutgoingEdges().iterator().next(), isbn, "isbn");
   }
 
-  private void validateEan(ResourceEdge edge, Resource source, boolean withLabels) {
+  private void validateEan(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var ean = edge.getTarget();
-    assertThat(ean.getLabel()).isEqualTo("ean " + (withLabels ? "label" : "value"));
+    assertThat(ean.getLabel()).isEqualTo("ean value");
     assertThat(ean.getFirstType().getTypeUri()).isEqualTo(EAN);
     assertThat(ean.getResourceHash()).isNotNull();
     assertThat(ean.getDoc().size()).isEqualTo(2);
@@ -609,12 +554,12 @@ public class ResourceControllerIT {
     assertThat(ean.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateLocalId(ResourceEdge edge, Resource source, boolean withLabels) {
+  private void validateLocalId(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var localId = edge.getTarget();
-    assertThat(localId.getLabel()).isEqualTo("localId " + (withLabels ? "label" : "value"));
+    assertThat(localId.getLabel()).isEqualTo("localId value");
     assertThat(localId.getFirstType().getTypeUri()).isEqualTo(LOCAL_ID);
     assertThat(localId.getResourceHash()).isNotNull();
     assertThat(localId.getDoc().size()).isEqualTo(2);
@@ -625,12 +570,12 @@ public class ResourceControllerIT {
     assertThat(localId.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateOtherId(ResourceEdge edge, Resource source, boolean withLabels) {
+  private void validateOtherId(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
     var otherId = edge.getTarget();
-    assertThat(otherId.getLabel()).isEqualTo("otherId " + (withLabels ? "label" : "value"));
+    assertThat(otherId.getLabel()).isEqualTo("otherId value");
     assertThat(otherId.getFirstType().getTypeUri()).isEqualTo(OTHER_ID);
     assertThat(otherId.getResourceHash()).isNotNull();
     assertThat(otherId.getDoc().size()).isEqualTo(2);
@@ -641,12 +586,12 @@ public class ResourceControllerIT {
     assertThat(otherId.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateStatus(ResourceEdge edge, Resource source, String prefix, boolean withLabels) {
+  private void validateStatus(ResourceEdge edge, Resource source, String prefix) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(STATUS_PRED);
     var status = edge.getTarget();
-    assertThat(status.getLabel()).isEqualTo(prefix + " status " + (withLabels ? "label" : "value"));
+    assertThat(status.getLabel()).isEqualTo(prefix + " status value");
     assertThat(status.getFirstType().getTypeUri()).isEqualTo(STATUS);
     assertThat(status.getResourceHash()).isNotNull();
     assertThat(status.getDoc().size()).isEqualTo(2);
@@ -657,12 +602,12 @@ public class ResourceControllerIT {
     assertThat(status.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateAccessLocation(ResourceEdge edge, Resource source, boolean withLabels) {
+  private void validateAccessLocation(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(ACCESS_LOCATION_PRED);
     var locator = edge.getTarget();
-    assertThat(locator.getLabel()).isEqualTo("accessLocation " + (withLabels ? "label" : "value"));
+    assertThat(locator.getLabel()).isEqualTo("accessLocation value");
     assertThat(locator.getFirstType().getTypeUri()).isEqualTo(ACCESS_LOCATION);
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
@@ -673,13 +618,13 @@ public class ResourceControllerIT {
     assertThat(locator.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateCategory(ResourceEdge edge, Resource source, String pred, String type, boolean withLabels) {
+  private void validateCategory(ResourceEdge edge, Resource source, String pred, String type) {
     var prefix = pred.substring(pred.lastIndexOf("/") + 1);
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(pred);
     var media = edge.getTarget();
-    assertThat(media.getLabel()).isEqualTo(prefix + (withLabels ? " label" : " term"));
+    assertThat(media.getLabel()).isEqualTo(prefix + " term");
     assertThat(media.getFirstType().getTypeUri()).isEqualTo(type);
     assertThat(media.getResourceHash()).isNotNull();
     assertThat(media.getDoc().size()).isEqualTo(3);
@@ -692,12 +637,12 @@ public class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateCopyrightDate(ResourceEdge edge, Resource source, boolean withLabels) {
+  private void validateCopyrightDate(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getLabel()).isEqualTo(COPYRIGHT_PRED);
     var copyrightEvent = edge.getTarget();
-    assertThat(copyrightEvent.getLabel()).isEqualTo("copyright date " + (withLabels ? "label" : "value"));
+    assertThat(copyrightEvent.getLabel()).isEqualTo("copyright date value");
     assertThat(copyrightEvent.getFirstType().getTypeUri()).isEqualTo(COPYRIGHT_EVENT);
     assertThat(copyrightEvent.getResourceHash()).isNotNull();
     assertThat(copyrightEvent.getDoc().size()).isEqualTo(1);
@@ -718,10 +663,6 @@ public class ResourceControllerIT {
     return String.join(".", toInstance(), arrayPath(EDITION_STATEMENT));
   }
 
-  private String toAccessLocationLabel() {
-    return String.join(".", toInstance(), arrayPath(ACCESS_LOCATION_PRED), path(LABEL_RDF));
-  }
-
   private String toAccessLocationLink() {
     return String.join(".", toInstance(), arrayPath(ACCESS_LOCATION_PRED), arrayPath(LINK));
   }
@@ -736,11 +677,6 @@ public class ResourceControllerIT {
 
   private String toProjectedProvisionDate() {
     return String.join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE));
-  }
-
-  private String toInstanceTitleLabel() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE),
-      path(LABEL_RDF));
   }
 
   private String toInstanceTitlePartName() {
@@ -772,11 +708,6 @@ public class ResourceControllerIT {
     return String.join(".", toInstance(), arrayPath(ISSUANCE));
   }
 
-  private String toParallelTitleLabel() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
-      path(LABEL_RDF));
-  }
-
   private String toParallelTitlePartName() {
     return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
       arrayPath(PART_NAME));
@@ -805,11 +736,6 @@ public class ResourceControllerIT {
   private String toParallelTitleNote() {
     return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
       arrayPath(NOTE));
-  }
-
-  private String toVariantTitleLabel() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
-      path(LABEL_RDF));
   }
 
   private String toVariantTitlePartName() {
@@ -847,21 +773,12 @@ public class ResourceControllerIT {
       arrayPath(NOTE));
   }
 
-  private String toProviderEventLabel(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), path(LABEL_RDF));
-  }
-
   private String toProviderEventDate(String predicate) {
     return String.join(".", toInstance(), arrayPath(predicate), arrayPath(DATE));
   }
 
   private String toProviderEventName(String predicate) {
     return String.join(".", toInstance(), arrayPath(predicate), arrayPath(NAME));
-  }
-
-  private String toProviderEventPlaceLabel(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(PROVIDER_PLACE_PRED),
-      path(LABEL_RDF));
   }
 
   private String toProviderEventPlaceName(String predicate) {
@@ -882,10 +799,6 @@ public class ResourceControllerIT {
     return String.join(".", toInstance(), arrayPath(predicate), arrayPath(SIMPLE_PLACE));
   }
 
-  private String toLccnLabel() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED), path(LCCN), path(LABEL_RDF));
-  }
-
   private String toLccnValue() {
     return String.join(".", toInstance(), arrayPath(MAP_PRED), path(LCCN), arrayPath(NAME));
   }
@@ -898,10 +811,6 @@ public class ResourceControllerIT {
   private String toLccnStatusLink() {
     return String.join(".", toInstance(), arrayPath(MAP_PRED), path(LCCN), arrayPath(STATUS_PRED),
       arrayPath(LINK));
-  }
-
-  private String toIsbnLabel() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 1), path(ISBN), path(LABEL_RDF));
   }
 
   private String toIsbnValue() {
@@ -922,20 +831,12 @@ public class ResourceControllerIT {
       arrayPath(LINK));
   }
 
-  private String toEanLabel() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 2), path(EAN), path(LABEL_RDF));
-  }
-
   private String toEanValue() {
     return String.join(".", toInstance(), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(EAN_VALUE));
   }
 
   private String toEanQualifier() {
     return String.join(".", toInstance(), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(QUALIFIER));
-  }
-
-  private String toLocalIdLabel() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 3), path(LOCAL_ID), path(LABEL_RDF));
   }
 
   private String toLocalIdValue() {
@@ -946,20 +847,12 @@ public class ResourceControllerIT {
     return String.join(".", toInstance(), arrayPath(MAP_PRED, 3), path(LOCAL_ID), arrayPath(ASSIGNING_SOURCE));
   }
 
-  private String toOtherIdLabel() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 4), path(OTHER_ID), path(LABEL_RDF));
-  }
-
   private String toOtherIdValue() {
     return String.join(".", toInstance(), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(NAME));
   }
 
   private String toOtherIdQualifier() {
     return String.join(".", toInstance(), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(QUALIFIER));
-  }
-
-  private String toCarrierLabel() {
-    return String.join(".", toInstance(), arrayPath(CARRIER_PRED), path(LABEL_RDF));
   }
 
   private String toCarrierCode() {
@@ -976,14 +869,6 @@ public class ResourceControllerIT {
 
   private String toCopyrightDate() {
     return String.join(".", toInstance(), arrayPath(COPYRIGHT_PRED), arrayPath(DATE));
-  }
-
-  private String toCopyrightLabel() {
-    return String.join(".", toInstance(), arrayPath(COPYRIGHT_PRED), path(LABEL_RDF));
-  }
-
-  private String toMediaLabel() {
-    return String.join(".", toInstance(), arrayPath(MEDIA_PRED), path(LABEL_RDF));
   }
 
   private String toMediaCode() {

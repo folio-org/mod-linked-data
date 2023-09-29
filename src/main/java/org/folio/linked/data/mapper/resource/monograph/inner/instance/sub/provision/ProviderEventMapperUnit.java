@@ -7,7 +7,7 @@ import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Place;
 import org.folio.linked.data.domain.dto.ProviderEvent;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
@@ -37,7 +36,6 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   public Instance toDto(Resource source, Instance destination) {
     var providerEvent = coreMapper.readResourceDoc(source, ProviderEvent.class);
     providerEvent.setId(String.valueOf(source.getResourceHash()));
-    providerEvent.setLabel(source.getLabel());
     coreMapper.addMappedResources(placeMapper, source, PROVIDER_PLACE_PRED, providerEvent);
     return providerEventConsumer.apply(providerEvent, destination);
   }
@@ -46,7 +44,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var providerEvent = (ProviderEvent) dto;
     Resource resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(providerEvent.getLabel(), () -> getPossibleLabels(providerEvent)));
+    resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addType(resourceTypeService.get(PROVIDER_EVENT));
     resource.setDoc(toDoc(providerEvent));
     coreMapper.mapResourceEdges(providerEvent.getProviderPlace(), resource, PLACE, PROVIDER_PLACE_PRED,
@@ -58,7 +56,6 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   private List<String> getPossibleLabels(ProviderEvent providerEvent) {
     List<String> result = new ArrayList<>(providerEvent.getName());
     result.addAll(providerEvent.getSimplePlace());
-    result.addAll(providerEvent.getProviderPlace().stream().map(Place::getLabel).toList());
     result.addAll(providerEvent.getProviderPlace().stream().flatMap(p -> p.getName().stream()).toList());
     return result;
   }

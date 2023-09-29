@@ -16,7 +16,7 @@ import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Comparator;
@@ -52,7 +52,6 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     var instanceField = new InstanceField();
     coreMapper.mapWithResources(mapper, source, instanceField::setInstance, Instance.class);
     instanceField.getInstance().setId(String.valueOf(source.getResourceHash()));
-    instanceField.getInstance().setLabel(source.getLabel());
     return destination.resource(instanceField);
   }
 
@@ -62,7 +61,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     var instance = new Resource();
     instance.addType(resourceTypeService.get(INSTANCE));
     instance.setDoc(getDoc(dto));
-    instance.setLabel(getLabelOrFirstValue(dto.getLabel(), () -> getPossibleLabels(dto)));
+    instance.setLabel(getFirstValue(() -> getPossibleLabels(dto)));
     coreMapper.mapResourceEdges(dto.getTitle(), instance, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getProduction(), instance, PRODUCTION_PRED, Instance.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getPublication(), instance, PUBLICATION_PRED, Instance.class, mapper::toEntity);
@@ -84,15 +83,15 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
       .map(t -> {
         if (t instanceof InstanceTitleField instanceTitleField) {
           var instanceTitle = instanceTitleField.getInstanceTitle();
-          return getLabelOrFirstValue(instanceTitle.getLabel(), instanceTitle::getMainTitle);
+          return getFirstValue(instanceTitle::getMainTitle);
         }
         if (t instanceof ParallelTitleField parallelTitleField) {
           var parallelTitle = parallelTitleField.getParallelTitle();
-          return getLabelOrFirstValue(parallelTitle.getLabel(), parallelTitle::getMainTitle);
+          return getFirstValue(parallelTitle::getMainTitle);
         }
         if (t instanceof VariantTitleField variantTitleField) {
           var variantTitle = variantTitleField.getVariantTitle();
-          return getLabelOrFirstValue(variantTitle.getLabel(), variantTitle::getMainTitle);
+          return getFirstValue(variantTitle::getMainTitle);
         }
         return "";
       }).toList();

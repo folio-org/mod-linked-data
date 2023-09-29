@@ -3,7 +3,7 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -30,7 +30,6 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var copyrightEvent = coreMapper.readResourceDoc(source, CopyrightEvent.class);
     copyrightEvent.setId(String.valueOf(source.getResourceHash()));
-    copyrightEvent.setLabel(source.getLabel());
     return destination.addCopyrightItem(copyrightEvent);
   }
 
@@ -38,7 +37,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var copyrightEvent = (CopyrightEvent) dto;
     var resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(copyrightEvent.getLabel(), copyrightEvent::getDate));
+    resource.setLabel(getFirstValue(copyrightEvent::getDate));
     resource.addType(resourceTypeService.get(COPYRIGHT_EVENT));
     resource.setDoc(toDoc(copyrightEvent));
     resource.setResourceHash(coreMapper.hash(resource));

@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.BibframeConstants.LABEL;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
-import static org.folio.linked.data.util.BibframeUtils.getLabelOrFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
@@ -40,7 +40,6 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
   public T toDto(Resource source, T destination) {
     var status = coreMapper.readResourceDoc(source, Status.class);
     status.setId(String.valueOf(source.getResourceHash()));
-    status.setLabel(source.getLabel());
     if (destination instanceof Lccn lccn) {
       lccn.addStatusItem(status);
     } else if (destination instanceof Isbn isbn) {
@@ -61,7 +60,7 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
     var status = (Status) dto;
     var resource = new Resource();
-    resource.setLabel(getLabelOrFirstValue(status.getLabel(), status::getValue));
+    resource.setLabel(getFirstValue(status::getValue));
     resource.addType(resourceTypeService.get(STATUS));
     resource.setDoc(getDoc(status));
     resource.setResourceHash(coreMapper.hash(resource));
