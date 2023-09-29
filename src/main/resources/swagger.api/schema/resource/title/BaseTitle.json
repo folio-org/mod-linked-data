@@ -29,12 +29,12 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/mainTitle"
         },
-        "subtitle": {
+        "subTitle": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/subtitle"
+          "x-json-property": "http://bibfra.me/vocab/marc/subTitle"
         }
       }
     }

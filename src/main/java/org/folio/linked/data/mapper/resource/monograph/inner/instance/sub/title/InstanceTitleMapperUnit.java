@@ -58,7 +58,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
     map.put(PART_NUMBER, dto.getPartNumber());
     map.put(MAIN_TITLE, dto.getMainTitle());
     map.put(NON_SORT_NUM, dto.getNonSortNum());
-    map.put(SUBTITLE, dto.getSubtitle());
+    map.put(SUBTITLE, dto.getSubTitle());
     return coreMapper.toJson(map);
   }
 

@@ -60,7 +60,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
     map.put(PART_NUMBER, dto.getPartNumber());
     map.put(MAIN_TITLE, dto.getMainTitle());
     map.put(DATE, dto.getDate());
-    map.put(SUBTITLE, dto.getSubtitle());
+    map.put(SUBTITLE, dto.getSubTitle());
     map.put(VARIANT_TYPE, dto.getVariantType());
     map.put(NOTE, dto.getNote());
     return coreMapper.toJson(map);

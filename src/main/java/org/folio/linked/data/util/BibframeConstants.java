@@ -14,7 +14,7 @@ public class BibframeConstants {
   public static final String VARIANT_TITLE = "http://bibfra.me/vocab/marc/VariantTitle";
   public static final String PROVIDER_EVENT = "http://bibfra.me/vocab/lite/ProviderEvent";
   public static final String PLACE = "http://bibfra.me/vocab/lite/Place";
-  public static final String ACCESS_LOCATION = "http://bibfra.me/vocab/marc/AccessLocation";
+  public static final String ANNOTATION = "http://bibfra.me/vocab/lite/Annotation";
   public static final String LCCN = "http://library.link/identifier/LCCN";
   public static final String ISBN = "http://library.link/identifier/ISBN";
   public static final String EAN = "http://bibfra.me/vocab/identifier/Ean";
@@ -46,7 +46,7 @@ public class BibframeConstants {
   public static final String PART_NUMBER = "http://bibfra.me/vocab/marc/partNumber";
   public static final String MAIN_TITLE = "http://bibfra.me/vocab/marc/mainTitle";
   public static final String DATE = "http://bibfra.me/vocab/lite/date";
-  public static final String SUBTITLE = "http://bibfra.me/vocab/marc/subtitle";
+  public static final String SUBTITLE = "http://bibfra.me/vocab/marc/subTitle";
   public static final String NON_SORT_NUM = "http://bibfra.me/vocab/bflc/nonSortNum";
   public static final String VARIANT_TYPE = "http://bibfra.me/vocab/marc/variantType";
   public static final String RESPONSIBILITY_STATEMENT = "http://bibfra.me/vocab/marc/statementOfResponsibility";
