@@ -2,8 +2,8 @@ package org.folio.linked.data.test;
 
 import static java.util.Collections.emptyMap;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
-import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
@@ -87,7 +87,7 @@ public class MonographTestService {
         PART_NUMBER, List.of("Instance: partNumber"),
         MAIN_TITLE, List.of("Instance: mainTitle"),
         NON_SORT_NUM, List.of("Instance: nonSortNum"),
-        SUBTITLE, List.of("Instance: subtitle")
+        SUBTITLE, List.of("Instance: subTitle")
       ),
       INSTANCE_TITLE,
       emptyMap()
@@ -99,7 +99,7 @@ public class MonographTestService {
         PART_NUMBER, List.of("Parallel: partNumber"),
         MAIN_TITLE, List.of("Parallel: mainTitle"),
         DATE, List.of("Parallel: date"),
-        SUBTITLE, List.of("Parallel: subtitle"),
+        SUBTITLE, List.of("Parallel: subTitle"),
         NOTE, List.of("Parallel: noteLabel")
       ),
       PARALLEL_TITLE,
@@ -112,7 +112,7 @@ public class MonographTestService {
         PART_NUMBER, List.of("Variant: partNumber"),
         MAIN_TITLE, List.of("Variant: mainTitle"),
         DATE, List.of("Variant: date"),
-        SUBTITLE, List.of("Variant: subtitle"),
+        SUBTITLE, List.of("Variant: subTitle"),
         VARIANT_TYPE, List.of("Variant: variantType"),
         NOTE, List.of("Variant: noteLabel")
       ),
@@ -130,7 +130,7 @@ public class MonographTestService {
         LINK, List.of("accessLocation value"),
         NOTE, List.of("accessLocation note")
       ),
-      ACCESS_LOCATION,
+      ANNOTATION,
       emptyMap()
     ).setLabel("accessLocation label");
 

@@ -16,8 +16,8 @@
             "http://bibfra.me/vocab/bflc/nonSortNum": [
               "Instance: nonSortNum"
             ],
-            "http://bibfra.me/vocab/marc/subtitle": [
-              "Instance: subtitle"
+            "http://bibfra.me/vocab/marc/subTitle": [
+              "Instance: subTitle"
             ]
           }
         },
@@ -38,8 +38,8 @@
             "http://bibfra.me/vocab/lite/date": [
               "Parallel: date"
             ],
-            "http://bibfra.me/vocab/marc/subtitle": [
-              "Parallel: subtitle"
+            "http://bibfra.me/vocab/marc/subTitle": [
+              "Parallel: subTitle"
             ]
           }
         },
@@ -60,8 +60,8 @@
             "http://bibfra.me/vocab/lite/date": [
               "Variant: date"
             ],
-            "http://bibfra.me/vocab/marc/subtitle": [
-              "Variant: subtitle"
+            "http://bibfra.me/vocab/marc/subTitle": [
+              "Variant: subTitle"
             ],
             "http://bibfra.me/vocab/marc/variantType": [
               "Variant: variantType"

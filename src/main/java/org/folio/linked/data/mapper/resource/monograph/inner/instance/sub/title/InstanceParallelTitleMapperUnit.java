@@ -59,7 +59,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
     map.put(PART_NUMBER, dto.getPartNumber());
     map.put(MAIN_TITLE, dto.getMainTitle());
     map.put(DATE, dto.getDate());
-    map.put(SUBTITLE, dto.getSubtitle());
+    map.put(SUBTITLE, dto.getSubTitle());
     map.put(NOTE, dto.getNote());
     return coreMapper.toJson(map);
   }

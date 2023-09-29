@@ -9,8 +9,8 @@ import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
@@ -317,7 +317,7 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toInstanceTitlePartNumber(), equalTo("Instance: partNumber")))
       .andExpect(jsonPath(toInstanceTitleMain(), equalTo("Instance: mainTitle")))
       .andExpect(jsonPath(toInstanceTitleNonSortNum(), equalTo("Instance: nonSortNum")))
-      .andExpect(jsonPath(toInstanceTitleSubtitle(), equalTo("Instance: subtitle")))
+      .andExpect(jsonPath(toInstanceTitleSubtitle(), equalTo("Instance: subTitle")))
       .andExpect(jsonPath(toIsbnValue(), equalTo("isbn value")))
       .andExpect(jsonPath(toIsbnQualifier(), equalTo("isbn qualifier")))
       .andExpect(jsonPath(toIsbnStatusValue(), equalTo("isbn status value")))
@@ -338,7 +338,7 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toParallelTitleMain(), equalTo("Parallel: mainTitle")))
       .andExpect(jsonPath(toParallelTitleNote(), equalTo("Parallel: noteLabel")))
       .andExpect(jsonPath(toParallelTitleDate(), equalTo("Parallel: date")))
-      .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo("Parallel: subtitle")))
+      .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo("Parallel: subTitle")))
       .andExpect(jsonPath(toProviderEventDate(PRODUCTION_PRED), equalTo("production date")))
       .andExpect(jsonPath(toProviderEventName(PRODUCTION_PRED), equalTo("production name")))
       .andExpect(jsonPath(toProviderEventPlaceName(PRODUCTION_PRED), equalTo("production providerPlace name")))
@@ -370,7 +370,7 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toVariantTitleMain(), equalTo("Variant: mainTitle")))
       .andExpect(jsonPath(toVariantTitleNote(), equalTo("Variant: noteLabel")))
       .andExpect(jsonPath(toVariantTitleDate(), equalTo("Variant: date")))
-      .andExpect(jsonPath(toVariantTitleSubtitle(), equalTo("Variant: subtitle")))
+      .andExpect(jsonPath(toVariantTitleSubtitle(), equalTo("Variant: subTitle")))
       .andExpect(jsonPath(toVariantTitleType(), equalTo("Variant: variantType")));
   }
 
@@ -465,7 +465,7 @@ public class ResourceControllerIT {
     assertThat(title.getDoc().get(MAIN_TITLE).size()).isEqualTo(1);
     assertThat(title.getDoc().get(MAIN_TITLE).get(0).asText()).isEqualTo(prefix + "mainTitle");
     assertThat(title.getDoc().get(SUBTITLE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(SUBTITLE).get(0).asText()).isEqualTo(prefix + "subtitle");
+    assertThat(title.getDoc().get(SUBTITLE).get(0).asText()).isEqualTo(prefix + "subTitle");
   }
 
   private void validateProviderEvent(ResourceEdge edge, Resource source, String predicate) {
@@ -608,7 +608,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getLabel()).isEqualTo(ACCESS_LOCATION_PRED);
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo("accessLocation value");
-    assertThat(locator.getFirstType().getTypeUri()).isEqualTo(ACCESS_LOCATION);
+    assertThat(locator.getFirstType().getTypeUri()).isEqualTo(ANNOTATION);
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK).size()).isEqualTo(1);

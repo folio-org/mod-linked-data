@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION;
 import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
+import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ACCESS_LOCATION, predicate = ACCESS_LOCATION_PRED, dtoClass = AccessLocation.class)
+@MapperUnit(type = ANNOTATION, predicate = ACCESS_LOCATION_PRED, dtoClass = AccessLocation.class)
 public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -41,7 +41,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
     var accessLocation = (AccessLocation) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(accessLocation::getLink));
-    resource.addType(resourceTypeService.get(ACCESS_LOCATION));
+    resource.addType(resourceTypeService.get(ANNOTATION));
     resource.setDoc(getDoc(accessLocation));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
