@@ -75,7 +75,7 @@
   </changeSet>
 
   <changeSet id="11_fix_annotation_type" author="Pavel_Bobylev@epam.com">
-    <preConditions>
+    <preConditions onFail="MARK_RAN">
       <sqlCheck expectedResult="0">
         select count(*) from type_lookup tl where tl.type_uri = 'http://bibfra.me/vocab/lite/Annotation'
       </sqlCheck>
