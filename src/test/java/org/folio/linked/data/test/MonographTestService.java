@@ -19,9 +19,11 @@ import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISBN;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.LABEL;
+import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
 import static org.folio.linked.data.util.BibframeConstants.LCCN;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
@@ -50,9 +52,13 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.linked.data.util.BibframeConstants.SUMMARY;
+import static org.folio.linked.data.util.BibframeConstants.TABLE_OF_CONTENTS;
+import static org.folio.linked.data.util.BibframeConstants.TARGET_AUDIENCE;
 import static org.folio.linked.data.util.BibframeConstants.TERM;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
+import static org.folio.linked.data.util.BibframeConstants.WORK;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,6 +87,17 @@ public class MonographTestService {
   }
 
   public Resource createSampleInstance() {
+    var work = createResource(
+      Map.of(
+        TARGET_AUDIENCE, List.of("Work: target audience"),
+        LANGUAGE, List.of("Work: language"),
+        SUMMARY, List.of("Work: summary"),
+        TABLE_OF_CONTENTS, List.of("Work: table of contents")
+      ),
+      WORK,
+      emptyMap()
+    ).setLabel("Work: label");
+
     var instanceTitle = createResource(
       Map.of(
         PART_NAME, List.of("Instance: partName"),
@@ -215,6 +232,7 @@ public class MonographTestService {
     pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
     pred2OutgoingResources.put(CARRIER_PRED, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT_PRED, List.of(copyrightEvent));
+    pred2OutgoingResources.put(INSTANTIATES_PRED, List.of(work));
 
     return createResource(
       Map.of(

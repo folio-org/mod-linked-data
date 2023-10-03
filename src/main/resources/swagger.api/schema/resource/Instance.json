@@ -212,6 +212,14 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/issuance"
+        },
+        "instantiates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Work.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/instantiates"
         }
       }
     }

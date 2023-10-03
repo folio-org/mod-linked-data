@@ -8,6 +8,7 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
@@ -73,6 +74,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     coreMapper.mapResourceEdges(dto.getMedia(), instance, MEDIA_PRED, Instance.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getCarrier(), instance, CARRIER_PRED, Instance.class, mapper::toEntity);
     coreMapper.mapResourceEdges(dto.getCopyright(), instance, COPYRIGHT_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapResourceEdges(dto.getInstantiates(), instance, INSTANTIATES_PRED, Instance.class, mapper::toEntity);
     instance.setResourceHash(coreMapper.hash(instance));
     return instance;
   }

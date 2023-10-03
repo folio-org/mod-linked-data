@@ -56,6 +56,10 @@
       <column name="predicate_hash" value="-355325280"/>
       <column name="predicate" value="http://bibfra.me/vocab/marc/media"/>
     </insert>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-5307605433297919406"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/instantiates"/>
+    </insert>
   </changeSet>
 
 </databaseChangeLog>
