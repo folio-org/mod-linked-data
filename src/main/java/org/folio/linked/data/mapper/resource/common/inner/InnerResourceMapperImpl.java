@@ -38,7 +38,14 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
 
   @Override
   public ResourceDto toDto(@NonNull Resource source, @NonNull ResourceDto destination) {
-    return getMapperUnit(source.getFirstType().getTypeUri()).map(m -> m.toDto(source, destination)).orElse(destination);
+    // Of all the types of the resource, take the first one that has a mapper
+    var mapper = source.getTypes()
+      .stream()
+      .map(type -> getMapperUnit(type.getTypeUri()))
+      .flatMap(Optional::stream)
+      .findFirst();
+
+    return mapper.map(m -> m.toDto(source, destination)).orElse(destination);
   }
 
   @SneakyThrows

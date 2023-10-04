@@ -26,9 +26,11 @@ import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
+import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
 import static org.folio.linked.data.util.BibframeConstants.ISBN;
 import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.LABEL;
+import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
 import static org.folio.linked.data.util.BibframeConstants.LCCN;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
@@ -57,6 +59,9 @@ import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.linked.data.util.BibframeConstants.SUMMARY;
+import static org.folio.linked.data.util.BibframeConstants.TABLE_OF_CONTENTS;
+import static org.folio.linked.data.util.BibframeConstants.TARGET_AUDIENCE;
 import static org.folio.linked.data.util.BibframeConstants.TERM;
 import static org.folio.linked.data.util.BibframeConstants.TYPE;
 import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
@@ -142,7 +147,7 @@ public class ResourceControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = validateResourceResponse(resultActions)
+    var response = validateInstanceResourceResponse(resultActions)
       .andReturn().getResponse().getContentAsString();
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
@@ -217,7 +222,8 @@ public class ResourceControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    validateResourceResponse(resultActions);
+    validateInstanceResourceResponse(resultActions);
+    validateWorkResourceResponse(resultActions);
   }
 
   @Test
@@ -276,8 +282,8 @@ public class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleInstance());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(23);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(22);
+    assertThat(resourceRepo.count()).isEqualTo(24);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(23);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -287,7 +293,7 @@ public class ResourceControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(22);
+    assertThat(resourceRepo.count()).isEqualTo(23);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(6);
     checkKafkaMessageSent(null, existed.getResourceHash());
@@ -298,7 +304,7 @@ public class ResourceControllerIT {
   }
 
   @NotNull
-  private ResultActions validateResourceResponse(ResultActions resultActions) throws Exception {
+  private ResultActions validateInstanceResourceResponse(ResultActions resultActions) throws Exception {
     return resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -372,6 +378,16 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toVariantTitleDate(), equalTo("Variant: date")))
       .andExpect(jsonPath(toVariantTitleSubtitle(), equalTo("Variant: subTitle")))
       .andExpect(jsonPath(toVariantTitleType(), equalTo("Variant: variantType")));
+  }
+
+  @NotNull
+  private ResultActions validateWorkResourceResponse(ResultActions resultActions) throws Exception {
+    return resultActions
+      .andExpect(status().isOk())
+      .andExpect(jsonPath(toWorkTargetAudience(), equalTo("Work: target audience")))
+      .andExpect(jsonPath(toWorkLanguage(), equalTo("Work: language")))
+      .andExpect(jsonPath(toWorkSummary(), equalTo("Work: summary")))
+      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("Work: table of contents")));
   }
 
   private void validateMonographInstanceResource(Resource resource) {
@@ -655,6 +671,10 @@ public class ResourceControllerIT {
     return String.join(".", "$", path("resource"), path(INSTANCE));
   }
 
+  private String toWork() {
+    return String.join(".", toInstance(), arrayPath(INSTANTIATES_PRED));
+  }
+
   private String toDimensions() {
     return String.join(".", toInstance(), arrayPath(DIMENSIONS));
   }
@@ -881,6 +901,22 @@ public class ResourceControllerIT {
 
   private String toMediaTerm() {
     return String.join(".", toInstance(), arrayPath(MEDIA_PRED), arrayPath(TERM));
+  }
+
+  private String toWorkTargetAudience() {
+    return String.join(".", toWork(), arrayPath(TARGET_AUDIENCE));
+  }
+
+  private String toWorkTableOfContents() {
+    return String.join(".", toWork(), arrayPath(TABLE_OF_CONTENTS));
+  }
+
+  private String toWorkSummary() {
+    return String.join(".", toWork(), arrayPath(SUMMARY));
+  }
+
+  private String toWorkLanguage() {
+    return String.join(".", toWork(), arrayPath(LANGUAGE));
   }
 
   private String toErrorType() {

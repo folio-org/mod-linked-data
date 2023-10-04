@@ -50,13 +50,18 @@ public class SubResourceMapperImpl implements SubResourceMapper {
   @Override
   @SuppressWarnings("java:S2201")
   public <T> void toDto(@NonNull ResourceEdge source, @NonNull T destination) {
-    var type = source.getTarget().getFirstType().getTypeUri();
-    getMapperUnit(type, source.getPredicate().getLabel(),
-      destination.getClass(), null)
+    // Of all the types of the resource, take the first one that has a mapper
+    var resourceMapper = source.getTarget().getTypes()
+      .stream()
+      .map(type -> getMapperUnit(type.getTypeUri(), source.getPredicate().getLabel(), destination.getClass(), null))
+      .flatMap(Optional::stream)
+      .findFirst();
+
+    resourceMapper
       .map(mapper -> ((SubResourceMapperUnit<T>) mapper).toDto(source.getTarget(), destination))
       .orElseGet(() -> {
-        log.warn(RESOURCE_WITH_GIVEN_ID + source.getTarget().getResourceHash() + RIGHT_SQUARE_BRACKET + AND
-          + RESOURCE_TYPE + type + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getLabel()
+        log.warn(RESOURCE_WITH_GIVEN_ID + source.getTarget().getResourceHash() + RIGHT_SQUARE_BRACKET
+          + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getLabel()
           + RIGHT_SQUARE_BRACKET + AND + destination.getClass().getSimpleName());
         return null;
       });
