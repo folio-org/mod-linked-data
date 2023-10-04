@@ -38,6 +38,7 @@ public class BibframeConstants {
   public static final String CARRIER_PRED = "http://bibfra.me/vocab/marc/carrier";
   public static final String COPYRIGHT_PRED = "http://bibfra.me/vocab/marc/copyright";
   public static final String INSTANTIATES_PRED = "http://bibfra.me/vocab/lite/instantiates";
+  public static final String CLASSIFICATION_PRED = "http://bibfra.me/vocab/lite/classification";
 
   // Properties
   public static final String ID = "id";
@@ -71,4 +72,5 @@ public class BibframeConstants {
   public static final String SUMMARY = "http://bibfra.me/vocab/marc/summary";
   public static final String LANGUAGE = "http://bibfra.me/vocab/lite/language";
   public static final String TABLE_OF_CONTENTS = "http://bibfra.me/vocab/marc/tableOfContents";
+  public static final String SOURCE = "http://bibfra.me/vocab/marc/source";
 }

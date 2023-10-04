@@ -14,6 +14,7 @@ import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
+import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
@@ -56,6 +57,7 @@ import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
+import static org.folio.linked.data.util.BibframeConstants.SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
@@ -282,8 +284,8 @@ public class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleInstance());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(24);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(23);
+    assertThat(resourceRepo.count()).isEqualTo(25);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(24);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -293,9 +295,9 @@ public class ResourceControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(23);
+    assertThat(resourceRepo.count()).isEqualTo(24);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(6);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(7);
     checkKafkaMessageSent(null, existed.getResourceHash());
   }
 
@@ -387,7 +389,9 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkTargetAudience(), equalTo("Work: target audience")))
       .andExpect(jsonPath(toWorkLanguage(), equalTo("Work: language")))
       .andExpect(jsonPath(toWorkSummary(), equalTo("Work: summary")))
-      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("Work: table of contents")));
+      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("Work: table of contents")))
+      .andExpect(jsonPath(toWorkDeweyCode(), equalTo("Dewey: code")))
+      .andExpect(jsonPath(toWorkDeweySource(), equalTo("Dewey: source")));
   }
 
   private void validateMonographInstanceResource(Resource resource) {
@@ -917,6 +921,14 @@ public class ResourceControllerIT {
 
   private String toWorkLanguage() {
     return String.join(".", toWork(), arrayPath(LANGUAGE));
+  }
+
+  private String toWorkDeweySource() {
+    return String.join(".", toWork(), arrayPath(CLASSIFICATION_PRED), arrayPath(SOURCE));
+  }
+
+  private String toWorkDeweyCode() {
+    return String.join(".", toWork(), arrayPath(CLASSIFICATION_PRED), arrayPath(CODE));
   }
 
   private String toErrorType() {

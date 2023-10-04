@@ -7,6 +7,7 @@ import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
+import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
@@ -49,6 +50,7 @@ import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
+import static org.folio.linked.data.util.BibframeConstants.SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
@@ -87,6 +89,15 @@ public class MonographTestService {
   }
 
   public Resource createSampleInstance() {
+    var deweyClassification = createResource(
+      Map.of(
+        CODE, List.of("Dewey: code"),
+        SOURCE, List.of("Dewey: source")
+      ),
+      STATUS,
+      emptyMap()
+    ).setLabel("Dewey: label");
+
     var work = createResource(
       Map.of(
         TARGET_AUDIENCE, List.of("Work: target audience"),
@@ -95,7 +106,9 @@ public class MonographTestService {
         TABLE_OF_CONTENTS, List.of("Work: table of contents")
       ),
       WORK,
-      emptyMap()
+      Map.of(
+        CLASSIFICATION_PRED, List.of(deweyClassification)
+      )
     ).setLabel("Work: label");
 
     var instanceTitle = createResource(

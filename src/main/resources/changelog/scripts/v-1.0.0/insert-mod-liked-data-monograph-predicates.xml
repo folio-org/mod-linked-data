@@ -56,10 +56,27 @@
       <column name="predicate_hash" value="-355325280"/>
       <column name="predicate" value="http://bibfra.me/vocab/marc/media"/>
     </insert>
+  </changeSet>
+  <changeSet id="08_insert_predicate_lookup_instantiates" author="pkjacob@ebsco.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/lite/instantiates'
+      </sqlCheck>
+    </preConditions>
     <insert tableName="predicate_lookup">
       <column name="predicate_hash" value="-5307605433297919406"/>
       <column name="predicate" value="http://bibfra.me/vocab/lite/instantiates"/>
     </insert>
   </changeSet>
-
+  <changeSet id="09_insert_predicate_lookup_classification" author="pkjacob@ebsco.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/lite/classification'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="554014919457463261"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/classification"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

@@ -35,6 +35,14 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/language"
+        },
+        "classification": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "DewvyDecimalClassification.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/classification"
         }
       }
     }
