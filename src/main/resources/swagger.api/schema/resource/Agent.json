@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Agents",
+  "PersonField": {
+    "type": "object",
+    "title": "PersonField",
+    "properties": {
+      "Person": {
+        "allOf": [
+          {
+            "type": "object",
+            "$ref": "#/Agent"
+          }
+        ],
+        "x-json-property": "http://bibfra.me/vocab/lite/Person"
+      }
+    }
+  },
+  "FamilyField": {
+    "type": "object",
+    "title": "FamilyField",
+    "properties": {
+      "Family": {
+        "allOf": [
+          {
+            "type": "object",
+            "$ref": "#/Agent"
+          }
+        ],
+        "x-json-property": "http://bibfra.me/vocab/lite/Family"
+      }
+    }
+  },
+  "MeetingField": {
+    "type": "object",
+    "title": "MeetingField",
+    "properties": {
+      "Meeting": {
+        "allOf": [
+          {
+            "type": "object",
+            "$ref": "#/Agent"
+          }
+        ],
+        "x-json-property": "http://bibfra.me/vocab/lite/Meeting"
+      }
+    }
+  },
+  "OrganizationField": {
+    "type": "object",
+    "title": "OrganizationField",
+    "properties": {
+      "Organization": {
+        "allOf": [
+          {
+            "type": "object",
+            "$ref": "#/Agent"
+          }
+        ],
+        "x-json-property": "http://bibfra.me/vocab/lite/Organization"
+      }
+    }
+  },
+  "Agent": {
+    "allOf": [
+      {
+        "$ref": "Topper.json"
+      },
+      {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-json-property": "http://bibfra.me/vocab/lite/name"
+          },
+          "lcnafId": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-json-property": "http://bibfra.me/vocab/marc/lcnafId"
+          },
+          "_roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "x-json-property": "_roles"
+          }
+        }
+      }
+    ]
+  }
+}

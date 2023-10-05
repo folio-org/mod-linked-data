@@ -1,10 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
-import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
 import static org.folio.linked.data.util.BibframeConstants.WORK;
 
-import lombok.RequiredArgsConstructor;
+import java.util.function.Consumer;
 import org.apache.commons.lang3.NotImplementedException;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
@@ -12,23 +11,39 @@ import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.work.sub.DeweyDecimalClassificationMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 @MapperUnit(type = WORK, predicate = INSTANTIATES_PRED, dtoClass = Work.class)
 public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
-  private final DeweyDecimalClassificationMapperUnit deweyMapper;
+  private final SubResourceMapper mapper;
+  private final AgentRoleAssigner agentRoleAssigner;
+
+  public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner) {
+    this.coreMapper = coreMapper;
+    this.mapper = mapper;
+    this.agentRoleAssigner = roleAssigner;
+  }
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
-    var work = coreMapper.readResourceDoc(source, Work.class);
+    Consumer<Work> workConsumer = work -> handleMappedWork(source, destination, work);
+    coreMapper.mapWithResources(mapper, source, workConsumer, Work.class);
+    return destination;
+  }
+
+  private void handleMappedWork(Resource source, Instance destination, Work work) {
     work.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedResources(deweyMapper, source, CLASSIFICATION_PRED, work);
-    return destination.addInstantiatesItem(work);
+    if (work.getCreator() != null) {
+      work.getCreator().forEach(creator -> agentRoleAssigner.assignRoles(creator, source));
+    }
+    if (work.getContributor() != null) {
+      work.getContributor().forEach(contributor -> agentRoleAssigner.assignRoles(contributor, source));
+    }
+    destination.addInstantiatesItem(work);
   }
 
   @Override

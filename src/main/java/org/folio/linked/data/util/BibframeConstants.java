@@ -23,8 +23,13 @@ public class BibframeConstants {
   public static final String STATUS = "http://bibfra.me/vocab/marc/Status";
   public static final String CATEGORY = "http://bibfra.me/vocab/lite/Category";
   public static final String COPYRIGHT_EVENT = "http://bibfra.me/vocab/lite/CopyrightEvent";
+  public static final String PERSON = "http://bibfra.me/vocab/lite/Person";
+  public static final String FAMILY = "http://bibfra.me/vocab/lite/Family";
+  public static final String ORGANIZATION = "http://bibfra.me/vocab/lite/Organization";
+  public static final String MEETING = "http://bibfra.me/vocab/lite/Meeting";
 
   // Predicates
+  public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";
   public static final String INSTANCE_TITLE_PRED = "http://bibfra.me/vocab/marc/title";
   public static final String PRODUCTION_PRED = "http://bibfra.me/vocab/marc/production";
   public static final String PUBLICATION_PRED = "http://bibfra.me/vocab/marc/publication";
@@ -39,6 +44,8 @@ public class BibframeConstants {
   public static final String COPYRIGHT_PRED = "http://bibfra.me/vocab/marc/copyright";
   public static final String INSTANTIATES_PRED = "http://bibfra.me/vocab/lite/instantiates";
   public static final String CLASSIFICATION_PRED = "http://bibfra.me/vocab/lite/classification";
+  public static final String CREATOR_PRED = "http://bibfra.me/vocab/lite/creator";
+  public static final String CONTRIBUTOR_PRED = "http://bibfra.me/vocab/lite/contributor";
 
   // Properties
   public static final String ID = "id";
@@ -73,4 +80,5 @@ public class BibframeConstants {
   public static final String LANGUAGE = "http://bibfra.me/vocab/lite/language";
   public static final String TABLE_OF_CONTENTS = "http://bibfra.me/vocab/marc/tableOfContents";
   public static final String SOURCE = "http://bibfra.me/vocab/marc/source";
+  public static final String LCNAF_ID = "http://bibfra.me/vocab/marc/lcnafId";
 }

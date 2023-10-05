@@ -79,4 +79,26 @@
       <column name="predicate" value="http://bibfra.me/vocab/lite/classification"/>
     </insert>
   </changeSet>
+  <changeSet id="10_insert_predicate_lookup_creator" author="pkjacob@ebsco.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/lite/creator'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-6427036973279413520"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/creator"/>
+    </insert>
+  </changeSet>
+  <changeSet id="11_insert_predicate_lookup_contributor" author="pkjacob@ebsco.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/lite/contributor'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="6734473498479079135"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/contributor"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>
