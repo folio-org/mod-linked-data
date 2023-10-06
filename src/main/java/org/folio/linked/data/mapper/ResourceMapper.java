@@ -67,7 +67,7 @@ public abstract class ResourceMapper {
     return kafkaMessageMapper.toIndex(resource);
   }
 
-  private void setEdgesId(Resource resource) {
+  public static void setEdgesId(Resource resource) {
     resource.getOutgoingEdges().forEach(edge -> {
       edge.getId().setSourceHash(edge.getSource().getResourceHash());
       edge.getId().setTargetHash(edge.getTarget().getResourceHash());

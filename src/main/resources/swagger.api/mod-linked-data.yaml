@@ -118,6 +118,29 @@ paths:
           description: No resource is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
+  /marc:
+    post:
+      operationId: createResourceFromMarc
+      description: Create a Resource from Marc
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: Created resource
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceDto.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
 
 components:
   parameters:

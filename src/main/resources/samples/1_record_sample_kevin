@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<marc:collection xmlns:marc="http://www.loc.gov/MARC21/slim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.loc.gov/MARC21/slim http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd">
+    <marc:record>
+        <marc:leader>01767cam a22003977i 4500</marc:leader>
+        <marc:controlfield tag="001">21009122</marc:controlfield>
+        <marc:controlfield tag="005">20200904145743.0</marc:controlfield>
+        <marc:controlfield tag="008">190607t20182018vra g b 000 0deng d</marc:controlfield>
+        <marc:datafield tag="906" ind1=" " ind2=" ">
+            <marc:subfield code="a">7</marc:subfield>
+            <marc:subfield code="b">cbc</marc:subfield>
+            <marc:subfield code="c">copycat</marc:subfield>
+            <marc:subfield code="d">3</marc:subfield>
+            <marc:subfield code="e">ncip</marc:subfield>
+            <marc:subfield code="f">20</marc:subfield>
+            <marc:subfield code="g">y-gencatlg</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="925" ind1="0" ind2=" ">
+            <marc:subfield code="a">acquire</marc:subfield>
+            <marc:subfield code="b">1 shelf copy</marc:subfield>
+            <marc:subfield code="x">policy default</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="955" ind1=" " ind2=" ">
+            <marc:subfield code="b">hc17 2019-06-07 z-processor</marc:subfield>
+            <marc:subfield code="i">hc11 2020-04-02 to BCCD</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="010" ind1=" " ind2=" ">
+            <marc:subfield code="a">2019493854</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="020" ind1=" " ind2=" ">
+            <marc:subfield code="a">9780143789963</marc:subfield>
+            <marc:subfield code="q">(paperback)</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="040" ind1=" " ind2=" ">
+            <marc:subfield code="a">AU@</marc:subfield>
+            <marc:subfield code="b">eng</marc:subfield>
+            <marc:subfield code="c">AU@</marc:subfield>
+            <marc:subfield code="e">rda</marc:subfield>
+            <marc:subfield code="d">ATNSH</marc:subfield>
+            <marc:subfield code="d">AUPTL</marc:subfield>
+            <marc:subfield code="d">OCLCF</marc:subfield>
+            <marc:subfield code="d">YDX</marc:subfield>
+            <marc:subfield code="d">AUCPL</marc:subfield>
+            <marc:subfield code="d">AUAMR</marc:subfield>
+            <marc:subfield code="d">OCLCQ</marc:subfield>
+            <marc:subfield code="d">IEU</marc:subfield>
+            <marc:subfield code="d">DLC</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="042" ind1=" " ind2=" ">
+            <marc:subfield code="a">anuc</marc:subfield>
+            <marc:subfield code="a">lccopycat</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="043" ind1=" " ind2=" ">
+            <marc:subfield code="a">u-at---</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="050" ind1="0" ind2="0">
+            <marc:subfield code="a">HV553</marc:subfield>
+            <marc:subfield code="b">.S243 2018</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="100" ind1="1" ind2=" ">
+            <marc:subfield code="a">Sales, Leigh,</marc:subfield>
+            <marc:subfield code="e">author.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="245" ind1="1" ind2="0">
+            <marc:subfield code="a">Any ordinary day /</marc:subfield>
+            <marc:subfield code="c">Leigh Sales.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="264" ind1=" " ind2="1">
+            <marc:subfield code="a">[Camberwell, VIC] :</marc:subfield>
+            <marc:subfield code="b">Hamish Hamilton an imprint of Penguin Books,</marc:subfield>
+            <marc:subfield code="c">[2018]</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="264" ind1=" " ind2="4">
+            <marc:subfield code="c">©2018</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="300" ind1=" " ind2=" ">
+            <marc:subfield code="a">264 pages ;</marc:subfield>
+            <marc:subfield code="c">24 cm</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="336" ind1=" " ind2=" ">
+            <marc:subfield code="a">text</marc:subfield>
+            <marc:subfield code="b">txt</marc:subfield>
+            <marc:subfield code="2">rdacontent</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="337" ind1=" " ind2=" ">
+            <marc:subfield code="a">unmediated</marc:subfield>
+            <marc:subfield code="b">n</marc:subfield>
+            <marc:subfield code="2">rdamedia</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="338" ind1=" " ind2=" ">
+            <marc:subfield code="a">volume</marc:subfield>
+            <marc:subfield code="b">nc</marc:subfield>
+            <marc:subfield code="2">rdacarrier</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="500" ind1=" " ind2=" ">
+            <marc:subfield code="a">&quot; ... what Happens After the Worst Day of Your Life&quot;--Cover.
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="504" ind1=" " ind2=" ">
+            <marc:subfield code="a">Includes bibliographical references.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="520" ind1=" " ind2=" ">
+            <marc:subfield code="a">&quot; ... As a journalist, Leigh Sales often encounters people experiencing the
+                worst moments of their lives in the full glare of the media. But one particular string of bad news
+                stories - and a terrifying brush with her own mortality - sent her looking for answers about how
+                vulnerable each of us is to a life-changing event ...&quot;--Back cover.
+            </marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="600" ind1="1" ind2="0">
+            <marc:subfield code="a">Sales, Leigh.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Life change events</marc:subfield>
+            <marc:subfield code="z">Australia.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Disaster victims</marc:subfield>
+            <marc:subfield code="z">Australia</marc:subfield>
+            <marc:subfield code="v">Interviews.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Victims</marc:subfield>
+            <marc:subfield code="z">Australia</marc:subfield>
+            <marc:subfield code="v">Interviews.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Victims of crimes</marc:subfield>
+            <marc:subfield code="z">Australia</marc:subfield>
+            <marc:subfield code="v">Interviews.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Grief.</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="650" ind1=" " ind2="0">
+            <marc:subfield code="a">Resilience (Personality trait)</marc:subfield>
+        </marc:datafield>
+        <marc:datafield tag="923" ind1=" " ind2=" ">
+            <marc:subfield code="a">Purchase</marc:subfield>
+            <marc:subfield code="d">2019-05-07</marc:subfield>
+            <marc:subfield code="n">INH0160330</marc:subfield>
+            <marc:subfield code="s">ubiq</marc:subfield>
+        </marc:datafield>
+    </marc:record>
+</marc:collection>
