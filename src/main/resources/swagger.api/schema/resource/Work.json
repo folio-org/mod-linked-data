@@ -85,6 +85,14 @@
             ]
           },
           "x-json-property": "http://bibfra.me/vocab/lite/contributor"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/content"
         }
       }
     }
