@@ -35,6 +35,56 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/language"
+        },
+        "classification": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "DewvyDecimalClassification.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/classification"
+        },
+        "creator": {
+          "type": "array",
+          "title": "AgentType",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "Agent.json#/PersonField"
+              },
+              {
+                "$ref": "Agent.json#/FamilyField"
+              },
+              {
+                "$ref": "Agent.json#/OrganizationField"
+              },
+              {
+                "$ref": "Agent.json#/MeetingField"
+              }
+            ]
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/creator"
+        },
+        "contributor": {
+          "type": "array",
+          "title": "AgentType",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "Agent.json#/PersonField"
+              },
+              {
+                "$ref": "Agent.json#/FamilyField"
+              },
+              {
+                "$ref": "Agent.json#/OrganizationField"
+              },
+              {
+                "$ref": "Agent.json#/MeetingField"
+              }
+            ]
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/contributor"
         }
       }
     }

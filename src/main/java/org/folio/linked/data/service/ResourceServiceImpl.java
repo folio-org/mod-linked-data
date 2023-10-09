@@ -42,6 +42,7 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResourceDto getResourceById(Long id) {
     var resource = resourceRepo.findById(id).orElseThrow(() ->
       new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND));

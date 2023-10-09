@@ -7,9 +7,12 @@ import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
+import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
+import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CREATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
@@ -25,6 +28,7 @@ import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.LABEL;
 import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
 import static org.folio.linked.data.util.BibframeConstants.LCCN;
+import static org.folio.linked.data.util.BibframeConstants.LCNAF_ID;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
@@ -35,10 +39,12 @@ import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
 import static org.folio.linked.data.util.BibframeConstants.OTHER_ID;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
+import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
@@ -49,6 +55,7 @@ import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
+import static org.folio.linked.data.util.BibframeConstants.SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
@@ -87,6 +94,33 @@ public class MonographTestService {
   }
 
   public Resource createSampleInstance() {
+    var deweyClassification = createResource(
+      Map.of(
+        CODE, List.of("Dewey: code"),
+        SOURCE, List.of("Dewey: source")
+      ),
+      CATEGORY,
+      emptyMap()
+    ).setLabel("Dewey: label");
+
+    var person = createResource(
+      Map.of(
+        NAME, List.of("Person: name"),
+        LCNAF_ID, List.of("Person: lcnafId")
+      ),
+      PERSON,
+      emptyMap()
+    );
+
+    var organization = createResource(
+      Map.of(
+        NAME, List.of("Organization: name"),
+        LCNAF_ID, List.of("Organization: lcnafId")
+      ),
+      ORGANIZATION,
+      emptyMap()
+    );
+
     var work = createResource(
       Map.of(
         TARGET_AUDIENCE, List.of("Work: target audience"),
@@ -95,7 +129,11 @@ public class MonographTestService {
         TABLE_OF_CONTENTS, List.of("Work: table of contents")
       ),
       WORK,
-      emptyMap()
+      Map.of(
+        CLASSIFICATION_PRED, List.of(deweyClassification),
+        CREATOR_PRED, List.of(person),
+        CONTRIBUTOR_PRED, List.of(organization)
+      )
     ).setLabel("Work: label");
 
     var instanceTitle = createResource(
