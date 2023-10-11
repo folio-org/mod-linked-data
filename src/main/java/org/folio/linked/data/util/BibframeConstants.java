@@ -46,6 +46,7 @@ public class BibframeConstants {
   public static final String CLASSIFICATION_PRED = "http://bibfra.me/vocab/lite/classification";
   public static final String CREATOR_PRED = "http://bibfra.me/vocab/lite/creator";
   public static final String CONTRIBUTOR_PRED = "http://bibfra.me/vocab/lite/contributor";
+  public static final String CONTENT_PRED = "http://bibfra.me/vocab/marc/content";
 
   // Properties
   public static final String ID = "id";

@@ -16,6 +16,7 @@ import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
 import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
+import static org.folio.linked.data.util.BibframeConstants.CONTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
@@ -289,8 +290,8 @@ public class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleInstance());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(27);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(26);
+    assertThat(resourceRepo.count()).isEqualTo(28);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(27);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -300,9 +301,9 @@ public class ResourceControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(26);
+    assertThat(resourceRepo.count()).isEqualTo(27);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(9);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(10);
     checkKafkaMessageSent(null, existed.getResourceHash());
   }
 
@@ -400,7 +401,10 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo("Person: name")))
       .andExpect(jsonPath(toWorkCreatorPersonLcnafId(), equalTo("Person: lcnafId")))
       .andExpect(jsonPath(toWorkContributorOrgName(), equalTo("Organization: name")))
-      .andExpect(jsonPath(toWorkContributorOrgLcnafId(), equalTo("Organization: lcnafId")));
+      .andExpect(jsonPath(toWorkContributorOrgLcnafId(), equalTo("Organization: lcnafId")))
+      .andExpect(jsonPath(toWorkContentLink(), equalTo("Content: link")))
+      .andExpect(jsonPath(toWorkContentCode(), equalTo("Content: code")))
+      .andExpect(jsonPath(toWorkContentTerm(), equalTo("Content: term")));
   }
 
   private void validateMonographInstanceResource(Resource resource) {
@@ -954,6 +958,18 @@ public class ResourceControllerIT {
 
   private String toWorkCreatorPersonName() {
     return String.join(".", toWork(), arrayPath(CREATOR_PRED), path(PERSON), arrayPath(NAME));
+  }
+
+  private String toWorkContentTerm() {
+    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(TERM));
+  }
+
+  private String toWorkContentCode() {
+    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(CODE));
+  }
+
+  private String toWorkContentLink() {
+    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(LINK));
   }
 
   private String toErrorType() {

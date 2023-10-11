@@ -9,6 +9,7 @@ import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
 import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
+import static org.folio.linked.data.util.BibframeConstants.CONTENT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
@@ -94,48 +95,6 @@ public class MonographTestService {
   }
 
   public Resource createSampleInstance() {
-    var deweyClassification = createResource(
-      Map.of(
-        CODE, List.of("Dewey: code"),
-        SOURCE, List.of("Dewey: source")
-      ),
-      CATEGORY,
-      emptyMap()
-    ).setLabel("Dewey: label");
-
-    var person = createResource(
-      Map.of(
-        NAME, List.of("Person: name"),
-        LCNAF_ID, List.of("Person: lcnafId")
-      ),
-      PERSON,
-      emptyMap()
-    );
-
-    var organization = createResource(
-      Map.of(
-        NAME, List.of("Organization: name"),
-        LCNAF_ID, List.of("Organization: lcnafId")
-      ),
-      ORGANIZATION,
-      emptyMap()
-    );
-
-    var work = createResource(
-      Map.of(
-        TARGET_AUDIENCE, List.of("Work: target audience"),
-        LANGUAGE, List.of("Work: language"),
-        SUMMARY, List.of("Work: summary"),
-        TABLE_OF_CONTENTS, List.of("Work: table of contents")
-      ),
-      WORK,
-      Map.of(
-        CLASSIFICATION_PRED, List.of(deweyClassification),
-        CREATOR_PRED, List.of(person),
-        CONTRIBUTOR_PRED, List.of(organization)
-      )
-    ).setLabel("Work: label");
-
     var instanceTitle = createResource(
       Map.of(
         PART_NAME, List.of("Instance: partName"),
@@ -270,7 +229,7 @@ public class MonographTestService {
     pred2OutgoingResources.put(MEDIA_PRED, List.of(media));
     pred2OutgoingResources.put(CARRIER_PRED, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT_PRED, List.of(copyrightEvent));
-    pred2OutgoingResources.put(INSTANTIATES_PRED, List.of(work));
+    pred2OutgoingResources.put(INSTANTIATES_PRED, List.of(createSampleWork()));
 
     return createResource(
       Map.of(
@@ -283,6 +242,61 @@ public class MonographTestService {
       INSTANCE,
       pred2OutgoingResources
     );
+  }
+
+  public Resource createSampleWork() {
+    var content = createResource(
+      Map.of(
+        TERM, List.of("Content: term"),
+        LINK, List.of("Content: link"),
+        CODE, List.of("Content: code")
+      ),
+      CATEGORY,
+      emptyMap()
+    ).setLabel("content label");
+
+    var deweyClassification = createResource(
+      Map.of(
+        CODE, List.of("Dewey: code"),
+        SOURCE, List.of("Dewey: source")
+      ),
+      CATEGORY,
+      emptyMap()
+    ).setLabel("Dewey: label");
+
+    var person = createResource(
+      Map.of(
+        NAME, List.of("Person: name"),
+        LCNAF_ID, List.of("Person: lcnafId")
+      ),
+      PERSON,
+      emptyMap()
+    );
+
+    var organization = createResource(
+      Map.of(
+        NAME, List.of("Organization: name"),
+        LCNAF_ID, List.of("Organization: lcnafId")
+      ),
+      ORGANIZATION,
+      emptyMap()
+    );
+
+    return createResource(
+      Map.of(
+        TARGET_AUDIENCE, List.of("Work: target audience"),
+        LANGUAGE, List.of("Work: language"),
+        SUMMARY, List.of("Work: summary"),
+        TABLE_OF_CONTENTS, List.of("Work: table of contents")
+      ),
+      WORK,
+      Map.of(
+        CLASSIFICATION_PRED, List.of(deweyClassification),
+        CREATOR_PRED, List.of(person),
+        CONTRIBUTOR_PRED, List.of(organization),
+        CONTENT_PRED, List.of(content)
+      )
+    ).setLabel("Work: label");
   }
 
   private Resource status(String prefix) {
