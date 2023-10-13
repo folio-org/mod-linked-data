@@ -33,7 +33,7 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-11  kafka-ui:
+  kafka-ui:
     container_name: kafka-ui
     image: provectuslabs/kafka-ui:latest
     ports:
@@ -46,23 +46,6 @@ services:
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
       KAFKA_CLUSTERS_0_JMXPORT: 9997
-  opensearch:
-    container_name: opensearch
-    image: dev.folio/searchengine
-    environment:
-      - discovery.type=single-node
-      - DISABLE_SECURITY_PLUGIN=true
-    ports:
-      - "9200:9200"
-  opensearch-dashboards:
-    container_name: opensearch-dashboards
-    image: dev.folio/opensearch-dashboards:1.3.2
-    ports:
-      - "5601:5601"
-    environment:
-      OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
-    depends_on:
-      - opensearch
 volumes:
   db:
     driver: local
