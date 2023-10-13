@@ -49,12 +49,12 @@ import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 import static org.folio.linked.data.util.BibframeConstants.SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
@@ -315,7 +315,7 @@ public class MonographTestService {
       Map.of(
         DATE, List.of(type + " date"),
         NAME, List.of(type + " name"),
-        SIMPLE_DATE, List.of(type + " simple date"),
+        PROVIDER_DATE, List.of(type + " provider date"),
         SIMPLE_PLACE, List.of(type + " simple place")
       ),
       PROVIDER_EVENT,

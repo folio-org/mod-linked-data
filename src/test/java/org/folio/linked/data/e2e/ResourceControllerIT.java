@@ -56,12 +56,12 @@ import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 import static org.folio.linked.data.util.BibframeConstants.SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
@@ -357,25 +357,25 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toProviderEventName(PRODUCTION_PRED), equalTo("production name")))
       .andExpect(jsonPath(toProviderEventPlaceName(PRODUCTION_PRED), equalTo("production providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PRODUCTION_PRED), equalTo("production providerPlace link")))
-      .andExpect(jsonPath(toProviderEventSimpleDate(PRODUCTION_PRED), equalTo("production simple date")))
+      .andExpect(jsonPath(toProviderEventProviderDate(PRODUCTION_PRED), equalTo("production provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PRODUCTION_PRED), equalTo("production simple place")))
       .andExpect(jsonPath(toProviderEventDate(PUBLICATION_PRED), equalTo("publication date")))
       .andExpect(jsonPath(toProviderEventName(PUBLICATION_PRED), equalTo("publication name")))
       .andExpect(jsonPath(toProviderEventPlaceName(PUBLICATION_PRED), equalTo("publication providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PUBLICATION_PRED), equalTo("publication providerPlace link")))
-      .andExpect(jsonPath(toProviderEventSimpleDate(PUBLICATION_PRED), equalTo("publication simple date")))
+      .andExpect(jsonPath(toProviderEventProviderDate(PUBLICATION_PRED), equalTo("publication provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PUBLICATION_PRED), equalTo("publication simple place")))
       .andExpect(jsonPath(toProviderEventDate(DISTRIBUTION_PRED), equalTo("distribution date")))
       .andExpect(jsonPath(toProviderEventName(DISTRIBUTION_PRED), equalTo("distribution name")))
       .andExpect(jsonPath(toProviderEventPlaceName(DISTRIBUTION_PRED), equalTo("distribution providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(DISTRIBUTION_PRED), equalTo("distribution providerPlace link")))
-      .andExpect(jsonPath(toProviderEventSimpleDate(DISTRIBUTION_PRED), equalTo("distribution simple date")))
+      .andExpect(jsonPath(toProviderEventProviderDate(DISTRIBUTION_PRED), equalTo("distribution provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(DISTRIBUTION_PRED), equalTo("distribution simple place")))
       .andExpect(jsonPath(toProviderEventDate(MANUFACTURE_PRED), equalTo("manufacture date")))
       .andExpect(jsonPath(toProviderEventName(MANUFACTURE_PRED), equalTo("manufacture name")))
       .andExpect(jsonPath(toProviderEventPlaceName(MANUFACTURE_PRED), equalTo("manufacture providerPlace name")))
       .andExpect(jsonPath(toProviderEventPlaceLink(MANUFACTURE_PRED), equalTo("manufacture providerPlace link")))
-      .andExpect(jsonPath(toProviderEventSimpleDate(MANUFACTURE_PRED), equalTo("manufacture simple date")))
+      .andExpect(jsonPath(toProviderEventProviderDate(MANUFACTURE_PRED), equalTo("manufacture provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(MANUFACTURE_PRED), equalTo("manufacture simple place")))
       .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
       .andExpect(jsonPath(toResponsibilityStatement(), equalTo("responsibility statement")))
@@ -515,8 +515,8 @@ public class ResourceControllerIT {
     assertThat(providerEvent.getDoc().get(DATE).get(0).asText()).isEqualTo(type + " date");
     assertThat(providerEvent.getDoc().get(NAME).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(NAME).get(0).asText()).isEqualTo(type + " name");
-    assertThat(providerEvent.getDoc().get(SIMPLE_DATE).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(SIMPLE_DATE).get(0).asText()).isEqualTo(type + " simple date");
+    assertThat(providerEvent.getDoc().get(PROVIDER_DATE).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(PROVIDER_DATE).get(0).asText()).isEqualTo(type + " provider date");
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).get(0).asText()).isEqualTo(type + " simple place");
     assertThat(providerEvent.getOutgoingEdges()).hasSize(1);
@@ -828,8 +828,8 @@ public class ResourceControllerIT {
       arrayPath(LINK));
   }
 
-  private String toProviderEventSimpleDate(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(SIMPLE_DATE));
+  private String toProviderEventProviderDate(String predicate) {
+    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(PROVIDER_DATE));
   }
 
   private String toProviderEventSimplePlace(String predicate) {
