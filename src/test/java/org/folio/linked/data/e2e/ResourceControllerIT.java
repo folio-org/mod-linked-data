@@ -14,9 +14,13 @@ import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
 import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
+import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.CODE;
+import static org.folio.linked.data.util.BibframeConstants.CONTENT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
+import static org.folio.linked.data.util.BibframeConstants.CREATOR_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
@@ -32,6 +36,7 @@ import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
 import static org.folio.linked.data.util.BibframeConstants.LABEL;
 import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
 import static org.folio.linked.data.util.BibframeConstants.LCCN;
+import static org.folio.linked.data.util.BibframeConstants.LCNAF_ID;
 import static org.folio.linked.data.util.BibframeConstants.LINK;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
@@ -42,10 +47,12 @@ import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
 import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
 import static org.folio.linked.data.util.BibframeConstants.OTHER_ID;
 import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
 import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
+import static org.folio.linked.data.util.BibframeConstants.PERSON;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
 import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
@@ -56,6 +63,7 @@ import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
+import static org.folio.linked.data.util.BibframeConstants.SOURCE;
 import static org.folio.linked.data.util.BibframeConstants.STATUS;
 import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
 import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
@@ -282,8 +290,8 @@ public class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(monographTestService.createSampleInstance());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(24);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(23);
+    assertThat(resourceRepo.count()).isEqualTo(28);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(27);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -293,9 +301,9 @@ public class ResourceControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(23);
+    assertThat(resourceRepo.count()).isEqualTo(27);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(6);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(10);
     checkKafkaMessageSent(null, existed.getResourceHash());
   }
 
@@ -387,7 +395,16 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkTargetAudience(), equalTo("Work: target audience")))
       .andExpect(jsonPath(toWorkLanguage(), equalTo("Work: language")))
       .andExpect(jsonPath(toWorkSummary(), equalTo("Work: summary")))
-      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("Work: table of contents")));
+      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("Work: table of contents")))
+      .andExpect(jsonPath(toWorkDeweyCode(), equalTo("Dewey: code")))
+      .andExpect(jsonPath(toWorkDeweySource(), equalTo("Dewey: source")))
+      .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo("Person: name")))
+      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(), equalTo("Person: lcnafId")))
+      .andExpect(jsonPath(toWorkContributorOrgName(), equalTo("Organization: name")))
+      .andExpect(jsonPath(toWorkContributorOrgLcnafId(), equalTo("Organization: lcnafId")))
+      .andExpect(jsonPath(toWorkContentLink(), equalTo("Content: link")))
+      .andExpect(jsonPath(toWorkContentCode(), equalTo("Content: code")))
+      .andExpect(jsonPath(toWorkContentTerm(), equalTo("Content: term")));
   }
 
   private void validateMonographInstanceResource(Resource resource) {
@@ -917,6 +934,42 @@ public class ResourceControllerIT {
 
   private String toWorkLanguage() {
     return String.join(".", toWork(), arrayPath(LANGUAGE));
+  }
+
+  private String toWorkDeweySource() {
+    return String.join(".", toWork(), arrayPath(CLASSIFICATION_PRED), arrayPath(SOURCE));
+  }
+
+  private String toWorkDeweyCode() {
+    return String.join(".", toWork(), arrayPath(CLASSIFICATION_PRED), arrayPath(CODE));
+  }
+
+  private String toWorkContributorOrgLcnafId() {
+    return String.join(".", toWork(), arrayPath(CONTRIBUTOR_PRED), path(ORGANIZATION), arrayPath(LCNAF_ID));
+  }
+
+  private String toWorkContributorOrgName() {
+    return String.join(".", toWork(), arrayPath(CONTRIBUTOR_PRED), path(ORGANIZATION), arrayPath(NAME));
+  }
+
+  private String toWorkCreatorPersonLcnafId() {
+    return String.join(".", toWork(), arrayPath(CREATOR_PRED), path(PERSON), arrayPath(LCNAF_ID));
+  }
+
+  private String toWorkCreatorPersonName() {
+    return String.join(".", toWork(), arrayPath(CREATOR_PRED), path(PERSON), arrayPath(NAME));
+  }
+
+  private String toWorkContentTerm() {
+    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(TERM));
+  }
+
+  private String toWorkContentCode() {
+    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(CODE));
+  }
+
+  private String toWorkContentLink() {
+    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(LINK));
   }
 
   private String toErrorType() {
