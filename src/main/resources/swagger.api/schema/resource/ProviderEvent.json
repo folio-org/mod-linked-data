@@ -30,12 +30,12 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/name"
         },
-        "simpleDate": {
+        "providerDate": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/simpleDate"
+          "x-json-property": "http://bibfra.me/vocab/lite/providerDate"
         },
         "simplePlace": {
           "type": "array",

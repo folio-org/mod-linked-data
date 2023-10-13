@@ -7,8 +7,8 @@ import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -99,7 +99,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframePublicationsInner()
         .publisher(getValue(ir.getDoc(), NAME))
-        .dateOfPublication(getValue(ir.getDoc(), DATE, SIMPLE_DATE)))
+        .dateOfPublication(getValue(ir.getDoc(), DATE, PROVIDER_DATE)))
       .toList();
   }
 

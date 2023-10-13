@@ -87,8 +87,8 @@
           "http://bibfra.me/vocab/lite/name": [
             "production name"
           ],
-          "http://bibfra.me/vocab/lite/simpleDate": [
-            "production simple date"
+          "http://bibfra.me/vocab/lite/providerDate": [
+            "production provider date"
           ],
           "http://bibfra.me/vocab/lite/place": [
             "production simple place"
@@ -113,8 +113,8 @@
           "http://bibfra.me/vocab/lite/name": [
             "publication name"
           ],
-          "http://bibfra.me/vocab/lite/simpleDate": [
-            "publication simple date"
+          "http://bibfra.me/vocab/lite/providerDate": [
+            "publication provider date"
           ],
           "http://bibfra.me/vocab/lite/place": [
             "publication simple place"
@@ -139,8 +139,8 @@
           "http://bibfra.me/vocab/lite/name": [
             "distribution name"
           ],
-          "http://bibfra.me/vocab/lite/simpleDate": [
-            "distribution simple date"
+          "http://bibfra.me/vocab/lite/providerDate": [
+            "distribution provider date"
           ],
           "http://bibfra.me/vocab/lite/place": [
             "distribution simple place"
@@ -165,8 +165,8 @@
           "http://bibfra.me/vocab/lite/name": [
             "manufacture name"
           ],
-          "http://bibfra.me/vocab/lite/simpleDate": [
-            "manufacture simple date"
+          "http://bibfra.me/vocab/lite/providerDate": [
+            "manufacture provider date"
           ],
           "http://bibfra.me/vocab/lite/place": [
             "manufacture simple place"

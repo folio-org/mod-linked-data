@@ -66,7 +66,7 @@ public class BibframeConstants {
   public static final String ISSUANCE = "http://bibfra.me/vocab/marc/issuance";
   public static final String LINK = "http://bibfra.me/vocab/lite/link";
   public static final String NAME = "http://bibfra.me/vocab/lite/name";
-  public static final String SIMPLE_DATE = "http://bibfra.me/vocab/lite/simpleDate";
+  public static final String PROVIDER_DATE = "http://bibfra.me/vocab/lite/providerDate";
   public static final String SIMPLE_PLACE = "http://bibfra.me/vocab/lite/place";
   public static final String LABEL_RDF = "http://www.w3.org/2000/01/rdf-schema#label";
   public static final String LABEL = "http://bibfra.me/vocab/lite/label";

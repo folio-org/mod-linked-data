@@ -3,9 +3,9 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provi
 import static org.folio.linked.data.util.BibframeConstants.DATE;
 import static org.folio.linked.data.util.BibframeConstants.NAME;
 import static org.folio.linked.data.util.BibframeConstants.PLACE;
+import static org.folio.linked.data.util.BibframeConstants.PROVIDER_DATE;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_DATE;
 import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -64,7 +64,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
     var map = new HashMap<String, List<String>>();
     map.put(DATE, providerEvent.getDate());
     map.put(NAME, providerEvent.getName());
-    map.put(SIMPLE_DATE, providerEvent.getSimpleDate());
+    map.put(PROVIDER_DATE, providerEvent.getProviderDate());
     map.put(SIMPLE_PLACE, providerEvent.getSimplePlace());
     return coreMapper.toJson(map);
   }
