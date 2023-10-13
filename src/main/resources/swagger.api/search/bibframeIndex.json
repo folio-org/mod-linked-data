@@ -7,15 +7,26 @@
       "description": "The unique ID of the bibframe record",
       "type": "string"
     },
-    "title": {
-      "type": "string",
-      "description": "The primary title (or label) associated with the record"
+    "titles": {
+      "type": "array",
+      "description": "Title array",
+      "items": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Value of Title"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["Main", "Sub"]
+          }
+        }
+      }
     },
     "identifiers": {
       "type": "array",
       "description": "Resource identifier value array",
       "items": {
-        "type": "object",
         "properties": {
           "value": {
             "type": "string",
@@ -23,7 +34,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["EAN", "ISBN", "LCCN", "Local", "Other"]
+            "enum": ["Ean", "ISBN", "LCCN", "LocalId", "UNKNOWN"]
           }
         }
       }
@@ -66,10 +77,9 @@
         }
       }
     },
-      "editionStatement": {
+    "editionStatement": {
       "type": "string"
     }
   },
   "required": ["id"]
 }
-
