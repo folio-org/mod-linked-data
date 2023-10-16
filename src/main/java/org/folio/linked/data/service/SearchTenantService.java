@@ -3,7 +3,6 @@ package org.folio.linked.data.service;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 
-import feign.FeignException;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.client.SearchClient;
@@ -42,11 +41,12 @@ public class SearchTenantService extends TenantService {
       ResponseEntity<FolioCreateIndexResponse> response = searchClient.createIndex(request);
       log.info("Index [{}] creation for the tenant [{}] has been completed with a response [{}]", SEARCH_RESOURCE_NAME,
         context.getTenantId(), response);
-    } catch (FeignException fe) {
-      if (fe.getMessage().contains("Index already exists")) {
+    } catch (Exception e) {
+      if (e.getMessage().contains("Index already exists")) {
         log.warn("Index [{}] exists already for tenant [{}]", SEARCH_RESOURCE_NAME, context.getTenantId());
       } else {
-        throw fe;
+        log.warn("Index [{}] creation call to mod-search for tenant [{}] is failed", SEARCH_RESOURCE_NAME,
+          context.getTenantId(), e);
       }
     }
   }
