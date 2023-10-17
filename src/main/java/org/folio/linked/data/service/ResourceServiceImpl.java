@@ -25,7 +25,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
-  private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "resourceHash");
+  private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
   private final ResourceRepository resourceRepo;
   private final ResourceMapper resourceMapper;
   private final KafkaSender kafkaSender;

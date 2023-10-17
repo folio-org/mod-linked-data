@@ -113,7 +113,7 @@ class ResourceServiceTest {
     // given
     var pageNumber = 0;
     var pageSize = 10;
-    var sort = Sort.by(Sort.Direction.ASC, "resourceHash");
+    var sort = Sort.by(Sort.Direction.ASC, "label");
     var types = Sets.newHashSet(BibframeConstants.INSTANCE);
     doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
       PageRequest.of(pageNumber, pageSize, sort));
@@ -134,7 +134,7 @@ class ResourceServiceTest {
     @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<ResourceShort> pageOfDto) {
     // given
     var types = Sets.newHashSet(BibframeConstants.INSTANCE);
-    var sort = Sort.by(Sort.Direction.ASC, "resourceHash");
+    var sort = Sort.by(Sort.Direction.ASC, "label");
     doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
       PageRequest.of(0, 100, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
