@@ -20,6 +20,7 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EAN;
 import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
@@ -233,6 +234,7 @@ public class MonographTestService {
 
     return createResource(
       Map.of(
+        EXTENT, List.of("extent info"),
         DIMENSIONS, List.of("20 cm"),
         RESPONSIBILITY_STATEMENT, List.of("responsibility statement"),
         EDITION_STATEMENT, List.of("edition statement"),

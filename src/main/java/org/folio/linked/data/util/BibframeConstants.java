@@ -62,6 +62,8 @@ public class BibframeConstants {
   public static final String RESPONSIBILITY_STATEMENT = "http://bibfra.me/vocab/marc/statementOfResponsibility";
   public static final String EDITION_STATEMENT = "http://bibfra.me/vocab/marc/edition";
   public static final String DIMENSIONS = "http://bibfra.me/vocab/marc/dimensions";
+
+  public static final String EXTENT = "http://bibfra.me/vocab/lite/extent";
   public static final String PROJECTED_PROVISION_DATE = "http://bibfra.me/vocab/bflc/projectedProvisionDate";
   public static final String ISSUANCE = "http://bibfra.me/vocab/marc/issuance";
   public static final String LINK = "http://bibfra.me/vocab/lite/link";

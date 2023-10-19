@@ -191,6 +191,13 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/copyright"
         },
+        "extent": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/extent"
+        },
         "dimensions": {
           "type": "array",
           "items": {

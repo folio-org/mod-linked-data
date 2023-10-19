@@ -6,6 +6,7 @@ import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
 import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
 import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
 import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
@@ -101,6 +102,7 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
 
   private JsonNode getDoc(Instance dto) {
     var map = new HashMap<String, List<String>>();
+    map.put(EXTENT, dto.getExtent());
     map.put(DIMENSIONS, dto.getDimensions());
     map.put(RESPONSIBILITY_STATEMENT, dto.getResponsibilityStatement());
     map.put(EDITION_STATEMENT, dto.getEdition());
