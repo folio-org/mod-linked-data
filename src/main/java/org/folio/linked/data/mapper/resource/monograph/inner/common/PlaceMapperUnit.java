@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
-import static org.folio.linked.data.util.BibframeConstants.LINK;
-import static org.folio.linked.data.util.BibframeConstants.NAME;
-import static org.folio.linked.data.util.BibframeConstants.PLACE;
-import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
+import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
+import static org.folio.ld.dictionary.Property.LINK;
+import static org.folio.ld.dictionary.Property.NAME;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
@@ -19,21 +19,17 @@ import org.folio.linked.data.domain.dto.ProviderEvent;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PLACE, predicate = PROVIDER_PLACE_PRED, dtoClass = Place.class)
+@MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, dtoClass = Place.class)
 public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private static final Set<Class> SUPPORTED_PARENTS = Set.of(ProviderEvent.class);
   private final CoreMapper coreMapper;
-  private final DictionaryService<ResourceType> resourceTypeService;
 
   @Override
   public T toDto(Resource source, T destination) {
@@ -43,7 +39,7 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
       providerEvent.addProviderPlaceItem(place);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + destination.getClass().getSimpleName()
-        + IS_NOT_SUPPORTED_FOR_PREDICATE + PROVIDER_PLACE_PRED + RIGHT_SQUARE_BRACKET);
+        + IS_NOT_SUPPORTED_FOR_PREDICATE + PROVIDER_PLACE.getUri() + RIGHT_SQUARE_BRACKET);
     }
     return destination;
   }
@@ -54,11 +50,11 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var place = (Place) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(place::getName));
-    resource.addType(resourceTypeService.get(PLACE));
+    resource.addType(PLACE);
     resource.setDoc(getDoc(place));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

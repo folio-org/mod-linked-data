@@ -56,9 +56,9 @@ public class Resource {
     joinColumns = @JoinColumn(name = "resource_hash"),
     inverseJoinColumns = @JoinColumn(name = "type_hash")
   )
-  private Set<ResourceType> types;
+  private Set<ResourceTypeEntity> types;
 
-  public Resource addType(ResourceType type) {
+  public Resource addType(ResourceTypeEntity type) {
     if (isNull(types)) {
       types = new LinkedHashSet<>();
     }
@@ -66,7 +66,12 @@ public class Resource {
     return this;
   }
 
-  public ResourceType getFirstType() {
+  public Resource addType(org.folio.ld.dictionary.ResourceTypeDictionary typeDictionary) {
+    this.addType(new ResourceTypeEntity(typeDictionary.getHash(), typeDictionary.getUri(), null));
+    return this;
+  }
+
+  public ResourceTypeEntity getFirstType() {
     return (isNull(types) || types.isEmpty()) ? null : types.iterator().next();
   }
 }

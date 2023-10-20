@@ -1,23 +1,22 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance;
 
-import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
-import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
+import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.Property.DIMENSIONS;
+import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.Property.ISSUANCE;
+import static org.folio.ld.dictionary.Property.PROJECTED_PROVISION_DATE;
+import static org.folio.ld.dictionary.Property.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,8 +35,6 @@ import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,7 +42,6 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = INSTANCE)
 public class InstanceMapperUnit implements InnerResourceMapperUnit {
 
-  private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
 
@@ -61,21 +57,20 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
   public Resource toEntity(Object resourceDto) {
     Instance dto = ((InstanceField) resourceDto).getInstance();
     var instance = new Resource();
-    instance.addType(resourceTypeService.get(INSTANCE));
+    instance.addType(INSTANCE);
     instance.setDoc(getDoc(dto));
     instance.setLabel(getFirstValue(() -> getPossibleLabels(dto)));
-    coreMapper.mapResourceEdges(dto.getTitle(), instance, INSTANCE_TITLE_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getProduction(), instance, PRODUCTION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getPublication(), instance, PUBLICATION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getDistribution(), instance, DISTRIBUTION_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getManufacture(), instance, MANUFACTURE_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION_PRED, Instance.class,
-      mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMap(), instance, MAP_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getMedia(), instance, MEDIA_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCarrier(), instance, CARRIER_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getCopyright(), instance, COPYRIGHT_PRED, Instance.class, mapper::toEntity);
-    coreMapper.mapResourceEdges(dto.getInstantiates(), instance, INSTANTIATES_PRED, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getTitle(), instance, TITLE, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getProduction(), instance, PE_PRODUCTION, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getManufacture(), instance, PE_MANUFACTURE, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getMap(), instance, MAP, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getMedia(), instance, MEDIA, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getCarrier(), instance, CARRIER, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getCopyright(), instance, COPYRIGHT, Instance.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(dto.getInstantiates(), instance, INSTANTIATES, Instance.class, mapper::toEntity);
     instance.setResourceHash(coreMapper.hash(instance));
     return instance;
   }

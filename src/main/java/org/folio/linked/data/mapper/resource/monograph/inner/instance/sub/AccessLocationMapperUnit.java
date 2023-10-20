@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
-import static org.folio.linked.data.util.BibframeConstants.LINK;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
+import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.Property.LINK;
+import static org.folio.ld.dictionary.Property.NOTE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,19 +14,15 @@ import org.folio.linked.data.domain.dto.AccessLocation;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ANNOTATION, predicate = ACCESS_LOCATION_PRED, dtoClass = AccessLocation.class)
+@MapperUnit(type = ANNOTATION, predicate = ACCESS_LOCATION, dtoClass = AccessLocation.class)
 public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final DictionaryService<ResourceType> resourceTypeService;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
@@ -37,11 +33,11 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var accessLocation = (AccessLocation) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(accessLocation::getLink));
-    resource.addType(resourceTypeService.get(ANNOTATION));
+    resource.addType(ANNOTATION);
     resource.setDoc(getDoc(accessLocation));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

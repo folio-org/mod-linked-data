@@ -1,11 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.identified;
 
-import static org.folio.linked.data.util.BibframeConstants.ISBN;
-import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NAME;
-import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
-import static org.folio.linked.data.util.BibframeConstants.STATUS;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.Property.NAME;
+import static org.folio.ld.dictionary.Property.QUALIFIER;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,20 +16,16 @@ import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.common.StatusMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ISBN, predicate = MAP_PRED, dtoClass = IsbnField.class)
+@MapperUnit(type = ID_ISBN, predicate = MAP, dtoClass = IsbnField.class)
 public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
-  private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
   private final StatusMapperUnit<Isbn> statusMapper;
 
@@ -38,20 +33,19 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   public Instance toDto(Resource source, Instance destination) {
     var isbn = coreMapper.readResourceDoc(source, Isbn.class);
     isbn.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedResources(statusMapper, source, STATUS_PRED, isbn);
+    coreMapper.addMappedResources(statusMapper, source, STATUS, isbn);
     destination.addMapItem(new IsbnField().isbn(isbn));
     return destination;
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var isbn = ((IsbnField) dto).getIsbn();
     var resource = new Resource();
     resource.setLabel(getFirstValue(isbn::getValue));
-    resource.addType(resourceTypeService.get(ISBN));
+    resource.addType(ID_ISBN);
     resource.setDoc(getDoc(isbn));
-    coreMapper.mapResourceEdges(isbn.getStatus(), resource, STATUS, STATUS_PRED,
-      (status, pred) -> statusMapper.toEntity(status, pred, null));
+    coreMapper.mapSubEdges(isbn.getStatus(), resource, STATUS, statusMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
-import static org.folio.linked.data.util.BibframeConstants.RELATION_PREDICATE_PREFIX;
+import static org.folio.linked.data.util.Constants.RELATION_PREDICATE_PREFIX;
 
 import java.util.List;
 import org.folio.linked.data.domain.dto.Agent;
@@ -29,9 +29,9 @@ public class AgentRoleAssigner {
     List<String> roles = workResource
       .getOutgoingEdges()
       .stream()
-      .filter(re -> re.getPredicate().getLabel().startsWith(RELATION_PREDICATE_PREFIX))
+      .filter(re -> re.getPredicate().getUri().startsWith(RELATION_PREDICATE_PREFIX))
       .filter(re -> String.valueOf(re.getTarget().getResourceHash()).equals(agent.getId()))
-      .map(re -> re.getPredicate().getLabel())
+      .map(re -> re.getPredicate().getUri())
       .toList();
 
     if (!roles.isEmpty()) {

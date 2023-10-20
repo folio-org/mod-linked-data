@@ -1,9 +1,11 @@
 package org.folio.linked.data.test;
 
 import static java.util.Objects.nonNull;
-import static org.folio.linked.data.util.BibframeConstants.LABEL;
-import static org.folio.linked.data.util.BibframeConstants.LINK;
-import static org.folio.linked.data.util.BibframeConstants.NAME;
+import static org.folio.ld.dictionary.Property.DIMENSIONS;
+import static org.folio.ld.dictionary.Property.LABEL;
+import static org.folio.ld.dictionary.Property.LINK;
+import static org.folio.ld.dictionary.Property.NAME;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -22,8 +24,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.util.BibframeConstants;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -82,8 +83,8 @@ public class TestUtil {
 
   public static String getBibframeSampleTest(String changedField) {
     JsonNode jsonNode = getBibframeJsonNodeSample();
-    JsonNode instance = jsonNode.get("resource").get(BibframeConstants.INSTANCE);
-    ((ArrayNode) instance.withArray(BibframeConstants.DIMENSIONS)).set(0, new TextNode(changedField));
+    JsonNode instance = jsonNode.get("resource").get(INSTANCE.getUri());
+    ((ArrayNode) instance.withArray(DIMENSIONS)).set(0, new TextNode(changedField));
     return jsonNode.toString();
   }
 
@@ -114,7 +115,7 @@ public class TestUtil {
     return resource;
   }
 
-  public static Resource bibframeSampleResource(Long resourceHash, ResourceType type) {
+  public static Resource bibframeSampleResource(Long resourceHash, ResourceTypeEntity type) {
     var bibframe = bibframeSampleResource();
     bibframe.setResourceHash(resourceHash);
     bibframe.addType(type);

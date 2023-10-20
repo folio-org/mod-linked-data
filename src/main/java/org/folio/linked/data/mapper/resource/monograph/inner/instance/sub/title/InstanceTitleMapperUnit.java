@@ -1,36 +1,32 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.ld.dictionary.Property.MAIN_TITLE;
+import static org.folio.ld.dictionary.Property.NON_SORT_NUM;
+import static org.folio.ld.dictionary.Property.PART_NAME;
+import static org.folio.ld.dictionary.Property.PART_NUMBER;
+import static org.folio.ld.dictionary.Property.SUBTITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceTitle;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = INSTANCE_TITLE, predicate = INSTANCE_TITLE_PRED, dtoClass = InstanceTitleField.class)
+@MapperUnit(type = TITLE, predicate = PredicateDictionary.TITLE, dtoClass = InstanceTitleField.class)
 public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
 
-  private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
 
   @Override
@@ -42,11 +38,11 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var instanceTitle = ((InstanceTitleField) dto).getInstanceTitle();
     var resource = new Resource();
     resource.setLabel(getFirstValue(instanceTitle::getMainTitle));
-    resource.addType(resourceTypeService.get(INSTANCE_TITLE));
+    resource.addType(TITLE);
     resource.setDoc(getDoc(instanceTitle));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

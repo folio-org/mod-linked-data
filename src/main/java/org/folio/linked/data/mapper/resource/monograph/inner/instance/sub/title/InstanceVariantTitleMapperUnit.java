@@ -1,14 +1,14 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static org.folio.linked.data.util.BibframeConstants.DATE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.Property.DATE;
+import static org.folio.ld.dictionary.Property.MAIN_TITLE;
+import static org.folio.ld.dictionary.Property.NOTE;
+import static org.folio.ld.dictionary.Property.PART_NAME;
+import static org.folio.ld.dictionary.Property.PART_NUMBER;
+import static org.folio.ld.dictionary.Property.SUBTITLE;
+import static org.folio.ld.dictionary.Property.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,19 +20,15 @@ import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = VARIANT_TITLE, predicate = INSTANCE_TITLE_PRED, dtoClass = VariantTitleField.class)
+@MapperUnit(type = VARIANT_TITLE, predicate = TITLE, dtoClass = VariantTitleField.class)
 public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapperUnit {
 
-  private final DictionaryService<ResourceType> resourceTypeService;
   private final CoreMapper coreMapper;
 
   @Override
@@ -44,11 +40,11 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
     resource.setLabel(getFirstValue(variantTitle::getMainTitle));
-    resource.addType(resourceTypeService.get(VARIANT_TITLE));
+    resource.addType(VARIANT_TITLE);
     resource.setDoc(getDoc(variantTitle));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

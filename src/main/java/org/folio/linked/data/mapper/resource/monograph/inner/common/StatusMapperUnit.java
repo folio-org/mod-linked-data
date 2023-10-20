@@ -1,9 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
-import static org.folio.linked.data.util.BibframeConstants.LABEL;
-import static org.folio.linked.data.util.BibframeConstants.LINK;
-import static org.folio.linked.data.util.BibframeConstants.STATUS;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
+import static org.folio.ld.dictionary.Property.LABEL;
+import static org.folio.ld.dictionary.Property.LINK;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
@@ -14,27 +13,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.domain.dto.Lccn;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = STATUS, predicate = STATUS_PRED, dtoClass = Status.class)
+@MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, dtoClass = Status.class)
 public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private static final Set<Class> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class);
   private final CoreMapper coreMapper;
-  private final DictionaryService<ResourceType> resourceTypeService;
 
   @Override
   public T toDto(Resource source, T destination) {
@@ -46,7 +42,7 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
       isbn.addStatusItem(status);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + destination.getClass().getSimpleName()
-        + IS_NOT_SUPPORTED_FOR_PREDICATE + STATUS_PRED + RIGHT_SQUARE_BRACKET);
+        + IS_NOT_SUPPORTED_FOR_PREDICATE + PredicateDictionary.STATUS.getUri() + RIGHT_SQUARE_BRACKET);
     }
     return destination;
   }
@@ -57,11 +53,11 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var status = (Status) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(status::getValue));
-    resource.addType(resourceTypeService.get(STATUS));
+    resource.addType(STATUS);
     resource.setDoc(getDoc(status));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;

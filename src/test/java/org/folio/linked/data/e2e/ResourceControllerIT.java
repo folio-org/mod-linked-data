@@ -1,7 +1,72 @@
 package org.folio.linked.data.e2e;
 
+import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
+import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
+import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
+import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.Property.ASSIGNING_SOURCE;
+import static org.folio.ld.dictionary.Property.CODE;
+import static org.folio.ld.dictionary.Property.DATE;
+import static org.folio.ld.dictionary.Property.DIMENSIONS;
+import static org.folio.ld.dictionary.Property.EAN_VALUE;
+import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.Property.EXTENT;
+import static org.folio.ld.dictionary.Property.ISSUANCE;
+import static org.folio.ld.dictionary.Property.LABEL;
+import static org.folio.ld.dictionary.Property.LANGUAGE;
+import static org.folio.ld.dictionary.Property.LCNAF_ID;
+import static org.folio.ld.dictionary.Property.LINK;
+import static org.folio.ld.dictionary.Property.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.Property.MAIN_TITLE;
+import static org.folio.ld.dictionary.Property.NAME;
+import static org.folio.ld.dictionary.Property.NON_SORT_NUM;
+import static org.folio.ld.dictionary.Property.NOTE;
+import static org.folio.ld.dictionary.Property.PART_NAME;
+import static org.folio.ld.dictionary.Property.PART_NUMBER;
+import static org.folio.ld.dictionary.Property.PROJECTED_PROVISION_DATE;
+import static org.folio.ld.dictionary.Property.PROVIDER_DATE;
+import static org.folio.ld.dictionary.Property.QUALIFIER;
+import static org.folio.ld.dictionary.Property.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.Property.SIMPLE_PLACE;
+import static org.folio.ld.dictionary.Property.SOURCE;
+import static org.folio.ld.dictionary.Property.SUBTITLE;
+import static org.folio.ld.dictionary.Property.SUMMARY;
+import static org.folio.ld.dictionary.Property.TABLE_OF_CONTENTS;
+import static org.folio.ld.dictionary.Property.TARGET_AUDIENCE;
+import static org.folio.ld.dictionary.Property.TERM;
+import static org.folio.ld.dictionary.Property.VARIANT_TYPE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
@@ -9,74 +74,9 @@ import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.BibframeConstants.ACCESS_LOCATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ANNOTATION;
-import static org.folio.linked.data.util.BibframeConstants.ASSIGNING_SOURCE;
-import static org.folio.linked.data.util.BibframeConstants.CARRIER_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
-import static org.folio.linked.data.util.BibframeConstants.CLASSIFICATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CODE;
-import static org.folio.linked.data.util.BibframeConstants.CONTENT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CONTRIBUTOR_PRED;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.CREATOR_PRED;
-import static org.folio.linked.data.util.BibframeConstants.DATE;
-import static org.folio.linked.data.util.BibframeConstants.DIMENSIONS;
-import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.EAN;
-import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.EXTENT;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
-import static org.folio.linked.data.util.BibframeConstants.ISBN;
-import static org.folio.linked.data.util.BibframeConstants.ISSUANCE;
-import static org.folio.linked.data.util.BibframeConstants.LABEL;
-import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
-import static org.folio.linked.data.util.BibframeConstants.LCCN;
-import static org.folio.linked.data.util.BibframeConstants.LCNAF_ID;
-import static org.folio.linked.data.util.BibframeConstants.LINK;
-import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID;
-import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.MANUFACTURE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
-import static org.folio.linked.data.util.BibframeConstants.MEDIA_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NAME;
-import static org.folio.linked.data.util.BibframeConstants.NON_SORT_NUM;
-import static org.folio.linked.data.util.BibframeConstants.NOTE;
-import static org.folio.linked.data.util.BibframeConstants.ORGANIZATION;
-import static org.folio.linked.data.util.BibframeConstants.OTHER_ID;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.PART_NAME;
-import static org.folio.linked.data.util.BibframeConstants.PART_NUMBER;
-import static org.folio.linked.data.util.BibframeConstants.PERSON;
-import static org.folio.linked.data.util.BibframeConstants.PLACE;
-import static org.folio.linked.data.util.BibframeConstants.PRODUCTION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PROJECTED_PROVISION_DATE;
-import static org.folio.linked.data.util.BibframeConstants.PROVIDER_DATE;
-import static org.folio.linked.data.util.BibframeConstants.PROVIDER_EVENT;
-import static org.folio.linked.data.util.BibframeConstants.PROVIDER_PLACE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.QUALIFIER;
-import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.SIMPLE_PLACE;
-import static org.folio.linked.data.util.BibframeConstants.SOURCE;
-import static org.folio.linked.data.util.BibframeConstants.STATUS;
-import static org.folio.linked.data.util.BibframeConstants.STATUS_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
-import static org.folio.linked.data.util.BibframeConstants.SUMMARY;
-import static org.folio.linked.data.util.BibframeConstants.TABLE_OF_CONTENTS;
-import static org.folio.linked.data.util.BibframeConstants.TARGET_AUDIENCE;
-import static org.folio.linked.data.util.BibframeConstants.TERM;
-import static org.folio.linked.data.util.BibframeConstants.TYPE;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TYPE;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.Constants.TYPE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -91,6 +91,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -266,7 +268,7 @@ public class ResourceControllerIT {
       resourceRepo.save(bibframeSampleResource(3L, monographTestService.getInstanceType()))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
     var requestBuilder = get(BIBFRAME_URL)
-      .param(TYPE, monographTestService.getInstanceType().getTypeUri())
+      .param(TYPE, monographTestService.getInstanceType().getUri())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
@@ -355,30 +357,30 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toParallelTitleNote(), equalTo("Parallel: noteLabel")))
       .andExpect(jsonPath(toParallelTitleDate(), equalTo("Parallel: date")))
       .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo("Parallel: subTitle")))
-      .andExpect(jsonPath(toProviderEventDate(PRODUCTION_PRED), equalTo("production date")))
-      .andExpect(jsonPath(toProviderEventName(PRODUCTION_PRED), equalTo("production name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(PRODUCTION_PRED), equalTo("production providerPlace name")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(PRODUCTION_PRED), equalTo("production providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(PRODUCTION_PRED), equalTo("production provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(PRODUCTION_PRED), equalTo("production simple place")))
-      .andExpect(jsonPath(toProviderEventDate(PUBLICATION_PRED), equalTo("publication date")))
-      .andExpect(jsonPath(toProviderEventName(PUBLICATION_PRED), equalTo("publication name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(PUBLICATION_PRED), equalTo("publication providerPlace name")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(PUBLICATION_PRED), equalTo("publication providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(PUBLICATION_PRED), equalTo("publication provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(PUBLICATION_PRED), equalTo("publication simple place")))
-      .andExpect(jsonPath(toProviderEventDate(DISTRIBUTION_PRED), equalTo("distribution date")))
-      .andExpect(jsonPath(toProviderEventName(DISTRIBUTION_PRED), equalTo("distribution name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(DISTRIBUTION_PRED), equalTo("distribution providerPlace name")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(DISTRIBUTION_PRED), equalTo("distribution providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(DISTRIBUTION_PRED), equalTo("distribution provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(DISTRIBUTION_PRED), equalTo("distribution simple place")))
-      .andExpect(jsonPath(toProviderEventDate(MANUFACTURE_PRED), equalTo("manufacture date")))
-      .andExpect(jsonPath(toProviderEventName(MANUFACTURE_PRED), equalTo("manufacture name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(MANUFACTURE_PRED), equalTo("manufacture providerPlace name")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(MANUFACTURE_PRED), equalTo("manufacture providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(MANUFACTURE_PRED), equalTo("manufacture provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(MANUFACTURE_PRED), equalTo("manufacture simple place")))
+      .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
+      .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
+      .andExpect(jsonPath(toProviderEventPlaceName(PE_PRODUCTION), equalTo("production providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("production providerPlace link")))
+      .andExpect(jsonPath(toProviderEventProviderDate(PE_PRODUCTION), equalTo("production provider date")))
+      .andExpect(jsonPath(toProviderEventSimplePlace(PE_PRODUCTION), equalTo("production simple place")))
+      .andExpect(jsonPath(toProviderEventDate(PE_PUBLICATION), equalTo("publication date")))
+      .andExpect(jsonPath(toProviderEventName(PE_PUBLICATION), equalTo("publication name")))
+      .andExpect(jsonPath(toProviderEventPlaceName(PE_PUBLICATION), equalTo("publication providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("publication providerPlace link")))
+      .andExpect(jsonPath(toProviderEventProviderDate(PE_PUBLICATION), equalTo("publication provider date")))
+      .andExpect(jsonPath(toProviderEventSimplePlace(PE_PUBLICATION), equalTo("publication simple place")))
+      .andExpect(jsonPath(toProviderEventDate(PE_DISTRIBUTION), equalTo("distribution date")))
+      .andExpect(jsonPath(toProviderEventName(PE_DISTRIBUTION), equalTo("distribution name")))
+      .andExpect(jsonPath(toProviderEventPlaceName(PE_DISTRIBUTION), equalTo("distribution providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("distribution providerPlace link")))
+      .andExpect(jsonPath(toProviderEventProviderDate(PE_DISTRIBUTION), equalTo("distribution provider date")))
+      .andExpect(jsonPath(toProviderEventSimplePlace(PE_DISTRIBUTION), equalTo("distribution simple place")))
+      .andExpect(jsonPath(toProviderEventDate(PE_MANUFACTURE), equalTo("manufacture date")))
+      .andExpect(jsonPath(toProviderEventName(PE_MANUFACTURE), equalTo("manufacture name")))
+      .andExpect(jsonPath(toProviderEventPlaceName(PE_MANUFACTURE), equalTo("manufacture providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("manufacture providerPlace link")))
+      .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
+      .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
       .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
       .andExpect(jsonPath(toResponsibilityStatement(), equalTo("responsibility statement")))
       .andExpect(jsonPath(toVariantTitlePartName(), equalTo("Variant: partName")))
@@ -410,14 +412,14 @@ public class ResourceControllerIT {
   }
 
   private void validateMonographInstanceResource(Resource resource) {
-    assertThat(resource.getFirstType().getTypeUri()).isEqualTo(INSTANCE);
+    assertThat(resource.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
     validateInstance(resource);
   }
 
   private void validateInstance(Resource instance) {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
-    assertThat(instance.getFirstType().getTypeUri()).isEqualTo(INSTANCE);
+    assertThat(instance.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(6);
     validateLiteral(instance, DIMENSIONS, "20 cm");
@@ -431,18 +433,18 @@ public class ResourceControllerIT {
     validateInstanceTitle(edgeIterator.next(), instance);
     validateParallelTitle(edgeIterator.next(), instance);
     validateVariantTitle(edgeIterator.next(), instance);
-    validateProviderEvent(edgeIterator.next(), instance, PRODUCTION_PRED);
-    validateProviderEvent(edgeIterator.next(), instance, PUBLICATION_PRED);
-    validateProviderEvent(edgeIterator.next(), instance, DISTRIBUTION_PRED);
-    validateProviderEvent(edgeIterator.next(), instance, MANUFACTURE_PRED);
+    validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION);
+    validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION);
+    validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION);
+    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
     validateAccessLocation(edgeIterator.next(), instance);
     validateLccn(edgeIterator.next(), instance);
     validateIsbn(edgeIterator.next(), instance);
     validateEan(edgeIterator.next(), instance);
     validateLocalId(edgeIterator.next(), instance);
     validateOtherId(edgeIterator.next(), instance);
-    validateCategory(edgeIterator.next(), instance, MEDIA_PRED, CATEGORY);
-    validateCategory(edgeIterator.next(), instance, CARRIER_PRED, CATEGORY);
+    validateCategory(edgeIterator.next(), instance, MEDIA);
+    validateCategory(edgeIterator.next(), instance, CARRIER);
     validateCopyrightDate(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
@@ -453,7 +455,7 @@ public class ResourceControllerIT {
   }
 
   private void validateInstanceTitle(ResourceEdge edge, Resource source) {
-    validateSampleTitleBase(edge, source, INSTANCE_TITLE, "Instance: ");
+    validateSampleTitleBase(edge, source, ResourceTypeDictionary.TITLE, "Instance: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM).size()).isEqualTo(1);
@@ -485,13 +487,13 @@ public class ResourceControllerIT {
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateSampleTitleBase(ResourceEdge edge, Resource source, String type, String prefix) {
+  private void validateSampleTitleBase(ResourceEdge edge, Resource source, ResourceTypeDictionary type, String prefix) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(INSTANCE_TITLE_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(TITLE.getUri());
     var title = edge.getTarget();
     assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle");
-    assertThat(title.getFirstType().getTypeUri()).isEqualTo(type);
+    assertThat(title.getFirstType().getUri()).isEqualTo(type.getUri());
     assertThat(title.getResourceHash()).isNotNull();
     assertThat(title.getDoc().get(PART_NAME).size()).isEqualTo(1);
     assertThat(title.getDoc().get(PART_NAME).get(0).asText()).isEqualTo(prefix + "partName");
@@ -503,14 +505,14 @@ public class ResourceControllerIT {
     assertThat(title.getDoc().get(SUBTITLE).get(0).asText()).isEqualTo(prefix + "subTitle");
   }
 
-  private void validateProviderEvent(ResourceEdge edge, Resource source, String predicate) {
-    var type = predicate.substring(predicate.indexOf("marc/") + 5);
+  private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate) {
+    var type = predicate.getUri().substring(predicate.getUri().indexOf("marc/") + 5);
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(predicate);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(predicate.getUri());
     var providerEvent = edge.getTarget();
     assertThat(providerEvent.getLabel()).isEqualTo(type + " name");
-    assertThat(providerEvent.getFirstType().getTypeUri()).isEqualTo(PROVIDER_EVENT);
+    assertThat(providerEvent.getFirstType().getUri()).isEqualTo(PROVIDER_EVENT.getUri());
     assertThat(providerEvent.getResourceHash()).isNotNull();
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
     assertThat(providerEvent.getDoc().get(DATE).size()).isEqualTo(1);
@@ -528,10 +530,10 @@ public class ResourceControllerIT {
   private void validateProviderPlace(ResourceEdge edge, Resource source, String prefix) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(PROVIDER_PLACE_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(PROVIDER_PLACE.getUri());
     var place = edge.getTarget();
     assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace name");
-    assertThat(place.getFirstType().getTypeUri()).isEqualTo(PLACE);
+    assertThat(place.getFirstType().getUri()).isEqualTo(PLACE.getUri());
     assertThat(place.getResourceHash()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(2);
     assertThat(place.getDoc().get(NAME).size()).isEqualTo(1);
@@ -544,10 +546,10 @@ public class ResourceControllerIT {
   private void validateLccn(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var lccn = edge.getTarget();
     assertThat(lccn.getLabel()).isEqualTo("lccn value");
-    assertThat(lccn.getFirstType().getTypeUri()).isEqualTo(LCCN);
+    assertThat(lccn.getFirstType().getUri()).isEqualTo(ID_LCCN.getUri());
     assertThat(lccn.getResourceHash()).isNotNull();
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME).size()).isEqualTo(1);
@@ -559,10 +561,10 @@ public class ResourceControllerIT {
   private void validateIsbn(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var isbn = edge.getTarget();
     assertThat(isbn.getLabel()).isEqualTo("isbn value");
-    assertThat(isbn.getFirstType().getTypeUri()).isEqualTo(ISBN);
+    assertThat(isbn.getFirstType().getUri()).isEqualTo(ID_ISBN.getUri());
     assertThat(isbn.getResourceHash()).isNotNull();
     assertThat(isbn.getDoc().size()).isEqualTo(2);
     assertThat(isbn.getDoc().get(NAME).size()).isEqualTo(1);
@@ -576,10 +578,10 @@ public class ResourceControllerIT {
   private void validateEan(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var ean = edge.getTarget();
     assertThat(ean.getLabel()).isEqualTo("ean value");
-    assertThat(ean.getFirstType().getTypeUri()).isEqualTo(EAN);
+    assertThat(ean.getFirstType().getUri()).isEqualTo(ID_EAN.getUri());
     assertThat(ean.getResourceHash()).isNotNull();
     assertThat(ean.getDoc().size()).isEqualTo(2);
     assertThat(ean.getDoc().get(EAN_VALUE).size()).isEqualTo(1);
@@ -592,10 +594,10 @@ public class ResourceControllerIT {
   private void validateLocalId(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var localId = edge.getTarget();
     assertThat(localId.getLabel()).isEqualTo("localId value");
-    assertThat(localId.getFirstType().getTypeUri()).isEqualTo(LOCAL_ID);
+    assertThat(localId.getFirstType().getUri()).isEqualTo(ID_LOCAL.getUri());
     assertThat(localId.getResourceHash()).isNotNull();
     assertThat(localId.getDoc().size()).isEqualTo(2);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE).size()).isEqualTo(1);
@@ -608,10 +610,10 @@ public class ResourceControllerIT {
   private void validateOtherId(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(MAP_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var otherId = edge.getTarget();
     assertThat(otherId.getLabel()).isEqualTo("otherId value");
-    assertThat(otherId.getFirstType().getTypeUri()).isEqualTo(OTHER_ID);
+    assertThat(otherId.getFirstType().getUri()).isEqualTo(ID_UNKNOWN.getUri());
     assertThat(otherId.getResourceHash()).isNotNull();
     assertThat(otherId.getDoc().size()).isEqualTo(2);
     assertThat(otherId.getDoc().get(NAME).size()).isEqualTo(1);
@@ -624,10 +626,10 @@ public class ResourceControllerIT {
   private void validateStatus(ResourceEdge edge, Resource source, String prefix) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(STATUS_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(STATUS.getUri());
     var status = edge.getTarget();
     assertThat(status.getLabel()).isEqualTo(prefix + " status value");
-    assertThat(status.getFirstType().getTypeUri()).isEqualTo(STATUS);
+    assertThat(status.getFirstType().getUri()).isEqualTo(ResourceTypeDictionary.STATUS.getUri());
     assertThat(status.getResourceHash()).isNotNull();
     assertThat(status.getDoc().size()).isEqualTo(2);
     assertThat(status.getDoc().get(LINK).size()).isEqualTo(1);
@@ -640,10 +642,10 @@ public class ResourceControllerIT {
   private void validateAccessLocation(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(ACCESS_LOCATION_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(ACCESS_LOCATION.getUri());
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo("accessLocation value");
-    assertThat(locator.getFirstType().getTypeUri()).isEqualTo(ANNOTATION);
+    assertThat(locator.getFirstType().getUri()).isEqualTo(ANNOTATION.getUri());
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK).size()).isEqualTo(1);
@@ -653,14 +655,14 @@ public class ResourceControllerIT {
     assertThat(locator.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateCategory(ResourceEdge edge, Resource source, String pred, String type) {
-    var prefix = pred.substring(pred.lastIndexOf("/") + 1);
+  private void validateCategory(ResourceEdge edge, Resource source, PredicateDictionary pred) {
+    var prefix = pred.getUri().substring(pred.getUri().lastIndexOf("/") + 1);
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(pred);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(pred.getUri());
     var media = edge.getTarget();
     assertThat(media.getLabel()).isEqualTo(prefix + " term");
-    assertThat(media.getFirstType().getTypeUri()).isEqualTo(type);
+    assertThat(media.getFirstType().getUri()).isEqualTo(CATEGORY.getUri());
     assertThat(media.getResourceHash()).isNotNull();
     assertThat(media.getDoc().size()).isEqualTo(3);
     assertThat(media.getDoc().get(CODE).size()).isEqualTo(1);
@@ -675,10 +677,10 @@ public class ResourceControllerIT {
   private void validateCopyrightDate(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getLabel()).isEqualTo(COPYRIGHT_PRED);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(COPYRIGHT.getUri());
     var copyrightEvent = edge.getTarget();
     assertThat(copyrightEvent.getLabel()).isEqualTo("copyright date value");
-    assertThat(copyrightEvent.getFirstType().getTypeUri()).isEqualTo(COPYRIGHT_EVENT);
+    assertThat(copyrightEvent.getFirstType().getUri()).isEqualTo(COPYRIGHT_EVENT.getUri());
     assertThat(copyrightEvent.getResourceHash()).isNotNull();
     assertThat(copyrightEvent.getDoc().size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE).size()).isEqualTo(1);
@@ -687,11 +689,11 @@ public class ResourceControllerIT {
   }
 
   private String toInstance() {
-    return String.join(".", "$", path("resource"), path(INSTANCE));
+    return join(".", "$", path("resource"), path(INSTANCE.getUri()));
   }
 
   private String toWork() {
-    return String.join(".", toInstance(), arrayPath(INSTANTIATES_PRED));
+    return join(".", toInstance(), arrayPath(INSTANTIATES.getUri()));
   }
 
   private String toExtent() {
@@ -699,303 +701,305 @@ public class ResourceControllerIT {
   }
 
   private String toDimensions() {
-    return String.join(".", toInstance(), arrayPath(DIMENSIONS));
+    return join(".", toInstance(), arrayPath(DIMENSIONS));
   }
 
   private String toEditionStatement() {
-    return String.join(".", toInstance(), arrayPath(EDITION_STATEMENT));
+    return join(".", toInstance(), arrayPath(EDITION_STATEMENT));
   }
 
   private String toAccessLocationLink() {
-    return String.join(".", toInstance(), arrayPath(ACCESS_LOCATION_PRED), arrayPath(LINK));
+    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(LINK));
   }
 
   private String toAccessLocationNote() {
-    return String.join(".", toInstance(), arrayPath(ACCESS_LOCATION_PRED), arrayPath(NOTE));
+    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(NOTE));
   }
 
   private String toResponsibilityStatement() {
-    return String.join(".", toInstance(), arrayPath(RESPONSIBILITY_STATEMENT));
+    return join(".", toInstance(), arrayPath(RESPONSIBILITY_STATEMENT));
   }
 
   private String toProjectedProvisionDate() {
-    return String.join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE));
+    return join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE));
   }
 
   private String toInstanceTitlePartName() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE),
-      arrayPath(PART_NAME));
+    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NAME));
   }
 
   private String toInstanceTitlePartNumber() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE),
-      arrayPath(PART_NUMBER));
+    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NUMBER));
   }
 
   private String toInstanceTitleMain() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE),
-      arrayPath(MAIN_TITLE));
+    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(MAIN_TITLE));
   }
 
   private String toInstanceTitleNonSortNum() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE),
-      arrayPath(NON_SORT_NUM));
+    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(NON_SORT_NUM));
   }
 
   private String toInstanceTitleSubtitle() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED), path(INSTANCE_TITLE),
-      arrayPath(SUBTITLE));
+    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(SUBTITLE));
   }
 
   private String toIssuance() {
-    return String.join(".", toInstance(), arrayPath(ISSUANCE));
+    return join(".", toInstance(), arrayPath(ISSUANCE));
   }
 
   private String toParallelTitlePartName() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
       arrayPath(PART_NAME));
   }
 
   private String toParallelTitlePartNumber() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
       arrayPath(PART_NUMBER));
   }
 
   private String toParallelTitleMain() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
       arrayPath(MAIN_TITLE));
   }
 
   private String toParallelTitleDate() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
       arrayPath(DATE));
   }
 
   private String toParallelTitleSubtitle() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
       arrayPath(SUBTITLE));
   }
 
   private String toParallelTitleNote() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 1), path(PARALLEL_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
       arrayPath(NOTE));
   }
 
   private String toVariantTitlePartName() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
       arrayPath(PART_NAME));
   }
 
   private String toVariantTitlePartNumber() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
       arrayPath(PART_NUMBER));
   }
 
   private String toVariantTitleMain() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
       arrayPath(MAIN_TITLE));
   }
 
   private String toVariantTitleDate() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
       arrayPath(DATE));
   }
 
   private String toVariantTitleSubtitle() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
       arrayPath(SUBTITLE));
   }
 
   private String toVariantTitleType() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
       arrayPath(VARIANT_TYPE));
   }
 
   private String toVariantTitleNote() {
-    return String.join(".", toInstance(), arrayPath(INSTANCE_TITLE_PRED, 2), path(VARIANT_TITLE),
+    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
       arrayPath(NOTE));
   }
 
-  private String toProviderEventDate(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(DATE));
+  private String toProviderEventDate(PredicateDictionary predicate) {
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(DATE));
   }
 
-  private String toProviderEventName(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(NAME));
+  private String toProviderEventName(PredicateDictionary predicate) {
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(NAME));
   }
 
-  private String toProviderEventPlaceName(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(PROVIDER_PLACE_PRED),
+  private String toProviderEventPlaceName(PredicateDictionary predicate) {
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
       arrayPath(NAME));
   }
 
-  private String toProviderEventPlaceLink(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(PROVIDER_PLACE_PRED),
+  private String toProviderEventPlaceLink(PredicateDictionary predicate) {
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
       arrayPath(LINK));
   }
 
-  private String toProviderEventProviderDate(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(PROVIDER_DATE));
+  private String toProviderEventProviderDate(PredicateDictionary predicate) {
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_DATE));
   }
 
-  private String toProviderEventSimplePlace(String predicate) {
-    return String.join(".", toInstance(), arrayPath(predicate), arrayPath(SIMPLE_PLACE));
+  private String toProviderEventSimplePlace(PredicateDictionary predicate) {
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(SIMPLE_PLACE));
   }
 
   private String toLccnValue() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED), path(LCCN), arrayPath(NAME));
+    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(NAME));
   }
 
   private String toLccnStatusValue() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED), path(LCCN), arrayPath(STATUS_PRED),
-      arrayPath(LABEL));
+    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()),
+      arrayPath(STATUS.getUri()), arrayPath(LABEL));
   }
 
   private String toLccnStatusLink() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED), path(LCCN), arrayPath(STATUS_PRED),
+    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(STATUS.getUri()),
       arrayPath(LINK));
   }
 
   private String toIsbnValue() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(NAME));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(NAME));
   }
 
   private String toIsbnQualifier() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(QUALIFIER));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(QUALIFIER));
   }
 
   private String toIsbnStatusValue() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(STATUS_PRED),
-      arrayPath(LABEL));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()),
+      arrayPath(STATUS.getUri()), arrayPath(LABEL));
   }
 
   private String toIsbnStatusLink() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 1), path(ISBN), arrayPath(STATUS_PRED),
-      arrayPath(LINK));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()),
+      arrayPath(STATUS.getUri()), arrayPath(LINK));
   }
 
   private String toEanValue() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(EAN_VALUE));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(EAN_VALUE));
   }
 
   private String toEanQualifier() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 2), path(EAN), arrayPath(QUALIFIER));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(QUALIFIER));
   }
 
   private String toLocalIdValue() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 3), path(LOCAL_ID), arrayPath(LOCAL_ID_VALUE));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 3), path(ID_LOCAL.getUri()),
+      arrayPath(LOCAL_ID_VALUE));
   }
 
   private String toLocalIdAssigner() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 3), path(LOCAL_ID), arrayPath(ASSIGNING_SOURCE));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 3), path(ID_LOCAL.getUri()),
+      arrayPath(ASSIGNING_SOURCE));
   }
 
   private String toOtherIdValue() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(NAME));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()), arrayPath(NAME));
   }
 
   private String toOtherIdQualifier() {
-    return String.join(".", toInstance(), arrayPath(MAP_PRED, 4), path(OTHER_ID), arrayPath(QUALIFIER));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()), arrayPath(QUALIFIER));
   }
 
   private String toCarrierCode() {
-    return String.join(".", toInstance(), arrayPath(CARRIER_PRED), arrayPath(CODE));
+    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(CODE));
   }
 
   private String toCarrierLink() {
-    return String.join(".", toInstance(), arrayPath(CARRIER_PRED), arrayPath(LINK));
+    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(LINK));
   }
 
   private String toCarrierTerm() {
-    return String.join(".", toInstance(), arrayPath(CARRIER_PRED), arrayPath(TERM));
+    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(TERM));
   }
 
   private String toCopyrightDate() {
-    return String.join(".", toInstance(), arrayPath(COPYRIGHT_PRED), arrayPath(DATE));
+    return join(".", toInstance(), arrayPath(COPYRIGHT.getUri()), arrayPath(DATE));
   }
 
   private String toMediaCode() {
-    return String.join(".", toInstance(), arrayPath(MEDIA_PRED), arrayPath(CODE));
+    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(CODE));
   }
 
   private String toMediaLink() {
-    return String.join(".", toInstance(), arrayPath(MEDIA_PRED), arrayPath(LINK));
+    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(LINK));
   }
 
   private String toMediaTerm() {
-    return String.join(".", toInstance(), arrayPath(MEDIA_PRED), arrayPath(TERM));
+    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM));
   }
 
   private String toWorkTargetAudience() {
-    return String.join(".", toWork(), arrayPath(TARGET_AUDIENCE));
+    return join(".", toWork(), arrayPath(TARGET_AUDIENCE));
   }
 
   private String toWorkTableOfContents() {
-    return String.join(".", toWork(), arrayPath(TABLE_OF_CONTENTS));
+    return join(".", toWork(), arrayPath(TABLE_OF_CONTENTS));
   }
 
   private String toWorkSummary() {
-    return String.join(".", toWork(), arrayPath(SUMMARY));
+    return join(".", toWork(), arrayPath(SUMMARY));
   }
 
   private String toWorkLanguage() {
-    return String.join(".", toWork(), arrayPath(LANGUAGE));
+    return join(".", toWork(), arrayPath(LANGUAGE));
   }
 
   private String toWorkDeweySource() {
-    return String.join(".", toWork(), arrayPath(CLASSIFICATION_PRED), arrayPath(SOURCE));
+    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE));
   }
 
   private String toWorkDeweyCode() {
-    return String.join(".", toWork(), arrayPath(CLASSIFICATION_PRED), arrayPath(CODE));
+    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE));
   }
 
   private String toWorkContributorOrgLcnafId() {
-    return String.join(".", toWork(), arrayPath(CONTRIBUTOR_PRED), path(ORGANIZATION), arrayPath(LCNAF_ID));
+    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()), arrayPath(LCNAF_ID));
   }
 
   private String toWorkContributorOrgName() {
-    return String.join(".", toWork(), arrayPath(CONTRIBUTOR_PRED), path(ORGANIZATION), arrayPath(NAME));
+    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()), arrayPath(NAME));
   }
 
   private String toWorkCreatorPersonLcnafId() {
-    return String.join(".", toWork(), arrayPath(CREATOR_PRED), path(PERSON), arrayPath(LCNAF_ID));
+    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(LCNAF_ID));
   }
 
   private String toWorkCreatorPersonName() {
-    return String.join(".", toWork(), arrayPath(CREATOR_PRED), path(PERSON), arrayPath(NAME));
+    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME));
   }
 
   private String toWorkContentTerm() {
-    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(TERM));
+    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(TERM));
   }
 
   private String toWorkContentCode() {
-    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(CODE));
+    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(CODE));
   }
 
   private String toWorkContentLink() {
-    return String.join(".", toWork(), arrayPath(CONTENT_PRED), arrayPath(LINK));
+    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(LINK));
   }
 
   private String toErrorType() {
-    return String.join(".", arrayPath("errors"), path("type"));
+    return join(".", arrayPath("errors"), path("type"));
   }
 
   private String toErrorCode() {
-    return String.join(".", arrayPath("errors"), path("code"));
+    return join(".", arrayPath("errors"), path("code"));
   }
 
   private String toErrorMessage() {
-    return String.join(".", arrayPath("errors"), path("message"));
+    return join(".", arrayPath("errors"), path("message"));
   }
 
   private String path(String path) {
-    return String.format("['%s']", path);
+    return format("['%s']", path);
   }
 
   private String arrayPath(String path, int index) {
-    return String.format("['%s'][%d]", path, index);
+    return format("['%s'][%d]", path, index);
   }
 
   private String arrayPath(String path) {

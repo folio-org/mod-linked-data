@@ -2,18 +2,18 @@ package org.folio.linked.data.mapper.resource.kafka;
 
 import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
-import static org.folio.linked.data.util.BibframeConstants.DATE;
-import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
-import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
-import static org.folio.linked.data.util.BibframeConstants.LOCAL_ID_VALUE;
-import static org.folio.linked.data.util.BibframeConstants.MAIN_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.MAP_PRED;
-import static org.folio.linked.data.util.BibframeConstants.NAME;
-import static org.folio.linked.data.util.BibframeConstants.PROVIDER_DATE;
-import static org.folio.linked.data.util.BibframeConstants.PUBLICATION_PRED;
-import static org.folio.linked.data.util.BibframeConstants.SUBTITLE;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.Property.DATE;
+import static org.folio.ld.dictionary.Property.EAN_VALUE;
+import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.Property.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.Property.MAIN_TITLE;
+import static org.folio.ld.dictionary.Property.NAME;
+import static org.folio.ld.dictionary.Property.PROVIDER_DATE;
+import static org.folio.ld.dictionary.Property.SUBTITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +23,7 @@ import lombok.NonNull;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceType;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeIndex;
@@ -47,9 +47,9 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   private Resource extractInstance(Resource resource) {
-    return resource.getTypes().stream().anyMatch(t -> t.getTypeUri().equals(INSTANCE)) ? resource :
+    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(INSTANCE.getUri())) ? resource :
       resource.getOutgoingEdges().stream()
-        .filter(re -> INSTANCE.equals(re.getPredicate().getLabel()))
+        .filter(re -> INSTANCE.getUri().equals(re.getPredicate().getUri()))
         .map(ResourceEdge::getTarget)
         .findFirst()
         .orElseThrow(() -> new NotSupportedException("Only Monograph.Instance bibframe is supported for now, and there "
@@ -58,7 +58,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private List<BibframeTitlesInner> extractTitles(Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANCE_TITLE_PRED.equals(re.getPredicate().getLabel()))
+      .filter(re -> TITLE.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .flatMap(t -> {
         var titles = new ArrayList<BibframeTitlesInner>();
@@ -80,10 +80,10 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private List<BibframeIdentifiersInner> extractIdentifiers(Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(re -> MAP_PRED.equals(re.getPredicate().getLabel()))
+      .filter(re -> MAP.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .filter(r -> stream(TypeEnum.values())
-        .anyMatch(typeEnum -> r.getFirstType().getTypeUri().contains(typeEnum.getValue())))
+        .anyMatch(typeEnum -> r.getFirstType().getUri().contains(typeEnum.getValue())))
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME, EAN_VALUE, LOCAL_ID_VALUE))
         .type(toTypeEnum(ir.getFirstType())))
@@ -99,8 +99,8 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return null;
   }
 
-  private TypeEnum toTypeEnum(ResourceType resourceType) {
-    var typeUri = resourceType.getTypeUri();
+  private TypeEnum toTypeEnum(ResourceTypeEntity resourceType) {
+    var typeUri = resourceType.getUri();
     var extractedTypeWord = typeUri.substring(typeUri.lastIndexOf("/") + 1);
     return TypeEnum.fromValue(extractedTypeWord);
   }
@@ -111,7 +111,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private List<BibframePublicationsInner> extractPublications(Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(re -> PUBLICATION_PRED.equals(re.getPredicate().getLabel()))
+      .filter(re -> PE_PUBLICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframePublicationsInner()
         .publisher(getValue(ir.getDoc(), NAME))

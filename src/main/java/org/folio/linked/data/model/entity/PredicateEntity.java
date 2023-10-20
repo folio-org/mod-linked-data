@@ -4,27 +4,31 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import org.folio.ld.dictionary.api.Predicate;
 
 @Data
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-@Table(name = "type_lookup")
-@EqualsAndHashCode(of = "typeHash")
-public class ResourceType {
+@RequiredArgsConstructor
+@Table(name = "predicate_lookup")
+@EqualsAndHashCode(of = "hash")
+public class PredicateEntity implements Predicate {
 
   @Id
-  private Long typeHash;
+  @Column(name = "predicate_hash")
+  private Long hash;
 
   @NonNull
-  @Column(nullable = false)
-  private String typeUri;
-
-  private String simpleLabel;
+  @Column(name = "predicate", nullable = false)
+  private String uri;
 
 }

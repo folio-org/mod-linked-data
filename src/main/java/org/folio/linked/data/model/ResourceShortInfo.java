@@ -3,7 +3,7 @@ package org.folio.linked.data.model;
 import static java.util.Objects.isNull;
 
 import java.util.Set;
-import org.folio.linked.data.model.entity.ResourceType;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 
 public interface ResourceShortInfo {
 
@@ -11,9 +11,9 @@ public interface ResourceShortInfo {
 
   String getLabel();
 
-  Set<ResourceType> getTypes();
+  Set<ResourceTypeEntity> getTypes();
 
-  default ResourceType getFirstType() {
+  default ResourceTypeEntity getFirstType() {
     return (isNull(getTypes()) || getTypes().isEmpty()) ? null : getTypes().iterator().next();
   }
 }
