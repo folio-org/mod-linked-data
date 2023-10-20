@@ -27,6 +27,7 @@ import static org.folio.linked.data.util.BibframeConstants.DISTRIBUTION_PRED;
 import static org.folio.linked.data.util.BibframeConstants.EAN;
 import static org.folio.linked.data.util.BibframeConstants.EAN_VALUE;
 import static org.folio.linked.data.util.BibframeConstants.EDITION_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.EXTENT;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
 import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE_PRED;
@@ -323,6 +324,7 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toCarrierLink(), equalTo("carrier link")))
       .andExpect(jsonPath(toCarrierTerm(), equalTo("carrier term")))
       .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
+      .andExpect(jsonPath(toExtent(), equalTo("extent info")))
       .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
       .andExpect(jsonPath(toEanValue(), equalTo("ean value")))
       .andExpect(jsonPath(toEanQualifier(), equalTo("ean qualifier")))
@@ -417,7 +419,7 @@ public class ResourceControllerIT {
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getFirstType().getTypeUri()).isEqualTo(INSTANCE);
     assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getDoc().size()).isEqualTo(5);
+    assertThat(instance.getDoc().size()).isEqualTo(6);
     validateLiteral(instance, DIMENSIONS, "20 cm");
     validateLiteral(instance, EDITION_STATEMENT, "edition statement");
     validateLiteral(instance, RESPONSIBILITY_STATEMENT, "responsibility statement");
@@ -690,6 +692,10 @@ public class ResourceControllerIT {
 
   private String toWork() {
     return String.join(".", toInstance(), arrayPath(INSTANTIATES_PRED));
+  }
+
+  private String toExtent() {
+    return String.join(".", toInstance(), arrayPath(EXTENT));
   }
 
   private String toDimensions() {
