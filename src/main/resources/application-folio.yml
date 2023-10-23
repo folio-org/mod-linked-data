@@ -9,3 +9,22 @@ folio:
       enabled: true
     feign:
       enabled: true
+  kafka:
+    listener:
+      data-import-instance-create:
+        concurrency: ${KAFKA_DATA_IMPORT_INSTANCE_CREATE_CONCURRENCY:1}
+        topic-pattern: ${KAFKA_DI_INSTANCE_CREATED_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)DI_INVENTORY_INSTANCE_CREATED_READY_FOR_POST_PROCESSING}
+        group-id: ${folio.environment}-linked-data-data-import-instances-created-group
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_HOST:kafka}:${KAFKA_PORT:9092}
+    consumer:
+      max-poll-records: ${KAFKA_CONSUMER_MAX_POLL_RECORDS:200}
+    security:
+      protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+    ssl:
+      key-store-password: ${KAFKA_SSL_KEYSTORE_PASSWORD:}
+      key-store-location: ${KAFKA_SSL_KEYSTORE_LOCATION:}
+      trust-store-password: ${KAFKA_SSL_TRUSTSTORE_PASSWORD:}
+      trust-store-location: ${KAFKA_SSL_TRUSTSTORE_LOCATION:}
