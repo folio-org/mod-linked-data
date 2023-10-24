@@ -13,6 +13,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.Property.DIMENSIONS;
 import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.Property.EXTENT;
 import static org.folio.ld.dictionary.Property.ISSUANCE;
 import static org.folio.ld.dictionary.Property.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.Property.RESPONSIBILITY_STATEMENT;

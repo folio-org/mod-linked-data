@@ -42,7 +42,7 @@
     <lombok.version>1.18.30</lombok.version>
     <lombok.mapstruct-binding.version>0.2.0</lombok.mapstruct-binding.version>
     <hibernate-types.version>2.21.1</hibernate-types.version>
-    <ld-dictionary.version>1.0.0-SNAPSHOT</ld-dictionary.version>
+    <lib-linked-data-dictionary.version>1.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
 
     <!-- Test dependencies versions -->
     <testcontainers.version>1.19.1</testcontainers.version>
@@ -77,8 +77,8 @@
     </dependency>
     <dependency>
       <groupId>org.folio</groupId>
-      <artifactId>ld-dictionary</artifactId>
-      <version>${ld-dictionary.version}</version>
+      <artifactId>lib-linked-data-dictionary</artifactId>
+      <version>${lib-linked-data-dictionary.version}</version>
     </dependency>
 
     <dependency>
@@ -542,6 +542,13 @@
       <id>index-data-nexus</id>
       <name>FOLIO Maven repository</name>
       <url>https://maven.indexdata.com</url>
+    </repository>
+
+    <!-- Folio EIS repos, could be removed after release -->
+    <repository>
+      <id>folio-eis-</id>
+      <name>FOLIO Maven repository</name>
+      <url>https://eis.jfrog.io/artifactory/libs-snapshot-local</url>
     </repository>
   </repositories>
 
