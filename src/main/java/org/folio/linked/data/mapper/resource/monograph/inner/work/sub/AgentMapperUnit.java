@@ -12,7 +12,6 @@ import org.folio.linked.data.domain.dto.OrganizationField;
 import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     // Not implemented yet as we don't support PUT / POST APIs for Work
     throw new NotImplementedException();
   }

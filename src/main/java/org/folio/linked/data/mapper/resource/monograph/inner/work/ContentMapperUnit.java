@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
-import static org.folio.linked.data.util.BibframeConstants.CATEGORY;
-import static org.folio.linked.data.util.BibframeConstants.CONTENT_PRED;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.NotImplementedException;
@@ -9,13 +9,12 @@ import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.work.sub.WorkSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = CATEGORY, predicate = CONTENT_PRED, dtoClass = Category.class)
+@MapperUnit(type = CATEGORY, predicate = CONTENT, dtoClass = Category.class)
 @RequiredArgsConstructor
 public class ContentMapperUnit implements WorkSubResourceMapperUnit {
 
@@ -30,7 +29,7 @@ public class ContentMapperUnit implements WorkSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     // Not implemented yet as we don't support PUT / POST APIs for Work
     throw new NotImplementedException();
   }

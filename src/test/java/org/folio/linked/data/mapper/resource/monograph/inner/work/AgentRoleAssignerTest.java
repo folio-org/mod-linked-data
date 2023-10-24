@@ -12,7 +12,7 @@ import org.folio.linked.data.domain.dto.FamilyField;
 import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.domain.dto.OrganizationField;
 import org.folio.linked.data.domain.dto.PersonField;
-import org.folio.linked.data.model.entity.Predicate;
+import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.test.type.UnitTest;
@@ -51,17 +51,17 @@ class AgentRoleAssignerTest {
     workResource.setOutgoingEdges(Set.of(
       // "relation" edges pointing to the agent
       new ResourceEdge().setSource(workResource).setTarget(sameAgentResource)
-        .setPredicate(new Predicate().setLabel(role1Predicate).setPredicateHash(1L)),
+        .setPredicate(new PredicateEntity().setUri(role1Predicate).setHash(1L)),
       new ResourceEdge().setSource(workResource).setTarget(sameAgentResource)
-        .setPredicate(new Predicate().setLabel(role2Predicate).setPredicateHash(2L)),
+        .setPredicate(new PredicateEntity().setUri(role2Predicate).setHash(2L)),
 
       // "relation" edge pointing to another agent
       new ResourceEdge().setSource(workResource).setTarget(anotherAgentResource)
-        .setPredicate(new Predicate().setLabel(role1Predicate).setPredicateHash(3L)),
+        .setPredicate(new PredicateEntity().setUri(role1Predicate).setHash(3L)),
 
       // "non-relation" edge pointing to the agent
       new ResourceEdge().setSource(workResource).setTarget(sameAgentResource)
-        .setPredicate(new Predicate().setLabel(nonRolePredicate).setPredicateHash(4L))
+        .setPredicate(new PredicateEntity().setUri(nonRolePredicate).setHash(4L))
     ));
 
     // when

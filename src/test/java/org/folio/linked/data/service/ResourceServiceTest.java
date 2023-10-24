@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.Sets;
 import java.util.Optional;
 import java.util.function.Function;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
@@ -24,7 +25,6 @@ import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.TestUtil;
-import org.folio.linked.data.util.BibframeConstants;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -114,7 +114,7 @@ class ResourceServiceTest {
     var pageNumber = 0;
     var pageSize = 10;
     var sort = Sort.by(Sort.Direction.ASC, "label");
-    var types = Sets.newHashSet(BibframeConstants.INSTANCE);
+    var types = Sets.newHashSet(ResourceTypeDictionary.INSTANCE.getUri());
     doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
       PageRequest.of(pageNumber, pageSize, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
@@ -133,7 +133,7 @@ class ResourceServiceTest {
   void getResourceShortInfoPageWithNoParams_shouldReturnExistedEntitiesShortInfoMapped(
     @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<ResourceShort> pageOfDto) {
     // given
-    var types = Sets.newHashSet(BibframeConstants.INSTANCE);
+    var types = Sets.newHashSet(ResourceTypeDictionary.INSTANCE.getUri());
     var sort = Sort.by(Sort.Direction.ASC, "label");
     doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
       PageRequest.of(0, 100, sort));

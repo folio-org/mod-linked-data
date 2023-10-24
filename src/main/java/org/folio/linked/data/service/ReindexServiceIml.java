@@ -6,9 +6,9 @@ import jakarta.transaction.Transactional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.util.BibframeConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
@@ -23,18 +23,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReindexServiceIml implements ReindexService {
 
-  @Value("${mod-linked-data.reindex.page-size}")
-  private String reindexPageSize;
   private final ResourceRepository resourceRepository;
   private final KafkaSender kafkaSender;
   private final KafkaMessageMapper kafkaMessageMapper;
+  @Value("${mod-linked-data.reindex.page-size}")
+  private String reindexPageSize;
 
   @Async
   @Override
   public void reindex() {
     var pageable = Pageable.ofSize(Integer.parseInt(reindexPageSize));
     while (pageable.isPaged()) {
-      var page = resourceRepository.findResourcesByTypeFull(Set.of(BibframeConstants.INSTANCE), pageable);
+      var page = resourceRepository.findResourcesByTypeFull(Set.of(ResourceTypeDictionary.INSTANCE.getUri()), pageable);
       page.get()
         .forEach(resource -> {
             try {

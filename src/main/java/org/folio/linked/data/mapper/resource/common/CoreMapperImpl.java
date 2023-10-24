@@ -1,10 +1,9 @@
 package org.folio.linked.data.mapper.resource.common;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static org.folio.linked.data.util.BibframeConstants.LABEL_RDF;
-import static org.folio.linked.data.util.BibframeConstants.TYPE;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.linked.data.util.Constants.ERROR_JSON_PROCESSING;
+import static org.folio.linked.data.util.Constants.TYPE;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,19 +13,17 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.function.TriFunction;
+import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
-import org.folio.linked.data.model.entity.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceType;
-import org.folio.linked.data.service.dictionary.DictionaryService;
 import org.folio.linked.data.util.HashUtil;
 import org.springframework.stereotype.Component;
 
@@ -34,8 +31,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CoreMapperImpl implements CoreMapper {
 
-  private final DictionaryService<ResourceType> resourceTypeService;
-  private final DictionaryService<Predicate> predicateService;
   private final ObjectMapper mapper;
 
   @Override
@@ -48,9 +43,9 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public <T> void addMappedResources(@NonNull SubResourceMapperUnit<T> subResourceMapperUnit, @NonNull Resource source,
-                                     @NonNull String predicate, @NonNull T destination) {
+                                     @NonNull Predicate predicate, @NonNull T destination) {
     source.getOutgoingEdges().stream()
-      .filter(re -> re.getPredicate().getLabel().equals(predicate))
+      .filter(re -> re.getPredicate().getUri().equals(predicate.getUri()))
       .map(ResourceEdge::getTarget)
       .forEach(r -> subResourceMapperUnit.toDto(r, destination));
   }
@@ -86,26 +81,24 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public <T> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, String type,
-                                   @NonNull String predicateLabel,
-                                   @NonNull BiFunction<T, String, Resource> mappingFunction) {
+  public <T> void mapSubEdges(List<T> dtoList, @NonNull Resource source,
+                              @NonNull Predicate predicate,
+                              @NonNull Function<T, Resource> mappingFunction) {
     if (nonNull(dtoList)) {
-      var predicate = predicateService.get(predicateLabel);
       dtoList.stream()
-        .map(dto -> mappingFunction.apply(dto, isNull(type) ? predicateLabel : type))
+        .map(mappingFunction)
         .map(resource -> new ResourceEdge(source, resource, predicate))
         .forEach(source.getOutgoingEdges()::add);
     }
   }
 
   @Override
-  public <T, P> void mapResourceEdges(List<T> dtoList, @NonNull Resource source, @NonNull String predicateLabel,
-                                      @NonNull Class<P> parent,
-                                      @NonNull TriFunction<T, String, Class<P>, Resource> mapping) {
+  public <T, P> void mapInnerEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
+                                   @NonNull Class<P> parent,
+                                   @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping) {
     if (nonNull(dtoList)) {
-      var predicate = predicateService.get(predicateLabel);
       dtoList.stream()
-        .map(dto -> mapping.apply(dto, predicateLabel, parent))
+        .map(dto -> mapping.apply(dto, predicate, parent))
         .map(resource -> new ResourceEdge(source, resource, predicate))
         .forEach(source.getOutgoingEdges()::add);
     }
@@ -118,10 +111,10 @@ public class CoreMapperImpl implements CoreMapper {
     } else {
       node = mapper.createObjectNode();
     }
-    node.put(LABEL_RDF, res.getLabel());
-    node.put(TYPE, res.getFirstType().getTypeHash());
+    node.put(LABEL_RDF.getValue(), res.getLabel());
+    node.put(TYPE, res.getFirstType().getHash());
     res.getOutgoingEdges().forEach(edge -> {
-      var predicate = edge.getPredicate().getLabel();
+      var predicate = edge.getPredicate().getUri();
       if (!node.has(predicate)) {
         node.set(predicate, mapper.createArrayNode());
       }

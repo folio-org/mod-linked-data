@@ -11,10 +11,10 @@ import org.springframework.data.repository.query.Param;
 
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
-  @Query("SELECT r FROM Resource r JOIN r.types t WHERE t.typeUri IN :types OR t.simpleLabel IN :types")
+  @Query("SELECT r FROM Resource r JOIN r.types t WHERE t.uri IN :types OR t.simpleLabel IN :types")
   Page<ResourceShortInfo> findResourcesByType(@Param("types") Set<String> types, Pageable pageable);
 
-  @Query("SELECT r FROM Resource r JOIN r.types t WHERE t.typeUri IN :types OR t.simpleLabel IN :types")
+  @Query("SELECT r FROM Resource r JOIN r.types t WHERE t.uri IN :types OR t.simpleLabel IN :types")
   Page<Resource> findResourcesByTypeFull(@Param("types") Set<String> types, Pageable pageable);
 
   @Query("SELECT r FROM Resource r JOIN r.types t")
