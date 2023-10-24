@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.title;
 
-import static org.folio.ld.dictionary.Property.MAIN_TITLE;
-import static org.folio.ld.dictionary.Property.NON_SORT_NUM;
-import static org.folio.ld.dictionary.Property.PART_NAME;
-import static org.folio.ld.dictionary.Property.PART_NUMBER;
-import static org.folio.ld.dictionary.Property.SUBTITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
+import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -50,11 +50,11 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(InstanceTitle dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(PART_NAME, dto.getPartName());
-    map.put(PART_NUMBER, dto.getPartNumber());
-    map.put(MAIN_TITLE, dto.getMainTitle());
-    map.put(NON_SORT_NUM, dto.getNonSortNum());
-    map.put(SUBTITLE, dto.getSubTitle());
+    map.put(PART_NAME.getValue(), dto.getPartName());
+    map.put(PART_NUMBER.getValue(), dto.getPartNumber());
+    map.put(MAIN_TITLE.getValue(), dto.getMainTitle());
+    map.put(NON_SORT_NUM.getValue(), dto.getNonSortNum());
+    map.put(SUBTITLE.getValue(), dto.getSubTitle());
     return coreMapper.toJson(map);
   }
 

@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.identified;
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.Property.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.Property.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -47,8 +47,8 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(LocalId dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(LOCAL_ID_VALUE, dto.getValue());
-    map.put(ASSIGNING_SOURCE, dto.getAssigner());
+    map.put(LOCAL_ID_VALUE.getValue(), dto.getValue());
+    map.put(ASSIGNING_SOURCE.getValue(), dto.getAssigner());
     return coreMapper.toJson(map);
   }
 }

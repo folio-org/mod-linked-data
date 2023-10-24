@@ -21,37 +21,37 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.Property.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.Property.CODE;
-import static org.folio.ld.dictionary.Property.DATE;
-import static org.folio.ld.dictionary.Property.DIMENSIONS;
-import static org.folio.ld.dictionary.Property.EAN_VALUE;
-import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.Property.EXTENT;
-import static org.folio.ld.dictionary.Property.ISSUANCE;
-import static org.folio.ld.dictionary.Property.LABEL;
-import static org.folio.ld.dictionary.Property.LANGUAGE;
-import static org.folio.ld.dictionary.Property.LCNAF_ID;
-import static org.folio.ld.dictionary.Property.LINK;
-import static org.folio.ld.dictionary.Property.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.Property.MAIN_TITLE;
-import static org.folio.ld.dictionary.Property.NAME;
-import static org.folio.ld.dictionary.Property.NON_SORT_NUM;
-import static org.folio.ld.dictionary.Property.NOTE;
-import static org.folio.ld.dictionary.Property.PART_NAME;
-import static org.folio.ld.dictionary.Property.PART_NUMBER;
-import static org.folio.ld.dictionary.Property.PROJECTED_PROVISION_DATE;
-import static org.folio.ld.dictionary.Property.PROVIDER_DATE;
-import static org.folio.ld.dictionary.Property.QUALIFIER;
-import static org.folio.ld.dictionary.Property.RESPONSIBILITY_STATEMENT;
-import static org.folio.ld.dictionary.Property.SIMPLE_PLACE;
-import static org.folio.ld.dictionary.Property.SOURCE;
-import static org.folio.ld.dictionary.Property.SUBTITLE;
-import static org.folio.ld.dictionary.Property.SUMMARY;
-import static org.folio.ld.dictionary.Property.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.Property.TARGET_AUDIENCE;
-import static org.folio.ld.dictionary.Property.TERM;
-import static org.folio.ld.dictionary.Property.VARIANT_TYPE;
+import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
+import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
+import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
+import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
+import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
+import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
+import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
+import static org.folio.ld.dictionary.PropertyDictionary.TERM;
+import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
@@ -422,11 +422,11 @@ public class ResourceControllerIT {
     assertThat(instance.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getDoc().size()).isEqualTo(6);
-    validateLiteral(instance, DIMENSIONS, "20 cm");
-    validateLiteral(instance, EDITION_STATEMENT, "edition statement");
-    validateLiteral(instance, RESPONSIBILITY_STATEMENT, "responsibility statement");
-    validateLiteral(instance, PROJECTED_PROVISION_DATE, "projected provision date");
-    validateLiteral(instance, ISSUANCE, "single unit");
+    validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
+    validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
+    validateLiteral(instance, RESPONSIBILITY_STATEMENT.getValue(), "responsibility statement");
+    validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
+    validateLiteral(instance, ISSUANCE.getValue(), "single unit");
     assertThat(instance.getOutgoingEdges()).hasSize(16);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
@@ -458,8 +458,8 @@ public class ResourceControllerIT {
     validateSampleTitleBase(edge, source, ResourceTypeDictionary.TITLE, "Instance: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
-    assertThat(title.getDoc().get(NON_SORT_NUM).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NON_SORT_NUM).get(0).asText()).isEqualTo("Instance: nonSortNum");
+    assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).get(0).asText()).isEqualTo("Instance: nonSortNum");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
@@ -467,10 +467,10 @@ public class ResourceControllerIT {
     validateSampleTitleBase(edge, source, PARALLEL_TITLE, "Parallel: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(6);
-    assertThat(title.getDoc().get(DATE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(DATE).get(0).asText()).isEqualTo("Parallel: date");
-    assertThat(title.getDoc().get(NOTE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NOTE).get(0).asText()).isEqualTo("Parallel: noteLabel");
+    assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("Parallel: date");
+    assertThat(title.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asText()).isEqualTo("Parallel: noteLabel");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
@@ -478,12 +478,12 @@ public class ResourceControllerIT {
     validateSampleTitleBase(edge, source, VARIANT_TITLE, "Variant: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(7);
-    assertThat(title.getDoc().get(DATE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(DATE).get(0).asText()).isEqualTo("Variant: date");
-    assertThat(title.getDoc().get(VARIANT_TYPE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(VARIANT_TYPE).get(0).asText()).isEqualTo("Variant: variantType");
-    assertThat(title.getDoc().get(NOTE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NOTE).get(0).asText()).isEqualTo("Variant: noteLabel");
+    assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("Variant: date");
+    assertThat(title.getDoc().get(VARIANT_TYPE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(VARIANT_TYPE.getValue()).get(0).asText()).isEqualTo("Variant: variantType");
+    assertThat(title.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asText()).isEqualTo("Variant: noteLabel");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
@@ -495,14 +495,14 @@ public class ResourceControllerIT {
     assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle");
     assertThat(title.getFirstType().getUri()).isEqualTo(type.getUri());
     assertThat(title.getResourceHash()).isNotNull();
-    assertThat(title.getDoc().get(PART_NAME).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(PART_NAME).get(0).asText()).isEqualTo(prefix + "partName");
-    assertThat(title.getDoc().get(PART_NUMBER).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(PART_NUMBER).get(0).asText()).isEqualTo(prefix + "partNumber");
-    assertThat(title.getDoc().get(MAIN_TITLE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(MAIN_TITLE).get(0).asText()).isEqualTo(prefix + "mainTitle");
-    assertThat(title.getDoc().get(SUBTITLE).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(SUBTITLE).get(0).asText()).isEqualTo(prefix + "subTitle");
+    assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asText()).isEqualTo(prefix + "partName");
+    assertThat(title.getDoc().get(PART_NUMBER.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(PART_NUMBER.getValue()).get(0).asText()).isEqualTo(prefix + "partNumber");
+    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).get(0).asText()).isEqualTo(prefix + "mainTitle");
+    assertThat(title.getDoc().get(SUBTITLE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(SUBTITLE.getValue()).get(0).asText()).isEqualTo(prefix + "subTitle");
   }
 
   private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate) {
@@ -515,14 +515,14 @@ public class ResourceControllerIT {
     assertThat(providerEvent.getFirstType().getUri()).isEqualTo(PROVIDER_EVENT.getUri());
     assertThat(providerEvent.getResourceHash()).isNotNull();
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
-    assertThat(providerEvent.getDoc().get(DATE).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(DATE).get(0).asText()).isEqualTo(type + " date");
-    assertThat(providerEvent.getDoc().get(NAME).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(NAME).get(0).asText()).isEqualTo(type + " name");
-    assertThat(providerEvent.getDoc().get(PROVIDER_DATE).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(PROVIDER_DATE).get(0).asText()).isEqualTo(type + " provider date");
-    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE).get(0).asText()).isEqualTo(type + " simple place");
+    assertThat(providerEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo(type + " date");
+    assertThat(providerEvent.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo(type + " name");
+    assertThat(providerEvent.getDoc().get(PROVIDER_DATE.getValue()).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(PROVIDER_DATE.getValue()).get(0).asText()).isEqualTo(type + " provider date");
+    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).size()).isEqualTo(1);
+    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asText()).isEqualTo(type + " simple place");
     assertThat(providerEvent.getOutgoingEdges()).hasSize(1);
     validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, type);
   }
@@ -536,10 +536,10 @@ public class ResourceControllerIT {
     assertThat(place.getFirstType().getUri()).isEqualTo(PLACE.getUri());
     assertThat(place.getResourceHash()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(2);
-    assertThat(place.getDoc().get(NAME).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(NAME).get(0).asText()).isEqualTo(prefix + " providerPlace name");
-    assertThat(place.getDoc().get(LINK).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(LINK).get(0).asText()).isEqualTo(prefix + " providerPlace link");
+    assertThat(place.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(place.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace name");
+    assertThat(place.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
+    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace link");
     assertThat(place.getOutgoingEdges()).isEmpty();
   }
 
@@ -552,8 +552,8 @@ public class ResourceControllerIT {
     assertThat(lccn.getFirstType().getUri()).isEqualTo(ID_LCCN.getUri());
     assertThat(lccn.getResourceHash()).isNotNull();
     assertThat(lccn.getDoc().size()).isEqualTo(1);
-    assertThat(lccn.getDoc().get(NAME).size()).isEqualTo(1);
-    assertThat(lccn.getDoc().get(NAME).get(0).asText()).isEqualTo("lccn value");
+    assertThat(lccn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(lccn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("lccn value");
     assertThat(lccn.getOutgoingEdges()).hasSize(1);
     validateStatus(lccn.getOutgoingEdges().iterator().next(), lccn, "lccn");
   }
@@ -567,10 +567,10 @@ public class ResourceControllerIT {
     assertThat(isbn.getFirstType().getUri()).isEqualTo(ID_ISBN.getUri());
     assertThat(isbn.getResourceHash()).isNotNull();
     assertThat(isbn.getDoc().size()).isEqualTo(2);
-    assertThat(isbn.getDoc().get(NAME).size()).isEqualTo(1);
-    assertThat(isbn.getDoc().get(NAME).get(0).asText()).isEqualTo("isbn value");
-    assertThat(isbn.getDoc().get(QUALIFIER).size()).isEqualTo(1);
-    assertThat(isbn.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("isbn qualifier");
+    assertThat(isbn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(isbn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("isbn value");
+    assertThat(isbn.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
+    assertThat(isbn.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("isbn qualifier");
     assertThat(isbn.getOutgoingEdges()).hasSize(1);
     validateStatus(isbn.getOutgoingEdges().iterator().next(), isbn, "isbn");
   }
@@ -584,10 +584,10 @@ public class ResourceControllerIT {
     assertThat(ean.getFirstType().getUri()).isEqualTo(ID_EAN.getUri());
     assertThat(ean.getResourceHash()).isNotNull();
     assertThat(ean.getDoc().size()).isEqualTo(2);
-    assertThat(ean.getDoc().get(EAN_VALUE).size()).isEqualTo(1);
-    assertThat(ean.getDoc().get(EAN_VALUE).get(0).asText()).isEqualTo("ean value");
-    assertThat(ean.getDoc().get(QUALIFIER).size()).isEqualTo(1);
-    assertThat(ean.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("ean qualifier");
+    assertThat(ean.getDoc().get(EAN_VALUE.getValue()).size()).isEqualTo(1);
+    assertThat(ean.getDoc().get(EAN_VALUE.getValue()).get(0).asText()).isEqualTo("ean value");
+    assertThat(ean.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
+    assertThat(ean.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("ean qualifier");
     assertThat(ean.getOutgoingEdges()).isEmpty();
   }
 
@@ -600,10 +600,10 @@ public class ResourceControllerIT {
     assertThat(localId.getFirstType().getUri()).isEqualTo(ID_LOCAL.getUri());
     assertThat(localId.getResourceHash()).isNotNull();
     assertThat(localId.getDoc().size()).isEqualTo(2);
-    assertThat(localId.getDoc().get(LOCAL_ID_VALUE).size()).isEqualTo(1);
-    assertThat(localId.getDoc().get(LOCAL_ID_VALUE).get(0).asText()).isEqualTo("localId value");
-    assertThat(localId.getDoc().get(ASSIGNING_SOURCE).size()).isEqualTo(1);
-    assertThat(localId.getDoc().get(ASSIGNING_SOURCE).get(0).asText()).isEqualTo("localId assigner");
+    assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).size()).isEqualTo(1);
+    assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).get(0).asText()).isEqualTo("localId value");
+    assertThat(localId.getDoc().get(ASSIGNING_SOURCE.getValue()).size()).isEqualTo(1);
+    assertThat(localId.getDoc().get(ASSIGNING_SOURCE.getValue()).get(0).asText()).isEqualTo("localId assigner");
     assertThat(localId.getOutgoingEdges()).isEmpty();
   }
 
@@ -616,10 +616,10 @@ public class ResourceControllerIT {
     assertThat(otherId.getFirstType().getUri()).isEqualTo(ID_UNKNOWN.getUri());
     assertThat(otherId.getResourceHash()).isNotNull();
     assertThat(otherId.getDoc().size()).isEqualTo(2);
-    assertThat(otherId.getDoc().get(NAME).size()).isEqualTo(1);
-    assertThat(otherId.getDoc().get(NAME).get(0).asText()).isEqualTo("otherId value");
-    assertThat(otherId.getDoc().get(QUALIFIER).size()).isEqualTo(1);
-    assertThat(otherId.getDoc().get(QUALIFIER).get(0).asText()).isEqualTo("otherId qualifier");
+    assertThat(otherId.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(otherId.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("otherId value");
+    assertThat(otherId.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
+    assertThat(otherId.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("otherId qualifier");
     assertThat(otherId.getOutgoingEdges()).isEmpty();
   }
 
@@ -632,10 +632,10 @@ public class ResourceControllerIT {
     assertThat(status.getFirstType().getUri()).isEqualTo(ResourceTypeDictionary.STATUS.getUri());
     assertThat(status.getResourceHash()).isNotNull();
     assertThat(status.getDoc().size()).isEqualTo(2);
-    assertThat(status.getDoc().get(LINK).size()).isEqualTo(1);
-    assertThat(status.getDoc().get(LINK).get(0).asText()).isEqualTo(prefix + " status link");
-    assertThat(status.getDoc().get(LABEL).size()).isEqualTo(1);
-    assertThat(status.getDoc().get(LABEL).get(0).asText()).isEqualTo(prefix + " status value");
+    assertThat(status.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
+    assertThat(status.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " status link");
+    assertThat(status.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
+    assertThat(status.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(prefix + " status value");
     assertThat(status.getOutgoingEdges()).isEmpty();
   }
 
@@ -648,10 +648,10 @@ public class ResourceControllerIT {
     assertThat(locator.getFirstType().getUri()).isEqualTo(ANNOTATION.getUri());
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
-    assertThat(locator.getDoc().get(LINK).size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(LINK).get(0).asText()).isEqualTo("accessLocation value");
-    assertThat(locator.getDoc().get(NOTE).size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(NOTE).get(0).asText()).isEqualTo("accessLocation note");
+    assertThat(locator.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
+    assertThat(locator.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("accessLocation value");
+    assertThat(locator.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
+    assertThat(locator.getDoc().get(NOTE.getValue()).get(0).asText()).isEqualTo("accessLocation note");
     assertThat(locator.getOutgoingEdges()).isEmpty();
   }
 
@@ -665,12 +665,12 @@ public class ResourceControllerIT {
     assertThat(media.getFirstType().getUri()).isEqualTo(CATEGORY.getUri());
     assertThat(media.getResourceHash()).isNotNull();
     assertThat(media.getDoc().size()).isEqualTo(3);
-    assertThat(media.getDoc().get(CODE).size()).isEqualTo(1);
-    assertThat(media.getDoc().get(CODE).get(0).asText()).isEqualTo(prefix + " code");
-    assertThat(media.getDoc().get(TERM).size()).isEqualTo(1);
-    assertThat(media.getDoc().get(TERM).get(0).asText()).isEqualTo(prefix + " term");
-    assertThat(media.getDoc().get(LINK).size()).isEqualTo(1);
-    assertThat(media.getDoc().get(LINK).get(0).asText()).isEqualTo(prefix + " link");
+    assertThat(media.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo(prefix + " code");
+    assertThat(media.getDoc().get(TERM.getValue()).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(TERM.getValue()).get(0).asText()).isEqualTo(prefix + " term");
+    assertThat(media.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
+    assertThat(media.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " link");
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
@@ -683,8 +683,8 @@ public class ResourceControllerIT {
     assertThat(copyrightEvent.getFirstType().getUri()).isEqualTo(COPYRIGHT_EVENT.getUri());
     assertThat(copyrightEvent.getResourceHash()).isNotNull();
     assertThat(copyrightEvent.getDoc().size()).isEqualTo(1);
-    assertThat(copyrightEvent.getDoc().get(DATE).size()).isEqualTo(1);
-    assertThat(copyrightEvent.getDoc().get(DATE).get(0).asText()).isEqualTo("copyright date value");
+    assertThat(copyrightEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
+    assertThat(copyrightEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("copyright date value");
     assertThat(copyrightEvent.getOutgoingEdges()).isEmpty();
   }
 
@@ -697,289 +697,292 @@ public class ResourceControllerIT {
   }
 
   private String toExtent() {
-    return String.join(".", toInstance(), arrayPath(EXTENT));
+    return String.join(".", toInstance(), arrayPath(EXTENT.getValue()));
   }
 
   private String toDimensions() {
-    return join(".", toInstance(), arrayPath(DIMENSIONS));
+    return join(".", toInstance(), arrayPath(DIMENSIONS.getValue()));
   }
 
   private String toEditionStatement() {
-    return join(".", toInstance(), arrayPath(EDITION_STATEMENT));
+    return join(".", toInstance(), arrayPath(EDITION_STATEMENT.getValue()));
   }
 
   private String toAccessLocationLink() {
-    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(LINK));
+    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toAccessLocationNote() {
-    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(NOTE));
+    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(NOTE.getValue()));
   }
 
   private String toResponsibilityStatement() {
-    return join(".", toInstance(), arrayPath(RESPONSIBILITY_STATEMENT));
+    return join(".", toInstance(), arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
 
   private String toProjectedProvisionDate() {
-    return join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE));
+    return join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE.getValue()));
   }
 
   private String toInstanceTitlePartName() {
     return join(".", toInstance(), arrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NAME));
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NAME.getValue()));
   }
 
   private String toInstanceTitlePartNumber() {
     return join(".", toInstance(), arrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NUMBER));
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NUMBER.getValue()));
   }
 
   private String toInstanceTitleMain() {
     return join(".", toInstance(), arrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(MAIN_TITLE));
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(MAIN_TITLE.getValue()));
   }
 
   private String toInstanceTitleNonSortNum() {
     return join(".", toInstance(), arrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(NON_SORT_NUM));
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(NON_SORT_NUM.getValue()));
   }
 
   private String toInstanceTitleSubtitle() {
     return join(".", toInstance(), arrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(SUBTITLE));
+      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(SUBTITLE.getValue()));
   }
 
   private String toIssuance() {
-    return join(".", toInstance(), arrayPath(ISSUANCE));
+    return join(".", toInstance(), arrayPath(ISSUANCE.getValue()));
   }
 
   private String toParallelTitlePartName() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
-      arrayPath(PART_NAME));
+      arrayPath(PART_NAME.getValue()));
   }
 
   private String toParallelTitlePartNumber() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
-      arrayPath(PART_NUMBER));
+      arrayPath(PART_NUMBER.getValue()));
   }
 
   private String toParallelTitleMain() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
-      arrayPath(MAIN_TITLE));
+      arrayPath(MAIN_TITLE.getValue()));
   }
 
   private String toParallelTitleDate() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
-      arrayPath(DATE));
+      arrayPath(DATE.getValue()));
   }
 
   private String toParallelTitleSubtitle() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
-      arrayPath(SUBTITLE));
+      arrayPath(SUBTITLE.getValue()));
   }
 
   private String toParallelTitleNote() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
-      arrayPath(NOTE));
+      arrayPath(NOTE.getValue()));
   }
 
   private String toVariantTitlePartName() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
-      arrayPath(PART_NAME));
+      arrayPath(PART_NAME.getValue()));
   }
 
   private String toVariantTitlePartNumber() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
-      arrayPath(PART_NUMBER));
+      arrayPath(PART_NUMBER.getValue()));
   }
 
   private String toVariantTitleMain() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
-      arrayPath(MAIN_TITLE));
+      arrayPath(MAIN_TITLE.getValue()));
   }
 
   private String toVariantTitleDate() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
-      arrayPath(DATE));
+      arrayPath(DATE.getValue()));
   }
 
   private String toVariantTitleSubtitle() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
-      arrayPath(SUBTITLE));
+      arrayPath(SUBTITLE.getValue()));
   }
 
   private String toVariantTitleType() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
-      arrayPath(VARIANT_TYPE));
+      arrayPath(VARIANT_TYPE.getValue()));
   }
 
   private String toVariantTitleNote() {
     return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
-      arrayPath(NOTE));
+      arrayPath(NOTE.getValue()));
   }
 
   private String toProviderEventDate(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(DATE));
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(DATE.getValue()));
   }
 
   private String toProviderEventName(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(NAME));
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toProviderEventPlaceName(PredicateDictionary predicate) {
     return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
-      arrayPath(NAME));
+      arrayPath(NAME.getValue()));
   }
 
   private String toProviderEventPlaceLink(PredicateDictionary predicate) {
     return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
-      arrayPath(LINK));
+      arrayPath(LINK.getValue()));
   }
 
   private String toProviderEventProviderDate(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_DATE));
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_DATE.getValue()));
   }
 
   private String toProviderEventSimplePlace(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(SIMPLE_PLACE));
+    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(SIMPLE_PLACE.getValue()));
   }
 
   private String toLccnValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(NAME));
+    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toLccnStatusValue() {
     return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()),
-      arrayPath(STATUS.getUri()), arrayPath(LABEL));
+      arrayPath(STATUS.getUri()), arrayPath(LABEL.getValue()));
   }
 
   private String toLccnStatusLink() {
     return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(STATUS.getUri()),
-      arrayPath(LINK));
+      arrayPath(LINK.getValue()));
   }
 
   private String toIsbnValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(NAME));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toIsbnQualifier() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(QUALIFIER));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(QUALIFIER.getValue()));
   }
 
   private String toIsbnStatusValue() {
     return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()),
-      arrayPath(STATUS.getUri()), arrayPath(LABEL));
+      arrayPath(STATUS.getUri()), arrayPath(LABEL.getValue()));
   }
 
   private String toIsbnStatusLink() {
     return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()),
-      arrayPath(STATUS.getUri()), arrayPath(LINK));
+      arrayPath(STATUS.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toEanValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(EAN_VALUE));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(EAN_VALUE.getValue()));
   }
 
   private String toEanQualifier() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(QUALIFIER));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(QUALIFIER.getValue()));
   }
 
   private String toLocalIdValue() {
     return join(".", toInstance(), arrayPath(MAP.getUri(), 3), path(ID_LOCAL.getUri()),
-      arrayPath(LOCAL_ID_VALUE));
+      arrayPath(LOCAL_ID_VALUE.getValue()));
   }
 
   private String toLocalIdAssigner() {
     return join(".", toInstance(), arrayPath(MAP.getUri(), 3), path(ID_LOCAL.getUri()),
-      arrayPath(ASSIGNING_SOURCE));
+      arrayPath(ASSIGNING_SOURCE.getValue()));
   }
 
   private String toOtherIdValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()), arrayPath(NAME));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toOtherIdQualifier() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()), arrayPath(QUALIFIER));
+    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()),
+      arrayPath(QUALIFIER.getValue()));
   }
 
   private String toCarrierCode() {
-    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(CODE));
+    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(CODE.getValue()));
   }
 
   private String toCarrierLink() {
-    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(LINK));
+    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toCarrierTerm() {
-    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(TERM));
+    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(TERM.getValue()));
   }
 
   private String toCopyrightDate() {
-    return join(".", toInstance(), arrayPath(COPYRIGHT.getUri()), arrayPath(DATE));
+    return join(".", toInstance(), arrayPath(COPYRIGHT.getUri()), arrayPath(DATE.getValue()));
   }
 
   private String toMediaCode() {
-    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(CODE));
+    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(CODE.getValue()));
   }
 
   private String toMediaLink() {
-    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(LINK));
+    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toMediaTerm() {
-    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM));
+    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM.getValue()));
   }
 
   private String toWorkTargetAudience() {
-    return join(".", toWork(), arrayPath(TARGET_AUDIENCE));
+    return join(".", toWork(), arrayPath(TARGET_AUDIENCE.getValue()));
   }
 
   private String toWorkTableOfContents() {
-    return join(".", toWork(), arrayPath(TABLE_OF_CONTENTS));
+    return join(".", toWork(), arrayPath(TABLE_OF_CONTENTS.getValue()));
   }
 
   private String toWorkSummary() {
-    return join(".", toWork(), arrayPath(SUMMARY));
+    return join(".", toWork(), arrayPath(SUMMARY.getValue()));
   }
 
   private String toWorkLanguage() {
-    return join(".", toWork(), arrayPath(LANGUAGE));
+    return join(".", toWork(), arrayPath(LANGUAGE.getValue()));
   }
 
   private String toWorkDeweySource() {
-    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE));
+    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE.getValue()));
   }
 
   private String toWorkDeweyCode() {
-    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE));
+    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
   }
 
   private String toWorkContributorOrgLcnafId() {
-    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()), arrayPath(LCNAF_ID));
+    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
   }
 
   private String toWorkContributorOrgName() {
-    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()), arrayPath(NAME));
+    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+      arrayPath(NAME.getValue()));
   }
 
   private String toWorkCreatorPersonLcnafId() {
-    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(LCNAF_ID));
+    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(LCNAF_ID.getValue()));
   }
 
   private String toWorkCreatorPersonName() {
-    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME));
+    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toWorkContentTerm() {
-    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(TERM));
+    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
   }
 
   private String toWorkContentCode() {
-    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(CODE));
+    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(CODE.getValue()));
   }
 
   private String toWorkContentLink() {
-    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(LINK));
+    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toErrorType() {

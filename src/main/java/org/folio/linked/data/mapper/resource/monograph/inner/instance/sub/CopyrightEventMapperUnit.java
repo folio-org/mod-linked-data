@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.Property.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -43,7 +43,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode toDoc(CopyrightEvent copyrightEvent) {
     var map = new HashMap<String, List<String>>();
-    map.put(DATE, copyrightEvent.getDate());
+    map.put(DATE.getValue(), copyrightEvent.getDate());
     return coreMapper.toJson(map);
   }
 }

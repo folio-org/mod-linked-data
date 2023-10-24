@@ -2,8 +2,8 @@ package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.ident
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
-import static org.folio.ld.dictionary.Property.NAME;
-import static org.folio.ld.dictionary.Property.QUALIFIER;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -52,8 +52,8 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(Isbn dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(NAME, dto.getValue());
-    map.put(QUALIFIER, dto.getQualifier());
+    map.put(NAME.getValue(), dto.getValue());
+    map.put(QUALIFIER.getValue(), dto.getQualifier());
     return coreMapper.toJson(map);
   }
 }

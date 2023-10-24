@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
-import static org.folio.ld.dictionary.Property.LINK;
-import static org.folio.ld.dictionary.Property.NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -45,8 +45,8 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(AccessLocation dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(LINK, dto.getLink());
-    map.put(NOTE, dto.getNote());
+    map.put(LINK.getValue(), dto.getLink());
+    map.put(NOTE.getValue(), dto.getNote());
     return coreMapper.toJson(map);
   }
 }

@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.common;
 
 import static java.util.Objects.nonNull;
-import static org.folio.ld.dictionary.Property.LABEL_RDF;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.linked.data.util.Constants.ERROR_JSON_PROCESSING;
 import static org.folio.linked.data.util.Constants.TYPE;
 
@@ -111,7 +111,7 @@ public class CoreMapperImpl implements CoreMapper {
     } else {
       node = mapper.createObjectNode();
     }
-    node.put(LABEL_RDF, res.getLabel());
+    node.put(LABEL_RDF.getValue(), res.getLabel());
     node.put(TYPE, res.getFirstType().getHash());
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getUri();

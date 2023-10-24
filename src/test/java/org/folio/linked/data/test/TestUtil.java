@@ -1,10 +1,10 @@
 package org.folio.linked.data.test;
 
 import static java.util.Objects.nonNull;
-import static org.folio.ld.dictionary.Property.DIMENSIONS;
-import static org.folio.ld.dictionary.Property.LABEL;
-import static org.folio.ld.dictionary.Property.LINK;
-import static org.folio.ld.dictionary.Property.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.jeasy.random.FieldPredicates.named;
@@ -84,7 +84,7 @@ public class TestUtil {
   public static String getBibframeSampleTest(String changedField) {
     JsonNode jsonNode = getBibframeJsonNodeSample();
     JsonNode instance = jsonNode.get("resource").get(INSTANCE.getUri());
-    ((ArrayNode) instance.withArray(DIMENSIONS)).set(0, new TextNode(changedField));
+    ((ArrayNode) instance.withArray(DIMENSIONS.getValue())).set(0, new TextNode(changedField));
     return jsonNode.toString();
   }
 
@@ -125,13 +125,13 @@ public class TestUtil {
   public static ObjectNode getObjectNode(String label, String name, String link) {
     var node = OBJECT_MAPPER.createObjectNode();
     if (nonNull(label)) {
-      node.put(LABEL, label);
+      node.put(LABEL.getValue(), label);
     }
     if (nonNull(label)) {
-      node.put(NAME, name);
+      node.put(NAME.getValue(), name);
     }
     if (nonNull(link)) {
-      node.put(LINK, link);
+      node.put(LINK.getValue(), link);
     }
     return node;
   }

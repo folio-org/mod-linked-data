@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.identified;
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.Property.EAN_VALUE;
-import static org.folio.ld.dictionary.Property.QUALIFIER;
+import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -47,8 +47,8 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(Ean dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(EAN_VALUE, dto.getValue());
-    map.put(QUALIFIER, dto.getQualifier());
+    map.put(EAN_VALUE.getValue(), dto.getValue());
+    map.put(QUALIFIER.getValue(), dto.getQualifier());
     return coreMapper.toJson(map);
   }
 }

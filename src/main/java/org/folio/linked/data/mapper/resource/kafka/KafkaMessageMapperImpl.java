@@ -5,14 +5,14 @@ import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.Property.DATE;
-import static org.folio.ld.dictionary.Property.EAN_VALUE;
-import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.Property.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.Property.MAIN_TITLE;
-import static org.folio.ld.dictionary.Property.NAME;
-import static org.folio.ld.dictionary.Property.PROVIDER_DATE;
-import static org.folio.ld.dictionary.Property.SUBTITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
 
@@ -42,7 +42,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     bibframeIndex.setIdentifiers(extractIdentifiers(instance));
     bibframeIndex.setContributors(extractContributors(instance));
     bibframeIndex.setPublications(extractPublications(instance));
-    bibframeIndex.setEditionStatement(getValue(instance.getDoc(), EDITION_STATEMENT));
+    bibframeIndex.setEditionStatement(getValue(instance.getDoc(), EDITION_STATEMENT.getValue()));
     return bibframeIndex;
   }
 
@@ -62,8 +62,8 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .flatMap(t -> {
         var titles = new ArrayList<BibframeTitlesInner>();
-        addTitle(t, MAIN_TITLE, titles, BibframeTitlesInner.TypeEnum.MAIN);
-        addTitle(t, SUBTITLE, titles, BibframeTitlesInner.TypeEnum.SUB);
+        addTitle(t, MAIN_TITLE.getValue(), titles, BibframeTitlesInner.TypeEnum.MAIN);
+        addTitle(t, SUBTITLE.getValue(), titles, BibframeTitlesInner.TypeEnum.SUB);
         return titles.stream();
       })
       .toList();
@@ -85,7 +85,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .filter(r -> stream(TypeEnum.values())
         .anyMatch(typeEnum -> r.getFirstType().getUri().contains(typeEnum.getValue())))
       .map(ir -> new BibframeIdentifiersInner()
-        .value(getValue(ir.getDoc(), NAME, EAN_VALUE, LOCAL_ID_VALUE))
+        .value(getValue(ir.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue()))
         .type(toTypeEnum(ir.getFirstType())))
       .toList();
   }
@@ -114,8 +114,8 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .filter(re -> PE_PUBLICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframePublicationsInner()
-        .publisher(getValue(ir.getDoc(), NAME))
-        .dateOfPublication(getValue(ir.getDoc(), DATE, PROVIDER_DATE)))
+        .publisher(getValue(ir.getDoc(), NAME.getValue()))
+        .dateOfPublication(getValue(ir.getDoc(), DATE.getValue(), PROVIDER_DATE.getValue())))
       .toList();
   }
 

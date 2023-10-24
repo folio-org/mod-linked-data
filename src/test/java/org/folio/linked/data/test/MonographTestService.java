@@ -18,37 +18,37 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.Property.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.Property.CODE;
-import static org.folio.ld.dictionary.Property.DATE;
-import static org.folio.ld.dictionary.Property.DIMENSIONS;
-import static org.folio.ld.dictionary.Property.EAN_VALUE;
-import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.Property.EXTENT;
-import static org.folio.ld.dictionary.Property.ISSUANCE;
-import static org.folio.ld.dictionary.Property.LABEL;
-import static org.folio.ld.dictionary.Property.LANGUAGE;
-import static org.folio.ld.dictionary.Property.LCNAF_ID;
-import static org.folio.ld.dictionary.Property.LINK;
-import static org.folio.ld.dictionary.Property.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.Property.MAIN_TITLE;
-import static org.folio.ld.dictionary.Property.NAME;
-import static org.folio.ld.dictionary.Property.NON_SORT_NUM;
-import static org.folio.ld.dictionary.Property.NOTE;
-import static org.folio.ld.dictionary.Property.PART_NAME;
-import static org.folio.ld.dictionary.Property.PART_NUMBER;
-import static org.folio.ld.dictionary.Property.PROJECTED_PROVISION_DATE;
-import static org.folio.ld.dictionary.Property.PROVIDER_DATE;
-import static org.folio.ld.dictionary.Property.QUALIFIER;
-import static org.folio.ld.dictionary.Property.RESPONSIBILITY_STATEMENT;
-import static org.folio.ld.dictionary.Property.SIMPLE_PLACE;
-import static org.folio.ld.dictionary.Property.SOURCE;
-import static org.folio.ld.dictionary.Property.SUBTITLE;
-import static org.folio.ld.dictionary.Property.SUMMARY;
-import static org.folio.ld.dictionary.Property.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.Property.TARGET_AUDIENCE;
-import static org.folio.ld.dictionary.Property.TERM;
-import static org.folio.ld.dictionary.Property.VARIANT_TYPE;
+import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
+import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
+import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
+import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
+import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
+import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
+import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
+import static org.folio.ld.dictionary.PropertyDictionary.TERM;
+import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
@@ -69,8 +69,10 @@ import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -331,7 +333,7 @@ public class MonographTestService {
     ).setLabel(providerEventType + " providerPlace label");
   }
 
-  private Resource createResource(Map<String, List<?>> properties, ResourceTypeDictionary type,
+  private Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic, ResourceTypeDictionary type,
                                   Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
     var resource = new Resource();
     pred2OutgoingResources.keySet()
@@ -341,6 +343,8 @@ public class MonographTestService {
         .map(target -> new ResourceEdge(resource, target, pred)))
       .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
+    Map<String, List<String>> properties = propertiesDic.entrySet().stream()
+      .collect(Collectors.toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
     resource.addType(type);
     resource.setResourceHash(coreMapper.hash(resource));

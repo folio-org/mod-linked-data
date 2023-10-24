@@ -11,12 +11,12 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.Property.DIMENSIONS;
-import static org.folio.ld.dictionary.Property.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.Property.EXTENT;
-import static org.folio.ld.dictionary.Property.ISSUANCE;
-import static org.folio.ld.dictionary.Property.PROJECTED_PROVISION_DATE;
-import static org.folio.ld.dictionary.Property.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
+import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
+import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -98,12 +98,12 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
 
   private JsonNode getDoc(Instance dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(EXTENT, dto.getExtent());
-    map.put(DIMENSIONS, dto.getDimensions());
-    map.put(RESPONSIBILITY_STATEMENT, dto.getResponsibilityStatement());
-    map.put(EDITION_STATEMENT, dto.getEdition());
-    map.put(PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
-    map.put(ISSUANCE, dto.getIssuance());
+    map.put(EXTENT.getValue(), dto.getExtent());
+    map.put(DIMENSIONS.getValue(), dto.getDimensions());
+    map.put(RESPONSIBILITY_STATEMENT.getValue(), dto.getResponsibilityStatement());
+    map.put(EDITION_STATEMENT.getValue(), dto.getEdition());
+    map.put(PROJECTED_PROVISION_DATE.getValue(), dto.getProjectProvisionDate());
+    map.put(ISSUANCE.getValue(), dto.getIssuance());
     return coreMapper.toJson(map);
   }
 

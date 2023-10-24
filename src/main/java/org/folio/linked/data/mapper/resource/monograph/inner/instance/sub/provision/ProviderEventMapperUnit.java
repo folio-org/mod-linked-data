@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.provision;
 
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
-import static org.folio.ld.dictionary.Property.DATE;
-import static org.folio.ld.dictionary.Property.NAME;
-import static org.folio.ld.dictionary.Property.PROVIDER_DATE;
-import static org.folio.ld.dictionary.Property.SIMPLE_PLACE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -57,10 +57,10 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
 
   private JsonNode toDoc(ProviderEvent providerEvent) {
     var map = new HashMap<String, List<String>>();
-    map.put(DATE, providerEvent.getDate());
-    map.put(NAME, providerEvent.getName());
-    map.put(PROVIDER_DATE, providerEvent.getProviderDate());
-    map.put(SIMPLE_PLACE, providerEvent.getSimplePlace());
+    map.put(DATE.getValue(), providerEvent.getDate());
+    map.put(NAME.getValue(), providerEvent.getName());
+    map.put(PROVIDER_DATE.getValue(), providerEvent.getProviderDate());
+    map.put(SIMPLE_PLACE.getValue(), providerEvent.getSimplePlace());
     return coreMapper.toJson(map);
   }
 }

@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
-import static org.folio.ld.dictionary.Property.LINK;
-import static org.folio.ld.dictionary.Property.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
@@ -62,8 +62,8 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private JsonNode getDoc(Place place) {
     var map = new HashMap<String, List<String>>();
-    map.put(NAME, place.getName());
-    map.put(LINK, place.getLink());
+    map.put(NAME.getValue(), place.getName());
+    map.put(LINK.getValue(), place.getLink());
     return coreMapper.toJson(map);
   }
 

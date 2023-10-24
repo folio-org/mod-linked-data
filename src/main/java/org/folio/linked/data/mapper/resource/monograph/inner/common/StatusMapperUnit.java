@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
-import static org.folio.ld.dictionary.Property.LABEL;
-import static org.folio.ld.dictionary.Property.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
@@ -65,8 +65,8 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private JsonNode getDoc(Status status) {
     var map = new HashMap<String, List<String>>();
-    map.put(LINK, status.getLink());
-    map.put(LABEL, status.getValue());
+    map.put(LINK.getValue(), status.getLink());
+    map.put(LABEL.getValue(), status.getValue());
     return coreMapper.toJson(map);
   }
 

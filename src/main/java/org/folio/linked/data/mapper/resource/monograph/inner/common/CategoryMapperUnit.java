@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.common;
 
-import static org.folio.ld.dictionary.Property.CODE;
-import static org.folio.ld.dictionary.Property.LINK;
-import static org.folio.ld.dictionary.Property.TERM;
+import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,9 +44,9 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
 
   private JsonNode getDoc(Category dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(CODE, dto.getCode());
-    map.put(TERM, dto.getTerm());
-    map.put(LINK, dto.getLink());
+    map.put(CODE.getValue(), dto.getCode());
+    map.put(TERM.getValue(), dto.getTerm());
+    map.put(LINK.getValue(), dto.getLink());
     return coreMapper.toJson(map);
   }
 }
