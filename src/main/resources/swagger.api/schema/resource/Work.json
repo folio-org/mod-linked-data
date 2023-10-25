@@ -13,7 +13,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/statementOfResponsibility"
+          "x-json-property": "http://bibfra.me/vocab/marc/responsibilityStatement"
         },
         "targetAudience": {
           "type": "array",
