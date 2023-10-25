@@ -446,7 +446,7 @@ public class ResourceControllerIT {
     validateCategory(edgeIterator.next(), instance, MEDIA);
     validateCategory(edgeIterator.next(), instance, CARRIER);
     validateCopyrightDate(edgeIterator.next(), instance);
-    edgeIterator.next();
+    validateInstantiates(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -673,6 +673,18 @@ public class ResourceControllerIT {
     assertThat(media.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(media.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " link");
     assertThat(media.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateInstantiates(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
+    var instantiates = edge.getTarget();
+    assertThat(instantiates.getResourceHash()).isNotNull();
+    assertThat(instantiates.getDoc().size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).get(0).asText()).isEqualTo("statement of responsibility");
+    assertThat(instantiates.getOutgoingEdges()).isEmpty();
   }
 
   private void validateCopyrightDate(ResourceEdge edge, Resource source) {
