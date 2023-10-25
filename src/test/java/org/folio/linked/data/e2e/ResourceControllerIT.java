@@ -425,7 +425,7 @@ public class ResourceControllerIT {
     validateLiteral(instance, RESPONSIBILITY_STATEMENT, "responsibility statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE, "projected provision date");
     validateLiteral(instance, ISSUANCE, "single unit");
-    assertThat(instance.getOutgoingEdges()).hasSize(16);
+    assertThat(instance.getOutgoingEdges()).hasSize(17);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateInstanceTitle(edgeIterator.next(), instance);
@@ -444,6 +444,7 @@ public class ResourceControllerIT {
     validateCategory(edgeIterator.next(), instance, MEDIA_PRED, CATEGORY);
     validateCategory(edgeIterator.next(), instance, CARRIER_PRED, CATEGORY);
     validateCopyrightDate(edgeIterator.next(), instance);
+    System.out.println(edgeIterator.next());
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 

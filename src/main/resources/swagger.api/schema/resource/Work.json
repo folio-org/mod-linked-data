@@ -8,6 +8,13 @@
     {
       "type": "object",
       "properties": {
+        "responsibiltyStatement": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/statementOfResponsibility"
+        },
         "targetAudience": {
           "type": "array",
           "items": {

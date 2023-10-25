@@ -302,6 +302,13 @@
       ],
       "http://bibfra.me/vocab/marc/issuance": [
         "single unit"
+      ],
+      "http://bibfra.me/vocab/lite/instantiates": [
+        {
+          "http://bibfra.me/vocab/marc/statementOfResponsibility": [
+            "statement of responsibility"
+          ]
+        }
       ]
     }
   }

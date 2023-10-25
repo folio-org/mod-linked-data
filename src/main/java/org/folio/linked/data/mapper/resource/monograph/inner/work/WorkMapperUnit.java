@@ -1,10 +1,18 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
 import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
+import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
+import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
+import static org.folio.linked.data.util.BibframeConstants.SUMMARY;
+import static org.folio.linked.data.util.BibframeConstants.TABLE_OF_CONTENTS;
+import static org.folio.linked.data.util.BibframeConstants.TARGET_AUDIENCE;
 import static org.folio.linked.data.util.BibframeConstants.WORK;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
-import org.apache.commons.lang3.NotImplementedException;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
@@ -12,6 +20,7 @@ import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.dictionary.ResourceTypeService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -22,10 +31,15 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   private final SubResourceMapper mapper;
   private final AgentRoleAssigner agentRoleAssigner;
 
-  public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner) {
+  private final ResourceTypeService resourceTypeService;
+
+
+  public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner,
+                        ResourceTypeService resourceTypeService) {
     this.coreMapper = coreMapper;
     this.mapper = mapper;
     this.agentRoleAssigner = roleAssigner;
+    this.resourceTypeService = resourceTypeService;
   }
 
   @Override
@@ -48,7 +62,22 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
-    // Not implemented yet as we don't support PUT / POST APIs for Work
-    throw new NotImplementedException();
+    var work = (Work) dto;
+    var resource = new Resource();
+    resource.setLabel(getFirstValue(work::getResponsibiltyStatement));
+    resource.addType(resourceTypeService.get(WORK));
+    resource.setDoc(toDoc(work));
+    resource.setResourceHash(coreMapper.hash(resource));
+    return resource;
+  }
+
+  private JsonNode toDoc(Work work) {
+    var map = new HashMap<String, List<String>>();
+    map.put(RESPONSIBILITY_STATEMENT, work.getResponsibiltyStatement());
+    map.put(TARGET_AUDIENCE, work.getTargetAudience());
+    map.put(LANGUAGE, work.getLanguage());
+    map.put(SUMMARY, work.getSummary());
+    map.put(TABLE_OF_CONTENTS, work.getTableOfContents());
+    return coreMapper.toJson(map);
   }
 }
