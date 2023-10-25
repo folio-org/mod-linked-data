@@ -1,85 +1,23 @@
 package org.folio.linked.data.test;
 
-import static java.util.Collections.emptyMap;
-import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static java.util.Collections.*;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
-import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
-import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
-import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
-import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
-import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
-import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
-import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
-import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
-import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.CODE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
-import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
-import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
-import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
-import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
-import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
-import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.NAME;
-import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
-import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
-import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
-import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
-import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
-import static org.folio.ld.dictionary.PropertyDictionary.TERM;
-import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.test.TestUtil.getJsonNode;
+import static org.folio.ld.dictionary.PredicateDictionary.*;
+import static org.folio.ld.dictionary.PropertyDictionary.*;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.*;
+import static org.folio.linked.data.test.TestUtil.*;
+import lombok.*;
+import org.folio.ld.dictionary.*;
+import org.folio.linked.data.mapper.resource.common.*;
+import org.folio.linked.data.model.entity.*;
+import org.springframework.stereotype.*;
+import org.springframework.transaction.annotation.*;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.resource.common.CoreMapper;
-import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.*;
+import java.util.stream.*;
 
 @Service
 @Transactional
@@ -233,7 +171,6 @@ public class MonographTestService {
       Map.of(
         EXTENT, List.of("extent info"),
         DIMENSIONS, List.of("20 cm"),
-        RESPONSIBILITY_STATEMENT, List.of("responsibility statement"),
         EDITION_STATEMENT, List.of("edition statement"),
         PROJECTED_PROVISION_DATE, List.of("projected provision date"),
         ISSUANCE, List.of("single unit")

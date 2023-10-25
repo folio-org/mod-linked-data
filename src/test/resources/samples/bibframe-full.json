@@ -291,9 +291,6 @@
       "http://bibfra.me/vocab/marc/dimensions": [
         "20 cm"
       ],
-      "http://bibfra.me/vocab/marc/statementOfResponsibility": [
-        "responsibility statement"
-      ],
       "http://bibfra.me/vocab/marc/edition": [
         "edition statement"
       ],

@@ -382,7 +382,6 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
       .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
-      .andExpect(jsonPath(toResponsibilityStatement(), equalTo("responsibility statement")))
       .andExpect(jsonPath(toVariantTitlePartName(), equalTo("Variant: partName")))
       .andExpect(jsonPath(toVariantTitlePartNumber(), equalTo("Variant: partNumber")))
       .andExpect(jsonPath(toVariantTitleMain(), equalTo("Variant: mainTitle")))
@@ -421,10 +420,9 @@ public class ResourceControllerIT {
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getDoc().size()).isEqualTo(6);
+    assertThat(instance.getDoc().size()).isEqualTo(5);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
-    validateLiteral(instance, RESPONSIBILITY_STATEMENT.getValue(), "responsibility statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
     assertThat(instance.getOutgoingEdges()).hasSize(17);
@@ -727,10 +725,6 @@ public class ResourceControllerIT {
 
   private String toAccessLocationNote() {
     return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(NOTE.getValue()));
-  }
-
-  private String toResponsibilityStatement() {
-    return join(".", toInstance(), arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
 
   private String toProjectedProvisionDate() {
