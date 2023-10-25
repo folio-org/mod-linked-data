@@ -2,13 +2,11 @@ package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
-import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
-import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
-import static org.folio.linked.data.util.BibframeConstants.SUMMARY;
-import static org.folio.linked.data.util.BibframeConstants.TABLE_OF_CONTENTS;
-import static org.folio.linked.data.util.BibframeConstants.TARGET_AUDIENCE;
-import static org.folio.linked.data.util.BibframeConstants.WORK;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
+import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
+import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import java.util.HashMap;
@@ -75,11 +73,11 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode toDoc(Work work) {
     var map = new HashMap<String, List<String>>();
-    map.put(RESPONSIBILITY_STATEMENT, work.getResponsibiltyStatement());
-    map.put(TARGET_AUDIENCE, work.getTargetAudience());
-    map.put(LANGUAGE, work.getLanguage());
-    map.put(SUMMARY, work.getSummary());
-    map.put(TABLE_OF_CONTENTS, work.getTableOfContents());
+    map.put(RESPONSIBILITY_STATEMENT.getValue(), work.getResponsibiltyStatement());
+    map.put(TARGET_AUDIENCE.getValue(), work.getTargetAudience());
+    map.put(LANGUAGE.getValue(), work.getLanguage());
+    map.put(SUMMARY.getValue(), work.getSummary());
+    map.put(TABLE_OF_CONTENTS.getValue(), work.getTableOfContents());
     return coreMapper.toJson(map);
   }
 }
