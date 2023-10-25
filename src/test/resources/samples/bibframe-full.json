@@ -305,7 +305,7 @@
       ],
       "http://bibfra.me/vocab/lite/instantiates": [
         {
-          "http://bibfra.me/vocab/marc/statementOfResponsibility": [
+          "http://bibfra.me/vocab/marc/responsibilityStatement": [
             "statement of responsibility"
           ]
         }
