@@ -15,12 +15,11 @@ import java.util.function.Consumer;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.monograph.inner.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.dictionary.ResourceTypeService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -31,15 +30,11 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   private final SubResourceMapper mapper;
   private final AgentRoleAssigner agentRoleAssigner;
 
-  private final ResourceTypeService resourceTypeService;
 
-
-  public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner,
-                        ResourceTypeService resourceTypeService) {
+  public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner) {
     this.coreMapper = coreMapper;
     this.mapper = mapper;
     this.agentRoleAssigner = roleAssigner;
-    this.resourceTypeService = resourceTypeService;
   }
 
   @Override
@@ -61,11 +56,11 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var work = (Work) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(work::getResponsibiltyStatement));
-    resource.addType(resourceTypeService.get(WORK));
+    resource.addType(WORK);
     resource.setDoc(toDoc(work));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
