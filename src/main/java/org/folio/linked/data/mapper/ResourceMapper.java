@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper;
 
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.HashMap;
@@ -30,17 +30,18 @@ import org.springframework.data.domain.Page;
 public abstract class ResourceMapper {
 
   private static final Map<Class<? extends ResourceField>, String> DTO_CLASS_TO_TYPE = new HashMap<>();
+
+  static {
+    DTO_CLASS_TO_TYPE.put(InstanceField.class, INSTANCE.getUri());
+  }
+
   @Autowired
   private InnerResourceMapper innerMapper;
   @Autowired
   private KafkaMessageMapper kafkaMessageMapper;
 
-  static {
-    DTO_CLASS_TO_TYPE.put(InstanceField.class, INSTANCE);
-  }
-
   @Mapping(target = "id", source = "resourceHash")
-  @Mapping(target = "type", expression = "java(resourceShortInfo.getFirstType().getTypeUri())")
+  @Mapping(target = "type", expression = "java(resourceShortInfo.getFirstType().getUri())")
   public abstract ResourceShort map(ResourceShortInfo resourceShortInfo);
 
   public abstract ResourceShortInfoPage map(Page<ResourceShort> page);
@@ -71,7 +72,7 @@ public abstract class ResourceMapper {
     resource.getOutgoingEdges().forEach(edge -> {
       edge.getId().setSourceHash(edge.getSource().getResourceHash());
       edge.getId().setTargetHash(edge.getTarget().getResourceHash());
-      edge.getId().setPredicateHash(edge.getPredicate().getPredicateHash());
+      edge.getId().setPredicateHash(edge.getPredicate().getHash());
       setEdgesId(edge.getTarget());
     });
   }

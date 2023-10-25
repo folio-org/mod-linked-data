@@ -18,6 +18,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 
 @Data
@@ -49,7 +50,13 @@ public class ResourceEdge {
   @ManyToOne
   @MapsId("predicateHash")
   @JoinColumn(name = "predicate_hash", nullable = false)
-  private Predicate predicate;
+  private PredicateEntity predicate;
+
+  public ResourceEdge(@NonNull Resource source, @NonNull Resource target, @NonNull Predicate predicate) {
+    this.source = source;
+    this.target = target;
+    this.predicate = new PredicateEntity(predicate.getHash(), predicate.getUri());
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -62,11 +69,11 @@ public class ResourceEdge {
     ResourceEdge that = (ResourceEdge) o;
     return Objects.equals(source.getResourceHash(), that.source.getResourceHash())
       && Objects.equals(target.getResourceHash(), that.target.getResourceHash())
-      && Objects.equals(predicate.getPredicateHash(), that.predicate.getPredicateHash());
+      && Objects.equals(predicate.getHash(), that.predicate.getHash());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(source.getResourceHash(), target.getResourceHash(), predicate.getPredicateHash());
+    return Objects.hash(source.getResourceHash(), target.getResourceHash(), predicate.getHash());
   }
 }

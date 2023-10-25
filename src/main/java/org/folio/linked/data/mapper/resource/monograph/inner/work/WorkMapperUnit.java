@@ -1,5 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeConstants.INSTANTIATES_PRED;
 import static org.folio.linked.data.util.BibframeConstants.LANGUAGE;
 import static org.folio.linked.data.util.BibframeConstants.RESPONSIBILITY_STATEMENT;
@@ -25,7 +27,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = WORK, predicate = INSTANTIATES_PRED, dtoClass = Work.class)
+@MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = Work.class)
 public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;

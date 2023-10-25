@@ -1,8 +1,8 @@
 package org.folio.linked.data.configuration.json.deserialization.instance;
 
-import static org.folio.linked.data.util.BibframeConstants.INSTANCE_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.PARALLEL_TITLE;
-import static org.folio.linked.data.util.BibframeConstants.VARIANT_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_SUB_ELEMENT;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -22,11 +22,11 @@ public class TitleDeserializer extends JsonDeserializer<InstanceAllOfTitleInner>
   public InstanceAllOfTitleInner deserialize(JsonParser jp, DeserializationContext deserializationContext)
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
-    if (node.has(INSTANCE_TITLE)) {
+    if (node.has(TITLE.getUri())) {
       return jp.getCodec().treeToValue(node, InstanceTitleField.class);
-    } else if (node.has(PARALLEL_TITLE)) {
+    } else if (node.has(PARALLEL_TITLE.getUri())) {
       return jp.getCodec().treeToValue(node, ParallelTitleField.class);
-    } else if (node.has(VARIANT_TITLE)) {
+    } else if (node.has(VARIANT_TITLE.getUri())) {
       return jp.getCodec().treeToValue(node, VariantTitleField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";

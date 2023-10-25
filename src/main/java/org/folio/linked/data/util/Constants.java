@@ -19,4 +19,6 @@ public class Constants {
   public static final String IS_NOT_FOUND = "] is not found";
   public static final String EXISTS_ALREADY = "] exists already";
   public static final String SEARCH_RESOURCE_NAME = "bibframe";
+  public static final String TYPE = "type";
+  public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";
 }

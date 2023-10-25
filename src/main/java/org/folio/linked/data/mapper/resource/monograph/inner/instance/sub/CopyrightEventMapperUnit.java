@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.instance.sub;
 
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_EVENT;
-import static org.folio.linked.data.util.BibframeConstants.COPYRIGHT_PRED;
-import static org.folio.linked.data.util.BibframeConstants.DATE;
+import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,18 +13,15 @@ import org.folio.linked.data.domain.dto.CopyrightEvent;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.dictionary.ResourceTypeService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = COPYRIGHT_EVENT, predicate = COPYRIGHT_PRED, dtoClass = CopyrightEvent.class)
+@MapperUnit(type = COPYRIGHT_EVENT, predicate = COPYRIGHT, dtoClass = CopyrightEvent.class)
 public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final ResourceTypeService resourceTypeService;
 
   @Override
   public Instance toDto(Resource source, Instance destination) {
@@ -34,11 +31,11 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   }
 
   @Override
-  public Resource toEntity(Object dto, String predicate, SubResourceMapper subResourceMapper) {
+  public Resource toEntity(Object dto) {
     var copyrightEvent = (CopyrightEvent) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(copyrightEvent::getDate));
-    resource.addType(resourceTypeService.get(COPYRIGHT_EVENT));
+    resource.addType(COPYRIGHT_EVENT);
     resource.setDoc(toDoc(copyrightEvent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
@@ -46,7 +43,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode toDoc(CopyrightEvent copyrightEvent) {
     var map = new HashMap<String, List<String>>();
-    map.put(DATE, copyrightEvent.getDate());
+    map.put(DATE.getValue(), copyrightEvent.getDate());
     return coreMapper.toJson(map);
   }
 }

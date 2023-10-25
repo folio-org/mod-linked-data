@@ -11,13 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
-import org.folio.linked.data.util.BibframeConstants;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.AfterEach;
@@ -86,7 +86,8 @@ class ReIndexControllerIT {
     var resource2 = resourceMapper.toEntity(bibframeRequest2);
     resourceRepo.save(resource2);
 
-    return resourceRepo.findResourcesByTypeFull(Set.of(BibframeConstants.INSTANCE), Pageable.ofSize(10000))
+    return resourceRepo.findResourcesByTypeFull(Set.of(ResourceTypeDictionary.INSTANCE.getUri()),
+        Pageable.ofSize(10000))
       .getContent();
   }
 }

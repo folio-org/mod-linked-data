@@ -31,7 +31,7 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
   public InnerResourceMapperImpl(List<InnerResourceMapperUnit> mapperUnits, ObjectMapper objectMapper) {
     mapperUnits.forEach(mapperUnit -> {
       var annotation = mapperUnit.getClass().getAnnotation(MapperUnit.class);
-      this.mapperUnits.put(annotation.type(), mapperUnit);
+      this.mapperUnits.put(annotation.type().getUri(), mapperUnit);
     });
     this.objectMapper = objectMapper;
   }
@@ -41,7 +41,7 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
     // Of all the types of the resource, take the first one that has a mapper
     var mapper = source.getTypes()
       .stream()
-      .map(type -> getMapperUnit(type.getTypeUri()))
+      .map(type -> getMapperUnit(type.getUri()))
       .flatMap(Optional::stream)
       .findFirst();
 

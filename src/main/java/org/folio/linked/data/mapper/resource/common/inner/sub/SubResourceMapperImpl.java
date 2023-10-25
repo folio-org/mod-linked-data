@@ -14,6 +14,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.api.Predicate;
+import org.folio.ld.dictionary.api.ResourceType;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.ValidationException;
@@ -32,18 +34,18 @@ public class SubResourceMapperImpl implements SubResourceMapper {
 
   @SneakyThrows
   @Override
-  public <P> Resource toEntity(@NonNull Object dto, @NonNull String predicate, @NonNull Class<P> parentDtoClass) {
+  public <P> Resource toEntity(@NonNull Object dto, Predicate predicate, @NonNull Class<P> parentDtoClass) {
     try {
       return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
-        .map(mapper -> mapper.toEntity(dto, predicate, this))
+        .map(mapper -> mapper.toEntity(dto))
         .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + dto.getClass().getSimpleName()
-          + IS_NOT_SUPPORTED_FOR_PREDICATE + predicate + RIGHT_SQUARE_BRACKET)
+          + IS_NOT_SUPPORTED_FOR_PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET)
         );
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
       log.warn("Exception during toEntity mapping", e);
-      throw new ValidationException(predicate, objectMapper.writeValueAsString(dto));
+      throw new ValidationException(predicate.getUri(), objectMapper.writeValueAsString(dto));
     }
   }
 
@@ -53,7 +55,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
     // Of all the types of the resource, take the first one that has a mapper
     var resourceMapper = source.getTarget().getTypes()
       .stream()
-      .map(type -> getMapperUnit(type.getTypeUri(), source.getPredicate().getLabel(), destination.getClass(), null))
+      .map(type -> getMapperUnit(type, source.getPredicate(), destination.getClass(), null))
       .flatMap(Optional::stream)
       .findFirst();
 
@@ -61,19 +63,20 @@ public class SubResourceMapperImpl implements SubResourceMapper {
       .map(mapper -> ((SubResourceMapperUnit<T>) mapper).toDto(source.getTarget(), destination))
       .orElseGet(() -> {
         log.warn(RESOURCE_WITH_GIVEN_ID + source.getTarget().getResourceHash() + RIGHT_SQUARE_BRACKET
-          + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getLabel()
+          + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getUri()
           + RIGHT_SQUARE_BRACKET + AND + destination.getClass().getSimpleName());
         return null;
       });
   }
 
-  private Optional<SubResourceMapperUnit<?>> getMapperUnit(String type, String pred, Class<?> parentDto, Class<?> dto) {
+  private Optional<SubResourceMapperUnit<?>> getMapperUnit(ResourceType type, Predicate pred, Class<?> parentDto,
+                                                           Class<?> dto) {
     return mapperUnits.stream()
       .filter(m -> isNull(parentDto) || m.getParentDto().contains(parentDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
-        return (isNull(type) || type.equals(annotation.type()))
-          && (isNull(pred) || pred.equals(annotation.predicate()))
+        return (isNull(type) || type.getHash().equals(annotation.type().getHash()))
+          && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
           && (isNull(dto) || dto.equals(annotation.dtoClass()));
       })
       .findFirst();
