@@ -545,11 +545,11 @@
     </repository>
 
     <!-- Folio EIS repos, could be removed after release -->
-    <!-- <repository>
+    <repository>
       <id>folio-eis</id>
       <name>FOLIO Maven repository</name>
       <url>https://eis.jfrog.io/artifactory/libs-snapshot-local</url>
-    </repository> -->
+    </repository>
   </repositories>
 
   <distributionManagement>
