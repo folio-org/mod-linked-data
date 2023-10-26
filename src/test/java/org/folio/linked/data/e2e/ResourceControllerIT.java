@@ -444,7 +444,7 @@ public class ResourceControllerIT {
     validateCategory(edgeIterator.next(), instance, MEDIA);
     validateCategory(edgeIterator.next(), instance, CARRIER);
     validateCopyrightDate(edgeIterator.next(), instance);
-    validateInstantiates(edgeIterator.next(), instance);
+    validateWork(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -673,7 +673,7 @@ public class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateInstantiates(ResourceEdge edge, Resource source) {
+  private void validateWork(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());

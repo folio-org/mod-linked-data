@@ -7,7 +7,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -59,7 +58,6 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto) {
     var work = (Work) dto;
     var resource = new Resource();
-    resource.setLabel(getFirstValue(work::getResponsibiltyStatement));
     resource.addType(WORK);
     resource.setDoc(toDoc(work));
     resource.setResourceHash(coreMapper.hash(resource));
