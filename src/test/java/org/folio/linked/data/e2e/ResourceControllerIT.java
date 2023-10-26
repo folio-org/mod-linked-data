@@ -681,7 +681,8 @@ public class ResourceControllerIT {
     assertThat(instantiates.getResourceHash()).isNotNull();
     assertThat(instantiates.getDoc().size()).isEqualTo(1);
     assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).size()).isEqualTo(1);
-    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).get(0).asText()).isEqualTo("statement of responsibility");
+    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).get(0).asText())
+      .isEqualTo("statement of responsibility");
     assertThat(instantiates.getOutgoingEdges()).isEmpty();
   }
 
