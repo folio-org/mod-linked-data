@@ -544,13 +544,13 @@
       <url>https://maven.indexdata.com</url>
     </repository>
 
-    <!-- Folio EIS repos, could be removed after release -->
+    <!-- Folio EIS repos, could be removed after release
     <repository>
       <id>folio-eis</id>
       <name>FOLIO Maven repository</name>
       <url>https://eis.jfrog.io/artifactory/libs-snapshot-local</url>
     </repository>
-  </repositories>
+  </repositories> -->
 
   <distributionManagement>
     <repository>
