@@ -1,10 +1,17 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
+import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
+import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.HashMap;
+import java.util.List;
 import java.util.function.Consumer;
-import org.apache.commons.lang3.NotImplementedException;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
@@ -21,6 +28,7 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
   private final AgentRoleAssigner agentRoleAssigner;
+
 
   public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner) {
     this.coreMapper = coreMapper;
@@ -48,7 +56,21 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public Resource toEntity(Object dto) {
-    // Not implemented yet as we don't support PUT / POST APIs for Work
-    throw new NotImplementedException();
+    var work = (Work) dto;
+    var resource = new Resource();
+    resource.addType(WORK);
+    resource.setDoc(toDoc(work));
+    resource.setResourceHash(coreMapper.hash(resource));
+    return resource;
+  }
+
+  private JsonNode toDoc(Work work) {
+    var map = new HashMap<String, List<String>>();
+    map.put(RESPONSIBILITY_STATEMENT.getValue(), work.getResponsibiltyStatement());
+    map.put(TARGET_AUDIENCE.getValue(), work.getTargetAudience());
+    map.put(LANGUAGE.getValue(), work.getLanguage());
+    map.put(SUMMARY.getValue(), work.getSummary());
+    map.put(TABLE_OF_CONTENTS.getValue(), work.getTableOfContents());
+    return coreMapper.toJson(map);
   }
 }

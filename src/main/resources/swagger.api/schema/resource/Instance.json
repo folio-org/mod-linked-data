@@ -168,14 +168,6 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/carrier"
         },
-        "responsibilityStatement": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/statementOfResponsibility",
-          "description": "Statement of responsibility"
-        },
         "edition": {
           "type": "array",
           "items": {

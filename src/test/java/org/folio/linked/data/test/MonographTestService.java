@@ -40,7 +40,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
@@ -233,7 +232,6 @@ public class MonographTestService {
       Map.of(
         EXTENT, List.of("extent info"),
         DIMENSIONS, List.of("20 cm"),
-        RESPONSIBILITY_STATEMENT, List.of("responsibility statement"),
         EDITION_STATEMENT, List.of("edition statement"),
         PROJECTED_PROVISION_DATE, List.of("projected provision date"),
         ISSUANCE, List.of("single unit")

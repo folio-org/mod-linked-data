@@ -382,7 +382,6 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
       .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
-      .andExpect(jsonPath(toResponsibilityStatement(), equalTo("responsibility statement")))
       .andExpect(jsonPath(toVariantTitlePartName(), equalTo("Variant: partName")))
       .andExpect(jsonPath(toVariantTitlePartNumber(), equalTo("Variant: partNumber")))
       .andExpect(jsonPath(toVariantTitleMain(), equalTo("Variant: mainTitle")))
@@ -421,13 +420,12 @@ public class ResourceControllerIT {
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getDoc().size()).isEqualTo(6);
+    assertThat(instance.getDoc().size()).isEqualTo(5);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
-    validateLiteral(instance, RESPONSIBILITY_STATEMENT.getValue(), "responsibility statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
-    assertThat(instance.getOutgoingEdges()).hasSize(16);
+    assertThat(instance.getOutgoingEdges()).hasSize(17);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateInstanceTitle(edgeIterator.next(), instance);
@@ -446,6 +444,7 @@ public class ResourceControllerIT {
     validateCategory(edgeIterator.next(), instance, MEDIA);
     validateCategory(edgeIterator.next(), instance, CARRIER);
     validateCopyrightDate(edgeIterator.next(), instance);
+    validateWork(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -674,6 +673,19 @@ public class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
+  private void validateWork(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
+    var instantiates = edge.getTarget();
+    assertThat(instantiates.getResourceHash()).isNotNull();
+    assertThat(instantiates.getDoc().size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).get(0).asText())
+      .isEqualTo("statement of responsibility");
+    assertThat(instantiates.getOutgoingEdges()).isEmpty();
+  }
+
   private void validateCopyrightDate(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -714,10 +726,6 @@ public class ResourceControllerIT {
 
   private String toAccessLocationNote() {
     return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(NOTE.getValue()));
-  }
-
-  private String toResponsibilityStatement() {
-    return join(".", toInstance(), arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
 
   private String toProjectedProvisionDate() {

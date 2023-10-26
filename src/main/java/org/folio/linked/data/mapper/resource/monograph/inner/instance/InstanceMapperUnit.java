@@ -16,7 +16,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 
@@ -100,7 +99,6 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     var map = new HashMap<String, List<String>>();
     map.put(EXTENT.getValue(), dto.getExtent());
     map.put(DIMENSIONS.getValue(), dto.getDimensions());
-    map.put(RESPONSIBILITY_STATEMENT.getValue(), dto.getResponsibilityStatement());
     map.put(EDITION_STATEMENT.getValue(), dto.getEdition());
     map.put(PROJECTED_PROVISION_DATE.getValue(), dto.getProjectProvisionDate());
     map.put(ISSUANCE.getValue(), dto.getIssuance());

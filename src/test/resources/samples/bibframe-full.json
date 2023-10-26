@@ -291,9 +291,6 @@
       "http://bibfra.me/vocab/marc/dimensions": [
         "20 cm"
       ],
-      "http://bibfra.me/vocab/marc/statementOfResponsibility": [
-        "responsibility statement"
-      ],
       "http://bibfra.me/vocab/marc/edition": [
         "edition statement"
       ],
@@ -302,6 +299,13 @@
       ],
       "http://bibfra.me/vocab/marc/issuance": [
         "single unit"
+      ],
+      "http://bibfra.me/vocab/lite/instantiates": [
+        {
+          "http://bibfra.me/vocab/marc/responsibilityStatement": [
+            "statement of responsibility"
+          ]
+        }
       ]
     }
   }
