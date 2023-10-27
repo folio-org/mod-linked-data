@@ -7,6 +7,8 @@ public interface ResourceService {
 
   ResourceDto createResource(ResourceDto resourceRequest);
 
+  Long createResource(org.folio.marc2ld.model.Resource resource);
+
   ResourceDto getResourceById(Long id);
 
   ResourceDto updateResource(Long id, ResourceDto bibframeRequest);

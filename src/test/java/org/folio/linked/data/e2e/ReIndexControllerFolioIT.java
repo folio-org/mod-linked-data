@@ -1,6 +1,9 @@
 package org.folio.linked.data.e2e;
 
 import static java.util.Objects.nonNull;
+import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,8 +16,8 @@ import org.hamcrest.MatcherAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles({"folio", "test-folio", "search"})
-public class ReIndexControllerITFolio extends ReIndexControllerIT {
+@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE, SEARCH_PROFILE})
+public class ReIndexControllerFolioIT extends ReIndexControllerIT {
 
   @Autowired
   private KafkaSearchIndexTopicListener consumer;
@@ -22,7 +25,7 @@ public class ReIndexControllerITFolio extends ReIndexControllerIT {
   @Override
   @SneakyThrows
   protected void checkKafkaMessageSent(Resource persisted) {
-    boolean messageConsumed = consumer.getLatch().await(10, TimeUnit.SECONDS);
+    boolean messageConsumed = consumer.getLatch().await(30, TimeUnit.SECONDS);
     assertTrue(messageConsumed);
     if (nonNull(persisted)) {
       MatcherAssert.assertThat(consumer.getPayload(), containsString(persisted.getResourceHash().toString()));

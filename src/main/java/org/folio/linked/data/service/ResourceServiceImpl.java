@@ -41,6 +41,13 @@ public class ResourceServiceImpl implements ResourceService {
     return resourceMapper.toDto(persisted);
   }
 
+  public Long createResource(org.folio.marc2ld.model.Resource marc2ldResource) {
+    var mapped = resourceMapper.toEntity(marc2ldResource);
+    var persisted = resourceRepo.save(mapped);
+    kafkaSender.sendResourceCreated(resourceMapper.mapToIndex(persisted));
+    return persisted.getResourceHash();
+  }
+
   @Override
   @Transactional(readOnly = true)
   public ResourceDto getResourceById(Long id) {

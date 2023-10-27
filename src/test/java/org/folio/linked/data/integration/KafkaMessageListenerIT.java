@@ -9,9 +9,9 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
-import java.util.function.Consumer;
 import org.folio.linked.data.configuration.KafkaListenerConfiguration;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
+import org.folio.linked.data.integration.consumer.DataImportEventHandler;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.spring.test.extension.EnableKafka;
 import org.folio.spring.test.type.IntegrationTest;
@@ -19,7 +19,6 @@ import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -45,9 +44,8 @@ class KafkaMessageListenerIT {
   @Autowired
   private KafkaTemplate<String, String> eventKafkaTemplate;
 
-  @MockBean()
-  @Qualifier("dataImportEventProcessor")
-  private Consumer<DataImportEvent> dataImportEventConsumer;
+  @MockBean
+  private DataImportEventHandler dataImportEventConsumer;
 
   @BeforeAll
   static void setup(@Autowired KafkaAdminService kafkaAdminService) {
@@ -72,10 +70,10 @@ class KafkaMessageListenerIT {
     eventKafkaTemplate.send(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), eventId, emittedEvent);
     await().atMost(FIVE_SECONDS)
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
-      .untilAsserted(() -> verify(dataImportEventConsumer, times(1)).accept(expectedEvent));
+      .untilAsserted(() -> verify(dataImportEventConsumer, times(1)).handle(expectedEvent));
   }
 
-  private static String getTopicName(String tenantId, String topic) {
+  private String getTopicName(String tenantId, String topic) {
     return String.format("%s.%s.%s", getFolioEnvName(), tenantId, topic);
   }
 }
