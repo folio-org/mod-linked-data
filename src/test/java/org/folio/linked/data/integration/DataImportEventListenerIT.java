@@ -51,7 +51,6 @@ class DataImportEventListenerIT {
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
     kafkaAdminService.createTopics(TENANT_ID);
-    kafkaAdminService.restartEventListeners();
   }
 
   private static String getTopicName(String tenantId, String topic) {

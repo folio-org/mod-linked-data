@@ -1,5 +1,6 @@
 package org.folio.linked.data.integration;
 
+import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.utils.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
@@ -35,7 +36,7 @@ import org.springframework.test.context.ActiveProfiles;
   ObjectMapperConfig.class
 })
 @SpringBootTest(classes = {KafkaMessageListener.class})
-@ActiveProfiles({FOLIO_PROFILE, "test"})
+@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class KafkaMessageListenerIT {
 
   private static final String TENANT_ID = "tenant_01";
@@ -50,7 +51,6 @@ class KafkaMessageListenerIT {
   @BeforeAll
   static void setup(@Autowired KafkaAdminService kafkaAdminService) {
     kafkaAdminService.createTopics(TENANT_ID);
-    kafkaAdminService.restartEventListeners();
   }
 
   @Test

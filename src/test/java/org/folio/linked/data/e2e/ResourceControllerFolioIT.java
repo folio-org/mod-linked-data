@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e;
 
 import static java.util.Objects.nonNull;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
+import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -13,6 +14,8 @@ import lombok.SneakyThrows;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
 import org.folio.search.domain.dto.ResourceEventType;
+import org.folio.spring.tools.kafka.KafkaAdminService;
+import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -21,6 +24,11 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @Autowired
   private KafkaSearchIndexTopicListener consumer;
+
+  @BeforeAll
+  static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
+    kafkaAdminService.createTopics(TENANT_ID);
+  }
 
   @SneakyThrows
   @Override

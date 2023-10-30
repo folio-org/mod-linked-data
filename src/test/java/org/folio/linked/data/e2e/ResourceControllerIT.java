@@ -69,7 +69,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
-import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
@@ -103,10 +102,8 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
-import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -134,12 +131,6 @@ public class ResourceControllerIT {
   private ObjectMapper objectMapper;
   @Autowired
   private Environment env;
-
-  @BeforeAll
-  static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
-    kafkaAdminService.createTopics(TENANT_ID);
-    kafkaAdminService.restartEventListeners();
-  }
 
   @AfterEach
   public void clean() {

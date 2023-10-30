@@ -1,6 +1,5 @@
 package org.folio.linked.data.e2e;
 
-import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
 import static org.folio.linked.data.test.TestUtil.getBibframeSampleTest;
@@ -19,9 +18,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
-import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -48,12 +45,6 @@ class ReIndexControllerIT {
   private ObjectMapper objectMapper;
   @Autowired
   private Environment env;
-
-  @BeforeAll
-  static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
-    kafkaAdminService.createTopics(TENANT_ID);
-    kafkaAdminService.restartEventListeners();
-  }
 
   @AfterEach
   public void clean() {
