@@ -1,9 +1,9 @@
 package org.folio.linked.data.e2e.base;
 
 import static java.util.Arrays.asList;
+import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.asJsonString;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.randomString;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,7 +33,7 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
       var env = context.getEnvironment();
       if (asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
         var mockMvc = context.getBean(MockMvc.class);
-        mockMvc.perform(post(TENANT_ENDPOINT_URI, randomString())
+        mockMvc.perform(post(TENANT_ENDPOINT_URI, TENANT_ID)
             .content(asJsonString(new TenantAttributes().moduleTo(env.getProperty("spring.application.name"))))
             .headers(defaultHeaders(env, extensionContext.getTestInstance().map(this::getOkapiUrl).orElse(null)))
             .contentType(APPLICATION_JSON))

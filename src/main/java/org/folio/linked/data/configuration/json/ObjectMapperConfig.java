@@ -15,7 +15,9 @@ import org.folio.linked.data.domain.dto.ResourceField;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
+@Primary
 @Configuration
 public class ObjectMapperConfig {
 

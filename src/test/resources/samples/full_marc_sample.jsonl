@@ -1,0 +1,227 @@
+{
+  "leader": "01767cam a22003977i 4500",
+  "fields": [
+    {
+      "010": {
+        "subfields": [
+          {
+            "a": "  2019493854"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "020": {
+        "subfields": [
+          {
+            "a": "9780143789963"
+          },
+          {
+            "q": "(paperback)"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "100": {
+        "subfields": [
+          {
+            "a": "Author name",
+            "0": "LCNAF id"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "Instance MainTitle"
+          },
+          {
+            "n": "8"
+          },
+          {
+            "p": "Instance PartName"
+          },
+          {
+            "b": "Instance SubTitle"
+          },
+          {
+            "c": "Statement Of Responsibility"
+          }
+        ],
+        "ind1": "1",
+        "ind2": "7"
+      }
+    },
+    {
+      "246": {
+        "subfields": [
+          {
+            "a": "Variant-MainTitle"
+          },
+          {
+            "n": "5"
+          },
+          {
+            "p": "Variant-PartName"
+          },
+          {
+            "b": "Variant-SubTitle"
+          },
+          {
+            "f": "2023-02-02"
+          },
+          {
+            "i": "Variant-Note"
+          }
+        ],
+        "ind1": "1",
+        "ind2": "9"
+      }
+    },
+    {
+      "246": {
+        "subfields": [
+          {
+            "a": "Parallel-MainTitle"
+          },
+          {
+            "n": "6"
+          },
+          {
+            "p": "Parallel-PartName"
+          },
+          {
+            "b": "Parallel-SubTitle"
+          },
+          {
+            "f": "2023-01-01"
+          },
+          {
+            "i": "Parallel-Note"
+          }
+        ],
+        "ind1": "1",
+        "ind2": "1"
+      }
+    },
+    {
+      "250": {
+        "subfields": [
+          {
+            "a": "Edition Statement"
+          },
+          {
+            "b": "Edition statement2"
+          }
+        ],
+        "ind1": "1",
+        "ind2": "1"
+      }
+    },
+    {
+      "262": {
+        "subfields": [
+          {
+            "a": "Publication262 Place"
+          },
+          {
+            "b": "Publication262 Name"
+          },
+          {
+            "c": "Publication262 Date"
+          }
+        ],
+        "ind1": " ",
+        "ind2": " "
+      }
+    },
+    {
+      "264": {
+        "subfields": [
+          {
+            "a": "Production Place"
+          },
+          {
+            "b": "Production Name"
+          },
+          {
+            "c": "Production Date"
+          }
+        ],
+        "ind1": " ",
+        "ind2": "0"
+      }
+    },
+    {
+      "264": {
+        "subfields": [
+          {
+            "a": "Publication Place"
+          },
+          {
+            "b": "Publication Name"
+          },
+          {
+            "c": "Publication Date"
+          }
+        ],
+        "ind1": " ",
+        "ind2": "1"
+      }
+    },
+    {
+      "264": {
+        "subfields": [
+          {
+            "a": "Distribution Place"
+          },
+          {
+            "b": "Distribution Name"
+          },
+          {
+            "c": "Distribution Date"
+          }
+        ],
+        "ind1": " ",
+        "ind2": "2"
+      }
+    },
+    {
+      "264": {
+        "subfields": [
+          {
+            "a": "Manufacture Place"
+          },
+          {
+            "b": "Manufacture Name"
+          },
+          {
+            "c": "Manufacture Date"
+          }
+        ],
+        "ind1": " ",
+        "ind2": "3"
+      }
+    },
+    {
+      "264": {
+        "subfields": [
+          {
+            "c": "©2018"
+          }
+        ],
+        "ind1": " ",
+        "ind2": "4"
+      }
+    }
+  ]
+}

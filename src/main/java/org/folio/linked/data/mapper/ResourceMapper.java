@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper;
 
+import static java.util.stream.Collectors.toSet;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
@@ -8,6 +9,8 @@ import java.util.Map;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceField;
@@ -18,7 +21,11 @@ import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
 import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
+import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -45,6 +52,31 @@ public abstract class ResourceMapper {
   public abstract ResourceShort map(ResourceShortInfo resourceShortInfo);
 
   public abstract ResourceShortInfoPage map(Page<ResourceShort> page);
+
+  public Resource toEntity(org.folio.marc2ld.model.Resource marc2ldResource) {
+    Resource resource = new Resource();
+    resource.setLabel(marc2ldResource.getLabel());
+    resource.setDoc(marc2ldResource.getDoc());
+    resource.setResourceHash(marc2ldResource.getResourceHash());
+    resource.setTypes(marc2ldResource.getTypes().stream().map(this::toEntity).collect(toSet()));
+    resource.setOutgoingEdges(marc2ldResource.getOutgoingEdges().stream().map(marc2ldEdge -> toEntity(marc2ldEdge,
+      resource)).collect(toSet()));
+    return resource;
+  }
+
+  public abstract ResourceTypeEntity toEntity(ResourceTypeDictionary dictionary);
+
+  public ResourceEdge toEntity(org.folio.marc2ld.model.ResourceEdge marc2ldEdge, Resource source) {
+    var edge = new ResourceEdge();
+    edge.setId(new ResourceEdgePk(marc2ldEdge.getSource().getResourceHash(),
+      marc2ldEdge.getTarget().getResourceHash(), marc2ldEdge.getPredicate().getHash()));
+    edge.setSource(source);
+    edge.setTarget(toEntity(marc2ldEdge.getTarget()));
+    edge.setPredicate(toEntity(marc2ldEdge.getPredicate()));
+    return edge;
+  }
+
+  public abstract PredicateEntity toEntity(PredicateDictionary dictionary);
 
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {

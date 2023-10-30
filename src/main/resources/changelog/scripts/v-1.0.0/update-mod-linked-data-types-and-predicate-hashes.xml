@@ -87,5 +87,15 @@
     </update>
   </changeSet>
 
-
+  <changeSet id="12_add_Identifier_type" author="Pavel_Bobylev@epam.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from type_lookup tl where tl.type_uri = 'http://bibfra.me/vocab/lite/Identifier'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="type_lookup">
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Identifier"/>
+      <column name="type_hash" valueComputed="hashing.hash_text('http://bibfra.me/vocab/lite/Identifier')"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

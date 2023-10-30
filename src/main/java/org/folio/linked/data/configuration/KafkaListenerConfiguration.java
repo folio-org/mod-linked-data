@@ -7,12 +7,10 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.spring.tools.kafka.FolioKafkaProperties;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -55,10 +53,4 @@ public class KafkaListenerConfiguration {
     return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
   }
 
-  @Bean
-  @Qualifier("dataImportEventProcessor")
-  // TODO (MODLD-131) - Delete this bean & replace with the actual component that process data import events
-  public Consumer<DataImportEvent> dataImportEventProcessor() {
-    return event -> {};
-  }
 }

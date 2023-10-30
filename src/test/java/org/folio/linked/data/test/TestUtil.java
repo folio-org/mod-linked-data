@@ -35,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 @UtilityClass
 public class TestUtil {
 
+  public static final String FOLIO_TEST_PROFILE = "test-folio";
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
