@@ -1,6 +1,8 @@
 package org.folio.linked.data.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
@@ -12,13 +14,14 @@ import static org.mockito.Mockito.verify;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+import static org.testcontainers.shaded.org.awaitility.Durations.ONE_MINUTE;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.consumer.DataImportEventHandler;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.search.domain.dto.DataImportEvent;
-import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,7 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @IntegrationTest
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class DataImportEventListenerIT {
@@ -42,12 +47,11 @@ class DataImportEventListenerIT {
   @SpyBean
   @Autowired
   private DataImportEventHandler dataImportEventHandler;
-  @Autowired
-  private FolioExecutionContext folioExecutionContext;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
     kafkaAdminService.createTopics(TENANT_ID);
+    kafkaAdminService.restartEventListeners();
   }
 
   private static String getTopicName(String tenantId, String topic) {
@@ -77,10 +81,27 @@ class DataImportEventListenerIT {
     eventKafkaTemplate.send(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), eventId, emittedEvent);
 
     // then
-    await().atMost(FIVE_SECONDS)
+    await().atMost(ONE_MINUTE)
+      .pollDelay(FIVE_SECONDS)
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
 
-    assertThat(resourceRepo.count()).isEqualTo(1);
+    var found = resourceRepo.findById(4244280705L);
+    assertThat(found).isPresent();
+    var result = found.get();
+    assertThat(result.getLabel()).isEqualTo("Instance MainTitle");
+    assertThat(result.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(result.getDoc()).hasSize(1);
+    assertThat(result.getDoc().has(EDITION_STATEMENT.getValue())).isTrue();
+    assertThat(result.getDoc().get(EDITION_STATEMENT.getValue())).hasSize(1);
+    assertThat(result.getDoc().get(EDITION_STATEMENT.getValue()).get(0).asText())
+      .isEqualTo("Edition Statement Edition statement2");
+    assertThat(result.getOutgoingEdges()).hasSize(8);
+    for (ResourceEdge edge : result.getOutgoingEdges()) {
+      assertThat(edge.getSource()).isEqualTo(result);
+      assertThat(edge.getTarget()).isNotNull();
+      assertThat(edge.getPredicate()).isNotNull();
+    }
   }
+
 }

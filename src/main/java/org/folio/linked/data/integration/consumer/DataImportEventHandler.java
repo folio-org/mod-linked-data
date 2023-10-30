@@ -8,8 +8,6 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.service.ResourceService;
 import org.folio.marc2ld.mapper.Marc2BibframeMapper;
 import org.folio.search.domain.dto.DataImportEvent;
-import org.folio.spring.FolioExecutionContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +19,6 @@ public class DataImportEventHandler {
 
   private final Marc2BibframeMapper marc2BibframeMapper;
   private final ResourceService resourceService;
-  @Autowired
-  private FolioExecutionContext folioExecutionContext;
 
   public void handle(DataImportEvent event) {
     if (isNotEmpty(event.getMarc())) {

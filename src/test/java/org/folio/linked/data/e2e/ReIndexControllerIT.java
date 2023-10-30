@@ -52,6 +52,7 @@ class ReIndexControllerIT {
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
     kafkaAdminService.createTopics(TENANT_ID);
+    kafkaAdminService.restartEventListeners();
   }
 
   @AfterEach
