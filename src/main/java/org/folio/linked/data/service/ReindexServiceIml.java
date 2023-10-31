@@ -2,7 +2,7 @@ package org.folio.linked.data.service;
 
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
-import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityManager;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -31,6 +31,7 @@ public class ReindexServiceIml implements ReindexService {
   private final KafkaMessageMapper kafkaMessageMapper;
   @Value("${mod-linked-data.reindex.page-size}")
   private String reindexPageSize;
+  private final EntityManager entityManager;
 
   @Async
   @Override
@@ -43,6 +44,8 @@ public class ReindexServiceIml implements ReindexService {
         .forEach(resource -> {
             try {
               var bibframeIndex = kafkaMessageMapper.toIndex(resource);
+              // detach the resource entity from entity manager, enabling garbage collection
+              entityManager.detach(resource);
               kafkaSender.sendResourceCreated(bibframeIndex);
               log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
               recordsIndexed.getAndIncrement();
