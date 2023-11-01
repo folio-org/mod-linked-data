@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.AgentDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.MapDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.TitleDeserializer;
+import org.folio.linked.data.domain.dto.AgentTypeInner;
 import org.folio.linked.data.domain.dto.InstanceAllOfMapInner;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitleInner;
 import org.folio.linked.data.domain.dto.ResourceField;
@@ -37,6 +39,7 @@ public class ObjectMapperConfig {
     module.addDeserializer(ResourceField.class, new ResourceFieldDeserializer());
     module.addDeserializer(InstanceAllOfTitleInner.class, new TitleDeserializer());
     module.addDeserializer(InstanceAllOfMapInner.class, new MapDeserializer());
+    module.addDeserializer(AgentTypeInner.class, new AgentDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;
   }
