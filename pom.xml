@@ -36,7 +36,7 @@
 
     <!-- Dependencies versions -->
     <folio-spring-base.version>7.2.0</folio-spring-base.version>
-    <apache-commons-io.version>2.14.0</apache-commons-io.version>
+    <apache-commons-io.version>2.15.0</apache-commons-io.version>
     <apache-commons-collections.version>4.4</apache-commons-collections.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
     <lombok.version>1.18.30</lombok.version>
@@ -56,9 +56,9 @@
     <maven-openapi-generator-plugin.version>7.0.1</maven-openapi-generator-plugin.version>
     <maven-copy-rename-plugin.version>1.0.1</maven-copy-rename-plugin.version>
     <maven-build-helper-plugin.version>3.4.0</maven-build-helper-plugin.version>
-    <maven-clean-plugin.version>3.3.1</maven-clean-plugin.version>
+    <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-    <maven-checkstyle-plugin.version>3.3.0</maven-checkstyle-plugin.version>
+    <maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
     <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>3.2.1</maven-surefire-plugin.version>
     <maven-failsafe-plugin.version>3.2.1</maven-failsafe-plugin.version>
