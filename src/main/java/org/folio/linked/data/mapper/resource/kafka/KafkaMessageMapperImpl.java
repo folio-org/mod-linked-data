@@ -2,6 +2,8 @@ package org.folio.linked.data.mapper.resource.kafka;
 
 import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -23,7 +25,6 @@ import lombok.NonNull;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeIndex;
@@ -86,7 +87,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         .anyMatch(typeEnum -> r.getFirstType().getUri().contains(typeEnum.getValue())))
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue()))
-        .type(toTypeEnum(ir.getFirstType())))
+        .type(TypeEnum.fromValue(extractType(ir.getFirstType().getUri()))))
       .toList();
   }
 
@@ -99,14 +100,22 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return null;
   }
 
-  private TypeEnum toTypeEnum(ResourceTypeEntity resourceType) {
-    var typeUri = resourceType.getUri();
-    var extractedTypeWord = typeUri.substring(typeUri.lastIndexOf("/") + 1);
-    return TypeEnum.fromValue(extractedTypeWord);
+  private String extractType(String typeUri) {
+    return typeUri.substring(typeUri.lastIndexOf("/") + 1);
   }
 
   private List<BibframeContributorsInner> extractContributors(Resource resource) {
-    return new ArrayList<>(); // Not supported at the moment
+    return resource.getOutgoingEdges().stream()
+      .filter(re -> CREATOR.getUri().equals(re.getPredicate().getUri())
+        || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
+      .filter(re -> stream(BibframeContributorsInner.TypeEnum.values())
+        .anyMatch(typeEnum -> re.getTarget().getFirstType().getUri().contains(typeEnum.getValue())))
+      .map(re -> new BibframeContributorsInner()
+        .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
+        .type(BibframeContributorsInner.TypeEnum.fromValue(extractType(re.getTarget().getFirstType().getUri())))
+        .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
+      )
+      .toList();
   }
 
   private List<BibframePublicationsInner> extractPublications(Resource resource) {
