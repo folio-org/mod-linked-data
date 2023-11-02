@@ -13,6 +13,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -108,6 +109,8 @@ class KafkaMessageMapperTest {
     instance.getOutgoingEdges().add(new ResourceEdge(instance, localId, new PredicateEntity(MAP.getUri())));
     var otherId = getIdentifier(NAME.getValue(), ID_UNKNOWN);
     instance.getOutgoingEdges().add(new ResourceEdge(instance, otherId, new PredicateEntity(MAP.getUri())));
+    var wrongTypeId = getIdentifier(NAME.getValue(), ANNOTATION);
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongTypeId, new PredicateEntity(MAP.getUri())));
     var publication = getPublication();
     instance.getOutgoingEdges()
       .add(new ResourceEdge(instance, publication, new PredicateEntity(PE_PUBLICATION.getUri())));
@@ -127,6 +130,8 @@ class KafkaMessageMapperTest {
     instance.getOutgoingEdges().add(new ResourceEdge(instance, creatorOrg, CREATOR));
     var creatorPerson = getContributor(PERSON);
     instance.getOutgoingEdges().add(new ResourceEdge(instance, creatorPerson, CREATOR));
+    var wrongTypeContributor = getContributor(ANNOTATION);
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongTypeContributor, CONTRIBUTOR));
     instance.setDoc(getJsonNode(Map.of(EDITION_STATEMENT.getValue(), List.of(UUID.randomUUID().toString()))));
 
     // when
@@ -141,18 +146,19 @@ class KafkaMessageMapperTest {
     assertTitle(result.getTitles().get(3), title2.getDoc().get(SUBTITLE.getValue()), SUB);
     assertTitle(result.getTitles().get(4), title3.getDoc().get(MAIN_TITLE.getValue()), MAIN);
     assertTitle(result.getTitles().get(5), title3.getDoc().get(SUBTITLE.getValue()), SUB);
-    assertThat(result.getIdentifiers()).hasSize(5);
+    assertThat(result.getIdentifiers()).hasSize(6);
     assertId(result.getIdentifiers().get(0), isbn.getDoc().get(NAME.getValue()), ISBN);
     assertId(result.getIdentifiers().get(1), lccn.getDoc().get(NAME.getValue()), LCCN);
     assertId(result.getIdentifiers().get(2), ean.getDoc().get(EAN_VALUE.getValue()), EAN);
     assertId(result.getIdentifiers().get(3), localId.getDoc().get(LOCAL_ID_VALUE.getValue()), LOCALID);
     assertId(result.getIdentifiers().get(4), otherId.getDoc().get(NAME.getValue()), UNKNOWN);
+    assertId(result.getIdentifiers().get(5), wrongTypeId.getDoc().get(NAME.getValue()), null);
     assertThat(result.getPublications()).hasSize(1);
     assertThat(result.getPublications().get(0).getDateOfPublication()).isEqualTo(
       publication.getDoc().get(DATE.getValue()).get(0).textValue());
     assertThat(result.getPublications().get(0).getPublisher()).isEqualTo(
       publication.getDoc().get(NAME.getValue()).get(0).textValue());
-    assertThat(result.getContributors()).hasSize(8);
+    assertThat(result.getContributors()).hasSize(9);
     assertContributor(result.getContributors().get(0), contribFamily, BibframeContributorsInner.TypeEnum.FAMILY, false);
     assertContributor(result.getContributors().get(1), contribMeeting, BibframeContributorsInner.TypeEnum.MEETING,
       false);
@@ -165,6 +171,7 @@ class KafkaMessageMapperTest {
     assertContributor(result.getContributors().get(6), creatorOrg, BibframeContributorsInner.TypeEnum.ORGANIZATION,
       true);
     assertContributor(result.getContributors().get(7), creatorPerson, BibframeContributorsInner.TypeEnum.PERSON, true);
+    assertContributor(result.getContributors().get(8), wrongTypeContributor, null, false);
     assertThat(result.getEditionStatement()).isEqualTo(
       instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).textValue());
   }
