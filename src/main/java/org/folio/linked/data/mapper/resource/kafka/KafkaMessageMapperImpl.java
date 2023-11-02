@@ -1,7 +1,8 @@
 package org.folio.linked.data.mapper.resource.kafka;
 
-import static java.util.Arrays.stream;
 import static java.util.Objects.nonNull;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -19,11 +20,12 @@ import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import lombok.NonNull;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeIndex;
@@ -31,6 +33,7 @@ import org.folio.search.domain.dto.BibframePublicationsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
@@ -82,12 +85,24 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return resource.getOutgoingEdges().stream()
       .filter(re -> MAP.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
-      .filter(r -> stream(TypeEnum.values())
-        .anyMatch(typeEnum -> r.getFirstType().getUri().contains(typeEnum.getValue())))
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue()))
-        .type(toTypeEnum(ir.getFirstType())))
+        .type(toType(ir, TypeEnum::fromValue, TypeEnum.class)))
       .toList();
+  }
+
+  private <E extends Enum<E>> E toType(Resource resource, Function<String, E> typeSupplier, Class<E> enumClass) {
+    var typeUri = resource.getFirstType().getUri();
+    typeUri = typeUri.substring(typeUri.lastIndexOf("/") + 1);
+    E result = null;
+    try {
+      result = typeSupplier.apply(typeUri);
+    } catch (IllegalArgumentException iae) {
+      var enumNameWithParent = enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
+      log.error("Unknown type [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message",
+        typeUri, enumNameWithParent, resource.getResourceHash());
+    }
+    return result;
   }
 
   private String getValue(JsonNode doc, String... values) {
@@ -99,14 +114,17 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return null;
   }
 
-  private TypeEnum toTypeEnum(ResourceTypeEntity resourceType) {
-    var typeUri = resourceType.getUri();
-    var extractedTypeWord = typeUri.substring(typeUri.lastIndexOf("/") + 1);
-    return TypeEnum.fromValue(extractedTypeWord);
-  }
-
   private List<BibframeContributorsInner> extractContributors(Resource resource) {
-    return new ArrayList<>(); // Not supported at the moment
+    return resource.getOutgoingEdges().stream()
+      .filter(re -> CREATOR.getUri().equals(re.getPredicate().getUri())
+        || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
+      .map(re -> new BibframeContributorsInner()
+        .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
+        .type(toType(re.getTarget(), BibframeContributorsInner.TypeEnum::fromValue,
+          BibframeContributorsInner.TypeEnum.class))
+        .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
+      )
+      .toList();
   }
 
   private List<BibframePublicationsInner> extractPublications(Resource resource) {
