@@ -1,5 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.inner.work;
 
+import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
@@ -60,6 +64,10 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     var resource = new Resource();
     resource.addType(WORK);
     resource.setDoc(toDoc(work));
+    coreMapper.mapInnerEdges(work.getClassification(), resource, CLASSIFICATION, Work.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(work.getContent(), resource, CONTENT, Work.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(work.getCreator(), resource, CREATOR, Work.class, mapper::toEntity);
+    coreMapper.mapInnerEdges(work.getContributor(), resource, CONTRIBUTOR, Work.class, mapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

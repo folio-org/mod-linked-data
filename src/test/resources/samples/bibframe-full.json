@@ -304,6 +304,122 @@
         {
           "http://bibfra.me/vocab/marc/responsibilityStatement": [
             "statement of responsibility"
+          ],
+          "http://bibfra.me/vocab/marc/summary": [
+            "summary text"
+          ],
+          "http://bibfra.me/vocab/lite/language": [
+            "eng"
+          ],
+          "http://bibfra.me/vocab/marc/targetAudience": [
+            "target audience"
+          ],
+          "http://bibfra.me/vocab/lite/classification": [
+            {
+              "http://bibfra.me/vocab/marc/code": [
+                "709.83"
+              ],
+              "http://bibfra.me/vocab/marc/source": [
+                "ddc"
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/marc/content": [
+            {
+              "http://bibfra.me/vocab/marc/code": [
+                "txt"
+              ],
+              "http://bibfra.me/vocab/marc/term": [
+                "text"
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+                "http://id.loc.gov/vocabulary/contentTypes/txt"
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/creator": [
+            {
+              "http://bibfra.me/vocab/lite/Meeting": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-MEETING"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-MEETING"
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Person": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-PERSON"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-PERSON"
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Organization": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-ORGANIZATION"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-ORGANIZATION"
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Family": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-FAMILY"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-FAMILY"
+                ]
+              }
+            }
+          ],
+          "http://bibfra.me/vocab/lite/contributor": [
+            {
+              "http://bibfra.me/vocab/lite/Meeting": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-MEETING"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-MEETING"
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Person": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-PERSON"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-PERSON"
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Organization": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-ORGANIZATION"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-ORGANIZATION"
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Family": {
+                "http://bibfra.me/vocab/lite/name": [
+                  "name-FAMILY"
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                  "2002801801-FAMILY"
+                ]
+              }
+            }
           ]
         }
       ]

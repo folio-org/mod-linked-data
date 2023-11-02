@@ -3,15 +3,15 @@ package org.folio.linked.data.mapper.resource.monograph.inner.work.sub.contribut
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 
-import org.folio.linked.data.domain.dto.Agent;
+import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.springframework.stereotype.Component;
 
 @Component("ContributorPersonMapperUnit")
-@MapperUnit(type = PERSON, dtoClass = Agent.class, predicate = CONTRIBUTOR)
+@MapperUnit(type = PERSON, dtoClass = PersonField.class, predicate = CONTRIBUTOR)
 public class PersonMapperUnit extends ContributorMapperUnit {
   public PersonMapperUnit(CoreMapper coreMapper) {
-    super(coreMapper, PERSON_CONVERTER);
+    super(coreMapper, PERSON_TO_FIELD_CONVERTER, FIELD_TO_PERSON_CONVERTER, PERSON);
   }
 }

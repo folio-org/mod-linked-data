@@ -55,12 +55,14 @@ import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -98,6 +100,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
@@ -671,11 +674,70 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var instantiates = edge.getTarget();
     assertThat(instantiates.getResourceHash()).isNotNull();
-    assertThat(instantiates.getDoc().size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().size()).isEqualTo(4);
     assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).size()).isEqualTo(1);
     assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).get(0).asText())
       .isEqualTo("statement of responsibility");
-    assertThat(instantiates.getOutgoingEdges()).isEmpty();
+    assertThat(instantiates.getDoc().get(SUMMARY.getValue()).size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo("summary text");
+    assertThat(instantiates.getDoc().get(LANGUAGE.getValue()).size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(LANGUAGE.getValue()).get(0).asText()).isEqualTo("eng");
+    assertThat(instantiates.getDoc().get(TARGET_AUDIENCE.getValue()).size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(TARGET_AUDIENCE.getValue()).get(0).asText())
+      .isEqualTo("target audience");
+    var edgeIterator = instantiates.getOutgoingEdges().iterator();
+    validateWorkClassification(edgeIterator.next(), instantiates);
+    validateWorkContentType(edgeIterator.next(), instantiates);
+    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CONTRIBUTOR.getUri());
+  }
+
+  private void validateWorkClassification(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(CLASSIFICATION.getUri());
+    var classification = edge.getTarget();
+    assertThat(classification.getDoc().size()).isEqualTo(2);
+    assertThat(classification.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
+    assertThat(classification.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo("709.83");
+    assertThat(classification.getDoc().get(SOURCE.getValue()).size()).isEqualTo(1);
+    assertThat(classification.getDoc().get(SOURCE.getValue()).get(0).asText()).isEqualTo("ddc");
+  }
+
+  private void validateWorkContentType(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(CONTENT.getUri());
+    var contentType = edge.getTarget();
+    assertThat(contentType.getDoc().size()).isEqualTo(3);
+    assertThat(contentType.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
+    assertThat(contentType.getDoc().get(LINK.getValue()).get(0).asText())
+      .isEqualTo("http://id.loc.gov/vocabulary/contentTypes/txt");
+    assertThat(contentType.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
+    assertThat(contentType.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo("txt");
+    assertThat(contentType.getDoc().get(TERM.getValue()).size()).isEqualTo(1);
+    assertThat(contentType.getDoc().get(TERM.getValue()).get(0).asText()).isEqualTo("text");
+  }
+
+  private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
+                                       String predicateUri) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(predicateUri);
+    var creator = edge.getTarget();
+    var types = creator.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(type.getUri());
+    assertThat(creator.getDoc().size()).isEqualTo(2);
+    assertThat(creator.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(creator.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("name-" + type);
+    assertThat(creator.getDoc().get(LCNAF_ID.getValue()).size()).isEqualTo(1);
+    assertThat(creator.getDoc().get(LCNAF_ID.getValue()).get(0).asText()).isEqualTo("2002801801-" + type);
   }
 
   private void validateCopyrightDate(ResourceEdge edge, Resource source) {
