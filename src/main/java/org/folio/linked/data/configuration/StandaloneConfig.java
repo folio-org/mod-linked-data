@@ -45,8 +45,8 @@ public class StandaloneConfig implements ApplicationListener<ContextRefreshedEve
     folioSpringLiquibase.performLiquibaseUpdate();
   }
 
-  @Bean(name = "folioTenantController")
   @Primary
+  @Bean(name = "folioTenantController")
   public TenantApi dummyTenantController() {
     return new TenantApi() {
       @Override
@@ -75,6 +75,24 @@ public class StandaloneConfig implements ApplicationListener<ContextRefreshedEve
         chain.doFilter(request, response);
       }
     };
+  }
+
+  @Primary
+  @Bean("folioPrepareSystemUserService")
+  public String dummyFolioPrepareSystemUserService() {
+    return "";
+  }
+
+  @Primary
+  @Bean("folioSystemUserService")
+  public String dummyFolioSystemUserService() {
+    return "";
+  }
+
+  @Primary
+  @Bean("folioSystemUserScopedExecutionService")
+  public String dummyFolioSystemUserScopedExecutionService() {
+    return "";
   }
 
 }

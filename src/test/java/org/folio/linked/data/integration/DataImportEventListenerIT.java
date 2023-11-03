@@ -20,6 +20,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.consumer.DataImportEventHandler;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -47,6 +48,8 @@ class DataImportEventListenerIT {
   @SpyBean
   @Autowired
   private DataImportEventHandler dataImportEventHandler;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -85,7 +88,7 @@ class DataImportEventListenerIT {
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
 
-    var found = resourceRepo.findById(4244280705L);
+    var found = tenantScopedExecutionService.executeTenantScoped(TENANT_ID, () -> resourceRepo.findById(4244280705L));
     assertThat(found).isPresent();
     var result = found.get();
     assertThat(result.getLabel()).isEqualTo("Instance MainTitle");

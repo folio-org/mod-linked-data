@@ -10,32 +10,18 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
-import org.folio.linked.data.configuration.KafkaListenerConfiguration;
-import org.folio.linked.data.configuration.json.ObjectMapperConfig;
+import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.consumer.DataImportEventHandler;
 import org.folio.search.domain.dto.DataImportEvent;
-import org.folio.spring.test.extension.EnableKafka;
-import org.folio.spring.test.type.IntegrationTest;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-@EnableKafka
 @IntegrationTest
-@Import({
-  KafkaAdminService.class,
-  KafkaAutoConfiguration.class,
-  KafkaListenerConfiguration.class,
-  ObjectMapperConfig.class
-})
-@SpringBootTest(classes = {KafkaMessageListener.class})
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class KafkaMessageListenerIT {
 
