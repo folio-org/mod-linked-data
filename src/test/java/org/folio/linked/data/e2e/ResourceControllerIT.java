@@ -71,6 +71,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
+import static org.folio.linked.data.test.MonographTestUtil.createSampleInstance;
 import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
@@ -102,7 +103,6 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.test.MonographTestService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -121,15 +121,12 @@ public class ResourceControllerIT {
 
   public static final String BIBFRAME_URL = "/resource";
   public static OkapiConfiguration okapi;
-
   @Autowired
   private MockMvc mockMvc;
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
   private ResourceEdgeRepository resourceEdgeRepository;
-  @Autowired
-  private MonographTestService monographTestService;
   @Autowired
   private ObjectMapper objectMapper;
   @Autowired
@@ -219,7 +216,7 @@ public class ResourceControllerIT {
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
-    var existed = resourceRepo.save(monographTestService.createSampleInstance());
+    var existed = resourceRepo.save(createSampleInstance());
     var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
@@ -258,12 +255,12 @@ public class ResourceControllerIT {
   void getBibframe2ShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-      resourceRepo.save(bibframeSampleResource(1L, monographTestService.getInstanceType())),
-      resourceRepo.save(bibframeSampleResource(2L, monographTestService.getInstanceType())),
-      resourceRepo.save(bibframeSampleResource(3L, monographTestService.getInstanceType()))
+      resourceRepo.save(bibframeSampleResource(1L, INSTANCE)),
+      resourceRepo.save(bibframeSampleResource(2L, INSTANCE)),
+      resourceRepo.save(bibframeSampleResource(3L, INSTANCE))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
     var requestBuilder = get(BIBFRAME_URL)
-      .param(TYPE, monographTestService.getInstanceType().getUri())
+      .param(TYPE, INSTANCE.getUri())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env, okapi.getOkapiUrl()));
 
@@ -286,7 +283,7 @@ public class ResourceControllerIT {
   @Test
   void deleteBibframeById_shouldDeleteRootResourceAndRootEdge() throws Exception {
     // given
-    var existed = resourceRepo.save(monographTestService.createSampleInstance());
+    var existed = resourceRepo.save(createSampleInstance());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(28);
     assertThat(resourceEdgeRepository.count()).isEqualTo(27);

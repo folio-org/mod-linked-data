@@ -63,35 +63,28 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
+import org.folio.linked.data.mapper.resource.common.CoreMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class MonographTestService {
+@UtilityClass
+public class MonographTestUtil {
 
-  private final CoreMapper coreMapper;
+  private static final CoreMapper CORE_MAPPER = new CoreMapperImpl(OBJECT_MAPPER);
 
-  public ResourceTypeEntity getInstanceType() {
-    return new ResourceTypeEntity(INSTANCE.getHash(), INSTANCE.getUri(), null);
-  }
-
-  public Resource createSampleInstance() {
+  public static Resource createSampleInstance() {
     var instanceTitle = createResource(
       Map.of(
         PART_NAME, List.of("Instance: partName"),
@@ -241,7 +234,7 @@ public class MonographTestService {
     );
   }
 
-  public Resource createSampleWork() {
+  public static Resource createSampleWork() {
     var content = createResource(
       Map.of(
         TERM, List.of("Content: term"),
@@ -279,6 +272,12 @@ public class MonographTestService {
       emptyMap()
     );
 
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
+    pred2OutgoingResources.put(CREATOR, List.of(person));
+    pred2OutgoingResources.put(CONTRIBUTOR, List.of(organization));
+    pred2OutgoingResources.put(CONTENT, List.of(content));
+
     return createResource(
       Map.of(
         TARGET_AUDIENCE, List.of("Work: target audience"),
@@ -287,12 +286,7 @@ public class MonographTestService {
         TABLE_OF_CONTENTS, List.of("Work: table of contents")
       ),
       WORK,
-      Map.of(
-        CLASSIFICATION, List.of(deweyClassification),
-        CREATOR, List.of(person),
-        CONTRIBUTOR, List.of(organization),
-        CONTENT, List.of(content)
-      )
+      pred2OutgoingResources
     ).setLabel("Work: label");
   }
 
@@ -345,7 +339,7 @@ public class MonographTestService {
       .collect(Collectors.toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
     resource.addType(type);
-    resource.setResourceHash(coreMapper.hash(resource));
+    resource.setResourceHash(CORE_MAPPER.hash(resource));
     return resource;
   }
 

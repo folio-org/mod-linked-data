@@ -7,7 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.MonographTestUtil.createSampleInstance;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.ORGANIZATION;
@@ -27,12 +27,10 @@ import java.util.Map;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.resource.common.CoreMapperImpl;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.test.MonographTestService;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
@@ -73,8 +71,7 @@ class KafkaMessageMapperTest {
   @Test
   void mapToIndex_shouldReturnCorrectlyMappedObject() {
     // given
-    var monographTestService = new MonographTestService(new CoreMapperImpl(OBJECT_MAPPER));
-    var instance = monographTestService.createSampleInstance();
+    var instance = createSampleInstance();
     var wrongId = getIdentifier(NAME.getValue(), ANNOTATION);
     instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, new PredicateEntity(MAP.getUri())));
     var wrongContributor = getContributor(ANNOTATION);
