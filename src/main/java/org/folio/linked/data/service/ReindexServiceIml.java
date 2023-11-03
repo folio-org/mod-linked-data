@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
@@ -35,6 +36,7 @@ public class ReindexServiceIml implements ReindexService {
 
   @Async
   @Override
+  @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public void reindex() {
     Pageable pageable = PageRequest.of(0, Integer.parseInt(reindexPageSize), Sort.by("resourceHash"));
     AtomicLong recordsIndexed  = new AtomicLong(0);
