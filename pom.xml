@@ -54,7 +54,7 @@
 
     <!-- Plugins versions -->
     <maven-openapi-generator-plugin.version>7.0.1</maven-openapi-generator-plugin.version>
-    <maven-copy-rename-plugin.version>2.0.0</maven-copy-rename-plugin.version>
+    <maven-copy-rename-plugin.version>1.0.1</maven-copy-rename-plugin.version>
     <maven-build-helper-plugin.version>3.4.0</maven-build-helper-plugin.version>
     <maven-clean-plugin.version>3.3.2</maven-clean-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -296,7 +296,7 @@
       </plugin>
 
       <plugin>
-        <groupId>com.kohlschutter.mavenplugins</groupId>
+        <groupId>com.coderplus.maven.plugins</groupId>
         <artifactId>copy-rename-maven-plugin</artifactId>
         <version>${maven-copy-rename-plugin.version}</version>
         <executions>
