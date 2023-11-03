@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.resource.kafka;
 import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -116,6 +117,8 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private List<BibframeContributorsInner> extractContributors(Resource resource) {
     return resource.getOutgoingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .flatMap(re -> re.getTarget().getOutgoingEdges().stream())
       .filter(re -> CREATOR.getUri().equals(re.getPredicate().getUri())
         || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
       .map(re -> new BibframeContributorsInner()

@@ -22,9 +22,9 @@ import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -116,7 +116,7 @@ public class TestUtil {
     return resource;
   }
 
-  public static Resource bibframeSampleResource(Long resourceHash, ResourceTypeEntity type) {
+  public static Resource bibframeSampleResource(Long resourceHash, ResourceTypeDictionary type) {
     var bibframe = bibframeSampleResource();
     bibframe.setResourceHash(resourceHash);
     bibframe.addType(type);
