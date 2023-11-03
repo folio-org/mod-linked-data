@@ -49,8 +49,8 @@ public class ReindexServiceIml implements ReindexService {
               kafkaSender.sendResourceCreated(bibframeIndex);
               log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
               recordsIndexed.getAndIncrement();
-            } catch (Exception e) {
-              log.warn("Failed to send resource for reindexing with id {}", resource.getResourceHash());
+            } catch (Exception ex) {
+              log.warn("Failed to send resource for reindexing with id {}", resource.getResourceHash(), ex);
             }
           }
         );
