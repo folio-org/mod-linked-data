@@ -44,11 +44,11 @@ public class ReindexServiceIml implements ReindexService {
         .forEach(resource -> {
             try {
               var bibframeIndex = kafkaMessageMapper.toIndex(resource);
-              // detach the resource entity from entity manager, enabling garbage collection
-              entityManager.detach(resource);
               kafkaSender.sendResourceCreated(bibframeIndex);
               log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
               recordsIndexed.getAndIncrement();
+              // detach the resource entity from entity manager, enabling garbage collection
+              entityManager.detach(resource);
             } catch (Exception ex) {
               log.warn("Failed to send resource for reindexing with id {}", resource.getResourceHash(), ex);
             }
