@@ -2,14 +2,19 @@ package org.folio.linked.data.service.tenant;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.Headers;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.folio.spring.tools.context.ExecutionContextBuilder;
-import org.folio.spring.tools.systemuser.SystemUserService;
 import org.springframework.context.annotation.Profile;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -18,24 +23,29 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TenantScopedExecutionService {
   private final ExecutionContextBuilder contextBuilder;
-  private final SystemUserService systemUserService;
 
   @SneakyThrows
   public <T> T executeTenantScoped(String tenantId, Callable<T> job) {
-    try (var fex = new FolioExecutionContextSetter(systemUserfolioExecutionContext(tenantId))) {
+    try (var fex = new FolioExecutionContextSetter(dbOnlyContext(tenantId))) {
       return job.call();
     }
   }
 
   @Async
-  public void executeAsyncTenantScoped(String tenantId, Runnable job) {
-    try (var fex = new FolioExecutionContextSetter(systemUserfolioExecutionContext(tenantId))) {
+  public void executeAsyncTenantScoped(Headers headers, Runnable job) {
+    try (var fex = new FolioExecutionContextSetter(kafkaFolioExecutionContext(headers))) {
       job.run();
     }
   }
 
-  private FolioExecutionContext systemUserfolioExecutionContext(String tenant) {
-    return contextBuilder.forSystemUser(systemUserService.getAuthedSystemUser(tenant));
+  private FolioExecutionContext kafkaFolioExecutionContext(Headers headers) {
+    Map<String, Object> headersMap = StreamSupport.stream(headers.spliterator(), false)
+      .collect(Collectors.toMap(Header::key, Header::value));
+    return contextBuilder.forMessageHeaders(new MessageHeaders(headersMap));
+  }
+
+  public FolioExecutionContext dbOnlyContext(String tenantId) {
+    return contextBuilder.builder().withTenantId(tenantId).build();
   }
 
 }

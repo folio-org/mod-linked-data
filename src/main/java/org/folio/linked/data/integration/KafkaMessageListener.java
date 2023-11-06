@@ -35,7 +35,7 @@ public class KafkaMessageListener {
       log.info("Received: {}", consumerRecord);
       var event = consumerRecord.value();
       if (isNotBlank(event.getTenant())) {
-        tenantScopedExecutionService.executeAsyncTenantScoped(event.getTenant(),
+        tenantScopedExecutionService.executeAsyncTenantScoped(consumerRecord.headers(),
           () -> dataImportEventHandler.handle(event));
       } else {
         log.warn("Received DataImportEvent with no TenantId: {}", event);

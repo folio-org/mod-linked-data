@@ -15,10 +15,6 @@ folio:
         concurrency: ${KAFKA_DATA_IMPORT_INSTANCE_CREATE_CONCURRENCY:1}
         topic-pattern: ${KAFKA_DI_INSTANCE_CREATED_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)DI_INVENTORY_INSTANCE_CREATED_READY_FOR_POST_PROCESSING}
         group-id: ${folio.environment}-linked-data-data-import-instances-created-group
-  system-user:
-    username: mod-linked-data
-    password: ${SYSTEM_USER_PASSWORD:Mod-linked-data-1-0-0}
-    lastname: System
 
 spring:
   kafka:
