@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @EnableFeignClients
 @SpringBootApplication
-@ComponentScan({"org.folio.linked.data", "org.folio.marc2ld"})
+@ComponentScan("org.folio")
 public class LinkedDataApplication {
 
 

@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.spring.tools.kafka.FolioKafkaProperties;
+import org.folio.spring.tools.systemuser.PrepareSystemUserService;
+import org.folio.spring.tools.systemuser.SystemUserService;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.retry.support.RetryTemplate;
 
 @Configuration
 @RequiredArgsConstructor
@@ -51,6 +54,21 @@ public class KafkaListenerConfiguration {
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
+  }
+
+  @Bean("defaultRetryTemplate")
+  public RetryTemplate retryTemplate() {
+    return new RetryTemplate();
+  }
+
+  @Bean("folioPrepareSystemUserService")
+  public PrepareSystemUserService dummyPrepareSystemUserService() {
+    return null;
+  }
+
+  @Bean("folioSystemUserService")
+  public SystemUserService dummySystemUserService() {
+    return null;
   }
 
 }

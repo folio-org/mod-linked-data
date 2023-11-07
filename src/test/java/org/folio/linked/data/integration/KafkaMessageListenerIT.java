@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration;
 
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
+import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.utils.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
@@ -10,6 +11,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.consumer.DataImportEventHandler;
 import org.folio.search.domain.dto.DataImportEvent;
@@ -53,7 +55,10 @@ class KafkaMessageListenerIT {
       .eventType(eventType)
       .marc(marc);
 
-    eventKafkaTemplate.send(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), eventId, emittedEvent);
+    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), 0,
+      eventId, emittedEvent, defaultKafkaHeaders());
+
+    eventKafkaTemplate.send(producerRecord);
     await().atMost(FIVE_SECONDS)
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(() -> verify(dataImportEventConsumer, times(1)).handle(expectedEvent));

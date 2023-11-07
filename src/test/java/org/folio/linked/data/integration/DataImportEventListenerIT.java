@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.utils.KafkaEventsTestDataFixture.dataImportEvent;
@@ -16,6 +17,7 @@ import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_MINUTE;
 
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.consumer.DataImportEventHandler;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -78,9 +80,11 @@ class DataImportEventListenerIT {
       .tenant(TENANT_ID)
       .eventType(eventType)
       .marc(marc);
+    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), 0,
+      eventId, emittedEvent, defaultKafkaHeaders());
 
     // when
-    eventKafkaTemplate.send(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), eventId, emittedEvent);
+    eventKafkaTemplate.send(producerRecord);
 
     // then
     await().atMost(ONE_MINUTE)

@@ -1,12 +1,15 @@
 package org.folio.linked.data.integration;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.spring.integration.XOkapiHeaders.TENANT;
+import static org.folio.spring.integration.XOkapiHeaders.URL;
 
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.header.Headers;
 import org.folio.linked.data.integration.consumer.DataImportEventHandler;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.search.domain.dto.DataImportEvent;
@@ -31,15 +34,20 @@ public class KafkaMessageListener {
     concurrency = "#{folioKafkaProperties.listener['data-import-instance-create'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['data-import-instance-create'].topicPattern}")
   public void handleDataImportInstanceCreatedEvent(List<ConsumerRecord<String, DataImportEvent>> consumerRecords) {
-    for (ConsumerRecord<String, DataImportEvent> consumerRecord : consumerRecords) {
+    consumerRecords.forEach(consumerRecord -> {
       log.info("Received: {}", consumerRecord);
       var event = consumerRecord.value();
-      if (isNotBlank(event.getTenant())) {
+      if (validFolioHeaders(consumerRecord.headers())) {
         tenantScopedExecutionService.executeAsyncTenantScoped(consumerRecord.headers(),
           () -> dataImportEventHandler.handle(event));
       } else {
-        log.warn("Received DataImportEvent with no TenantId: {}", event);
+        log.warn("Received DataImportEvent with not valid headers will be ignored: {}", event);
       }
-    }
+    });
+  }
+
+  private boolean validFolioHeaders(Headers headers) {
+    return Arrays.stream(headers.toArray()).anyMatch(h -> h.key().equals(TENANT) && h.value().length > 0)
+      && Arrays.stream(headers.toArray()).anyMatch(h -> h.key().equals(URL) && h.value().length > 0);
   }
 }
