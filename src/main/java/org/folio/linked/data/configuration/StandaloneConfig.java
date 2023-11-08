@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.filter.GenericFilterBean;
 
 @Configuration
@@ -76,30 +75,6 @@ public class StandaloneConfig implements ApplicationListener<ContextRefreshedEve
         chain.doFilter(request, response);
       }
     };
-  }
-
-  @Primary
-  @Bean("folioPrepareSystemUserService")
-  public String dummyFolioPrepareSystemUserService() {
-    return "";
-  }
-
-  @Primary
-  @Bean("folioSystemUserService")
-  public String dummyFolioSystemUserService() {
-    return "";
-  }
-
-  @Primary
-  @Bean("folioSystemUserScopedExecutionService")
-  public String dummyFolioSystemUserScopedExecutionService() {
-    return "";
-  }
-
-  @Primary
-  @Bean("defaultRetryTemplate")
-  public RetryTemplate dummyRetryTemplate() {
-    return null;
   }
 
 }
