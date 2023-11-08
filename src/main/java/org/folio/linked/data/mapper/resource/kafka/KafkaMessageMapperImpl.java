@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.resource.kafka;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
@@ -89,13 +90,17 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue()))
         .type(toType(ir, TypeEnum::fromValue, TypeEnum.class)))
+      .filter(ri -> nonNull(ri.getValue()))
       .toList();
   }
 
   private <E extends Enum<E>> E toType(Resource resource, Function<String, E> typeSupplier, Class<E> enumClass) {
+    E result = null;
+    if (isNull(resource.getFirstType())) {
+      return result;
+    }
     var typeUri = resource.getFirstType().getUri();
     typeUri = typeUri.substring(typeUri.lastIndexOf("/") + 1);
-    E result = null;
     try {
       result = typeSupplier.apply(typeUri);
     } catch (IllegalArgumentException iae) {
@@ -107,9 +112,11 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   private String getValue(JsonNode doc, String... values) {
-    for (String value : values) {
-      if (doc.has(value)) {
-        return doc.get(value).get(0).asText();
+    if (nonNull(doc)) {
+      for (String value : values) {
+        if (doc.has(value)) {
+          return doc.get(value).get(0).asText();
+        }
       }
     }
     return null;
@@ -127,6 +134,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
           BibframeContributorsInner.TypeEnum.class))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
+      .filter(ic -> nonNull(ic.getName()))
       .toList();
   }
 
@@ -137,6 +145,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ir -> new BibframePublicationsInner()
         .publisher(getValue(ir.getDoc(), NAME.getValue()))
         .dateOfPublication(getValue(ir.getDoc(), DATE.getValue(), PROVIDER_DATE.getValue())))
+      .filter(ip -> nonNull(ip.getPublisher()) || nonNull(ip.getDateOfPublication()))
       .toList();
   }
 
