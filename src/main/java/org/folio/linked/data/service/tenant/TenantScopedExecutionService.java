@@ -1,11 +1,13 @@
 package org.folio.linked.data.service.tenant;
 
+import static java.util.stream.Collectors.toMap;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.kafka.common.header.Header;
@@ -39,8 +41,8 @@ public class TenantScopedExecutionService {
   }
 
   private FolioExecutionContext kafkaFolioExecutionContext(Headers headers) {
-    Map<String, Object> headersMap = StreamSupport.stream(headers.spliterator(), false)
-      .collect(Collectors.toMap(Header::key, Header::value));
+    var headersMap = Arrays.stream(headers.toArray())
+      .collect(toMap(Header::key, Header::value, (o, o2) -> o2, (Supplier<Map<String, Object>>) HashMap::new));
     return contextBuilder.forMessageHeaders(new MessageHeaders(headersMap));
   }
 

@@ -4,8 +4,8 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 public class KafkaMessageListener {
 
   private static final String DI_INSTANCE_CREATED_LISTENER = "mod-linked-data-data-import-instance-created-listener";
+  private static final Set<String> REQUIRED_FOLIO_HEADERS = Set.of(TENANT, URL);
   private final TenantScopedExecutionService tenantScopedExecutionService;
   private final DataImportEventHandler dataImportEventHandler;
 
@@ -37,17 +38,18 @@ public class KafkaMessageListener {
     consumerRecords.forEach(consumerRecord -> {
       log.info("Received: {}", consumerRecord);
       var event = consumerRecord.value();
-      if (validFolioHeaders(consumerRecord.headers())) {
+      if (requiredHeadersProvided(consumerRecord.headers())) {
         tenantScopedExecutionService.executeAsyncTenantScoped(consumerRecord.headers(),
           () -> dataImportEventHandler.handle(event));
       } else {
-        log.warn("Received DataImportEvent with not valid headers will be ignored: {}", event);
+        log.warn("Received DataImportEvent with no required Folio headers will be ignored: {}", event);
       }
     });
   }
 
-  private boolean validFolioHeaders(Headers headers) {
-    return Arrays.stream(headers.toArray()).anyMatch(h -> h.key().equals(TENANT) && h.value().length > 0)
-      && Arrays.stream(headers.toArray()).anyMatch(h -> h.key().equals(URL) && h.value().length > 0);
+  private boolean requiredHeadersProvided(Headers headers) {
+    return REQUIRED_FOLIO_HEADERS.stream()
+      .map(required -> headers.headers(required).iterator())
+      .allMatch(iterator -> iterator.hasNext() && iterator.next().value().length > 0);
   }
 }

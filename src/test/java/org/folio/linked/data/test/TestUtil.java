@@ -31,7 +31,6 @@ import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
@@ -65,8 +64,8 @@ public class TestUtil {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
     if (Arrays.asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
-      httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
-      httpHeaders.add(XOkapiHeaders.URL, getProperty(FOLIO_OKAPI_URL));
+      httpHeaders.add(TENANT, TENANT_ID);
+      httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
     }
     return httpHeaders;
   }
