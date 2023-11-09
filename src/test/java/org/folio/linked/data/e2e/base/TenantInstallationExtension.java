@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
@@ -35,23 +34,12 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
         var mockMvc = context.getBean(MockMvc.class);
         mockMvc.perform(post(TENANT_ENDPOINT_URI, TENANT_ID)
             .content(asJsonString(new TenantAttributes().moduleTo(env.getProperty("spring.application.name"))))
-            .headers(defaultHeaders(env, extensionContext.getTestInstance().map(this::getOkapiUrl).orElse(null)))
+            .headers(defaultHeaders(env))
             .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent());
       }
       init = true;
     }
-  }
-
-  private String getOkapiUrl(Object ti) {
-    try {
-      return ((OkapiConfiguration) ti.getClass().getField("okapi").get(null)).getOkapiUrl();
-    } catch (NoSuchFieldException nsfe) {
-      log.warn("Test instance contains no 'okapi' field. Add it if you want to mock the Okapi in your test");
-    } catch (IllegalAccessException iae) {
-      log.warn("Test instance contains 'okapi' field but it's not accessible");
-    }
-    return null;
   }
 
 }

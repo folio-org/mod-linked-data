@@ -1,5 +1,7 @@
 package org.folio.linked.data.test;
 
+import static java.lang.System.getProperty;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
@@ -7,6 +9,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.spring.integration.XOkapiHeaders.TENANT;
+import static org.folio.spring.integration.XOkapiHeaders.URL;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
@@ -17,15 +21,16 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.spring.integration.XOkapiHeaders;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
@@ -40,8 +45,8 @@ public class TestUtil {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   private static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
-
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
+  private static final String FOLIO_OKAPI_URL = "folio.okapi-url";
 
   static {
     PARAMETERS.excludeField(named("id"));
@@ -56,19 +61,20 @@ public class TestUtil {
   }
 
   public static HttpHeaders defaultHeaders(Environment env) {
-    return defaultHeaders(env, null);
-  }
-
-  public static HttpHeaders defaultHeaders(Environment env, String okapiUrl) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
     if (Arrays.asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
-      httpHeaders.add(XOkapiHeaders.TENANT, TENANT_ID);
-    }
-    if (nonNull(okapiUrl)) {
-      httpHeaders.add(XOkapiHeaders.URL, okapiUrl);
+      httpHeaders.add(TENANT, TENANT_ID);
+      httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
     }
     return httpHeaders;
+  }
+
+  public static List<RecordHeader> defaultKafkaHeaders() {
+    return List.of(
+      new RecordHeader(TENANT, TENANT_ID.getBytes(UTF_8)),
+      new RecordHeader(URL, getProperty(FOLIO_OKAPI_URL).getBytes(UTF_8))
+    );
   }
 
   @SneakyThrows

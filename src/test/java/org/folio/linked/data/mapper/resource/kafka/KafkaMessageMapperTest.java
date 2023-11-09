@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
@@ -27,7 +29,6 @@ import java.util.Map;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -72,12 +73,22 @@ class KafkaMessageMapperTest {
   void mapToIndex_shouldReturnCorrectlyMappedObject() {
     // given
     var instance = createSampleInstance();
+    var emptyTitle = new Resource();
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyTitle, TITLE));
     var wrongId = getIdentifier(NAME.getValue(), ANNOTATION);
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, new PredicateEntity(MAP.getUri())));
+    var emptyId = new Resource();
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, MAP));
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyId, MAP));
     var wrongContributor = getContributor(ANNOTATION);
+    var emptyContributor = new Resource();
     instance.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .forEach(re -> re.getTarget().getOutgoingEdges().add(new ResourceEdge(instance, wrongContributor, CONTRIBUTOR)));
+    instance.getOutgoingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .forEach(re -> re.getTarget().getOutgoingEdges().add(new ResourceEdge(instance, emptyContributor, CONTRIBUTOR)));
+    var emptyPublication = new Resource();
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
 
     // when
     var result = kafkaMessageMapper.toIndex(instance);

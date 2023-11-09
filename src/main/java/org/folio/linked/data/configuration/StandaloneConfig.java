@@ -45,8 +45,8 @@ public class StandaloneConfig implements ApplicationListener<ContextRefreshedEve
     folioSpringLiquibase.performLiquibaseUpdate();
   }
 
-  @Bean(name = "folioTenantController")
   @Primary
+  @Bean(name = "folioTenantController")
   public TenantApi dummyTenantController() {
     return new TenantApi() {
       @Override

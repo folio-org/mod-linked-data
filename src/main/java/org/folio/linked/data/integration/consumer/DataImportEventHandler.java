@@ -23,7 +23,7 @@ public class DataImportEventHandler {
   public void handle(DataImportEvent event) {
     if (isNotEmpty(event.getMarc())) {
       var marc2ldResource = marc2BibframeMapper.map(event.getMarc());
-      Long id = resourceService.createResource(marc2ldResource);
+      var id = resourceService.createResource(marc2ldResource);
       log.info("DataImportEvent with id [{}] was saved as LD resource with id [{}]", event.getId(), id);
     } else {
       log.error("DataImportEvent with id [{}], tenant [{}], eventType [{}] has no Marc record inside",

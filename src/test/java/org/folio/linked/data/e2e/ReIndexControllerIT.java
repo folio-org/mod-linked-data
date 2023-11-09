@@ -17,7 +17,6 @@ import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
-import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 class ReIndexControllerIT {
 
   public static final String INDEX_URL = "/reindex";
-  public static OkapiConfiguration okapi;
 
   @Autowired
   private MockMvc mockMvc;
@@ -58,7 +56,7 @@ class ReIndexControllerIT {
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
+      .headers(defaultHeaders(env));
 
     mockMvc.perform(requestBuilder);
 

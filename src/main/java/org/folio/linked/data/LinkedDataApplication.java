@@ -1,5 +1,8 @@
 package org.folio.linked.data;
 
+import static org.springframework.context.annotation.ComponentScan.Filter;
+import static org.springframework.context.annotation.FilterType.REGEX;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
@@ -11,14 +14,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @EnableFeignClients
 @SpringBootApplication
-@ComponentScan({"org.folio.linked.data", "org.folio.marc2ld"})
+@ComponentScan(value = "org.folio", excludeFilters = @Filter(type = REGEX, pattern =
+  {"org.folio.spring.tools.systemuser.*", "org.folio.spring.tools.batch.*"}))
 public class LinkedDataApplication {
 
 
   public static void main(String[] args) {
     SpringApplication.run(LinkedDataApplication.class, args);
-
   }
-
 
 }

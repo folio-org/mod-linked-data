@@ -104,7 +104,6 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.ResourceEdgeRepository;
-import org.folio.spring.test.extension.impl.OkapiConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -120,7 +119,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResourceControllerIT {
 
   public static final String BIBFRAME_URL = "/resource";
-  public static OkapiConfiguration okapi;
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -143,7 +141,7 @@ public class ResourceControllerIT {
     // given
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
+      .headers(defaultHeaders(env))
       .content(getBibframeSample());
 
     // when
@@ -167,7 +165,7 @@ public class ResourceControllerIT {
     // given
     var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
+      .headers(defaultHeaders(env))
       .content(getBibframeSample());
     var resultActions1 = mockMvc.perform(requestBuilder1);
     var response1 = resultActions1.andReturn().getResponse().getContentAsString();
@@ -177,7 +175,7 @@ public class ResourceControllerIT {
     assertThat(persistedOptional1).isPresent();
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
+      .headers(defaultHeaders(env))
       .content(getBibframeSample().replace("Instance: partName", "Instance: partName2"));
 
     // when
@@ -196,7 +194,7 @@ public class ResourceControllerIT {
     var wrongValue = "http://TitleWrong";
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()))
+      .headers(defaultHeaders(env))
       .content(getBibframeSample().replace("http://bibfra.me/vocab/marc/Title", wrongValue));
 
     // when
@@ -219,7 +217,7 @@ public class ResourceControllerIT {
     var existed = resourceRepo.save(createSampleInstance());
     var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
+      .headers(defaultHeaders(env));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -235,7 +233,7 @@ public class ResourceControllerIT {
     var notExistedId = randomLong();
     var requestBuilder = get(BIBFRAME_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
+      .headers(defaultHeaders(env));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -262,7 +260,7 @@ public class ResourceControllerIT {
     var requestBuilder = get(BIBFRAME_URL)
       .param(TYPE, INSTANCE.getUri())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
+      .headers(defaultHeaders(env));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -289,7 +287,7 @@ public class ResourceControllerIT {
     assertThat(resourceEdgeRepository.count()).isEqualTo(27);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env, okapi.getOkapiUrl()));
+      .headers(defaultHeaders(env));
 
     // when
     mockMvc.perform(requestBuilder);
