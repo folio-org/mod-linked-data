@@ -669,7 +669,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var instantiates = edge.getTarget();
     assertThat(instantiates.getResourceHash()).isNotNull();
-    assertThat(instantiates.getDoc().size()).isEqualTo(4);
+    assertThat(instantiates.getDoc().size()).isEqualTo(5);
     assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).size()).isEqualTo(1);
     assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).get(0).asText())
       .isEqualTo("statement of responsibility");
@@ -680,6 +680,8 @@ public class ResourceControllerIT {
     assertThat(instantiates.getDoc().get(TARGET_AUDIENCE.getValue()).size()).isEqualTo(1);
     assertThat(instantiates.getDoc().get(TARGET_AUDIENCE.getValue()).get(0).asText())
       .isEqualTo("target audience");
+    assertThat(instantiates.getDoc().get(TABLE_OF_CONTENTS.getValue()).size()).isEqualTo(1);
+    assertThat(instantiates.getDoc().get(TABLE_OF_CONTENTS.getValue()).get(0).asText()).isEqualTo("table of contents");
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
     validateWorkClassification(edgeIterator.next(), instantiates);
     validateWorkContentType(edgeIterator.next(), instantiates);

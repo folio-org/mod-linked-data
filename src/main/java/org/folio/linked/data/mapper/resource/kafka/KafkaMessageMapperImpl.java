@@ -24,10 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.api.Predicate;
+import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.exception.NotSupportedException;
+import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeIndex;
@@ -37,7 +43,11 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class KafkaMessageMapperImpl implements KafkaMessageMapper {
+
+  private final InnerResourceMapper innerResourceMapper;
+  private final SubResourceMapper subResourceMapper;
 
   @Override
   public BibframeIndex toIndex(@NonNull Resource resource) {
@@ -89,26 +99,36 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue()))
-        .type(toType(ir, TypeEnum::fromValue, TypeEnum.class)))
+        .type(toType(ir, TypeEnum::fromValue, TypeEnum.class, MAP)))
       .filter(ri -> nonNull(ri.getValue()))
       .toList();
   }
 
-  private <E extends Enum<E>> E toType(Resource resource, Function<String, E> typeSupplier, Class<E> enumClass) {
+  private <E extends Enum<E>> E toType(Resource resource, Function<String, E> typeSupplier, Class<E> enumClass,
+                                       Predicate predicate) {
     E result = null;
     if (isNull(resource.getFirstType())) {
       return result;
     }
-    var typeUri = resource.getFirstType().getUri();
-    typeUri = typeUri.substring(typeUri.lastIndexOf("/") + 1);
-    try {
-      result = typeSupplier.apply(typeUri);
-    } catch (IllegalArgumentException iae) {
-      var enumNameWithParent = enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
-      log.error("Unknown type [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message",
-        typeUri, enumNameWithParent, resource.getResourceHash());
-    }
-    return result;
+    return resource.getTypes()
+      .stream()
+      .map(ResourceTypeEntity::getUri)
+      .filter(type -> innerResourceMapper.getMapperUnit(type).isPresent()
+        || subResourceMapper.getMapperUnit(type, predicate, Instance.class, null).isPresent())
+      .findFirst()
+      .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
+      .map(typeUri -> {
+        try {
+          return typeSupplier.apply(typeUri);
+        } catch (IllegalArgumentException iae) {
+          var enumNameWithParent = enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
+          log.error(
+            "Unknown type [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message",
+            typeUri, enumNameWithParent, resource.getResourceHash());
+        }
+        return null;
+      })
+      .orElse(null);
   }
 
   private String getValue(JsonNode doc, String... values) {
@@ -131,7 +151,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(re -> new BibframeContributorsInner()
         .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
         .type(toType(re.getTarget(), BibframeContributorsInner.TypeEnum::fromValue,
-          BibframeContributorsInner.TypeEnum.class))
+          BibframeContributorsInner.TypeEnum.class, re.getPredicate()))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> nonNull(ic.getName()))

@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.api.Predicate;
-import org.folio.ld.dictionary.api.ResourceType;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.ValidationException;
@@ -55,7 +54,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
     // Of all the types of the resource, take the first one that has a mapper
     var resourceMapper = source.getTarget().getTypes()
       .stream()
-      .map(type -> getMapperUnit(type, source.getPredicate(), destination.getClass(), null))
+      .map(type -> getMapperUnit(type.getUri(), source.getPredicate(), destination.getClass(), null))
       .flatMap(Optional::stream)
       .findFirst();
 
@@ -69,13 +68,15 @@ public class SubResourceMapperImpl implements SubResourceMapper {
       });
   }
 
-  private Optional<SubResourceMapperUnit<?>> getMapperUnit(ResourceType type, Predicate pred, Class<?> parentDto,
-                                                           Class<?> dto) {
+
+  @Override
+  public Optional<SubResourceMapperUnit<?>> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
+                                                          Class<?> dto) {
     return mapperUnits.stream()
       .filter(m -> isNull(parentDto) || m.getParentDto().contains(parentDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
-        return (isNull(type) || type.getHash().equals(annotation.type().getHash()))
+        return (isNull(typeUri) || typeUri.equals(annotation.type().getUri()))
           && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
           && (isNull(dto) || dto.equals(annotation.dtoClass()));
       })
