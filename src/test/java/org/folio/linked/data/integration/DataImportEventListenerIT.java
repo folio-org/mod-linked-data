@@ -17,6 +17,7 @@ import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_MINUTE;
 
+import java.util.Set;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.consumer.DataImportEventHandler;
@@ -31,6 +32,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,7 +94,12 @@ class DataImportEventListenerIT {
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
 
-    var found = tenantScopedExecutionService.executeTenantScoped(TENANT_ID, () -> resourceRepo.findById(4244280705L));
+    var found = tenantScopedExecutionService.executeTenantScoped(
+      TENANT_ID,
+      () -> resourceRepo.findResourcesByTypeFull(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
+        .stream()
+        .findFirst()
+    );
     assertThat(found).isPresent();
     var result = found.get();
     assertThat(result.getLabel()).isEqualTo("Instance MainTitle");
