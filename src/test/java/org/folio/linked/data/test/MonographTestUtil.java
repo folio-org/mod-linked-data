@@ -51,6 +51,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
@@ -60,6 +61,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -69,6 +71,7 @@ import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -93,7 +96,7 @@ public class MonographTestUtil {
         NON_SORT_NUM, List.of("Instance: nonSortNum"),
         SUBTITLE, List.of("Instance: subTitle")
       ),
-      ResourceTypeDictionary.TITLE,
+      Set.of(ResourceTypeDictionary.TITLE),
       emptyMap()
     ).setLabel("Instance: label");
 
@@ -106,7 +109,7 @@ public class MonographTestUtil {
         SUBTITLE, List.of("Parallel: subTitle"),
         NOTE, List.of("Parallel: noteLabel")
       ),
-      PARALLEL_TITLE,
+      Set.of(PARALLEL_TITLE),
       emptyMap()
     ).setLabel("Parallel: label");
 
@@ -120,7 +123,7 @@ public class MonographTestUtil {
         VARIANT_TYPE, List.of("Variant: variantType"),
         NOTE, List.of("Variant: noteLabel")
       ),
-      VARIANT_TITLE,
+      Set.of(VARIANT_TITLE),
       emptyMap()
     ).setLabel("Variant: label");
 
@@ -134,13 +137,13 @@ public class MonographTestUtil {
         LINK, List.of("accessLocation value"),
         NOTE, List.of("accessLocation note")
       ),
-      ANNOTATION,
+      Set.of(ANNOTATION),
       emptyMap()
     ).setLabel("accessLocation label");
 
     var lccn = createResource(
       Map.of(NAME, List.of("lccn value")),
-      ID_LCCN,
+      Set.of(IDENTIFIER, ID_LCCN),
       Map.of(STATUS, List.of(status("lccn")))
     ).setLabel("lccn label");
 
@@ -149,7 +152,7 @@ public class MonographTestUtil {
         NAME, List.of("isbn value"),
         QUALIFIER, List.of("isbn qualifier")
       ),
-      ID_ISBN,
+      Set.of(IDENTIFIER, ID_ISBN),
       Map.of(STATUS, List.of(status("isbn")))
     ).setLabel("isbn label");
 
@@ -158,7 +161,7 @@ public class MonographTestUtil {
         EAN_VALUE, List.of("ean value"),
         QUALIFIER, List.of("ean qualifier")
       ),
-      ID_EAN,
+      Set.of(IDENTIFIER, ID_EAN),
       emptyMap()
     ).setLabel("ean label");
 
@@ -167,7 +170,7 @@ public class MonographTestUtil {
         LOCAL_ID_VALUE, List.of("localId value"),
         ASSIGNING_SOURCE, List.of("localId assigner")
       ),
-      ID_LOCAL,
+      Set.of(IDENTIFIER, ID_LOCAL),
       emptyMap()
     ).setLabel("localId label");
 
@@ -176,7 +179,7 @@ public class MonographTestUtil {
         NAME, List.of("otherId value"),
         QUALIFIER, List.of("otherId qualifier")
       ),
-      ID_UNKNOWN,
+      Set.of(IDENTIFIER, ID_UNKNOWN),
       emptyMap()
     ).setLabel("otherId label");
 
@@ -186,7 +189,7 @@ public class MonographTestUtil {
         TERM, List.of("media term"),
         LINK, List.of("media link")
       ),
-      CATEGORY,
+      Set.of(CATEGORY),
       emptyMap()
     ).setLabel("media label");
 
@@ -196,7 +199,7 @@ public class MonographTestUtil {
         TERM, List.of("carrier term"),
         LINK, List.of("carrier link")
       ),
-      CATEGORY,
+      Set.of(CATEGORY),
       emptyMap()
     ).setLabel("carrier label");
 
@@ -204,7 +207,7 @@ public class MonographTestUtil {
       Map.of(
         DATE, List.of("copyright date value")
       ),
-      COPYRIGHT_EVENT,
+      Set.of(COPYRIGHT_EVENT),
       emptyMap()
     ).setLabel("copyright date label");
 
@@ -229,7 +232,7 @@ public class MonographTestUtil {
         PROJECTED_PROVISION_DATE, List.of("projected provision date"),
         ISSUANCE, List.of("single unit")
       ),
-      INSTANCE,
+      Set.of(INSTANCE),
       pred2OutgoingResources
     );
   }
@@ -241,7 +244,7 @@ public class MonographTestUtil {
         LINK, List.of("Content: link"),
         CODE, List.of("Content: code")
       ),
-      CATEGORY,
+      Set.of(CATEGORY),
       emptyMap()
     ).setLabel("content label");
 
@@ -250,7 +253,7 @@ public class MonographTestUtil {
         CODE, List.of("Dewey: code"),
         SOURCE, List.of("Dewey: source")
       ),
-      CATEGORY,
+      Set.of(CATEGORY),
       emptyMap()
     ).setLabel("Dewey: label");
 
@@ -259,7 +262,7 @@ public class MonographTestUtil {
         NAME, List.of("Person: name"),
         LCNAF_ID, List.of("Person: lcnafId")
       ),
-      PERSON,
+      Set.of(PERSON),
       emptyMap()
     );
 
@@ -268,7 +271,7 @@ public class MonographTestUtil {
         NAME, List.of("Organization: name"),
         LCNAF_ID, List.of("Organization: lcnafId")
       ),
-      ORGANIZATION,
+      Set.of(ORGANIZATION),
       emptyMap()
     );
 
@@ -285,7 +288,7 @@ public class MonographTestUtil {
         SUMMARY, List.of("Work: summary"),
         TABLE_OF_CONTENTS, List.of("Work: table of contents")
       ),
-      WORK,
+      Set.of(WORK),
       pred2OutgoingResources
     ).setLabel("Work: label");
   }
@@ -296,7 +299,7 @@ public class MonographTestUtil {
         LABEL, List.of(prefix + " status value"),
         LINK, List.of(prefix + " status link")
       ),
-      ResourceTypeDictionary.STATUS,
+      Set.of(ResourceTypeDictionary.STATUS),
       emptyMap()
     ).setLabel(prefix + " status label");
   }
@@ -309,7 +312,7 @@ public class MonographTestUtil {
         PROVIDER_DATE, List.of(type + " provider date"),
         SIMPLE_PLACE, List.of(type + " simple place")
       ),
-      PROVIDER_EVENT,
+      Set.of(PROVIDER_EVENT),
       Map.of(PROVIDER_PLACE, List.of(providerPlace(type)))
     ).setLabel(type + " label");
   }
@@ -320,12 +323,13 @@ public class MonographTestUtil {
         NAME, List.of(providerEventType + " providerPlace name"),
         LINK, List.of(providerEventType + " providerPlace link")
       ),
-      ResourceTypeDictionary.PLACE,
+      Set.of(PLACE),
       emptyMap()
     ).setLabel(providerEventType + " providerPlace label");
   }
 
-  private Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic, ResourceTypeDictionary type,
+  private Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
+                                  Set<ResourceTypeDictionary> types,
                                   Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
     var resource = new Resource();
     pred2OutgoingResources.keySet()
@@ -338,7 +342,7 @@ public class MonographTestUtil {
     Map<String, List<String>> properties = propertiesDic.entrySet().stream()
       .collect(Collectors.toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
-    resource.addType(type);
+    types.forEach(resource::addType);
     resource.setResourceHash(CORE_MAPPER.hash(resource));
     return resource;
   }

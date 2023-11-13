@@ -9,6 +9,11 @@ import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.linked.data.test.MonographTestUtil.createSampleInstance;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -23,12 +28,17 @@ import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum.UNKN
 import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.MAIN;
 import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.SUB;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.NotSupportedException;
+import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
+import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.monograph.inner.instance.InstanceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -37,11 +47,21 @@ import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
+@ExtendWith(MockitoExtension.class)
 class KafkaMessageMapperTest {
 
-  private final KafkaMessageMapper kafkaMessageMapper = new KafkaMessageMapperImpl();
+  @InjectMocks
+  private KafkaMessageMapperImpl kafkaMessageMapper;
+  @Mock
+  private InnerResourceMapper innerResourceMapper;
+  @Mock
+  private SubResourceMapper subResourceMapper;
 
   @Test
   void toIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
@@ -72,6 +92,17 @@ class KafkaMessageMapperTest {
   @Test
   void mapToIndex_shouldReturnCorrectlyMappedObject() {
     // given
+    var optionalWithMapper = Optional.of(new InstanceMapperUnit(null, null));
+    lenient().doReturn(optionalWithMapper).when(innerResourceMapper).getMapperUnit(ID_ISBN.getUri());
+    lenient().doReturn(optionalWithMapper).when(innerResourceMapper).getMapperUnit(ID_LCCN.getUri());
+    lenient().doReturn(optionalWithMapper).when(innerResourceMapper).getMapperUnit(ID_EAN.getUri());
+    lenient().doReturn(optionalWithMapper).when(innerResourceMapper).getMapperUnit(ID_LOCAL.getUri());
+    lenient().doReturn(optionalWithMapper).when(innerResourceMapper).getMapperUnit(ID_UNKNOWN.getUri());
+    lenient().doReturn(optionalWithMapper).when(innerResourceMapper)
+      .getMapperUnit(ResourceTypeDictionary.PERSON.getUri());
+    lenient().doReturn(optionalWithMapper).when(innerResourceMapper)
+      .getMapperUnit(ResourceTypeDictionary.ORGANIZATION.getUri());
+
     var instance = createSampleInstance();
     var emptyTitle = new Resource();
     instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyTitle, TITLE));

@@ -50,10 +50,10 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
 
   @SneakyThrows
   @Override
-  public Resource toEntity(@NonNull Object dto, @NonNull String resourceType) {
+  public Resource toEntity(@NonNull Object dto, @NonNull String typeUri) {
     try {
-      return getMapperUnit(resourceType).map(m -> m.toEntity(dto))
-        .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + resourceType + IS_NOT_SUPPORTED));
+      return getMapperUnit(typeUri).map(m -> m.toEntity(dto))
+        .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + typeUri + IS_NOT_SUPPORTED));
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
@@ -62,9 +62,10 @@ public class InnerResourceMapperImpl implements InnerResourceMapper {
     }
   }
 
-  private Optional<InnerResourceMapperUnit> getMapperUnit(String type) {
-    return Optional.ofNullable(mapperUnits.computeIfAbsent(type, k -> {
-      log.warn(RESOURCE_TYPE + type + IS_NOT_SUPPORTED);
+  @Override
+  public Optional<InnerResourceMapperUnit> getMapperUnit(String typeUri) {
+    return Optional.ofNullable(mapperUnits.computeIfAbsent(typeUri, k -> {
+      log.warn(RESOURCE_TYPE + typeUri + IS_NOT_SUPPORTED);
       return null;
     }));
   }
