@@ -1,8 +1,8 @@
 package org.folio.linked.data.e2e;
 
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.getBibframeSample;
-import static org.folio.linked.data.test.TestUtil.getBibframeSampleTest;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Set;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -23,10 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
-@Transactional
 class ReIndexControllerIT {
 
   public static final String INDEX_URL = "/reindex";
@@ -68,14 +65,8 @@ class ReIndexControllerIT {
   }
 
   private List<Resource> createMonograph() throws Exception {
-    var bibframeRequest1 = objectMapper.readValue(getBibframeSample(), ResourceDto.class);
-    var resource1 = resourceMapper.toEntity(bibframeRequest1);
-    resourceRepo.save(resource1);
-
-    var bibframeRequest2 = objectMapper.readValue(getBibframeSampleTest("77 mm"), ResourceDto.class);
-    var resource2 = resourceMapper.toEntity(bibframeRequest2);
-    resourceRepo.save(resource2);
-
+    resourceRepo.save(bibframeSampleResource(1L, INSTANCE));
+    resourceRepo.save(bibframeSampleResource(2L, INSTANCE));
     return resourceRepo.findResourcesByTypeFull(Set.of(ResourceTypeDictionary.INSTANCE.getUri()),
         Pageable.ofSize(10000))
       .getContent();
