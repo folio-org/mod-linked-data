@@ -21,4 +21,5 @@ public class Constants {
   public static final String SEARCH_RESOURCE_NAME = "bibframe";
   public static final String TYPE = "type";
   public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";
+  public static final String PROFILE_NOT_FOUND = "Profile not found";
 }
