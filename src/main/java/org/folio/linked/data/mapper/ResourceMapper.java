@@ -16,7 +16,7 @@ import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.ValidationException;
-import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
+import org.folio.linked.data.mapper.resource.common.top.TopResourceMapper;
 import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
@@ -38,7 +38,7 @@ public abstract class ResourceMapper {
   }
 
   @Autowired
-  private InnerResourceMapper innerMapper;
+  private TopResourceMapper topResourceMapper;
   @Autowired
   private KafkaMessageMapper kafkaMessageMapper;
 
@@ -58,7 +58,7 @@ public abstract class ResourceMapper {
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {
     try {
-      var resource = innerMapper.toEntity(dto.getResource(), DTO_CLASS_TO_TYPE.get(dto.getResource().getClass()));
+      var resource = topResourceMapper.toEntity(dto.getResource(), DTO_CLASS_TO_TYPE.get(dto.getResource().getClass()));
       setEdgesId(resource);
       return resource;
     } catch (BaseLinkedDataException blde) {
@@ -70,7 +70,7 @@ public abstract class ResourceMapper {
   }
 
   public ResourceDto toDto(Resource resource) {
-    return innerMapper.toDto(resource, new ResourceDto());
+    return topResourceMapper.toDto(resource, new ResourceDto());
   }
 
   public BibframeIndex mapToIndex(@NonNull Resource resource) {

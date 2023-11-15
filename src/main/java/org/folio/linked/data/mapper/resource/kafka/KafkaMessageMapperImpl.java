@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.resource.kafka;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.joining;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -29,8 +30,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.resource.common.inner.InnerResourceMapper;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -39,6 +39,7 @@ import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.BibframePublicationsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -46,8 +47,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
-  private final InnerResourceMapper innerResourceMapper;
+  private static final String MSG_UNKNOWN_TYPES =
+    "Unknown type(s) [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message";
   private final SubResourceMapper subResourceMapper;
+
+  @NotNull
+  private static <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
+    return enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
+  }
 
   @Override
   public BibframeIndex toIndex(@NonNull Resource resource) {
@@ -112,22 +119,23 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return resource.getTypes()
       .stream()
       .map(ResourceTypeEntity::getUri)
-      .filter(type -> innerResourceMapper.getMapperUnit(type).isPresent()
-        || subResourceMapper.getMapperUnit(type, predicate, Instance.class, null).isPresent())
+      .filter(type -> subResourceMapper.getMapperUnit(type, predicate, Instance.class, null).isPresent())
       .findFirst()
       .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
       .map(typeUri -> {
         try {
           return typeSupplier.apply(typeUri);
-        } catch (IllegalArgumentException iae) {
-          var enumNameWithParent = enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
-          log.error(
-            "Unknown type [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message",
-            typeUri, enumNameWithParent, resource.getResourceHash());
+        } catch (IllegalArgumentException ignored) {
+          return null;
         }
-        return null;
       })
-      .orElse(null);
+      .orElseGet(() -> {
+        var enumNameWithParent = getTypeEnumNameWithParent(enumClass);
+        log.warn(MSG_UNKNOWN_TYPES,
+          resource.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", ")),
+          enumNameWithParent, resource.getResourceHash());
+        return null;
+      });
   }
 
   private String getValue(JsonNode doc, String... values) {

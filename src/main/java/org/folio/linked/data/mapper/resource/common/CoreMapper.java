@@ -7,8 +7,8 @@ import java.util.function.Function;
 import lombok.NonNull;
 import org.apache.commons.lang3.function.TriFunction;
 import org.folio.ld.dictionary.api.Predicate;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 
 public interface CoreMapper {

@@ -1,0 +1,22 @@
+openapi: 3.0.0
+info:
+  title: Folio modules API
+  version: v2.1.0
+  description: Folio modules API used by mod-linked-data
+
+paths: {}
+
+components:
+  schemas:
+    searchCreateIndexRequest:
+      $ref: search/createIndexRequest.json
+    searchCreateIndexResponse:
+      $ref: search/folioCreateIndexResponse.json
+    searchResourceEvent:
+      $ref: search/resourceEvent.json
+    searchResourceEventType:
+      $ref: search/resourceEventType.json
+    bibframe:
+      $ref: search/bibframeIndex.json
+    dataImportEvent:
+      $ref: events/dataImportEvent.json

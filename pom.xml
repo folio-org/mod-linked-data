@@ -27,7 +27,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <swagger.yaml.file>${project.basedir}/src/main/resources/swagger.api/mod-linked-data.yaml</swagger.yaml.file>
-    <mod-search.swagger>${project.basedir}/src/main/resources/swagger.api/mod-search.yaml</mod-search.swagger>
+    <folio-modules.swagger>${project.basedir}/src/main/resources/swagger.api/folio-modules.yaml</folio-modules.swagger>
     <sonar.exclusions>
       src/main/java/org/folio/linked/data/LinkedDataApplication.java,
       src/main/java/org/folio/linked/data/model/**,
@@ -419,12 +419,12 @@
             </configuration>
           </execution>
           <execution>
-            <id>mod-search-dto</id>
+            <id>folio-modules-dto</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${mod-search.swagger}</inputSpec>
+              <inputSpec>${folio-modules.swagger}</inputSpec>
               <output>${project.build.directory}/generated-sources</output>
               <generatorName>spring</generatorName>
               <modelPackage>${project.groupId}.search.domain.dto</modelPackage>
