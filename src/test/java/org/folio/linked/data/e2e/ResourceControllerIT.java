@@ -156,7 +156,7 @@ public class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateMonographInstanceResource(bibframe);
+    validateInstance(bibframe);
     checkKafkaMessageSent(bibframe, null);
   }
 
@@ -310,6 +310,8 @@ public class ResourceControllerIT {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(toInstance(), notNullValue()))
+      .andExpect(jsonPath(toInventoryId(), equalTo("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")))
+      .andExpect(jsonPath(toSrsId(), equalTo("43d58061-decf-4d74-9747-0e1c368e861b")))
       .andExpect(jsonPath(toAccessLocationLink(), equalTo("accessLocation value")))
       .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
       .andExpect(jsonPath(toCarrierCode(), equalTo("carrier code")))
@@ -400,16 +402,13 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkContentTerm(), equalTo("Content: term")));
   }
 
-  private void validateMonographInstanceResource(Resource resource) {
-    assertThat(resource.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
-    validateInstance(resource);
-  }
-
   private void validateInstance(Resource instance) {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
-    assertThat(instance.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getResourceHash()).isNotNull();
+    assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
+    assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
     assertThat(instance.getDoc().size()).isEqualTo(5);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
@@ -482,7 +481,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(TITLE.getUri());
     var title = edge.getTarget();
     assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle");
-    assertThat(title.getFirstType().getUri()).isEqualTo(type.getUri());
+    assertThat(title.getTypes().iterator().next().getUri()).isEqualTo(type.getUri());
     assertThat(title.getResourceHash()).isNotNull();
     assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
     assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asText()).isEqualTo(prefix + "partName");
@@ -501,7 +500,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(predicate.getUri());
     var providerEvent = edge.getTarget();
     assertThat(providerEvent.getLabel()).isEqualTo(type + " name");
-    assertThat(providerEvent.getFirstType().getUri()).isEqualTo(PROVIDER_EVENT.getUri());
+    assertThat(providerEvent.getTypes().iterator().next().getUri()).isEqualTo(PROVIDER_EVENT.getUri());
     assertThat(providerEvent.getResourceHash()).isNotNull();
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
@@ -522,7 +521,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(PROVIDER_PLACE.getUri());
     var place = edge.getTarget();
     assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace name");
-    assertThat(place.getFirstType().getUri()).isEqualTo(PLACE.getUri());
+    assertThat(place.getTypes().iterator().next().getUri()).isEqualTo(PLACE.getUri());
     assertThat(place.getResourceHash()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(2);
     assertThat(place.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
@@ -538,7 +537,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var lccn = edge.getTarget();
     assertThat(lccn.getLabel()).isEqualTo("lccn value");
-    assertThat(lccn.getFirstType().getUri()).isEqualTo(ID_LCCN.getUri());
+    assertThat(lccn.getTypes().iterator().next().getUri()).isEqualTo(ID_LCCN.getUri());
     assertThat(lccn.getResourceHash()).isNotNull();
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
@@ -553,7 +552,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var isbn = edge.getTarget();
     assertThat(isbn.getLabel()).isEqualTo("isbn value");
-    assertThat(isbn.getFirstType().getUri()).isEqualTo(ID_ISBN.getUri());
+    assertThat(isbn.getTypes().iterator().next().getUri()).isEqualTo(ID_ISBN.getUri());
     assertThat(isbn.getResourceHash()).isNotNull();
     assertThat(isbn.getDoc().size()).isEqualTo(2);
     assertThat(isbn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
@@ -570,7 +569,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var ean = edge.getTarget();
     assertThat(ean.getLabel()).isEqualTo("ean value");
-    assertThat(ean.getFirstType().getUri()).isEqualTo(ID_EAN.getUri());
+    assertThat(ean.getTypes().iterator().next().getUri()).isEqualTo(ID_EAN.getUri());
     assertThat(ean.getResourceHash()).isNotNull();
     assertThat(ean.getDoc().size()).isEqualTo(2);
     assertThat(ean.getDoc().get(EAN_VALUE.getValue()).size()).isEqualTo(1);
@@ -586,7 +585,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var localId = edge.getTarget();
     assertThat(localId.getLabel()).isEqualTo("localId value");
-    assertThat(localId.getFirstType().getUri()).isEqualTo(ID_LOCAL.getUri());
+    assertThat(localId.getTypes().iterator().next().getUri()).isEqualTo(ID_LOCAL.getUri());
     assertThat(localId.getResourceHash()).isNotNull();
     assertThat(localId.getDoc().size()).isEqualTo(2);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).size()).isEqualTo(1);
@@ -602,7 +601,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var otherId = edge.getTarget();
     assertThat(otherId.getLabel()).isEqualTo("otherId value");
-    assertThat(otherId.getFirstType().getUri()).isEqualTo(ID_UNKNOWN.getUri());
+    assertThat(otherId.getTypes().iterator().next().getUri()).isEqualTo(ID_UNKNOWN.getUri());
     assertThat(otherId.getResourceHash()).isNotNull();
     assertThat(otherId.getDoc().size()).isEqualTo(2);
     assertThat(otherId.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
@@ -618,7 +617,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(STATUS.getUri());
     var status = edge.getTarget();
     assertThat(status.getLabel()).isEqualTo(prefix + " status value");
-    assertThat(status.getFirstType().getUri()).isEqualTo(ResourceTypeDictionary.STATUS.getUri());
+    assertThat(status.getTypes().iterator().next().getUri()).isEqualTo(ResourceTypeDictionary.STATUS.getUri());
     assertThat(status.getResourceHash()).isNotNull();
     assertThat(status.getDoc().size()).isEqualTo(2);
     assertThat(status.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
@@ -634,7 +633,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(ACCESS_LOCATION.getUri());
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo("accessLocation value");
-    assertThat(locator.getFirstType().getUri()).isEqualTo(ANNOTATION.getUri());
+    assertThat(locator.getTypes().iterator().next().getUri()).isEqualTo(ANNOTATION.getUri());
     assertThat(locator.getResourceHash()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
@@ -651,7 +650,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(pred.getUri());
     var media = edge.getTarget();
     assertThat(media.getLabel()).isEqualTo(prefix + " term");
-    assertThat(media.getFirstType().getUri()).isEqualTo(CATEGORY.getUri());
+    assertThat(media.getTypes().iterator().next().getUri()).isEqualTo(CATEGORY.getUri());
     assertThat(media.getResourceHash()).isNotNull();
     assertThat(media.getDoc().size()).isEqualTo(3);
     assertThat(media.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
@@ -743,7 +742,7 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(COPYRIGHT.getUri());
     var copyrightEvent = edge.getTarget();
     assertThat(copyrightEvent.getLabel()).isEqualTo("copyright date value");
-    assertThat(copyrightEvent.getFirstType().getUri()).isEqualTo(COPYRIGHT_EVENT.getUri());
+    assertThat(copyrightEvent.getTypes().iterator().next().getUri()).isEqualTo(COPYRIGHT_EVENT.getUri());
     assertThat(copyrightEvent.getResourceHash()).isNotNull();
     assertThat(copyrightEvent.getDoc().size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
@@ -753,6 +752,14 @@ public class ResourceControllerIT {
 
   private String toInstance() {
     return join(".", "$", path("resource"), path(INSTANCE.getUri()));
+  }
+
+  private String toInventoryId() {
+    return join(".", toInstance(), path("inventoryId"));
+  }
+
+  private String toSrsId() {
+    return join(".", toInstance(), path("srsId"));
   }
 
   private String toWork() {

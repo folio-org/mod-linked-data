@@ -50,6 +50,8 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     var instanceField = new InstanceField();
     coreMapper.mapWithResources(mapper, source, instanceField::setInstance, Instance.class);
     instanceField.getInstance().setId(String.valueOf(source.getResourceHash()));
+    instanceField.getInstance().setInventoryId(source.getInventoryId());
+    instanceField.getInstance().setSrsId(source.getSrsId());
     return destination.resource(instanceField);
   }
 
@@ -60,6 +62,8 @@ public class InstanceMapperUnit implements InnerResourceMapperUnit {
     instance.addType(INSTANCE);
     instance.setDoc(getDoc(dto));
     instance.setLabel(getFirstValue(() -> getPossibleLabels(dto)));
+    instance.setInventoryId(dto.getInventoryId());
+    instance.setSrsId(dto.getSrsId());
     coreMapper.mapInnerEdges(dto.getTitle(), instance, TITLE, Instance.class, mapper::toEntity);
     coreMapper.mapInnerEdges(dto.getProduction(), instance, PE_PRODUCTION, Instance.class, mapper::toEntity);
     coreMapper.mapInnerEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);

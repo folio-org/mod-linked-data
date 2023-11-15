@@ -17,6 +17,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -44,10 +45,9 @@ public class Resource {
   @Type(JsonBinaryType.class)
   private JsonNode doc;
 
-  @OrderBy
-  @ToString.Exclude
-  @OneToMany(mappedBy = "source", cascade = ALL, fetch = FetchType.EAGER)
-  private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
+  private UUID inventoryId;
+
+  private UUID srsId;
 
   @OrderBy
   @ManyToMany
@@ -57,6 +57,11 @@ public class Resource {
     inverseJoinColumns = @JoinColumn(name = "type_hash")
   )
   private Set<ResourceTypeEntity> types;
+
+  @OrderBy
+  @ToString.Exclude
+  @OneToMany(mappedBy = "source", cascade = ALL, fetch = FetchType.EAGER)
+  private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
 
   public Resource addType(ResourceTypeEntity type) {
     if (isNull(types)) {
@@ -71,7 +76,4 @@ public class Resource {
     return this;
   }
 
-  public ResourceTypeEntity getFirstType() {
-    return (isNull(types) || types.isEmpty()) ? null : types.iterator().next();
-  }
 }

@@ -219,6 +219,14 @@
             "$ref": "Work.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/instantiates"
+        },
+        "inventoryId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "srsId": {
+          "type": "string",
+          "format": "uuid"
         }
       }
     }

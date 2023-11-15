@@ -112,7 +112,9 @@ public class CoreMapperImpl implements CoreMapper {
       node = mapper.createObjectNode();
     }
     node.put(LABEL_RDF.getValue(), res.getLabel());
-    node.put(TYPE, res.getFirstType().getHash());
+    if (nonNull(res.getTypes())) {
+      node.put(TYPE, res.getTypes().iterator().next().getHash());
+    }
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getUri();
       if (!node.has(predicate)) {
