@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet author="Askhat_Abishev@epam.com" id="01_create_profiles_table">
+    <createTable tableName="profiles">
+      <column name="id" type="SMALLINT">
+        <constraints primaryKey="true" primaryKeyName="profiles_pkey"/>
+      </column>
+      <column name="value" type="JSONB">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet author="Askhat_Abishev@epam.com" id="02_insert_profile">
+    <loadData file="changelog/data/profile.csv" tableName="profiles"/>
+  </changeSet>
+
+</databaseChangeLog>

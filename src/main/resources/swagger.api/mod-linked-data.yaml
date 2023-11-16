@@ -119,6 +119,23 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /profile:
+    get:
+      operationId: getProfile
+      description: Get profile
+      responses:
+        '200':
+          description: Profile
+          content:
+            text/plain;charset=utf-8:
+              schema:
+                type: string
+                example: example/profile.sample
+        '404':
+          description: No profile is found
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     id:

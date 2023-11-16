@@ -65,6 +65,17 @@
           "modulePermissions": []
         }
       ]
+    },
+    {
+      "id": "profile",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/profile",
+          "permissionsRequired": [ "linked.data.bibframe.get" ]
+        }
+      ]
     }
   ],
   "requires": [],
