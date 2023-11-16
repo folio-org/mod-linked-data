@@ -1,15 +1,5 @@
 package org.folio.linked.data.e2e;
 
-import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.repo.ProfileRepository;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
-
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.util.Constants.PROFILE_NOT_FOUND;
 import static org.hamcrest.Matchers.equalTo;
@@ -20,6 +10,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.repo.ProfileRepository;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.web.servlet.MockMvc;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @IntegrationTest
