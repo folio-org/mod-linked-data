@@ -103,7 +103,9 @@ class DataImportEventListenerIT {
     assertThat(found).isPresent();
     var result = found.get();
     assertThat(result.getLabel()).isEqualTo("Instance MainTitle");
-    assertThat(result.getFirstType().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(result.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
+    assertThat(result.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
+    assertThat(result.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(result.getDoc()).hasSize(1);
     assertThat(result.getDoc().has(EDITION_STATEMENT.getValue())).isTrue();
     assertThat(result.getDoc().get(EDITION_STATEMENT.getValue())).hasSize(1);

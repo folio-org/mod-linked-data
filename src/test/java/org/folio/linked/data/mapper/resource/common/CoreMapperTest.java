@@ -36,9 +36,9 @@ import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.Isbn;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.inner.common.StatusMapperUnit;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.common.StatusMapperUnit;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -327,7 +327,7 @@ class CoreMapperTest {
     var resource = new Resource().setDoc(node).addType(new ResourceTypeEntity());
     ObjectNode expectedNodeForHash = resource.getDoc().deepCopy();
     expectedNodeForHash.put(LABEL_RDF.getValue(), resource.getLabel());
-    expectedNodeForHash.put(TYPE, resource.getFirstType().getHash());
+    expectedNodeForHash.put(TYPE, resource.getTypes().iterator().next().getHash());
 
     // when
     var result = coreMapper.hash(resource);
@@ -342,7 +342,7 @@ class CoreMapperTest {
     var resource = new Resource().addType(new ResourceTypeEntity());
     var expectedNodeForHash = OBJECT_MAPPER.createObjectNode();
     expectedNodeForHash.put(LABEL_RDF.getValue(), resource.getLabel());
-    expectedNodeForHash.put(TYPE, resource.getFirstType().getHash());
+    expectedNodeForHash.put(TYPE, resource.getTypes().iterator().next().getHash());
 
     // when
     var result = coreMapper.hash(resource);
@@ -372,21 +372,21 @@ class CoreMapperTest {
 
     var expectedNodeForHash = OBJECT_MAPPER.createObjectNode();
     expectedNodeForHash.put(LABEL_RDF.getValue(), resource.getLabel());
-    expectedNodeForHash.put(TYPE, resource.getFirstType().getHash());
+    expectedNodeForHash.put(TYPE, resource.getTypes().iterator().next().getHash());
     var arrayPredicate1 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate1.add(targetNode1.deepCopy()
       .put(LABEL_RDF.getValue(), target1.getLabel())
-      .put(TYPE, target1.getFirstType().getHash())
+      .put(TYPE, target1.getTypes().iterator().next().getHash())
     );
     arrayPredicate1.add(targetNode2.deepCopy()
       .put(LABEL_RDF.getValue(), target2.getLabel())
-      .put(TYPE, target2.getFirstType().getHash())
+      .put(TYPE, target2.getTypes().iterator().next().getHash())
     );
     expectedNodeForHash.set(predicate1.getUri(), arrayPredicate1);
     var arrayPredicate2 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate2.add(targetNode3.deepCopy()
       .put(LABEL_RDF.getValue(), target3.getLabel())
-      .put(TYPE, target3.getFirstType().getHash())
+      .put(TYPE, target3.getTypes().iterator().next().getHash())
     );
     expectedNodeForHash.set(predicate2.getUri(), arrayPredicate2);
 
@@ -419,21 +419,21 @@ class CoreMapperTest {
 
     var expectedNodeForHash = rootNode.deepCopy();
     expectedNodeForHash.put(LABEL_RDF.getValue(), resource.getLabel());
-    expectedNodeForHash.put(TYPE, resource.getFirstType().getHash());
+    expectedNodeForHash.put(TYPE, resource.getTypes().iterator().next().getHash());
     var arrayPredicate1 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate1.add(targetNode1.deepCopy()
       .put(LABEL_RDF.getValue(), target1.getLabel())
-      .put(TYPE, target1.getFirstType().getHash())
+      .put(TYPE, target1.getTypes().iterator().next().getHash())
     );
     arrayPredicate1.add(targetNode2.deepCopy()
       .put(LABEL_RDF.getValue(), target2.getLabel())
-      .put(TYPE, target2.getFirstType().getHash())
+      .put(TYPE, target2.getTypes().iterator().next().getHash())
     );
     expectedNodeForHash.set(predicate1.getUri(), arrayPredicate1);
     var arrayPredicate2 = OBJECT_MAPPER.createArrayNode();
     arrayPredicate2.add(targetNode3.deepCopy()
       .put(LABEL_RDF.getValue(), target3.getLabel())
-      .put(TYPE, target3.getFirstType().getHash())
+      .put(TYPE, target3.getTypes().iterator().next().getHash())
     );
     expectedNodeForHash.set(predicate2.getUri(), arrayPredicate2);
 

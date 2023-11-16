@@ -401,6 +401,14 @@
     <dropNotNullConstraint tableName="generator_manifest" columnName="created_event_id"/>
   </changeSet>
 
+  <changeSet id="31_add_inventory_id_srs_id_columns_to_resources_table" author="Pavel_Bobylev@epam.com">
+    <addColumn tableName="resources">
+      <column name="inventory_id" type="uuid"/>
+    </addColumn>
+    <addColumn tableName="resources">
+      <column name="srs_id" type="uuid"/>
+    </addColumn>
+  </changeSet>
 
 </databaseChangeLog>
 

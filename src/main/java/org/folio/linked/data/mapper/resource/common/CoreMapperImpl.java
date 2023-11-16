@@ -20,8 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.function.TriFunction;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.exception.JsonException;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.common.inner.sub.SubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.util.HashUtil;
@@ -112,7 +112,9 @@ public class CoreMapperImpl implements CoreMapper {
       node = mapper.createObjectNode();
     }
     node.put(LABEL_RDF.getValue(), res.getLabel());
-    node.put(TYPE, res.getFirstType().getHash());
+    if (nonNull(res.getTypes())) {
+      node.put(TYPE, res.getTypes().iterator().next().getHash());
+    }
     res.getOutgoingEdges().forEach(edge -> {
       var predicate = edge.getPredicate().getUri();
       if (!node.has(predicate)) {
