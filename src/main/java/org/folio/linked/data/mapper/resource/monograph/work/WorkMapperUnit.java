@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -64,22 +65,23 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     var work = (Work) dto;
     var resource = new Resource();
     resource.addType(WORK);
-    resource.setDoc(toDoc(work));
-    coreMapper.mapInnerEdges(work.getClassification(), resource, CLASSIFICATION, Work.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(work.getContent(), resource, CONTENT, Work.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(work.getCreator(), resource, CREATOR, Work.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(work.getContributor(), resource, CONTRIBUTOR, Work.class, mapper::toEntity);
+    resource.setDoc(getDoc(work));
+    coreMapper.mapTopEdges(work.getClassification(), resource, CLASSIFICATION, Work.class, mapper::toEntity);
+    coreMapper.mapTopEdges(work.getContent(), resource, CONTENT, Work.class, mapper::toEntity);
+    coreMapper.mapTopEdges(work.getCreator(), resource, CREATOR, Work.class, mapper::toEntity);
+    coreMapper.mapTopEdges(work.getContributor(), resource, CONTRIBUTOR, Work.class, mapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
 
-  private JsonNode toDoc(Work work) {
+  private JsonNode getDoc(Work dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(RESPONSIBILITY_STATEMENT.getValue(), work.getResponsibiltyStatement());
-    map.put(TARGET_AUDIENCE.getValue(), work.getTargetAudience());
-    map.put(LANGUAGE.getValue(), work.getLanguage());
-    map.put(SUMMARY.getValue(), work.getSummary());
-    map.put(TABLE_OF_CONTENTS.getValue(), work.getTableOfContents());
-    return coreMapper.toJson(map);
+    putProperty(map, RESPONSIBILITY_STATEMENT, dto.getResponsibiltyStatement());
+    putProperty(map, TARGET_AUDIENCE, dto.getTargetAudience());
+    putProperty(map, LANGUAGE, dto.getLanguage());
+    putProperty(map, SUMMARY, dto.getSummary());
+    putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

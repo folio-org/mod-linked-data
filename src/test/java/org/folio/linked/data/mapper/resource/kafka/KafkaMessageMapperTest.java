@@ -124,9 +124,11 @@ class KafkaMessageMapperTest {
     instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
 
     // when
-    var result = kafkaMessageMapper.toIndex(instance);
+    var resultOpt = kafkaMessageMapper.toIndex(instance);
 
     // then
+    assertThat(resultOpt).isPresent();
+    var result = resultOpt.get();
     assertThat(result.getId()).isEqualTo(instance.getResourceHash().toString());
     assertThat(result.getTitles()).hasSize(6);
     assertTitle(result.getTitles().get(0), "Instance: mainTitle", MAIN);

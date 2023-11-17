@@ -1,5 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.instance.sub.provision;
 
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
@@ -7,6 +9,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -39,28 +42,31 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   @Override
   public Resource toEntity(Object dto) {
     var providerEvent = (ProviderEvent) dto;
-    Resource resource = new Resource();
+    var resource = new Resource();
     resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addType(PROVIDER_EVENT);
-    resource.setDoc(toDoc(providerEvent));
+    resource.setDoc(getDoc(providerEvent));
     coreMapper.mapSubEdges(providerEvent.getProviderPlace(), resource, PROVIDER_PLACE, placeMapper::toEntity);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
 
   private List<String> getPossibleLabels(ProviderEvent providerEvent) {
-    List<String> result = new ArrayList<>(providerEvent.getName());
-    result.addAll(providerEvent.getSimplePlace());
-    result.addAll(providerEvent.getProviderPlace().stream().flatMap(p -> p.getName().stream()).toList());
+    var result = new ArrayList<String>();
+    ofNullable(providerEvent.getName()).ifPresent(result::addAll);
+    ofNullable(providerEvent.getSimplePlace()).ifPresent(result::addAll);
+    ofNullable(providerEvent.getProviderPlace()).ifPresent(
+      pp -> result.addAll(pp.stream().filter(p -> nonNull(p.getName())).flatMap(p -> p.getName().stream()).toList()));
     return result;
   }
 
-  private JsonNode toDoc(ProviderEvent providerEvent) {
+  private JsonNode getDoc(ProviderEvent dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(DATE.getValue(), providerEvent.getDate());
-    map.put(NAME.getValue(), providerEvent.getName());
-    map.put(PROVIDER_DATE.getValue(), providerEvent.getProviderDate());
-    map.put(SIMPLE_PLACE.getValue(), providerEvent.getSimplePlace());
-    return coreMapper.toJson(map);
+    putProperty(map, DATE, dto.getDate());
+    putProperty(map, NAME, dto.getName());
+    putProperty(map, PROVIDER_DATE, dto.getProviderDate());
+    putProperty(map, SIMPLE_PLACE, dto.getSimplePlace());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

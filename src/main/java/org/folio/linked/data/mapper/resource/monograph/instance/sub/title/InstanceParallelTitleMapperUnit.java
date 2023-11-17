@@ -9,6 +9,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -51,13 +52,13 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
 
   private JsonNode getDoc(ParallelTitle dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(PART_NAME.getValue(), dto.getPartName());
-    map.put(PART_NUMBER.getValue(), dto.getPartNumber());
-    map.put(MAIN_TITLE.getValue(), dto.getMainTitle());
-    map.put(DATE.getValue(), dto.getDate());
-    map.put(SUBTITLE.getValue(), dto.getSubTitle());
-    map.put(NOTE.getValue(), dto.getNote());
-    return coreMapper.toJson(map);
+    putProperty(map, PART_NAME, dto.getPartName());
+    putProperty(map, PART_NUMBER, dto.getPartNumber());
+    putProperty(map, MAIN_TITLE, dto.getMainTitle());
+    putProperty(map, DATE, dto.getDate());
+    putProperty(map, SUBTITLE, dto.getSubTitle());
+    putProperty(map, NOTE, dto.getNote());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
 }

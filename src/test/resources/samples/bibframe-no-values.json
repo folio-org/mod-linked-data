@@ -1,0 +1,336 @@
+{
+  "resource": {
+    "http://bibfra.me/vocab/lite/Instance": {
+      "http://bibfra.me/vocab/marc/title": [
+        {
+          "http://bibfra.me/vocab/marc/Title": {
+            "http://bibfra.me/vocab/marc/partName": [
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+            ],
+            "http://bibfra.me/vocab/bflc/nonSortNum": [
+            ],
+            "http://bibfra.me/vocab/marc/subTitle": [
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/marc/ParallelTitle": {
+            "http://bibfra.me/vocab/marc/partName": [
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+            ],
+            "http://bibfra.me/vocab/lite/note": [
+            ],
+            "http://bibfra.me/vocab/lite/date": [
+            ],
+            "http://bibfra.me/vocab/marc/subTitle": [
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/marc/VariantTitle": {
+            "http://bibfra.me/vocab/marc/partName": [
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+            ],
+            "http://bibfra.me/vocab/lite/note": [
+            ],
+            "http://bibfra.me/vocab/lite/date": [
+            ],
+            "http://bibfra.me/vocab/marc/subTitle": [
+            ],
+            "http://bibfra.me/vocab/marc/variantType": [
+            ]
+          }
+        }
+      ],
+      "http://bibfra.me/vocab/marc/production": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+          ],
+          "http://bibfra.me/vocab/lite/providerPlace": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+          ],
+          "http://bibfra.me/vocab/lite/providerDate": [
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/publication": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+          ],
+          "http://bibfra.me/vocab/lite/providerPlace": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+          ],
+          "http://bibfra.me/vocab/lite/providerDate": [
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/distribution": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+          ],
+          "http://bibfra.me/vocab/lite/providerPlace": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+          ],
+          "http://bibfra.me/vocab/lite/providerDate": [
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/manufacture": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+          ],
+          "http://bibfra.me/vocab/lite/providerPlace": [
+            {
+              "http://bibfra.me/vocab/lite/name": [
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+          ],
+          "http://bibfra.me/vocab/lite/providerDate": [
+          ],
+          "http://bibfra.me/vocab/lite/place": [
+          ]
+        }
+      ],
+      "http://library.link/vocab/map": [
+        {
+          "http://library.link/identifier/LCCN": {
+            "http://bibfra.me/vocab/lite/name": [
+            ],
+            "http://bibfra.me/vocab/marc/status": [
+              {
+                "http://bibfra.me/vocab/lite/label": [
+                ],
+                "http://bibfra.me/vocab/lite/link": [
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "http://library.link/identifier/ISBN": {
+            "http://bibfra.me/vocab/lite/name": [
+            ],
+            "http://bibfra.me/vocab/marc/qualifier": [
+            ],
+            "http://bibfra.me/vocab/marc/status": [
+              {
+                "http://bibfra.me/vocab/lite/label": [
+                ],
+                "http://bibfra.me/vocab/lite/link": [
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/identifier/Ean": {
+            "http://bibfra.me/vocab/marc/ean": [
+            ],
+            "http://bibfra.me/vocab/marc/qualifier": [
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/LocalId": {
+            "http://bibfra.me/vocab/marc/localId": [
+            ],
+            "http://bibfra.me/vocab/marc/localIdAssigningSource": [
+            ]
+          }
+        },
+        {
+          "http://library.link/identifier/UNKNOWN": {
+            "http://bibfra.me/vocab/lite/name": [
+            ],
+            "http://bibfra.me/vocab/marc/qualifier": [
+            ]
+          }
+        }
+      ],
+      "http://bibfra.me/vocab/marc/accessLocation": [
+        {
+          "http://bibfra.me/vocab/lite/link": [
+          ],
+          "http://bibfra.me/vocab/lite/note": [
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/media": [
+        {
+          "http://bibfra.me/vocab/marc/code": [
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/carrier": [
+        {
+          "http://bibfra.me/vocab/marc/code": [
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/copyright": [
+        {
+          "http://bibfra.me/vocab/lite/date": [
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/lite/extent": [
+      ],
+      "http://bibfra.me/vocab/marc/dimensions": [
+      ],
+      "http://bibfra.me/vocab/marc/edition": [
+      ],
+      "http://bibfra.me/vocab/bflc/projectedProvisionDate": [
+      ],
+      "http://bibfra.me/vocab/marc/issuance": [
+      ],
+      "http://bibfra.me/vocab/lite/instantiates": [
+        {
+          "http://bibfra.me/vocab/marc/responsibilityStatement": [
+          ],
+          "http://bibfra.me/vocab/marc/summary": [
+          ],
+          "http://bibfra.me/vocab/lite/language": [
+          ],
+          "http://bibfra.me/vocab/marc/targetAudience": [
+          ],
+          "http://bibfra.me/vocab/marc/tableOfContents": [
+          ],
+          "http://bibfra.me/vocab/lite/classification": [
+            {
+              "http://bibfra.me/vocab/marc/code": [
+              ],
+              "http://bibfra.me/vocab/marc/source": [
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/marc/content": [
+            {
+              "http://bibfra.me/vocab/marc/code": [
+              ],
+              "http://bibfra.me/vocab/marc/term": [
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+              ]
+            }
+          ],
+          "http://bibfra.me/vocab/lite/creator": [
+            {
+              "http://bibfra.me/vocab/lite/Meeting": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Person": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Organization": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Family": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            }
+          ],
+          "http://bibfra.me/vocab/lite/contributor": [
+            {
+              "http://bibfra.me/vocab/lite/Meeting": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Person": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Organization": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            },
+            {
+              "http://bibfra.me/vocab/lite/Family": {
+                "http://bibfra.me/vocab/lite/name": [
+                ],
+                "http://bibfra.me/vocab/marc/lcnafId": [
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

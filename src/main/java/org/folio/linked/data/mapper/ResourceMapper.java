@@ -5,6 +5,7 @@ import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -73,7 +74,7 @@ public abstract class ResourceMapper {
     return topResourceMapper.toDto(resource, new ResourceDto());
   }
 
-  public BibframeIndex mapToIndex(@NonNull Resource resource) {
+  public Optional<BibframeIndex> mapToIndex(@NonNull Resource resource) {
     return kafkaMessageMapper.toIndex(resource);
   }
 

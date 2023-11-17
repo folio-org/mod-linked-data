@@ -27,8 +27,8 @@ import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.spring.tools.kafka.KafkaAdminService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -64,7 +64,7 @@ class DataImportEventListenerIT {
     return String.format("%s.%s.%s", getFolioEnvName(), tenantId, topic);
   }
 
-  @AfterEach
+  @BeforeEach
   public void clean() {
     resourceEdgeRepository.deleteAll();
     resourceRepo.deleteAll();

@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -51,7 +52,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(Lccn dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(NAME.getValue(), dto.getValue());
-    return coreMapper.toJson(map);
+    putProperty(map, NAME, dto.getValue());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 }

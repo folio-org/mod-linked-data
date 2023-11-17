@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
@@ -60,11 +61,11 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
     return resource;
   }
 
-  private JsonNode getDoc(Place place) {
+  private JsonNode getDoc(Place dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(NAME.getValue(), place.getName());
-    map.put(LINK.getValue(), place.getLink());
-    return coreMapper.toJson(map);
+    putProperty(map, NAME, dto.getName());
+    putProperty(map, LINK, dto.getLink());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
 }

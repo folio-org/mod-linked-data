@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -45,8 +46,9 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(AccessLocation dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(LINK.getValue(), dto.getLink());
-    map.put(NOTE.getValue(), dto.getNote());
-    return coreMapper.toJson(map);
+    putProperty(map, LINK, dto.getLink());
+    putProperty(map, NOTE, dto.getNote());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

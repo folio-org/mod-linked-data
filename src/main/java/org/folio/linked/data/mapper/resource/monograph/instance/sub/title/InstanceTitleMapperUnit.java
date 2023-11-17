@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -50,12 +51,12 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(InstanceTitle dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(PART_NAME.getValue(), dto.getPartName());
-    map.put(PART_NUMBER.getValue(), dto.getPartNumber());
-    map.put(MAIN_TITLE.getValue(), dto.getMainTitle());
-    map.put(NON_SORT_NUM.getValue(), dto.getNonSortNum());
-    map.put(SUBTITLE.getValue(), dto.getSubTitle());
-    return coreMapper.toJson(map);
+    putProperty(map, PART_NAME, dto.getPartName());
+    putProperty(map, PART_NUMBER, dto.getPartNumber());
+    putProperty(map, MAIN_TITLE, dto.getMainTitle());
+    putProperty(map, NON_SORT_NUM, dto.getNonSortNum());
+    putProperty(map, SUBTITLE, dto.getSubTitle());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
 }

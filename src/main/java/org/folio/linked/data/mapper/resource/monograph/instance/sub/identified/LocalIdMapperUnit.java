@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -47,8 +48,9 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(LocalId dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(LOCAL_ID_VALUE.getValue(), dto.getValue());
-    map.put(ASSIGNING_SOURCE.getValue(), dto.getAssigner());
-    return coreMapper.toJson(map);
+    putProperty(map, LOCAL_ID_VALUE, dto.getValue());
+    putProperty(map, ASSIGNING_SOURCE, dto.getAssigner());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

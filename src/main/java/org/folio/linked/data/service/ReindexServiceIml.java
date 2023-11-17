@@ -30,25 +30,28 @@ public class ReindexServiceIml implements ReindexService {
   private final ResourceRepository resourceRepository;
   private final KafkaSender kafkaSender;
   private final KafkaMessageMapper kafkaMessageMapper;
+  private final EntityManager entityManager;
   @Value("${mod-linked-data.reindex.page-size}")
   private String reindexPageSize;
-  private final EntityManager entityManager;
 
   @Async
   @Override
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public void reindex() {
     Pageable pageable = PageRequest.of(0, Integer.parseInt(reindexPageSize), Sort.by("resourceHash"));
-    AtomicLong recordsIndexed  = new AtomicLong(0);
+    var recordsIndexed = new AtomicLong(0);
     while (pageable.isPaged()) {
       var page = resourceRepository.findResourcesByTypeFull(Set.of(ResourceTypeDictionary.INSTANCE.getUri()), pageable);
       page.get()
         .forEach(resource -> {
             try {
-              var bibframeIndex = kafkaMessageMapper.toIndex(resource);
-              kafkaSender.sendResourceCreated(bibframeIndex);
-              log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
-              recordsIndexed.getAndIncrement();
+              kafkaMessageMapper.toIndex(resource)
+                .ifPresentOrElse(bibframeIndex -> {
+                  kafkaSender.sendResourceCreated(bibframeIndex);
+                  log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
+                  recordsIndexed.getAndIncrement();
+                }, () -> log.info("Resource with id {} wasn't sent for reindexing, because it doesn't contain any "
+                  + "indexable values", resource.getResourceHash()));
               // detach the resource entity from entity manager, enabling garbage collection
               entityManager.detach(resource);
             } catch (Exception ex) {

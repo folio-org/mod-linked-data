@@ -225,7 +225,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
     pred2OutgoingResources.put(INSTANTIATES, List.of(createSampleWork()));
 
-    return createResource(
+    var instance = createResource(
       Map.of(
         EXTENT, List.of("extent info"),
         DIMENSIONS, List.of("20 cm"),
@@ -237,6 +237,9 @@ public class MonographTestUtil {
       pred2OutgoingResources)
       .setInventoryId(UUID.fromString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1"))
       .setSrsId(UUID.fromString("43d58061-decf-4d74-9747-0e1c368e861b"));
+
+    setEdgesId(instance);
+    return instance;
   }
 
   public static Resource createSampleWork() {
@@ -347,6 +350,15 @@ public class MonographTestUtil {
     types.forEach(resource::addType);
     resource.setResourceHash(CORE_MAPPER.hash(resource));
     return resource;
+  }
+
+  private void setEdgesId(Resource resource) {
+    resource.getOutgoingEdges().forEach(edge -> {
+      edge.getId().setSourceHash(edge.getSource().getResourceHash());
+      edge.getId().setTargetHash(edge.getTarget().getResourceHash());
+      edge.getId().setPredicateHash(edge.getPredicate().getHash());
+      setEdgesId(edge.getTarget());
+    });
   }
 
 }

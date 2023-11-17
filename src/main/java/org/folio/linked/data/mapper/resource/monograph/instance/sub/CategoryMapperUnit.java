@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -43,9 +44,10 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
 
   private JsonNode getDoc(Category dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(CODE.getValue(), dto.getCode());
-    map.put(TERM.getValue(), dto.getTerm());
-    map.put(LINK.getValue(), dto.getLink());
-    return coreMapper.toJson(map);
+    putProperty(map, CODE, dto.getCode());
+    putProperty(map, TERM, dto.getTerm());
+    putProperty(map, LINK, dto.getLink());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

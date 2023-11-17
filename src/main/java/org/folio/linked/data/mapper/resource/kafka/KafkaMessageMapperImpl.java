@@ -3,6 +3,8 @@ package org.folio.linked.data.mapper.resource.kafka;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -23,12 +25,14 @@ import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -57,7 +61,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   @Override
-  public BibframeIndex toIndex(@NonNull Resource resource) {
+  public Optional<BibframeIndex> toIndex(@NonNull Resource resource) {
     var instance = extractInstance(resource);
     var bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
     bibframeIndex.setTitles(extractTitles(instance));
@@ -65,7 +69,15 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     bibframeIndex.setContributors(extractContributors(instance));
     bibframeIndex.setPublications(extractPublications(instance));
     bibframeIndex.setEditionStatement(getValue(instance.getDoc(), EDITION_STATEMENT.getValue()));
-    return bibframeIndex;
+    return shouldBeIndexed(bibframeIndex) ? Optional.of(bibframeIndex) : Optional.empty();
+  }
+
+  private boolean shouldBeIndexed(BibframeIndex bi) {
+    return isNotEmpty(bi.getTitles())
+      || isNotEmpty(bi.getIdentifiers())
+      || isNotEmpty(bi.getContributors())
+      || isNotEmpty(bi.getPublications())
+      || isNotBlank(bi.getEditionStatement());
   }
 
   private Resource extractInstance(Resource resource) {
@@ -88,6 +100,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         addTitle(t, SUBTITLE.getValue(), titles, BibframeTitlesInner.TypeEnum.SUB);
         return titles.stream();
       })
+      .distinct()
       .toList();
   }
 
@@ -106,20 +119,21 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframeIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue()))
-        .type(toType(ir, TypeEnum::fromValue, TypeEnum.class, MAP)))
+        .type(toType(ir, TypeEnum::fromValue, TypeEnum.class, MAP, Instance.class)))
       .filter(ri -> nonNull(ri.getValue()))
+      .distinct()
       .toList();
   }
 
   private <E extends Enum<E>> E toType(Resource resource, Function<String, E> typeSupplier, Class<E> enumClass,
-                                       Predicate predicate) {
+                                       Predicate predicate, Class parentDto) {
     if (isNull(resource.getTypes())) {
       return null;
     }
     return resource.getTypes()
       .stream()
       .map(ResourceTypeEntity::getUri)
-      .filter(type -> subResourceMapper.getMapperUnit(type, predicate, Instance.class, null).isPresent())
+      .filter(type -> subResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
       .findFirst()
       .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
       .map(typeUri -> {
@@ -141,7 +155,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   private String getValue(JsonNode doc, String... values) {
     if (nonNull(doc)) {
       for (String value : values) {
-        if (doc.has(value)) {
+        if (doc.has(value) && !doc.get(value).isEmpty()) {
           return doc.get(value).get(0).asText();
         }
       }
@@ -158,10 +172,11 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(re -> new BibframeContributorsInner()
         .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
         .type(toType(re.getTarget(), BibframeContributorsInner.TypeEnum::fromValue,
-          BibframeContributorsInner.TypeEnum.class, re.getPredicate()))
+          BibframeContributorsInner.TypeEnum.class, re.getPredicate(), Work.class))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> nonNull(ic.getName()))
+      .distinct()
       .toList();
   }
 
@@ -173,6 +188,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         .publisher(getValue(ir.getDoc(), NAME.getValue()))
         .dateOfPublication(getValue(ir.getDoc(), DATE.getValue(), PROVIDER_DATE.getValue())))
       .filter(ip -> nonNull(ip.getPublisher()) || nonNull(ip.getDateOfPublication()))
+      .distinct()
       .toList();
   }
 

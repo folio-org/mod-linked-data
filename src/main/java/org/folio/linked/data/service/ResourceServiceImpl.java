@@ -37,14 +37,14 @@ public class ResourceServiceImpl implements ResourceService {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     var persisted = resourceRepo.save(mapped);
-    kafkaSender.sendResourceCreated(resourceMapper.mapToIndex(persisted));
+    resourceMapper.mapToIndex(persisted).ifPresent(kafkaSender::sendResourceCreated);
     return resourceMapper.toDto(persisted);
   }
 
   public Long createResource(org.folio.marc2ld.model.Resource marc2ldResource) {
     var mapped = resourceMapper.toEntity(marc2ldResource);
     var persisted = resourceRepo.save(mapped);
-    kafkaSender.sendResourceCreated(resourceMapper.mapToIndex(persisted));
+    resourceMapper.mapToIndex(persisted).ifPresent(kafkaSender::sendResourceCreated);
     return persisted.getResourceHash();
   }
 

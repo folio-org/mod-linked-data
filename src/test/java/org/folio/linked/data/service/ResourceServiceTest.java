@@ -61,7 +61,7 @@ class ResourceServiceTest {
     when(resourceMapper.toEntity(request)).thenReturn(mapped);
     var persisted = new Resource().setResourceHash(67890L);
     when(resourceRepo.save(mapped)).thenReturn(persisted);
-    var expectedIndex = new BibframeIndex(persisted.getResourceHash().toString());
+    var expectedIndex = Optional.of(new BibframeIndex(persisted.getResourceHash().toString()));
     when(resourceMapper.mapToIndex(persisted)).thenReturn(expectedIndex);
     var expectedResponse = new ResourceDto();
     expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
@@ -71,7 +71,7 @@ class ResourceServiceTest {
     ResourceDto response = resourceService.createResource(request);
 
     // then
-    verify(kafkaSender).sendResourceCreated(expectedIndex);
+    verify(kafkaSender).sendResourceCreated(expectedIndex.get());
     assertThat(response).isEqualTo(expectedResponse);
   }
 
