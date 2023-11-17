@@ -75,6 +75,7 @@ import static org.folio.linked.data.test.MonographTestUtil.createSampleInstance;
 import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getBibframeSample;
+import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
@@ -82,6 +83,9 @@ import static org.folio.linked.data.util.Constants.TYPE;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -103,11 +107,13 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.test.web.servlet.MockMvc;
@@ -129,8 +135,10 @@ public class ResourceControllerIT {
   private ObjectMapper objectMapper;
   @Autowired
   private Environment env;
+  @SpyBean
+  private KafkaSender kafkaSender;
 
-  @AfterEach
+  @BeforeEach
   public void clean() {
     resourceEdgeRepository.deleteAll();
     resourceRepo.deleteAll();
@@ -158,6 +166,105 @@ public class ResourceControllerIT {
     var bibframe = persistedOptional.get();
     validateInstance(bibframe);
     checkKafkaMessageSent(bibframe, null);
+  }
+
+  @Test
+  void createEmptyInstance_shouldSaveEmptyEntityAndNotSentIndexRequest() throws Exception {
+    // given
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/bibframe-empty.json"));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toInstance(), notNullValue()))
+      .andReturn().getResponse().getContentAsString();
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var instance = persistedOptional.get();
+    assertThat(instance.getResourceHash()).isNotNull();
+    assertThat(instance.getLabel()).isEmpty();
+    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(instance.getInventoryId()).isNull();
+    assertThat(instance.getSrsId()).isNull();
+    assertThat(instance.getDoc()).isNull();
+    assertThat(instance.getOutgoingEdges()).isEmpty();
+    verify(kafkaSender, never()).sendResourceCreated(any());
+  }
+
+  @Test
+  void createNoValuesInstance_shouldSaveEmptyEntityAndNotSentIndexRequest() throws Exception {
+    // given
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/bibframe-no-values.json"));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toInstance(), notNullValue()))
+      .andReturn().getResponse().getContentAsString();
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var instance = persistedOptional.get();
+    assertThat(instance.getResourceHash()).isNotNull();
+    assertThat(instance.getLabel()).isEmpty();
+    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(instance.getInventoryId()).isNull();
+    assertThat(instance.getSrsId()).isNull();
+    assertThat(instance.getDoc()).isNull();
+    assertThat(instance.getOutgoingEdges()).isEmpty();
+    verify(kafkaSender, never()).sendResourceCreated(any());
+  }
+
+  @Test
+  void createPartialValuesInstance_shouldSaveCorrectEntityAndSentIndexRequest() throws Exception {
+    // given
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/bibframe-partial-objects.json"));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toInstance(), notNullValue()))
+      .andReturn().getResponse().getContentAsString();
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var instance = persistedOptional.get();
+    assertThat(instance.getResourceHash()).isNotNull();
+    assertThat(instance.getLabel()).isEmpty();
+    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(instance.getInventoryId()).isNull();
+    assertThat(instance.getSrsId()).isNull();
+    assertThat(instance.getDoc()).isNull();
+    assertThat(instance.getOutgoingEdges()).hasSize(42);
+    checkKafkaMessageSent(instance, null);
   }
 
   @Test
@@ -406,7 +513,6 @@ public class ResourceControllerIT {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
     assertThat(instance.getDoc().size()).isEqualTo(5);

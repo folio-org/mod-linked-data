@@ -13,8 +13,8 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -29,9 +29,10 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
     kafkaAdminService.createTopics(TENANT_ID);
   }
 
-  @AfterEach
+  @BeforeEach
   public void clean() {
     consumer.getMessages().clear();
+    super.clean();
   }
 
   @SneakyThrows

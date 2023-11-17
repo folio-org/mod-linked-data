@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -47,8 +48,9 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(Ean dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(EAN_VALUE.getValue(), dto.getValue());
-    map.put(QUALIFIER.getValue(), dto.getQualifier());
-    return coreMapper.toJson(map);
+    putProperty(map, EAN_VALUE, dto.getValue());
+    putProperty(map, QUALIFIER, dto.getQualifier());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

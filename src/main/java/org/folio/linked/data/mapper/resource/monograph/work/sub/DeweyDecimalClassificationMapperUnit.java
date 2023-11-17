@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -43,8 +44,9 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
 
   private JsonNode getDoc(DeweyDecimalClassification dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(CODE.getValue(), dto.getCode());
-    map.put(SOURCE.getValue(), dto.getSource());
-    return coreMapper.toJson(map);
+    putProperty(map, CODE, dto.getCode());
+    putProperty(map, SOURCE, dto.getSource());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

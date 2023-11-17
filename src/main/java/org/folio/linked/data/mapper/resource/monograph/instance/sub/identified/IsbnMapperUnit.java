@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -52,8 +53,9 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private JsonNode getDoc(Isbn dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(NAME.getValue(), dto.getValue());
-    map.put(QUALIFIER.getValue(), dto.getQualifier());
-    return coreMapper.toJson(map);
+    putProperty(map, NAME, dto.getValue());
+    putProperty(map, QUALIFIER, dto.getQualifier());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

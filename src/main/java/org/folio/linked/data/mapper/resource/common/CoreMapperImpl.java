@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.common;
 
 import static java.util.Objects.nonNull;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL_RDF;
 import static org.folio.linked.data.util.Constants.ERROR_JSON_PROCESSING;
 import static org.folio.linked.data.util.Constants.TYPE;
@@ -87,18 +88,20 @@ public class CoreMapperImpl implements CoreMapper {
     if (nonNull(dtoList)) {
       dtoList.stream()
         .map(mappingFunction)
-        .map(resource -> new ResourceEdge(source, resource, predicate))
+        .filter(r -> nonNull(r.getDoc()) || isNotEmpty(r.getOutgoingEdges()))
+        .map(r -> new ResourceEdge(source, r, predicate))
         .forEach(source.getOutgoingEdges()::add);
     }
   }
 
   @Override
-  public <T, P> void mapInnerEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
-                                   @NonNull Class<P> parent,
-                                   @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping) {
+  public <T, P> void mapTopEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
+                                 @NonNull Class<P> parent,
+                                 @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping) {
     if (nonNull(dtoList)) {
       dtoList.stream()
         .map(dto -> mapping.apply(dto, predicate, parent))
+        .filter(r -> nonNull(r.getDoc()) || isNotEmpty(r.getOutgoingEdges()))
         .map(resource -> new ResourceEdge(source, resource, predicate))
         .forEach(source.getOutgoingEdges()::add);
     }

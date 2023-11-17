@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
@@ -63,11 +64,11 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
     return resource;
   }
 
-  private JsonNode getDoc(Status status) {
+  private JsonNode getDoc(Status dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(LINK.getValue(), status.getLink());
-    map.put(LABEL.getValue(), status.getValue());
-    return coreMapper.toJson(map);
+    putProperty(map, LINK, dto.getLink());
+    putProperty(map, LABEL, dto.getValue());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
 }

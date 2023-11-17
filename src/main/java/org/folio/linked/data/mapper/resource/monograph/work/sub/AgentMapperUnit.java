@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.resource.monograph.work.sub;
 
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -53,15 +54,16 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
     var agent = agentProvider.apply(dto);
     var resource = new Resource();
     resource.addType(type);
-    resource.setDoc(toDoc(agent));
+    resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }
 
-  private JsonNode toDoc(Agent dto) {
+  private JsonNode getDoc(Agent dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(NAME.getValue(), dto.getName());
-    map.put(LCNAF_ID.getValue(), dto.getLcnafId());
-    return coreMapper.toJson(map);
+    putProperty(map, NAME, dto.getName());
+    putProperty(map, LCNAF_ID, dto.getLcnafId());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

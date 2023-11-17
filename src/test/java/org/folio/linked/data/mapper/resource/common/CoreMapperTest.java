@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
@@ -564,9 +564,9 @@ class CoreMapperTest {
     var dto1 = new Isbn().id(randomLong().toString());
     var dto2 = new Isbn().id(randomLong().toString());
     var predicate = PredicateDictionary.MAP;
-    var expectedTarget1 = new Resource().setLabel("expectedTarget1").setResourceHash(111L);
+    var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setResourceHash(111L);
     doReturn(expectedTarget1).when(mapper).toEntity(dto1);
-    var expectedTarget2 = new Resource().setLabel("expectedTarget2").setResourceHash(222L);
+    var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setResourceHash(222L);
     doReturn(expectedTarget2).when(mapper).toEntity(dto2);
     var source = new Resource();
     var dtoList = List.of(dto1, dto2);
@@ -590,10 +590,9 @@ class CoreMapperTest {
     var dto1 = new Isbn().id(randomLong().toString());
     var dto2 = new Isbn().id(randomLong().toString());
     var predicate = PredicateDictionary.MAP;
-    var type = ResourceTypeDictionary.ID_ISBN;
-    var expectedTarget1 = new Resource().setLabel("expectedTarget1").setResourceHash(111L);
+    var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setResourceHash(111L);
     doReturn(expectedTarget1).when(mapper).toEntity(dto1);
-    var expectedTarget2 = new Resource().setLabel("expectedTarget2").setResourceHash(222L);
+    var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setResourceHash(222L);
     doReturn(expectedTarget2).when(mapper).toEntity(dto2);
     var source = new Resource();
     var dtoList = List.of(dto1, dto2);
@@ -620,7 +619,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapInnerEdges(dtoList, source, predicate, parent, mapper::toEntity));
+      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("source is marked non-null but is null"));
@@ -636,7 +635,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapInnerEdges(dtoList, source, predicate, parent, mapper::toEntity));
+      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("predicate is marked non-null but is null"));
@@ -652,7 +651,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapInnerEdges(dtoList, source, predicate, parent, mapper::toEntity));
+      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("parent is marked non-null but is null"));
@@ -668,7 +667,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapInnerEdges(dtoList, source, predicate, parent, null));
+      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, null));
 
     // then
     assertThat(thrown.getMessage(), is("mapping is marked non-null but is null"));
@@ -683,7 +682,7 @@ class CoreMapperTest {
     var parent = Instance.class;
 
     // when
-    coreMapper.mapInnerEdges(dtoList, source, predicate, parent, mapper::toEntity);
+    coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity);
 
     // then
     verify(mapper, never()).toEntity(any(), any(), any());
@@ -699,7 +698,7 @@ class CoreMapperTest {
     var parent = Instance.class;
 
     // when
-    coreMapper.mapInnerEdges(dtoList, source, predicate, parent, mapper::toEntity);
+    coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity);
 
     // then
     verify(mapper, never()).toEntity(any(), any(), any());
@@ -714,15 +713,15 @@ class CoreMapperTest {
     var dto2 = new Isbn().id(randomLong().toString());
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
-    var expectedTarget1 = new Resource().setLabel("expectedTarget1").setResourceHash(111L);
+    var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setResourceHash(111L);
     doReturn(expectedTarget1).when(mapper).toEntity(dto1, predicate, parent);
-    var expectedTarget2 = new Resource().setLabel("expectedTarget2").setResourceHash(222L);
+    var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setResourceHash(222L);
     doReturn(expectedTarget2).when(mapper).toEntity(dto2, predicate, parent);
     var source = new Resource();
     var dtoList = List.of(dto1, dto2);
 
     // when
-    coreMapper.mapInnerEdges(dtoList, source, predicate, parent, mapper::toEntity);
+    coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity);
 
     // then
     assertThat(source.getOutgoingEdges(), hasSize(2));

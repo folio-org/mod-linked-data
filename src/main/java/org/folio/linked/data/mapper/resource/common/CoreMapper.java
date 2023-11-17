@@ -28,7 +28,7 @@ public interface CoreMapper {
   <T> void mapSubEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
                        @NonNull Function<T, Resource> mappingFunction);
 
-  <T, P> void mapInnerEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
-                            @NonNull Class<P> parentClass,
-                            @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping);
+  <T, P> void mapTopEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
+                          @NonNull Class<P> parentClass,
+                          @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping);
 }

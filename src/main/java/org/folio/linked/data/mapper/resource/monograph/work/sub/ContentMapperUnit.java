@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -42,11 +43,12 @@ public class ContentMapperUnit implements WorkSubResourceMapperUnit {
     return resource;
   }
 
-  private JsonNode getDoc(Category category) {
+  private JsonNode getDoc(Category dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(CODE.getValue(), category.getCode());
-    map.put(LINK.getValue(), category.getLink());
-    map.put(TERM.getValue(), category.getTerm());
-    return coreMapper.toJson(map);
+    putProperty(map, CODE, dto.getCode());
+    putProperty(map, LINK, dto.getLink());
+    putProperty(map, TERM, dto.getTerm());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
+
 }

@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.instance;
 
+import static java.util.Objects.isNull;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
@@ -18,8 +19,10 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -64,22 +67,25 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     instance.setLabel(getFirstValue(() -> getPossibleLabels(dto)));
     instance.setInventoryId(dto.getInventoryId());
     instance.setSrsId(dto.getSrsId());
-    coreMapper.mapInnerEdges(dto.getTitle(), instance, TITLE, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getProduction(), instance, PE_PRODUCTION, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getManufacture(), instance, PE_MANUFACTURE, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getMap(), instance, MAP, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getMedia(), instance, MEDIA, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getCarrier(), instance, CARRIER, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getCopyright(), instance, COPYRIGHT, Instance.class, mapper::toEntity);
-    coreMapper.mapInnerEdges(dto.getInstantiates(), instance, INSTANTIATES, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getTitle(), instance, TITLE, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getProduction(), instance, PE_PRODUCTION, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getManufacture(), instance, PE_MANUFACTURE, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getMap(), instance, MAP, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getMedia(), instance, MEDIA, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getCarrier(), instance, CARRIER, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getCopyright(), instance, COPYRIGHT, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getInstantiates(), instance, INSTANTIATES, Instance.class, mapper::toEntity);
     instance.setResourceHash(coreMapper.hash(instance));
     return instance;
   }
 
   private List<String> getPossibleLabels(Instance instance) {
+    if (isNull(instance.getTitle())) {
+      return new ArrayList<>();
+    }
     return instance.getTitle().stream()
       .sorted(Comparator.comparing(o -> o.getClass().getSimpleName()))
       .map(t -> {
@@ -101,12 +107,12 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
 
   private JsonNode getDoc(Instance dto) {
     var map = new HashMap<String, List<String>>();
-    map.put(EXTENT.getValue(), dto.getExtent());
-    map.put(DIMENSIONS.getValue(), dto.getDimensions());
-    map.put(EDITION_STATEMENT.getValue(), dto.getEdition());
-    map.put(PROJECTED_PROVISION_DATE.getValue(), dto.getProjectProvisionDate());
-    map.put(ISSUANCE.getValue(), dto.getIssuance());
-    return coreMapper.toJson(map);
+    putProperty(map, EXTENT, dto.getExtent());
+    putProperty(map, DIMENSIONS, dto.getDimensions());
+    putProperty(map, EDITION_STATEMENT, dto.getEdition());
+    putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
+    putProperty(map, ISSUANCE, dto.getIssuance());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
 }
