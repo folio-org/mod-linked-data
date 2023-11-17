@@ -458,25 +458,25 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo("Parallel: subTitle")))
       .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
       .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(PE_PRODUCTION), equalTo("production providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("production providerPlace code")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("production providerPlace link")))
       .andExpect(jsonPath(toProviderEventProviderDate(PE_PRODUCTION), equalTo("production provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_PRODUCTION), equalTo("production simple place")))
       .andExpect(jsonPath(toProviderEventDate(PE_PUBLICATION), equalTo("publication date")))
       .andExpect(jsonPath(toProviderEventName(PE_PUBLICATION), equalTo("publication name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(PE_PUBLICATION), equalTo("publication providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceCode(PE_PUBLICATION), equalTo("publication providerPlace code")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("publication providerPlace link")))
       .andExpect(jsonPath(toProviderEventProviderDate(PE_PUBLICATION), equalTo("publication provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_PUBLICATION), equalTo("publication simple place")))
       .andExpect(jsonPath(toProviderEventDate(PE_DISTRIBUTION), equalTo("distribution date")))
       .andExpect(jsonPath(toProviderEventName(PE_DISTRIBUTION), equalTo("distribution name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(PE_DISTRIBUTION), equalTo("distribution providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceCode(PE_DISTRIBUTION), equalTo("distribution providerPlace code")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("distribution providerPlace link")))
       .andExpect(jsonPath(toProviderEventProviderDate(PE_DISTRIBUTION), equalTo("distribution provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_DISTRIBUTION), equalTo("distribution simple place")))
       .andExpect(jsonPath(toProviderEventDate(PE_MANUFACTURE), equalTo("manufacture date")))
       .andExpect(jsonPath(toProviderEventName(PE_MANUFACTURE), equalTo("manufacture name")))
-      .andExpect(jsonPath(toProviderEventPlaceName(PE_MANUFACTURE), equalTo("manufacture providerPlace name")))
+      .andExpect(jsonPath(toProviderEventPlaceCode(PE_MANUFACTURE), equalTo("manufacture providerPlace code")))
       .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("manufacture providerPlace link")))
       .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
@@ -626,12 +626,12 @@ public class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(PROVIDER_PLACE.getUri());
     var place = edge.getTarget();
-    assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace name");
+    assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace code");
     assertThat(place.getTypes().iterator().next().getUri()).isEqualTo(PLACE.getUri());
     assertThat(place.getResourceHash()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(2);
     assertThat(place.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace name");
+    assertThat(place.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace code");
     assertThat(place.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace link");
     assertThat(place.getOutgoingEdges()).isEmpty();
@@ -998,9 +998,9 @@ public class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(NAME.getValue()));
   }
 
-  private String toProviderEventPlaceName(PredicateDictionary predicate) {
+  private String toProviderEventPlaceCode(PredicateDictionary predicate) {
     return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
-      arrayPath(NAME.getValue()));
+      arrayPath(CODE.getValue()));
   }
 
   private String toProviderEventPlaceLink(PredicateDictionary predicate) {
