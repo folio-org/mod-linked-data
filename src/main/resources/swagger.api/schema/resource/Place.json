@@ -15,6 +15,13 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/code"
         },
+        "label": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/label"
+        },
         "link": {
           "type": "array",
           "items": {
