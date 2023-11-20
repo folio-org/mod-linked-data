@@ -325,7 +325,8 @@ public class MonographTestUtil {
   private Resource providerPlace(String providerEventType) {
     return createResource(
       Map.of(
-        NAME, List.of(providerEventType + " providerPlace name"),
+        CODE, List.of(providerEventType + " providerPlace code"),
+        LABEL, List.of(providerEventType + " providerPlace label"),
         LINK, List.of(providerEventType + " providerPlace link")
       ),
       Set.of(PLACE),

@@ -1,8 +1,9 @@
 package org.folio.linked.data.mapper.resource.monograph.common;
 
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
+import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
@@ -54,7 +55,7 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
   public Resource toEntity(Object dto) {
     var place = (Place) dto;
     var resource = new Resource();
-    resource.setLabel(getFirstValue(place::getName));
+    resource.setLabel(getFirstValue(place::getLabel));
     resource.addType(PLACE);
     resource.setDoc(getDoc(place));
     resource.setResourceHash(coreMapper.hash(resource));
@@ -63,7 +64,8 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
 
   private JsonNode getDoc(Place dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, NAME, dto.getName());
+    putProperty(map, CODE, dto.getCode());
+    putProperty(map, LABEL, dto.getLabel());
     putProperty(map, LINK, dto.getLink());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }

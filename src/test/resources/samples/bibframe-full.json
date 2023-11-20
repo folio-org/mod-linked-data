@@ -76,11 +76,14 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "production providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "production providerPlace code"
               ],
               "http://bibfra.me/vocab/lite/link": [
                 "production providerPlace link"
+              ],
+              "http://bibfra.me/vocab/lite/label": [
+                "production providerPlace label"
               ]
             }
           ],
@@ -102,11 +105,14 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "publication providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "publication providerPlace code"
               ],
               "http://bibfra.me/vocab/lite/link": [
                 "publication providerPlace link"
+              ],
+              "http://bibfra.me/vocab/lite/label": [
+                "publication providerPlace label"
               ]
             }
           ],
@@ -128,11 +134,14 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "distribution providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "distribution providerPlace code"
               ],
               "http://bibfra.me/vocab/lite/link": [
                 "distribution providerPlace link"
+              ],
+              "http://bibfra.me/vocab/lite/label": [
+                "distribution providerPlace label"
               ]
             }
           ],
@@ -154,11 +163,14 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "manufacture providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "manufacture providerPlace code"
               ],
               "http://bibfra.me/vocab/lite/link": [
                 "manufacture providerPlace link"
+              ],
+              "http://bibfra.me/vocab/lite/label": [
+                "manufacture providerPlace label"
               ]
             }
           ],

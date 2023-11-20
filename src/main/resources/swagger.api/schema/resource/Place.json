@@ -8,12 +8,19 @@
     {
       "type": "object",
       "properties": {
-        "name": {
+        "code": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/name"
+          "x-json-property": "http://bibfra.me/vocab/marc/code"
+        },
+        "label": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/label"
         },
         "link": {
           "type": "array",

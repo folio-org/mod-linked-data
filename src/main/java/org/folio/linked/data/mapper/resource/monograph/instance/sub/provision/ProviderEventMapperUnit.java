@@ -56,7 +56,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
     ofNullable(providerEvent.getName()).ifPresent(result::addAll);
     ofNullable(providerEvent.getSimplePlace()).ifPresent(result::addAll);
     ofNullable(providerEvent.getProviderPlace()).ifPresent(
-      pp -> result.addAll(pp.stream().filter(p -> nonNull(p.getName())).flatMap(p -> p.getName().stream()).toList()));
+      pp -> result.addAll(pp.stream().filter(p -> nonNull(p.getLabel())).flatMap(p -> p.getLabel().stream()).toList()));
     return result;
   }
 

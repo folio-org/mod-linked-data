@@ -49,8 +49,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "production providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "production providerPlace code"
               ]
             }
           ],
@@ -73,8 +73,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "production providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "production providerPlace code"
               ]
             }
           ]
@@ -89,8 +89,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "publication providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "publication providerPlace code"
               ]
             }
           ],
@@ -113,8 +113,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "publication providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "publication providerPlace code"
               ]
             }
           ]
@@ -129,8 +129,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "distribution providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "distribution providerPlace code"
               ]
             }
           ],
@@ -153,8 +153,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "distribution providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "distribution providerPlace code"
               ]
             }
           ]
@@ -169,8 +169,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "manufacture providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "manufacture providerPlace code"
               ]
             }
           ],
@@ -193,8 +193,8 @@
         {
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/lite/name": [
-                "manufacture providerPlace name"
+              "http://bibfra.me/vocab/marc/code": [
+                "manufacture providerPlace code"
               ]
             }
           ]
