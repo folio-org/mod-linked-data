@@ -33,6 +33,12 @@ public class TenantScopedExecutionService {
     }
   }
 
+  public void executeTenantScoped(String tenantId, Runnable job) {
+    try (var fex = new FolioExecutionContextSetter(dbOnlyContext(tenantId))) {
+      job.run();
+    }
+  }
+
   @Async
   public void executeAsyncTenantScoped(Headers headers, Runnable job) {
     try (var fex = new FolioExecutionContextSetter(kafkaFolioExecutionContext(headers))) {

@@ -6,6 +6,7 @@ import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -24,15 +25,18 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
+import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -51,18 +55,16 @@ class ResourceServiceTest {
   private ResourceMapper resourceMapper;
 
   @Mock
-  private KafkaSender kafkaSender;
+  private ApplicationEventPublisher applicationEventPublisher;
 
   @Test
-  void create_shouldPersistMappedBibframeAndSendItToKafka() {
+  void create_shouldPersistMappedBibframeAndPublishResourceCreatedEvent() {
     // given
     var request = new ResourceDto();
     var mapped = new Resource().setResourceHash(12345L);
     when(resourceMapper.toEntity(request)).thenReturn(mapped);
     var persisted = new Resource().setResourceHash(67890L);
     when(resourceRepo.save(mapped)).thenReturn(persisted);
-    var expectedIndex = Optional.of(new BibframeIndex(persisted.getResourceHash().toString()));
-    when(resourceMapper.mapToIndex(persisted)).thenReturn(expectedIndex);
     var expectedResponse = new ResourceDto();
     expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
     when(resourceMapper.toDto(persisted)).thenReturn(expectedResponse);
@@ -71,8 +73,11 @@ class ResourceServiceTest {
     ResourceDto response = resourceService.createResource(request);
 
     // then
-    verify(kafkaSender).sendResourceCreated(expectedIndex.get());
     assertThat(response).isEqualTo(expectedResponse);
+
+    var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
+    verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
+    assertEquals(persisted, resourceCreateEventCaptor.getValue().resource());
   }
 
   @Test
@@ -150,7 +155,7 @@ class ResourceServiceTest {
   }
 
   @Test
-  void delete_shouldDeleteBibframeAndSendItToKafka() {
+  void delete_shouldDeleteBibframeAndPublishResourceDeletedEvent() {
     // given
     var id = randomLong();
 
@@ -159,7 +164,10 @@ class ResourceServiceTest {
 
     // then
     verify(resourceRepo).deleteById(id);
-    verify(kafkaSender).sendResourceDeleted(id);
+
+    var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
+    verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
+    assertEquals(id, resourceDeletedEventCaptor.getValue().id());
   }
 
 }

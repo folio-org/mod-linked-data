@@ -79,9 +79,12 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -97,6 +100,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import java.util.Optional;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
@@ -109,20 +113,23 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
+import org.folio.linked.data.test.ResourceTypeEntityRepository;
 import org.folio.linked.data.test.TestUtil;
+import org.folio.search.domain.dto.BibframeIndex;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
-@Transactional
 public class ResourceControllerIT {
 
   public static final String BIBFRAME_URL = "/resource";
@@ -131,6 +138,8 @@ public class ResourceControllerIT {
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
+  private ResourceTypeEntityRepository resourceTypeEntityRepository;
+  @Autowired
   private ResourceEdgeRepository resourceEdgeRepository;
   @Autowired
   private ObjectMapper objectMapper;
@@ -138,11 +147,12 @@ public class ResourceControllerIT {
   private Environment env;
   @SpyBean
   private KafkaSender kafkaSender;
+  @Autowired
+  private JdbcTemplate jdbcTemplate;
 
   @BeforeEach
   public void clean() {
-    resourceEdgeRepository.deleteAll();
-    resourceRepo.deleteAll();
+    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resources");
   }
 
   @Test
@@ -162,7 +172,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    var persistedOptional = getResource(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
     validateInstance(bibframe);
@@ -189,7 +199,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    var persistedOptional = getResource(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var instance = persistedOptional.get();
     assertThat(instance.getResourceHash()).isNotNull();
@@ -222,7 +232,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    var persistedOptional = getResource(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var instance = persistedOptional.get();
     assertThat(instance.getResourceHash()).isNotNull();
@@ -255,7 +265,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    var persistedOptional = getResource(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var instance = persistedOptional.get();
     assertThat(instance.getResourceHash()).isNotNull();
@@ -340,7 +350,7 @@ public class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    var persistedOptional = getResource(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var updatedInstance = persistedOptional.get();
     assertThat(updatedInstance.getResourceHash()).isNotNull();
@@ -442,8 +452,66 @@ public class ResourceControllerIT {
     checkKafkaMessageSent(null, existed.getResourceHash());
   }
 
+  @Test
+  void updateResource_should_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateSucceeded()
+    throws Exception {
+    //given
+    var existedResource = resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE));
+    var requestBuilder = put(BIBFRAME_URL + "/" + existedResource.getResourceHash())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/bibframe-partial-objects.json"));
+
+    //when
+    mockMvc.perform(requestBuilder);
+
+    //then
+    assertFalse(resourceRepo.existsById(existedResource.getResourceHash()));
+    assertTrue(resourceRepo.existsById(220458842L));
+    verify(kafkaSender).sendResourceDeleted(existedResource.getResourceHash());
+
+    var bibframeIndexCaptor = ArgumentCaptor.forClass(BibframeIndex.class);
+    verify(kafkaSender).sendResourceCreated(bibframeIndexCaptor.capture());
+    assertThat(bibframeIndexCaptor.getValue().getId()).isEqualTo("220458842");
+  }
+
+  @Test
+  void updateResource_shouldNot_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateFailed()
+    throws Exception {
+    //given
+    var existedResource = resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE));
+    var requestBuilder = put(BIBFRAME_URL + "/" + existedResource.getResourceHash())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content("{\"resource\": {\"id\": null}}");
+
+    //when
+    mockMvc.perform(requestBuilder);
+
+    //then
+    assertTrue(resourceRepo.existsById(existedResource.getResourceHash()));
+    verify(kafkaSender, never()).sendResourceDeleted(existedResource.getResourceHash());
+    verify(kafkaSender, never()).sendResourceCreated(any());
+  }
+
   protected void checkKafkaMessageSent(Resource persisted, Long deleted) {
     // nothing to check without Folio profile
+  }
+
+  protected Optional<Resource> getResource(Long id) {
+    var optionalResource = resourceRepo.findById(id);
+    optionalResource.ifPresent(this::setTypes);
+    return optionalResource;
+  }
+
+  protected void setTypes(Resource resource) {
+    resource.setTypes(resourceTypeEntityRepository.findByResourceId(resource.getResourceHash()));
+    resource.getOutgoingEdges()
+      .forEach(resourceEdge -> {
+        var target = resourceEdge.getTarget();
+        target.setTypes(resourceTypeEntityRepository.findByResourceId(target.getResourceHash()));
+        setTypes(target);
+      });
   }
 
   @NotNull
@@ -462,35 +530,35 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
       .andExpect(jsonPath(toExtent(), equalTo("extent info")))
       .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
-      .andExpect(jsonPath(toEanValue(), equalTo("ean value")))
-      .andExpect(jsonPath(toEanQualifier(), equalTo("ean qualifier")))
+      .andExpect(jsonPath(toEanValue(), contains("ean value")))
+      .andExpect(jsonPath(toEanQualifier(), contains("ean qualifier")))
       .andExpect(jsonPath(toEditionStatement(), equalTo("edition statement")))
-      .andExpect(jsonPath(toInstanceTitlePartName(), equalTo("Instance: partName")))
-      .andExpect(jsonPath(toInstanceTitlePartNumber(), equalTo("Instance: partNumber")))
-      .andExpect(jsonPath(toInstanceTitleMain(), equalTo("Instance: mainTitle")))
-      .andExpect(jsonPath(toInstanceTitleNonSortNum(), equalTo("Instance: nonSortNum")))
-      .andExpect(jsonPath(toInstanceTitleSubtitle(), equalTo("Instance: subTitle")))
-      .andExpect(jsonPath(toIsbnValue(), equalTo("isbn value")))
-      .andExpect(jsonPath(toIsbnQualifier(), equalTo("isbn qualifier")))
-      .andExpect(jsonPath(toIsbnStatusValue(), equalTo("isbn status value")))
-      .andExpect(jsonPath(toIsbnStatusLink(), equalTo("isbn status link")))
+      .andExpect(jsonPath(toInstanceTitlePartName(), contains("Instance: partName")))
+      .andExpect(jsonPath(toInstanceTitlePartNumber(), contains("Instance: partNumber")))
+      .andExpect(jsonPath(toInstanceTitleMain(), contains("Instance: mainTitle")))
+      .andExpect(jsonPath(toInstanceTitleNonSortNum(), contains("Instance: nonSortNum")))
+      .andExpect(jsonPath(toInstanceTitleSubtitle(), contains("Instance: subTitle")))
+      .andExpect(jsonPath(toIsbnValue(), contains("isbn value")))
+      .andExpect(jsonPath(toIsbnQualifier(), contains("isbn qualifier")))
+      .andExpect(jsonPath(toIsbnStatusValue(), contains("isbn status value")))
+      .andExpect(jsonPath(toIsbnStatusLink(), contains("isbn status link")))
       .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
-      .andExpect(jsonPath(toLccnValue(), equalTo("lccn value")))
-      .andExpect(jsonPath(toLccnStatusValue(), equalTo("lccn status value")))
-      .andExpect(jsonPath(toLccnStatusLink(), equalTo("lccn status link")))
-      .andExpect(jsonPath(toLocalIdValue(), equalTo("localId value")))
-      .andExpect(jsonPath(toLocalIdAssigner(), equalTo("localId assigner")))
+      .andExpect(jsonPath(toLccnValue(), contains("lccn value")))
+      .andExpect(jsonPath(toLccnStatusValue(), contains("lccn status value")))
+      .andExpect(jsonPath(toLccnStatusLink(), contains("lccn status link")))
+      .andExpect(jsonPath(toLocalIdValue(), contains("localId value")))
+      .andExpect(jsonPath(toLocalIdAssigner(), contains("localId assigner")))
       .andExpect(jsonPath(toMediaCode(), equalTo("media code")))
       .andExpect(jsonPath(toMediaLink(), equalTo("media link")))
       .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
-      .andExpect(jsonPath(toOtherIdValue(), equalTo("otherId value")))
-      .andExpect(jsonPath(toOtherIdQualifier(), equalTo("otherId qualifier")))
-      .andExpect(jsonPath(toParallelTitlePartName(), equalTo("Parallel: partName")))
-      .andExpect(jsonPath(toParallelTitlePartNumber(), equalTo("Parallel: partNumber")))
-      .andExpect(jsonPath(toParallelTitleMain(), equalTo("Parallel: mainTitle")))
-      .andExpect(jsonPath(toParallelTitleNote(), equalTo("Parallel: noteLabel")))
-      .andExpect(jsonPath(toParallelTitleDate(), equalTo("Parallel: date")))
-      .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo("Parallel: subTitle")))
+      .andExpect(jsonPath(toOtherIdValue(), contains("otherId value")))
+      .andExpect(jsonPath(toOtherIdQualifier(), contains("otherId qualifier")))
+      .andExpect(jsonPath(toParallelTitlePartName(), contains("Parallel: partName")))
+      .andExpect(jsonPath(toParallelTitlePartNumber(), contains("Parallel: partNumber")))
+      .andExpect(jsonPath(toParallelTitleMain(), contains("Parallel: mainTitle")))
+      .andExpect(jsonPath(toParallelTitleNote(), contains("Parallel: noteLabel")))
+      .andExpect(jsonPath(toParallelTitleDate(), contains("Parallel: date")))
+      .andExpect(jsonPath(toParallelTitleSubtitle(), contains("Parallel: subTitle")))
       .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
       .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
       .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("production providerPlace code")))
@@ -520,13 +588,13 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
       .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
-      .andExpect(jsonPath(toVariantTitlePartName(), equalTo("Variant: partName")))
-      .andExpect(jsonPath(toVariantTitlePartNumber(), equalTo("Variant: partNumber")))
-      .andExpect(jsonPath(toVariantTitleMain(), equalTo("Variant: mainTitle")))
-      .andExpect(jsonPath(toVariantTitleNote(), equalTo("Variant: noteLabel")))
-      .andExpect(jsonPath(toVariantTitleDate(), equalTo("Variant: date")))
-      .andExpect(jsonPath(toVariantTitleSubtitle(), equalTo("Variant: subTitle")))
-      .andExpect(jsonPath(toVariantTitleType(), equalTo("Variant: variantType")));
+      .andExpect(jsonPath(toVariantTitlePartName(), contains("Variant: partName")))
+      .andExpect(jsonPath(toVariantTitlePartNumber(), contains("Variant: partNumber")))
+      .andExpect(jsonPath(toVariantTitleMain(), contains("Variant: mainTitle")))
+      .andExpect(jsonPath(toVariantTitleNote(), contains("Variant: noteLabel")))
+      .andExpect(jsonPath(toVariantTitleDate(), contains("Variant: date")))
+      .andExpect(jsonPath(toVariantTitleSubtitle(), contains("Variant: subTitle")))
+      .andExpect(jsonPath(toVariantTitleType(), contains("Variant: variantType")));
   }
 
   @NotNull
@@ -562,23 +630,23 @@ public class ResourceControllerIT {
     assertThat(instance.getOutgoingEdges()).hasSize(17);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
-    validateInstanceTitle(edgeIterator.next(), instance);
-    validateParallelTitle(edgeIterator.next(), instance);
-    validateVariantTitle(edgeIterator.next(), instance);
-    validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION);
-    validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION);
-    validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION);
-    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
-    validateAccessLocation(edgeIterator.next(), instance);
-    validateLccn(edgeIterator.next(), instance);
-    validateIsbn(edgeIterator.next(), instance);
-    validateEan(edgeIterator.next(), instance);
-    validateLocalId(edgeIterator.next(), instance);
-    validateOtherId(edgeIterator.next(), instance);
-    validateCategory(edgeIterator.next(), instance, MEDIA);
     validateCategory(edgeIterator.next(), instance, CARRIER);
+    validateAccessLocation(edgeIterator.next(), instance);
     validateCopyrightDate(edgeIterator.next(), instance);
     validateWork(edgeIterator.next(), instance);
+    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
+    validateCategory(edgeIterator.next(), instance, MEDIA);
+    validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION);
+    validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION);
+    validateLocalId(edgeIterator.next(), instance);
+    validateEan(edgeIterator.next(), instance);
+    validateLccn(edgeIterator.next(), instance);
+    validateOtherId(edgeIterator.next(), instance);
+    validateIsbn(edgeIterator.next(), instance);
+    validateVariantTitle(edgeIterator.next(), instance);
+    validateInstanceTitle(edgeIterator.next(), instance);
+    validateParallelTitle(edgeIterator.next(), instance);
+    validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -829,16 +897,16 @@ public class ResourceControllerIT {
     assertThat(instantiates.getDoc().get(TABLE_OF_CONTENTS.getValue()).size()).isEqualTo(1);
     assertThat(instantiates.getDoc().get(TABLE_OF_CONTENTS.getValue()).get(0).asText()).isEqualTo("table of contents");
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
-    validateWorkClassification(edgeIterator.next(), instantiates);
     validateWorkContentType(edgeIterator.next(), instantiates);
     validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
+    validateWorkClassification(edgeIterator.next(), instantiates);
     validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CONTRIBUTOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CONTRIBUTOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
   }
 
   private void validateWorkClassification(ResourceEdge edge, Resource source) {
@@ -938,27 +1006,27 @@ public class ResourceControllerIT {
   }
 
   private String toInstanceTitlePartName() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NAME.getValue()));
   }
 
   private String toInstanceTitlePartNumber() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NUMBER.getValue()));
   }
 
   private String toInstanceTitleMain() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(MAIN_TITLE.getValue()));
   }
 
   private String toInstanceTitleNonSortNum() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(NON_SORT_NUM.getValue()));
   }
 
   private String toInstanceTitleSubtitle() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(SUBTITLE.getValue()));
   }
 
@@ -967,67 +1035,67 @@ public class ResourceControllerIT {
   }
 
   private String toParallelTitlePartName() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(PART_NAME.getValue()));
   }
 
   private String toParallelTitlePartNumber() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(PART_NUMBER.getValue()));
   }
 
   private String toParallelTitleMain() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(MAIN_TITLE.getValue()));
   }
 
   private String toParallelTitleDate() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(DATE.getValue()));
   }
 
   private String toParallelTitleSubtitle() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(SUBTITLE.getValue()));
   }
 
   private String toParallelTitleNote() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 1), path(PARALLEL_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(NOTE.getValue()));
   }
 
   private String toVariantTitlePartName() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(PART_NAME.getValue()));
   }
 
   private String toVariantTitlePartNumber() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(PART_NUMBER.getValue()));
   }
 
   private String toVariantTitleMain() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(MAIN_TITLE.getValue()));
   }
 
   private String toVariantTitleDate() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(DATE.getValue()));
   }
 
   private String toVariantTitleSubtitle() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(SUBTITLE.getValue()));
   }
 
   private String toVariantTitleType() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(VARIANT_TYPE.getValue()));
   }
 
   private String toVariantTitleNote() {
-    return join(".", toInstance(), arrayPath(TITLE.getUri(), 2), path(VARIANT_TITLE.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(NOTE.getValue()));
   }
 
@@ -1063,61 +1131,65 @@ public class ResourceControllerIT {
   }
 
   private String toLccnValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(NAME.getValue()));
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toLccnStatusValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LCCN.getUri()),
       arrayPath(STATUS.getUri()), arrayPath(LABEL.getValue()));
   }
 
   private String toLccnStatusLink() {
-    return join(".", toInstance(), arrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(STATUS.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(STATUS.getUri()),
       arrayPath(LINK.getValue()));
   }
 
   private String toIsbnValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(NAME.getValue()));
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toIsbnQualifier() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()), arrayPath(QUALIFIER.getValue()));
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()),
+      arrayPath(QUALIFIER.getValue()));
   }
 
   private String toIsbnStatusValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()),
       arrayPath(STATUS.getUri()), arrayPath(LABEL.getValue()));
   }
 
   private String toIsbnStatusLink() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 1), path(ID_ISBN.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()),
       arrayPath(STATUS.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toEanValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(EAN_VALUE.getValue()));
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_EAN.getUri()),
+      arrayPath(EAN_VALUE.getValue()));
   }
 
   private String toEanQualifier() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 2), path(ID_EAN.getUri()), arrayPath(QUALIFIER.getValue()));
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_EAN.getUri()),
+      arrayPath(QUALIFIER.getValue()));
   }
 
   private String toLocalIdValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 3), path(ID_LOCAL.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LOCAL.getUri()),
       arrayPath(LOCAL_ID_VALUE.getValue()));
   }
 
   private String toLocalIdAssigner() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 3), path(ID_LOCAL.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LOCAL.getUri()),
       arrayPath(ASSIGNING_SOURCE.getValue()));
   }
 
   private String toOtherIdValue() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()), arrayPath(NAME.getValue()));
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_UNKNOWN.getUri()),
+      arrayPath(NAME.getValue()));
   }
 
   private String toOtherIdQualifier() {
-    return join(".", toInstance(), arrayPath(MAP.getUri(), 4), path(ID_UNKNOWN.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_UNKNOWN.getUri()),
       arrayPath(QUALIFIER.getValue()));
   }
 
@@ -1219,12 +1291,11 @@ public class ResourceControllerIT {
     return format("['%s']", path);
   }
 
-  private String arrayPath(String path, int index) {
-    return format("['%s'][%d]", path, index);
-  }
-
   private String arrayPath(String path) {
-    return arrayPath(path, 0);
+    return format("['%s'][0]", path);
   }
 
+  private String dynamicArrayPath(String path) {
+    return format("['%s'][*]", path);
+  }
 }
