@@ -91,6 +91,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -319,6 +320,38 @@ public class ResourceControllerIT {
   }
 
   @Test
+  void update_shouldReturnCorrectlyUpdatedEntity() throws Exception {
+    // given
+    var existed = resourceRepo.save(createSampleInstance().setLabel("Instance: mainTitle"));
+    var requestBuilder = put(BIBFRAME_URL + "/" + existed.getResourceHash())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(getBibframeSample().replace("20 cm", "200 m"));
+
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toInstance(), notNullValue()))
+      .andReturn().getResponse().getContentAsString();
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var instance = persistedOptional.get();
+    assertThat(instance.getResourceHash()).isNotNull();
+    assertThat(instance.getLabel()).isEqualTo(existed.getLabel());
+    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(instance.getInventoryId()).isEqualTo(existed.getInventoryId());
+    assertThat(instance.getSrsId()).isEqualTo(existed.getSrsId());
+    assertThat(instance.getDoc().asText()).isEqualTo(existed.getDoc().asText().replace("20 cm", "200 m"));
+    assertThat(instance.getOutgoingEdges()).hasSize(existed.getOutgoingEdges().size());
+  }
+
+  @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
     var existed = resourceRepo.save(createSampleInstance());
@@ -357,7 +390,7 @@ public class ResourceControllerIT {
   }
 
   @Test
-  void getBibframe2ShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
+  void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
       resourceRepo.save(bibframeSampleResource(1L, INSTANCE)),
