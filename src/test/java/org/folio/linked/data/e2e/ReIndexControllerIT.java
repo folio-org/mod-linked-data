@@ -1,6 +1,6 @@
 package org.folio.linked.data.e2e;
 
-import static org.folio.linked.data.test.MonographTestUtil.createSampleInstance;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -39,7 +39,7 @@ class ReIndexControllerIT {
   @Test
   void createIndexIfTrue_Ok() throws Exception {
     // given
-    var persisted = resourceRepo.save(createSampleInstance());
+    var persisted = resourceRepo.save(getSampleInstanceResource());
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)

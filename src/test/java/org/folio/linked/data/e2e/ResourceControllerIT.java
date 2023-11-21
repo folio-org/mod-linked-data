@@ -71,10 +71,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
-import static org.folio.linked.data.test.MonographTestUtil.createSampleInstance;
-import static org.folio.linked.data.test.TestUtil.bibframeSampleResource;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.getBibframeSample;
+import static org.folio.linked.data.test.TestUtil.getSampleInstanceString;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -110,6 +109,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
+import org.folio.linked.data.test.TestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -151,7 +151,7 @@ public class ResourceControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getBibframeSample());
+      .content(getSampleInstanceString());
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -274,7 +274,7 @@ public class ResourceControllerIT {
     var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getBibframeSample());
+      .content(getSampleInstanceString());
     var resultActions1 = mockMvc.perform(requestBuilder1);
     var response1 = resultActions1.andReturn().getResponse().getContentAsString();
     var resourceResponse1 = objectMapper.readValue(response1, ResourceDto.class);
@@ -284,7 +284,7 @@ public class ResourceControllerIT {
     var requestBuilder2 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getBibframeSample().replace("Instance: partName", "Instance: partName2"));
+      .content(getSampleInstanceString().replace("Instance: partName", "Instance: partName2"));
 
     // when
     var response2 = mockMvc.perform(requestBuilder2);
@@ -303,7 +303,7 @@ public class ResourceControllerIT {
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getBibframeSample().replace("http://bibfra.me/vocab/marc/Title", wrongValue));
+      .content(getSampleInstanceString().replace("http://bibfra.me/vocab/marc/Title", wrongValue));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -322,13 +322,15 @@ public class ResourceControllerIT {
   @Test
   void update_shouldReturnCorrectlyUpdatedEntity() throws Exception {
     // given
-    var existed = resourceRepo.save(createSampleInstance().setLabel("Instance: mainTitle"));
-    var requestBuilder = put(BIBFRAME_URL + "/" + existed.getResourceHash())
+    var originalInstance = resourceRepo.save(getSampleInstanceResource().setLabel("Instance: mainTitle"));
+    var originalInstanceWithChangedDimensions = getSampleInstanceString().replace("20 cm", "200 m");
+    var updateRequest = put(BIBFRAME_URL + "/" + originalInstance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getBibframeSample().replace("20 cm", "200 m"));
+      .content(originalInstanceWithChangedDimensions);
 
-    var resultActions = mockMvc.perform(requestBuilder);
+    // when
+    var resultActions = mockMvc.perform(updateRequest);
 
     // then
     var response = resultActions
@@ -336,25 +338,25 @@ public class ResourceControllerIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(toInstance(), notNullValue()))
       .andReturn().getResponse().getContentAsString();
-
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
-    var instance = persistedOptional.get();
-    assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getLabel()).isEqualTo(existed.getLabel());
-    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getInventoryId()).isEqualTo(existed.getInventoryId());
-    assertThat(instance.getSrsId()).isEqualTo(existed.getSrsId());
-    assertThat(instance.getDoc().asText()).isEqualTo(existed.getDoc().asText().replace("20 cm", "200 m"));
-    assertThat(instance.getOutgoingEdges()).hasSize(existed.getOutgoingEdges().size());
+    var updatedInstance = persistedOptional.get();
+    assertThat(updatedInstance.getResourceHash()).isNotNull();
+    assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
+    assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(updatedInstance.getInventoryId()).isEqualTo(originalInstance.getInventoryId());
+    assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
+    assertThat(updatedInstance.getDoc().asText()).isEqualTo(
+      originalInstance.getDoc().asText().replace("20 cm", "200 m"));
+    assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
   }
 
   @Test
   void getBibframeById_shouldReturnExistedEntity() throws Exception {
     // given
-    var existed = resourceRepo.save(createSampleInstance());
+    var existed = resourceRepo.save(getSampleInstanceResource());
     var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -393,9 +395,9 @@ public class ResourceControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-      resourceRepo.save(bibframeSampleResource(1L, INSTANCE)),
-      resourceRepo.save(bibframeSampleResource(2L, INSTANCE)),
-      resourceRepo.save(bibframeSampleResource(3L, INSTANCE))
+      resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE)),
+      resourceRepo.save(TestUtil.getSampleInstanceResource(2L, INSTANCE)),
+      resourceRepo.save(TestUtil.getSampleInstanceResource(3L, INSTANCE))
     ).stream().sorted(comparing(Resource::getResourceHash)).toList();
     var requestBuilder = get(BIBFRAME_URL)
       .param(TYPE, INSTANCE.getUri())
@@ -421,7 +423,7 @@ public class ResourceControllerIT {
   @Test
   void deleteBibframeById_shouldDeleteRootResourceAndRootEdge() throws Exception {
     // given
-    var existed = resourceRepo.save(createSampleInstance());
+    var existed = resourceRepo.save(getSampleInstanceResource());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(28);
     assertThat(resourceEdgeRepository.count()).isEqualTo(27);

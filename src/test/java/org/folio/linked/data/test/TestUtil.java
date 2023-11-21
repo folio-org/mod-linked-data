@@ -3,11 +3,9 @@ package org.folio.linked.data.test;
 import static java.lang.System.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.nonNull;
-import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
@@ -16,9 +14,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -50,7 +46,7 @@ public class TestUtil {
 
   static {
     PARAMETERS.excludeField(named("id"));
-    PARAMETERS.randomize(Resource.class, TestUtil::bibframeSampleResource);
+    PARAMETERS.randomize(Resource.class, MonographTestUtil::getSampleInstanceResource);
     PARAMETERS.randomizationDepth(3);
     PARAMETERS.scanClasspathForConcreteTypes(true);
   }
@@ -84,19 +80,8 @@ public class TestUtil {
     return IOUtils.toString(is, StandardCharsets.UTF_8);
   }
 
-  public static String getBibframeSample() {
+  public static String getSampleInstanceString() {
     return BIBFRAME_SAMPLE;
-  }
-
-  public static String getBibframeSampleTest(String changedField) {
-    JsonNode jsonNode = getBibframeJsonNodeSample();
-    JsonNode instance = jsonNode.get("resource").get(INSTANCE.getUri());
-    ((ArrayNode) instance.withArray(DIMENSIONS.getValue())).set(0, new TextNode(changedField));
-    return jsonNode.toString();
-  }
-
-  public static String getResource(String fileName) {
-    return loadResourceAsString(fileName);
   }
 
   @SneakyThrows
@@ -116,14 +101,8 @@ public class TestUtil {
     return GENERATOR.nextLong();
   }
 
-  public static Resource bibframeSampleResource() {
-    var resource = new Resource();
-    resource.setDoc(getBibframeJsonNodeSample());
-    return resource;
-  }
-
-  public static Resource bibframeSampleResource(Long resourceHash, ResourceTypeDictionary type) {
-    var bibframe = bibframeSampleResource();
+  public static Resource getSampleInstanceResource(Long resourceHash, ResourceTypeDictionary type) {
+    var bibframe = MonographTestUtil.getSampleInstanceResource();
     bibframe.setResourceHash(resourceHash);
     bibframe.addType(type);
     return bibframe;

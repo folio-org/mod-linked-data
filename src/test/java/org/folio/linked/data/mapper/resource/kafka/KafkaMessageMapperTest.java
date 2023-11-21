@@ -15,7 +15,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
-import static org.folio.linked.data.test.MonographTestUtil.createSampleInstance;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.ORGANIZATION;
@@ -105,7 +105,7 @@ class KafkaMessageMapperTest {
         .thenReturn(of(new CarrierMapperUnit(null)))
     );
 
-    var instance = createSampleInstance();
+    var instance = getSampleInstanceResource();
     var emptyTitle = new Resource();
     instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyTitle, TITLE));
     var wrongId = getIdentifier(NAME.getValue(), ANNOTATION);
