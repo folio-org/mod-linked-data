@@ -5,9 +5,9 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.linked.data.test.IsEqualJson.equalToJson;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
-import static org.folio.linked.data.test.TestUtil.getBibframeSample;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.getObjectNode;
+import static org.folio.linked.data.test.TestUtil.getSampleInstanceString;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.TYPE;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -447,19 +447,19 @@ class CoreMapperTest {
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromString() throws JsonProcessingException {
     // given
-    var json = getBibframeSample();
+    var json = getSampleInstanceString();
 
     // when
     var jsonNode = coreMapper.toJson(json);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
+    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getSampleInstanceString()));
   }
 
   @Test
   void toJson_shouldReturnCorrectJsonNodeFromMap() throws JsonProcessingException {
     // given
-    var json = getBibframeSample();
+    var json = getSampleInstanceString();
     var map = OBJECT_MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {
     });
 
@@ -467,7 +467,7 @@ class CoreMapperTest {
     var jsonNode = coreMapper.toJson(map);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getBibframeSample()));
+    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode), equalToJson(getSampleInstanceString()));
   }
 
   @Test

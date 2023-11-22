@@ -1,12 +1,14 @@
 package org.folio.linked.data.service;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.util.Constants.EXISTS_ALREADY;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
@@ -41,6 +43,7 @@ public class ResourceServiceImpl implements ResourceService {
     return resourceMapper.toDto(persisted);
   }
 
+  @Override
   public Long createResource(org.folio.marc2ld.model.Resource marc2ldResource) {
     var mapped = resourceMapper.toEntity(marc2ldResource);
     var persisted = resourceRepo.save(mapped);
@@ -61,8 +64,17 @@ public class ResourceServiceImpl implements ResourceService {
     if (!resourceRepo.existsById(id)) {
       throw new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
     }
+    addInternalFields(resourceDto, id);
     deleteResource(id);
     return createResource(resourceDto);
+  }
+
+  private void addInternalFields(ResourceDto resourceDto, Long id) {
+    if (resourceDto.getResource() instanceof InstanceField instanceField) {
+      var resourceInternal = resourceRepo.findResourceInternal(id);
+      ofNullable(resourceInternal.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
+      ofNullable(resourceInternal.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);
+    }
   }
 
   @Override

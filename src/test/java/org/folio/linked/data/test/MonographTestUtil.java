@@ -88,7 +88,7 @@ public class MonographTestUtil {
 
   private static final CoreMapper CORE_MAPPER = new CoreMapperImpl(OBJECT_MAPPER);
 
-  public static Resource createSampleInstance() {
+  public static Resource getSampleInstanceResource() {
     var instanceTitle = createResource(
       Map.of(
         PART_NAME, List.of("Instance: partName"),

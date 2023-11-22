@@ -1,6 +1,7 @@
 package org.folio.linked.data.repo;
 
 import java.util.Set;
+import org.folio.linked.data.model.ResourceInternal;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.data.domain.Page;
@@ -19,4 +20,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
   @Query("SELECT r FROM Resource r JOIN r.types t")
   Page<ResourceShortInfo> findAllPageable(Pageable pageable);
+
+  @Query("SELECT r.inventoryId, r.srsId FROM Resource r WHERE r.resourceHash = :id")
+  ResourceInternal findResourceInternal(Long id);
 }

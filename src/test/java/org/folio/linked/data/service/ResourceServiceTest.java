@@ -1,6 +1,7 @@
 package org.folio.linked.data.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -24,7 +25,6 @@ import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.test.TestUtil;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -79,7 +79,7 @@ class ResourceServiceTest {
   void getResourceById_shouldReturnExistedEntity() {
     // given
     var id = randomLong();
-    var existedResource = TestUtil.bibframeSampleResource();
+    var existedResource = getSampleInstanceResource();
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
     var expectedResponse = random(ResourceDto.class);
     when(resourceMapper.toDto(existedResource)).thenReturn(expectedResponse);
