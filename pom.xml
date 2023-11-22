@@ -46,7 +46,7 @@
     <lib-linked-data-marc2ld.version>1.0.0-SNAPSHOT</lib-linked-data-marc2ld.version>
 
     <!-- Test dependencies versions -->
-    <testcontainers.version>1.19.2</testcontainers.version>
+    <testcontainers.version>1.19.3</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <folio-service-tools.version>3.1.0</folio-service-tools.version>
