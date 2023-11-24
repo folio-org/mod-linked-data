@@ -74,7 +74,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private void addInternalFields(ResourceDto resourceDto, Long id) {
     if (resourceDto.getResource() instanceof InstanceField instanceField) {
-      var resourceInternal = resourceRepo.findResourceInternal(id);
+      var resourceInternal = resourceRepo.findByResourceHash(id);
       ofNullable(resourceInternal.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
       ofNullable(resourceInternal.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);
     }

@@ -329,11 +329,14 @@ public class ResourceControllerIT {
   void update_shouldReturnCorrectlyUpdatedEntity() throws Exception {
     // given
     var originalInstance = resourceRepo.save(getSampleInstanceResource().setLabel("Instance: mainTitle"));
-    var originalInstanceWithChangedDimensions = getSampleInstanceString().replace("20 cm", "200 m");
+    var updatedInstanceDto = getSampleInstanceString()
+      .replace("20 cm", "200 m")
+      .replace(",\n      \"inventoryId\": \"2165ef4b-001f-46b3-a60e-52bcdeb3d5a1\",\n"
+        + "      \"srsId\": \"43d58061-decf-4d74-9747-0e1c368e861b\"", "");
     var updateRequest = put(BIBFRAME_URL + "/" + originalInstance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(originalInstanceWithChangedDimensions);
+      .content(updatedInstanceDto);
 
     // when
     var resultActions = mockMvc.perform(updateRequest);

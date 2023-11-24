@@ -21,6 +21,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   @Query("SELECT r FROM Resource r JOIN r.types t")
   Page<ResourceShortInfo> findAllPageable(Pageable pageable);
 
-  @Query("SELECT r.inventoryId, r.srsId FROM Resource r WHERE r.resourceHash = :id")
-  ResourceInternal findResourceInternal(Long id);
+  ResourceInternal findByResourceHash(Long id);
+
 }
