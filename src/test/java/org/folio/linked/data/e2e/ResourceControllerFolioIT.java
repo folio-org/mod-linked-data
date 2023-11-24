@@ -10,6 +10,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import lombok.SneakyThrows;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -23,6 +24,8 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @Autowired
   private KafkaSearchIndexTopicListener consumer;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -32,7 +35,7 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   @BeforeEach
   public void clean() {
     consumer.getMessages().clear();
-    super.clean();
+    tenantScopedExecutionService.executeTenantScoped(TENANT_ID, super::clean);
   }
 
   @SneakyThrows

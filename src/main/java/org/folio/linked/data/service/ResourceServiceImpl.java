@@ -14,7 +14,10 @@ import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
+import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,7 @@ public class ResourceServiceImpl implements ResourceService {
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
   private final ResourceRepository resourceRepo;
   private final ResourceMapper resourceMapper;
-  private final KafkaSender kafkaSender;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
   public ResourceDto createResource(ResourceDto resourceDto) {
@@ -39,7 +42,7 @@ public class ResourceServiceImpl implements ResourceService {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     var persisted = resourceRepo.save(mapped);
-    resourceMapper.mapToIndex(persisted).ifPresent(kafkaSender::sendResourceCreated);
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return resourceMapper.toDto(persisted);
   }
 
@@ -47,7 +50,7 @@ public class ResourceServiceImpl implements ResourceService {
   public Long createResource(org.folio.marc2ld.model.Resource marc2ldResource) {
     var mapped = resourceMapper.toEntity(marc2ldResource);
     var persisted = resourceRepo.save(mapped);
-    resourceMapper.mapToIndex(persisted).ifPresent(kafkaSender::sendResourceCreated);
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return persisted.getResourceHash();
   }
 
@@ -80,7 +83,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public void deleteResource(Long id) {
     resourceRepo.deleteById(id);
-    kafkaSender.sendResourceDeleted(id);
+    applicationEventPublisher.publishEvent(new ResourceDeletedEvent(id));
   }
 
   @Override
