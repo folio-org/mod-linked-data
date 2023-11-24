@@ -79,7 +79,6 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -100,7 +99,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import java.util.Optional;
+import net.minidev.json.JSONArray;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
@@ -113,7 +112,6 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
-import org.folio.linked.data.test.ResourceTypeEntityRepository;
 import org.folio.linked.data.test.TestUtil;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.jetbrains.annotations.NotNull;
@@ -137,8 +135,6 @@ public class ResourceControllerIT {
   private MockMvc mockMvc;
   @Autowired
   private ResourceRepository resourceRepo;
-  @Autowired
-  private ResourceTypeEntityRepository resourceTypeEntityRepository;
   @Autowired
   private ResourceEdgeRepository resourceEdgeRepository;
   @Autowired
@@ -172,7 +168,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = getResource(Long.parseLong(id));
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
     validateInstance(bibframe);
@@ -199,7 +195,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = getResource(Long.parseLong(id));
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var instance = persistedOptional.get();
     assertThat(instance.getResourceHash()).isNotNull();
@@ -232,7 +228,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = getResource(Long.parseLong(id));
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var instance = persistedOptional.get();
     assertThat(instance.getResourceHash()).isNotNull();
@@ -265,7 +261,7 @@ public class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = getResource(Long.parseLong(id));
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var instance = persistedOptional.get();
     assertThat(instance.getResourceHash()).isNotNull();
@@ -350,7 +346,7 @@ public class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = getResource(Long.parseLong(id));
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var updatedInstance = persistedOptional.get();
     assertThat(updatedInstance.getResourceHash()).isNotNull();
@@ -498,22 +494,6 @@ public class ResourceControllerIT {
     // nothing to check without Folio profile
   }
 
-  protected Optional<Resource> getResource(Long id) {
-    var optionalResource = resourceRepo.findById(id);
-    optionalResource.ifPresent(this::setTypes);
-    return optionalResource;
-  }
-
-  protected void setTypes(Resource resource) {
-    resource.setTypes(resourceTypeEntityRepository.findByResourceId(resource.getResourceHash()));
-    resource.getOutgoingEdges()
-      .forEach(resourceEdge -> {
-        var target = resourceEdge.getTarget();
-        target.setTypes(resourceTypeEntityRepository.findByResourceId(target.getResourceHash()));
-        setTypes(target);
-      });
-  }
-
   @NotNull
   private ResultActions validateInstanceResourceResponse(ResultActions resultActions) throws Exception {
     return resultActions
@@ -530,35 +510,35 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
       .andExpect(jsonPath(toExtent(), equalTo("extent info")))
       .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
-      .andExpect(jsonPath(toEanValue(), contains("ean value")))
-      .andExpect(jsonPath(toEanQualifier(), contains("ean qualifier")))
+      .andExpect(jsonPath(toEanValue(), equalTo(new JSONArray().appendElement("ean value"))))
+      .andExpect(jsonPath(toEanQualifier(), equalTo(new JSONArray().appendElement("ean qualifier"))))
       .andExpect(jsonPath(toEditionStatement(), equalTo("edition statement")))
-      .andExpect(jsonPath(toInstanceTitlePartName(), contains("Instance: partName")))
-      .andExpect(jsonPath(toInstanceTitlePartNumber(), contains("Instance: partNumber")))
-      .andExpect(jsonPath(toInstanceTitleMain(), contains("Instance: mainTitle")))
-      .andExpect(jsonPath(toInstanceTitleNonSortNum(), contains("Instance: nonSortNum")))
-      .andExpect(jsonPath(toInstanceTitleSubtitle(), contains("Instance: subTitle")))
-      .andExpect(jsonPath(toIsbnValue(), contains("isbn value")))
-      .andExpect(jsonPath(toIsbnQualifier(), contains("isbn qualifier")))
-      .andExpect(jsonPath(toIsbnStatusValue(), contains("isbn status value")))
-      .andExpect(jsonPath(toIsbnStatusLink(), contains("isbn status link")))
+      .andExpect(jsonPath(toInstanceTitlePartName(), equalTo(new JSONArray().appendElement("Instance: partName"))))
+      .andExpect(jsonPath(toInstanceTitlePartNumber(), equalTo(new JSONArray().appendElement("Instance: partNumber"))))
+      .andExpect(jsonPath(toInstanceTitleMain(), equalTo(new JSONArray().appendElement("Instance: mainTitle"))))
+      .andExpect(jsonPath(toInstanceTitleNonSortNum(), equalTo(new JSONArray().appendElement("Instance: nonSortNum"))))
+      .andExpect(jsonPath(toInstanceTitleSubtitle(), equalTo(new JSONArray().appendElement("Instance: subTitle"))))
+      .andExpect(jsonPath(toIsbnValue(), equalTo(new JSONArray().appendElement("isbn value"))))
+      .andExpect(jsonPath(toIsbnQualifier(), equalTo(new JSONArray().appendElement("isbn qualifier"))))
+      .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
+      .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
       .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
-      .andExpect(jsonPath(toLccnValue(), contains("lccn value")))
-      .andExpect(jsonPath(toLccnStatusValue(), contains("lccn status value")))
-      .andExpect(jsonPath(toLccnStatusLink(), contains("lccn status link")))
-      .andExpect(jsonPath(toLocalIdValue(), contains("localId value")))
-      .andExpect(jsonPath(toLocalIdAssigner(), contains("localId assigner")))
+      .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
+      .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
+      .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
+      .andExpect(jsonPath(toLocalIdValue(), equalTo(new JSONArray().appendElement("localId value"))))
+      .andExpect(jsonPath(toLocalIdAssigner(), equalTo(new JSONArray().appendElement("localId assigner"))))
       .andExpect(jsonPath(toMediaCode(), equalTo("media code")))
       .andExpect(jsonPath(toMediaLink(), equalTo("media link")))
       .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
-      .andExpect(jsonPath(toOtherIdValue(), contains("otherId value")))
-      .andExpect(jsonPath(toOtherIdQualifier(), contains("otherId qualifier")))
-      .andExpect(jsonPath(toParallelTitlePartName(), contains("Parallel: partName")))
-      .andExpect(jsonPath(toParallelTitlePartNumber(), contains("Parallel: partNumber")))
-      .andExpect(jsonPath(toParallelTitleMain(), contains("Parallel: mainTitle")))
-      .andExpect(jsonPath(toParallelTitleNote(), contains("Parallel: noteLabel")))
-      .andExpect(jsonPath(toParallelTitleDate(), contains("Parallel: date")))
-      .andExpect(jsonPath(toParallelTitleSubtitle(), contains("Parallel: subTitle")))
+      .andExpect(jsonPath(toOtherIdValue(), equalTo(new JSONArray().appendElement("otherId value"))))
+      .andExpect(jsonPath(toOtherIdQualifier(), equalTo(new JSONArray().appendElement("otherId qualifier"))))
+      .andExpect(jsonPath(toParallelTitlePartName(), equalTo(new JSONArray().appendElement("Parallel: partName"))))
+      .andExpect(jsonPath(toParallelTitlePartNumber(), equalTo(new JSONArray().appendElement("Parallel: partNumber"))))
+      .andExpect(jsonPath(toParallelTitleMain(), equalTo(new JSONArray().appendElement("Parallel: mainTitle"))))
+      .andExpect(jsonPath(toParallelTitleNote(), equalTo(new JSONArray().appendElement("Parallel: noteLabel"))))
+      .andExpect(jsonPath(toParallelTitleDate(), equalTo(new JSONArray().appendElement("Parallel: date"))))
+      .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo(new JSONArray().appendElement("Parallel: subTitle"))))
       .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
       .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
       .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("production providerPlace code")))
@@ -588,13 +568,13 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
       .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
       .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
-      .andExpect(jsonPath(toVariantTitlePartName(), contains("Variant: partName")))
-      .andExpect(jsonPath(toVariantTitlePartNumber(), contains("Variant: partNumber")))
-      .andExpect(jsonPath(toVariantTitleMain(), contains("Variant: mainTitle")))
-      .andExpect(jsonPath(toVariantTitleNote(), contains("Variant: noteLabel")))
-      .andExpect(jsonPath(toVariantTitleDate(), contains("Variant: date")))
-      .andExpect(jsonPath(toVariantTitleSubtitle(), contains("Variant: subTitle")))
-      .andExpect(jsonPath(toVariantTitleType(), contains("Variant: variantType")));
+      .andExpect(jsonPath(toVariantTitlePartName(), equalTo(new JSONArray().appendElement("Variant: partName"))))
+      .andExpect(jsonPath(toVariantTitlePartNumber(), equalTo(new JSONArray().appendElement("Variant: partNumber"))))
+      .andExpect(jsonPath(toVariantTitleMain(), equalTo(new JSONArray().appendElement("Variant: mainTitle"))))
+      .andExpect(jsonPath(toVariantTitleNote(), equalTo(new JSONArray().appendElement("Variant: noteLabel"))))
+      .andExpect(jsonPath(toVariantTitleDate(), equalTo(new JSONArray().appendElement("Variant: date"))))
+      .andExpect(jsonPath(toVariantTitleSubtitle(), equalTo(new JSONArray().appendElement("Variant: subTitle"))))
+      .andExpect(jsonPath(toVariantTitleType(), equalTo(new JSONArray().appendElement("Variant: variantType"))));
   }
 
   @NotNull
@@ -630,23 +610,23 @@ public class ResourceControllerIT {
     assertThat(instance.getOutgoingEdges()).hasSize(17);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
+    validateParallelTitle(edgeIterator.next(), instance);
     validateCategory(edgeIterator.next(), instance, CARRIER);
-    validateAccessLocation(edgeIterator.next(), instance);
-    validateCopyrightDate(edgeIterator.next(), instance);
-    validateWork(edgeIterator.next(), instance);
-    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
     validateCategory(edgeIterator.next(), instance, MEDIA);
+    validateLccn(edgeIterator.next(), instance);
+    validateWork(edgeIterator.next(), instance);
+    validateAccessLocation(edgeIterator.next(), instance);
+    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION);
     validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION);
-    validateLocalId(edgeIterator.next(), instance);
-    validateEan(edgeIterator.next(), instance);
-    validateLccn(edgeIterator.next(), instance);
-    validateOtherId(edgeIterator.next(), instance);
-    validateIsbn(edgeIterator.next(), instance);
-    validateVariantTitle(edgeIterator.next(), instance);
-    validateInstanceTitle(edgeIterator.next(), instance);
-    validateParallelTitle(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION);
+    validateOtherId(edgeIterator.next(), instance);
+    validateEan(edgeIterator.next(), instance);
+    validateInstanceTitle(edgeIterator.next(), instance);
+    validateIsbn(edgeIterator.next(), instance);
+    validateLocalId(edgeIterator.next(), instance);
+    validateVariantTitle(edgeIterator.next(), instance);
+    validateCopyrightDate(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
 
@@ -898,15 +878,15 @@ public class ResourceControllerIT {
     assertThat(instantiates.getDoc().get(TABLE_OF_CONTENTS.getValue()).get(0).asText()).isEqualTo("table of contents");
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
     validateWorkContentType(edgeIterator.next(), instantiates);
-    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
     validateWorkClassification(edgeIterator.next(), instantiates);
-    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CONTRIBUTOR.getUri());
   }
 
   private void validateWorkClassification(ResourceEdge edge, Resource source) {

@@ -50,7 +50,7 @@ public class Resource {
   private UUID srsId;
 
   @OrderBy
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
     name = "resource_type_map",
     joinColumns = @JoinColumn(name = "resource_hash"),

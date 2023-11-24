@@ -21,10 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class SendKafkaMessageListenerTest {
+class ResourceModificationEventListenerTest {
 
   @InjectMocks
-  private SendKafkaMessageListener sendKafkaMessageListener;
+  private ResourceModificationEventListener resourceModificationEventListener;
 
   @Mock
   private ResourceMapper resourceMapper;
@@ -41,7 +41,7 @@ class SendKafkaMessageListenerTest {
     when(resourceMapper.mapToIndex(resource)).thenReturn(Optional.of(bibframeIndex));
 
     //when
-    sendKafkaMessageListener.afterCreate(new ResourceCreatedEvent(resource));
+    resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
 
     //then
     verify(kafkaSender).sendResourceCreated(bibframeIndex);
@@ -55,7 +55,7 @@ class SendKafkaMessageListenerTest {
     when(resourceMapper.mapToIndex(resource)).thenReturn(Optional.empty());
 
     //when
-    sendKafkaMessageListener.afterCreate(new ResourceCreatedEvent(resource));
+    resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
 
     //then
     verify(kafkaSender, never()).sendResourceCreated(any());
@@ -67,7 +67,7 @@ class SendKafkaMessageListenerTest {
     var resourceDeletedEvent = new ResourceDeletedEvent(1L);
 
     //when
-    sendKafkaMessageListener.afterDelete(resourceDeletedEvent);
+    resourceModificationEventListener.afterDelete(resourceDeletedEvent);
 
     //then
     verify(kafkaSender).sendResourceDeleted(resourceDeletedEvent.id());

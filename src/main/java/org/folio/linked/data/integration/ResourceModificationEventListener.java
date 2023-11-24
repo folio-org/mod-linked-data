@@ -10,7 +10,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @RequiredArgsConstructor
 @Component
-public class SendKafkaMessageListener {
+public class ResourceModificationEventListener {
 
   private final ResourceMapper resourceMapper;
   private final KafkaSender kafkaSender;

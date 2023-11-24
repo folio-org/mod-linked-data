@@ -8,7 +8,6 @@ import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
-import java.util.Optional;
 import lombok.SneakyThrows;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
@@ -56,15 +55,5 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
         assertTrue(message.contains(ResourceEventType.DELETE.getValue()));
       });
     }
-  }
-
-  @Override
-  protected Optional<Resource> getResource(Long id) {
-    return tenantScopedExecutionService.executeTenantScoped(TENANT_ID, () -> super.getResource(id));
-  }
-
-  @Override
-  protected void setTypes(Resource resource) {
-    tenantScopedExecutionService.executeTenantScoped(TENANT_ID, () -> super.setTypes(resource));
   }
 }
