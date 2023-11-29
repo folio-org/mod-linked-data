@@ -19,8 +19,8 @@ import org.folio.ld.dictionary.PropertyDictionary;
 @UtilityClass
 public class BibframeUtils {
 
-  private final String DATE_CLEAN_PATTERN = "[^0-9T:\\-+.]";
-  private final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+  private static final String DATE_CLEAN_PATTERN = "[^0-9T:\\-+.]";
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
     .appendOptional(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)

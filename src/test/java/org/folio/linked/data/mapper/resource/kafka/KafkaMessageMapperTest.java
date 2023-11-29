@@ -145,7 +145,7 @@ class KafkaMessageMapperTest {
     assertId(result.getIdentifiers().get(4), "otherId value", UNKNOWN);
     assertId(result.getIdentifiers().get(5), wrongId.getDoc().get(NAME.getValue()).get(0).asText(), null);
     assertThat(result.getPublications()).hasSize(1);
-    assertThat(result.getPublications().get(0).getDateOfPublication()).isEqualTo("publication date");
+    assertThat(result.getPublications().get(0).getDateOfPublication()).isNull();
     assertThat(result.getPublications().get(0).getPublisher()).isEqualTo("publication name");
     assertThat(result.getContributors()).hasSize(3);
     assertContributor(result.getContributors().get(0), "Person: name", PERSON, true);
