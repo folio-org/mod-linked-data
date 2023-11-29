@@ -12,4 +12,5 @@
   <include file="scripts/v-1.0.0/modify-mod-liked-data-multiple-type-resource-model.xml" relativeToChangelogFile="true"/>
   <include file="scripts/v-1.0.0/update-mod-linked-data-types-and-predicate-hashes.xml" relativeToChangelogFile="true"/>
   <include file="scripts/v-1.0.0/create-mod-linked-data-profiles-table.xml" relativeToChangelogFile="true"/>
+  <include file="scripts/v-1.0.0/update-mod-linked-data-profiles.xml" relativeToChangelogFile="true"/>
  </databaseChangeLog>
