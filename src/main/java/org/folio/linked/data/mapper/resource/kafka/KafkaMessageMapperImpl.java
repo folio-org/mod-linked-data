@@ -20,6 +20,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.util.BibframeUtils.cleanDate;
 import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -186,7 +187,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframePublicationsInner()
         .publisher(getValue(ir.getDoc(), NAME.getValue()))
-        .dateOfPublication(getValue(ir.getDoc(), DATE.getValue(), PROVIDER_DATE.getValue())))
+        .dateOfPublication(cleanDate(getValue(ir.getDoc(), DATE.getValue(), PROVIDER_DATE.getValue()))))
       .filter(ip -> nonNull(ip.getPublisher()) || nonNull(ip.getDateOfPublication()))
       .distinct()
       .toList();
