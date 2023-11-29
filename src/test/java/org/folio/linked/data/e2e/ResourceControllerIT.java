@@ -72,7 +72,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getSampleBibframeDtoMap;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceString;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -99,6 +101,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import java.util.LinkedHashMap;
+import java.util.List;
 import net.minidev.json.JSONArray;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -329,14 +333,16 @@ public class ResourceControllerIT {
   void update_shouldReturnCorrectlyUpdatedEntity() throws Exception {
     // given
     var originalInstance = resourceRepo.save(getSampleInstanceResource().setLabel("Instance: mainTitle"));
-    var updatedInstanceDto = getSampleInstanceString()
-      .replace("20 cm", "200 m")
-      .replace(",\n      \"inventoryId\": \"2165ef4b-001f-46b3-a60e-52bcdeb3d5a1\",\n"
-        + "      \"srsId\": \"43d58061-decf-4d74-9747-0e1c368e861b\"", "");
+    var updateDto = getSampleBibframeDtoMap();
+    var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
+    instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
+    instanceMap.remove("inventoryId");
+    instanceMap.remove("srsId");
+
     var updateRequest = put(BIBFRAME_URL + "/" + originalInstance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(updatedInstanceDto);
+      .content(OBJECT_MAPPER.writeValueAsString(updateDto));
 
     // when
     var resultActions = mockMvc.perform(updateRequest);
@@ -357,8 +363,7 @@ public class ResourceControllerIT {
     assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(updatedInstance.getInventoryId()).isEqualTo(originalInstance.getInventoryId());
     assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
-    assertThat(updatedInstance.getDoc().asText()).isEqualTo(
-      originalInstance.getDoc().asText().replace("20 cm", "200 m"));
+    assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
   }
 
