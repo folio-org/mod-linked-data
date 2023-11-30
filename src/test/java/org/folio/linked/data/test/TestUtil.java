@@ -85,8 +85,8 @@ public class TestUtil {
   }
 
   @SneakyThrows
-  public static JsonNode getBibframeJsonNodeSample() {
-    return OBJECT_MAPPER.readTree(BIBFRAME_SAMPLE);
+  public static Map<String, Object> getSampleBibframeDtoMap() {
+    return OBJECT_MAPPER.readValue(BIBFRAME_SAMPLE, Map.class);
   }
 
   public static <T> T random(Class<T> clazz) {
