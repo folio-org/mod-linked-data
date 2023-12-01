@@ -144,6 +144,14 @@
           },
           "x-json-property": "http://library.link/vocab/map"
         },
+        "supplementaryContent": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "SupplementaryContent.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/supplementaryContent"
+        },
         "accessLocation": {
           "type": "array",
           "items": {

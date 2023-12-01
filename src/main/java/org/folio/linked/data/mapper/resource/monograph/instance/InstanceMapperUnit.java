@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
@@ -72,6 +73,8 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     coreMapper.mapTopEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);
     coreMapper.mapTopEdges(dto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class, mapper::toEntity);
     coreMapper.mapTopEdges(dto.getManufacture(), instance, PE_MANUFACTURE, Instance.class, mapper::toEntity);
+    coreMapper.mapTopEdges(dto.getSupplementaryContent(), instance, SUPPLEMENTARY_CONTENT, Instance.class,
+      mapper::toEntity);
     coreMapper.mapTopEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class, mapper::toEntity);
     coreMapper.mapTopEdges(dto.getMap(), instance, MAP, Instance.class, mapper::toEntity);
     coreMapper.mapTopEdges(dto.getMedia(), instance, MEDIA, Instance.class, mapper::toEntity);

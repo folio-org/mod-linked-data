@@ -20,6 +20,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
@@ -439,8 +440,8 @@ public class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleInstanceResource());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(28);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(27);
+    assertThat(resourceRepo.count()).isEqualTo(29);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(28);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -450,7 +451,7 @@ public class ResourceControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(27);
+    assertThat(resourceRepo.count()).isEqualTo(28);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(10);
     checkKafkaMessageSent(null, existed.getResourceHash());
@@ -510,6 +511,8 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toInstance(), notNullValue()))
       .andExpect(jsonPath(toInventoryId(), equalTo("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")))
       .andExpect(jsonPath(toSrsId(), equalTo("43d58061-decf-4d74-9747-0e1c368e861b")))
+      .andExpect(jsonPath(toSupplementaryContentLink(), equalTo("supplementaryContent link")))
+      .andExpect(jsonPath(toSupplementaryContentName(), equalTo("supplementaryContent name")))
       .andExpect(jsonPath(toAccessLocationLink(), equalTo("accessLocation value")))
       .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
       .andExpect(jsonPath(toCarrierCode(), equalTo("carrier code")))
@@ -615,7 +618,7 @@ public class ResourceControllerIT {
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
-    assertThat(instance.getOutgoingEdges()).hasSize(17);
+    assertThat(instance.getOutgoingEdges()).hasSize(18);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateParallelTitle(edgeIterator.next(), instance);
@@ -631,6 +634,7 @@ public class ResourceControllerIT {
     validateOtherId(edgeIterator.next(), instance);
     validateEan(edgeIterator.next(), instance);
     validateInstanceTitle(edgeIterator.next(), instance);
+    validateSupplementaryContent(edgeIterator.next(), instance);
     validateIsbn(edgeIterator.next(), instance);
     validateLocalId(edgeIterator.next(), instance);
     validateVariantTitle(edgeIterator.next(), instance);
@@ -830,6 +834,28 @@ public class ResourceControllerIT {
     assertThat(status.getOutgoingEdges()).isEmpty();
   }
 
+  private void validateSupplementaryContent(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(SUPPLEMENTARY_CONTENT.getUri());
+
+    var supplementaryContent = edge.getTarget();
+
+    assertThat(supplementaryContent.getLabel()).isEqualTo("supplementaryContent link");
+    assertThat(supplementaryContent.getTypes().iterator().next().getUri())
+      .isEqualTo(ResourceTypeDictionary.SUPPLEMENTARY_CONTENT.getUri());
+    assertThat(supplementaryContent.getResourceHash()).isNotNull();
+
+    var doc = supplementaryContent.getDoc();
+
+    assertThat(doc.size()).isEqualTo(2);
+    assertThat(doc.get(LINK.getValue()).size()).isEqualTo(1);
+    assertThat(doc.get(LINK.getValue()).get(0).asText()).isEqualTo("supplementaryContent link");
+    assertThat(doc.get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(doc.get(NAME.getValue()).get(0).asText()).isEqualTo("supplementaryContent name");
+    assertThat(supplementaryContent.getOutgoingEdges()).isEmpty();
+  }
+
   private void validateAccessLocation(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -979,6 +1005,14 @@ public class ResourceControllerIT {
 
   private String toEditionStatement() {
     return join(".", toInstance(), arrayPath(EDITION_STATEMENT.getValue()));
+  }
+
+  private String toSupplementaryContentLink() {
+    return join(".", toInstance(), arrayPath(SUPPLEMENTARY_CONTENT.getUri()), arrayPath(LINK.getValue()));
+  }
+
+  private String toSupplementaryContentName() {
+    return join(".", toInstance(), arrayPath(SUPPLEMENTARY_CONTENT.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toAccessLocationLink() {
