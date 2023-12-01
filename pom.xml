@@ -43,7 +43,7 @@
     <lombok.mapstruct-binding.version>0.2.0</lombok.mapstruct-binding.version>
     <hibernate-types.version>2.21.1</hibernate-types.version>
     <lib-linked-data-dictionary.version>1.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
-    <lib-linked-data-marc2ld.version>1.0.0-SNAPSHOT</lib-linked-data-marc2ld.version>
+    <lib-linked-data-marc2ld.version>1.0.1-SNAPSHOT</lib-linked-data-marc2ld.version>
 
     <!-- Test dependencies versions -->
     <testcontainers.version>1.19.3</testcontainers.version>

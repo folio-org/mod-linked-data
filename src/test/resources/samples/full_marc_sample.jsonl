@@ -2,14 +2,32 @@
   "leader": "01767cam a22003977i 4500",
   "fields": [
     {
+      "008": "  190607t19992019ilua   b      000 1 eng"
+    },
+    {
       "010": {
         "subfields": [
           {
             "a": "  2019493854"
+          },
+          {
+            "z": "88888888"
           }
         ],
         "ind1": " ",
         "ind2": " "
+      }
+    },
+    {
+      "019": {
+        "subfields": [
+          {
+            "a": "19861509"
+          },
+          {
+            "z": "09151986"
+          }
+        ],
       }
     },
     {
@@ -20,6 +38,9 @@
           },
           {
             "q": "(paperback)"
+          },
+          {
+            "z": "9999999"
           }
         ],
         "ind1": " ",
@@ -27,15 +48,70 @@
       }
     },
     {
+      "024": {
+        "subfields": [
+          {
+            "a": "111"
+          },
+          {
+            "d": "222"
+          },
+          {
+            "q": "eanIdQal"
+          },
+          {
+            "z": "333"
+          }
+        ],
+        "ind1": "3"
+      }
+    },
+    {
+      "024": {
+        "subfields": [
+          {
+            "a": "20232023"
+          },
+          {
+            "d": "9999"
+          },
+          {
+            "q": "otherIdQal"
+          },
+          {
+            "z": "231123"
+          }
+        ]
+      }
+    },
+    {
       "100": {
         "subfields": [
           {
-            "a": "Author name",
-            "0": "LCNAF id"
+            "a": "Creator PERSON name",
+            "0": "Creator PERSON LCNAF id"
           }
-        ],
-        "ind1": " ",
-        "ind2": " "
+        ]
+      }
+    },
+    {
+      "110": {
+        "subfields": [
+          {
+            "a": "Creator ORGANIZATION name",
+            "0": "Creator ORGANIZATION LCNAF id"
+          }
+        ]
+      }
+    },
+    {
+      "111": {
+        "subfields": [
+          {
+            "a": "Creator MEETING name",
+            "0": "Creator MEETING LCNAF id"
+          }
+        ]
       }
     },
     {
@@ -59,6 +135,32 @@
         ],
         "ind1": "1",
         "ind2": "7"
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "Instance Title empty"
+          }
+        ]
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+            "b": "Instance Title empty label"
+          }
+        ]
+      }
+    },
+    {
+      "245": {
+        "subfields": [
+          {
+          }
+        ]
       }
     },
     {
@@ -128,6 +230,21 @@
       }
     },
     {
+      "261": {
+        "subfields": [
+          {
+            "b": "Manufacture261 Name"
+          },
+          {
+            "d": "Manufacture261 Date"
+          },
+          {
+            "f": "Manufacture261 Place"
+          }
+        ]
+      }
+    },
+    {
       "262": {
         "subfields": [
           {
@@ -142,6 +259,15 @@
         ],
         "ind1": " ",
         "ind2": " "
+      }
+    },
+    {
+      "263": {
+        "subfields": [
+          {
+            "a": "projectedProvisionDate"
+          }
+        ]
       }
     },
     {
@@ -221,6 +347,73 @@
         ],
         "ind1": " ",
         "ind2": "4"
+      }
+    },
+    {
+      "300": {
+        "subfields": [
+          {
+            "a": "extent"
+          },
+          {
+            "c": "dimensions"
+          }
+        ]
+      }
+    },
+    {
+      "334": {
+        "subfields": [
+          {
+            "a": "issuance"
+          }
+        ]
+      }
+    },
+    {
+      "337": {
+        "subfields": [
+          {
+            "a": "MEDIA term"
+          },
+          {
+            "b": "MEDIA code"
+          }
+        ]
+      }
+    },
+    {
+      "338": {
+        "subfields": [
+          {
+            "a": "CARRIER term"
+          },
+          {
+            "b": "CARRIER code"
+          }
+        ]
+      }
+    },
+    {
+      "520": {
+        "subfields": [
+          {
+            "a": "work summary"
+          }
+        ],
+        "ind1": "#"
+      }
+    },
+    {
+      "865": {
+        "subfields": [
+          {
+            "u": "access location URI"
+          },
+          {
+            "z": "access location note"
+          }
+        ]
       }
     },
     {
