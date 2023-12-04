@@ -841,7 +841,7 @@ public class ResourceControllerIT {
 
     var supplementaryContent = edge.getTarget();
 
-    assertThat(supplementaryContent.getLabel()).isEqualTo("supplementaryContent link");
+    assertThat(supplementaryContent.getLabel()).isEqualTo("supplementaryContent name");
     assertThat(supplementaryContent.getTypes().iterator().next().getUri())
       .isEqualTo(ResourceTypeDictionary.SUPPLEMENTARY_CONTENT.getUri());
     assertThat(supplementaryContent.getResourceHash()).isNotNull();

@@ -39,7 +39,7 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
   public Resource toEntity(Object dto) {
     var supplementaryContent = (SupplementaryContent) dto;
     var resource = new Resource()
-      .setLabel(getFirstValue(supplementaryContent::getLink))
+      .setLabel(getFirstValue(supplementaryContent::getName))
       .addType(SUPPLEMENTARY_CONTENT)
       .setDoc(getDoc(supplementaryContent));
 
