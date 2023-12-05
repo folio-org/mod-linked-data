@@ -1,6 +1,7 @@
 package org.folio.linked.data.test;
 
 import static java.util.Collections.emptyMap;
+import static java.util.Map.entry;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
@@ -18,36 +19,64 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.ENTITY_AND_ATTRIBUTE_INFORMATION;
+import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
+import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
+import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
+import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
+import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
+import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
+import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
+import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
+import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
+import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
@@ -237,12 +266,41 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(INSTANTIATES, List.of(createSampleWork()));
 
     var instance = createResource(
-      Map.of(
-        EXTENT, List.of("extent info"),
-        DIMENSIONS, List.of("20 cm"),
-        EDITION_STATEMENT, List.of("edition statement"),
-        PROJECTED_PROVISION_DATE, List.of("projected provision date"),
-        ISSUANCE, List.of("single unit")
+      Map.ofEntries(
+        entry(EXTENT, List.of("extent info")),
+        entry(DIMENSIONS, List.of("20 cm")),
+        entry(EDITION_STATEMENT, List.of("edition statement")),
+        entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),
+        entry(ISSUANCE, List.of("single unit")),
+        entry(ACCESSIBILITY_NOTE, List.of("accessibility note")),
+        entry(ADDITIONAL_PHYSICAL_FORM, List.of("additional physical form")),
+        entry(CITATION_COVERAGE, List.of("citation coverage")),
+        entry(COMPUTER_DATA_NOTE, List.of("computer data note")),
+        entry(CREDITS_NOTE, List.of("credits note")),
+        entry(DATES_OF_PUBLICATION_NOTE, List.of("dates of publication note")),
+        entry(DESCRIPTION_SOURCE_NOTE, List.of("description source note")),
+        entry(ENTITY_AND_ATTRIBUTE_INFORMATION, List.of("entity and attribute information")),
+        entry(EXHIBITIONS_NOTE, List.of("exhibitions note")),
+        entry(FORMER_TITLE_NOTE, List.of("former title note")),
+        entry(FUNDING_INFORMATION, List.of("funding information")),
+        entry(GOVERNING_ACCESS_NOTE, List.of("governing access note")),
+        entry(INFORMATION_ABOUT_DOCUMENTATION, List.of("information about documentation")),
+        entry(INFORMATION_RELATING_TO_COPYRIGHT_STATUS, List.of("information relating to copyright status")),
+        entry(ISSUANCE_NOTE, List.of("issuance note")),
+        entry(ISSUING_BODY, List.of("issuing body")),
+        entry(LOCATION_OF_ORIGINALS_DUPLICATES, List.of("location of originals duplicates")),
+        entry(LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, List.of("location of other archival material")),
+        entry(NOTE, List.of("note")),
+        entry(ORIGINAL_VERSION_NOTE, List.of("original version note")),
+        entry(PARTICIPANT_NOTE, List.of("participant note")),
+        entry(PHYSICAL_DESCRIPTION, List.of("physical description")),
+        entry(PUBLICATION_FREQUENCY, List.of("publication frequency")),
+        entry(RELATED_PARTS, List.of("related parts")),
+        entry(REPRODUCTION_NOTE, List.of("reproduction note")),
+        entry(SYSTEM_DETAILS, List.of("system details")),
+        entry(SYSTEM_DETAILS_ACCESS_NOTE, List.of("system details access note")),
+        entry(TYPE_OF_REPORT, List.of("type of report")),
+        entry(WITH_NOTE, List.of("with note"))
       ),
       Set.of(INSTANCE),
       pred2OutgoingResources)

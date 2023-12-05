@@ -22,37 +22,65 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.ENTITY_AND_ATTRIBUTE_INFORMATION;
+import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
+import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
+import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
+import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
+import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
+import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
+import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
+import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
+import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
+import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
+import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
@@ -534,6 +562,36 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
       .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
       .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
+      .andExpect(jsonPath(toAccessibilityNote(), equalTo("accessibility note")))
+      .andExpect(jsonPath(toAdditionalPhysicalForm(), equalTo("additional physical form")))
+      .andExpect(jsonPath(toCitationCoverage(), equalTo("citation coverage")))
+      .andExpect(jsonPath(toComputerDataNote(), equalTo("computer data note")))
+      .andExpect(jsonPath(toCreditsNote(), equalTo("credits note")))
+      .andExpect(jsonPath(toDatesOfPublicationNote(), equalTo("dates of publication note")))
+      .andExpect(jsonPath(toDescriptionSourceNote(), equalTo("description source note")))
+      .andExpect(jsonPath(toEntityAndAttributeInformation(), equalTo("entity and attribute information")))
+      .andExpect(jsonPath(toExhibitionsNote(), equalTo("exhibitions note")))
+      .andExpect(jsonPath(toFormerTitleNote(), equalTo("former title note")))
+      .andExpect(jsonPath(toFundingInformation(), equalTo("funding information")))
+      .andExpect(jsonPath(toGoverningAccessNote(), equalTo("governing access note")))
+      .andExpect(jsonPath(toInformationAboutDocumentation(), equalTo("information about documentation")))
+      .andExpect(jsonPath(toInformationRelatingToCopyrightStatus(), equalTo(
+        "information relating to copyright status")))
+      .andExpect(jsonPath(toIssuanceNote(), equalTo("issuance note")))
+      .andExpect(jsonPath(toIssuingBody(), equalTo("issuing body")))
+      .andExpect(jsonPath(toLocationOfOriginalsDuplicates(), equalTo("location of originals duplicates")))
+      .andExpect(jsonPath(toLocationOfOtherArchivalMaterial(), equalTo("location of other archival material")))
+      .andExpect(jsonPath(toNote(), equalTo("note")))
+      .andExpect(jsonPath(toOriginalVersionNote(), equalTo("original version note")))
+      .andExpect(jsonPath(toParticipantNote(), equalTo("participant note")))
+      .andExpect(jsonPath(toPhysicalDescription(), equalTo("physical description")))
+      .andExpect(jsonPath(toPublicationFrequency(), equalTo("publication frequency")))
+      .andExpect(jsonPath(toRelatedParts(), equalTo("related parts")))
+      .andExpect(jsonPath(toReproductionNote(), equalTo("reproduction note")))
+      .andExpect(jsonPath(toSystemDetails(), equalTo("system details")))
+      .andExpect(jsonPath(toSystemDetailsAccessNote(), equalTo("system details access note")))
+      .andExpect(jsonPath(toTypeOfReport(), equalTo("type of report")))
+      .andExpect(jsonPath(toWithNote(), equalTo("with note")))
       .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
       .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
       .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
@@ -613,11 +671,41 @@ public class ResourceControllerIT {
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
-    assertThat(instance.getDoc().size()).isEqualTo(5);
+    assertThat(instance.getDoc().size()).isEqualTo(34);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
+    validateLiteral(instance, ACCESSIBILITY_NOTE.getValue(), "accessibility note");
+    validateLiteral(instance, ADDITIONAL_PHYSICAL_FORM.getValue(), "additional physical form");
+    validateLiteral(instance, CITATION_COVERAGE.getValue(), "citation coverage");
+    validateLiteral(instance, COMPUTER_DATA_NOTE.getValue(), "computer data note");
+    validateLiteral(instance, CREDITS_NOTE.getValue(), "credits note");
+    validateLiteral(instance, DATES_OF_PUBLICATION_NOTE.getValue(), "dates of publication note");
+    validateLiteral(instance, DESCRIPTION_SOURCE_NOTE.getValue(), "description source note");
+    validateLiteral(instance, ENTITY_AND_ATTRIBUTE_INFORMATION.getValue(), "entity and attribute information");
+    validateLiteral(instance, EXHIBITIONS_NOTE.getValue(), "exhibitions note");
+    validateLiteral(instance, FORMER_TITLE_NOTE.getValue(), "former title note");
+    validateLiteral(instance, FUNDING_INFORMATION.getValue(), "funding information");
+    validateLiteral(instance, GOVERNING_ACCESS_NOTE.getValue(), "governing access note");
+    validateLiteral(instance, INFORMATION_ABOUT_DOCUMENTATION.getValue(), "information about documentation");
+    validateLiteral(instance, INFORMATION_RELATING_TO_COPYRIGHT_STATUS.getValue(),
+      "information relating to copyright status");
+    validateLiteral(instance, ISSUANCE_NOTE.getValue(), "issuance note");
+    validateLiteral(instance, ISSUING_BODY.getValue(), "issuing body");
+    validateLiteral(instance, LOCATION_OF_ORIGINALS_DUPLICATES.getValue(), "location of originals duplicates");
+    validateLiteral(instance, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL.getValue(), "location of other archival material");
+    validateLiteral(instance, NOTE.getValue(), "note");
+    validateLiteral(instance, ORIGINAL_VERSION_NOTE.getValue(), "original version note");
+    validateLiteral(instance, PARTICIPANT_NOTE.getValue(), "participant note");
+    validateLiteral(instance, PHYSICAL_DESCRIPTION.getValue(), "physical description");
+    validateLiteral(instance, PUBLICATION_FREQUENCY.getValue(), "publication frequency");
+    validateLiteral(instance, RELATED_PARTS.getValue(), "related parts");
+    validateLiteral(instance, REPRODUCTION_NOTE.getValue(), "reproduction note");
+    validateLiteral(instance, SYSTEM_DETAILS.getValue(), "system details");
+    validateLiteral(instance, SYSTEM_DETAILS_ACCESS_NOTE.getValue(), "system details access note");
+    validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
+    validateLiteral(instance, WITH_NOTE.getValue(), "with note");
     assertThat(instance.getOutgoingEdges()).hasSize(18);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
@@ -1054,6 +1142,122 @@ public class ResourceControllerIT {
 
   private String toIssuance() {
     return join(".", toInstance(), arrayPath(ISSUANCE.getValue()));
+  }
+
+  private String toNote() {
+    return join(".", toInstance(), arrayPath(NOTE.getValue()));
+  }
+
+  private String toWithNote() {
+    return join(".", toInstance(), arrayPath(WITH_NOTE.getValue()));
+  }
+
+  private String toGoverningAccessNote() {
+    return join(".", toInstance(), arrayPath(GOVERNING_ACCESS_NOTE.getValue()));
+  }
+
+  private String toCreditsNote() {
+    return join(".", toInstance(), arrayPath(CREDITS_NOTE.getValue()));
+  }
+
+  private String toParticipantNote() {
+    return join(".", toInstance(), arrayPath(PARTICIPANT_NOTE.getValue()));
+  }
+
+  private String toTypeOfReport() {
+    return join(".", toInstance(), arrayPath(TYPE_OF_REPORT.getValue()));
+  }
+
+  private String toIssuanceNote() {
+    return join(".", toInstance(), arrayPath(ISSUANCE_NOTE.getValue()));
+  }
+
+  private String toComputerDataNote() {
+    return join(".", toInstance(), arrayPath(COMPUTER_DATA_NOTE.getValue()));
+  }
+
+  private String toCitationCoverage() {
+    return join(".", toInstance(), arrayPath(CITATION_COVERAGE.getValue()));
+  }
+
+  private String toAdditionalPhysicalForm() {
+    return join(".", toInstance(), arrayPath(ADDITIONAL_PHYSICAL_FORM.getValue()));
+  }
+
+  private String toAccessibilityNote() {
+    return join(".", toInstance(), arrayPath(ACCESSIBILITY_NOTE.getValue()));
+  }
+
+  private String toReproductionNote() {
+    return join(".", toInstance(), arrayPath(REPRODUCTION_NOTE.getValue()));
+  }
+
+  private String toOriginalVersionNote() {
+    return join(".", toInstance(), arrayPath(ORIGINAL_VERSION_NOTE.getValue()));
+  }
+
+  private String toLocationOfOriginalsDuplicates() {
+    return join(".", toInstance(), arrayPath(LOCATION_OF_ORIGINALS_DUPLICATES.getValue()));
+  }
+
+  private String toFundingInformation() {
+    return join(".", toInstance(), arrayPath(FUNDING_INFORMATION.getValue()));
+  }
+
+  private String toInformationRelatingToCopyrightStatus() {
+    return join(".", toInstance(), arrayPath(INFORMATION_RELATING_TO_COPYRIGHT_STATUS.getValue()));
+  }
+
+  private String toRelatedParts() {
+    return join(".", toInstance(), arrayPath(RELATED_PARTS.getValue()));
+  }
+
+  private String toFormerTitleNote() {
+    return join(".", toInstance(), arrayPath(FORMER_TITLE_NOTE.getValue()));
+  }
+
+  private String toIssuingBody() {
+    return join(".", toInstance(), arrayPath(ISSUING_BODY.getValue()));
+  }
+
+  private String toEntityAndAttributeInformation() {
+    return join(".", toInstance(), arrayPath(ENTITY_AND_ATTRIBUTE_INFORMATION.getValue()));
+  }
+
+  private String toLocationOfOtherArchivalMaterial() {
+    return join(".", toInstance(), arrayPath(LOCATION_OF_OTHER_ARCHIVAL_MATERIAL.getValue()));
+  }
+
+  private String toInformationAboutDocumentation() {
+    return join(".", toInstance(), arrayPath(INFORMATION_ABOUT_DOCUMENTATION.getValue()));
+  }
+
+  private String toExhibitionsNote() {
+    return join(".", toInstance(), arrayPath(EXHIBITIONS_NOTE.getValue()));
+  }
+
+  private String toDescriptionSourceNote() {
+    return join(".", toInstance(), arrayPath(DESCRIPTION_SOURCE_NOTE.getValue()));
+  }
+
+  private String toSystemDetails() {
+    return join(".", toInstance(), arrayPath(SYSTEM_DETAILS.getValue()));
+  }
+
+  private String toSystemDetailsAccessNote() {
+    return join(".", toInstance(), arrayPath(SYSTEM_DETAILS_ACCESS_NOTE.getValue()));
+  }
+
+  private String toPhysicalDescription() {
+    return join(".", toInstance(), arrayPath(PHYSICAL_DESCRIPTION.getValue()));
+  }
+
+  private String toPublicationFrequency() {
+    return join(".", toInstance(), arrayPath(PUBLICATION_FREQUENCY.getValue()));
+  }
+
+  private String toDatesOfPublicationNote() {
+    return join(".", toInstance(), arrayPath(DATES_OF_PUBLICATION_NOTE.getValue()));
   }
 
   private String toParallelTitlePartName() {

@@ -322,6 +322,93 @@
       "http://bibfra.me/vocab/marc/issuance": [
         "single unit"
       ],
+      "http://bibfra.me/vocab/lite/note": [
+        "note"
+      ],
+      "http://bibfra.me/vocab/marc/withNote": [
+        "with note"
+      ],
+      "http://bibfra.me/vocab/marc/governingAccessNote": [
+        "governing access note"
+      ],
+      "http://bibfra.me/vocab/marc/creditsNote": [
+        "credits note"
+      ],
+      "http://bibfra.me/vocab/marc/participantNote": [
+        "participant note"
+      ],
+      "http://bibfra.me/vocab/marc/typeOfReport": [
+        "type of report"
+      ],
+      "http://bibfra.me/vocab/marc/issuanceNote": [
+        "issuance note"
+      ],
+      "http://bibfra.me/vocab/marc/computerDataNote": [
+        "computer data note"
+      ],
+      "http://bibfra.me/vocab/marc/citationCoverage": [
+        "citation coverage"
+      ],
+      "http://bibfra.me/vocab/marc/additionalPhysicalForm": [
+        "additional physical form"
+      ],
+      "http://bibfra.me/vocab/marc/accessibilityNote": [
+        "accessibility note"
+      ],
+      "http://bibfra.me/vocab/marc/reproductionNote": [
+        "reproduction note"
+      ],
+      "http://bibfra.me/vocab/marc/originalVersionNote": [
+        "original version note"
+      ],
+      "http://bibfra.me/vocab/marc/locationOfOriginalsDuplicates": [
+        "location of originals duplicates"
+      ],
+      "http://bibfra.me/vocab/marc/fundingInformation": [
+        "funding information"
+      ],
+      "http://bibfra.me/vocab/marc/informationRelatingToCopyrightStatus": [
+        "information relating to copyright status"
+      ],
+      "http://bibfra.me/vocab/marc/relatedParts": [
+        "related parts"
+      ],
+      "http://bibfra.me/vocab/marc/formerTitleNote": [
+        "former title note"
+      ],
+      "http://bibfra.me/vocab/marc/issuingBody": [
+        "issuing body"
+      ],
+      "http://bibfra.me/vocab/marc/entityAndAttributeInformation": [
+        "entity and attribute information"
+      ],
+      "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial": [
+        "location of other archival material"
+      ],
+      "http://bibfra.me/vocab/marc/informationAboutDocumentation": [
+        "information about documentation"
+      ],
+      "http://bibfra.me/vocab/marc/exhibitionsNote": [
+        "exhibitions note"
+      ],
+      "http://bibfra.me/vocab/marc/descriptionSourceNote": [
+        "description source note"
+      ],
+      "http://bibfra.me/vocab/marc/systemDetails": [
+        "system details"
+      ],
+      "http://bibfra.me/vocab/marc/systemDetailsAccessNote": [
+        "system details access note"
+      ],
+      "http://bibfra.me/vocab/marc/physicalDescription": [
+        "physical description"
+      ],
+      "http://bibfra.me/vocab/marc/publicationFrequency": [
+        "publication frequency"
+      ],
+      "http://bibfra.me/vocab/marc/datesOfPublicationNote": [
+        "dates of publication note"
+      ],
       "http://bibfra.me/vocab/lite/instantiates": [
         {
           "http://bibfra.me/vocab/marc/responsibilityStatement": [
