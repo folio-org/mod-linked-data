@@ -63,6 +63,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
@@ -132,6 +133,15 @@ public class MonographTestUtil {
     var publication = providerEvent("publication");
     var distribution = providerEvent("distribution");
     var manufacture = providerEvent("manufacture");
+
+    var supplementaryContent = createResource(
+      Map.of(
+        LINK, List.of("supplementaryContent link"),
+        NAME, List.of("supplementaryContent name")
+      ),
+      Set.of(SUPPLEMENTARY_CONTENT),
+      emptyMap()
+    ).setLabel("supplementaryContent label");
 
     var accessLocation = createResource(
       Map.of(
@@ -218,6 +228,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(PE_PUBLICATION, List.of(publication));
     pred2OutgoingResources.put(PE_DISTRIBUTION, List.of(distribution));
     pred2OutgoingResources.put(PE_MANUFACTURE, List.of(manufacture));
+    pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(supplementaryContent));
     pred2OutgoingResources.put(ACCESS_LOCATION, List.of(accessLocation));
     pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ean, localId, otherId));
     pred2OutgoingResources.put(MEDIA, List.of(media));

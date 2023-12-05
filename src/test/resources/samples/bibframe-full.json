@@ -254,6 +254,16 @@
           }
         }
       ],
+      "http://bibfra.me/vocab/marc/supplementaryContent": [
+        {
+          "http://bibfra.me/vocab/lite/link": [
+            "supplementaryContent link"
+          ],
+          "http://bibfra.me/vocab/lite/name": [
+            "supplementaryContent name"
+          ]
+        }
+      ],
       "http://bibfra.me/vocab/marc/accessLocation": [
         {
           "http://bibfra.me/vocab/lite/link": [
