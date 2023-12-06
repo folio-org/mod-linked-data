@@ -1,5 +1,7 @@
 package org.folio.linked.data.service;
 
+import static java.lang.Boolean.TRUE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import jakarta.persistence.EntityManager;
@@ -7,7 +9,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +38,13 @@ public class ReindexServiceIml implements ReindexService {
   @Async
   @Override
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
-  public void reindex() {
+  public void reindex(Boolean full) {
     Pageable pageable = PageRequest.of(0, Integer.parseInt(reindexPageSize), Sort.by("resourceHash"));
     var recordsIndexed = new AtomicLong(0);
     while (pageable.isPaged()) {
-      var page = resourceRepository.findResourcesByTypeFull(Set.of(ResourceTypeDictionary.INSTANCE.getUri()), pageable);
+      var page = TRUE.equals(full)
+        ? resourceRepository.findAllByType(Set.of(INSTANCE.getUri()), pageable)
+        : resourceRepository.findNotIndexedByType(Set.of(INSTANCE.getUri()), pageable);
       page.get()
         .forEach(resource -> {
             try {

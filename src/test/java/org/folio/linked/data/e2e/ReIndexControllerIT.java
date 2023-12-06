@@ -5,12 +5,11 @@ import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+import java.util.Date;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.test.ResourceEdgeRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -26,18 +25,10 @@ class ReIndexControllerIT {
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
-  private ResourceEdgeRepository resourceEdgeRepository;
-  @Autowired
   private Environment env;
 
-  @BeforeEach
-  public void clean() {
-    resourceEdgeRepository.deleteAll();
-    resourceRepo.deleteAll();
-  }
-
   @Test
-  void createIndexIfTrue_Ok() throws Exception {
+  void indexResourceWithNoIndexDate_andNotFullIndexRequest() throws Exception {
     // given
     var persisted = resourceRepo.save(getSampleInstanceResource());
 
@@ -52,8 +43,58 @@ class ReIndexControllerIT {
     checkKafkaMessageSent(persisted);
   }
 
+  @Test
+  void notIndexResourceWithIndexDate_andNotFullIndexRequest() throws Exception {
+    // given
+    resourceRepo.save(getSampleInstanceResource().setIndexDate(new Date()));
+
+    var requestBuilder = put(INDEX_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    mockMvc.perform(requestBuilder);
+
+    // then
+    checkKafkaMessageSent(null);
+  }
+
+  @Test
+  void indexResourceWithNoIndexDate_andFullIndexRequest() throws Exception {
+    // given
+    var persisted = resourceRepo.save(getSampleInstanceResource());
+
+    var requestBuilder = put(INDEX_URL)
+      .param("full", "true")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    mockMvc.perform(requestBuilder);
+
+    // then
+    checkKafkaMessageSent(persisted);
+  }
+
+  @Test
+  void indexResourceWithIndexDate_andFullIndexRequest() throws Exception {
+    // given
+    var persisted = resourceRepo.save(getSampleInstanceResource().setIndexDate(new Date()));
+
+    var requestBuilder = put(INDEX_URL)
+      .param("full", "true")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    mockMvc.perform(requestBuilder);
+
+    // then
+    checkKafkaMessageSent(persisted);
+  }
+
   @SneakyThrows
-  protected void checkKafkaMessageSent(Resource persisted) {
+  protected void checkKafkaMessageSent(Resource indexed) {
     // no exception should be thrown
   }
 

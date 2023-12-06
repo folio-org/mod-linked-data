@@ -8,6 +8,7 @@ import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 
 import lombok.SneakyThrows;
 import org.folio.linked.data.model.entity.Resource;
@@ -30,11 +31,14 @@ public class ReIndexControllerFolioIT extends ReIndexControllerIT {
 
   @Override
   @SneakyThrows
-  protected void checkKafkaMessageSent(Resource persisted) {
-    if (nonNull(persisted)) {
-      await().untilAsserted(() -> assertTrue(consumer.getMessages()
+  protected void checkKafkaMessageSent(Resource indexed) {
+    if (nonNull(indexed)) {
+      await().pollDelay(FIVE_SECONDS).untilAsserted(() -> assertTrue(consumer.getMessages()
         .stream()
-        .anyMatch(m -> m.contains(persisted.getResourceHash().toString()) && m.contains(CREATE.getValue()))));
+        .anyMatch(m -> m.contains(indexed.getResourceHash().toString()) && m.contains(CREATE.getValue()))));
+    } else {
+      await().pollDelay(FIVE_SECONDS).untilAsserted(() -> assertTrue(consumer.getMessages().isEmpty()));
     }
   }
+
 }

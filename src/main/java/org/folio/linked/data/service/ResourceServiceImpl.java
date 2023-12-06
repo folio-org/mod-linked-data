@@ -95,8 +95,8 @@ public class ResourceServiceImpl implements ResourceService {
       pageSize = DEFAULT_PAGE_SIZE;
     }
     var pageRequest = PageRequest.of(pageNumber, pageSize, DEFAULT_SORT);
-    var page = isNull(type) ? resourceRepo.findAllPageable(pageRequest)
-      : resourceRepo.findResourcesByType(Set.of(type), pageRequest);
+    var page = isNull(type) ? resourceRepo.findAllShort(pageRequest)
+      : resourceRepo.findAllShortByType(Set.of(type), pageRequest);
     var pageOfDto = page.map(resourceMapper::map);
     return resourceMapper.map(pageOfDto);
   }

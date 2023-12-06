@@ -120,7 +120,7 @@ class ResourceServiceTest {
     var pageSize = 10;
     var sort = Sort.by(Sort.Direction.ASC, "label");
     var types = Sets.newHashSet(ResourceTypeDictionary.INSTANCE.getUri());
-    doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
+    doReturn(pageOfShortEntities).when(resourceRepo).findAllShortByType(types,
       PageRequest.of(pageNumber, pageSize, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
       .map(ArgumentMatchers.<Function<ResourceShortInfo, ResourceShort>>any());
@@ -140,7 +140,7 @@ class ResourceServiceTest {
     // given
     var types = Sets.newHashSet(ResourceTypeDictionary.INSTANCE.getUri());
     var sort = Sort.by(Sort.Direction.ASC, "label");
-    doReturn(pageOfShortEntities).when(resourceRepo).findResourcesByType(types,
+    doReturn(pageOfShortEntities).when(resourceRepo).findAllShortByType(types,
       PageRequest.of(0, 100, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
       .map(ArgumentMatchers.<Function<ResourceShortInfo, ResourceShort>>any());

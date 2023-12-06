@@ -94,7 +94,7 @@ class DataImportEventListenerIT {
 
     var found = tenantScopedExecutionService.executeTenantScoped(
       TENANT_ID,
-      () -> resourceRepo.findResourcesByTypeFull(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
+      () -> resourceRepo.findAllByType(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
         .stream()
         .findFirst()
     );

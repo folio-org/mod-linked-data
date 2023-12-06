@@ -1,5 +1,6 @@
 package org.folio.linked.data.service;
 
+import static java.lang.Long.parseLong;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
@@ -7,11 +8,13 @@ import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolio
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.ResourceEvent;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -22,10 +25,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KafkaSenderFolio implements KafkaSender {
 
-  @Value("${mod-linked-data.kafka.topic.bibframe-index}")
-  private String initialBibframeIndexTopicName;
   private final KafkaTemplate<String, ResourceEvent> kafkaTemplate;
   private final FolioExecutionContext folioExecutionContext;
+  private final ApplicationEventPublisher eventPublisher;
+  @Value("${mod-linked-data.kafka.topic.bibframe-index}")
+  private String initialBibframeIndexTopicName;
 
   @SneakyThrows
   @Override
@@ -40,6 +44,7 @@ public class KafkaSenderFolio implements KafkaSender {
         .resourceName(SEARCH_RESOURCE_NAME)
         ._new(bibframeIndex)
     );
+    future.thenRun(() -> eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(bibframeIndex.getId()))));
     log.info("sendResourceCreated result to topic [{}]: [{}]", tenantTopicName, future.get().toString());
   }
 
