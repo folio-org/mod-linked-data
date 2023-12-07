@@ -23,37 +23,31 @@
     </createIndex>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="04_create_index_resource_type_map_type_hash_idx">
-    <createIndex indexName="resource_type_map_type_hash_idx" tableName="resource_type_map">
-      <column name="type_hash"/>
-    </createIndex>
-  </changeSet>
-
-  <changeSet author="Victor_Bodrov@epam.com" id="05_create_index_resource_context_map_type_hash_idx">
+  <changeSet author="Victor_Bodrov@epam.com" id="04_create_index_resource_context_map_type_hash_idx">
     <createIndex indexName="resource_context_map_type_hash_idx" tableName="resource_context_map">
       <column name="context_hash"/>
     </createIndex>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="06_create_index_generator_manifest_conceptual_hash">
+  <changeSet author="Victor_Bodrov@epam.com" id="05_create_index_generator_manifest_conceptual_hash">
     <createIndex indexName="generator_manifest_conceptual_hash" tableName="generator_manifest">
       <column name="conceptual_hash"/>
     </createIndex>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="07_create_index_generator_manifest_concrete_hash">
+  <changeSet author="Victor_Bodrov@epam.com" id="06_create_index_generator_manifest_concrete_hash">
     <createIndex indexName="generator_manifest_concrete_hash" tableName="generator_manifest">
       <column name="concrete_hash"/>
     </createIndex>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="08_create_index_generator_manifest_generator_hash">
+  <changeSet author="Victor_Bodrov@epam.com" id="07_create_index_generator_manifest_generator_hash">
     <createIndex indexName="generator_manifest_generator_hash" tableName="generator_manifest">
       <column name="generator_hash"/>
     </createIndex>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="09_create_index_resource_generator_map_resource_hash">
+  <changeSet author="Victor_Bodrov@epam.com" id="08_create_index_resource_generator_map_resource_hash">
     <createIndex indexName="resource_generator_map_resource_hash" tableName="resource_generator_map">
       <column name="resource_hash"/>
     </createIndex>

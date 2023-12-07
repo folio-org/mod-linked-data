@@ -1,0 +1,101 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="01_insert_type_lookup" author="Pavel_Bobylev@epam.com">
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-6368122725352320482"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Instance"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-1796261916093733980"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Item"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-3114907246856331309"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Work"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="1422402142581052159"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/Title"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-7668047008344689015"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/ParallelTitle"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="4846800426734929825"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/VariantTitle"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-1414513180123539856"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/ProviderEvent"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="7862842856693929565"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Place"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-5891299401617387451"/>
+      <column name="type_uri" value="http://library.link/identifier/LCCN"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="3962988838506018431"/>
+      <column name="type_uri" value="http://library.link/identifier/ISBN"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="219046076164824264"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/identifier/Ean"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="4097848952412986786"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/LocalId"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-1259663971045664909"/>
+      <column name="type_uri" value="http://library.link/identifier/UNKNOWN"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-5546355039147771611"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/Status"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="3745950457458968285"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Person"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-2724163952136761329"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Organization"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="8312970713564449340"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Meeting"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-1114722094452060721"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Family"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="3849426639441431097"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/marc/SupplementaryContent"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-7237503330348194663"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Category"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="7138672891049112604"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/CopyrightEvent"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="-2716756821684516448"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Annotation"/>
+    </insert>
+    <insert tableName="type_lookup">
+      <column name="type_hash" value="8535666185887263660"/>
+      <column name="type_uri" value="http://bibfra.me/vocab/lite/Identifier"/>
+    </insert>
+  </changeSet>
+</databaseChangeLog>
