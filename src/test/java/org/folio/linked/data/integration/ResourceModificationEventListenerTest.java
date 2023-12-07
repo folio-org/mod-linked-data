@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,7 +45,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
 
     //then
-    verify(kafkaSender).sendResourceCreated(bibframeIndex);
+    verify(kafkaSender).sendResourceCreated(bibframeIndex, true);
   }
 
   @Test
@@ -58,7 +59,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
 
     //then
-    verify(kafkaSender, never()).sendResourceCreated(any());
+    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
   @Test

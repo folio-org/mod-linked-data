@@ -33,7 +33,7 @@ public class KafkaSenderFolio implements KafkaSender {
 
   @SneakyThrows
   @Override
-  public void sendResourceCreated(BibframeIndex bibframeIndex) {
+  public void sendResourceCreated(BibframeIndex bibframeIndex, boolean isSingle) {
     var tenant = folioExecutionContext.getTenantId();
     var tenantTopicName = getTenantTopicName(tenant);
     var future = kafkaTemplate.send(tenantTopicName, bibframeIndex.getId(),
@@ -44,7 +44,9 @@ public class KafkaSenderFolio implements KafkaSender {
         .resourceName(SEARCH_RESOURCE_NAME)
         ._new(bibframeIndex)
     );
-    future.thenRun(() -> eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(bibframeIndex.getId()))));
+    if (isSingle) {
+      future.thenRun(() -> eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(bibframeIndex.getId()))));
+    }
     log.info("sendResourceCreated result to topic [{}]: [{}]", tenantTopicName, future.get().toString());
   }
 

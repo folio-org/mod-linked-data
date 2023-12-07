@@ -20,7 +20,8 @@ public class ResourceModificationEventListener {
 
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
-    resourceMapper.mapToIndex(resourceCreatedEvent.resource()).ifPresent(kafkaSender::sendResourceCreated);
+    resourceMapper.mapToIndex(resourceCreatedEvent.resource())
+      .ifPresent(bibframeIndex -> kafkaSender.sendResourceCreated(bibframeIndex, true));
   }
 
   @TransactionalEventListener

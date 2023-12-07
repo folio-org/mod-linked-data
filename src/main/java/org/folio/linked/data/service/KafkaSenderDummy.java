@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class KafkaSenderDummy implements KafkaSender {
 
   @Override
-  public void sendResourceCreated(BibframeIndex bibframeIndex) {
+  public void sendResourceCreated(BibframeIndex bibframeIndex, boolean isSingle) {
     log.debug("sendResourceCreated is ignored by dummy kafka sender, because search feature is disabled");
   }
 

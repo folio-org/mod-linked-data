@@ -30,4 +30,8 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   @Modifying
   @Query("update Resource r set r.indexDate = current_timestamp() where r.resourceHash = :id")
   void updateIndexDate(@Param("id") Long id);
+
+  @Modifying
+  @Query("update Resource r set r.indexDate = current_timestamp() where r.resourceHash in (:ids)")
+  void updateIndexDateBatch(@Param("ids") Set<Long> ids);
 }

@@ -116,6 +116,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
@@ -238,7 +239,7 @@ public class ResourceControllerIT {
     assertThat(instance.getSrsId()).isNull();
     assertThat(instance.getDoc()).isNull();
     assertThat(instance.getOutgoingEdges()).isEmpty();
-    verify(kafkaSender, never()).sendResourceCreated(any());
+    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
   @Test
@@ -271,7 +272,7 @@ public class ResourceControllerIT {
     assertThat(instance.getSrsId()).isNull();
     assertThat(instance.getDoc()).isNull();
     assertThat(instance.getOutgoingEdges()).isEmpty();
-    verify(kafkaSender, never()).sendResourceCreated(any());
+    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
   @Test
@@ -504,7 +505,7 @@ public class ResourceControllerIT {
     verify(kafkaSender).sendResourceDeleted(existedResource.getResourceHash());
 
     var bibframeIndexCaptor = ArgumentCaptor.forClass(BibframeIndex.class);
-    verify(kafkaSender).sendResourceCreated(bibframeIndexCaptor.capture());
+    verify(kafkaSender).sendResourceCreated(bibframeIndexCaptor.capture(), eq(true));
     assertThat(bibframeIndexCaptor.getValue().getId()).isEqualTo("220458842");
   }
 
@@ -524,7 +525,7 @@ public class ResourceControllerIT {
     //then
     assertTrue(resourceRepo.existsById(existedResource.getResourceHash()));
     verify(kafkaSender, never()).sendResourceDeleted(existedResource.getResourceHash());
-    verify(kafkaSender, never()).sendResourceCreated(any());
+    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
   protected void checkKafkaMessageSent(Resource persisted, Long deleted) {
