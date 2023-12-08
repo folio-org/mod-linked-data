@@ -22,7 +22,7 @@ class BibframeUtilsTest {
     var result = BibframeUtils.getFirstValue(null);
 
     // then
-    assertThat(result).isEqualTo("");
+    assertThat(result).isEmpty();
   }
 
   @Test
@@ -79,7 +79,7 @@ class BibframeUtilsTest {
     var result = BibframeUtils.getFirstValue(valuesSupplier);
 
     // then
-    assertThat(result).isEqualTo("");
+    assertThat(result).isEmpty();
   }
 
   @Test

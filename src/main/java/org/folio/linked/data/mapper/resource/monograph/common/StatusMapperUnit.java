@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, dtoClass = Status.class)
 public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
 
-  private static final Set<Class> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class);
   private final CoreMapper coreMapper;
 
   @Override
@@ -49,7 +49,7 @@ public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
   }
 
   @Override
-  public Set<Class> getParentDto() {
+  public Set<Class<?>> getParentDto() {
     return SUPPORTED_PARENTS;
   }
 

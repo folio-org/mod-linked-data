@@ -127,7 +127,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   private <E extends Enum<E>> E toType(Resource resource, Function<String, E> typeSupplier, Class<E> enumClass,
-                                       Predicate predicate, Class parentDto) {
+                                       Predicate predicate, Class<?> parentDto) {
     if (isNull(resource.getTypes())) {
       return null;
     }
