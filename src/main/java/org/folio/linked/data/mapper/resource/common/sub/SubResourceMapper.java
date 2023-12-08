@@ -8,10 +8,10 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 
 public interface SubResourceMapper {
 
-  <T> void toDto(@NonNull ResourceEdge source, @NonNull T destination);
+  <D> void toDto(@NonNull ResourceEdge source, @NonNull D destination);
 
   <P> Resource toEntity(@NonNull Object dto, Predicate predicate, @NonNull Class<P> parentDtoClass);
 
-  Optional<SubResourceMapperUnit<?>> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
-                                                   Class<?> dto);
+  <T> Optional<SubResourceMapperUnit<T>> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
+                                                       Class<?> dto);
 }

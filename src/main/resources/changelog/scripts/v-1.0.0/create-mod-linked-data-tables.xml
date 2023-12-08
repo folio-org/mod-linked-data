@@ -32,7 +32,7 @@
         <constraints nullable="false" primaryKey="true" primaryKeyName="type_lookup_pkey"/>
       </column>
       <column name="type_uri" type="TEXT">
-        <constraints nullable="false"/>
+        <constraints nullable="false" unique="true" uniqueConstraintName="unique_type_uri"/>
       </column>
       <column name="simple_label" type="TEXT">
       </column>
@@ -54,9 +54,6 @@
         <constraints unique="true"/>
       </column>
       <column name="configuration" remarks="Configuration information for a graph" type="JSONB" defaultValue="{}" />
-      <column name="profile_hash" type="BIGINT">
-        <constraints nullable="false" foreignKeyName="graphset_profile_hash_fkey" referencedColumnNames="type_hash" referencedTableName="type_lookup" deleteCascade="false" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
-      </column>
     </createTable>
   </changeSet>
 
@@ -190,24 +187,12 @@
         <constraints nullable="false" primaryKey="true" primaryKeyName="predicate_lookup_pkey"/>
       </column>
       <column name="predicate" type="TEXT">
-        <constraints nullable="false"/>
+        <constraints nullable="false" unique="true" uniqueConstraintName="unique_predicate"/>
       </column>
     </createTable>
   </changeSet>
 
-
-  <changeSet author="Victor_Bodrov@epam.com" id="14_create_type_profile_table">
-    <createTable tableName="type_profile">
-      <column name="type_hash" type="BIGINT">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="type_profile_pkey" foreignKeyName="type_profile_type_hash_fkey" referencedColumnNames="type_hash" referencedTableName="type_lookup" deleteCascade="false" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
-      </column>
-      <column name="profile_hash" type="BIGINT">
-        <constraints nullable="false" primaryKey="true" primaryKeyName="type_profile_pkey" foreignKeyName="type_profile_profile_hash_fkey" referencedColumnNames="type_hash" referencedTableName="type_lookup" deleteCascade="false" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
-      </column>
-    </createTable>
-  </changeSet>
-
-  <changeSet author="Victor_Bodrov@epam.com" id="15_create_feature_events_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="14_create_feature_events_table">
     <createTable remarks="Supplements event tracking on individual graphs by feature" tableName="feature_events">
       <column name="graph_id" remarks="The graph the event is being tracked for" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="feature_events_pkey"/>
@@ -228,7 +213,7 @@
     <addForeignKeyConstraint baseColumnNames="graph_id,event_id" baseTableName="feature_events" constraintName="feature_events_graph_id_event_id_fkey" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="graph_id,id" referencedTableName="events" validate="true"/>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="16_create_graph_features_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="15_create_graph_features_table">
     <createTable remarks="Map of features on graphs" tableName="graph_features">
       <column name="graph_id" type="INTEGER">
         <constraints nullable="false" primaryKey="true" primaryKeyName="graph_features_pkey" foreignKeyName="graph_features_graph_id_fkey" referencedColumnNames="id" referencedTableName="graphset" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
@@ -239,29 +224,24 @@
     </createTable>
    </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="17_create_resources_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="16_create_resources_table">
     <createTable remarks="All resources in a graph and their non-link data" tableName="resources">
       <column name="resource_hash" remarks="The unique hash identifier for the resource" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="resources_pkey"/>
       </column>
       <column name="doc" remarks="JSON representation of literal properties for the resource" type="JSONB"/>
       <column name="label" remarks="Descriptive label for the resource" type="TEXT"/>
-      <column name="resource_uri" type="TEXT">
-      </column>
-      <column name="type_hash" type="BIGINT">
-        <constraints nullable="false" foreignKeyName="resources_type_hash_fkey" referencedColumnNames="type_hash" referencedTableName="type_lookup" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
-      </column>
-      <column name="created_event_id" remarks="The event that created the resource" type="BIGINT">
-<!--        <constraints nullable="false"/>-->
-      </column>
-      <column name="updated_event_id" remarks="The latest event that updated the resource" type="BIGINT">
-<!--        <constraints nullable="false"/>-->
-      </column>
+      <column name="resource_uri" type="TEXT"/>
+      <column name="created_event_id" remarks="The event that created the resource" type="BIGINT"/>
+      <column name="updated_event_id" remarks="The latest event that updated the resource" type="BIGINT"/>
       <column name="active_event_id" remarks="The event that indicates if the resource is active" type="BIGINT"/>
+      <column name="inventory_id" type="uuid"/>
+      <column name="srs_id" type="uuid"/>
+      <column name="index_date" type="timestamp(3)"/>
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="18_create_resource_type_map_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="17_create_resource_type_map_table">
     <createTable remarks="Map of all types to resources" tableName="resource_type_map">
       <column name="resource_hash" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="resource_type_map_pkey" foreignKeyName="resource_type_map_resource_hash_fkey" referencedColumnNames="resource_hash" referencedTableName="resources" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
@@ -272,7 +252,7 @@
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="19_create_resource_context_map_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="18_create_resource_context_map_table">
     <createTable remarks="Map of all resource to context" tableName="resource_context_map">
       <column name="resource_hash" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="resource_context_map_pkey" foreignKeyName="resource_context_map_resource_hash_fkey" referencedColumnNames="resource_hash" referencedTableName="resources" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
@@ -283,7 +263,7 @@
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="20_create_resource_edges_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="19_create_resource_edges_table">
     <createTable remarks="Edges between resource nodes" tableName="resource_edges">
       <column name="source_hash" remarks="The source resource for the edge" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="resource_edges_pkey" foreignKeyName="resource_edges_source_hash_fkey" referencedColumnNames="resource_hash" referencedTableName="resources" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
@@ -294,17 +274,13 @@
       <column name="predicate_hash" remarks="The lookup hash for the edge predicate" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="resource_edges_pkey" foreignKeyName="resource_edges_predicate_hash_fkey" referencedColumnNames="predicate_hash" referencedTableName="predicate_lookup" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
       </column>
-      <column name="created_event_id" remarks="The event that created the edge" type="BIGINT">
-<!--        <constraints nullable="false"/>-->
-      </column>
-      <column name="updated_event_id" remarks="The latest event that updated the edge" type="BIGINT">
-<!--        <constraints nullable="false"/>-->
-      </column>
+      <column name="created_event_id" remarks="The event that created the edge" type="BIGINT"/>
+      <column name="updated_event_id" remarks="The latest event that updated the edge" type="BIGINT"/>
       <column name="active_event_id" remarks="The event that indicates if the edge is active" type="BIGINT"/>
     </createTable>
    </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="21_create_generator_manifest_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="20_create_generator_manifest_table">
     <createTable remarks="Manifest of resources and their sources sufficient to generate a full subgraph of resources" tableName="generator_manifest">
       <column name="input_hash" remarks="A hash representing the input source" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="generator_manifest_pkey"/>
@@ -318,17 +294,13 @@
       <column name="conceptual_hash" remarks="A hash representing the generating source entity in the abstract" type="BIGINT">
         <constraints nullable="false"/>
       </column>
-      <column name="created_event_id" remarks="The event that created the edge" type="BIGINT">
-        <constraints nullable="false"/>
-      </column>
-      <column name="updated_event_id" remarks="The latest event that updated the edge" type="BIGINT">
-        <constraints nullable="false"/>
-      </column>
+      <column name="created_event_id" remarks="The event that created the edge" type="BIGINT"/>
+      <column name="updated_event_id" remarks="The latest event that updated the edge" type="BIGINT"/>
       <column name="active_event_id" remarks="The event that indicates if the edge is active" type="BIGINT"/>
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="22_create_resource_generator_map_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="21_create_resource_generator_map_table">
     <createTable remarks="Map of all resources past and present to the generator element they originated from" tableName="resource_generator_map">
       <column name="generator_hash" remarks="A hash representing the source entity that generated the resource" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="resource_generator_map_pkey"/>
@@ -336,17 +308,13 @@
       <column name="resource_hash" remarks="A hash representing a resource associated to the source entity" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="resource_generator_map_pkey" foreignKeyName="resource_generator_map_resource_hash_fkey" referencedColumnNames="resource_hash" referencedTableName="resources" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
       </column>
-      <column name="created_event_id" remarks="The event that created the edge" type="BIGINT">
-        <constraints nullable="false"/>
-      </column>
-      <column name="updated_event_id" remarks="The latest event that updated the edge" type="BIGINT">
-        <constraints nullable="false"/>
-      </column>
+      <column name="created_event_id" remarks="The event that created the edge" type="BIGINT"/>
+      <column name="updated_event_id" remarks="The latest event that updated the edge" type="BIGINT"/>
       <column name="active_event_id" remarks="The event that indicates if the edge is active" type="BIGINT"/>
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="23_create_scopes_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="22_create_scopes_table">
     <createTable remarks="Scopes that can be used to generate subgraphs of a graph" tableName="scopes">
       <column name="scope_hash" remarks="A hash representing the scope. Generated from the key" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="scopes_pkey"/>
@@ -363,7 +331,7 @@
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="24_create_generator_scope_map_table">
+  <changeSet author="Victor_Bodrov@epam.com" id="23_create_generator_scope_map_table">
     <createTable remarks="Manifest of resources and their sources sufficient to generate a full subgraph of resources" tableName="generator_scope_map">
       <column name="scope_hash" remarks="A hash representing the scope to which a generator is assigned" type="BIGINT">
         <constraints nullable="false" primaryKey="true" primaryKeyName="generator_scope_map_pkey" foreignKeyName="generator_scope_map_scope_hash_fkey" referencedColumnNames="scope_hash" referencedTableName="scopes" deleteCascade="true" validateForeignKey="true" deferrable="false" initiallyDeferred="false"/>
@@ -377,43 +345,15 @@
     </createTable>
   </changeSet>
 
-  <changeSet author="Victor_Bodrov@epam.com" id="25_drop_constraint_resources_type_hash_not_null">
-    <dropNotNullConstraint tableName="resources" columnName="type_hash"/>
-  </changeSet>
-
-  <changeSet author="Victor_Bodrov@epam.com" id="26_drop_constraint_graphset_profile_hash_not_null">
-    <dropNotNullConstraint tableName="graphset" columnName="profile_hash"/>
-  </changeSet>
-
-  <changeSet author="Victor_Bodrov@epam.com" id="27_drop_constraint_resource_generator_map_updated_event_id_not_null">
-    <dropNotNullConstraint tableName="resource_generator_map" columnName="updated_event_id"/>
-  </changeSet>
-
-  <changeSet author="Victor_Bodrov@epam.com" id="28_drop_constraint_resource_generator_map_created_event_id_not_null">
-    <dropNotNullConstraint tableName="resource_generator_map" columnName="created_event_id"/>
-  </changeSet>
-
-  <changeSet author="Victor_Bodrov@epam.com" id="29_drop_constraint_generator_manifest_updated_event_id_not_null">
-    <dropNotNullConstraint tableName="generator_manifest" columnName="updated_event_id"/>
-  </changeSet>
-
-  <changeSet author="Victor_Bodrov@epam.com" id="30_drop_constraint_generator_manifest_created_event_id_not_null">
-    <dropNotNullConstraint tableName="generator_manifest" columnName="created_event_id"/>
-  </changeSet>
-
-  <changeSet id="31_add_inventory_id_srs_id_columns_to_resources_table" author="Pavel_Bobylev@epam.com">
-    <addColumn tableName="resources">
-      <column name="inventory_id" type="uuid"/>
-    </addColumn>
-    <addColumn tableName="resources">
-      <column name="srs_id" type="uuid"/>
-    </addColumn>
-  </changeSet>
-
-  <changeSet id="32_add_index_date_column_to_resources_table" author="Pavel_Bobylev@epam.com">
-    <addColumn tableName="resources">
-      <column name="index_date" type="timestamp(3)"/>
-    </addColumn>
+  <changeSet author="Askhat_Abishev@epam.com" id="24_create_profiles_table">
+    <createTable tableName="profiles">
+      <column name="id" type="SMALLINT">
+        <constraints primaryKey="true" primaryKeyName="profiles_pkey"/>
+      </column>
+      <column name="value" type="JSONB">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
   </changeSet>
 
 </databaseChangeLog>
