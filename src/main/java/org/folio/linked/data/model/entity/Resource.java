@@ -15,6 +15,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -48,6 +49,8 @@ public class Resource {
   private UUID inventoryId;
 
   private UUID srsId;
+
+  private Date indexDate;
 
   @OrderBy
   @ManyToMany(fetch = FetchType.EAGER)

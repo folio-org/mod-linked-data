@@ -44,6 +44,7 @@
     <hibernate-types.version>2.21.1</hibernate-types.version>
     <lib-linked-data-dictionary.version>1.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc2ld.version>1.0.1-SNAPSHOT</lib-linked-data-marc2ld.version>
+    <maven-checkstyle-plugin.checkstyle.version>10.12.6</maven-checkstyle-plugin.checkstyle.version>
 
     <!-- Test dependencies versions -->
     <testcontainers.version>1.19.3</testcontainers.version>
@@ -354,7 +355,7 @@
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>10.12.5</version>
+            <version>${maven-checkstyle-plugin.checkstyle.version}</version>
           </dependency>
         </dependencies>
         <executions>

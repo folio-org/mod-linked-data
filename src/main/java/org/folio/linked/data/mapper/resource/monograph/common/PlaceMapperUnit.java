@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, dtoClass = Place.class)
 public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
 
-  private static final Set<Class> SUPPORTED_PARENTS = Set.of(ProviderEvent.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(ProviderEvent.class);
   private final CoreMapper coreMapper;
 
   @Override
@@ -47,7 +47,7 @@ public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
   }
 
   @Override
-  public Set<Class> getParentDto() {
+  public Set<Class<?>> getParentDto() {
     return SUPPORTED_PARENTS;
   }
 

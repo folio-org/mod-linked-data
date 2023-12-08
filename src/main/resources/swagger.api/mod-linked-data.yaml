@@ -11,6 +11,7 @@ paths:
       description: Start the process of reindexing of resources in the database
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/full'
       responses:
         '204':
           description: Started the process of reindex
@@ -174,6 +175,13 @@ components:
       example: 'http://bibfra.me/vocab/lite/Instance'
       schema:
         type: string
+    full:
+      name: full
+      in: query
+      required: false
+      description: Reindex all records if true, otherwise only not indexed
+      schema:
+        type: boolean
 
   schemas:
     errorResponse:

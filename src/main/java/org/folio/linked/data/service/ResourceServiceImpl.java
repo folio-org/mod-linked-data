@@ -20,6 +20,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,10 +96,15 @@ public class ResourceServiceImpl implements ResourceService {
       pageSize = DEFAULT_PAGE_SIZE;
     }
     var pageRequest = PageRequest.of(pageNumber, pageSize, DEFAULT_SORT);
-    var page = isNull(type) ? resourceRepo.findAllPageable(pageRequest)
-      : resourceRepo.findResourcesByType(Set.of(type), pageRequest);
+    var page = isNull(type) ? resourceRepo.findAllShort(pageRequest)
+      : resourceRepo.findAllShortByType(Set.of(type), pageRequest);
     var pageOfDto = page.map(resourceMapper::map);
     return resourceMapper.map(pageOfDto);
   }
 
+  @Async
+  @Override
+  public void updateIndexDateBatch(Set<Long> ids) {
+    resourceRepo.updateIndexDateBatch(ids);
+  }
 }

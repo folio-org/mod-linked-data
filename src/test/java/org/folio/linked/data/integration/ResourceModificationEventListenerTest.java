@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -10,6 +11,8 @@ import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
+import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
+import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
@@ -31,6 +34,8 @@ class ResourceModificationEventListenerTest {
 
   @Mock
   private KafkaSender kafkaSender;
+  @Mock
+  private ResourceRepository resourceRepository;
 
   @Test
   void afterCreate_shouldSendResourceCreatedMessageToKafka() {
@@ -44,7 +49,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
 
     //then
-    verify(kafkaSender).sendResourceCreated(bibframeIndex);
+    verify(kafkaSender).sendResourceCreated(bibframeIndex, true);
   }
 
   @Test
@@ -58,7 +63,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
 
     //then
-    verify(kafkaSender, never()).sendResourceCreated(any());
+    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
   @Test
@@ -71,5 +76,17 @@ class ResourceModificationEventListenerTest {
 
     //then
     verify(kafkaSender).sendResourceDeleted(resourceDeletedEvent.id());
+  }
+
+  @Test
+  void afterIndex_shouldSendResourceIndexedMessageToKafka() {
+    //given
+    var resourceIndexedEvent = new ResourceIndexedEvent(1L);
+
+    //when
+    resourceModificationEventListener.afterIndex(resourceIndexedEvent);
+
+    //then
+    verify(resourceRepository).updateIndexDate(resourceIndexedEvent.id());
   }
 }

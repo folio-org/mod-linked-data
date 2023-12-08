@@ -7,7 +7,7 @@ public interface SubResourceMapperUnit<T> {
 
   T toDto(Resource source, T destination);
 
-  Set<Class> getParentDto();
+  Set<Class<?>> getParentDto();
 
   Resource toEntity(Object dto);
 

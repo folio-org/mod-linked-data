@@ -410,6 +410,12 @@
     </addColumn>
   </changeSet>
 
+  <changeSet id="32_add_index_date_column_to_resources_table" author="Pavel_Bobylev@epam.com">
+    <addColumn tableName="resources">
+      <column name="index_date" type="timestamp(3)"/>
+    </addColumn>
+  </changeSet>
+
 </databaseChangeLog>
 
 

@@ -68,7 +68,7 @@ public class CoreMapperImpl implements CoreMapper {
       JsonNode node;
       if (object instanceof String string) {
         node = mapper.readTree(string);
-      } else if (object instanceof Map map) {
+      } else if (object instanceof Map<?, ?> map) {
         node = mapper.convertValue(map, JsonNode.class);
       } else if (object instanceof Resource resource) {
         return resourceToJson(resource);
