@@ -44,17 +44,26 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @SneakyThrows
   @Override
-  protected void checkKafkaMessageSentAndMarkedAsIndexed(Long id, boolean createOrDelete) {
+  protected void checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long id) {
+    checkMessage(id, true);
+    var freshPersistedOptional = resourceRepository.findById(id);
+    assertThat(freshPersistedOptional).isPresent();
+    var freshPersisted = freshPersistedOptional.get();
+    assertThat(freshPersisted.getIndexDate()).isNotNull();
+
+  }
+
+  @SneakyThrows
+  @Override
+  protected void checkKafkaMessageDeletedSent(Long id) {
+    checkMessage(id, false);
+  }
+
+  private void checkMessage(Long id, boolean createOrDelete) {
     await().pollDelay(FIVE_SECONDS).untilAsserted(() ->
       assertTrue(consumer.getMessages().stream().anyMatch(m -> m.contains(id.toString())
         && m.contains(createOrDelete ? CREATE.getValue() : DELETE.getValue())))
     );
-    if (createOrDelete) {
-      var freshPersistedOptional = resourceRepository.findById(id);
-      assertThat(freshPersistedOptional).isPresent();
-      var freshPersisted = freshPersistedOptional.get();
-      assertThat(freshPersisted.getIndexDate()).isNotNull();
-    }
   }
 
 }

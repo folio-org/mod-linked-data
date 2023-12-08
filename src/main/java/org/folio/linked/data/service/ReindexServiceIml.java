@@ -33,6 +33,7 @@ public class ReindexServiceIml implements ReindexService {
   private final ResourceRepository resourceRepository;
   private final KafkaSender kafkaSender;
   private final KafkaMessageMapper kafkaMessageMapper;
+  private final ResourceService resourceService;
   private final EntityManager entityManager;
   @Value("${mod-linked-data.reindex.page-size}")
   private String reindexPageSize;
@@ -50,7 +51,7 @@ public class ReindexServiceIml implements ReindexService {
       var indexedIds = page.get()
         .map(resource -> {
             try {
-              return kafkaMessageMapper.toIndex(resource)
+              var id = kafkaMessageMapper.toIndex(resource)
                 .map(bibframeIndex -> {
                   log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
                   kafkaSender.sendResourceCreated(bibframeIndex, false);
@@ -62,6 +63,9 @@ public class ReindexServiceIml implements ReindexService {
                     + "indexable values", resource.getResourceHash());
                   return null;
                 });
+              // detach the resource entity from entity manager, enabling garbage collection
+              entityManager.detach(resource);
+              return id;
             } catch (Exception ex) {
               log.warn("Failed to send resource for reindexing with id {}", resource.getResourceHash(), ex);
               return null;
@@ -70,7 +74,7 @@ public class ReindexServiceIml implements ReindexService {
         )
         .filter(Objects::nonNull)
         .collect(Collectors.toSet());
-      resourceRepository.updateIndexDateBatch(indexedIds);
+      resourceService.updateIndexDateBatch(indexedIds);
       pageable = page.nextPageable();
     }
     log.info("Reindexing finished. {} records indexed", recordsIndexed.get());

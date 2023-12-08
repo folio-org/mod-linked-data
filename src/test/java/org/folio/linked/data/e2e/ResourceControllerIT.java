@@ -204,7 +204,7 @@ public class ResourceControllerIT {
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
     validateInstance(bibframe);
-    checkKafkaMessageSentAndMarkedAsIndexed(bibframe.getResourceHash(), true);
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
 
   @Test
@@ -303,7 +303,7 @@ public class ResourceControllerIT {
     assertThat(instance.getSrsId()).isNull();
     assertThat(instance.getDoc()).isNull();
     assertThat(instance.getOutgoingEdges()).hasSize(42);
-    checkKafkaMessageSentAndMarkedAsIndexed(instance.getResourceHash(), true);
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(instance.getResourceHash());
   }
 
   @Test
@@ -481,7 +481,7 @@ public class ResourceControllerIT {
     assertThat(resourceRepo.count()).isEqualTo(28);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(10);
-    checkKafkaMessageSentAndMarkedAsIndexed(existed.getResourceHash(), false);
+    checkKafkaMessageDeletedSent(existed.getResourceHash());
   }
 
   @Test
@@ -502,8 +502,8 @@ public class ResourceControllerIT {
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var updatedId = Long.valueOf(((InstanceField) resourceResponse.getResource()).getInstance().getId());
     assertTrue(resourceRepo.existsById(updatedId));
-    checkKafkaMessageSentAndMarkedAsIndexed(existedResource.getResourceHash(), false);
-    checkKafkaMessageSentAndMarkedAsIndexed(updatedId, true);
+    checkKafkaMessageDeletedSent(existedResource.getResourceHash());
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(updatedId);
   }
 
   @Test
@@ -525,7 +525,11 @@ public class ResourceControllerIT {
     verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
-  protected void checkKafkaMessageSentAndMarkedAsIndexed(Long id, boolean createOrDelete) {
+  protected void checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long id) {
+    // nothing to check without Folio profile
+  }
+
+  protected void checkKafkaMessageDeletedSent(Long id) {
     // nothing to check without Folio profile
   }
 
