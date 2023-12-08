@@ -40,7 +40,7 @@ import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.monograph.instance.sub.CarrierMapperUnit;
+import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -101,8 +101,7 @@ class KafkaMessageMapperTest {
       ResourceTypeDictionary.PERSON.getUri(),
       ResourceTypeDictionary.ORGANIZATION.getUri()
     ).forEach(t ->
-      lenient().when(subResourceMapper.getMapperUnit(eq(t), any(), any(), any()))
-        .thenReturn(of(new CarrierMapperUnit(null)))
+      lenient().when(subResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
     );
 
     var instance = getSampleInstanceResource();
@@ -188,4 +187,24 @@ class KafkaMessageMapperTest {
     assertThat(contributorInner.getType()).isEqualTo(type);
     assertThat(contributorInner.getIsCreator()).isEqualTo(isCreator);
   }
+
+  private SubResourceMapperUnit<Object> genericMapper() {
+    return new SubResourceMapperUnit<>() {
+      @Override
+      public Object toDto(Resource source, Object destination) {
+        return null;
+      }
+
+      @Override
+      public Set<Class<?>> getParentDto() {
+        return null;
+      }
+
+      @Override
+      public Resource toEntity(Object dto) {
+        return null;
+      }
+    };
+  }
+
 }

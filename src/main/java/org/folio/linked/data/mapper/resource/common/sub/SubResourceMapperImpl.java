@@ -50,7 +50,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
 
   @Override
   @SuppressWarnings("java:S2201")
-  public <T> void toDto(@NonNull ResourceEdge source, @NonNull T destination) {
+  public <D> void toDto(@NonNull ResourceEdge source, @NonNull D destination) {
     // Of all the types of the resource, take the first one that has a mapper
     var resourceMapper = source.getTarget().getTypes()
       .stream()
@@ -59,7 +59,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
       .findFirst();
 
     resourceMapper
-      .map(mapper -> ((SubResourceMapperUnit<T>) mapper).toDto(source.getTarget(), destination))
+      .map(mapper -> ((SubResourceMapperUnit<D>) mapper).toDto(source.getTarget(), destination))
       .orElseGet(() -> {
         log.warn(RESOURCE_WITH_GIVEN_ID + source.getTarget().getResourceHash() + RIGHT_SQUARE_BRACKET
           + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getUri()
@@ -70,8 +70,8 @@ public class SubResourceMapperImpl implements SubResourceMapper {
 
 
   @Override
-  public Optional<SubResourceMapperUnit<?>> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
-                                                          Class<?> dto) {
+  public <T> Optional<SubResourceMapperUnit<T>> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
+                                                              Class<?> dto) {
     return mapperUnits.stream()
       .filter(m -> isNull(parentDto) || m.getParentDto().contains(parentDto))
       .filter(m -> {
@@ -80,6 +80,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
           && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
           && (isNull(dto) || dto.equals(annotation.dtoClass()));
       })
+      .map(mapper -> (SubResourceMapperUnit<T>) mapper)
       .findFirst();
   }
 
