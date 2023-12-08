@@ -147,11 +147,9 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.linked.data.test.TestUtil;
-import org.folio.search.domain.dto.BibframeIndex;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
@@ -206,7 +204,7 @@ public class ResourceControllerIT {
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
     validateInstance(bibframe);
-    checkKafkaMessageSent(bibframe, null);
+    checkKafkaMessageSentAndMarkedAsIndexed(bibframe.getResourceHash(), true);
   }
 
   @Test
@@ -305,7 +303,7 @@ public class ResourceControllerIT {
     assertThat(instance.getSrsId()).isNull();
     assertThat(instance.getDoc()).isNull();
     assertThat(instance.getOutgoingEdges()).hasSize(42);
-    checkKafkaMessageSent(instance, null);
+    checkKafkaMessageSentAndMarkedAsIndexed(instance.getResourceHash(), true);
   }
 
   @Test
@@ -483,7 +481,7 @@ public class ResourceControllerIT {
     assertThat(resourceRepo.count()).isEqualTo(28);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(10);
-    checkKafkaMessageSent(null, existed.getResourceHash());
+    checkKafkaMessageSentAndMarkedAsIndexed(existed.getResourceHash(), false);
   }
 
   @Test
@@ -497,16 +495,15 @@ public class ResourceControllerIT {
       .content(loadResourceAsString("samples/bibframe-partial-objects.json"));
 
     //when
-    mockMvc.perform(requestBuilder);
+    var response = mockMvc.perform(requestBuilder).andReturn().getResponse().getContentAsString();
 
     //then
     assertFalse(resourceRepo.existsById(existedResource.getResourceHash()));
-    assertTrue(resourceRepo.existsById(220458842L));
-    verify(kafkaSender).sendResourceDeleted(existedResource.getResourceHash());
-
-    var bibframeIndexCaptor = ArgumentCaptor.forClass(BibframeIndex.class);
-    verify(kafkaSender).sendResourceCreated(bibframeIndexCaptor.capture(), eq(true));
-    assertThat(bibframeIndexCaptor.getValue().getId()).isEqualTo("220458842");
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var updatedId = Long.valueOf(((InstanceField) resourceResponse.getResource()).getInstance().getId());
+    assertTrue(resourceRepo.existsById(updatedId));
+    checkKafkaMessageSentAndMarkedAsIndexed(existedResource.getResourceHash(), false);
+    checkKafkaMessageSentAndMarkedAsIndexed(updatedId, true);
   }
 
   @Test
@@ -528,7 +525,7 @@ public class ResourceControllerIT {
     verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
-  protected void checkKafkaMessageSent(Resource persisted, Long deleted) {
+  protected void checkKafkaMessageSentAndMarkedAsIndexed(Long id, boolean createOrDelete) {
     // nothing to check without Folio profile
   }
 

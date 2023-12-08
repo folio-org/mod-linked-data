@@ -11,6 +11,8 @@ import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
+import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
+import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
@@ -32,6 +34,8 @@ class ResourceModificationEventListenerTest {
 
   @Mock
   private KafkaSender kafkaSender;
+  @Mock
+  private ResourceRepository resourceRepository;
 
   @Test
   void afterCreate_shouldSendResourceCreatedMessageToKafka() {
@@ -72,5 +76,17 @@ class ResourceModificationEventListenerTest {
 
     //then
     verify(kafkaSender).sendResourceDeleted(resourceDeletedEvent.id());
+  }
+
+  @Test
+  void afterIndex_shouldSendResourceIndexedMessageToKafka() {
+    //given
+    var resourceIndexedEvent = new ResourceIndexedEvent(1L);
+
+    //when
+    resourceModificationEventListener.afterIndex(resourceIndexedEvent);
+
+    //then
+    verify(resourceRepository).updateIndexDate(resourceIndexedEvent.id());
   }
 }
