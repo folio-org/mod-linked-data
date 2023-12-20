@@ -6,7 +6,7 @@ do $do$
 
   execute format($format$
 
-    create or replace function identify_scale_partitions(in_parent_table_name text, scaling_exponent int)
+    create or replace function %1$I.identify_scale_partitions(in_parent_table_name text, scaling_exponent int)
     returns boolean
     as $$
     DECLARE
@@ -57,14 +57,17 @@ do $do$
       return true;
     END
     $$
-      language plpgsql
-      security definer
-      set search_path=%1$I,public;
+    language plpgsql
+    security definer
+    set search_path=%1$I,public;
+
+    comment on function %1$I.identify_scale_partitions is 'returns a list of partition tables for a parent table based on a scaling factor';
+
+
     $format$, CURRENT_SCHEMA);
 
   END;
 $do$;
 
-comment on function identify_scale_partitions is 'returns a list of partition tables for a parent table based on a scaling factor';
 
 --rollback drop function if exists  identify_scale_partitions(text, int);

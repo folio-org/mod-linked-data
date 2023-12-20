@@ -50,7 +50,7 @@ do $do$
       $$
       language plpgsql
       security definer
-      set search_path=%1$s,public;
+      set search_path=%1$I,public;
 
       comment on function %1$I.detach_graph_table_partitions(text) is 'Detaches partitions of the provided table name on a graph. Returns whether or not each expected partition exists and was detached';
     $format$, CURRENT_SCHEMA);

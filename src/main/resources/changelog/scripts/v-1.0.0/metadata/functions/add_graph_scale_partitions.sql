@@ -70,7 +70,7 @@ do $do$
       $$
       language plpgsql
       security definer
-      set search_path=%1$s,public;
+      set search_path=%1$I,public;
 
       comment on function %1$I.add_graph_scale_partitions(text) is 'Creates new partitions on a table based on pre-calculated values in a workspace';
     $format$, CURRENT_SCHEMA);

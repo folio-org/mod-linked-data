@@ -38,7 +38,7 @@ do $do$
       $validate_partition_state$
       language plpgsql
       security definer
-      set search_path=%1$s,public;
+      set search_path=%1$I,public;
 
       comment on function %1$I.validate_partition_state() is 'Returns true if there is no overlap between existing partition tables and expected new tables';
 

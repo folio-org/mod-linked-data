@@ -56,7 +56,7 @@ END
 $$
 language plpgsql
 security definer
-set search_path=%1$s,public;
+set search_path=%1$I,public;
 
 comment on function %1$I.find_existing_partitions is 'returns a list of existing partition tables for a parent table';
 

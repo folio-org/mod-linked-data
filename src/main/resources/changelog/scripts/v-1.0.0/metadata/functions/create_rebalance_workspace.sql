@@ -7,7 +7,7 @@ do $do$
 
   execute format($format$
 
-    create or replace function create_rebalance_workspace() returns boolean as
+    create or replace function %1$I.create_rebalance_workspace() returns boolean as
     $$
     BEGIN
       drop table if exists %1$I.existing_partitions;
@@ -52,11 +52,13 @@ do $do$
     security definer
     set search_path=%1$I,public;
 
+    comment on function %1$I.create_rebalance_workspace is 'Creates rebalancing tables, dropping them first if they exist';
+
+
   $format$, CURRENT_SCHEMA);
   END;
 $do$;
 
-comment on function create_rebalance_workspace is 'Creates rebalancing tables, dropping them first if they exist';
 
 
 --rollback drop function if exists  create_rebalance_workspace();
