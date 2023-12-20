@@ -48,8 +48,8 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
-  public Long createResource(org.folio.marc2ld.model.Resource marc2ldResource) {
-    var mapped = resourceMapper.toEntity(marc2ldResource);
+  public Long createResource(org.folio.marc4ld.model.Resource marc4ldResource) {
+    var mapped = resourceMapper.toEntity(marc4ldResource);
     var persisted = resourceRepo.save(mapped);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return persisted.getResourceHash();

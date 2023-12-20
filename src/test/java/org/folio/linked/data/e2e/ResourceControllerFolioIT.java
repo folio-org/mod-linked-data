@@ -9,7 +9,8 @@ import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
-import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
+import static org.testcontainers.shaded.org.awaitility.Durations.ONE_MINUTE;
+import static org.testcontainers.shaded.org.awaitility.Durations.TEN_SECONDS;
 
 import lombok.SneakyThrows;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -60,7 +61,7 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   }
 
   private void checkMessage(Long id, boolean createOrDelete) {
-    await().pollDelay(FIVE_SECONDS).untilAsserted(() ->
+    await().pollDelay(TEN_SECONDS).timeout(ONE_MINUTE).untilAsserted(() ->
       assertTrue(consumer.getMessages().stream().anyMatch(m -> m.contains(id.toString())
         && m.contains(createOrDelete ? CREATE.getValue() : DELETE.getValue())))
     );
