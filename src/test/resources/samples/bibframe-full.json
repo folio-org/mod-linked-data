@@ -420,6 +420,33 @@
           "http://bibfra.me/vocab/lite/language": [
             "eng"
           ],
+          "http://bibfra.me/vocab/marc/bibliographyNote": [
+            "bibliography note"
+          ],
+          "http://bibfra.me/vocab/marc/scaleNote": [
+            "scale note"
+          ],
+          "http://bibfra.me/vocab/marc/references": [
+            "references"
+          ],
+          "http://bibfra.me/vocab/marc/dataQuality": [
+            "data quality"
+          ],
+          "http://bibfra.me/vocab/marc/otherEventInformation": [
+            "other event information"
+          ],
+          "http://bibfra.me/vocab/marc/geographicCoverage": [
+            "geographic coverage"
+          ],
+          "http://bibfra.me/vocab/marc/supplement": [
+            "supplement"
+          ],
+          "http://bibfra.me/vocab/marc/studyProgramName": [
+            "study program name"
+          ],
+          "http://bibfra.me/vocab/marc/languageNote": [
+            "language note"
+          ],
           "http://bibfra.me/vocab/marc/targetAudience": [
             "target audience"
           ],

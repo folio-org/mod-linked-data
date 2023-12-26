@@ -43,6 +43,69 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/language"
         },
+        "bibliographyNote": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/bibliographyNote"
+        },
+        "scaleNote": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/scaleNote"
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/references"
+        },
+        "dataQuality": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/dataQuality"
+        },
+        "otherEventInformation": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/otherEventInformation"
+        },
+        "geographicCoverage": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/geographicCoverage"
+        },
+        "supplement": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/supplement"
+        },
+        "studyProgramName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/studyProgramName"
+        },
+        "languageNote": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/languageNote"
+        },
         "classification": {
           "type": "array",
           "items": {

@@ -6,9 +6,18 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATA_QUALITY;
+import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.OTHER_EVENT_INFORMATION;
+import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
 import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.SCALE_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.STUDY_PROGRAM_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
+import static org.folio.ld.dictionary.PropertyDictionary.SUPPLEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -103,6 +112,15 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     putProperty(map, LANGUAGE, dto.getLanguage());
     putProperty(map, SUMMARY, dto.getSummary());
     putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());
+    putProperty(map, BIBLIOGRAPHY_NOTE, dto.getBibliographyNote());
+    putProperty(map, SCALE_NOTE, dto.getScaleNote());
+    putProperty(map, REFERENCES, dto.getReferences());
+    putProperty(map, DATA_QUALITY, dto.getDataQuality());
+    putProperty(map, OTHER_EVENT_INFORMATION, dto.getOtherEventInformation());
+    putProperty(map, GEOGRAPHIC_COVERAGE, dto.getGeographicCoverage());
+    putProperty(map, SUPPLEMENT, dto.getSupplement());
+    putProperty(map, STUDY_PROGRAM_NAME, dto.getStudyProgramName());
+    putProperty(map, LANGUAGE_NOTE, dto.getLanguageNote());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
