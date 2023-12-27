@@ -39,7 +39,7 @@ public class AgentRoleAssigner {
     }
   }
 
-  private Agent getAgent(AgentTypeInner agentInner) {
+  public Agent getAgent(AgentTypeInner agentInner) {
     if (agentInner instanceof FamilyField familyField) {
       return familyField.getFamily();
     }

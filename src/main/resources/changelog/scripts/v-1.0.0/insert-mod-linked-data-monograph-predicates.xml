@@ -86,4 +86,11 @@
       <column name="predicate" value="http://bibfra.me/vocab/lite/providerPlace"/>
     </insert>
   </changeSet>
+
+  <changeSet id="02_insert_predicate_lookup" author="Askhat_Abishev@epam.com">
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-6596442569246316195"/>
+      <column name="predicate" value="http://bibfra.me/vocab/relation/author"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>
