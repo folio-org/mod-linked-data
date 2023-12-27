@@ -3,11 +3,11 @@
 --changeset dfeeney@ebsco.com:3.4_resources dbms:postgresql
 CREATE TABLE if not exists resources (
   resource_hash bigint not null primary key,
-  doc jsonb not null,
-  label text not null,
+  doc jsonb null,
+  label text null,
   resource_uri text,
-  created_event_id bigint not null,
-  updated_event_id bigint not null,
+  created_event_id bigint null,
+  updated_event_id bigint null,
   active_event_id bigint null,
   inventory_id uuid,
   srs_id uuid,

@@ -2,7 +2,6 @@ package org.folio.linked.data.e2e;
 
 import static java.lang.String.format;
 import static java.lang.String.join;
-import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
@@ -110,6 +109,7 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -180,7 +180,7 @@ public class ResourceControllerIT {
 
   @BeforeEach
   public void clean() {
-    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resources");
+    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources");
   }
 
   @Test
@@ -437,10 +437,13 @@ public class ResourceControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-      resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE)),
-      resourceRepo.save(TestUtil.getSampleInstanceResource(2L, INSTANCE)),
-      resourceRepo.save(TestUtil.getSampleInstanceResource(3L, INSTANCE))
-    ).stream().sorted(comparing(Resource::getResourceHash)).toList();
+        resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE)),
+        resourceRepo.save(TestUtil.getSampleInstanceResource(2L, INSTANCE)),
+        resourceRepo.save(TestUtil.getSampleInstanceResource(3L, INSTANCE))
+      ).stream()
+      .map(Resource::getResourceHash)
+      .map(Object::toString)
+      .toList();
     var requestBuilder = get(BIBFRAME_URL)
       .param(TYPE, INSTANCE.getUri())
       .contentType(APPLICATION_JSON)
@@ -457,9 +460,7 @@ public class ResourceControllerIT {
       .andExpect(jsonPath("total_pages", equalTo(1)))
       .andExpect(jsonPath("total_elements", equalTo(3)))
       .andExpect(jsonPath("content", hasSize(3)))
-      .andExpect(jsonPath("content[0].id", equalTo(existed.get(0).getResourceHash().toString())))
-      .andExpect(jsonPath("content[1].id", equalTo(existed.get(1).getResourceHash().toString())))
-      .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getResourceHash().toString())));
+      .andExpect(jsonPath("content[*].id", containsInAnyOrder(existed.toArray())));
   }
 
   @Test
