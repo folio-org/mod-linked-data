@@ -467,6 +467,9 @@
                 ],
                 "http://bibfra.me/vocab/marc/lcnafId": [
                   "2002801801-PERSON"
+                ],
+                "_roles": [
+                  "http://bibfra.me/vocab/relation/author"
                 ]
               }
             },
@@ -477,6 +480,10 @@
                 ],
                 "http://bibfra.me/vocab/marc/lcnafId": [
                   "2002801801-ORGANIZATION"
+                ],
+                "_roles": [
+                  "http://bibfra.me/vocab/relation/author",
+                  "http://bibfra.me/vocab/relation/editor"
                 ]
               }
             },

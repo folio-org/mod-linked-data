@@ -16,7 +16,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -91,18 +90,11 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
         if (nonNull(resource.getDoc()) || isNotEmpty(resource.getOutgoingEdges())) {
           source.getOutgoingEdges().add(new ResourceEdge(source, resource, predicate));
           Optional.ofNullable(agentRoleAssigner.getAgent(dto).getRoles())
-            .ifPresent(roles -> roles.forEach(role ->
-              source.getOutgoingEdges().add(new ResourceEdge(source, resource, getPredicate(role)))));
+            .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
+              .ifPresent(p -> source.getOutgoingEdges().add(new ResourceEdge(source, resource, p)))));
         }
       }
     }
-  }
-
-  private Predicate getPredicate(String role) {
-    return Arrays.stream(PredicateDictionary.values())
-      .filter(predicate -> predicate.getUri().equals(role))
-      .findFirst()
-      .orElseThrow();
   }
 
   private JsonNode getDoc(Work dto) {

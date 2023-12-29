@@ -5,12 +5,15 @@ import static java.lang.String.join;
 import static java.util.Comparator.comparing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
+import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
@@ -162,7 +165,9 @@ import org.springframework.test.web.servlet.ResultActions;
 @IntegrationTest
 public class ResourceControllerIT {
 
-  public static final String BIBFRAME_URL = "/resource";
+  private static final String BIBFRAME_URL = "/resource";
+  private static final String ROLES_PROPERTY = "_roles";
+
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -468,7 +473,7 @@ public class ResourceControllerIT {
     var existed = resourceRepo.save(getSampleInstanceResource());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(29);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(28);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(31);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -480,7 +485,7 @@ public class ResourceControllerIT {
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
     assertThat(resourceRepo.count()).isEqualTo(28);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(10);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(13);
     checkKafkaMessageDeletedSent(existed.getResourceHash());
   }
 
@@ -659,9 +664,12 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkDeweyCode(), equalTo("Dewey: code")))
       .andExpect(jsonPath(toWorkDeweySource(), equalTo("Dewey: source")))
       .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo("Person: name")))
+      .andExpect(jsonPath(toWorkCreatorPersonRole(), equalTo(AUTHOR.getUri())))
       .andExpect(jsonPath(toWorkCreatorPersonLcnafId(), equalTo("Person: lcnafId")))
       .andExpect(jsonPath(toWorkContributorOrgName(), equalTo("Organization: name")))
       .andExpect(jsonPath(toWorkContributorOrgLcnafId(), equalTo("Organization: lcnafId")))
+      .andExpect(jsonPath(toWorkContributorOrgRoles(), equalTo(
+        new JSONArray().appendElement(EDITOR.getUri()).appendElement(ASSIGNEE.getUri()))))
       .andExpect(jsonPath(toWorkContentLink(), equalTo("Content: link")))
       .andExpect(jsonPath(toWorkContentCode(), equalTo("Content: code")))
       .andExpect(jsonPath(toWorkContentTerm(), equalTo("Content: term")));
@@ -1003,10 +1011,13 @@ public class ResourceControllerIT {
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
     validateWorkContentType(edgeIterator.next(), instantiates);
     validateWorkClassification(edgeIterator.next(), instantiates);
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, AUTHOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, EDITOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CONTRIBUTOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, AUTHOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
@@ -1483,12 +1494,21 @@ public class ResourceControllerIT {
       arrayPath(NAME.getValue()));
   }
 
+  private String toWorkContributorOrgRoles() {
+    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+      dynamicArrayPath(ROLES_PROPERTY));
+  }
+
   private String toWorkCreatorPersonLcnafId() {
     return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(LCNAF_ID.getValue()));
   }
 
   private String toWorkCreatorPersonName() {
     return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME.getValue()));
+  }
+
+  private String toWorkCreatorPersonRole() {
+    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(ROLES_PROPERTY));
   }
 
   private String toWorkContentTerm() {
