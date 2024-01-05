@@ -31,12 +31,10 @@ import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATA_QUALITY;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
@@ -48,7 +46,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
-import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
 import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
@@ -57,7 +54,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
@@ -68,7 +64,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.OTHER_EVENT_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
@@ -77,17 +72,13 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DAT
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
-import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.SCALE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.STUDY_PROGRAM_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
-import static org.folio.ld.dictionary.PropertyDictionary.SUPPLEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
 import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
@@ -125,6 +116,7 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -179,6 +171,9 @@ public class ResourceControllerIT {
 
   private static final String BIBFRAME_URL = "/resource";
   private static final String ROLES_PROPERTY = "_roles";
+  private static final String NOTES_PROPERTY = "_notes";
+  private static final String VALUE_PROPERTY = "value";
+  private static final String TYPE_PROPERTY = "type";
 
   @Autowired
   private MockMvc mockMvc;
@@ -582,36 +577,30 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
       .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
       .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
-      .andExpect(jsonPath(toAccessibilityNote(), equalTo("accessibility note")))
-      .andExpect(jsonPath(toAdditionalPhysicalForm(), equalTo("additional physical form")))
-      .andExpect(jsonPath(toCitationCoverage(), equalTo("citation coverage")))
-      .andExpect(jsonPath(toComputerDataNote(), equalTo("computer data note")))
-      .andExpect(jsonPath(toCreditsNote(), equalTo("credits note")))
-      .andExpect(jsonPath(toDatesOfPublicationNote(), equalTo("dates of publication note")))
-      .andExpect(jsonPath(toDescriptionSourceNote(), equalTo("description source note")))
-      .andExpect(jsonPath(toEntityAndAttributeInformation(), equalTo("entity and attribute information")))
-      .andExpect(jsonPath(toExhibitionsNote(), equalTo("exhibitions note")))
-      .andExpect(jsonPath(toFormerTitleNote(), equalTo("former title note")))
-      .andExpect(jsonPath(toFundingInformation(), equalTo("funding information")))
-      .andExpect(jsonPath(toGoverningAccessNote(), equalTo("governing access note")))
-      .andExpect(jsonPath(toInformationAboutDocumentation(), equalTo("information about documentation")))
-      .andExpect(jsonPath(toInformationRelatingToCopyrightStatus(), equalTo(
-        "information relating to copyright status")))
-      .andExpect(jsonPath(toIssuanceNote(), equalTo("issuance note")))
-      .andExpect(jsonPath(toIssuingBody(), equalTo("issuing body")))
-      .andExpect(jsonPath(toLocationOfOriginalsDuplicates(), equalTo("location of originals duplicates")))
-      .andExpect(jsonPath(toLocationOfOtherArchivalMaterial(), equalTo("location of other archival material")))
-      .andExpect(jsonPath(toNote(), equalTo("note")))
-      .andExpect(jsonPath(toOriginalVersionNote(), equalTo("original version note")))
-      .andExpect(jsonPath(toParticipantNote(), equalTo("participant note")))
-      .andExpect(jsonPath(toPhysicalDescription(), equalTo("physical description")))
-      .andExpect(jsonPath(toPublicationFrequency(), equalTo("publication frequency")))
-      .andExpect(jsonPath(toRelatedParts(), equalTo("related parts")))
-      .andExpect(jsonPath(toReproductionNote(), equalTo("reproduction note")))
-      .andExpect(jsonPath(toSystemDetails(), equalTo("system details")))
-      .andExpect(jsonPath(toSystemDetailsAccessNote(), equalTo("system details access note")))
-      .andExpect(jsonPath(toTypeOfReport(), equalTo("type of report")))
-      .andExpect(jsonPath(toWithNote(), equalTo("with note")))
+      .andExpect(jsonPath(toInstanceNotesValues(), containsInAnyOrder("accessibility note", "additional physical form",
+        "citation coverage", "computer data note", "credits note", "dates of publication note",
+        "description source note", "entity and attribute information", "exhibitions note", "former title note",
+        "funding information", "governing access note", "information about documentation",
+        "information relating to copyright status", "issuance note", "issuing body", "location of originals duplicates",
+        "location of other archival material", "note", "original version note", "participant note",
+        "physical description", "publication frequency", "related parts", "reproduction note", "system details",
+        "system details access note", "type of report", "with note")))
+      .andExpect(jsonPath(toInstanceNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
+        "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/governingAccessNote",
+        "http://bibfra.me/vocab/marc/creditsNote", "http://bibfra.me/vocab/marc/participantNote",
+        "http://bibfra.me/vocab/marc/typeOfReport", "http://bibfra.me/vocab/marc/issuanceNote",
+        "http://bibfra.me/vocab/marc/computerDataNote", "http://bibfra.me/vocab/marc/citationCoverage",
+        "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/accessibilityNote",
+        "http://bibfra.me/vocab/marc/reproductionNote", "http://bibfra.me/vocab/marc/originalVersionNote",
+        "http://bibfra.me/vocab/marc/locationOfOriginalsDuplicates", "http://bibfra.me/vocab/marc/fundingInformation",
+        "http://bibfra.me/vocab/marc/informationRelatingToCopyrightStatus", "http://bibfra.me/vocab/marc/relatedParts",
+        "http://bibfra.me/vocab/marc/formerTitleNote", "http://bibfra.me/vocab/marc/issuingBody",
+        "http://bibfra.me/vocab/marc/entityAndAttributeInformation",
+        "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
+        "http://bibfra.me/vocab/marc/informationAboutDocumentation", "http://bibfra.me/vocab/marc/exhibitionsNote",
+        "http://bibfra.me/vocab/marc/descriptionSourceNote", "http://bibfra.me/vocab/marc/systemDetails",
+        "http://bibfra.me/vocab/marc/systemDetailsAccessNote", "http://bibfra.me/vocab/marc/physicalDescription",
+        "http://bibfra.me/vocab/marc/publicationFrequency", "http://bibfra.me/vocab/marc/datesOfPublicationNote")))
       .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
       .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
       .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
@@ -675,15 +664,14 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkSummary(), equalTo("summary text")))
       .andExpect(jsonPath(toWorkTableOfContents(), equalTo("table of contents")))
       .andExpect(jsonPath(toWorkResponsibilityStatement(), equalTo("statement of responsibility")))
-      .andExpect(jsonPath(toWorkBibliographyNote(), equalTo("bibliography note")))
-      .andExpect(jsonPath(toWorkScaleNote(), equalTo("scale note")))
-      .andExpect(jsonPath(toWorkReferences(), equalTo("references")))
-      .andExpect(jsonPath(toWorkDataQuality(), equalTo("data quality")))
-      .andExpect(jsonPath(toWorkOtherEventInformation(), equalTo("other event information")))
-      .andExpect(jsonPath(toWorkGeographicCoverage(), equalTo("geographic coverage")))
-      .andExpect(jsonPath(toWorkSupplement(), equalTo("supplement")))
-      .andExpect(jsonPath(toWorkStudyProgramName(), equalTo("study program name")))
-      .andExpect(jsonPath(toWorkLanguageNote(), equalTo("language note")))
+      .andExpect(jsonPath(toWorkNotesValues(), containsInAnyOrder("supplement", "study program name", "data quality",
+        "other event information", "language note", "bibliography note", "geographic coverage", "references",
+        "scale note")))
+      .andExpect(jsonPath(toWorkNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/marc/supplement",
+        "http://bibfra.me/vocab/marc/studyProgramName", "http://bibfra.me/vocab/marc/dataQuality",
+        "http://bibfra.me/vocab/marc/otherEventInformation", "http://bibfra.me/vocab/marc/languageNote",
+        "http://bibfra.me/vocab/marc/bibliographyNote", "http://bibfra.me/vocab/marc/geographicCoverage",
+        "http://bibfra.me/vocab/marc/references", "http://bibfra.me/vocab/marc/scaleNote")))
       .andExpect(jsonPath(toWorkDeweyCode(), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(), equalTo("ddc")))
       .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
@@ -1188,120 +1176,12 @@ public class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(ISSUANCE.getValue()));
   }
 
-  private String toNote() {
-    return join(".", toInstance(), arrayPath(NOTE.getValue()));
+  private String toInstanceNotesValues() {
+    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
   }
 
-  private String toWithNote() {
-    return join(".", toInstance(), arrayPath(WITH_NOTE.getValue()));
-  }
-
-  private String toGoverningAccessNote() {
-    return join(".", toInstance(), arrayPath(GOVERNING_ACCESS_NOTE.getValue()));
-  }
-
-  private String toCreditsNote() {
-    return join(".", toInstance(), arrayPath(CREDITS_NOTE.getValue()));
-  }
-
-  private String toParticipantNote() {
-    return join(".", toInstance(), arrayPath(PARTICIPANT_NOTE.getValue()));
-  }
-
-  private String toTypeOfReport() {
-    return join(".", toInstance(), arrayPath(TYPE_OF_REPORT.getValue()));
-  }
-
-  private String toIssuanceNote() {
-    return join(".", toInstance(), arrayPath(ISSUANCE_NOTE.getValue()));
-  }
-
-  private String toComputerDataNote() {
-    return join(".", toInstance(), arrayPath(COMPUTER_DATA_NOTE.getValue()));
-  }
-
-  private String toCitationCoverage() {
-    return join(".", toInstance(), arrayPath(CITATION_COVERAGE.getValue()));
-  }
-
-  private String toAdditionalPhysicalForm() {
-    return join(".", toInstance(), arrayPath(ADDITIONAL_PHYSICAL_FORM.getValue()));
-  }
-
-  private String toAccessibilityNote() {
-    return join(".", toInstance(), arrayPath(ACCESSIBILITY_NOTE.getValue()));
-  }
-
-  private String toReproductionNote() {
-    return join(".", toInstance(), arrayPath(REPRODUCTION_NOTE.getValue()));
-  }
-
-  private String toOriginalVersionNote() {
-    return join(".", toInstance(), arrayPath(ORIGINAL_VERSION_NOTE.getValue()));
-  }
-
-  private String toLocationOfOriginalsDuplicates() {
-    return join(".", toInstance(), arrayPath(LOCATION_OF_ORIGINALS_DUPLICATES.getValue()));
-  }
-
-  private String toFundingInformation() {
-    return join(".", toInstance(), arrayPath(FUNDING_INFORMATION.getValue()));
-  }
-
-  private String toInformationRelatingToCopyrightStatus() {
-    return join(".", toInstance(), arrayPath(INFORMATION_RELATING_TO_COPYRIGHT_STATUS.getValue()));
-  }
-
-  private String toRelatedParts() {
-    return join(".", toInstance(), arrayPath(RELATED_PARTS.getValue()));
-  }
-
-  private String toFormerTitleNote() {
-    return join(".", toInstance(), arrayPath(FORMER_TITLE_NOTE.getValue()));
-  }
-
-  private String toIssuingBody() {
-    return join(".", toInstance(), arrayPath(ISSUING_BODY.getValue()));
-  }
-
-  private String toEntityAndAttributeInformation() {
-    return join(".", toInstance(), arrayPath(ENTITY_AND_ATTRIBUTE_INFORMATION.getValue()));
-  }
-
-  private String toLocationOfOtherArchivalMaterial() {
-    return join(".", toInstance(), arrayPath(LOCATION_OF_OTHER_ARCHIVAL_MATERIAL.getValue()));
-  }
-
-  private String toInformationAboutDocumentation() {
-    return join(".", toInstance(), arrayPath(INFORMATION_ABOUT_DOCUMENTATION.getValue()));
-  }
-
-  private String toExhibitionsNote() {
-    return join(".", toInstance(), arrayPath(EXHIBITIONS_NOTE.getValue()));
-  }
-
-  private String toDescriptionSourceNote() {
-    return join(".", toInstance(), arrayPath(DESCRIPTION_SOURCE_NOTE.getValue()));
-  }
-
-  private String toSystemDetails() {
-    return join(".", toInstance(), arrayPath(SYSTEM_DETAILS.getValue()));
-  }
-
-  private String toSystemDetailsAccessNote() {
-    return join(".", toInstance(), arrayPath(SYSTEM_DETAILS_ACCESS_NOTE.getValue()));
-  }
-
-  private String toPhysicalDescription() {
-    return join(".", toInstance(), arrayPath(PHYSICAL_DESCRIPTION.getValue()));
-  }
-
-  private String toPublicationFrequency() {
-    return join(".", toInstance(), arrayPath(PUBLICATION_FREQUENCY.getValue()));
-  }
-
-  private String toDatesOfPublicationNote() {
-    return join(".", toInstance(), arrayPath(DATES_OF_PUBLICATION_NOTE.getValue()));
+  private String toInstanceNotesTypes() {
+    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
   private String toParallelTitlePartName() {
@@ -1499,40 +1379,12 @@ public class ResourceControllerIT {
     return join(".", toWork(), arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
 
-  private String toWorkBibliographyNote() {
-    return join(".", toWork(), arrayPath(BIBLIOGRAPHY_NOTE.getValue()));
+  private String toWorkNotesValues() {
+    return join(".", toWork(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
   }
 
-  private String toWorkScaleNote() {
-    return join(".", toWork(), arrayPath(SCALE_NOTE.getValue()));
-  }
-
-  private String toWorkReferences() {
-    return join(".", toWork(), arrayPath(REFERENCES.getValue()));
-  }
-
-  private String toWorkDataQuality() {
-    return join(".", toWork(), arrayPath(DATA_QUALITY.getValue()));
-  }
-
-  private String toWorkOtherEventInformation() {
-    return join(".", toWork(), arrayPath(OTHER_EVENT_INFORMATION.getValue()));
-  }
-
-  private String toWorkGeographicCoverage() {
-    return join(".", toWork(), arrayPath(GEOGRAPHIC_COVERAGE.getValue()));
-  }
-
-  private String toWorkSupplement() {
-    return join(".", toWork(), arrayPath(SUPPLEMENT.getValue()));
-  }
-
-  private String toWorkStudyProgramName() {
-    return join(".", toWork(), arrayPath(STUDY_PROGRAM_NAME.getValue()));
-  }
-
-  private String toWorkLanguageNote() {
-    return join(".", toWork(), arrayPath(LANGUAGE_NOTE.getValue()));
+  private String toWorkNotesTypes() {
+    return join(".", toWork(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
   private String toWorkTableOfContents() {

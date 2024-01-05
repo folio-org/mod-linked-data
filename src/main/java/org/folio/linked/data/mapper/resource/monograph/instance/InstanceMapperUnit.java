@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.instance;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
@@ -56,7 +57,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
@@ -67,6 +70,7 @@ import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.top.TopResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
@@ -75,8 +79,17 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = INSTANCE)
 public class InstanceMapperUnit implements TopResourceMapperUnit {
 
+  private static final Set<PropertyDictionary> NOTE_PROPS = Set.of(ACCESSIBILITY_NOTE, ADDITIONAL_PHYSICAL_FORM,
+    CITATION_COVERAGE, COMPUTER_DATA_NOTE, CREDITS_NOTE, DATES_OF_PUBLICATION_NOTE, DESCRIPTION_SOURCE_NOTE,
+    ENTITY_AND_ATTRIBUTE_INFORMATION, EXHIBITIONS_NOTE, FORMER_TITLE_NOTE, FUNDING_INFORMATION, GOVERNING_ACCESS_NOTE,
+    INFORMATION_ABOUT_DOCUMENTATION, INFORMATION_RELATING_TO_COPYRIGHT_STATUS, ISSUANCE_NOTE, ISSUING_BODY,
+    LOCATION_OF_ORIGINALS_DUPLICATES, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE,
+    PARTICIPANT_NOTE, PHYSICAL_DESCRIPTION, PUBLICATION_FREQUENCY, RELATED_PARTS, REPRODUCTION_NOTE, SYSTEM_DETAILS,
+    SYSTEM_DETAILS_ACCESS_NOTE, TYPE_OF_REPORT, WITH_NOTE);
+
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
+  private final NoteMapper noteMapper;
 
   @Override
   public ResourceDto toDto(Resource source, ResourceDto destination) {
@@ -85,6 +98,10 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     instanceField.getInstance().setId(String.valueOf(source.getResourceHash()));
     instanceField.getInstance().setInventoryId(source.getInventoryId());
     instanceField.getInstance().setSrsId(source.getSrsId());
+
+    ofNullable(source.getDoc())
+      .ifPresent(doc -> instanceField.getInstance().setNotes(noteMapper.toNotes(doc, NOTE_PROPS)));
+
     return destination.resource(instanceField);
   }
 
@@ -144,35 +161,9 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     putProperty(map, EDITION_STATEMENT, dto.getEdition());
     putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
     putProperty(map, ISSUANCE, dto.getIssuance());
-    putProperty(map, ACCESSIBILITY_NOTE, dto.getAccessibilityNote());
-    putProperty(map, ADDITIONAL_PHYSICAL_FORM, dto.getAdditionalPhysicalForm());
-    putProperty(map, CITATION_COVERAGE, dto.getCitationCoverage());
-    putProperty(map, COMPUTER_DATA_NOTE, dto.getComputerDataNote());
-    putProperty(map, CREDITS_NOTE, dto.getCreditsNote());
-    putProperty(map, DATES_OF_PUBLICATION_NOTE, dto.getDatesOfPublicationNote());
-    putProperty(map, DESCRIPTION_SOURCE_NOTE, dto.getDescriptionSourceNote());
-    putProperty(map, ENTITY_AND_ATTRIBUTE_INFORMATION, dto.getEntityAndAttributeInformation());
-    putProperty(map, EXHIBITIONS_NOTE, dto.getExhibitionsNote());
-    putProperty(map, FORMER_TITLE_NOTE, dto.getFormerTitleNote());
-    putProperty(map, FUNDING_INFORMATION, dto.getFundingInformation());
-    putProperty(map, GOVERNING_ACCESS_NOTE, dto.getGoverningAccessNote());
-    putProperty(map, INFORMATION_ABOUT_DOCUMENTATION, dto.getInformationAboutDocumentation());
-    putProperty(map, INFORMATION_RELATING_TO_COPYRIGHT_STATUS, dto.getInformationRelatingToCopyrightStatus());
-    putProperty(map, ISSUANCE_NOTE, dto.getIssuanceNote());
-    putProperty(map, ISSUING_BODY, dto.getIssuingBody());
-    putProperty(map, LOCATION_OF_ORIGINALS_DUPLICATES, dto.getLocationOfOriginalsDuplicates());
-    putProperty(map, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, dto.getLocationOfOtherArchivalMaterial());
-    putProperty(map, NOTE, dto.getNote());
-    putProperty(map, ORIGINAL_VERSION_NOTE, dto.getOriginalVersionNote());
-    putProperty(map, PARTICIPANT_NOTE, dto.getParticipantNote());
-    putProperty(map, PHYSICAL_DESCRIPTION, dto.getPhysicalDescription());
-    putProperty(map, PUBLICATION_FREQUENCY, dto.getPublicationFrequency());
-    putProperty(map, RELATED_PARTS, dto.getRelatedParts());
-    putProperty(map, REPRODUCTION_NOTE, dto.getReproductionNote());
-    putProperty(map, SYSTEM_DETAILS, dto.getSystemDetails());
-    putProperty(map, SYSTEM_DETAILS_ACCESS_NOTE, dto.getSystemDetailsAccessNote());
-    putProperty(map, TYPE_OF_REPORT, dto.getTypeOfReport());
-    putProperty(map, WITH_NOTE, dto.getWithNote());
+
+    noteMapper.putNotes(dto.getNotes(), map);
+
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 

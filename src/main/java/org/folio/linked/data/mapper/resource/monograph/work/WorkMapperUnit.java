@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.work;
 
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
@@ -27,9 +28,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import lombok.NonNull;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.AgentTypeInner;
 import org.folio.linked.data.domain.dto.Instance;
@@ -37,6 +40,7 @@ import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
 import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.model.entity.Resource;
@@ -47,15 +51,22 @@ import org.springframework.stereotype.Component;
 @Component
 @MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = Work.class)
 public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
+
+  private static final Set<PropertyDictionary> NOTE_PROPS = Set.of(BIBLIOGRAPHY_NOTE, DATA_QUALITY, GEOGRAPHIC_COVERAGE,
+    LANGUAGE_NOTE, OTHER_EVENT_INFORMATION, REFERENCES, SCALE_NOTE, STUDY_PROGRAM_NAME, SUPPLEMENT);
+
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
   private final AgentRoleAssigner agentRoleAssigner;
+  private final NoteMapper noteMapper;
 
 
-  public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner) {
+  public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner,
+                        NoteMapper noteMapper) {
     this.coreMapper = coreMapper;
     this.mapper = mapper;
     this.agentRoleAssigner = roleAssigner;
+    this.noteMapper = noteMapper;
   }
 
   @Override
@@ -73,6 +84,9 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     if (work.getContributor() != null) {
       work.getContributor().forEach(contributor -> agentRoleAssigner.assignRoles(contributor, source));
     }
+
+    ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, NOTE_PROPS)));
+
     destination.addInstantiatesItem(work);
   }
 
@@ -112,15 +126,9 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     putProperty(map, LANGUAGE, dto.getLanguage());
     putProperty(map, SUMMARY, dto.getSummary());
     putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());
-    putProperty(map, BIBLIOGRAPHY_NOTE, dto.getBibliographyNote());
-    putProperty(map, SCALE_NOTE, dto.getScaleNote());
-    putProperty(map, REFERENCES, dto.getReferences());
-    putProperty(map, DATA_QUALITY, dto.getDataQuality());
-    putProperty(map, OTHER_EVENT_INFORMATION, dto.getOtherEventInformation());
-    putProperty(map, GEOGRAPHIC_COVERAGE, dto.getGeographicCoverage());
-    putProperty(map, SUPPLEMENT, dto.getSupplement());
-    putProperty(map, STUDY_PROGRAM_NAME, dto.getStudyProgramName());
-    putProperty(map, LANGUAGE_NOTE, dto.getLanguageNote());
+
+    noteMapper.putNotes(dto.getNotes(), map);
+
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
