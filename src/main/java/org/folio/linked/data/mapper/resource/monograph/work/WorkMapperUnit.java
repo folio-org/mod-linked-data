@@ -1,7 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.work;
 
 import static java.util.Objects.nonNull;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
@@ -87,7 +86,7 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     if (nonNull(dtoList)) {
       for (var dto : dtoList) {
         var resource = mapper.toEntity(dto, predicate, Work.class);
-        if (nonNull(resource.getDoc()) || isNotEmpty(resource.getOutgoingEdges())) {
+        if (nonNull(resource.getDoc())) {
           source.getOutgoingEdges().add(new ResourceEdge(source, resource, predicate));
           Optional.ofNullable(agentRoleAssigner.getAgent(dto).getRoles())
             .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
