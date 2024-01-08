@@ -7,15 +7,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
-import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
-import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -675,7 +672,7 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkDeweyCode(), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(), equalTo("ddc")))
       .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
-      .andExpect(jsonPath(toWorkCreatorPersonRole(), equalTo(AUTHOR.getUri())))
+      .andExpect(jsonPath(toWorkCreatorPersonRole(), equalTo(new JSONArray().appendElement(AUTHOR.getUri()))))
       .andExpect(jsonPath(toWorkCreatorPersonLcnafId(), equalTo(new JSONArray().appendElement("2002801801-PERSON"))))
       .andExpect(jsonPath(toWorkCreatorMeetingName(), equalTo(new JSONArray().appendElement("name-MEETING"))))
       .andExpect(jsonPath(toWorkCreatorMeetingLcnafId(), equalTo(new JSONArray().appendElement("2002801801-MEETING"))))
@@ -1030,10 +1027,10 @@ public class ResourceControllerIT {
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
     validateWorkContentType(edgeIterator.next(), instantiates);
     validateWorkClassification(edgeIterator.next(), instantiates);
-    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, AUTHOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, EDITOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, ASSIGNEE.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CONTRIBUTOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, AUTHOR.getUri());
@@ -1433,7 +1430,7 @@ public class ResourceControllerIT {
   }
 
   private String toWorkContributorOrgRoles() {
-    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
       dynamicArrayPath(ROLES_PROPERTY));
   }
 
@@ -1477,7 +1474,7 @@ public class ResourceControllerIT {
   }
 
   private String toWorkCreatorPersonRole() {
-    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(ROLES_PROPERTY));
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(ROLES_PROPERTY));
   }
 
   private String toWorkCreatorMeetingName() {

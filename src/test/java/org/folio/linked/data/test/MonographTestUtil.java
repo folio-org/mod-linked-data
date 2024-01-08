@@ -5,15 +5,12 @@ import static java.util.Map.entry;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
-import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
-import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -424,11 +421,11 @@ public class MonographTestUtil {
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
     pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
-    pred2OutgoingResources.put(AUTHOR, List.of(person));
+    pred2OutgoingResources.put(AUTHOR, List.of(creatorPerson));
     pred2OutgoingResources.put(CONTRIBUTOR, List.of(contributorPerson, contributorMeeting, contributorOrganization,
       contributorFamily));
-    pred2OutgoingResources.put(EDITOR, List.of(organization));
-    pred2OutgoingResources.put(ASSIGNEE, List.of(organization));
+    pred2OutgoingResources.put(EDITOR, List.of(contributorOrganization));
+    pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
     pred2OutgoingResources.put(CONTENT, List.of(content));
 
     return createResource(
