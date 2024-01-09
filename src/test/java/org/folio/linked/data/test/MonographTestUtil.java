@@ -22,58 +22,46 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.ENTITY_AND_ATTRIBUTE_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
-import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
-import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
@@ -83,6 +71,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -90,6 +79,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -275,33 +265,18 @@ public class MonographTestUtil {
         entry(EDITION_STATEMENT, List.of("edition statement")),
         entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),
         entry(ISSUANCE, List.of("single unit")),
-        entry(ACCESSIBILITY_NOTE, List.of("accessibility note")),
         entry(ADDITIONAL_PHYSICAL_FORM, List.of("additional physical form")),
-        entry(CITATION_COVERAGE, List.of("citation coverage")),
         entry(COMPUTER_DATA_NOTE, List.of("computer data note")),
-        entry(CREDITS_NOTE, List.of("credits note")),
-        entry(DATES_OF_PUBLICATION_NOTE, List.of("dates of publication note")),
         entry(DESCRIPTION_SOURCE_NOTE, List.of("description source note")),
-        entry(ENTITY_AND_ATTRIBUTE_INFORMATION, List.of("entity and attribute information")),
         entry(EXHIBITIONS_NOTE, List.of("exhibitions note")),
-        entry(FORMER_TITLE_NOTE, List.of("former title note")),
         entry(FUNDING_INFORMATION, List.of("funding information")),
-        entry(GOVERNING_ACCESS_NOTE, List.of("governing access note")),
-        entry(INFORMATION_ABOUT_DOCUMENTATION, List.of("information about documentation")),
-        entry(INFORMATION_RELATING_TO_COPYRIGHT_STATUS, List.of("information relating to copyright status")),
         entry(ISSUANCE_NOTE, List.of("issuance note")),
         entry(ISSUING_BODY, List.of("issuing body")),
-        entry(LOCATION_OF_ORIGINALS_DUPLICATES, List.of("location of originals duplicates")),
         entry(LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, List.of("location of other archival material")),
         entry(NOTE, List.of("note")),
         entry(ORIGINAL_VERSION_NOTE, List.of("original version note")),
-        entry(PARTICIPANT_NOTE, List.of("participant note")),
-        entry(PHYSICAL_DESCRIPTION, List.of("physical description")),
-        entry(PUBLICATION_FREQUENCY, List.of("publication frequency")),
         entry(RELATED_PARTS, List.of("related parts")),
         entry(REPRODUCTION_NOTE, List.of("reproduction note")),
-        entry(SYSTEM_DETAILS, List.of("system details")),
-        entry(SYSTEM_DETAILS_ACCESS_NOTE, List.of("system details access note")),
         entry(TYPE_OF_REPORT, List.of("type of report")),
         entry(WITH_NOTE, List.of("with note"))
       ),
@@ -317,9 +292,9 @@ public class MonographTestUtil {
   public static Resource createSampleWork() {
     var content = createResource(
       Map.of(
-        TERM, List.of("Content: term"),
-        LINK, List.of("Content: link"),
-        CODE, List.of("Content: code")
+        TERM, List.of("text"),
+        LINK, List.of("http://id.loc.gov/vocabulary/contentTypes/txt"),
+        CODE, List.of("txt")
       ),
       Set.of(CATEGORY),
       emptyMap()
@@ -327,46 +302,105 @@ public class MonographTestUtil {
 
     var deweyClassification = createResource(
       Map.of(
-        CODE, List.of("Dewey: code"),
-        SOURCE, List.of("Dewey: source")
+        CODE, List.of("709.83"),
+        SOURCE, List.of("ddc")
       ),
       Set.of(CATEGORY),
       emptyMap()
     ).setLabel("Dewey: label");
 
-    var person = createResource(
+    var creatorPerson = createResource(
       Map.of(
-        NAME, List.of("Person: name"),
-        LCNAF_ID, List.of("Person: lcnafId")
+        NAME, List.of("name-PERSON"),
+        LCNAF_ID, List.of("2002801801-PERSON")
       ),
       Set.of(PERSON),
       emptyMap()
     );
 
-    var organization = createResource(
+    var creatorMeeting = createResource(
       Map.of(
-        NAME, List.of("Organization: name"),
-        LCNAF_ID, List.of("Organization: lcnafId")
+        NAME, List.of("name-MEETING"),
+        LCNAF_ID, List.of("2002801801-MEETING")
+      ),
+      Set.of(MEETING),
+      emptyMap()
+    );
+
+    var creatorOrganization = createResource(
+      Map.of(
+        NAME, List.of("name-ORGANIZATION"),
+        LCNAF_ID, List.of("2002801801-ORGANIZATION")
       ),
       Set.of(ORGANIZATION),
       emptyMap()
     );
 
+    var creatorFamily = createResource(
+      Map.of(
+        NAME, List.of("name-FAMILY"),
+        LCNAF_ID, List.of("2002801801-FAMILY")
+      ),
+      Set.of(FAMILY),
+      emptyMap()
+    );
+
+    var contributorPerson = createResource(
+      Map.of(
+        NAME, List.of("name-PERSON"),
+        LCNAF_ID, List.of("2002801801-PERSON")
+      ),
+      Set.of(PERSON),
+      emptyMap()
+    );
+
+    var contributorMeeting = createResource(
+      Map.of(
+        NAME, List.of("name-MEETING"),
+        LCNAF_ID, List.of("2002801801-MEETING")
+      ),
+      Set.of(MEETING),
+      emptyMap()
+    );
+
+    var contributorOrganization = createResource(
+      Map.of(
+        NAME, List.of("name-ORGANIZATION"),
+        LCNAF_ID, List.of("2002801801-ORGANIZATION")
+      ),
+      Set.of(ORGANIZATION),
+      emptyMap()
+    );
+
+    var contributorFamily = createResource(
+      Map.of(
+        NAME, List.of("name-FAMILY"),
+        LCNAF_ID, List.of("2002801801-FAMILY")
+      ),
+      Set.of(FAMILY),
+      emptyMap()
+    );
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
-    pred2OutgoingResources.put(CREATOR, List.of(person));
-    pred2OutgoingResources.put(AUTHOR, List.of(person));
-    pred2OutgoingResources.put(CONTRIBUTOR, List.of(organization));
-    pred2OutgoingResources.put(EDITOR, List.of(organization));
-    pred2OutgoingResources.put(ASSIGNEE, List.of(organization));
+    pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
+    pred2OutgoingResources.put(AUTHOR, List.of(creatorPerson));
+    pred2OutgoingResources.put(CONTRIBUTOR, List.of(contributorPerson, contributorMeeting, contributorOrganization,
+      contributorFamily));
+    pred2OutgoingResources.put(EDITOR, List.of(contributorOrganization));
+    pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
     pred2OutgoingResources.put(CONTENT, List.of(content));
 
     return createResource(
-      Map.of(
-        TARGET_AUDIENCE, List.of("Work: target audience"),
-        LANGUAGE, List.of("Work: language"),
-        SUMMARY, List.of("Work: summary"),
-        TABLE_OF_CONTENTS, List.of("Work: table of contents")
+      Map.ofEntries(
+        entry(TARGET_AUDIENCE, List.of("target audience")),
+        entry(LANGUAGE, List.of("eng")),
+        entry(SUMMARY, List.of("summary text")),
+        entry(TABLE_OF_CONTENTS, List.of("table of contents")),
+        entry(RESPONSIBILITY_STATEMENT, List.of("statement of responsibility")),
+        entry(BIBLIOGRAPHY_NOTE, List.of("bibliography note")),
+        entry(LANGUAGE_NOTE, List.of("language note", "another note")),
+        entry(NOTE, List.of("note", "another note"))
       ),
       Set.of(WORK),
       pred2OutgoingResources

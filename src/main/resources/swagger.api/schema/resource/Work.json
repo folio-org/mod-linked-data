@@ -43,6 +43,14 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/language"
         },
+        "_notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../noteDto.json"
+          },
+          "x-json-property": "_notes"
+        },
         "classification": {
           "type": "array",
           "items": {
