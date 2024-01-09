@@ -399,8 +399,8 @@ public class MonographTestUtil {
         entry(TABLE_OF_CONTENTS, List.of("table of contents")),
         entry(RESPONSIBILITY_STATEMENT, List.of("statement of responsibility")),
         entry(BIBLIOGRAPHY_NOTE, List.of("bibliography note")),
-        entry(LANGUAGE_NOTE, List.of("language note")),
-        entry(NOTE, List.of("note"))
+        entry(LANGUAGE_NOTE, List.of("language note", "another note")),
+        entry(NOTE, List.of("note", "another note"))
       ),
       Set.of(WORK),
       pred2OutgoingResources

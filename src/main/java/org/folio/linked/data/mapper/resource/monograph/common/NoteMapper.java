@@ -1,6 +1,10 @@
 package org.folio.linked.data.mapper.resource.monograph.common;
 
 import static java.util.Optional.ofNullable;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.StreamSupport.stream;
+import static org.apache.commons.collections4.CollectionUtils.union;
 import static org.folio.ld.dictionary.PropertyDictionary.fromValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -21,18 +25,29 @@ public class NoteMapper {
         var property = fromValue(entry.getKey());
         return property.isPresent() && noteProperties.contains(property.get());
       })
-      .map(entry -> {
-        var noteDto = new NoteDto();
-        noteDto.setValue(List.of(entry.getValue().get(0).textValue()));
-        noteDto.setType(List.of(entry.getKey()));
-        return noteDto;
-      })
+      .flatMap(entry ->
+        stream(spliteratorUnknownSize(entry.getValue().iterator(), ORDERED), false)
+          .map(value -> {
+            var noteDto = new NoteDto();
+            noteDto.setValue(List.of(value.textValue()));
+            noteDto.setType(List.of(entry.getKey()));
+            return noteDto;
+          })
+      )
       .toList();
   }
 
   public void putNotes(List<NoteDto> noteDtos, Map<String, List<String>> map) {
     ofNullable(noteDtos)
-      .ifPresent(notes -> notes.forEach(note -> fromValue(note.getType().get(0))
-        .ifPresent(property -> putProperty(map, property, note.getValue()))));
+      .ifPresent(notes -> notes
+        .forEach(note -> note.getType()
+          .forEach(type -> fromValue(type)
+            .ifPresent(property -> {
+              if (map.containsKey(property.getValue())) {
+                putProperty(map, property, (List<String>) union(map.get(property.getValue()), note.getValue()));
+              } else {
+                putProperty(map, property, note.getValue());
+              }
+            }))));
   }
 }

@@ -3,6 +3,9 @@ package org.folio.linked.data.e2e;
 import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Comparator.comparing;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
@@ -120,6 +123,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
@@ -636,9 +640,11 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkSummary(), equalTo("summary text")))
       .andExpect(jsonPath(toWorkTableOfContents(), equalTo("table of contents")))
       .andExpect(jsonPath(toWorkResponsibilityStatement(), equalTo("statement of responsibility")))
-      .andExpect(jsonPath(toWorkNotesValues(), containsInAnyOrder("language note", "bibliography note", "note")))
+      .andExpect(jsonPath(toWorkNotesValues(), containsInAnyOrder("language note", "bibliography note", "note",
+        "another note", "another note")))
       .andExpect(jsonPath(toWorkNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
-        "http://bibfra.me/vocab/marc/bibliographyNote", "http://bibfra.me/vocab/lite/note")))
+        "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
+        "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
       .andExpect(jsonPath(toWorkDeweyCode(), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(), equalTo("ddc")))
       .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
@@ -722,6 +728,13 @@ public class ResourceControllerIT {
   private void validateLiteral(Resource resource, String field, String value) {
     assertThat(resource.getDoc().get(field).size()).isEqualTo(1);
     assertThat(resource.getDoc().get(field).get(0).asText()).isEqualTo(value);
+  }
+
+  private void validateLiterals(Resource resource, String field, List<String> expectedValues) {
+    var actualValues = resource.getDoc().get(field);
+    assertThat(actualValues.size()).isEqualTo(expectedValues.size());
+    assertThat(stream(spliteratorUnknownSize(actualValues.iterator(), ORDERED), false).map(JsonNode::asText).toList())
+      .hasSameElementsAs(expectedValues);
   }
 
   private void validateInstanceTitle(ResourceEdge edge, Resource source) {
@@ -979,8 +992,8 @@ public class ResourceControllerIT {
     validateLiteral(instantiates, TARGET_AUDIENCE.getValue(), "target audience");
     validateLiteral(instantiates, TABLE_OF_CONTENTS.getValue(), "table of contents");
     validateLiteral(instantiates, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
-    validateLiteral(instantiates, LANGUAGE_NOTE.getValue(), "language note");
-    validateLiteral(instantiates, NOTE.getValue(), "note");
+    validateLiterals(instantiates, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
+    validateLiterals(instantiates, NOTE.getValue(), List.of("note", "another note"));
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
     validateWorkContentType(edgeIterator.next(), instantiates);
     validateWorkClassification(edgeIterator.next(), instantiates);

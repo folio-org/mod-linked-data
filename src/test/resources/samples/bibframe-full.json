@@ -471,6 +471,15 @@
               "type": [
                 "http://bibfra.me/vocab/lite/note"
               ]
+            },
+            {
+              "value": [
+                "another note"
+              ],
+              "type": [
+                "http://bibfra.me/vocab/lite/note",
+                "http://bibfra.me/vocab/marc/languageNote"
+              ]
             }
           ],
           "http://bibfra.me/vocab/marc/targetAudience": [

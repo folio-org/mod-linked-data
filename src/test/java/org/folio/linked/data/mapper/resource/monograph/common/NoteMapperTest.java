@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,7 +35,10 @@ class NoteMapperTest {
       ),
       Arguments.of(
         createDocWithNotes(),
-        List.of(createNote(NOTE.getValue(), "general note"), createNote(ISSUANCE_NOTE.getValue(), "issuance note"))
+        List.of(
+          createNote(List.of(NOTE.getValue()), "general note"),
+          createNote(List.of(ISSUANCE_NOTE.getValue()), "issuance note"),
+          createNote(List.of(ISSUANCE_NOTE.getValue()), "another issuance note"))
       ),
       Arguments.of(
         OBJECT_MAPPER.convertValue(Map.of(), JsonNode.class),
@@ -59,14 +63,18 @@ class NoteMapperTest {
   private static Stream<Arguments> provideNotesAndExpectedMap() {
     return Stream.of(
       Arguments.of(
-        List.of(createNote(NOTE.getValue(), "general note"), createNote(ISSUANCE_NOTE.getValue(), "issuance note")),
+        List.of(
+          createNote(List.of(NOTE.getValue(), WITH_NOTE.getValue()), "note"),
+          createNote(List.of(ISSUANCE_NOTE.getValue()), "issuance note"),
+          createNote(List.of(ISSUANCE_NOTE.getValue()), "another issuance note")),
         Map.of(
-          NOTE.getValue(), List.of("general note"),
-          ISSUANCE_NOTE.getValue(), List.of("issuance note")
+          NOTE.getValue(), List.of("note"),
+          WITH_NOTE.getValue(), List.of("note"),
+          ISSUANCE_NOTE.getValue(), List.of("issuance note", "another issuance note")
         )
       ),
       Arguments.of(
-        List.of(createNote("invalid type", "invalid note")),
+        List.of(createNote(List.of("invalid type"), "invalid note")),
         Map.of()
       ),
       Arguments.of(
@@ -105,13 +113,13 @@ class NoteMapperTest {
     putProperty(map, EXTENT, List.of("extent"));
     putProperty(map, DIMENSIONS, List.of("dimensions"));
     putProperty(map, NOTE, List.of("general note"));
-    putProperty(map, ISSUANCE_NOTE, List.of("issuance note"));
+    putProperty(map, ISSUANCE_NOTE, List.of("issuance note", "another issuance note"));
     return OBJECT_MAPPER.convertValue(map, JsonNode.class);
   }
 
-  private static NoteDto createNote(String type, String value) {
+  private static NoteDto createNote(List<String> types, String value) {
     var note = new NoteDto();
-    note.setType(List.of(type));
+    note.setType(types);
     note.setValue(List.of(value));
     return note;
   }
