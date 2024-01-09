@@ -341,30 +341,6 @@
         },
         {
           "value": [
-            "governing access note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/governingAccessNote"
-          ]
-        },
-        {
-          "value": [
-            "credits note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/creditsNote"
-          ]
-        },
-        {
-          "value": [
-            "participant note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/participantNote"
-          ]
-        },
-        {
-          "value": [
             "type of report"
           ],
           "type": [
@@ -389,26 +365,10 @@
         },
         {
           "value": [
-            "citation coverage"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/citationCoverage"
-          ]
-        },
-        {
-          "value": [
             "additional physical form"
           ],
           "type": [
             "http://bibfra.me/vocab/marc/additionalPhysicalForm"
-          ]
-        },
-        {
-          "value": [
-            "accessibility note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/accessibilityNote"
           ]
         },
         {
@@ -429,26 +389,10 @@
         },
         {
           "value": [
-            "location of originals duplicates"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/locationOfOriginalsDuplicates"
-          ]
-        },
-        {
-          "value": [
             "funding information"
           ],
           "type": [
             "http://bibfra.me/vocab/marc/fundingInformation"
-          ]
-        },
-        {
-          "value": [
-            "information relating to copyright status"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/informationRelatingToCopyrightStatus"
           ]
         },
         {
@@ -461,14 +405,6 @@
         },
         {
           "value": [
-            "former title note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/formerTitleNote"
-          ]
-        },
-        {
-          "value": [
             "issuing body"
           ],
           "type": [
@@ -477,26 +413,10 @@
         },
         {
           "value": [
-            "entity and attribute information"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/entityAndAttributeInformation"
-          ]
-        },
-        {
-          "value": [
             "location of other archival material"
           ],
           "type": [
             "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial"
-          ]
-        },
-        {
-          "value": [
-            "information about documentation"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/informationAboutDocumentation"
           ]
         },
         {
@@ -513,46 +433,6 @@
           ],
           "type": [
             "http://bibfra.me/vocab/marc/descriptionSourceNote"
-          ]
-        },
-        {
-          "value": [
-            "system details"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/systemDetails"
-          ]
-        },
-        {
-          "value": [
-            "system details access note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/systemDetailsAccessNote"
-          ]
-        },
-        {
-          "value": [
-            "physical description"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/physicalDescription"
-          ]
-        },
-        {
-          "value": [
-            "publication frequency"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/publicationFrequency"
-          ]
-        },
-        {
-          "value": [
-            "dates of publication note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/datesOfPublicationNote"
           ]
         }
       ],
@@ -578,66 +458,18 @@
             },
             {
               "value": [
-                "scale note"
-              ],
-              "type": [
-                "http://bibfra.me/vocab/marc/scaleNote"
-              ]
-            },
-            {
-              "value": [
-                "references"
-              ],
-              "type": [
-                "http://bibfra.me/vocab/marc/references"
-              ]
-            },
-            {
-              "value": [
-                "data quality"
-              ],
-              "type": [
-                "http://bibfra.me/vocab/marc/dataQuality"
-              ]
-            },
-            {
-              "value": [
-                "other event information"
-              ],
-              "type": [
-                "http://bibfra.me/vocab/marc/otherEventInformation"
-              ]
-            },
-            {
-              "value": [
-                "geographic coverage"
-              ],
-              "type": [
-                "http://bibfra.me/vocab/marc/geographicCoverage"
-              ]
-            },
-            {
-              "value": [
-                "supplement"
-              ],
-              "type": [
-                "http://bibfra.me/vocab/marc/supplement"
-              ]
-            },
-            {
-              "value": [
-                "study program name"
-              ],
-              "type": [
-                "http://bibfra.me/vocab/marc/studyProgramName"
-              ]
-            },
-            {
-              "value": [
                 "language note"
               ],
               "type": [
                 "http://bibfra.me/vocab/marc/languageNote"
+              ]
+            },
+            {
+              "value": [
+                "note"
+              ],
+              "type": [
+                "http://bibfra.me/vocab/lite/note"
               ]
             }
           ],

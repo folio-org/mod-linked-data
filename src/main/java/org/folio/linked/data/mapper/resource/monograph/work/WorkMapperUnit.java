@@ -8,17 +8,11 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATA_QUALITY;
-import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.OTHER_EVENT_INFORMATION;
-import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
+import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.SCALE_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.STUDY_PROGRAM_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
-import static org.folio.ld.dictionary.PropertyDictionary.SUPPLEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -52,8 +46,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = Work.class)
 public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
 
-  private static final Set<PropertyDictionary> NOTE_PROPS = Set.of(BIBLIOGRAPHY_NOTE, DATA_QUALITY, GEOGRAPHIC_COVERAGE,
-    LANGUAGE_NOTE, OTHER_EVENT_INFORMATION, REFERENCES, SCALE_NOTE, STUDY_PROGRAM_NAME, SUPPLEMENT);
+  private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
 
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
@@ -85,7 +78,7 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
       work.getContributor().forEach(contributor -> agentRoleAssigner.assignRoles(contributor, source));
     }
 
-    ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, NOTE_PROPS)));
+    ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
 
     destination.addInstantiatesItem(work);
   }

@@ -14,38 +14,23 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
-import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.ENTITY_AND_ATTRIBUTE_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
-import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
-import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -79,13 +64,10 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = INSTANCE)
 public class InstanceMapperUnit implements TopResourceMapperUnit {
 
-  private static final Set<PropertyDictionary> NOTE_PROPS = Set.of(ACCESSIBILITY_NOTE, ADDITIONAL_PHYSICAL_FORM,
-    CITATION_COVERAGE, COMPUTER_DATA_NOTE, CREDITS_NOTE, DATES_OF_PUBLICATION_NOTE, DESCRIPTION_SOURCE_NOTE,
-    ENTITY_AND_ATTRIBUTE_INFORMATION, EXHIBITIONS_NOTE, FORMER_TITLE_NOTE, FUNDING_INFORMATION, GOVERNING_ACCESS_NOTE,
-    INFORMATION_ABOUT_DOCUMENTATION, INFORMATION_RELATING_TO_COPYRIGHT_STATUS, ISSUANCE_NOTE, ISSUING_BODY,
-    LOCATION_OF_ORIGINALS_DUPLICATES, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE,
-    PARTICIPANT_NOTE, PHYSICAL_DESCRIPTION, PUBLICATION_FREQUENCY, RELATED_PARTS, REPRODUCTION_NOTE, SYSTEM_DETAILS,
-    SYSTEM_DETAILS_ACCESS_NOTE, TYPE_OF_REPORT, WITH_NOTE);
+  private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(ADDITIONAL_PHYSICAL_FORM, COMPUTER_DATA_NOTE,
+    DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION, ISSUANCE_NOTE, ISSUING_BODY,
+    LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE, RELATED_PARTS, REPRODUCTION_NOTE, TYPE_OF_REPORT,
+    WITH_NOTE);
 
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
@@ -100,7 +82,7 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     instanceField.getInstance().setSrsId(source.getSrsId());
 
     ofNullable(source.getDoc())
-      .ifPresent(doc -> instanceField.getInstance().setNotes(noteMapper.toNotes(doc, NOTE_PROPS)));
+      .ifPresent(doc -> instanceField.getInstance().setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
 
     return destination.resource(instanceField);
   }

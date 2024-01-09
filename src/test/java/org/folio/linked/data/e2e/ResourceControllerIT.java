@@ -25,49 +25,38 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.ENTITY_AND_ATTRIBUTE_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
-import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
-import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
@@ -76,8 +65,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
@@ -574,30 +561,18 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
       .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
       .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
-      .andExpect(jsonPath(toInstanceNotesValues(), containsInAnyOrder("accessibility note", "additional physical form",
-        "citation coverage", "computer data note", "credits note", "dates of publication note",
-        "description source note", "entity and attribute information", "exhibitions note", "former title note",
-        "funding information", "governing access note", "information about documentation",
-        "information relating to copyright status", "issuance note", "issuing body", "location of originals duplicates",
-        "location of other archival material", "note", "original version note", "participant note",
-        "physical description", "publication frequency", "related parts", "reproduction note", "system details",
-        "system details access note", "type of report", "with note")))
+      .andExpect(jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
+        "description source note", "exhibitions note", "funding information", "issuance note", "issuing body",
+        "location of other archival material", "note", "original version note", "related parts", "reproduction note",
+        "type of report", "with note")))
       .andExpect(jsonPath(toInstanceNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
-        "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/governingAccessNote",
-        "http://bibfra.me/vocab/marc/creditsNote", "http://bibfra.me/vocab/marc/participantNote",
-        "http://bibfra.me/vocab/marc/typeOfReport", "http://bibfra.me/vocab/marc/issuanceNote",
-        "http://bibfra.me/vocab/marc/computerDataNote", "http://bibfra.me/vocab/marc/citationCoverage",
-        "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/accessibilityNote",
-        "http://bibfra.me/vocab/marc/reproductionNote", "http://bibfra.me/vocab/marc/originalVersionNote",
-        "http://bibfra.me/vocab/marc/locationOfOriginalsDuplicates", "http://bibfra.me/vocab/marc/fundingInformation",
-        "http://bibfra.me/vocab/marc/informationRelatingToCopyrightStatus", "http://bibfra.me/vocab/marc/relatedParts",
-        "http://bibfra.me/vocab/marc/formerTitleNote", "http://bibfra.me/vocab/marc/issuingBody",
-        "http://bibfra.me/vocab/marc/entityAndAttributeInformation",
-        "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
-        "http://bibfra.me/vocab/marc/informationAboutDocumentation", "http://bibfra.me/vocab/marc/exhibitionsNote",
-        "http://bibfra.me/vocab/marc/descriptionSourceNote", "http://bibfra.me/vocab/marc/systemDetails",
-        "http://bibfra.me/vocab/marc/systemDetailsAccessNote", "http://bibfra.me/vocab/marc/physicalDescription",
-        "http://bibfra.me/vocab/marc/publicationFrequency", "http://bibfra.me/vocab/marc/datesOfPublicationNote")))
+        "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/typeOfReport",
+        "http://bibfra.me/vocab/marc/issuanceNote", "http://bibfra.me/vocab/marc/computerDataNote",
+        "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/reproductionNote",
+        "http://bibfra.me/vocab/marc/originalVersionNote", "http://bibfra.me/vocab/marc/relatedParts",
+        "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
+        "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
+        "http://bibfra.me/vocab/marc/fundingInformation")))
       .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
       .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
       .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
@@ -661,14 +636,9 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toWorkSummary(), equalTo("summary text")))
       .andExpect(jsonPath(toWorkTableOfContents(), equalTo("table of contents")))
       .andExpect(jsonPath(toWorkResponsibilityStatement(), equalTo("statement of responsibility")))
-      .andExpect(jsonPath(toWorkNotesValues(), containsInAnyOrder("supplement", "study program name", "data quality",
-        "other event information", "language note", "bibliography note", "geographic coverage", "references",
-        "scale note")))
-      .andExpect(jsonPath(toWorkNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/marc/supplement",
-        "http://bibfra.me/vocab/marc/studyProgramName", "http://bibfra.me/vocab/marc/dataQuality",
-        "http://bibfra.me/vocab/marc/otherEventInformation", "http://bibfra.me/vocab/marc/languageNote",
-        "http://bibfra.me/vocab/marc/bibliographyNote", "http://bibfra.me/vocab/marc/geographicCoverage",
-        "http://bibfra.me/vocab/marc/references", "http://bibfra.me/vocab/marc/scaleNote")))
+      .andExpect(jsonPath(toWorkNotesValues(), containsInAnyOrder("language note", "bibliography note", "note")))
+      .andExpect(jsonPath(toWorkNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
+        "http://bibfra.me/vocab/marc/bibliographyNote", "http://bibfra.me/vocab/lite/note")))
       .andExpect(jsonPath(toWorkDeweyCode(), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(), equalTo("ddc")))
       .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
@@ -706,39 +676,23 @@ public class ResourceControllerIT {
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
-    assertThat(instance.getDoc().size()).isEqualTo(34);
+    assertThat(instance.getDoc().size()).isEqualTo(19);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
-    validateLiteral(instance, ACCESSIBILITY_NOTE.getValue(), "accessibility note");
     validateLiteral(instance, ADDITIONAL_PHYSICAL_FORM.getValue(), "additional physical form");
-    validateLiteral(instance, CITATION_COVERAGE.getValue(), "citation coverage");
     validateLiteral(instance, COMPUTER_DATA_NOTE.getValue(), "computer data note");
-    validateLiteral(instance, CREDITS_NOTE.getValue(), "credits note");
-    validateLiteral(instance, DATES_OF_PUBLICATION_NOTE.getValue(), "dates of publication note");
     validateLiteral(instance, DESCRIPTION_SOURCE_NOTE.getValue(), "description source note");
-    validateLiteral(instance, ENTITY_AND_ATTRIBUTE_INFORMATION.getValue(), "entity and attribute information");
     validateLiteral(instance, EXHIBITIONS_NOTE.getValue(), "exhibitions note");
-    validateLiteral(instance, FORMER_TITLE_NOTE.getValue(), "former title note");
     validateLiteral(instance, FUNDING_INFORMATION.getValue(), "funding information");
-    validateLiteral(instance, GOVERNING_ACCESS_NOTE.getValue(), "governing access note");
-    validateLiteral(instance, INFORMATION_ABOUT_DOCUMENTATION.getValue(), "information about documentation");
-    validateLiteral(instance, INFORMATION_RELATING_TO_COPYRIGHT_STATUS.getValue(),
-      "information relating to copyright status");
     validateLiteral(instance, ISSUANCE_NOTE.getValue(), "issuance note");
     validateLiteral(instance, ISSUING_BODY.getValue(), "issuing body");
-    validateLiteral(instance, LOCATION_OF_ORIGINALS_DUPLICATES.getValue(), "location of originals duplicates");
     validateLiteral(instance, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL.getValue(), "location of other archival material");
     validateLiteral(instance, NOTE.getValue(), "note");
     validateLiteral(instance, ORIGINAL_VERSION_NOTE.getValue(), "original version note");
-    validateLiteral(instance, PARTICIPANT_NOTE.getValue(), "participant note");
-    validateLiteral(instance, PHYSICAL_DESCRIPTION.getValue(), "physical description");
-    validateLiteral(instance, PUBLICATION_FREQUENCY.getValue(), "publication frequency");
     validateLiteral(instance, RELATED_PARTS.getValue(), "related parts");
     validateLiteral(instance, REPRODUCTION_NOTE.getValue(), "reproduction note");
-    validateLiteral(instance, SYSTEM_DETAILS.getValue(), "system details");
-    validateLiteral(instance, SYSTEM_DETAILS_ACCESS_NOTE.getValue(), "system details access note");
     validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
     validateLiteral(instance, WITH_NOTE.getValue(), "with note");
     assertThat(instance.getOutgoingEdges()).hasSize(18);
@@ -1018,12 +972,15 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var instantiates = edge.getTarget();
     assertThat(instantiates.getResourceHash()).isNotNull();
-    assertThat(instantiates.getDoc().size()).isEqualTo(14);
+    assertThat(instantiates.getDoc().size()).isEqualTo(8);
     validateLiteral(instantiates, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
     validateLiteral(instantiates, SUMMARY.getValue(), "summary text");
     validateLiteral(instantiates, LANGUAGE.getValue(), "eng");
     validateLiteral(instantiates, TARGET_AUDIENCE.getValue(), "target audience");
     validateLiteral(instantiates, TABLE_OF_CONTENTS.getValue(), "table of contents");
+    validateLiteral(instantiates, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
+    validateLiteral(instantiates, LANGUAGE_NOTE.getValue(), "language note");
+    validateLiteral(instantiates, NOTE.getValue(), "note");
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
     validateWorkContentType(edgeIterator.next(), instantiates);
     validateWorkClassification(edgeIterator.next(), instantiates);
