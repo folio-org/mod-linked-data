@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="2.22_insert_configurable_settings" author="dfeeney@ebsco.com">
+
+    <insert tableName="configurable_settings">
+      <column name="group_name" value="graph"/>
+      <column name="setting_name" value="scaling_exponent"/>
+      <column name="default_value" value="-1"/>
+      <column name="description" value="The exponent used to determine the number of partitions for tables in a graph. Defaults to -1 to ensure initial scaling is set."/>
+
+    </insert>
+
+  </changeSet>
+</databaseChangeLog>
