@@ -2,14 +2,21 @@ package org.folio.linked.data.e2e;
 
 import static java.lang.String.format;
 import static java.lang.String.join;
+import static java.util.Comparator.comparing;
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
+import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
@@ -21,49 +28,38 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.ENTITY_AND_ATTRIBUTE_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
-import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
-import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
@@ -72,8 +68,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
@@ -129,6 +123,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
@@ -162,7 +157,12 @@ import org.springframework.test.web.servlet.ResultActions;
 @IntegrationTest
 public class ResourceControllerIT {
 
-  public static final String BIBFRAME_URL = "/resource";
+  private static final String BIBFRAME_URL = "/resource";
+  private static final String ROLES_PROPERTY = "_roles";
+  private static final String NOTES_PROPERTY = "_notes";
+  private static final String VALUE_PROPERTY = "value";
+  private static final String TYPE_PROPERTY = "type";
+
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -197,6 +197,7 @@ public class ResourceControllerIT {
     // then
     var response = validateInstanceResourceResponse(resultActions)
       .andReturn().getResponse().getContentAsString();
+    validateWorkResourceResponse(resultActions);
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
@@ -468,8 +469,8 @@ public class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleInstanceResource());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(29);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(28);
+    assertThat(resourceRepo.count()).isEqualTo(31);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(37);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -479,9 +480,9 @@ public class ResourceControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(28);
+    assertThat(resourceRepo.count()).isEqualTo(30);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(10);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(19);
     checkKafkaMessageDeletedSent(existed.getResourceHash());
   }
 
@@ -565,36 +566,18 @@ public class ResourceControllerIT {
       .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
       .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
       .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
-      .andExpect(jsonPath(toAccessibilityNote(), equalTo("accessibility note")))
-      .andExpect(jsonPath(toAdditionalPhysicalForm(), equalTo("additional physical form")))
-      .andExpect(jsonPath(toCitationCoverage(), equalTo("citation coverage")))
-      .andExpect(jsonPath(toComputerDataNote(), equalTo("computer data note")))
-      .andExpect(jsonPath(toCreditsNote(), equalTo("credits note")))
-      .andExpect(jsonPath(toDatesOfPublicationNote(), equalTo("dates of publication note")))
-      .andExpect(jsonPath(toDescriptionSourceNote(), equalTo("description source note")))
-      .andExpect(jsonPath(toEntityAndAttributeInformation(), equalTo("entity and attribute information")))
-      .andExpect(jsonPath(toExhibitionsNote(), equalTo("exhibitions note")))
-      .andExpect(jsonPath(toFormerTitleNote(), equalTo("former title note")))
-      .andExpect(jsonPath(toFundingInformation(), equalTo("funding information")))
-      .andExpect(jsonPath(toGoverningAccessNote(), equalTo("governing access note")))
-      .andExpect(jsonPath(toInformationAboutDocumentation(), equalTo("information about documentation")))
-      .andExpect(jsonPath(toInformationRelatingToCopyrightStatus(), equalTo(
-        "information relating to copyright status")))
-      .andExpect(jsonPath(toIssuanceNote(), equalTo("issuance note")))
-      .andExpect(jsonPath(toIssuingBody(), equalTo("issuing body")))
-      .andExpect(jsonPath(toLocationOfOriginalsDuplicates(), equalTo("location of originals duplicates")))
-      .andExpect(jsonPath(toLocationOfOtherArchivalMaterial(), equalTo("location of other archival material")))
-      .andExpect(jsonPath(toNote(), equalTo("note")))
-      .andExpect(jsonPath(toOriginalVersionNote(), equalTo("original version note")))
-      .andExpect(jsonPath(toParticipantNote(), equalTo("participant note")))
-      .andExpect(jsonPath(toPhysicalDescription(), equalTo("physical description")))
-      .andExpect(jsonPath(toPublicationFrequency(), equalTo("publication frequency")))
-      .andExpect(jsonPath(toRelatedParts(), equalTo("related parts")))
-      .andExpect(jsonPath(toReproductionNote(), equalTo("reproduction note")))
-      .andExpect(jsonPath(toSystemDetails(), equalTo("system details")))
-      .andExpect(jsonPath(toSystemDetailsAccessNote(), equalTo("system details access note")))
-      .andExpect(jsonPath(toTypeOfReport(), equalTo("type of report")))
-      .andExpect(jsonPath(toWithNote(), equalTo("with note")))
+      .andExpect(jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
+        "description source note", "exhibitions note", "funding information", "issuance note", "issuing body",
+        "location of other archival material", "note", "original version note", "related parts", "reproduction note",
+        "type of report", "with note")))
+      .andExpect(jsonPath(toInstanceNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
+        "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/typeOfReport",
+        "http://bibfra.me/vocab/marc/issuanceNote", "http://bibfra.me/vocab/marc/computerDataNote",
+        "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/reproductionNote",
+        "http://bibfra.me/vocab/marc/originalVersionNote", "http://bibfra.me/vocab/marc/relatedParts",
+        "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
+        "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
+        "http://bibfra.me/vocab/marc/fundingInformation")))
       .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
       .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
       .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
@@ -653,19 +636,45 @@ public class ResourceControllerIT {
   private ResultActions validateWorkResourceResponse(ResultActions resultActions) throws Exception {
     return resultActions
       .andExpect(status().isOk())
-      .andExpect(jsonPath(toWorkTargetAudience(), equalTo("Work: target audience")))
-      .andExpect(jsonPath(toWorkLanguage(), equalTo("Work: language")))
-      .andExpect(jsonPath(toWorkSummary(), equalTo("Work: summary")))
-      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("Work: table of contents")))
-      .andExpect(jsonPath(toWorkDeweyCode(), equalTo("Dewey: code")))
-      .andExpect(jsonPath(toWorkDeweySource(), equalTo("Dewey: source")))
-      .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo("Person: name")))
-      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(), equalTo("Person: lcnafId")))
-      .andExpect(jsonPath(toWorkContributorOrgName(), equalTo("Organization: name")))
-      .andExpect(jsonPath(toWorkContributorOrgLcnafId(), equalTo("Organization: lcnafId")))
-      .andExpect(jsonPath(toWorkContentLink(), equalTo("Content: link")))
-      .andExpect(jsonPath(toWorkContentCode(), equalTo("Content: code")))
-      .andExpect(jsonPath(toWorkContentTerm(), equalTo("Content: term")));
+      .andExpect(jsonPath(toWorkTargetAudience(), equalTo("target audience")))
+      .andExpect(jsonPath(toWorkLanguage(), equalTo("eng")))
+      .andExpect(jsonPath(toWorkSummary(), equalTo("summary text")))
+      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("table of contents")))
+      .andExpect(jsonPath(toWorkResponsibilityStatement(), equalTo("statement of responsibility")))
+      .andExpect(jsonPath(toWorkNotesValues(), containsInAnyOrder("language note", "bibliography note", "note",
+        "another note", "another note")))
+      .andExpect(jsonPath(toWorkNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
+        "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
+        "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
+      .andExpect(jsonPath(toWorkDeweyCode(), equalTo("709.83")))
+      .andExpect(jsonPath(toWorkDeweySource(), equalTo("ddc")))
+      .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
+      .andExpect(jsonPath(toWorkCreatorPersonRole(), equalTo(new JSONArray().appendElement(AUTHOR.getUri()))))
+      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(), equalTo(new JSONArray().appendElement("2002801801-PERSON"))))
+      .andExpect(jsonPath(toWorkCreatorMeetingName(), equalTo(new JSONArray().appendElement("name-MEETING"))))
+      .andExpect(jsonPath(toWorkCreatorMeetingLcnafId(), equalTo(new JSONArray().appendElement("2002801801-MEETING"))))
+      .andExpect(jsonPath(toWorkCreatorOrganizationName(), equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkCreatorOrganizationLcnafId(), equalTo(
+        new JSONArray().appendElement("2002801801-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkCreatorFamilyName(), equalTo(new JSONArray().appendElement("name-FAMILY"))))
+      .andExpect(jsonPath(toWorkCreatorFamilyLcnafId(), equalTo(new JSONArray().appendElement("2002801801-FAMILY"))))
+      .andExpect(jsonPath(toWorkContributorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
+      .andExpect(jsonPath(toWorkContributorPersonLcnafId(), equalTo(
+        new JSONArray().appendElement("2002801801-PERSON"))))
+      .andExpect(jsonPath(toWorkContributorMeetingName(), equalTo(new JSONArray().appendElement("name-MEETING"))))
+      .andExpect(jsonPath(toWorkContributorMeetingLcnafId(), equalTo(
+        new JSONArray().appendElement("2002801801-MEETING"))))
+      .andExpect(jsonPath(toWorkContributorOrgName(), equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkContributorOrgLcnafId(), equalTo(
+        new JSONArray().appendElement("2002801801-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkContributorOrgRoles(), equalTo(
+        new JSONArray().appendElement(EDITOR.getUri()).appendElement(ASSIGNEE.getUri()))))
+      .andExpect(jsonPath(toWorkContributorFamilyName(), equalTo(new JSONArray().appendElement("name-FAMILY"))))
+      .andExpect(jsonPath(toWorkContributorFamilyLcnafId(), equalTo(
+        new JSONArray().appendElement("2002801801-FAMILY"))))
+      .andExpect(jsonPath(toWorkContentLink(), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
+      .andExpect(jsonPath(toWorkContentCode(), equalTo("txt")))
+      .andExpect(jsonPath(toWorkContentTerm(), equalTo("text")));
   }
 
   private void validateInstance(Resource instance) {
@@ -674,39 +683,23 @@ public class ResourceControllerIT {
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
-    assertThat(instance.getDoc().size()).isEqualTo(34);
+    assertThat(instance.getDoc().size()).isEqualTo(19);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
-    validateLiteral(instance, ACCESSIBILITY_NOTE.getValue(), "accessibility note");
     validateLiteral(instance, ADDITIONAL_PHYSICAL_FORM.getValue(), "additional physical form");
-    validateLiteral(instance, CITATION_COVERAGE.getValue(), "citation coverage");
     validateLiteral(instance, COMPUTER_DATA_NOTE.getValue(), "computer data note");
-    validateLiteral(instance, CREDITS_NOTE.getValue(), "credits note");
-    validateLiteral(instance, DATES_OF_PUBLICATION_NOTE.getValue(), "dates of publication note");
     validateLiteral(instance, DESCRIPTION_SOURCE_NOTE.getValue(), "description source note");
-    validateLiteral(instance, ENTITY_AND_ATTRIBUTE_INFORMATION.getValue(), "entity and attribute information");
     validateLiteral(instance, EXHIBITIONS_NOTE.getValue(), "exhibitions note");
-    validateLiteral(instance, FORMER_TITLE_NOTE.getValue(), "former title note");
     validateLiteral(instance, FUNDING_INFORMATION.getValue(), "funding information");
-    validateLiteral(instance, GOVERNING_ACCESS_NOTE.getValue(), "governing access note");
-    validateLiteral(instance, INFORMATION_ABOUT_DOCUMENTATION.getValue(), "information about documentation");
-    validateLiteral(instance, INFORMATION_RELATING_TO_COPYRIGHT_STATUS.getValue(),
-      "information relating to copyright status");
     validateLiteral(instance, ISSUANCE_NOTE.getValue(), "issuance note");
     validateLiteral(instance, ISSUING_BODY.getValue(), "issuing body");
-    validateLiteral(instance, LOCATION_OF_ORIGINALS_DUPLICATES.getValue(), "location of originals duplicates");
     validateLiteral(instance, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL.getValue(), "location of other archival material");
     validateLiteral(instance, NOTE.getValue(), "note");
     validateLiteral(instance, ORIGINAL_VERSION_NOTE.getValue(), "original version note");
-    validateLiteral(instance, PARTICIPANT_NOTE.getValue(), "participant note");
-    validateLiteral(instance, PHYSICAL_DESCRIPTION.getValue(), "physical description");
-    validateLiteral(instance, PUBLICATION_FREQUENCY.getValue(), "publication frequency");
     validateLiteral(instance, RELATED_PARTS.getValue(), "related parts");
     validateLiteral(instance, REPRODUCTION_NOTE.getValue(), "reproduction note");
-    validateLiteral(instance, SYSTEM_DETAILS.getValue(), "system details");
-    validateLiteral(instance, SYSTEM_DETAILS_ACCESS_NOTE.getValue(), "system details access note");
     validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
     validateLiteral(instance, WITH_NOTE.getValue(), "with note");
     assertThat(instance.getOutgoingEdges()).hasSize(18);
@@ -736,6 +729,13 @@ public class ResourceControllerIT {
   private void validateLiteral(Resource resource, String field, String value) {
     assertThat(resource.getDoc().get(field).size()).isEqualTo(1);
     assertThat(resource.getDoc().get(field).get(0).asText()).isEqualTo(value);
+  }
+
+  private void validateLiterals(Resource resource, String field, List<String> expectedValues) {
+    var actualValues = resource.getDoc().get(field);
+    assertThat(actualValues.size()).isEqualTo(expectedValues.size());
+    assertThat(stream(spliteratorUnknownSize(actualValues.iterator(), ORDERED), false).map(JsonNode::asText).toList())
+      .hasSameElementsAs(expectedValues);
   }
 
   private void validateInstanceTitle(ResourceEdge edge, Resource source) {
@@ -940,10 +940,8 @@ public class ResourceControllerIT {
     var doc = supplementaryContent.getDoc();
 
     assertThat(doc.size()).isEqualTo(2);
-    assertThat(doc.get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(doc.get(LINK.getValue()).get(0).asText()).isEqualTo("supplementaryContent link");
-    assertThat(doc.get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(doc.get(NAME.getValue()).get(0).asText()).isEqualTo("supplementaryContent name");
+    validateLiteral(supplementaryContent, LINK.getValue(), "supplementaryContent link");
+    validateLiteral(supplementaryContent, NAME.getValue(), "supplementaryContent name");
     assertThat(supplementaryContent.getOutgoingEdges()).isEmpty();
   }
 
@@ -988,26 +986,25 @@ public class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var instantiates = edge.getTarget();
     assertThat(instantiates.getResourceHash()).isNotNull();
-    assertThat(instantiates.getDoc().size()).isEqualTo(5);
-    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).size()).isEqualTo(1);
-    assertThat(instantiates.getDoc().get(RESPONSIBILITY_STATEMENT.getValue()).get(0).asText())
-      .isEqualTo("statement of responsibility");
-    assertThat(instantiates.getDoc().get(SUMMARY.getValue()).size()).isEqualTo(1);
-    assertThat(instantiates.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo("summary text");
-    assertThat(instantiates.getDoc().get(LANGUAGE.getValue()).size()).isEqualTo(1);
-    assertThat(instantiates.getDoc().get(LANGUAGE.getValue()).get(0).asText()).isEqualTo("eng");
-    assertThat(instantiates.getDoc().get(TARGET_AUDIENCE.getValue()).size()).isEqualTo(1);
-    assertThat(instantiates.getDoc().get(TARGET_AUDIENCE.getValue()).get(0).asText())
-      .isEqualTo("target audience");
-    assertThat(instantiates.getDoc().get(TABLE_OF_CONTENTS.getValue()).size()).isEqualTo(1);
-    assertThat(instantiates.getDoc().get(TABLE_OF_CONTENTS.getValue()).get(0).asText()).isEqualTo("table of contents");
+    assertThat(instantiates.getDoc().size()).isEqualTo(8);
+    validateLiteral(instantiates, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
+    validateLiteral(instantiates, SUMMARY.getValue(), "summary text");
+    validateLiteral(instantiates, LANGUAGE.getValue(), "eng");
+    validateLiteral(instantiates, TARGET_AUDIENCE.getValue(), "target audience");
+    validateLiteral(instantiates, TABLE_OF_CONTENTS.getValue(), "table of contents");
+    validateLiteral(instantiates, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
+    validateLiterals(instantiates, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
+    validateLiterals(instantiates, NOTE.getValue(), List.of("note", "another note"));
     var edgeIterator = instantiates.getOutgoingEdges().iterator();
     validateWorkContentType(edgeIterator.next(), instantiates);
     validateWorkClassification(edgeIterator.next(), instantiates);
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, EDITOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, ASSIGNEE.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, AUTHOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
@@ -1147,120 +1144,12 @@ public class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(ISSUANCE.getValue()));
   }
 
-  private String toNote() {
-    return join(".", toInstance(), arrayPath(NOTE.getValue()));
+  private String toInstanceNotesValues() {
+    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
   }
 
-  private String toWithNote() {
-    return join(".", toInstance(), arrayPath(WITH_NOTE.getValue()));
-  }
-
-  private String toGoverningAccessNote() {
-    return join(".", toInstance(), arrayPath(GOVERNING_ACCESS_NOTE.getValue()));
-  }
-
-  private String toCreditsNote() {
-    return join(".", toInstance(), arrayPath(CREDITS_NOTE.getValue()));
-  }
-
-  private String toParticipantNote() {
-    return join(".", toInstance(), arrayPath(PARTICIPANT_NOTE.getValue()));
-  }
-
-  private String toTypeOfReport() {
-    return join(".", toInstance(), arrayPath(TYPE_OF_REPORT.getValue()));
-  }
-
-  private String toIssuanceNote() {
-    return join(".", toInstance(), arrayPath(ISSUANCE_NOTE.getValue()));
-  }
-
-  private String toComputerDataNote() {
-    return join(".", toInstance(), arrayPath(COMPUTER_DATA_NOTE.getValue()));
-  }
-
-  private String toCitationCoverage() {
-    return join(".", toInstance(), arrayPath(CITATION_COVERAGE.getValue()));
-  }
-
-  private String toAdditionalPhysicalForm() {
-    return join(".", toInstance(), arrayPath(ADDITIONAL_PHYSICAL_FORM.getValue()));
-  }
-
-  private String toAccessibilityNote() {
-    return join(".", toInstance(), arrayPath(ACCESSIBILITY_NOTE.getValue()));
-  }
-
-  private String toReproductionNote() {
-    return join(".", toInstance(), arrayPath(REPRODUCTION_NOTE.getValue()));
-  }
-
-  private String toOriginalVersionNote() {
-    return join(".", toInstance(), arrayPath(ORIGINAL_VERSION_NOTE.getValue()));
-  }
-
-  private String toLocationOfOriginalsDuplicates() {
-    return join(".", toInstance(), arrayPath(LOCATION_OF_ORIGINALS_DUPLICATES.getValue()));
-  }
-
-  private String toFundingInformation() {
-    return join(".", toInstance(), arrayPath(FUNDING_INFORMATION.getValue()));
-  }
-
-  private String toInformationRelatingToCopyrightStatus() {
-    return join(".", toInstance(), arrayPath(INFORMATION_RELATING_TO_COPYRIGHT_STATUS.getValue()));
-  }
-
-  private String toRelatedParts() {
-    return join(".", toInstance(), arrayPath(RELATED_PARTS.getValue()));
-  }
-
-  private String toFormerTitleNote() {
-    return join(".", toInstance(), arrayPath(FORMER_TITLE_NOTE.getValue()));
-  }
-
-  private String toIssuingBody() {
-    return join(".", toInstance(), arrayPath(ISSUING_BODY.getValue()));
-  }
-
-  private String toEntityAndAttributeInformation() {
-    return join(".", toInstance(), arrayPath(ENTITY_AND_ATTRIBUTE_INFORMATION.getValue()));
-  }
-
-  private String toLocationOfOtherArchivalMaterial() {
-    return join(".", toInstance(), arrayPath(LOCATION_OF_OTHER_ARCHIVAL_MATERIAL.getValue()));
-  }
-
-  private String toInformationAboutDocumentation() {
-    return join(".", toInstance(), arrayPath(INFORMATION_ABOUT_DOCUMENTATION.getValue()));
-  }
-
-  private String toExhibitionsNote() {
-    return join(".", toInstance(), arrayPath(EXHIBITIONS_NOTE.getValue()));
-  }
-
-  private String toDescriptionSourceNote() {
-    return join(".", toInstance(), arrayPath(DESCRIPTION_SOURCE_NOTE.getValue()));
-  }
-
-  private String toSystemDetails() {
-    return join(".", toInstance(), arrayPath(SYSTEM_DETAILS.getValue()));
-  }
-
-  private String toSystemDetailsAccessNote() {
-    return join(".", toInstance(), arrayPath(SYSTEM_DETAILS_ACCESS_NOTE.getValue()));
-  }
-
-  private String toPhysicalDescription() {
-    return join(".", toInstance(), arrayPath(PHYSICAL_DESCRIPTION.getValue()));
-  }
-
-  private String toPublicationFrequency() {
-    return join(".", toInstance(), arrayPath(PUBLICATION_FREQUENCY.getValue()));
-  }
-
-  private String toDatesOfPublicationNote() {
-    return join(".", toInstance(), arrayPath(DATES_OF_PUBLICATION_NOTE.getValue()));
+  private String toInstanceNotesTypes() {
+    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
   private String toParallelTitlePartName() {
@@ -1454,6 +1343,18 @@ public class ResourceControllerIT {
     return join(".", toWork(), arrayPath(TARGET_AUDIENCE.getValue()));
   }
 
+  private String toWorkResponsibilityStatement() {
+    return join(".", toWork(), arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
+  }
+
+  private String toWorkNotesValues() {
+    return join(".", toWork(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
+  }
+
+  private String toWorkNotesTypes() {
+    return join(".", toWork(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
+  }
+
   private String toWorkTableOfContents() {
     return join(".", toWork(), arrayPath(TABLE_OF_CONTENTS.getValue()));
   }
@@ -1475,21 +1376,89 @@ public class ResourceControllerIT {
   }
 
   private String toWorkContributorOrgLcnafId() {
-    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
+  }
+
+  private String toWorkContributorPersonLcnafId() {
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
+  }
+
+  private String toWorkContributorMeetingLcnafId() {
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
+  }
+
+  private String toWorkContributorFamilyLcnafId() {
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
   private String toWorkContributorOrgName() {
-    return join(".", toWork(), arrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+      arrayPath(NAME.getValue()));
+  }
+
+  private String toWorkContributorOrgRoles() {
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+      dynamicArrayPath(ROLES_PROPERTY));
+  }
+
+  private String toWorkContributorPersonName() {
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
+      arrayPath(NAME.getValue()));
+  }
+
+  private String toWorkContributorFamilyName() {
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
+      arrayPath(NAME.getValue()));
+  }
+
+  private String toWorkContributorMeetingName() {
+    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
       arrayPath(NAME.getValue()));
   }
 
   private String toWorkCreatorPersonLcnafId() {
-    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(LCNAF_ID.getValue()));
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
+  }
+
+  private String toWorkCreatorMeetingLcnafId() {
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
+  }
+
+  private String toWorkCreatorOrganizationLcnafId() {
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
+  }
+
+  private String toWorkCreatorFamilyLcnafId() {
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()),
+      arrayPath(LCNAF_ID.getValue()));
   }
 
   private String toWorkCreatorPersonName() {
-    return join(".", toWork(), arrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME.getValue()));
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME.getValue()));
+  }
+
+  private String toWorkCreatorPersonRole() {
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(ROLES_PROPERTY));
+  }
+
+  private String toWorkCreatorMeetingName() {
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()), arrayPath(NAME.getValue()));
+  }
+
+  private String toWorkCreatorOrganizationName() {
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
+      arrayPath(NAME.getValue()));
+  }
+
+  private String toWorkCreatorFamilyName() {
+    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()), arrayPath(NAME.getValue()));
   }
 
   private String toWorkContentTerm() {

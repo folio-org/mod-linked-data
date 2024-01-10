@@ -322,92 +322,119 @@
       "http://bibfra.me/vocab/marc/issuance": [
         "single unit"
       ],
-      "http://bibfra.me/vocab/lite/note": [
-        "note"
-      ],
-      "http://bibfra.me/vocab/marc/withNote": [
-        "with note"
-      ],
-      "http://bibfra.me/vocab/marc/governingAccessNote": [
-        "governing access note"
-      ],
-      "http://bibfra.me/vocab/marc/creditsNote": [
-        "credits note"
-      ],
-      "http://bibfra.me/vocab/marc/participantNote": [
-        "participant note"
-      ],
-      "http://bibfra.me/vocab/marc/typeOfReport": [
-        "type of report"
-      ],
-      "http://bibfra.me/vocab/marc/issuanceNote": [
-        "issuance note"
-      ],
-      "http://bibfra.me/vocab/marc/computerDataNote": [
-        "computer data note"
-      ],
-      "http://bibfra.me/vocab/marc/citationCoverage": [
-        "citation coverage"
-      ],
-      "http://bibfra.me/vocab/marc/additionalPhysicalForm": [
-        "additional physical form"
-      ],
-      "http://bibfra.me/vocab/marc/accessibilityNote": [
-        "accessibility note"
-      ],
-      "http://bibfra.me/vocab/marc/reproductionNote": [
-        "reproduction note"
-      ],
-      "http://bibfra.me/vocab/marc/originalVersionNote": [
-        "original version note"
-      ],
-      "http://bibfra.me/vocab/marc/locationOfOriginalsDuplicates": [
-        "location of originals duplicates"
-      ],
-      "http://bibfra.me/vocab/marc/fundingInformation": [
-        "funding information"
-      ],
-      "http://bibfra.me/vocab/marc/informationRelatingToCopyrightStatus": [
-        "information relating to copyright status"
-      ],
-      "http://bibfra.me/vocab/marc/relatedParts": [
-        "related parts"
-      ],
-      "http://bibfra.me/vocab/marc/formerTitleNote": [
-        "former title note"
-      ],
-      "http://bibfra.me/vocab/marc/issuingBody": [
-        "issuing body"
-      ],
-      "http://bibfra.me/vocab/marc/entityAndAttributeInformation": [
-        "entity and attribute information"
-      ],
-      "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial": [
-        "location of other archival material"
-      ],
-      "http://bibfra.me/vocab/marc/informationAboutDocumentation": [
-        "information about documentation"
-      ],
-      "http://bibfra.me/vocab/marc/exhibitionsNote": [
-        "exhibitions note"
-      ],
-      "http://bibfra.me/vocab/marc/descriptionSourceNote": [
-        "description source note"
-      ],
-      "http://bibfra.me/vocab/marc/systemDetails": [
-        "system details"
-      ],
-      "http://bibfra.me/vocab/marc/systemDetailsAccessNote": [
-        "system details access note"
-      ],
-      "http://bibfra.me/vocab/marc/physicalDescription": [
-        "physical description"
-      ],
-      "http://bibfra.me/vocab/marc/publicationFrequency": [
-        "publication frequency"
-      ],
-      "http://bibfra.me/vocab/marc/datesOfPublicationNote": [
-        "dates of publication note"
+      "_notes": [
+        {
+          "value": [
+            "note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/lite/note"
+          ]
+        },
+        {
+          "value": [
+            "with note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/withNote"
+          ]
+        },
+        {
+          "value": [
+            "type of report"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/typeOfReport"
+          ]
+        },
+        {
+          "value": [
+            "issuance note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/issuanceNote"
+          ]
+        },
+        {
+          "value": [
+            "computer data note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/computerDataNote"
+          ]
+        },
+        {
+          "value": [
+            "additional physical form"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/additionalPhysicalForm"
+          ]
+        },
+        {
+          "value": [
+            "reproduction note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/reproductionNote"
+          ]
+        },
+        {
+          "value": [
+            "original version note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/originalVersionNote"
+          ]
+        },
+        {
+          "value": [
+            "funding information"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/fundingInformation"
+          ]
+        },
+        {
+          "value": [
+            "related parts"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/relatedParts"
+          ]
+        },
+        {
+          "value": [
+            "issuing body"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/issuingBody"
+          ]
+        },
+        {
+          "value": [
+            "location of other archival material"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial"
+          ]
+        },
+        {
+          "value": [
+            "exhibitions note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/exhibitionsNote"
+          ]
+        },
+        {
+          "value": [
+            "description source note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/descriptionSourceNote"
+          ]
+        }
       ],
       "http://bibfra.me/vocab/lite/instantiates": [
         {
@@ -419,6 +446,41 @@
           ],
           "http://bibfra.me/vocab/lite/language": [
             "eng"
+          ],
+          "_notes": [
+            {
+              "value": [
+                "bibliography note"
+              ],
+              "type": [
+                "http://bibfra.me/vocab/marc/bibliographyNote"
+              ]
+            },
+            {
+              "value": [
+                "language note"
+              ],
+              "type": [
+                "http://bibfra.me/vocab/marc/languageNote"
+              ]
+            },
+            {
+              "value": [
+                "note"
+              ],
+              "type": [
+                "http://bibfra.me/vocab/lite/note"
+              ]
+            },
+            {
+              "value": [
+                "another note"
+              ],
+              "type": [
+                "http://bibfra.me/vocab/lite/note",
+                "http://bibfra.me/vocab/marc/languageNote"
+              ]
+            }
           ],
           "http://bibfra.me/vocab/marc/targetAudience": [
             "target audience"
@@ -467,6 +529,9 @@
                 ],
                 "http://bibfra.me/vocab/marc/lcnafId": [
                   "2002801801-PERSON"
+                ],
+                "_roles": [
+                  "http://bibfra.me/vocab/relation/author"
                 ]
               }
             },
@@ -519,6 +584,10 @@
                 ],
                 "http://bibfra.me/vocab/marc/lcnafId": [
                   "2002801801-ORGANIZATION"
+                ],
+                "_roles": [
+                  "http://bibfra.me/vocab/relation/editor",
+                  "http://bibfra.me/vocab/relation/assignee"
                 ]
               }
             },

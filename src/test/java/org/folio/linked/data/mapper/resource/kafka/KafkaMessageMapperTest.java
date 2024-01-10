@@ -18,6 +18,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.FAMILY;
+import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.MEETING;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.ORGANIZATION;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.PERSON;
 import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
@@ -99,6 +101,8 @@ class KafkaMessageMapperTest {
       ID_LOCAL.getUri(),
       ID_UNKNOWN.getUri(),
       ResourceTypeDictionary.PERSON.getUri(),
+      ResourceTypeDictionary.MEETING.getUri(),
+      ResourceTypeDictionary.FAMILY.getUri(),
       ResourceTypeDictionary.ORGANIZATION.getUri()
     ).forEach(t ->
       lenient().when(subResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
@@ -146,10 +150,16 @@ class KafkaMessageMapperTest {
     assertThat(result.getPublications()).hasSize(1);
     assertThat(result.getPublications().get(0).getDateOfPublication()).isNull();
     assertThat(result.getPublications().get(0).getPublisher()).isEqualTo("publication name");
-    assertThat(result.getContributors()).hasSize(3);
-    assertContributor(result.getContributors().get(0), "Person: name", PERSON, true);
-    assertContributor(result.getContributors().get(1), "Organization: name", ORGANIZATION, false);
-    assertContributor(result.getContributors().get(2), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
+    assertThat(result.getContributors()).hasSize(9);
+    assertContributor(result.getContributors().get(0), "name-PERSON", PERSON, true);
+    assertContributor(result.getContributors().get(1), "name-MEETING", MEETING, true);
+    assertContributor(result.getContributors().get(2), "name-ORGANIZATION", ORGANIZATION, true);
+    assertContributor(result.getContributors().get(3), "name-FAMILY", FAMILY, true);
+    assertContributor(result.getContributors().get(4), "name-PERSON", PERSON, false);
+    assertContributor(result.getContributors().get(5), "name-MEETING", MEETING, false);
+    assertContributor(result.getContributors().get(6), "name-ORGANIZATION", ORGANIZATION, false);
+    assertContributor(result.getContributors().get(7), "name-FAMILY", FAMILY, false);
+    assertContributor(result.getContributors().get(8), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
       null, false);
     assertThat(result.getEditionStatement()).isEqualTo(
       instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).textValue());

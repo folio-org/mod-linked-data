@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.resource.monograph.instance;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
@@ -13,38 +14,23 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
-import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.ENTITY_AND_ATTRIBUTE_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
-import static org.folio.ld.dictionary.PropertyDictionary.FORMER_TITLE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
-import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_ABOUT_DOCUMENTATION;
-import static org.folio.ld.dictionary.PropertyDictionary.INFORMATION_RELATING_TO_COPYRIGHT_STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS;
-import static org.folio.ld.dictionary.PropertyDictionary.SYSTEM_DETAILS_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -56,7 +42,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
@@ -67,6 +55,7 @@ import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
 import org.folio.linked.data.mapper.resource.common.top.TopResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
@@ -75,8 +64,14 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = INSTANCE)
 public class InstanceMapperUnit implements TopResourceMapperUnit {
 
+  private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(ADDITIONAL_PHYSICAL_FORM, COMPUTER_DATA_NOTE,
+    DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION, ISSUANCE_NOTE, ISSUING_BODY,
+    LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE, RELATED_PARTS, REPRODUCTION_NOTE, TYPE_OF_REPORT,
+    WITH_NOTE);
+
   private final CoreMapper coreMapper;
   private final SubResourceMapper mapper;
+  private final NoteMapper noteMapper;
 
   @Override
   public ResourceDto toDto(Resource source, ResourceDto destination) {
@@ -85,6 +80,10 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     instanceField.getInstance().setId(String.valueOf(source.getResourceHash()));
     instanceField.getInstance().setInventoryId(source.getInventoryId());
     instanceField.getInstance().setSrsId(source.getSrsId());
+
+    ofNullable(source.getDoc())
+      .ifPresent(doc -> instanceField.getInstance().setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+
     return destination.resource(instanceField);
   }
 
@@ -144,35 +143,9 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     putProperty(map, EDITION_STATEMENT, dto.getEdition());
     putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
     putProperty(map, ISSUANCE, dto.getIssuance());
-    putProperty(map, ACCESSIBILITY_NOTE, dto.getAccessibilityNote());
-    putProperty(map, ADDITIONAL_PHYSICAL_FORM, dto.getAdditionalPhysicalForm());
-    putProperty(map, CITATION_COVERAGE, dto.getCitationCoverage());
-    putProperty(map, COMPUTER_DATA_NOTE, dto.getComputerDataNote());
-    putProperty(map, CREDITS_NOTE, dto.getCreditsNote());
-    putProperty(map, DATES_OF_PUBLICATION_NOTE, dto.getDatesOfPublicationNote());
-    putProperty(map, DESCRIPTION_SOURCE_NOTE, dto.getDescriptionSourceNote());
-    putProperty(map, ENTITY_AND_ATTRIBUTE_INFORMATION, dto.getEntityAndAttributeInformation());
-    putProperty(map, EXHIBITIONS_NOTE, dto.getExhibitionsNote());
-    putProperty(map, FORMER_TITLE_NOTE, dto.getFormerTitleNote());
-    putProperty(map, FUNDING_INFORMATION, dto.getFundingInformation());
-    putProperty(map, GOVERNING_ACCESS_NOTE, dto.getGoverningAccessNote());
-    putProperty(map, INFORMATION_ABOUT_DOCUMENTATION, dto.getInformationAboutDocumentation());
-    putProperty(map, INFORMATION_RELATING_TO_COPYRIGHT_STATUS, dto.getInformationRelatingToCopyrightStatus());
-    putProperty(map, ISSUANCE_NOTE, dto.getIssuanceNote());
-    putProperty(map, ISSUING_BODY, dto.getIssuingBody());
-    putProperty(map, LOCATION_OF_ORIGINALS_DUPLICATES, dto.getLocationOfOriginalsDuplicates());
-    putProperty(map, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, dto.getLocationOfOtherArchivalMaterial());
-    putProperty(map, NOTE, dto.getNote());
-    putProperty(map, ORIGINAL_VERSION_NOTE, dto.getOriginalVersionNote());
-    putProperty(map, PARTICIPANT_NOTE, dto.getParticipantNote());
-    putProperty(map, PHYSICAL_DESCRIPTION, dto.getPhysicalDescription());
-    putProperty(map, PUBLICATION_FREQUENCY, dto.getPublicationFrequency());
-    putProperty(map, RELATED_PARTS, dto.getRelatedParts());
-    putProperty(map, REPRODUCTION_NOTE, dto.getReproductionNote());
-    putProperty(map, SYSTEM_DETAILS, dto.getSystemDetails());
-    putProperty(map, SYSTEM_DETAILS_ACCESS_NOTE, dto.getSystemDetailsAccessNote());
-    putProperty(map, TYPE_OF_REPORT, dto.getTypeOfReport());
-    putProperty(map, WITH_NOTE, dto.getWithNote());
+
+    noteMapper.putNotes(dto.getNotes(), map);
+
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 

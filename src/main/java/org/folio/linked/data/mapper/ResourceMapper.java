@@ -49,12 +49,12 @@ public abstract class ResourceMapper {
 
   public abstract ResourceShortInfoPage map(Page<ResourceShort> page);
 
-  @Mapping(target = "outgoingEdges", expression = "java(marc2ldResource.getOutgoingEdges().stream()"
+  @Mapping(target = "outgoingEdges", expression = "java(marc4ldResource.getOutgoingEdges().stream()"
     + ".map(marc2ldEdge -> toEntity(marc2ldEdge, resource)).collect(Collectors.toSet()))")
-  public abstract Resource toEntity(org.folio.marc2ld.model.Resource marc2ldResource);
+  public abstract Resource toEntity(org.folio.marc4ld.model.Resource marc4ldResource);
 
   @Mapping(target = "source", source = "source")
-  public abstract ResourceEdge toEntity(org.folio.marc2ld.model.ResourceEdge marc2ldEdge, Resource source);
+  public abstract ResourceEdge toEntity(org.folio.marc4ld.model.ResourceEdge marc4ldEdge, Resource source);
 
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {
