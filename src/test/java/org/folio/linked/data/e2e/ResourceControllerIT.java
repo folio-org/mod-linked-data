@@ -180,7 +180,7 @@ public class ResourceControllerIT {
 
   @BeforeEach
   public void clean() {
-    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources");
+    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resources");
   }
 
   @Test
@@ -438,13 +438,10 @@ public class ResourceControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-        resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE)),
-        resourceRepo.save(TestUtil.getSampleInstanceResource(2L, INSTANCE)),
-        resourceRepo.save(TestUtil.getSampleInstanceResource(3L, INSTANCE))
-      ).stream()
-      .map(Resource::getResourceHash)
-      .map(Object::toString)
-      .toList();
+      resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE)),
+      resourceRepo.save(TestUtil.getSampleInstanceResource(2L, INSTANCE)),
+      resourceRepo.save(TestUtil.getSampleInstanceResource(3L, INSTANCE))
+    ).stream().sorted(comparing(Resource::getResourceHash)).toList();
     var requestBuilder = get(BIBFRAME_URL)
       .param(TYPE, INSTANCE.getUri())
       .contentType(APPLICATION_JSON)
@@ -461,7 +458,9 @@ public class ResourceControllerIT {
       .andExpect(jsonPath("total_pages", equalTo(1)))
       .andExpect(jsonPath("total_elements", equalTo(3)))
       .andExpect(jsonPath("content", hasSize(3)))
-      .andExpect(jsonPath("content[*].id", containsInAnyOrder(existed.toArray())));
+      .andExpect(jsonPath("content[0].id", equalTo(existed.get(0).getResourceHash().toString())))
+      .andExpect(jsonPath("content[1].id", equalTo(existed.get(1).getResourceHash().toString())))
+      .andExpect(jsonPath("content[2].id", equalTo(existed.get(2).getResourceHash().toString())));
   }
 
   @Test

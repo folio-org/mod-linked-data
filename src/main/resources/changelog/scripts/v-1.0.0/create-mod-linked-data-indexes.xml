@@ -1,0 +1,56 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet author="Victor_Bodrov@epam.com" id="01_create_index_graph_settings_graph_id_setting_id_idx">
+    <createIndex indexName="graph_settings_graph_id_setting_id_idx" tableName="graph_settings">
+      <column name="graph_id"/>
+      <column name="setting_id"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="02_create_index_resource_edges_target_hash_idx">
+    <createIndex indexName="resource_edges_target_hash_idx" tableName="resource_edges">
+      <column name="target_hash"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="03_create_index_resource_edges_predicate_hash_idx">
+    <createIndex indexName="resource_edges_predicate_hash_idx" tableName="resource_edges">
+      <column name="predicate_hash"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="04_create_index_resource_context_map_type_hash_idx">
+    <createIndex indexName="resource_context_map_type_hash_idx" tableName="resource_context_map">
+      <column name="context_hash"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="05_create_index_generator_manifest_conceptual_hash">
+    <createIndex indexName="generator_manifest_conceptual_hash" tableName="generator_manifest">
+      <column name="conceptual_hash"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="06_create_index_generator_manifest_concrete_hash">
+    <createIndex indexName="generator_manifest_concrete_hash" tableName="generator_manifest">
+      <column name="concrete_hash"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="07_create_index_generator_manifest_generator_hash">
+    <createIndex indexName="generator_manifest_generator_hash" tableName="generator_manifest">
+      <column name="generator_hash"/>
+    </createIndex>
+  </changeSet>
+
+  <changeSet author="Victor_Bodrov@epam.com" id="08_create_index_resource_generator_map_resource_hash">
+    <createIndex indexName="resource_generator_map_resource_hash" tableName="resource_generator_map">
+      <column name="resource_hash"/>
+    </createIndex>
+  </changeSet>
+
+</databaseChangeLog>
