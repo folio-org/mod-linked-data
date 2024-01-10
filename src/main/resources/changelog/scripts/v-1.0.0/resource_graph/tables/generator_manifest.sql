@@ -7,8 +7,8 @@ create table if not exists generator_manifest (
   concrete_hash bigint not null,
   generator_hash bigint not null references resources(resource_hash) on delete cascade,
   conceptual_hash bigint not null,
-  created_event_id bigint not null,
-  updated_event_id bigint not null,
+  created_event_id bigint null,
+  updated_event_id bigint null,
   active_event_id bigint null,
   primary key (input_hash, concrete_hash, generator_hash)
   ) partition by hash(generator_hash);

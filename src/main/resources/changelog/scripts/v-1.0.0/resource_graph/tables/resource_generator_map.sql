@@ -5,8 +5,8 @@
 create table if not exists resource_generator_map (
   generator_hash bigint not null,
   resource_hash bigint not null references resources(resource_hash) on delete cascade,
-  created_event_id bigint not null,
-  updated_event_id bigint not null,
+  created_event_id bigint null,
+  updated_event_id bigint null,
   active_event_id bigint null,
   primary key (generator_hash, resource_hash)
 ) partition by hash(generator_hash);
