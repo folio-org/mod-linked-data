@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
+
+  <changeSet id="2.21_insert_event_lookup" author="dfeeney@ebsco.com">
+    <insert tableName="event_lookup">
+      <column name="event_uri_hash" value="3952664360255043583"/>
+      <column name="event_uri" value="http://folio.org/ext/event/rebalance_graph"/>
+    </insert>
+    <insert tableName="event_lookup">
+      <column name="event_uri_hash" value="-3711691750509798532"/>
+      <column name="event_uri" value="http://folio.org/ext/event/import_graph"/>
+    </insert>
+    <insert tableName="event_lookup">
+      <column name="event_uri_hash" value="-2505891563145130517"/>
+      <column name="event_uri" value="http://folio.org/ext/event/set_configuration"/>
+    </insert>
+  </changeSet>
+</databaseChangeLog>

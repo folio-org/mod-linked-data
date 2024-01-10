@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @IntegrationTest
 class DatabaseIT {
 
-  private static final String GRAPHSET_TABLE_NAME = "graphset";
+  private static final String RESOURCES_TABLE_NAME = "resources";
 
   private static final String LIST_TABLES_QUERY = """
           SELECT table_name
@@ -33,7 +33,7 @@ class DatabaseIT {
     var tables = jdbcTemplate.queryForList(LIST_TABLES_QUERY, String.class, schema);
 
     // then
-    assertThat(tables).contains(GRAPHSET_TABLE_NAME);
+    assertThat(tables).contains(RESOURCES_TABLE_NAME);
   }
 
 }
