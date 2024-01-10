@@ -284,6 +284,9 @@
           ],
           "http://bibfra.me/vocab/lite/link": [
             "media link"
+          ],
+          "http://bibfra.me/vocab/marc/source": [
+            "media source"
           ]
         }
       ],
@@ -297,6 +300,9 @@
           ],
           "http://bibfra.me/vocab/lite/link": [
             "carrier link"
+          ],
+          "http://bibfra.me/vocab/marc/source": [
+            "carrier source"
           ]
         }
       ],
@@ -508,6 +514,9 @@
               ],
               "http://bibfra.me/vocab/lite/link": [
                 "http://id.loc.gov/vocabulary/contentTypes/txt"
+              ],
+              "http://bibfra.me/vocab/marc/source": [
+                "content source"
               ]
             }
           ],

@@ -28,6 +28,13 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/link"
+        },
+        "source": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/source"
         }
       }
     }

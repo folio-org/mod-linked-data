@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.resource.monograph.instance.sub;
 
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
@@ -47,6 +48,7 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
     putProperty(map, CODE, dto.getCode());
     putProperty(map, TERM, dto.getTerm());
     putProperty(map, LINK, dto.getLink());
+    putProperty(map, SOURCE, dto.getSource());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
