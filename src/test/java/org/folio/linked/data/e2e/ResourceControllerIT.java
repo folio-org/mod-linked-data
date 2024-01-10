@@ -2,7 +2,6 @@ package org.folio.linked.data.e2e;
 
 import static java.lang.String.format;
 import static java.lang.String.join;
-import static java.util.Comparator.comparing;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
