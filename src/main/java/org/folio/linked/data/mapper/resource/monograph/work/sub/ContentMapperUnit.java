@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.resource.monograph.work.sub;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
@@ -48,6 +49,7 @@ public class ContentMapperUnit implements WorkSubResourceMapperUnit {
     putProperty(map, CODE, dto.getCode());
     putProperty(map, LINK, dto.getLink());
     putProperty(map, TERM, dto.getTerm());
+    putProperty(map, SOURCE, dto.getSource());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 

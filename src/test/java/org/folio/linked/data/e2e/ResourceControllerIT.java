@@ -969,13 +969,11 @@ public class ResourceControllerIT {
     assertThat(media.getLabel()).isEqualTo(prefix + " term");
     assertThat(media.getTypes().iterator().next().getUri()).isEqualTo(CATEGORY.getUri());
     assertThat(media.getResourceHash()).isNotNull();
-    assertThat(media.getDoc().size()).isEqualTo(3);
-    assertThat(media.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
-    assertThat(media.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo(prefix + " code");
-    assertThat(media.getDoc().get(TERM.getValue()).size()).isEqualTo(1);
-    assertThat(media.getDoc().get(TERM.getValue()).get(0).asText()).isEqualTo(prefix + " term");
-    assertThat(media.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(media.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " link");
+    assertThat(media.getDoc().size()).isEqualTo(4);
+    validateLiteral(media, CODE.getValue(), prefix + " code");
+    validateLiteral(media, TERM.getValue(), prefix + " term");
+    validateLiteral(media, LINK.getValue(), prefix + " link");
+    validateLiteral(media, SOURCE.getValue(), prefix + " source");
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
@@ -1027,14 +1025,13 @@ public class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(CONTENT.getUri());
     var contentType = edge.getTarget();
-    assertThat(contentType.getDoc().size()).isEqualTo(3);
+    assertThat(contentType.getDoc().size()).isEqualTo(4);
     assertThat(contentType.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(contentType.getDoc().get(LINK.getValue()).get(0).asText())
       .isEqualTo("http://id.loc.gov/vocabulary/contentTypes/txt");
-    assertThat(contentType.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
-    assertThat(contentType.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo("txt");
-    assertThat(contentType.getDoc().get(TERM.getValue()).size()).isEqualTo(1);
-    assertThat(contentType.getDoc().get(TERM.getValue()).get(0).asText()).isEqualTo("text");
+    validateLiteral(contentType, CODE.getValue(), "txt");
+    validateLiteral(contentType, TERM.getValue(), "text");
+    validateLiteral(contentType, SOURCE.getValue(), "content source");
   }
 
   private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
