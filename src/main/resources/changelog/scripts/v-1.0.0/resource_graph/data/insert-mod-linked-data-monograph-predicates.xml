@@ -3596,4 +3596,38 @@
       <column name="predicate" value="http://bibfra.me/vocab/relation/writerofsupplementarytextualcontent"/>
     </insert>
   </changeSet>
+
+  <changeSet id="321_insert_predicate_lookup" author="Askhat_Abishev@epam.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/lite/focus'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="56570521968326884"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/focus"/>
+    </insert>
+  </changeSet>
+  <changeSet id="322_insert_predicate_lookup" author="Askhat_Abishev@epam.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/lite/subFocus'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="4520390776619819950"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/subFocus"/>
+    </insert>
+  </changeSet>
+  <changeSet id="323_insert_predicate_lookup" author="Askhat_Abishev@epam.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/lite/subject'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="-2239094214354783649"/>
+      <column name="predicate" value="http://bibfra.me/vocab/lite/subject"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>

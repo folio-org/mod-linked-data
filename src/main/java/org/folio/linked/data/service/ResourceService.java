@@ -2,6 +2,7 @@ package org.folio.linked.data.service;
 
 import java.util.Set;
 import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 
 public interface ResourceService {
@@ -19,4 +20,6 @@ public interface ResourceService {
   ResourceShortInfoPage getResourceShortInfoPage(String type, Integer pageNumber, Integer pageSize);
 
   void updateIndexDateBatch(Set<Long> ids);
+
+  ResourceGraphDto getResourceGraphById(Long id);
 }

@@ -19,6 +19,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
@@ -170,5 +171,35 @@ class ResourceServiceTest {
     assertEquals(id, resourceDeletedEventCaptor.getValue().id());
   }
 
+  @Test
+  void getResourceGraphById_shouldReturnResourceGraphDto_whenResourceExists() {
+    //given
+    var id = randomLong();
+    var resource = new Resource().setResourceHash(id);
+    var expectedResourceGraphDto = new ResourceGraphDto().id(String.valueOf(id));
+
+    when(resourceRepo.findById(id)).thenReturn(Optional.of(resource));
+    when(resourceMapper.toResourceGraphDto(resource)).thenReturn(expectedResourceGraphDto);
+
+    //when
+    var resourceGraphDto = resourceService.getResourceGraphById(id);
+
+    //then
+    assertEquals(expectedResourceGraphDto, resourceGraphDto);
+  }
+
+  @Test
+  void getResourceGraphById_shouldThrowNotFoundException_whenResourceDoesNotExist() {
+    // given
+    var id = randomLong();
+
+    when(resourceRepo.findById(id)).thenReturn(Optional.empty());
+
+    // when
+    var thrown = assertThrows(NotFoundException.class, () -> resourceService.getResourceGraphById(id));
+
+    // then
+    assertThat(thrown.getMessage()).isEqualTo(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
+  }
 }
 
