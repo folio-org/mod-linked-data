@@ -10,6 +10,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
@@ -58,15 +59,14 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   @Transactional(readOnly = true)
   public ResourceDto getResourceById(Long id) {
-    var resource = resourceRepo.findById(id).orElseThrow(() ->
-      new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND));
+    var resource = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
     return resourceMapper.toDto(resource);
   }
 
   @Override
   public ResourceDto updateResource(Long id, ResourceDto resourceDto) {
     if (!resourceRepo.existsById(id)) {
-      throw new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
+      throw getResourceNotFoundException(id);
     }
     addInternalFields(resourceDto, id);
     deleteResource(id);
@@ -106,5 +106,15 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public void updateIndexDateBatch(Set<Long> ids) {
     resourceRepo.updateIndexDateBatch(ids);
+  }
+
+  @Override
+  public ResourceGraphDto getResourceGraphById(Long id) {
+    var resource = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
+    return resourceMapper.toResourceGraphDto(resource);
+  }
+
+  private NotFoundException getResourceNotFoundException(Long id) {
+    return new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
   }
 }

@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceField;
+import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.BaseLinkedDataException;
@@ -29,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 @Log4j2
-@Mapper(componentModel = SPRING, imports = Collectors.class)
+@Mapper(componentModel = SPRING, imports = { Collectors.class, Arrays.class })
 public abstract class ResourceMapper {
 
   private static final Map<Class<? extends ResourceField>, String> DTO_CLASS_TO_TYPE = new HashMap<>();
@@ -77,6 +79,22 @@ public abstract class ResourceMapper {
   public Optional<BibframeIndex> mapToIndex(@NonNull Resource resource) {
     return kafkaMessageMapper.toIndex(resource);
   }
+
+  @Mapping(target = "id", source = "resourceHash")
+  @Mapping(target = "types", expression = """
+    java(resource.getTypes().stream()
+      .map(ResourceTypeEntity::getUri)
+      .toList())""")
+  @Mapping(target = "outgoingEdges", expression = """
+    java(resource.getOutgoingEdges().stream()
+      .collect(Collectors.toMap(re -> re.getPredicate().getUri(),
+        re -> new ArrayList<>(Arrays.asList(String.valueOf(re.getTarget().getResourceHash()))),
+        (a, b) -> {
+          a.addAll(b);
+          return a;
+        })))""")
+  @Mapping(target = "indexDate", source = "indexDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+  public abstract ResourceGraphDto toResourceGraphDto(Resource resource);
 
   private void setEdgesId(Resource resource) {
     resource.getOutgoingEdges().forEach(edge -> {

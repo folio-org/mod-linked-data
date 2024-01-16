@@ -418,7 +418,7 @@ public class MonographTestUtil {
     ).setLabel(prefix + " status label");
   }
 
-  private Resource providerEvent(String type) {
+  public Resource providerEvent(String type) {
     return createResource(
       Map.of(
         DATE, List.of(type + " date"),

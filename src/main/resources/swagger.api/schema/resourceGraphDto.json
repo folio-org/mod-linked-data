@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource graph DTO",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ID of the resource"
+    },
+    "types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Types of the resource"
+    },
+    "doc": {
+      "type": "object",
+      "description": "Properties of the resource"
+    },
+    "label": {
+      "type": "string",
+      "description": "Label of the resource"
+    },
+    "outgoingEdges": {
+      "type": "object",
+      "description": "Predicate and the IDs of the resources to which that predicate points to"
+    },
+    "indexDate": {
+      "type": "string",
+      "description": "Date on which the resource is indexed"
+    }
+  }
+}

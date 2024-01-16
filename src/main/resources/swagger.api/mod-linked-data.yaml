@@ -137,6 +137,27 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /graph/resource/{id}:
+    get:
+      operationId: getResourceGraphById
+      description: Get a resource graph by id
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: Resource graph as json string
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceGraphDto.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          description: No Resource graph is found by id
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     id:

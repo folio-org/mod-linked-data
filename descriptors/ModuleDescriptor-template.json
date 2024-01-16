@@ -76,6 +76,18 @@
           "permissionsRequired": [ "linked.data.bibframe.get" ]
         }
       ]
+    },
+    {
+      "id": "graph",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/graph/resource/{id}",
+          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "modulePermissions": []
+        }
+      ]
     }
   ],
   "requires": [],
