@@ -2,7 +2,7 @@
 
 --changeset dfeeney@ebsco.com:3.6_resource_type_map dbms:postgresql
 create table if not exists resource_type_map (
-  resource_hash bigint references resources(resource_hash),
+  resource_hash bigint references resources(resource_hash) on delete cascade,
   type_hash bigint references type_lookup(type_hash),
   primary key(resource_hash, type_hash)
 ) partition by hash(resource_hash);
