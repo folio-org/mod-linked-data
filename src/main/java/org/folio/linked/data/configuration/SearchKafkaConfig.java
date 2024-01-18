@@ -26,7 +26,7 @@ public class SearchKafkaConfig {
 
   @Bean
   public ProducerFactory<String, ResourceEvent> producerFactory() {
-    Map<String, Object> configProps = new HashMap<>(kafkaProperties.buildProducerProperties());
+    Map<String, Object> configProps = new HashMap<>(kafkaProperties.buildProducerProperties(null));
     configProps.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     configProps.put(VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
     return new DefaultKafkaProducerFactory<>(configProps);
