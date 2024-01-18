@@ -130,6 +130,7 @@ import java.util.List;
 import net.minidev.json.JSONArray;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -353,8 +354,9 @@ public class ResourceControllerIT {
       .andExpect(jsonPath("errors", notNullValue()))
       .andExpect(jsonPath("$." + toErrorType(), equalTo(HttpMessageNotReadableException.class.getSimpleName())))
       .andExpect(jsonPath("$." + toErrorCode(), equalTo(VALIDATION_ERROR.getValue())))
-      .andExpect(jsonPath("$." + toErrorMessage(), equalTo("JSON parse error: InstanceAllOfTitleInner dto"
-        + " class deserialization error: Unknown sub-element http://TitleWrong")));
+      .andExpect(jsonPath("$." + toErrorMessage(), equalTo("JSON parse error: "
+        + InstanceAllOfTitle.class.getSimpleName()
+        + " dto class deserialization error: Unknown sub-element http://TitleWrong")));
   }
 
   @Test

@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Agent container",
+  "oneOf": [
+    {
+      "$ref": "Agent.json#/PersonField"
+    },
+    {
+      "$ref": "Agent.json#/FamilyField"
+    },
+    {
+      "$ref": "Agent.json#/OrganizationField"
+    },
+    {
+      "$ref": "Agent.json#/MeetingField"
+    }
+  ]
+}

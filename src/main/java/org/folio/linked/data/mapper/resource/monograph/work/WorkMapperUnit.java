@@ -28,7 +28,7 @@ import lombok.NonNull;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.api.Predicate;
-import org.folio.linked.data.domain.dto.AgentTypeInner;
+import org.folio.linked.data.domain.dto.AgentContainer;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
@@ -97,7 +97,7 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     return resource;
   }
 
-  private void mapContributionEdges(List<AgentTypeInner> dtoList, @NonNull Resource source,
+  private void mapContributionEdges(List<AgentContainer> dtoList, @NonNull Resource source,
                                     @NonNull Predicate predicate) {
     if (nonNull(dtoList)) {
       for (var dto : dtoList) {
