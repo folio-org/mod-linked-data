@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.Constants.RELATION_PREDICATE_PREFIX;
 
 import java.util.List;
 import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.domain.dto.AgentTypeInner;
+import org.folio.linked.data.domain.dto.AgentContainer;
 import org.folio.linked.data.domain.dto.FamilyField;
 import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.domain.dto.OrganizationField;
@@ -23,7 +23,7 @@ public class AgentRoleAssigner {
    * Assigns roles to the given agent. Roles can be found in the work resource as outgoing edges with a predicate that
    * starts with "http://bibfra.me/vocab/relation/" and has the agent's id as target.
    */
-  public void assignRoles(AgentTypeInner agentInner, Resource workResource) {
+  public void assignRoles(AgentContainer agentInner, Resource workResource) {
     Agent agent = getAgent(agentInner);
 
     List<String> roles = workResource
@@ -39,20 +39,20 @@ public class AgentRoleAssigner {
     }
   }
 
-  public Agent getAgent(AgentTypeInner agentInner) {
-    if (agentInner instanceof FamilyField familyField) {
+  public Agent getAgent(AgentContainer agentContainer) {
+    if (agentContainer instanceof FamilyField familyField) {
       return familyField.getFamily();
     }
-    if (agentInner instanceof PersonField personField) {
+    if (agentContainer instanceof PersonField personField) {
       return personField.getPerson();
     }
-    if (agentInner instanceof OrganizationField organizationField) {
+    if (agentContainer instanceof OrganizationField organizationField) {
       return organizationField.getOrganization();
     }
-    if (agentInner instanceof MeetingField meetingField) {
+    if (agentContainer instanceof MeetingField meetingField) {
       return meetingField.getMeeting();
     }
     // should not be here
-    throw new NotSupportedException("Unknown agent type: " + agentInner.getClass().getSimpleName());
+    throw new NotSupportedException("Unknown agent type: " + agentContainer.getClass().getSimpleName());
   }
 }

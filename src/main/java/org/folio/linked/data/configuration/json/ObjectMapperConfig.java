@@ -7,12 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.AgentDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.AgentContainerDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.MapDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.TitleDeserializer;
-import org.folio.linked.data.domain.dto.AgentTypeInner;
-import org.folio.linked.data.domain.dto.InstanceAllOfMapInner;
-import org.folio.linked.data.domain.dto.InstanceAllOfTitleInner;
+import org.folio.linked.data.domain.dto.AgentContainer;
+import org.folio.linked.data.domain.dto.InstanceAllOfMap;
+import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.ResourceField;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
@@ -37,9 +37,9 @@ public class ObjectMapperConfig {
   private Module monographModule(ObjectMapper mapper) {
     var module = new SimpleModule();
     module.addDeserializer(ResourceField.class, new ResourceFieldDeserializer());
-    module.addDeserializer(InstanceAllOfTitleInner.class, new TitleDeserializer());
-    module.addDeserializer(InstanceAllOfMapInner.class, new MapDeserializer());
-    module.addDeserializer(AgentTypeInner.class, new AgentDeserializer());
+    module.addDeserializer(InstanceAllOfTitle.class, new TitleDeserializer());
+    module.addDeserializer(InstanceAllOfMap.class, new MapDeserializer());
+    module.addDeserializer(AgentContainer.class, new AgentContainerDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;
   }

@@ -11,17 +11,17 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import org.folio.linked.data.domain.dto.AgentTypeInner;
+import org.folio.linked.data.domain.dto.AgentContainer;
 import org.folio.linked.data.domain.dto.FamilyField;
 import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.domain.dto.OrganizationField;
 import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.exception.JsonException;
 
-public class AgentDeserializer extends JsonDeserializer<AgentTypeInner> {
+public class AgentContainerDeserializer extends JsonDeserializer<AgentContainer> {
 
   @Override
-  public AgentTypeInner deserialize(JsonParser jp, DeserializationContext deserializationContext)
+  public AgentContainer deserialize(JsonParser jp, DeserializationContext deserializationContext)
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     if (node.has(PERSON.getUri())) {
@@ -34,6 +34,6 @@ public class AgentDeserializer extends JsonDeserializer<AgentTypeInner> {
       return jp.getCodec().treeToValue(node, FamilyField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(AgentTypeInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(AgentContainer.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

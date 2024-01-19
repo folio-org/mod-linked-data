@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.domain.dto.AgentTypeInner;
+import org.folio.linked.data.domain.dto.AgentContainer;
 import org.folio.linked.data.domain.dto.FamilyField;
 import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.domain.dto.OrganizationField;
@@ -39,7 +39,7 @@ class AgentRoleAssignerTest {
     testAssignRoles(agent, a -> new PersonField().person(a));
   }
 
-  private void testAssignRoles(Agent agent, Function<Agent, AgentTypeInner> agentConverter) {
+  private void testAssignRoles(Agent agent, Function<Agent, AgentContainer> agentConverter) {
     // given
     String role1Predicate = "http://bibfra.me/vocab/relation/role1";
     String role2Predicate = "http://bibfra.me/vocab/relation/role2";
