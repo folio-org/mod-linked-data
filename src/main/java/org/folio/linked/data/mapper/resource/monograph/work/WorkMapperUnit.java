@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
@@ -91,6 +92,7 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setDoc(getDoc(work));
     coreMapper.mapTopEdges(work.getClassification(), resource, CLASSIFICATION, Work.class, mapper::toEntity);
     coreMapper.mapTopEdges(work.getContent(), resource, CONTENT, Work.class, mapper::toEntity);
+    coreMapper.mapTopEdges(work.getSubjects(), resource, SUBJECT, Work.class, mapper::toEntity);
     mapContributionEdges(work.getCreator(), resource, CREATOR);
     mapContributionEdges(work.getContributor(), resource, CONTRIBUTOR);
     resource.setResourceHash(coreMapper.hash(resource));

@@ -25,6 +25,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
@@ -75,6 +76,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
@@ -127,6 +129,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
 import java.util.List;
+import lombok.SneakyThrows;
 import net.minidev.json.JSONArray;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -155,7 +158,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
-public class ResourceControllerIT {
+class ResourceControllerIT {
 
   private static final String BIBFRAME_URL = "/resource";
   private static final String ROLES_PROPERTY = "_roles";
@@ -186,6 +189,7 @@ public class ResourceControllerIT {
   @Test
   void createMonographInstanceBibframe_shouldSaveEntityCorrectly() throws Exception {
     // given
+    LookupResources lookupResources = saveLookupResources();
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -204,7 +208,7 @@ public class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateInstance(bibframe);
+    validateInstance(bibframe, lookupResources);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
 
@@ -310,6 +314,7 @@ public class ResourceControllerIT {
   @Test
   void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
     // given
+    saveLookupResources();
     var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -362,6 +367,7 @@ public class ResourceControllerIT {
   @Test
   void update_shouldReturnCorrectlyUpdatedEntity() throws Exception {
     // given
+    saveLookupResources();
     var originalInstance = resourceRepo.save(getSampleInstanceResource().setLabel("Instance: mainTitle"));
     var updateDto = getSampleBibframeDtoMap();
     var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
@@ -470,8 +476,8 @@ public class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleInstanceResource());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(31);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(37);
+    assertThat(resourceRepo.count()).isEqualTo(33);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(39);
     var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -481,9 +487,9 @@ public class ResourceControllerIT {
 
     // then
     assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
-    assertThat(resourceRepo.count()).isEqualTo(30);
+    assertThat(resourceRepo.count()).isEqualTo(32);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(19);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(21);
     checkKafkaMessageDeletedSent(existed.getResourceHash());
   }
 
@@ -675,10 +681,11 @@ public class ResourceControllerIT {
         new JSONArray().appendElement("2002801801-FAMILY"))))
       .andExpect(jsonPath(toWorkContentLink(), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(), equalTo("txt")))
-      .andExpect(jsonPath(toWorkContentTerm(), equalTo("text")));
+      .andExpect(jsonPath(toWorkContentTerm(), equalTo("text")))
+      .andExpect(jsonPath(toWorkSubjectLabel(), equalTo(List.of("subject 1", "subject 2"))));
   }
 
-  private void validateInstance(Resource instance) {
+  private void validateInstance(Resource instance, LookupResources lookupResources) {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -710,7 +717,7 @@ public class ResourceControllerIT {
     validateCategory(edgeIterator.next(), instance, CARRIER);
     validateCategory(edgeIterator.next(), instance, MEDIA);
     validateLccn(edgeIterator.next(), instance);
-    validateWork(edgeIterator.next(), instance);
+    validateWork(edgeIterator.next(), instance, lookupResources);
     validateAccessLocation(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION);
@@ -979,7 +986,7 @@ public class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateWork(ResourceEdge edge, Resource source) {
+  private void validateWork(ResourceEdge edge, Resource source, LookupResources lookupResources) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
@@ -1006,6 +1013,8 @@ public class ResourceControllerIT {
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, AUTHOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
+    validateResourceEdge(edgeIterator.next(), instantiates, lookupResources.subjects().get(0), SUBJECT.getUri());
+    validateResourceEdge(edgeIterator.next(), instantiates, lookupResources.subjects().get(1), SUBJECT.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
     validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CONTRIBUTOR.getUri());
   }
@@ -1051,6 +1060,13 @@ public class ResourceControllerIT {
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).get(0).asText()).isEqualTo("2002801801-" + type);
   }
 
+  private void validateResourceEdge(ResourceEdge edge, Resource source, Resource target, String predicate) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(predicate);
+    assertThat(edge.getTarget()).isEqualTo(target);
+  }
+
   private void validateCopyrightDate(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -1063,6 +1079,24 @@ public class ResourceControllerIT {
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("copyright date value");
     assertThat(copyrightEvent.getOutgoingEdges()).isEmpty();
+  }
+
+  private LookupResources saveLookupResources() {
+    var subject1 = saveSubject(1L);
+    var subject2 = saveSubject(2L);
+    return new LookupResources(
+      List.of(subject1, subject2)
+    );
+  }
+
+  @SneakyThrows
+  private Resource saveSubject(Long id)  {
+    var subjectResource = new Resource();
+    subjectResource.addType(new ResourceTypeEntity().setHash(CONCEPT.getHash()).setUri(CONCEPT.getUri()));
+    subjectResource.setLabel("subject " + id);
+    subjectResource.setDoc(OBJECT_MAPPER.readTree("{}"));
+    subjectResource.setResourceHash(id);
+    return resourceRepo.save(subjectResource);
   }
 
   private String toInstance() {
@@ -1463,6 +1497,10 @@ public class ResourceControllerIT {
     return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
   }
 
+  private String toWorkSubjectLabel() {
+    return join(".", toWork(), dynamicArrayPath(SUBJECT.getUri()), path("label"));
+  }
+
   private String toWorkContentCode() {
     return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(CODE.getValue()));
   }
@@ -1494,4 +1532,8 @@ public class ResourceControllerIT {
   private String dynamicArrayPath(String path) {
     return format("['%s'][*]", path);
   }
+
+  private record LookupResources(
+    List<Resource> subjects
+  ) {}
 }

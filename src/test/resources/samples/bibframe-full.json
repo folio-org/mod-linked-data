@@ -488,6 +488,14 @@
               ]
             }
           ],
+          "http://bibfra.me/vocab/lite/subject": [
+            {
+              "id": "1"
+            },
+            {
+              "id": "2"
+            }
+          ],
           "http://bibfra.me/vocab/marc/targetAudience": [
             "target audience"
           ],
