@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Subject Info",
+  "allOf": [
+    {
+      "$ref": "Topper.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        }
+      }
+    }
+  ]
+}

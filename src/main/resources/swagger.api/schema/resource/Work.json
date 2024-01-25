@@ -51,6 +51,14 @@
           },
           "x-json-property": "_notes"
         },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Subject.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/subject"
+        },
         "classification": {
           "type": "array",
           "items": {

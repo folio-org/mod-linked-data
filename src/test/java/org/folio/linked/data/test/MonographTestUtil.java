@@ -21,6 +21,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
@@ -70,6 +71,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
@@ -381,6 +383,22 @@ public class MonographTestUtil {
       emptyMap()
     );
 
+    var subject1 = createResource(
+      Map.of(
+        NAME, List.of("Subject 1")
+      ),
+      Set.of(CONCEPT),
+      emptyMap()
+    ).setLabel("subject 1");
+
+    var subject2 = createResource(
+      Map.of(
+        NAME, List.of("Subject 2")
+      ),
+      Set.of(CONCEPT),
+      emptyMap()
+    ).setLabel("subject 2");
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
     pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
@@ -390,6 +408,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(EDITOR, List.of(contributorOrganization));
     pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
     pred2OutgoingResources.put(CONTENT, List.of(content));
+    pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
 
     return createResource(
       Map.ofEntries(
