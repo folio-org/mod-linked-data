@@ -28,13 +28,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, dtoClass = Place.class)
-public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
+public class PlaceMapperUnit implements SubResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(ProviderEvent.class);
   private final CoreMapper coreMapper;
 
   @Override
-  public T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T destination) {
     var place = coreMapper.readResourceDoc(source, Place.class);
     place.setId(String.valueOf(source.getResourceHash()));
     if (destination instanceof ProviderEvent providerEvent) {

@@ -12,6 +12,6 @@ public interface SubResourceMapper {
 
   <P> Resource toEntity(@NonNull Object dto, Predicate predicate, @NonNull Class<P> parentDtoClass);
 
-  <T> Optional<SubResourceMapperUnit<T>> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
+  Optional<SubResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
                                                        Class<?> dto);
 }

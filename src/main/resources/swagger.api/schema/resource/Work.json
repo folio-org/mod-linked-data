@@ -88,6 +88,13 @@
             "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/content"
+        },
+        "_instanceReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "InstanceReference.json"
+          }
         }
       }
     }

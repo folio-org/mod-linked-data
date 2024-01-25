@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = PROVIDER_EVENT, predicate = PE_PUBLICATION, dtoClass = ProviderEvent.class)
 public class PublicationMapperUnit extends ProviderEventMapperUnit {
 
-  public PublicationMapperUnit(CoreMapper coreMapper, PlaceMapperUnit<ProviderEvent> placeMapper) {
+  public PublicationMapperUnit(CoreMapper coreMapper, PlaceMapperUnit placeMapper) {
     super(coreMapper, placeMapper, (providerEvent, instance) -> instance.addPublicationItem(providerEvent));
   }
 }

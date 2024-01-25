@@ -16,8 +16,11 @@ public interface CoreMapper {
   <T> void mapWithResources(@NonNull SubResourceMapper subResourceMapper, @NonNull Resource resource,
                             @NonNull Consumer<T> consumer, @NonNull Class<T> destination);
 
-  <T> void addMappedResources(@NonNull SubResourceMapperUnit<T> subResourceMapperUnit, @NonNull Resource resource,
-                              @NonNull Predicate predicate, @NonNull T destination);
+  <T> void addMappedOutgoingResources(@NonNull SubResourceMapperUnit subResourceMapperUnit,
+                                      @NonNull Resource resource, @NonNull Predicate predicate, @NonNull T destination);
+
+  <T> void addMappedIncomingResources(@NonNull SubResourceMapperUnit subResourceMapperUnit,
+                                      @NonNull Resource resource, @NonNull Predicate predicate, @NonNull T destination);
 
   <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass);
 
@@ -28,7 +31,11 @@ public interface CoreMapper {
   <T> void mapSubEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
                        @NonNull Function<T, Resource> mappingFunction);
 
-  <T, P> void mapTopEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
-                          @NonNull Class<P> parentClass,
-                          @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping);
+  <T, P> void mapOutgoingEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
+                               @NonNull Class<P> parentClass,
+                               @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping);
+
+  <T, P> void mapIncomingEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
+                               @NonNull Class<P> parentClass,
+                               @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping);
 }

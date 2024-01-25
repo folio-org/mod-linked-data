@@ -63,6 +63,11 @@ public class Resource {
 
   @OrderBy
   @ToString.Exclude
+  @OneToMany(mappedBy = "target", cascade = ALL)
+  private Set<ResourceEdge> incomingEdges = new LinkedHashSet<>();
+
+  @OrderBy
+  @ToString.Exclude
   @OneToMany(mappedBy = "source", cascade = ALL, fetch = FetchType.EAGER)
   private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
 

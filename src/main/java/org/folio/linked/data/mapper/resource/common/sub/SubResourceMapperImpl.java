@@ -3,7 +3,6 @@ package org.folio.linked.data.mapper.resource.common.sub;
 import static java.util.Objects.isNull;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
-import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
 
@@ -29,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class SubResourceMapperImpl implements SubResourceMapper {
 
   private final ObjectMapper objectMapper;
-  private final List<SubResourceMapperUnit<?>> mapperUnits;
+  private final List<SubResourceMapperUnit> mapperUnits;
 
   @SneakyThrows
   @Override
@@ -37,8 +36,9 @@ public class SubResourceMapperImpl implements SubResourceMapper {
     try {
       return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
         .map(mapper -> mapper.toEntity(dto))
-        .orElseThrow(() -> new NotSupportedException(RESOURCE_TYPE + dto.getClass().getSimpleName()
-          + IS_NOT_SUPPORTED_FOR_PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET)
+        .orElseThrow(() -> new NotSupportedException("Dto [" + dto.getClass().getSimpleName()
+          + IS_NOT_SUPPORTED_FOR_PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET
+          + " and parentDto [" + parentDtoClass + "]")
         );
     } catch (BaseLinkedDataException blde) {
       throw blde;
@@ -59,7 +59,7 @@ public class SubResourceMapperImpl implements SubResourceMapper {
       .findFirst();
 
     resourceMapper
-      .map(mapper -> ((SubResourceMapperUnit<D>) mapper).toDto(source.getTarget(), destination))
+      .map(mapper -> mapper.toDto(source.getTarget(), destination))
       .orElseGet(() -> {
         log.warn(RESOURCE_WITH_GIVEN_ID + source.getTarget().getResourceHash() + RIGHT_SQUARE_BRACKET
           + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getUri()
@@ -70,8 +70,8 @@ public class SubResourceMapperImpl implements SubResourceMapper {
 
 
   @Override
-  public <T> Optional<SubResourceMapperUnit<T>> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
-                                                              Class<?> dto) {
+  public Optional<SubResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
+                                                       Class<?> dto) {
     return mapperUnits.stream()
       .filter(m -> isNull(parentDto) || m.getParentDto().contains(parentDto))
       .filter(m -> {
@@ -80,7 +80,6 @@ public class SubResourceMapperImpl implements SubResourceMapper {
           && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
           && (isNull(dto) || dto.equals(annotation.dtoClass()));
       })
-      .map(mapper -> (SubResourceMapperUnit<T>) mapper)
       .findFirst();
   }
 

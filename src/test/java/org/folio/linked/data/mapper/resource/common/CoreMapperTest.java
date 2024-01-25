@@ -71,7 +71,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addMappedResources(subResourceMapperUnit, source, predicate, destination));
+      () -> coreMapper.addMappedOutgoingResources(subResourceMapperUnit, source, predicate, destination));
 
     // then
     assertThat(thrown.getMessage(), is("subResourceMapperUnit is marked non-null but is null"));
@@ -86,7 +86,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addMappedResources(subResourceMapperUnit, source, predicate, destination));
+      () -> coreMapper.addMappedOutgoingResources(subResourceMapperUnit, source, predicate, destination));
 
     // then
     assertThat(thrown.getMessage(), is("source is marked non-null but is null"));
@@ -101,7 +101,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addMappedResources(subResourceMapperUnit, source, predicate, destination));
+      () -> coreMapper.addMappedOutgoingResources(subResourceMapperUnit, source, predicate, destination));
 
     // then
     assertThat(thrown.getMessage(), is("predicate is marked non-null but is null"));
@@ -116,7 +116,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addMappedResources(subResourceMapperUnit, source, predicate, destination));
+      () -> coreMapper.addMappedOutgoingResources(subResourceMapperUnit, source, predicate, destination));
 
     // then
     assertThat(thrown.getMessage(), is("destination is marked non-null but is null"));
@@ -124,7 +124,7 @@ class CoreMapperTest {
 
   @Test
   void addMappedResources_shouldAddMappedResources_ifGivenDataIsCorrect(
-    @Mock StatusMapperUnit<Isbn> subResourceMapperUnit) {
+    @Mock StatusMapperUnit subResourceMapperUnit) {
     // given
     var predicate = PredicateDictionary.MAP;
     var targetResource = new Resource().setLabel("target");
@@ -137,7 +137,7 @@ class CoreMapperTest {
     var destination = new Isbn();
 
     // when
-    coreMapper.addMappedResources(subResourceMapperUnit, source, predicate, destination);
+    coreMapper.addMappedOutgoingResources(subResourceMapperUnit, source, predicate, destination);
 
     // then
     verify(subResourceMapperUnit).toDto(targetResource, destination);
@@ -483,7 +483,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void mapSubEdges_shouldThrowNpe_ifGivenSourceIsNull(@Mock StatusMapperUnit<Isbn> mapper) {
+  void mapSubEdges_shouldThrowNpe_ifGivenSourceIsNull(@Mock StatusMapperUnit mapper) {
     // given
     var dtoList = new ArrayList<>();
     Resource source = null;
@@ -498,7 +498,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void mapSubEdges_shouldThrowNpe_ifGivenPredicateIsNull(@Mock StatusMapperUnit<Isbn> mapper) {
+  void mapSubEdges_shouldThrowNpe_ifGivenPredicateIsNull(@Mock StatusMapperUnit mapper) {
     // given
     var dtoList = new ArrayList<>();
     var source = new Resource();
@@ -528,7 +528,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void mapSubEdges_shouldDoNothing_ifGivenDtoListIsNull(@Mock StatusMapperUnit<Isbn> mapper) {
+  void mapSubEdges_shouldDoNothing_ifGivenDtoListIsNull(@Mock StatusMapperUnit mapper) {
     // given
     List dtoList = null;
     var source = new Resource();
@@ -543,7 +543,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void mapSubEdges_shouldDoNothing_ifGivenDtoListIsEmpty(@Mock StatusMapperUnit<Isbn> mapper) {
+  void mapSubEdges_shouldDoNothing_ifGivenDtoListIsEmpty(@Mock StatusMapperUnit mapper) {
     // given
     var dtoList = new ArrayList<>();
     var source = new Resource();
@@ -559,7 +559,7 @@ class CoreMapperTest {
 
   @Test
   void mapSubEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndNoType(
-    @Mock StatusMapperUnit<Isbn> mapper) {
+    @Mock StatusMapperUnit mapper) {
     // given
     var dto1 = new Isbn().id(randomLong().toString());
     var dto2 = new Isbn().id(randomLong().toString());
@@ -585,7 +585,7 @@ class CoreMapperTest {
 
   @Test
   void mapSubEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmptyAndType(
-    @Mock StatusMapperUnit<Isbn> mapper) {
+    @Mock StatusMapperUnit mapper) {
     // given
     var dto1 = new Isbn().id(randomLong().toString());
     var dto2 = new Isbn().id(randomLong().toString());
@@ -619,7 +619,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity));
+      () -> coreMapper.mapOutgoingEdges(dtoList, source, predicate, parent, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("source is marked non-null but is null"));
@@ -635,7 +635,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity));
+      () -> coreMapper.mapOutgoingEdges(dtoList, source, predicate, parent, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("predicate is marked non-null but is null"));
@@ -651,7 +651,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity));
+      () -> coreMapper.mapOutgoingEdges(dtoList, source, predicate, parent, mapper::toEntity));
 
     // then
     assertThat(thrown.getMessage(), is("parent is marked non-null but is null"));
@@ -667,7 +667,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.mapTopEdges(dtoList, source, predicate, parent, null));
+      () -> coreMapper.mapOutgoingEdges(dtoList, source, predicate, parent, null));
 
     // then
     assertThat(thrown.getMessage(), is("mapping is marked non-null but is null"));
@@ -682,7 +682,7 @@ class CoreMapperTest {
     var parent = Instance.class;
 
     // when
-    coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dtoList, source, predicate, parent, mapper::toEntity);
 
     // then
     verify(mapper, never()).toEntity(any(), any(), any());
@@ -698,7 +698,7 @@ class CoreMapperTest {
     var parent = Instance.class;
 
     // when
-    coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dtoList, source, predicate, parent, mapper::toEntity);
 
     // then
     verify(mapper, never()).toEntity(any(), any(), any());
@@ -721,7 +721,7 @@ class CoreMapperTest {
     var dtoList = List.of(dto1, dto2);
 
     // when
-    coreMapper.mapTopEdges(dtoList, source, predicate, parent, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dtoList, source, predicate, parent, mapper::toEntity);
 
     // then
     assertThat(source.getOutgoingEdges(), hasSize(2));

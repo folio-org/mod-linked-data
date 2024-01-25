@@ -26,10 +26,12 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var accessLocation = coreMapper.readResourceDoc(source, AccessLocation.class);
     accessLocation.setId(String.valueOf(source.getResourceHash()));
-    destination.addAccessLocationItem(accessLocation);
+    if (destination instanceof Instance instance) {
+      instance.addAccessLocationItem(accessLocation);
+    }
     return destination;
   }
 

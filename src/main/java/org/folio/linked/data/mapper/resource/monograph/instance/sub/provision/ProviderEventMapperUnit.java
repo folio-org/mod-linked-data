@@ -28,15 +28,18 @@ import org.folio.linked.data.model.entity.Resource;
 public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final PlaceMapperUnit<ProviderEvent> placeMapper;
+  private final PlaceMapperUnit placeMapper;
   private final BiFunction<ProviderEvent, Instance, Instance> providerEventConsumer;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var providerEvent = coreMapper.readResourceDoc(source, ProviderEvent.class);
     providerEvent.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedResources(placeMapper, source, PROVIDER_PLACE, providerEvent);
-    return providerEventConsumer.apply(providerEvent, destination);
+    coreMapper.addMappedOutgoingResources(placeMapper, source, PROVIDER_PLACE, providerEvent);
+    if (destination instanceof Instance instance) {
+      destination = (T) providerEventConsumer.apply(providerEvent, instance);
+    }
+    return destination;
   }
 
   @Override

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
@@ -33,10 +34,15 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   private final CoreMapper coreMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var variantTitle = coreMapper.readResourceDoc(source, VariantTitle.class);
     variantTitle.setId(String.valueOf(source.getResourceHash()));
-    destination.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    if (destination instanceof Instance instance) {
+      instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    }
+    if (destination instanceof InstanceReference instance) {
+      instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    }
     return destination;
   }
 

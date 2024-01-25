@@ -14,7 +14,6 @@ import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Category;
-import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.model.entity.Resource;
 
@@ -22,14 +21,14 @@ import org.folio.linked.data.model.entity.Resource;
 public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final BiFunction<Category, Instance, Instance> categoryConsumer;
+  private final BiFunction<Category, Object, Object> categoryConsumer;
   private final ResourceTypeDictionary type;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var category = coreMapper.readResourceDoc(source, Category.class);
     category.setId(String.valueOf(source.getResourceHash()));
-    return categoryConsumer.apply(category, destination);
+    return (T) categoryConsumer.apply(category, destination);
   }
 
   @Override

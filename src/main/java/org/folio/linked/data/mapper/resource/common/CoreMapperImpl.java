@@ -43,11 +43,22 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public <T> void addMappedResources(@NonNull SubResourceMapperUnit<T> subResourceMapperUnit, @NonNull Resource source,
-                                     @NonNull Predicate predicate, @NonNull T destination) {
+  public <T> void addMappedOutgoingResources(@NonNull SubResourceMapperUnit subResourceMapperUnit,
+                                             @NonNull Resource source, @NonNull Predicate predicate,
+                                             @NonNull T destination) {
     source.getOutgoingEdges().stream()
       .filter(re -> re.getPredicate().getUri().equals(predicate.getUri()))
       .map(ResourceEdge::getTarget)
+      .forEach(r -> subResourceMapperUnit.toDto(r, destination));
+  }
+
+  @Override
+  public <T> void addMappedIncomingResources(@NonNull SubResourceMapperUnit subResourceMapperUnit,
+                                             @NonNull Resource source, @NonNull Predicate predicate,
+                                             @NonNull T destination) {
+    source.getIncomingEdges().stream()
+      .filter(re -> re.getPredicate().getUri().equals(predicate.getUri()))
+      .map(ResourceEdge::getSource)
       .forEach(r -> subResourceMapperUnit.toDto(r, destination));
   }
 
@@ -95,15 +106,28 @@ public class CoreMapperImpl implements CoreMapper {
   }
 
   @Override
-  public <T, P> void mapTopEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
-                                 @NonNull Class<P> parent,
-                                 @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping) {
+  public <T, P> void mapOutgoingEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
+                                      @NonNull Class<P> parent,
+                                      @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping) {
     if (nonNull(dtoList)) {
       dtoList.stream()
         .map(dto -> mapping.apply(dto, predicate, parent))
         .filter(r -> nonNull(r.getDoc()) || isNotEmpty(r.getOutgoingEdges()))
         .map(resource -> new ResourceEdge(source, resource, predicate))
         .forEach(source.getOutgoingEdges()::add);
+    }
+  }
+
+  @Override
+  public <T, P> void mapIncomingEdges(List<T> dtoList, @NonNull Resource source, @NonNull Predicate predicate,
+                                      @NonNull Class<P> parent,
+                                      @NonNull TriFunction<T, Predicate, Class<P>, Resource> mapping) {
+    if (nonNull(dtoList)) {
+      dtoList.stream()
+        .map(dto -> mapping.apply(dto, predicate, parent))
+        .filter(r -> nonNull(r.getDoc()) || isNotEmpty(r.getOutgoingEdges()))
+        .map(resource -> new ResourceEdge(resource, source, predicate))
+        .forEach(source.getIncomingEdges()::add);
     }
   }
 

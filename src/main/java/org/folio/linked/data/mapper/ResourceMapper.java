@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.folio.linked.data.domain.dto.ResourceField;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
+import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.top.TopResourceMapper;
@@ -31,13 +33,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 @Log4j2
-@Mapper(componentModel = SPRING, imports = { Collectors.class, Arrays.class })
+@Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class})
 public abstract class ResourceMapper {
 
   private static final Map<Class<? extends ResourceField>, String> DTO_CLASS_TO_TYPE = new HashMap<>();
 
   static {
     DTO_CLASS_TO_TYPE.put(InstanceField.class, INSTANCE.getUri());
+    DTO_CLASS_TO_TYPE.put(WorkField.class, WORK.getUri());
   }
 
   @Autowired

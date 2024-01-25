@@ -26,12 +26,13 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
   private final CoreMapper coreMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var supplementaryContent = coreMapper.readResourceDoc(source, SupplementaryContent.class);
 
     supplementaryContent.setId(String.valueOf(source.getResourceHash()));
-    destination.addSupplementaryContentItem(supplementaryContent);
-
+    if (destination instanceof Instance instance) {
+      instance.addSupplementaryContentItem(supplementaryContent);
+    }
     return destination;
   }
 

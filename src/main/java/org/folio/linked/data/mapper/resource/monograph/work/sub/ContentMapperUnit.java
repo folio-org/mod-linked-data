@@ -14,6 +14,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -27,10 +28,15 @@ public class ContentMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Work toDto(Resource source, Work destination) {
+  public <T> T toDto(Resource source, T destination) {
     var category = coreMapper.readResourceDoc(source, Category.class);
     category.setId(String.valueOf(source.getResourceHash()));
-    destination.addContentItem(category);
+    if (destination instanceof Work work) {
+      work.addContentItem(category);
+    }
+    if (destination instanceof WorkReference work) {
+      work.addContentItem(category);
+    }
     return destination;
   }
 

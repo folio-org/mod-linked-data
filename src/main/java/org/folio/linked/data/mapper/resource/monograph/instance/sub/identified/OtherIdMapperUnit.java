@@ -28,10 +28,12 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var otherId = coreMapper.readResourceDoc(source, OtherId.class);
     otherId.setId(String.valueOf(source.getResourceHash()));
-    destination.addMapItem(new OtherIdField().identifier(otherId));
+    if (destination instanceof Instance instance) {
+      instance.addMapItem(new OtherIdField().identifier(otherId));
+    }
     return destination;
   }
 

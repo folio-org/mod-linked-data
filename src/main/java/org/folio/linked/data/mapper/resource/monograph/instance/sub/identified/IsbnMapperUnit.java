@@ -28,14 +28,16 @@ import org.springframework.stereotype.Component;
 public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final StatusMapperUnit<Isbn> statusMapper;
+  private final StatusMapperUnit statusMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var isbn = coreMapper.readResourceDoc(source, Isbn.class);
     isbn.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedResources(statusMapper, source, STATUS, isbn);
-    destination.addMapItem(new IsbnField().isbn(isbn));
+    coreMapper.addMappedOutgoingResources(statusMapper, source, STATUS, isbn);
+    if (destination instanceof Instance instance) {
+      instance.addMapItem(new IsbnField().isbn(isbn));
+    }
     return destination;
   }
 

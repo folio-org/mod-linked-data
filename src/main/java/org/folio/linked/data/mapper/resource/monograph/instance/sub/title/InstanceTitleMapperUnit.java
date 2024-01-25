@@ -15,6 +15,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.InstanceTitle;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
@@ -31,10 +32,15 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var instanceTitle = coreMapper.readResourceDoc(source, InstanceTitle.class);
     instanceTitle.setId(String.valueOf(source.getResourceHash()));
-    destination.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
+    if (destination instanceof Instance instance) {
+      instance.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
+    }
+    if (destination instanceof InstanceReference instance) {
+      instance.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
+    }
     return destination;
   }
 

@@ -27,14 +27,16 @@ import org.springframework.stereotype.Component;
 public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final StatusMapperUnit<Lccn> statusMapper;
+  private final StatusMapperUnit statusMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var lccn = coreMapper.readResourceDoc(source, Lccn.class);
     lccn.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedResources(statusMapper, source, STATUS, lccn);
-    destination.addMapItem(new LccnField().lccn(lccn));
+    coreMapper.addMappedOutgoingResources(statusMapper, source, STATUS, lccn);
+    if (destination instanceof Instance instance) {
+      instance.addMapItem(new LccnField().lccn(lccn));
+    }
     return destination;
   }
 

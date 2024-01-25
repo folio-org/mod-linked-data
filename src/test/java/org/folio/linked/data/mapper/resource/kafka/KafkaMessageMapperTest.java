@@ -198,8 +198,8 @@ class KafkaMessageMapperTest {
     assertThat(contributorInner.getIsCreator()).isEqualTo(isCreator);
   }
 
-  private SubResourceMapperUnit<Object> genericMapper() {
-    return new SubResourceMapperUnit<>() {
+  private SubResourceMapperUnit genericMapper() {
+    return new SubResourceMapperUnit() {
       @Override
       public Object toDto(Resource source, Object destination) {
         return null;

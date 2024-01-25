@@ -96,19 +96,19 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     instance.setLabel(getFirstValue(() -> getPossibleLabels(dto)));
     instance.setInventoryId(dto.getInventoryId());
     instance.setSrsId(dto.getSrsId());
-    coreMapper.mapTopEdges(dto.getTitle(), instance, TITLE, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getProduction(), instance, PE_PRODUCTION, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getManufacture(), instance, PE_MANUFACTURE, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getSupplementaryContent(), instance, SUPPLEMENTARY_CONTENT, Instance.class,
+    coreMapper.mapOutgoingEdges(dto.getTitle(), instance, TITLE, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getProduction(), instance, PE_PRODUCTION, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getManufacture(), instance, PE_MANUFACTURE, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getSupplementaryContent(), instance, SUPPLEMENTARY_CONTENT, Instance.class,
       mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getMap(), instance, MAP, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getMedia(), instance, MEDIA, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getCarrier(), instance, CARRIER, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getCopyright(), instance, COPYRIGHT, Instance.class, mapper::toEntity);
-    coreMapper.mapTopEdges(dto.getInstantiates(), instance, INSTANTIATES, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getMap(), instance, MAP, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getMedia(), instance, MEDIA, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getCarrier(), instance, CARRIER, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getCopyright(), instance, COPYRIGHT, Instance.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(dto.getWorkReference(), instance, INSTANTIATES, Instance.class, mapper::toEntity);
     instance.setResourceHash(coreMapper.hash(instance));
     return instance;
   }

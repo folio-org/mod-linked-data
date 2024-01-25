@@ -18,6 +18,7 @@ import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.domain.dto.OrganizationField;
 import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.model.entity.Resource;
 
@@ -37,15 +38,20 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   protected static final Function<Object, Agent> FIELD_TO_MEETING_CONVERTER = o -> ((MeetingField) o).getMeeting();
 
   private final CoreMapper coreMapper;
-  private final BiConsumer<Work, Agent> agentConsumer;
+  private final BiConsumer<Object, Agent> agentConsumer;
   private final Function<Object, Agent> agentProvider;
   private final ResourceTypeDictionary type;
 
   @Override
-  public Work toDto(Resource source, Work destination) {
+  public <T> T toDto(Resource source, T destination) {
     var person = coreMapper.readResourceDoc(source, Agent.class);
     person.setId(String.valueOf(source.getResourceHash()));
-    agentConsumer.accept(destination, person);
+    if (destination instanceof Work work) {
+      agentConsumer.accept(work, person);
+    }
+    if (destination instanceof WorkReference work) {
+      agentConsumer.accept(work, person);
+    }
     return destination;
   }
 

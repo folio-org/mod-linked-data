@@ -228,13 +228,12 @@
           },
           "x-json-property": "_notes"
         },
-        "instantiates": {
+        "_workReference": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Work.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/lite/instantiates"
+            "$ref": "WorkReference.json"
+          }
         },
         "inventoryId": {
           "type": "string",

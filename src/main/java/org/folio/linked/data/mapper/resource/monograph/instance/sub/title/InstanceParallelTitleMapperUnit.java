@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
@@ -32,10 +33,15 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   private final CoreMapper coreMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public <T> T toDto(Resource source, T destination) {
     var parallelTitle = coreMapper.readResourceDoc(source, ParallelTitle.class);
     parallelTitle.setId(String.valueOf(source.getResourceHash()));
-    destination.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+    if (destination instanceof Instance instance) {
+      instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+    }
+    if (destination instanceof InstanceReference instance) {
+      instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+    }
     return destination;
   }
 

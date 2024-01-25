@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Work Reference Info",
+  "allOf": [
+    {
+      "$ref": "Topper.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/language"
+        },
+        "classification": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "DeweyDecimalClassification.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/classification"
+        },
+        "creator": {
+          "type": "array",
+          "items": {
+            "$ref": "AgentContainer.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/creator"
+        },
+        "contributor": {
+          "type": "array",
+          "items": {
+            "$ref": "AgentContainer.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/contributor"
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/content"
+        }
+      }
+    }
+  ]
+}

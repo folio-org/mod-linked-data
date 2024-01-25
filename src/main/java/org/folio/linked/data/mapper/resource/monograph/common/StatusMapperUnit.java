@@ -28,13 +28,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, dtoClass = Status.class)
-public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
+public class StatusMapperUnit implements SubResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class);
   private final CoreMapper coreMapper;
 
   @Override
-  public T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T destination) {
     var status = coreMapper.readResourceDoc(source, Status.class);
     status.setId(String.valueOf(source.getResourceHash()));
     if (destination instanceof Lccn lccn) {

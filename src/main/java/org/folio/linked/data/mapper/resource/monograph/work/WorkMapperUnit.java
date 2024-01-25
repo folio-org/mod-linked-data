@@ -30,22 +30,25 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.AgentContainer;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.common.top.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
-import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.instance.InstanceReferenceMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = Work.class)
-public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
+@MapperUnit(type = WORK)
+public class WorkMapperUnit implements TopResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
 
@@ -53,24 +56,29 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
   private final SubResourceMapper mapper;
   private final AgentRoleAssigner agentRoleAssigner;
   private final NoteMapper noteMapper;
+  private final InstanceReferenceMapperUnit instanceReferenceMapperUnit;
+  private final ResourceRepository resourceRepository;
 
 
   public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner,
-                        NoteMapper noteMapper) {
+                        NoteMapper noteMapper, InstanceReferenceMapperUnit instanceReferenceMapperUnit,
+                        ResourceRepository resourceRepository) {
     this.coreMapper = coreMapper;
     this.mapper = mapper;
     this.agentRoleAssigner = roleAssigner;
     this.noteMapper = noteMapper;
+    this.instanceReferenceMapperUnit = instanceReferenceMapperUnit;
+    this.resourceRepository = resourceRepository;
   }
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
+  public ResourceDto toDto(Resource source, ResourceDto destination) {
     Consumer<Work> workConsumer = work -> handleMappedWork(source, destination, work);
     coreMapper.mapWithResources(mapper, source, workConsumer, Work.class);
     return destination;
   }
 
-  private void handleMappedWork(Resource source, Instance destination, Work work) {
+  private void handleMappedWork(Resource source, ResourceDto destination, Work work) {
     work.setId(String.valueOf(source.getResourceHash()));
     if (work.getCreator() != null) {
       work.getCreator().forEach(creator -> agentRoleAssigner.assignRoles(creator, source));
@@ -78,21 +86,21 @@ public class WorkMapperUnit implements InstanceSubResourceMapperUnit {
     if (work.getContributor() != null) {
       work.getContributor().forEach(contributor -> agentRoleAssigner.assignRoles(contributor, source));
     }
-
     ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
-
-    destination.addInstantiatesItem(work);
+    coreMapper.addMappedIncomingResources(instanceReferenceMapperUnit, source, INSTANTIATES, work);
+    destination.setResource(new WorkField().work(work));
   }
 
   @Override
   public Resource toEntity(Object dto) {
-    var work = (Work) dto;
+    var work = ((WorkField) dto).getWork();
     var resource = new Resource();
     resource.addType(WORK);
     resource.setDoc(getDoc(work));
-    coreMapper.mapTopEdges(work.getClassification(), resource, CLASSIFICATION, Work.class, mapper::toEntity);
-    coreMapper.mapTopEdges(work.getContent(), resource, CONTENT, Work.class, mapper::toEntity);
-    coreMapper.mapTopEdges(work.getSubjects(), resource, SUBJECT, Work.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(work.getClassification(), resource, CLASSIFICATION, Work.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(work.getContent(), resource, CONTENT, Work.class, mapper::toEntity);
+    coreMapper.mapOutgoingEdges(work.getSubjects(), resource, SUBJECT, Work.class, mapper::toEntity);
+    coreMapper.mapIncomingEdges(work.getInstanceReference(), resource, INSTANTIATES, Work.class, mapper::toEntity);
     mapContributionEdges(work.getCreator(), resource, CREATOR);
     mapContributionEdges(work.getContributor(), resource, CONTRIBUTOR);
     resource.setResourceHash(coreMapper.hash(resource));

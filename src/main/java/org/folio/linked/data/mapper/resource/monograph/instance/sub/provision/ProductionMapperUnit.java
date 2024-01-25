@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = PROVIDER_EVENT, predicate = PE_PRODUCTION, dtoClass = ProviderEvent.class)
 public class ProductionMapperUnit extends ProviderEventMapperUnit {
 
-  public ProductionMapperUnit(CoreMapper coreMapper, PlaceMapperUnit<ProviderEvent> placeMapper) {
+  public ProductionMapperUnit(CoreMapper coreMapper, PlaceMapperUnit placeMapper) {
     super(coreMapper, placeMapper, (providerEvent, instance) -> instance.addProductionItem(providerEvent));
   }
 }
