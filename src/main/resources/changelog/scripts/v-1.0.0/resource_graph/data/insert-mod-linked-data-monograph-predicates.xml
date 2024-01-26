@@ -3642,4 +3642,16 @@
       <column name="predicate" value="http://bibfra.me/vocab/lite/genre"/>
     </insert>
   </changeSet>
+
+  <changeSet id="325_insert_predicate_lookup" author="Askhat_Abishev@epam.com">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        select count(*) from predicate_lookup pl where pl.predicate = 'http://bibfra.me/vocab/marc/governmentPublication'
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="predicate_lookup">
+      <column name="predicate_hash" value="8470378347721175903"/>
+      <column name="predicate" value="http://bibfra.me/vocab/marc/governmentPublication"/>
+    </insert>
+  </changeSet>
 </databaseChangeLog>
