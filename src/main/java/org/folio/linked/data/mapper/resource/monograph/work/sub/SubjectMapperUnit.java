@@ -8,6 +8,7 @@ import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Subject;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -22,11 +23,17 @@ public class SubjectMapperUnit implements WorkSubResourceMapperUnit {
   private final ResourceRepository resourceRepository;
 
   @Override
-  public Work toDto(Resource source, Work destination) {
+  public <T> T toDto(Resource source, T destination) {
     var subject = new Subject()
       .id(source.getResourceHash().toString())
       .label(source.getLabel());
-    return destination.addSubjectsItem(subject);
+    if (destination instanceof Work work) {
+      work.addSubjectsItem(subject);
+    }
+    if (destination instanceof WorkReference work) {
+      work.addSubjectsItem(subject);
+    }
+    return destination;
   }
 
   @Override

@@ -42,7 +42,6 @@ import org.folio.linked.data.mapper.resource.monograph.instance.InstanceReferenc
 import org.folio.linked.data.mapper.resource.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -57,18 +56,15 @@ public class WorkMapperUnit implements TopResourceMapperUnit {
   private final AgentRoleAssigner agentRoleAssigner;
   private final NoteMapper noteMapper;
   private final InstanceReferenceMapperUnit instanceReferenceMapperUnit;
-  private final ResourceRepository resourceRepository;
 
 
   public WorkMapperUnit(CoreMapper coreMapper, @Lazy SubResourceMapper mapper, AgentRoleAssigner roleAssigner,
-                        NoteMapper noteMapper, InstanceReferenceMapperUnit instanceReferenceMapperUnit,
-                        ResourceRepository resourceRepository) {
+                        NoteMapper noteMapper, InstanceReferenceMapperUnit instanceReferenceMapperUnit) {
     this.coreMapper = coreMapper;
     this.mapper = mapper;
     this.agentRoleAssigner = roleAssigner;
     this.noteMapper = noteMapper;
     this.instanceReferenceMapperUnit = instanceReferenceMapperUnit;
-    this.resourceRepository = resourceRepository;
   }
 
   @Override
