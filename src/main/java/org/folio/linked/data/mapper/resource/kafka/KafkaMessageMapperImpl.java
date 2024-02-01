@@ -35,7 +35,7 @@ import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -54,7 +54,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message";
-  private final SubResourceMapper subResourceMapper;
+  private final SingleResourceMapper singleResourceMapper;
 
   @NotNull
   private static <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
@@ -134,7 +134,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return resource.getTypes()
       .stream()
       .map(ResourceTypeEntity::getUri)
-      .filter(type -> subResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
+      .filter(type -> singleResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
       .findFirst()
       .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
       .map(typeUri -> {

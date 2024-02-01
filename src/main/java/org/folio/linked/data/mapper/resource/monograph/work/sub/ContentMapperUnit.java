@@ -28,20 +28,20 @@ public class ContentMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var category = coreMapper.readResourceDoc(source, Category.class);
     category.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Work work) {
+    if (parentDto instanceof Work work) {
       work.addContentItem(category);
     }
-    if (destination instanceof WorkReference work) {
+    if (parentDto instanceof WorkReference work) {
       work.addContentItem(category);
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var category = (Category) dto;
     var resource = new Resource();
     resource.addType(CATEGORY);

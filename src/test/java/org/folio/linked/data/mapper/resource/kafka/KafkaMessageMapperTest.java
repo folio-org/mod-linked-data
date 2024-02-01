@@ -41,8 +41,8 @@ import java.util.Set;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -63,7 +63,7 @@ class KafkaMessageMapperTest {
   @InjectMocks
   private KafkaMessageMapperImpl kafkaMessageMapper;
   @Mock
-  private SubResourceMapper subResourceMapper;
+  private SingleResourceMapper singleResourceMapper;
 
   @Test
   void toIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
@@ -105,7 +105,7 @@ class KafkaMessageMapperTest {
       ResourceTypeDictionary.FAMILY.getUri(),
       ResourceTypeDictionary.ORGANIZATION.getUri()
     ).forEach(t ->
-      lenient().when(subResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
+      lenient().when(singleResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
     );
 
     var instance = getSampleInstanceResource();
@@ -198,20 +198,20 @@ class KafkaMessageMapperTest {
     assertThat(contributorInner.getIsCreator()).isEqualTo(isCreator);
   }
 
-  private SubResourceMapperUnit genericMapper() {
-    return new SubResourceMapperUnit() {
+  private SingleResourceMapperUnit genericMapper() {
+    return new SingleResourceMapperUnit() {
       @Override
-      public Object toDto(Resource source, Object destination) {
+      public Object toDto(Resource source, Object parentDto, Resource parentResource) {
         return null;
       }
 
       @Override
-      public Set<Class<?>> getParentDto() {
+      public Set<Class<?>> supportedParents() {
         return null;
       }
 
       @Override
-      public Resource toEntity(Object dto) {
+      public Resource toEntity(Object dto, Resource parentEntity) {
         return null;
       }
     };

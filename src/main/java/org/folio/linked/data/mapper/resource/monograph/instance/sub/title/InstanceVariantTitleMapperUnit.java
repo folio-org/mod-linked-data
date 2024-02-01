@@ -34,20 +34,20 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var variantTitle = coreMapper.readResourceDoc(source, VariantTitle.class);
     variantTitle.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Instance instance) {
+    if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
-    if (destination instanceof InstanceReference instance) {
+    if (parentDto instanceof InstanceReference instance) {
       instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
     resource.setLabel(getFirstValue(variantTitle::getMainTitle));

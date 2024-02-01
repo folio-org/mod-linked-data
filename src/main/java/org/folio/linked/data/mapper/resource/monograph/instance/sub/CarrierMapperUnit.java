@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = CATEGORY, predicate = CARRIER, dtoClass = Category.class)
 public class CarrierMapperUnit extends CategoryMapperUnit {
 
-
   public CarrierMapperUnit(CoreMapper coreMapper) {
     super(coreMapper, (category, destination) -> {
       if (destination instanceof Instance instance) {

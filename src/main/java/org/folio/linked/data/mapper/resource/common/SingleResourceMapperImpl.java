@@ -1,6 +1,7 @@
-package org.folio.linked.data.mapper.resource.common.sub;
+package org.folio.linked.data.mapper.resource.common;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
@@ -17,28 +18,27 @@ import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.ValidationException;
-import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class SubResourceMapperImpl implements SubResourceMapper {
+public class SingleResourceMapperImpl implements SingleResourceMapper {
 
   private final ObjectMapper objectMapper;
-  private final List<SubResourceMapperUnit> mapperUnits;
+  private final List<SingleResourceMapperUnit> mapperUnits;
 
   @SneakyThrows
   @Override
-  public <P> Resource toEntity(@NonNull Object dto, Predicate predicate, @NonNull Class<P> parentDtoClass) {
+  public <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentDtoClass, Predicate predicate,
+                               Resource parentEntity) {
     try {
       return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
-        .map(mapper -> mapper.toEntity(dto))
+        .map(mapper -> mapper.toEntity(dto, parentEntity))
         .orElseThrow(() -> new NotSupportedException("Dto [" + dto.getClass().getSimpleName()
-          + IS_NOT_SUPPORTED_FOR_PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET
-          + " and parentDto [" + parentDtoClass + "]")
+          + IS_NOT_SUPPORTED_FOR_PREDICATE + (nonNull(predicate) ? predicate.getUri() : "null") + RIGHT_SQUARE_BRACKET
+          + " and parentDto [" + parentDtoClass.getSimpleName() + "]")
         );
     } catch (BaseLinkedDataException blde) {
       throw blde;
@@ -50,35 +50,34 @@ public class SubResourceMapperImpl implements SubResourceMapper {
 
   @Override
   @SuppressWarnings("java:S2201")
-  public <D> void toDto(@NonNull ResourceEdge source, @NonNull D destination) {
+  public <D> D toDto(@NonNull Resource source, @NonNull D parentDto, Resource parentResource, Predicate predicate) {
     // Of all the types of the resource, take the first one that has a mapper
-    var resourceMapper = source.getTarget().getTypes()
+    var resourceMapper = source.getTypes()
       .stream()
-      .map(type -> getMapperUnit(type.getUri(), source.getPredicate(), destination.getClass(), null))
+      .map(type -> getMapperUnit(type.getUri(), predicate, parentDto.getClass(), null))
       .flatMap(Optional::stream)
       .findFirst();
 
-    resourceMapper
-      .map(mapper -> mapper.toDto(source.getTarget(), destination))
+    return resourceMapper
+      .map(mapper -> mapper.toDto(source, parentDto, parentResource))
       .orElseGet(() -> {
-        log.warn(RESOURCE_WITH_GIVEN_ID + source.getTarget().getResourceHash() + RIGHT_SQUARE_BRACKET
-          + IS_NOT_SUPPORTED_FOR_PREDICATE + source.getPredicate().getUri()
-          + RIGHT_SQUARE_BRACKET + AND + destination.getClass().getSimpleName());
+        log.warn(RESOURCE_WITH_GIVEN_ID + source.getResourceHash() + IS_NOT_SUPPORTED_FOR_PREDICATE + predicate.getUri()
+          + RIGHT_SQUARE_BRACKET + AND + "parent [" + parentDto.getClass().getSimpleName() + ".class]");
         return null;
       });
   }
 
 
   @Override
-  public Optional<SubResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
-                                                       Class<?> dto) {
+  public Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
+                                                          Class<?> dtoClass) {
     return mapperUnits.stream()
-      .filter(m -> isNull(parentDto) || m.getParentDto().contains(parentDto))
+      .filter(m -> isNull(parentDto) || m.supportedParents().contains(parentDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
         return (isNull(typeUri) || typeUri.equals(annotation.type().getUri()))
           && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
-          && (isNull(dto) || dto.equals(annotation.dtoClass()));
+          && (isNull(dtoClass) || dtoClass.equals(annotation.dtoClass()));
       })
       .findFirst();
   }

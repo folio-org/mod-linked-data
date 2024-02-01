@@ -31,24 +31,24 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   private final StatusMapperUnit statusMapper;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var isbn = coreMapper.readResourceDoc(source, Isbn.class);
     isbn.setId(String.valueOf(source.getResourceHash()));
     coreMapper.addMappedOutgoingResources(statusMapper, source, STATUS, isbn);
-    if (destination instanceof Instance instance) {
+    if (parentDto instanceof Instance instance) {
       instance.addMapItem(new IsbnField().isbn(isbn));
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var isbn = ((IsbnField) dto).getIsbn();
     var resource = new Resource();
     resource.setLabel(getFirstValue(isbn::getValue));
     resource.addType(ID_ISBN);
     resource.setDoc(getDoc(isbn));
-    coreMapper.mapSubEdges(isbn.getStatus(), resource, STATUS, statusMapper::toEntity);
+    coreMapper.mapSubEdges(isbn.getStatus(), resource, STATUS, dto1 -> statusMapper.toEntity(dto1, parentEntity));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

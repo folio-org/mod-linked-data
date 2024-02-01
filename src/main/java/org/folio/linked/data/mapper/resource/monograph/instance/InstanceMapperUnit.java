@@ -39,6 +39,7 @@ import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -53,16 +54,15 @@ import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapper;
-import org.folio.linked.data.mapper.resource.common.top.TopResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = INSTANCE)
-public class InstanceMapperUnit implements TopResourceMapperUnit {
+@MapperUnit(type = INSTANCE, dtoClass = InstanceField.class)
+public class InstanceMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(ADDITIONAL_PHYSICAL_FORM, COMPUTER_DATA_NOTE,
     DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION, ISSUANCE_NOTE, ISSUING_BODY,
@@ -70,13 +70,12 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     WITH_NOTE);
 
   private final CoreMapper coreMapper;
-  private final SubResourceMapper mapper;
   private final NoteMapper noteMapper;
 
   @Override
-  public ResourceDto toDto(Resource source, ResourceDto destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var instanceField = new InstanceField();
-    coreMapper.mapWithResources(mapper, source, instanceField::setInstance, Instance.class);
+    coreMapper.mapToDtoWithEdges(source, instanceField::setInstance, Instance.class);
     instanceField.getInstance().setId(String.valueOf(source.getResourceHash()));
     instanceField.getInstance().setInventoryId(source.getInventoryId());
     instanceField.getInstance().setSrsId(source.getSrsId());
@@ -84,33 +83,42 @@ public class InstanceMapperUnit implements TopResourceMapperUnit {
     ofNullable(source.getDoc())
       .ifPresent(doc -> instanceField.getInstance().setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
 
-    return destination.resource(instanceField);
+    if (parentDto instanceof ResourceDto resourceDto) {
+      resourceDto.resource(instanceField);
+    }
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object topResourceDto) {
-    Instance dto = ((InstanceField) topResourceDto).getInstance();
+  public Resource toEntity(Object dto, Resource parentEntity) {
+    Instance instanceDto = ((InstanceField) dto).getInstance();
     var instance = new Resource();
     instance.addType(INSTANCE);
-    instance.setDoc(getDoc(dto));
-    instance.setLabel(getFirstValue(() -> getPossibleLabels(dto)));
-    instance.setInventoryId(dto.getInventoryId());
-    instance.setSrsId(dto.getSrsId());
-    coreMapper.mapOutgoingEdges(dto.getTitle(), instance, TITLE, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getProduction(), instance, PE_PRODUCTION, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getPublication(), instance, PE_PUBLICATION, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getManufacture(), instance, PE_MANUFACTURE, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getSupplementaryContent(), instance, SUPPLEMENTARY_CONTENT, Instance.class,
-      mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getMap(), instance, MAP, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getMedia(), instance, MEDIA, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getCarrier(), instance, CARRIER, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getCopyright(), instance, COPYRIGHT, Instance.class, mapper::toEntity);
-    coreMapper.mapOutgoingEdges(dto.getWorkReference(), instance, INSTANTIATES, Instance.class, mapper::toEntity);
+    instance.setDoc(getDoc(instanceDto));
+    instance.setLabel(getFirstValue(() -> getPossibleLabels(instanceDto)));
+    instance.setInventoryId(instanceDto.getInventoryId());
+    instance.setSrsId(instanceDto.getSrsId());
+    coreMapper.toOutgoingEdges(instanceDto.getTitle(), instance, TITLE, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getProduction(), instance, PE_PRODUCTION, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getPublication(), instance, PE_PUBLICATION, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getManufacture(), instance, PE_MANUFACTURE, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getSupplementaryContent(), instance, SUPPLEMENTARY_CONTENT, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getMap(), instance, MAP, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getMedia(), instance, MEDIA, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getCarrier(), instance, CARRIER, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getCopyright(), instance, COPYRIGHT, Instance.class);
+    coreMapper.toOutgoingEdges(instanceDto.getWorkReference(), instance, INSTANTIATES, Instance.class);
+    // DEPRECATED: to be removed, temporary support of current ui
+    coreMapper.toOutgoingEdges(instanceDto.getInstantiates(), instance, INSTANTIATES, Instance.class);
     instance.setResourceHash(coreMapper.hash(instance));
     return instance;
+  }
+
+  @Override
+  public Set<Class<?>> supportedParents() {
+    return Collections.singleton(ResourceDto.class);
   }
 
   private List<String> getPossibleLabels(Instance instance) {

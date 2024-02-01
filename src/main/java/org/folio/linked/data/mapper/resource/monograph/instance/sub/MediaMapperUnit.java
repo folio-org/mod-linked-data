@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = CATEGORY, predicate = MEDIA, dtoClass = Category.class)
 public class MediaMapperUnit extends CategoryMapperUnit {
 
-
   public MediaMapperUnit(CoreMapper coreMapper) {
     super(coreMapper, (category, destination) -> {
       if (destination instanceof Instance instance) {

@@ -30,24 +30,24 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   private final StatusMapperUnit statusMapper;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var lccn = coreMapper.readResourceDoc(source, Lccn.class);
     lccn.setId(String.valueOf(source.getResourceHash()));
     coreMapper.addMappedOutgoingResources(statusMapper, source, STATUS, lccn);
-    if (destination instanceof Instance instance) {
+    if (parentDto instanceof Instance instance) {
       instance.addMapItem(new LccnField().lccn(lccn));
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var lccn = ((LccnField) dto).getLccn();
     var resource = new Resource();
     resource.setLabel(getFirstValue(lccn::getValue));
     resource.addType(ID_LCCN);
     resource.setDoc(getDoc(lccn));
-    coreMapper.mapSubEdges(lccn.getStatus(), resource, STATUS, statusMapper::toEntity);
+    coreMapper.mapSubEdges(lccn.getStatus(), resource, STATUS, dto1 -> statusMapper.toEntity(dto1, parentEntity));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

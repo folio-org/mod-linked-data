@@ -23,21 +23,21 @@ public class SubjectMapperUnit implements WorkSubResourceMapperUnit {
   private final ResourceRepository resourceRepository;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var subject = new Subject()
       .id(source.getResourceHash().toString())
       .label(source.getLabel());
-    if (destination instanceof Work work) {
+    if (parentDto instanceof Work work) {
       work.addSubjectsItem(subject);
     }
-    if (destination instanceof WorkReference work) {
+    if (parentDto instanceof WorkReference work) {
       work.addSubjectsItem(subject);
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var subject = (Subject) dto;
     return resourceRepository
       .findById(Long.parseLong(subject.getId()))

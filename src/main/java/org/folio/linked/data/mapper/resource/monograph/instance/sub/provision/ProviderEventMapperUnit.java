@@ -32,24 +32,25 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   private final BiFunction<ProviderEvent, Instance, Instance> providerEventConsumer;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var providerEvent = coreMapper.readResourceDoc(source, ProviderEvent.class);
     providerEvent.setId(String.valueOf(source.getResourceHash()));
     coreMapper.addMappedOutgoingResources(placeMapper, source, PROVIDER_PLACE, providerEvent);
-    if (destination instanceof Instance instance) {
-      destination = (T) providerEventConsumer.apply(providerEvent, instance);
+    if (parentDto instanceof Instance instance) {
+      parentDto = (T) providerEventConsumer.apply(providerEvent, instance);
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var providerEvent = (ProviderEvent) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addType(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));
-    coreMapper.mapSubEdges(providerEvent.getProviderPlace(), resource, PROVIDER_PLACE, placeMapper::toEntity);
+    coreMapper.mapSubEdges(providerEvent.getProviderPlace(), resource, PROVIDER_PLACE,
+      dto1 -> placeMapper.toEntity(dto1, parentEntity));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

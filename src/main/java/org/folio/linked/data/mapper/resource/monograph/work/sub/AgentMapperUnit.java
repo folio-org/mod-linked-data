@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.resource.monograph.work.sub;
 
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.domain.dto.AgentContainer;
@@ -21,6 +23,7 @@ import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 
 @RequiredArgsConstructor
 public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
@@ -40,28 +43,40 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final BiConsumer<Object, Agent> agentConsumer;
   private final Function<Object, Agent> agentProvider;
+  private final AgentRoleAssigner agentRoleAssigner;
   private final ResourceTypeDictionary type;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
-    var person = coreMapper.readResourceDoc(source, Agent.class);
-    person.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Work work) {
-      agentConsumer.accept(work, person);
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
+    var agent = coreMapper.readResourceDoc(source, Agent.class);
+    agent.setId(String.valueOf(source.getResourceHash()));
+    if (parentDto instanceof Work work) {
+      agentConsumer.accept(work, agent);
+      assignRoles(work.getCreator(), parentResource);
+      assignRoles(work.getContributor(), parentResource);
     }
-    if (destination instanceof WorkReference work) {
-      agentConsumer.accept(work, person);
+    if (parentDto instanceof WorkReference work) {
+      agentConsumer.accept(work, agent);
+      assignRoles(work.getCreator(), parentResource);
+      assignRoles(work.getContributor(), parentResource);
     }
-    return destination;
+    return parentDto;
+  }
+
+  private void assignRoles(List<AgentContainer> agentContainers, Resource source) {
+    ofNullable(agentContainers).ifPresent(acs -> acs.forEach(ac -> agentRoleAssigner.assignRoles(ac, source)));
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var agent = agentProvider.apply(dto);
     var resource = new Resource();
     resource.addType(type);
     resource.setDoc(getDoc(agent));
     resource.setResourceHash(coreMapper.hash(resource));
+    ofNullable(agentRoleAssigner.getAgent((AgentContainer) dto).getRoles())
+      .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
+        .ifPresent(p -> parentEntity.getOutgoingEdges().add(new ResourceEdge(parentEntity, resource, p)))));
     return resource;
   }
 

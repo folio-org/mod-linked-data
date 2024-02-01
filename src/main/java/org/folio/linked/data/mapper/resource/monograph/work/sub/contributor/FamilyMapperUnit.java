@@ -7,12 +7,16 @@ import org.folio.linked.data.domain.dto.FamilyField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.work.sub.AgentMapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.work.sub.AgentRoleAssigner;
 import org.springframework.stereotype.Component;
 
 @Component("ContributorFamilyMapperUnit")
 @MapperUnit(type = FAMILY, dtoClass = FamilyField.class, predicate = CONTRIBUTOR)
 public class FamilyMapperUnit extends ContributorMapperUnit {
-  public FamilyMapperUnit(CoreMapper coreMapper) {
-    super(coreMapper, AgentMapperUnit.FAMILY_TO_FIELD_CONVERTER, AgentMapperUnit.FIELD_TO_FAMILY_CONVERTER, FAMILY);
+
+  public FamilyMapperUnit(CoreMapper coreMapper, AgentRoleAssigner agentRoleAssigner) {
+    super(coreMapper, AgentMapperUnit.FAMILY_TO_FIELD_CONVERTER, AgentMapperUnit.FIELD_TO_FAMILY_CONVERTER,
+      agentRoleAssigner, FAMILY);
   }
+
 }

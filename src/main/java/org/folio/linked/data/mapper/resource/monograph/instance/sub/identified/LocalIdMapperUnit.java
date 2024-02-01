@@ -28,17 +28,17 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var localId = coreMapper.readResourceDoc(source, LocalId.class);
     localId.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Instance instance) {
+    if (parentDto instanceof Instance instance) {
       instance.addMapItem(new LocalIdField().localId(localId));
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var localId = ((LocalIdField) dto).getLocalId();
     var resource = new Resource();
     resource.setLabel(getFirstValue(localId::getValue));

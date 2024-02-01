@@ -93,6 +93,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,13 +106,15 @@ import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.CoreMapperImpl;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 
 @UtilityClass
 public class MonographTestUtil {
 
-  private static final CoreMapper CORE_MAPPER = new CoreMapperImpl(OBJECT_MAPPER);
+  private static final CoreMapper CORE_MAPPER =
+    new CoreMapperImpl(OBJECT_MAPPER, new SingleResourceMapperImpl(OBJECT_MAPPER, new ArrayList<>()));
 
   public static Resource getSampleInstanceResource() {
     var instanceTitle = createResource(
@@ -482,11 +485,25 @@ public class MonographTestUtil {
   }
 
   private void setEdgesId(Resource resource) {
+    setIncomingEdgesId(resource);
+    setOutgoingEdgesId(resource);
+  }
+
+  private void setIncomingEdgesId(Resource resource) {
+    resource.getIncomingEdges().forEach(edge -> {
+      edge.getId().setSourceHash(edge.getSource().getResourceHash());
+      edge.getId().setTargetHash(edge.getTarget().getResourceHash());
+      edge.getId().setPredicateHash(edge.getPredicate().getHash());
+      setEdgesId(edge.getSource());
+    });
+  }
+
+  private void setOutgoingEdgesId(Resource resource) {
     resource.getOutgoingEdges().forEach(edge -> {
       edge.getId().setSourceHash(edge.getSource().getResourceHash());
       edge.getId().setTargetHash(edge.getTarget().getResourceHash());
       edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setEdgesId(edge.getTarget());
+      setOutgoingEdgesId(edge.getTarget());
     });
   }
 

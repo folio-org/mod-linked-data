@@ -26,20 +26,20 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T destination) {
+  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
     var deweyDecimalClassification = coreMapper.readResourceDoc(source, DeweyDecimalClassification.class);
     deweyDecimalClassification.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Work work) {
+    if (parentDto instanceof Work work) {
       work.addClassificationItem(deweyDecimalClassification);
     }
-    if (destination instanceof WorkReference work) {
+    if (parentDto instanceof WorkReference work) {
       work.addClassificationItem(deweyDecimalClassification);
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var deweyDecimalClassification = (DeweyDecimalClassification) dto;
     var resource = new Resource();
     resource.addType(CATEGORY);
