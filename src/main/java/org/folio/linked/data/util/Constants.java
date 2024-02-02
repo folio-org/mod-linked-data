@@ -8,8 +8,8 @@ public class Constants {
   public static final String RESOURCE_TYPE = "Resource type [";
   public static final String PREDICATE = "Predicate [";
   public static final String RIGHT_SQUARE_BRACKET = "]";
-  public static final String IS_NOT_SUPPORTED = "] is not supported";
-  public static final String IS_NOT_SUPPORTED_FOR_PREDICATE = IS_NOT_SUPPORTED + " for " + PREDICATE;
+  public static final String IS_NOT_SUPPORTED_FOR = "] is not supported for ";
+  public static final String IS_NOT_SUPPORTED_FOR_PREDICATE = IS_NOT_SUPPORTED_FOR + PREDICATE;
   public static final String FOLIO_PROFILE = "folio";
   public static final String SEARCH_PROFILE = "search";
   public static final String ERROR_JSON_PROCESSING = "Error while json processing";

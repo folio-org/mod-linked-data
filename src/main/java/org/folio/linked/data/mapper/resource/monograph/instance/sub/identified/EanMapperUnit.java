@@ -28,10 +28,10 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var ean = coreMapper.readResourceDoc(source, Ean.class);
-    ean.setId(String.valueOf(source.getResourceHash()));
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
+      var ean = coreMapper.toDtoWithEdges(source, Ean.class, false);
+      ean.setId(String.valueOf(source.getResourceHash()));
       instance.addMapItem(new EanField().ean(ean));
     }
     return parentDto;

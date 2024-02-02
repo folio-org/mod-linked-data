@@ -47,8 +47,8 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   private final ResourceTypeDictionary type;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var agent = coreMapper.readResourceDoc(source, Agent.class);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    var agent = coreMapper.toDtoWithEdges(source, Agent.class, false);
     agent.setId(String.valueOf(source.getResourceHash()));
     if (parentDto instanceof Work work) {
       agentConsumer.accept(work, agent);

@@ -16,7 +16,6 @@ import org.folio.linked.data.domain.dto.Lccn;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.common.StatusMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
@@ -27,14 +26,12 @@ import org.springframework.stereotype.Component;
 public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final StatusMapperUnit statusMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var lccn = coreMapper.readResourceDoc(source, Lccn.class);
-    lccn.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedOutgoingResources(statusMapper, source, STATUS, lccn);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
+      var lccn = coreMapper.toDtoWithEdges(source, Lccn.class, false);
+      lccn.setId(String.valueOf(source.getResourceHash()));
       instance.addMapItem(new LccnField().lccn(lccn));
     }
     return parentDto;
@@ -47,7 +44,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(lccn::getValue));
     resource.addType(ID_LCCN);
     resource.setDoc(getDoc(lccn));
-    coreMapper.mapSubEdges(lccn.getStatus(), resource, STATUS, dto1 -> statusMapper.toEntity(dto1, parentEntity));
+    coreMapper.addOutgoingEdges(resource, Lccn.class, lccn.getStatus(), STATUS);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

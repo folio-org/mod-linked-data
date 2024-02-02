@@ -17,7 +17,6 @@ import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.common.StatusMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
@@ -28,14 +27,12 @@ import org.springframework.stereotype.Component;
 public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final StatusMapperUnit statusMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var isbn = coreMapper.readResourceDoc(source, Isbn.class);
-    isbn.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedOutgoingResources(statusMapper, source, STATUS, isbn);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
+      var isbn = coreMapper.toDtoWithEdges(source, Isbn.class, false);
+      isbn.setId(String.valueOf(source.getResourceHash()));
       instance.addMapItem(new IsbnField().isbn(isbn));
     }
     return parentDto;
@@ -48,7 +45,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(isbn::getValue));
     resource.addType(ID_ISBN);
     resource.setDoc(getDoc(isbn));
-    coreMapper.mapSubEdges(isbn.getStatus(), resource, STATUS, dto1 -> statusMapper.toEntity(dto1, parentEntity));
+    coreMapper.addOutgoingEdges(resource, Isbn.class, isbn.getStatus(), STATUS);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

@@ -16,8 +16,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import lombok.NonNull;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.exception.JsonException;
@@ -38,36 +36,44 @@ public class CoreMapperImpl implements CoreMapper {
     this.singleResourceMapper = singleResourceMapper;
   }
 
-  public <T> void mapToDtoWithEdges(@NonNull Resource resource, @NonNull Consumer<T> consumer,
-                                    @NonNull Class<T> destination) {
-    T item = readResourceDoc(resource, destination);
+  public <D> D toDtoWithEdges(@NonNull Resource resource, @NonNull Class<D> dtoClass, boolean mapIncomingEdges) {
+    D dto = readResourceDoc(resource, dtoClass);
     resource.getOutgoingEdges()
-      .forEach(re -> singleResourceMapper.toDto(re.getTarget(), item, resource, re.getPredicate()));
-    consumer.accept(item);
+      .forEach(re -> singleResourceMapper.toDto(re.getTarget(), dto, resource, re.getPredicate()));
+    if (mapIncomingEdges) {
+      resource.getIncomingEdges()
+        .forEach(re -> singleResourceMapper.toDto(re.getSource(), dto, resource, re.getPredicate()));
+    }
+    return dto;
   }
 
   @Override
-  public <T> void addMappedOutgoingResources(@NonNull SingleResourceMapperUnit singleResourceMapperUnit,
-                                             @NonNull Resource source, @NonNull Predicate predicate,
-                                             @NonNull T destination) {
-    source.getOutgoingEdges().stream()
-      .filter(re -> re.getPredicate().getUri().equals(predicate.getUri()))
-      .map(ResourceEdge::getTarget)
-      .forEach(r -> singleResourceMapperUnit.toDto(r, destination, null));
+  public <T, P> void addOutgoingEdges(@NonNull Resource parentEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
+                                      @NonNull Predicate predicate) {
+    addEdgeEntities(dtoList, parentEntity, predicate, parentDtoClass, true);
   }
 
   @Override
-  public <T> void addMappedIncomingResources(@NonNull SingleResourceMapperUnit singleResourceMapperUnit,
-                                             @NonNull Resource source, @NonNull Predicate predicate,
-                                             @NonNull T destination) {
-    source.getIncomingEdges().stream()
-      .filter(re -> re.getPredicate().getUri().equals(predicate.getUri()))
-      .map(ResourceEdge::getSource)
-      .forEach(r -> singleResourceMapperUnit.toDto(r, destination, null));
+  public <T, P> void addIncomingEdges(@NonNull Resource parentEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
+                                      @NonNull Predicate predicate) {
+    addEdgeEntities(dtoList, parentEntity, predicate, parentDtoClass, false);
   }
 
-  @Override
-  public <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass) {
+  private <T, P> void addEdgeEntities(List<T> dtoList, @NonNull Resource parentEntity,
+                                      @NonNull Predicate predicate, @NonNull Class<P> parentDtoClass,
+                                      boolean isOutgoingOrIncoming) {
+    ofNullable(dtoList)
+      .stream()
+      .flatMap(Collection::stream)
+      .map(dto -> singleResourceMapper.toEntity(dto, parentDtoClass, predicate, parentEntity))
+      .filter(
+        r -> nonNull(r.getDoc()) || isNotEmpty(isOutgoingOrIncoming ? r.getOutgoingEdges() : r.getIncomingEdges()))
+      .map(r -> new ResourceEdge(isOutgoingOrIncoming ? parentEntity : r,
+        isOutgoingOrIncoming ? r : parentEntity, predicate))
+      .forEach((isOutgoingOrIncoming ? parentEntity.getOutgoingEdges() : parentEntity.getIncomingEdges())::add);
+  }
+
+  private <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass) {
     return readDoc(resource.getDoc(), dtoClass);
   }
 
@@ -94,53 +100,6 @@ public class CoreMapperImpl implements CoreMapper {
     } catch (JsonProcessingException e) {
       throw new JsonException(ERROR_JSON_PROCESSING, e);
     }
-  }
-
-  @Override
-  public <T> void mapSubEdges(List<T> dtoList, @NonNull Resource source,
-                              @NonNull Predicate predicate,
-                              @NonNull Function<T, Resource> mappingFunction) {
-    if (nonNull(dtoList)) {
-      dtoList.stream()
-        .map(mappingFunction)
-        .filter(r -> nonNull(r.getDoc()) || isNotEmpty(r.getOutgoingEdges()))
-        .map(r -> new ResourceEdge(source, r, predicate))
-        .forEach(source.getOutgoingEdges()::add);
-    }
-  }
-
-  @Override
-  public <T, P> List<ResourceEdge> toOutgoingEdges(List<T> dtoList, @NonNull Resource parentEntity,
-                                                   @NonNull Predicate predicate,
-                                                   @NonNull Class<P> parentDtoClass) {
-    return ofNullable(dtoList)
-      .stream()
-      .flatMap(Collection::stream)
-      .map(dto -> singleResourceMapper.toEntity(dto, parentDtoClass, predicate, parentEntity))
-      .filter(r -> nonNull(r.getDoc()) || isNotEmpty(r.getOutgoingEdges()))
-      .map(resource -> {
-        var edge = new ResourceEdge(parentEntity, resource, predicate);
-        parentEntity.getOutgoingEdges().add(edge);
-        return edge;
-      })
-      .toList();
-  }
-
-  @Override
-  public <T, P> List<ResourceEdge> toIncomingEdges(List<T> dtoList, @NonNull Resource parentEntity,
-                                                   @NonNull Predicate predicate,
-                                                   @NonNull Class<P> parentDtoClass) {
-    return ofNullable(dtoList)
-      .stream()
-      .flatMap(Collection::stream)
-      .map(dto -> singleResourceMapper.toEntity(dto, parentDtoClass, predicate, parentEntity))
-      .filter(r -> nonNull(r.getDoc()) || isNotEmpty(r.getOutgoingEdges()))
-      .map(resource -> {
-        var edge = new ResourceEdge(parentEntity, resource, predicate);
-        parentEntity.getIncomingEdges().add(edge);
-        return edge;
-      })
-      .toList();
   }
 
   private JsonNode resourceToJson(Resource res) {

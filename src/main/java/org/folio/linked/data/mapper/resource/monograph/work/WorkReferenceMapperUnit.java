@@ -4,7 +4,8 @@ import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.WorkReference;
@@ -12,7 +13,7 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.stereotype.Component;
@@ -20,23 +21,19 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = WorkReference.class)
-public class WorkReferenceMapperUnit implements InstanceSubResourceMapperUnit {
+public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final ResourceRepository resourceRepository;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    Consumer<WorkReference> workConsumer = work -> handleMappedWork(source, parentDto, work);
-    coreMapper.mapToDtoWithEdges(source, workConsumer, WorkReference.class);
-    return parentDto;
-  }
-
-  private <T> void handleMappedWork(Resource source, T destination, WorkReference work) {
-    work.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Instance instance) {
-      instance.addWorkReferenceItem(work);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    if (parentDto instanceof Instance instance) {
+      var workReference = coreMapper.toDtoWithEdges(source, WorkReference.class, false);
+      workReference.setId(String.valueOf(source.getResourceHash()));
+      instance.addWorkReferenceItem(workReference);
     }
+    return parentDto;
   }
 
   @Override
@@ -50,4 +47,8 @@ public class WorkReferenceMapperUnit implements InstanceSubResourceMapperUnit {
     }
   }
 
+  @Override
+  public Set<Class<?>> supportedParents() {
+    return Collections.singleton(Instance.class);
+  }
 }

@@ -25,10 +25,10 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var copyrightEvent = coreMapper.readResourceDoc(source, CopyrightEvent.class);
-    copyrightEvent.setId(String.valueOf(source.getResourceHash()));
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
+      var copyrightEvent = coreMapper.toDtoWithEdges(source, CopyrightEvent.class, false);
+      copyrightEvent.setId(String.valueOf(source.getResourceHash()));
       instance.addCopyrightItem(copyrightEvent);
     }
     return parentDto;

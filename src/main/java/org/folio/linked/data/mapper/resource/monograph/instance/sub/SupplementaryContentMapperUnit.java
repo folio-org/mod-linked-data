@@ -26,11 +26,10 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var supplementaryContent = coreMapper.readResourceDoc(source, SupplementaryContent.class);
-
-    supplementaryContent.setId(String.valueOf(source.getResourceHash()));
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
+      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContent.class, false);
+      supplementaryContent.setId(String.valueOf(source.getResourceHash()));
       instance.addSupplementaryContentItem(supplementaryContent);
     }
     return parentDto;
@@ -43,18 +42,14 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
       .setLabel(getFirstValue(supplementaryContent::getName))
       .addType(SUPPLEMENTARY_CONTENT)
       .setDoc(getDoc(supplementaryContent));
-
     resource.setResourceHash(coreMapper.hash(resource));
-
     return resource;
   }
 
   private JsonNode getDoc(SupplementaryContent dto) {
     var map = new HashMap<String, List<String>>();
-
     putProperty(map, PropertyDictionary.LINK, dto.getLink());
     putProperty(map, PropertyDictionary.NAME, dto.getName());
-
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 }
