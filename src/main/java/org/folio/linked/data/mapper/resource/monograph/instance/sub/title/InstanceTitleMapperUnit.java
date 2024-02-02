@@ -32,8 +32,8 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var instanceTitle = coreMapper.readResourceDoc(source, InstanceTitle.class);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    var instanceTitle = coreMapper.toDtoWithEdges(source, InstanceTitle.class, false);
     instanceTitle.setId(String.valueOf(source.getResourceHash()));
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));

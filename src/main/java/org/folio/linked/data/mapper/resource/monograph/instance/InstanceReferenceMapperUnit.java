@@ -4,7 +4,6 @@ import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 
-import java.util.function.Consumer;
 import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.NotFoundException;
@@ -29,9 +28,12 @@ public class InstanceReferenceMapperUnit implements WorkSubResourceMapperUnit {
   }
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    Consumer<InstanceReference> instanceConsumer = instance -> handleMappedInstance(source, parentDto, instance);
-    coreMapper.mapToDtoWithEdges(source, instanceConsumer, InstanceReference.class);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    if (parentDto instanceof Work work) {
+      var instanceReference = coreMapper.toDtoWithEdges(source, InstanceReference.class, false);
+      instanceReference.setId(String.valueOf(source.getResourceHash()));
+      work.addInstanceReferenceItem(instanceReference);
+    }
     return parentDto;
   }
 
@@ -43,13 +45,6 @@ public class InstanceReferenceMapperUnit implements WorkSubResourceMapperUnit {
         .orElseThrow(() -> new NotFoundException("Instance with id [" + instance.getId() + " is not found"));
     } else {
       throw new ValidationException("Instance id", "null");
-    }
-  }
-
-  private <T> void handleMappedInstance(Resource source, T destination, InstanceReference instance) {
-    instance.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Work work) {
-      work.addInstanceReferenceItem(instance);
     }
   }
 

@@ -3,6 +3,7 @@ package org.folio.linked.data.model.entity;
 import static jakarta.persistence.CascadeType.ALL;
 import static java.util.Objects.isNull;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
@@ -36,6 +37,7 @@ import org.hibernate.annotations.Type;
 public class Resource {
 
   @Id
+  @JsonProperty("id")
   private Long resourceHash;
 
   @NonNull

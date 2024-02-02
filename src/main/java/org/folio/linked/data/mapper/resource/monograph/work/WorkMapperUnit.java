@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.ResourceDto;
@@ -33,7 +32,6 @@ import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
-import org.folio.linked.data.mapper.resource.monograph.instance.InstanceReferenceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
@@ -43,25 +41,18 @@ import org.springframework.stereotype.Component;
 public class WorkMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
-
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
-  private final InstanceReferenceMapperUnit instanceReferenceMapperUnit;
 
   @Override
-  public <D> D toDto(Resource source, D parentDto, Resource parentResource) {
-    Consumer<Work> workConsumer = work -> handleMappedWork(source, parentDto, work);
-    coreMapper.mapToDtoWithEdges(source, workConsumer, Work.class);
-    return parentDto;
-  }
-
-  private <D> void handleMappedWork(Resource source, D destination, Work work) {
-    work.setId(String.valueOf(source.getResourceHash()));
-    ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
-    coreMapper.addMappedIncomingResources(instanceReferenceMapperUnit, source, INSTANTIATES, work);
-    if (destination instanceof ResourceDto resourceDto) {
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    if (parentDto instanceof ResourceDto resourceDto) {
+      var work = coreMapper.toDtoWithEdges(source, Work.class, true);
+      work.setId(String.valueOf(source.getResourceHash()));
+      ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.setResource(new WorkField().work(work));
     }
+    return parentDto;
   }
 
   @Override
@@ -70,12 +61,12 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     var work = new Resource();
     work.addType(WORK);
     work.setDoc(getDoc(workDto));
-    coreMapper.toOutgoingEdges(workDto.getClassification(), work, CLASSIFICATION, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getContent(), work, CONTENT, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getSubjects(), work, SUBJECT, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getCreator(), work, CREATOR, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getContributor(), work, CONTRIBUTOR, Work.class);
-    coreMapper.toIncomingEdges(workDto.getInstanceReference(), work, INSTANTIATES, Work.class);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContent(), CONTENT);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getSubjects(), SUBJECT);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getCreator(), CREATOR);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContributor(), CONTRIBUTOR);
+    coreMapper.addIncomingEdges(work, Work.class, workDto.getInstanceReference(), INSTANTIATES);
     work.setResourceHash(coreMapper.hash(work));
     return work;
   }

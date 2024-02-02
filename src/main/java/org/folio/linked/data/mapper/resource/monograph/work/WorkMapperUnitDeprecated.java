@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
  * Temporary support of current ui.
  *
  * @deprecated To be removed.
- *
  */
 @Deprecated(forRemoval = true)
 @Component
@@ -52,18 +51,17 @@ public class WorkMapperUnitDeprecated implements InstanceSubResourceMapperUnit {
   private final NoteMapper noteMapper;
 
   @Override
-  public <D> D toDto(Resource source, D parentDto, Resource parentResource) {
-    Consumer<Work> workConsumer = work -> handleMappedWork(source, parentDto, work);
-    coreMapper.mapToDtoWithEdges(source, workConsumer, Work.class);
-    return parentDto;
-  }
-
-  private <D> void handleMappedWork(Resource source, D destination, Work work) {
-    work.setId(String.valueOf(source.getResourceHash()));
-    ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
-    if (destination instanceof Instance instance) {
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    if (parentDto instanceof Instance instance) {
+      var work = coreMapper.toDtoWithEdges(source, Work.class, false);
+      var workReference = coreMapper.toDtoWithEdges(source, WorkReference.class, false);
+      work.setId(String.valueOf(source.getResourceHash()));
+      workReference.setId(String.valueOf(source.getResourceHash()));
+      ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       instance.addInstantiatesItem(work);
+      instance.addWorkReferenceItem(workReference);
     }
+    return parentDto;
   }
 
   @Override
@@ -72,11 +70,11 @@ public class WorkMapperUnitDeprecated implements InstanceSubResourceMapperUnit {
     var work = new Resource();
     work.addType(WORK);
     work.setDoc(getDoc(workDto));
-    coreMapper.toOutgoingEdges(workDto.getClassification(), work, CLASSIFICATION, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getContent(), work, CONTENT, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getSubjects(), work, SUBJECT, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getCreator(), work, CREATOR, Work.class);
-    coreMapper.toOutgoingEdges(workDto.getContributor(), work, CONTRIBUTOR, Work.class);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContent(), CONTENT);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getSubjects(), SUBJECT);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getCreator(), CREATOR);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContributor(), CONTRIBUTOR);
     work.setResourceHash(coreMapper.hash(work));
     return work;
   }

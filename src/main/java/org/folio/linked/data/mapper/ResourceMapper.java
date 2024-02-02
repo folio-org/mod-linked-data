@@ -94,7 +94,7 @@ public abstract class ResourceMapper {
       edge.getId().setSourceHash(edge.getSource().getResourceHash());
       edge.getId().setTargetHash(edge.getTarget().getResourceHash());
       edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setEdgesId(edge.getSource());
+      setIncomingEdgesId(edge.getSource());
     });
   }
   private void setOutgoingEdgesId(Resource resource) {

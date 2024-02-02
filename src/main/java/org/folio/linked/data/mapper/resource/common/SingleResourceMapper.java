@@ -7,7 +7,7 @@ import org.folio.linked.data.model.entity.Resource;
 
 public interface SingleResourceMapper {
 
-  <D> D toDto(@NonNull Resource source, @NonNull D parentDto, Resource parentResource, Predicate predicate);
+  <P> P toDto(@NonNull Resource source, @NonNull P parentDto, Resource parentResource, Predicate predicate);
 
   <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentDtoClass, Predicate predicate,
                         Resource parentEntity);

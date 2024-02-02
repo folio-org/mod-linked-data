@@ -23,7 +23,7 @@ public class SubjectMapperUnit implements WorkSubResourceMapperUnit {
   private final ResourceRepository resourceRepository;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var subject = new Subject()
       .id(source.getResourceHash().toString())
       .label(source.getLabel());
@@ -43,4 +43,5 @@ public class SubjectMapperUnit implements WorkSubResourceMapperUnit {
       .findById(Long.parseLong(subject.getId()))
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + subject.getId() + IS_NOT_FOUND));
   }
+
 }

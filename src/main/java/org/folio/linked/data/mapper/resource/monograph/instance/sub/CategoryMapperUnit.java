@@ -25,10 +25,11 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
   private final ResourceTypeDictionary type;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var category = coreMapper.readResourceDoc(source, Category.class);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    var category = coreMapper.toDtoWithEdges(source, Category.class, false);
     category.setId(String.valueOf(source.getResourceHash()));
-    return (T) categoryConsumer.apply(category, parentDto);
+    categoryConsumer.apply(category, parentDto);
+    return parentDto;
   }
 
   @Override

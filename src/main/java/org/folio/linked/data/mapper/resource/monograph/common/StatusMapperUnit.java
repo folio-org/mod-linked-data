@@ -34,8 +34,8 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var status = coreMapper.readResourceDoc(source, Status.class);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    var status = coreMapper.toDtoWithEdges(source, Status.class, false);
     status.setId(String.valueOf(source.getResourceHash()));
     if (parentDto instanceof Lccn lccn) {
       lccn.addStatusItem(status);

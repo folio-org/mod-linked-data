@@ -494,7 +494,7 @@ public class MonographTestUtil {
       edge.getId().setSourceHash(edge.getSource().getResourceHash());
       edge.getId().setTargetHash(edge.getTarget().getResourceHash());
       edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setEdgesId(edge.getSource());
+      setIncomingEdgesId(edge.getSource());
     });
   }
 

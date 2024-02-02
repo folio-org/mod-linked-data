@@ -34,10 +34,10 @@ public class PlaceMapperUnit implements SingleResourceMapperUnit {
   private final CoreMapper coreMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var place = coreMapper.readResourceDoc(source, Place.class);
-    place.setId(String.valueOf(source.getResourceHash()));
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ProviderEvent providerEvent) {
+      var place = coreMapper.toDtoWithEdges(source, Place.class, false);
+      place.setId(String.valueOf(source.getResourceHash()));
       providerEvent.addProviderPlaceItem(place);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()

@@ -73,45 +73,42 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
   private final NoteMapper noteMapper;
 
   @Override
-  public <T> T toDto(Resource source, T parentDto, Resource parentResource) {
-    var instanceField = new InstanceField();
-    coreMapper.mapToDtoWithEdges(source, instanceField::setInstance, Instance.class);
-    instanceField.getInstance().setId(String.valueOf(source.getResourceHash()));
-    instanceField.getInstance().setInventoryId(source.getInventoryId());
-    instanceField.getInstance().setSrsId(source.getSrsId());
-
-    ofNullable(source.getDoc())
-      .ifPresent(doc -> instanceField.getInstance().setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
-
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ResourceDto resourceDto) {
-      resourceDto.resource(instanceField);
+      var instance = coreMapper.toDtoWithEdges(source, Instance.class, false);
+      instance.setId(String.valueOf(source.getResourceHash()));
+      instance.setInventoryId(source.getInventoryId());
+      instance.setSrsId(source.getSrsId());
+      ofNullable(source.getDoc())
+        .ifPresent(doc -> instance.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      resourceDto.resource(new InstanceField().instance(instance));
     }
     return parentDto;
   }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    Instance instanceDto = ((InstanceField) dto).getInstance();
+    var instanceDto = ((InstanceField) dto).getInstance();
     var instance = new Resource();
     instance.addType(INSTANCE);
     instance.setDoc(getDoc(instanceDto));
     instance.setLabel(getFirstValue(() -> getPossibleLabels(instanceDto)));
     instance.setInventoryId(instanceDto.getInventoryId());
     instance.setSrsId(instanceDto.getSrsId());
-    coreMapper.toOutgoingEdges(instanceDto.getTitle(), instance, TITLE, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getProduction(), instance, PE_PRODUCTION, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getPublication(), instance, PE_PUBLICATION, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getDistribution(), instance, PE_DISTRIBUTION, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getManufacture(), instance, PE_MANUFACTURE, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getSupplementaryContent(), instance, SUPPLEMENTARY_CONTENT, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getAccessLocation(), instance, ACCESS_LOCATION, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getMap(), instance, MAP, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getMedia(), instance, MEDIA, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getCarrier(), instance, CARRIER, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getCopyright(), instance, COPYRIGHT, Instance.class);
-    coreMapper.toOutgoingEdges(instanceDto.getWorkReference(), instance, INSTANTIATES, Instance.class);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getTitle(), TITLE);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getProduction(), PE_PRODUCTION);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getPublication(), PE_PUBLICATION);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getDistribution(), PE_DISTRIBUTION);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getManufacture(), PE_MANUFACTURE);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getAccessLocation(), ACCESS_LOCATION);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getMap(), MAP);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getMedia(), MEDIA);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCarrier(), CARRIER);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCopyright(), COPYRIGHT);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getWorkReference(), INSTANTIATES);
     // DEPRECATED: to be removed, temporary support of current ui
-    coreMapper.toOutgoingEdges(instanceDto.getInstantiates(), instance, INSTANTIATES, Instance.class);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getInstantiates(), INSTANTIATES);
     instance.setResourceHash(coreMapper.hash(instance));
     return instance;
   }
@@ -151,9 +148,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
     putProperty(map, EDITION_STATEMENT, dto.getEdition());
     putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
     putProperty(map, ISSUANCE, dto.getIssuance());
-
     noteMapper.putNotes(dto.getNotes(), map);
-
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 

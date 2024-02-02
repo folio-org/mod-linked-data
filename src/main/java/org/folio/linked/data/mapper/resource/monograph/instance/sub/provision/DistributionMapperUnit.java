@@ -6,14 +6,13 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import org.folio.linked.data.domain.dto.ProviderEvent;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.common.PlaceMapperUnit;
 import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = PROVIDER_EVENT, predicate = PE_DISTRIBUTION, dtoClass = ProviderEvent.class)
 public class DistributionMapperUnit extends ProviderEventMapperUnit {
 
-  public DistributionMapperUnit(CoreMapper coreMapper, PlaceMapperUnit placeMapper) {
-    super(coreMapper, placeMapper, (providerEvent, instance) -> instance.addDistributionItem(providerEvent));
+  public DistributionMapperUnit(CoreMapper coreMapper) {
+    super(coreMapper, (providerEvent, instance) -> instance.addDistributionItem(providerEvent));
   }
 }
