@@ -10,16 +10,16 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
+import org.folio.linked.data.domain.dto.InstanceReferenceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceTitleField;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.exception.JsonException;
 
-public class TitleDeserializer extends JsonDeserializer<InstanceAllOfTitle> {
+public class InstanceReferenceTitleDeserializer extends JsonDeserializer<InstanceReferenceAllOfTitle> {
 
   @Override
-  public InstanceAllOfTitle deserialize(JsonParser jp, DeserializationContext deserializationContext)
+  public InstanceReferenceAllOfTitle deserialize(JsonParser jp, DeserializationContext deserializationContext)
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     if (node.has(TITLE.getUri())) {
@@ -30,6 +30,6 @@ public class TitleDeserializer extends JsonDeserializer<InstanceAllOfTitle> {
       return jp.getCodec().treeToValue(node, VariantTitleField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(InstanceAllOfTitle.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(InstanceReferenceAllOfTitle.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

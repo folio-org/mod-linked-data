@@ -92,8 +92,10 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
+import static org.folio.linked.data.test.MonographTestUtil.createSampleWork;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
@@ -136,6 +138,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
@@ -144,7 +147,6 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
-import org.folio.linked.data.test.TestUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -165,7 +167,8 @@ class ResourceControllerIT {
   private static final String NOTES_PROPERTY = "_notes";
   private static final String VALUE_PROPERTY = "value";
   private static final String TYPE_PROPERTY = "type";
-
+  private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
+  private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -180,16 +183,19 @@ class ResourceControllerIT {
   private KafkaSender kafkaSender;
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  private LookupResources lookupResources;
 
   @BeforeEach
   public void clean() {
     JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources");
+    lookupResources = saveLookupResources();
   }
 
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
   @Test
   void createMonographInstanceBibframe_shouldSaveEntityCorrectly() throws Exception {
     // given
-    LookupResources lookupResources = saveLookupResources();
     var requestBuilder = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -209,6 +215,61 @@ class ResourceControllerIT {
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
     validateInstance(bibframe, lookupResources);
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+  }
+
+  @Test
+  void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
+    // given
+    var work = resourceRepo.save(createSampleWork());
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/instance_and_work_ref.json")
+        .replaceAll(WORK_ID_PLACEHOLDER, work.getResourceHash().toString()));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = validateInstanceResourceResponse(resultActions)
+      .andReturn().getResponse().getContentAsString();
+    validateWorkResourceResponse(resultActions);
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var bibframe = persistedOptional.get();
+    validateInstance(bibframe, lookupResources);
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+  }
+
+  @Test
+  void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
+    // given
+    var instance = resourceRepo.save(getSampleInstanceResource(null, false));
+    var requestBuilder = post(BIBFRAME_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/work_and_instance_ref.json")
+        .replaceAll(INSTANCE_ID_PLACEHOLDER, instance.getResourceHash().toString()));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var bibframe = persistedOptional.get();
+    validateWork(bibframe, lookupResources);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
 
@@ -314,7 +375,6 @@ class ResourceControllerIT {
   @Test
   void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
     // given
-    saveLookupResources();
     var requestBuilder1 = post(BIBFRAME_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -367,7 +427,6 @@ class ResourceControllerIT {
   @Test
   void update_shouldReturnCorrectlyUpdatedEntity() throws Exception {
     // given
-    saveLookupResources();
     var originalInstance = resourceRepo.save(getSampleInstanceResource().setLabel("Instance: mainTitle"));
     var updateDto = getSampleBibframeDtoMap();
     var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
@@ -445,9 +504,9 @@ class ResourceControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-        resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE)),
-        resourceRepo.save(TestUtil.getSampleInstanceResource(2L, INSTANCE)),
-        resourceRepo.save(TestUtil.getSampleInstanceResource(3L, INSTANCE))
+        resourceRepo.save(getSampleInstanceResource(100L)),
+        resourceRepo.save(getSampleInstanceResource(200L)),
+        resourceRepo.save(getSampleInstanceResource(300L))
       ).stream()
       .map(Resource::getResourceHash)
       .map(Object::toString)
@@ -494,10 +553,10 @@ class ResourceControllerIT {
   }
 
   @Test
-  void updateResource_should_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateSucceeded()
+  void updateInstance_should_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateSucceeded()
     throws Exception {
     //given
-    var existedResource = resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE));
+    var existedResource = resourceRepo.save(getSampleInstanceResource());
     var requestBuilder = put(BIBFRAME_URL + "/" + existedResource.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -519,7 +578,7 @@ class ResourceControllerIT {
   void updateResource_shouldNot_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateFailed()
     throws Exception {
     //given
-    var existedResource = resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE));
+    var existedResource = resourceRepo.save(getSampleInstanceResource(100L));
     var requestBuilder = put(BIBFRAME_URL + "/" + existedResource.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -986,6 +1045,38 @@ class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
+  private void validateWork(Resource work, LookupResources lookupResources) {
+    assertThat(work.getResourceHash()).isNotNull();
+    assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
+    assertThat(work.getResourceHash()).isNotNull();
+    assertThat(work.getDoc().size()).isEqualTo(8);
+    validateLiteral(work, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
+    validateLiteral(work, SUMMARY.getValue(), "summary text");
+    validateLiteral(work, LANGUAGE.getValue(), "eng");
+    validateLiteral(work, TARGET_AUDIENCE.getValue(), "target audience");
+    validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
+    validateLiteral(work, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
+    validateLiterals(work, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
+    validateLiterals(work, NOTE.getValue(), List.of("note", "another note"));
+    var edgeIterator = work.getOutgoingEdges().iterator();
+    validateWorkContentType(edgeIterator.next(), work);
+    validateWorkClassification(edgeIterator.next(), work);
+    validateWorkContributor(edgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, ORGANIZATION, ASSIGNEE.getUri());
+    validateWorkContributor(edgeIterator.next(), work, FAMILY, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, PERSON, AUTHOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, PERSON, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
+    validateResourceEdge(edgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
+    validateResourceEdge(edgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
+    validateWorkContributor(edgeIterator.next(), work, MEETING, CREATOR.getUri());
+    validateWorkContributor(edgeIterator.next(), work, MEETING, CONTRIBUTOR.getUri());
+  }
+
+  @Deprecated
   private void validateWork(ResourceEdge edge, Resource source, LookupResources lookupResources) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -1090,7 +1181,7 @@ class ResourceControllerIT {
   }
 
   @SneakyThrows
-  private Resource saveSubject(Long id)  {
+  private Resource saveSubject(Long id) {
     var subjectResource = new Resource();
     subjectResource.addType(new ResourceTypeEntity().setHash(CONCEPT.getHash()).setUri(CONCEPT.getUri()));
     subjectResource.setLabel("subject " + id);
@@ -1535,5 +1626,6 @@ class ResourceControllerIT {
 
   private record LookupResources(
     List<Resource> subjects
-  ) {}
+  ) {
+  }
 }

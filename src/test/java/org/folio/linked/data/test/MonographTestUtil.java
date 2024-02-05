@@ -2,6 +2,7 @@ package org.folio.linked.data.test;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Map.entry;
+import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
@@ -113,15 +114,24 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 @UtilityClass
 public class MonographTestUtil {
 
-  private static final CoreMapper CORE_MAPPER =
+  public static final CoreMapper CORE_MAPPER =
     new CoreMapperImpl(OBJECT_MAPPER, new SingleResourceMapperImpl(OBJECT_MAPPER, new ArrayList<>()));
 
   public static Resource getSampleInstanceResource() {
+    return getSampleInstanceResource(null, true);
+  }
+
+  public static Resource getSampleInstanceResource(Long id) {
+    return getSampleInstanceResource(id, true);
+  }
+
+  public static Resource getSampleInstanceResource(Long id, boolean withWork) {
+    var instanceTitleValue = "Instance: mainTitle" + (nonNull(id) ? id : "");
     var instanceTitle = createResource(
       Map.of(
         PART_NAME, List.of("Instance: partName"),
         PART_NUMBER, List.of("Instance: partNumber"),
-        MAIN_TITLE, List.of("Instance: mainTitle"),
+        MAIN_TITLE, List.of(instanceTitleValue),
         NON_SORT_NUM, List.of("Instance: nonSortNum"),
         SUBTITLE, List.of("Instance: subTitle")
       ),
@@ -225,7 +235,8 @@ public class MonographTestUtil {
       Map.of(
         CODE, List.of("media code"),
         TERM, List.of("media term"),
-        LINK, List.of("media link")
+        LINK, List.of("media link"),
+        SOURCE, List.of("media source")
       ),
       Set.of(CATEGORY),
       emptyMap()
@@ -235,7 +246,8 @@ public class MonographTestUtil {
       Map.of(
         CODE, List.of("carrier code"),
         TERM, List.of("carrier term"),
-        LINK, List.of("carrier link")
+        LINK, List.of("carrier link"),
+        SOURCE, List.of("carrier source")
       ),
       Set.of(CATEGORY),
       emptyMap()
@@ -261,7 +273,9 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
-    pred2OutgoingResources.put(INSTANTIATES, List.of(createSampleWork()));
+    if (withWork) {
+      pred2OutgoingResources.put(INSTANTIATES, List.of(createSampleWork()));
+    }
 
     var instance = createResource(
       Map.ofEntries(
@@ -290,6 +304,10 @@ public class MonographTestUtil {
       .setInventoryId(UUID.fromString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1"))
       .setSrsId(UUID.fromString("43d58061-decf-4d74-9747-0e1c368e861b"));
 
+    if (nonNull(id)) {
+      instance.setResourceHash(id);
+    }
+    instance.setLabel(instanceTitleValue);
     setEdgesId(instance);
     return instance;
   }
@@ -299,7 +317,8 @@ public class MonographTestUtil {
       Map.of(
         TERM, List.of("text"),
         LINK, List.of("http://id.loc.gov/vocabulary/contentTypes/txt"),
-        CODE, List.of("txt")
+        CODE, List.of("txt"),
+        SOURCE, List.of("content source")
       ),
       Set.of(CATEGORY),
       emptyMap()
@@ -392,7 +411,8 @@ public class MonographTestUtil {
       ),
       Set.of(CONCEPT),
       emptyMap()
-    ).setLabel("subject 1");
+    ).setLabel("subject 1")
+      .setResourceHash(1L);
 
     var subject2 = createResource(
       Map.of(
@@ -400,7 +420,8 @@ public class MonographTestUtil {
       ),
       Set.of(CONCEPT),
       emptyMap()
-    ).setLabel("subject 2");
+    ).setLabel("subject 2")
+      .setResourceHash(2L);
 
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
@@ -413,7 +434,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(CONTENT, List.of(content));
     pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
 
-    return createResource(
+    var work = createResource(
       Map.ofEntries(
         entry(TARGET_AUDIENCE, List.of("target audience")),
         entry(LANGUAGE, List.of("eng")),
@@ -427,6 +448,8 @@ public class MonographTestUtil {
       Set.of(WORK),
       pred2OutgoingResources
     ).setLabel("Work: label");
+    setEdgesId(work);
+    return work;
   }
 
   private Resource status(String prefix) {

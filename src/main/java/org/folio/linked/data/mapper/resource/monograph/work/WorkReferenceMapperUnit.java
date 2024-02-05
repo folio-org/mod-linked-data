@@ -41,7 +41,7 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
     var work = (WorkReference) dto;
     if (nonNull(work.getId())) {
       return resourceRepository.findById(Long.parseLong(work.getId()))
-        .orElseThrow(() -> new NotFoundException("Work with id [" + work.getId() + " is not found"));
+        .orElseThrow(() -> new NotFoundException("Work with id [" + work.getId() + "] is not found"));
     } else {
       throw new ValidationException("Work id", "null");
     }

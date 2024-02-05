@@ -24,7 +24,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.model.entity.Resource;
 import org.jeasy.random.EasyRandom;
@@ -99,13 +98,6 @@ public class TestUtil {
 
   public static Long randomLong() {
     return GENERATOR.nextLong();
-  }
-
-  public static Resource getSampleInstanceResource(Long resourceHash, ResourceTypeDictionary type) {
-    var bibframe = MonographTestUtil.getSampleInstanceResource();
-    bibframe.setResourceHash(resourceHash);
-    bibframe.addType(type);
-    return bibframe;
   }
 
   public static ObjectNode getObjectNode(String label, String name, String link) {
