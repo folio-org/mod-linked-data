@@ -1,13 +1,13 @@
 package org.folio.linked.data.model.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.FetchType.EAGER;
 import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -53,22 +53,22 @@ public class Resource {
   private Date indexDate;
 
   @OrderBy
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = EAGER)
   @JoinTable(
     name = "resource_type_map",
     joinColumns = @JoinColumn(name = "resource_hash"),
     inverseJoinColumns = @JoinColumn(name = "type_hash")
   )
-  private Set<ResourceTypeEntity> types;
+  private Set<ResourceTypeEntity> types = new LinkedHashSet<>();
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "target", cascade = ALL)
+  @OneToMany(mappedBy = "target", cascade = ALL, fetch = EAGER, orphanRemoval = true)
   private Set<ResourceEdge> incomingEdges = new LinkedHashSet<>();
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "source", cascade = ALL, fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "source", cascade = ALL, fetch = EAGER, orphanRemoval = true)
   private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
 
   public Resource addType(ResourceTypeEntity type) {

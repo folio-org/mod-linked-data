@@ -41,6 +41,7 @@ import org.springframework.stereotype.Component;
 public class WorkMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(ResourceDto.class);
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
 
@@ -84,7 +85,7 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
 
   @Override
   public Set<Class<?>> supportedParents() {
-    return Collections.singleton(ResourceDto.class);
+    return SUPPORTED_PARENTS;
   }
 
 }

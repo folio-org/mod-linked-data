@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = WorkReference.class)
 public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
 
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(Instance.class);
   private final CoreMapper coreMapper;
   private final ResourceRepository resourceRepository;
 
@@ -49,6 +50,6 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
 
   @Override
   public Set<Class<?>> supportedParents() {
-    return Collections.singleton(Instance.class);
+    return SUPPORTED_PARENTS;
   }
 }

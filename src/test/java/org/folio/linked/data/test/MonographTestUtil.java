@@ -93,6 +93,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
+import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -118,14 +119,14 @@ public class MonographTestUtil {
     new CoreMapperImpl(OBJECT_MAPPER, new SingleResourceMapperImpl(OBJECT_MAPPER, new ArrayList<>()));
 
   public static Resource getSampleInstanceResource() {
-    return getSampleInstanceResource(null, true);
+    return getSampleInstanceResource(null, getSampleWork(null));
   }
 
   public static Resource getSampleInstanceResource(Long id) {
-    return getSampleInstanceResource(id, true);
+    return getSampleInstanceResource(id, getSampleWork(null));
   }
 
-  public static Resource getSampleInstanceResource(Long id, boolean withWork) {
+  public static Resource getSampleInstanceResource(Long id, Resource withWork) {
     var instanceTitleValue = "Instance: mainTitle" + (nonNull(id) ? id : "");
     var instanceTitle = createResource(
       Map.of(
@@ -137,7 +138,7 @@ public class MonographTestUtil {
       ),
       Set.of(ResourceTypeDictionary.TITLE),
       emptyMap()
-    ).setLabel("Instance: label");
+    ).setLabel(instanceTitleValue);
 
     var parallelTitle = createResource(
       Map.of(
@@ -150,7 +151,7 @@ public class MonographTestUtil {
       ),
       Set.of(PARALLEL_TITLE),
       emptyMap()
-    ).setLabel("Parallel: label");
+    ).setLabel("Parallel: mainTitle");
 
     var variantTitle = createResource(
       Map.of(
@@ -164,7 +165,7 @@ public class MonographTestUtil {
       ),
       Set.of(VARIANT_TITLE),
       emptyMap()
-    ).setLabel("Variant: label");
+    ).setLabel("Variant: mainTitle");
 
     var production = providerEvent("production");
     var publication = providerEvent("publication");
@@ -178,7 +179,7 @@ public class MonographTestUtil {
       ),
       Set.of(SUPPLEMENTARY_CONTENT),
       emptyMap()
-    ).setLabel("supplementaryContent label");
+    ).setLabel("supplementaryContent name");
 
     var accessLocation = createResource(
       Map.of(
@@ -187,13 +188,13 @@ public class MonographTestUtil {
       ),
       Set.of(ANNOTATION),
       emptyMap()
-    ).setLabel("accessLocation label");
+    ).setLabel("accessLocation value");
 
     var lccn = createResource(
       Map.of(NAME, List.of("lccn value")),
       Set.of(IDENTIFIER, ID_LCCN),
       Map.of(STATUS, List.of(status("lccn")))
-    ).setLabel("lccn label");
+    ).setLabel("lccn value");
 
     var isbn = createResource(
       Map.of(
@@ -202,7 +203,7 @@ public class MonographTestUtil {
       ),
       Set.of(IDENTIFIER, ID_ISBN),
       Map.of(STATUS, List.of(status("isbn")))
-    ).setLabel("isbn label");
+    ).setLabel("isbn value");
 
     var ean = createResource(
       Map.of(
@@ -211,7 +212,7 @@ public class MonographTestUtil {
       ),
       Set.of(IDENTIFIER, ID_EAN),
       emptyMap()
-    ).setLabel("ean label");
+    ).setLabel("ean value");
 
     var localId = createResource(
       Map.of(
@@ -220,7 +221,7 @@ public class MonographTestUtil {
       ),
       Set.of(IDENTIFIER, ID_LOCAL),
       emptyMap()
-    ).setLabel("localId label");
+    ).setLabel("localId value");
 
     var otherId = createResource(
       Map.of(
@@ -229,7 +230,7 @@ public class MonographTestUtil {
       ),
       Set.of(IDENTIFIER, ID_UNKNOWN),
       emptyMap()
-    ).setLabel("otherId label");
+    ).setLabel("otherId value");
 
     var media = createResource(
       Map.of(
@@ -240,7 +241,7 @@ public class MonographTestUtil {
       ),
       Set.of(CATEGORY),
       emptyMap()
-    ).setLabel("media label");
+    ).setLabel("media term");
 
     var carrier = createResource(
       Map.of(
@@ -251,7 +252,7 @@ public class MonographTestUtil {
       ),
       Set.of(CATEGORY),
       emptyMap()
-    ).setLabel("carrier label");
+    ).setLabel("carrier term");
 
     var copyrightEvent = createResource(
       Map.of(
@@ -259,7 +260,7 @@ public class MonographTestUtil {
       ),
       Set.of(COPYRIGHT_EVENT),
       emptyMap()
-    ).setLabel("copyright date label");
+    ).setLabel("copyright date value");
 
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(instanceTitle, parallelTitle, variantTitle));
@@ -273,9 +274,6 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
-    if (withWork) {
-      pred2OutgoingResources.put(INSTANTIATES, List.of(createSampleWork()));
-    }
 
     var instance = createResource(
       Map.ofEntries(
@@ -308,11 +306,16 @@ public class MonographTestUtil {
       instance.setResourceHash(id);
     }
     instance.setLabel(instanceTitleValue);
+    if (nonNull(withWork)) {
+      var edge = new ResourceEdge(instance, withWork, INSTANTIATES);
+      instance.getOutgoingEdges().add(edge);
+      withWork.getIncomingEdges().add(edge);
+    }
     setEdgesId(instance);
     return instance;
   }
 
-  public static Resource createSampleWork() {
+  public static Resource getSampleWork(Resource withInstance) {
     var content = createResource(
       Map.of(
         TERM, List.of("text"),
@@ -322,7 +325,7 @@ public class MonographTestUtil {
       ),
       Set.of(CATEGORY),
       emptyMap()
-    ).setLabel("content label");
+    ).setLabel("text");
 
     var deweyClassification = createResource(
       Map.of(
@@ -331,7 +334,7 @@ public class MonographTestUtil {
       ),
       Set.of(CATEGORY),
       emptyMap()
-    ).setLabel("Dewey: label");
+    ).setLabel("709.83");
 
     var creatorPerson = createResource(
       Map.of(
@@ -447,7 +450,12 @@ public class MonographTestUtil {
       ),
       Set.of(WORK),
       pred2OutgoingResources
-    ).setLabel("Work: label");
+    );
+    if (nonNull(withInstance)) {
+      var edge = new ResourceEdge(withInstance, work, INSTANTIATES);
+      withInstance.getOutgoingEdges().add(edge);
+      work.getIncomingEdges().add(edge);
+    }
     setEdgesId(work);
     return work;
   }
@@ -460,7 +468,7 @@ public class MonographTestUtil {
       ),
       Set.of(ResourceTypeDictionary.STATUS),
       emptyMap()
-    ).setLabel(prefix + " status label");
+    ).setLabel(prefix + " status value");
   }
 
   public Resource providerEvent(String type) {
@@ -473,7 +481,7 @@ public class MonographTestUtil {
       ),
       Set.of(PROVIDER_EVENT),
       Map.of(PROVIDER_PLACE, List.of(providerPlace(type)))
-    ).setLabel(type + " label");
+    ).setLabel(type + " name");
   }
 
   private Resource providerPlace(String providerEventType) {
@@ -505,29 +513,6 @@ public class MonographTestUtil {
     types.forEach(resource::addType);
     resource.setResourceHash(CORE_MAPPER.hash(resource));
     return resource;
-  }
-
-  private void setEdgesId(Resource resource) {
-    setIncomingEdgesId(resource);
-    setOutgoingEdgesId(resource);
-  }
-
-  private void setIncomingEdgesId(Resource resource) {
-    resource.getIncomingEdges().forEach(edge -> {
-      edge.getId().setSourceHash(edge.getSource().getResourceHash());
-      edge.getId().setTargetHash(edge.getTarget().getResourceHash());
-      edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setIncomingEdgesId(edge.getSource());
-    });
-  }
-
-  private void setOutgoingEdgesId(Resource resource) {
-    resource.getOutgoingEdges().forEach(edge -> {
-      edge.getId().setSourceHash(edge.getSource().getResourceHash());
-      edge.getId().setTargetHash(edge.getTarget().getResourceHash());
-      edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setOutgoingEdgesId(edge.getTarget());
-    });
   }
 
 }

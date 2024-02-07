@@ -8,6 +8,7 @@ import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -159,12 +160,13 @@ class ResourceServiceTest {
   void delete_shouldDeleteBibframeAndPublishResourceDeletedEvent() {
     // given
     var id = randomLong();
+    when(resourceRepo.findById(id)).thenReturn(Optional.of(new Resource().setResourceHash(id)));
 
     // when
     resourceService.deleteResource(id);
 
     // then
-    verify(resourceRepo).deleteById(id);
+    verify(resourceRepo).delete(any());
 
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());

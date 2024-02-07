@@ -68,6 +68,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
     DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION, ISSUANCE_NOTE, ISSUING_BODY,
     LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE, RELATED_PARTS, REPRODUCTION_NOTE, TYPE_OF_REPORT,
     WITH_NOTE);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(ResourceDto.class);
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
@@ -115,7 +116,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
 
   @Override
   public Set<Class<?>> supportedParents() {
-    return Collections.singleton(ResourceDto.class);
+    return SUPPORTED_PARENTS;
   }
 
   private List<String> getPossibleLabels(Instance instance) {

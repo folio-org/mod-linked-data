@@ -40,12 +40,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
@@ -75,20 +73,6 @@ class KafkaMessageMapperTest {
 
     // then
     assertThat(thrown.getMessage()).isEqualTo("resource is marked non-null but is null");
-  }
-
-  @Test
-  void toIndex_shouldThrowNotSupportedException_ifThereIsNoInstance() {
-    // given
-    var resource = new Resource();
-    resource.addType(new ResourceTypeEntity().setUri("www"));
-
-    // when
-    var thrown = assertThrows(NotSupportedException.class, () -> kafkaMessageMapper.toIndex(resource));
-
-    // then
-    assertThat(thrown.getMessage()).isEqualTo(
-      "Only Monograph.Instance bibframe is supported for now, and there is no Instance found");
   }
 
   @Test

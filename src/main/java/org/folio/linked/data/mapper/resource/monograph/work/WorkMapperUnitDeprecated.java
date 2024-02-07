@@ -47,6 +47,7 @@ import org.springframework.stereotype.Component;
 public class WorkMapperUnitDeprecated implements InstanceSubResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(Instance.class);
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
 
@@ -92,6 +93,6 @@ public class WorkMapperUnitDeprecated implements InstanceSubResourceMapperUnit {
 
   @Override
   public Set<Class<?>> supportedParents() {
-    return Collections.singleton(Instance.class);
+    return SUPPORTED_PARENTS;
   }
 }

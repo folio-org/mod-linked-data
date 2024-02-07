@@ -42,7 +42,7 @@ public class InstanceReferenceMapperUnit implements WorkSubResourceMapperUnit {
     var instance = (InstanceReference) dto;
     if (nonNull(instance.getId())) {
       return resourceRepository.findById(Long.parseLong(instance.getId()))
-        .orElseThrow(() -> new NotFoundException("Instance with id [" + instance.getId() + " is not found"));
+        .orElseThrow(() -> new NotFoundException("Instance with id [" + instance.getId() + "] is not found"));
     } else {
       throw new ValidationException("Instance id", "null");
     }

@@ -34,7 +34,6 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -63,14 +62,20 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   @Override
   public Optional<BibframeIndex> toIndex(@NonNull Resource resource) {
-    var instance = extractInstance(resource);
-    var bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
-    bibframeIndex.setTitles(extractTitles(instance));
-    bibframeIndex.setIdentifiers(extractIdentifiers(instance));
-    bibframeIndex.setContributors(extractContributors(instance));
-    bibframeIndex.setPublications(extractPublications(instance));
-    bibframeIndex.setEditionStatement(getValue(instance.getDoc(), EDITION_STATEMENT.getValue()));
-    return shouldBeIndexed(bibframeIndex) ? Optional.of(bibframeIndex) : Optional.empty();
+    Optional<BibframeIndex> result = extractInstance(resource)
+      .map(instance -> {
+        var bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
+        bibframeIndex.setTitles(extractTitles(instance));
+        bibframeIndex.setIdentifiers(extractIdentifiers(instance));
+        bibframeIndex.setContributors(extractContributors(instance));
+        bibframeIndex.setPublications(extractPublications(instance));
+        bibframeIndex.setEditionStatement(getValue(instance.getDoc(), EDITION_STATEMENT.getValue()));
+        return shouldBeIndexed(bibframeIndex) ? bibframeIndex : null;
+      });
+    if (result.isEmpty()) {
+      log.warn("Only Monograph Instance bibframe is supported for now, and there is no Instance found");
+    }
+    return result;
   }
 
   private boolean shouldBeIndexed(BibframeIndex bi) {
@@ -81,14 +86,12 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       || isNotBlank(bi.getEditionStatement());
   }
 
-  private Resource extractInstance(Resource resource) {
-    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(INSTANCE.getUri())) ? resource :
+  private Optional<Resource> extractInstance(Resource resource) {
+    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(INSTANCE.getUri())) ? Optional.of(resource) :
       resource.getOutgoingEdges().stream()
         .filter(re -> INSTANCE.getUri().equals(re.getPredicate().getUri()))
         .map(ResourceEdge::getTarget)
-        .findFirst()
-        .orElseThrow(() -> new NotSupportedException("Only Monograph.Instance bibframe is supported for now, and there "
-          + "is no Instance found"));
+        .findFirst();
   }
 
   private List<BibframeTitlesInner> extractTitles(Resource resource) {
