@@ -1,25 +1,21 @@
 package org.folio.linked.data.mapper;
 
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
-import org.folio.linked.data.domain.dto.ResourceField;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.ValidationException;
-import org.folio.linked.data.mapper.resource.common.top.TopResourceMapper;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
@@ -31,17 +27,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 @Log4j2
-@Mapper(componentModel = SPRING, imports = { Collectors.class, Arrays.class })
+@Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class})
 public abstract class ResourceMapper {
 
-  private static final Map<Class<? extends ResourceField>, String> DTO_CLASS_TO_TYPE = new HashMap<>();
-
-  static {
-    DTO_CLASS_TO_TYPE.put(InstanceField.class, INSTANCE.getUri());
-  }
-
   @Autowired
-  private TopResourceMapper topResourceMapper;
+  private SingleResourceMapper singleResourceMapper;
   @Autowired
   private KafkaMessageMapper kafkaMessageMapper;
 
@@ -61,7 +51,7 @@ public abstract class ResourceMapper {
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {
     try {
-      var resource = topResourceMapper.toEntity(dto.getResource(), DTO_CLASS_TO_TYPE.get(dto.getResource().getClass()));
+      var resource = singleResourceMapper.toEntity(dto.getResource(), ResourceDto.class, null, null);
       setEdgesId(resource);
       return resource;
     } catch (BaseLinkedDataException blde) {
@@ -73,7 +63,7 @@ public abstract class ResourceMapper {
   }
 
   public ResourceDto toDto(Resource resource) {
-    return topResourceMapper.toDto(resource, new ResourceDto());
+    return singleResourceMapper.toDto(resource, new ResourceDto(), null, null);
   }
 
   public Optional<BibframeIndex> mapToIndex(@NonNull Resource resource) {
@@ -95,14 +85,5 @@ public abstract class ResourceMapper {
         })))""")
   @Mapping(target = "indexDate", source = "indexDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   public abstract ResourceGraphDto toResourceGraphDto(Resource resource);
-
-  private void setEdgesId(Resource resource) {
-    resource.getOutgoingEdges().forEach(edge -> {
-      edge.getId().setSourceHash(edge.getSource().getResourceHash());
-      edge.getId().setTargetHash(edge.getTarget().getResourceHash());
-      edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setEdgesId(edge.getTarget());
-    });
-  }
 
 }

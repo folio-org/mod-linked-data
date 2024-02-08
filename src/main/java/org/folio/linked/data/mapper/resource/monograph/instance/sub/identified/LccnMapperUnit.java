@@ -16,7 +16,6 @@ import org.folio.linked.data.domain.dto.Lccn;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.monograph.common.StatusMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
@@ -27,25 +26,25 @@ import org.springframework.stereotype.Component;
 public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final StatusMapperUnit<Lccn> statusMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
-    var lccn = coreMapper.readResourceDoc(source, Lccn.class);
-    lccn.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedResources(statusMapper, source, STATUS, lccn);
-    destination.addMapItem(new LccnField().lccn(lccn));
-    return destination;
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    if (parentDto instanceof Instance instance) {
+      var lccn = coreMapper.toDtoWithEdges(source, Lccn.class, false);
+      lccn.setId(String.valueOf(source.getResourceHash()));
+      instance.addMapItem(new LccnField().lccn(lccn));
+    }
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var lccn = ((LccnField) dto).getLccn();
     var resource = new Resource();
     resource.setLabel(getFirstValue(lccn::getValue));
     resource.addType(ID_LCCN);
     resource.setDoc(getDoc(lccn));
-    coreMapper.mapSubEdges(lccn.getStatus(), resource, STATUS, statusMapper::toEntity);
+    coreMapper.addOutgoingEdges(resource, Lccn.class, lccn.getStatus(), STATUS);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

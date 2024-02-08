@@ -1,0 +1,186 @@
+{
+  "resource": {
+    "http://bibfra.me/vocab/lite/Work": {
+      "http://bibfra.me/vocab/marc/responsibilityStatement": [
+        "statement of responsibility"
+      ],
+      "http://bibfra.me/vocab/marc/summary": [
+        "summary text"
+      ],
+      "http://bibfra.me/vocab/lite/language": [
+        "eng"
+      ],
+      "_notes": [
+        {
+          "value": [
+            "bibliography note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/bibliographyNote"
+          ]
+        },
+        {
+          "value": [
+            "language note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/marc/languageNote"
+          ]
+        },
+        {
+          "value": [
+            "note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/lite/note"
+          ]
+        },
+        {
+          "value": [
+            "another note"
+          ],
+          "type": [
+            "http://bibfra.me/vocab/lite/note",
+            "http://bibfra.me/vocab/marc/languageNote"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/lite/subject": [
+        {
+          "id": "1"
+        },
+        {
+          "id": "2"
+        }
+      ],
+      "http://bibfra.me/vocab/marc/targetAudience": [
+        "target audience"
+      ],
+      "http://bibfra.me/vocab/marc/tableOfContents": [
+        "table of contents"
+      ],
+      "http://bibfra.me/vocab/lite/classification": [
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "709.83"
+          ],
+          "http://bibfra.me/vocab/marc/source": [
+            "ddc"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/marc/content": [
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "txt"
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+            "text"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "http://id.loc.gov/vocabulary/contentTypes/txt"
+          ],
+          "http://bibfra.me/vocab/marc/source": [
+            "content source"
+          ]
+        }
+      ],
+      "http://bibfra.me/vocab/lite/creator": [
+        {
+          "http://bibfra.me/vocab/lite/Meeting": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-MEETING"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-MEETING"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/Person": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-PERSON"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-PERSON"
+            ],
+            "_roles": [
+              "http://bibfra.me/vocab/relation/author"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/Organization": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-ORGANIZATION"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-ORGANIZATION"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/Family": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-FAMILY"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-FAMILY"
+            ]
+          }
+        }
+      ],
+      "http://bibfra.me/vocab/lite/contributor": [
+        {
+          "http://bibfra.me/vocab/lite/Meeting": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-MEETING"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-MEETING"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/Person": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-PERSON"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-PERSON"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/Organization": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-ORGANIZATION"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-ORGANIZATION"
+            ],
+            "_roles": [
+              "http://bibfra.me/vocab/relation/editor",
+              "http://bibfra.me/vocab/relation/assignee"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/lite/Family": {
+            "http://bibfra.me/vocab/lite/name": [
+              "name-FAMILY"
+            ],
+            "http://bibfra.me/vocab/marc/lcnafId": [
+              "2002801801-FAMILY"
+            ]
+          }
+        }
+      ],
+      "_instanceReference": [
+        {
+          "id": "%INSTANCE_ID%"
+        }
+      ]
+    }
+  }
+}

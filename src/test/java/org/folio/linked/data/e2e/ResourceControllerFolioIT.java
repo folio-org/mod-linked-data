@@ -38,9 +38,9 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   }
 
   @BeforeEach
-  public void clean() {
+  public void beforeEach() {
     consumer.getMessages().clear();
-    tenantScopedExecutionService.executeTenantScoped(TENANT_ID, super::clean);
+    tenantScopedExecutionService.executeTenantScoped(TENANT_ID, super::beforeEach);
   }
 
   @SneakyThrows

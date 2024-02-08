@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.ProviderEvent;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
-import org.folio.linked.data.mapper.resource.monograph.common.PlaceMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 
@@ -28,25 +27,25 @@ import org.folio.linked.data.model.entity.Resource;
 public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
-  private final PlaceMapperUnit<ProviderEvent> placeMapper;
   private final BiFunction<ProviderEvent, Instance, Instance> providerEventConsumer;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
-    var providerEvent = coreMapper.readResourceDoc(source, ProviderEvent.class);
-    providerEvent.setId(String.valueOf(source.getResourceHash()));
-    coreMapper.addMappedResources(placeMapper, source, PROVIDER_PLACE, providerEvent);
-    return providerEventConsumer.apply(providerEvent, destination);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    if (parentDto instanceof Instance instance) {
+      var providerEvent = coreMapper.toDtoWithEdges(source, ProviderEvent.class, false);
+      providerEventConsumer.apply(providerEvent, instance);
+    }
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var providerEvent = (ProviderEvent) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addType(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));
-    coreMapper.mapSubEdges(providerEvent.getProviderPlace(), resource, PROVIDER_PLACE, placeMapper::toEntity);
+    coreMapper.addOutgoingEdges(resource, ProviderEvent.class, providerEvent.getProviderPlace(), PROVIDER_PLACE);
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

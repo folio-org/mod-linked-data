@@ -16,6 +16,16 @@
               "x-json-property": "http://bibfra.me/vocab/lite/Instance"
             }
           }
+        },
+        {
+          "title": "WorkField",
+          "properties": {
+            "Work": {
+              "type": "object",
+              "$ref": "resource/Work.json",
+              "x-json-property": "http://bibfra.me/vocab/lite/Work"
+            }
+          }
         }
       ]
     }

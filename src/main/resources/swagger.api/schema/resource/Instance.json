@@ -229,12 +229,20 @@
           "x-json-property": "_notes"
         },
         "instantiates": {
+          "description": "DEPRECATED: to be removed, temporary support of current ui",
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "Work.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/instantiates"
+        },
+        "_workReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "WorkReference.json"
+          }
         },
         "inventoryId": {
           "type": "string",

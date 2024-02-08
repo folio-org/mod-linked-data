@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
@@ -33,15 +34,20 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   private final CoreMapper coreMapper;
 
   @Override
-  public Instance toDto(Resource source, Instance destination) {
-    var variantTitle = coreMapper.readResourceDoc(source, VariantTitle.class);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitle.class, false);
     variantTitle.setId(String.valueOf(source.getResourceHash()));
-    destination.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
-    return destination;
+    if (parentDto instanceof Instance instance) {
+      instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    }
+    if (parentDto instanceof InstanceReference instance) {
+      instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    }
+    return parentDto;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
     resource.setLabel(getFirstValue(variantTitle::getMainTitle));

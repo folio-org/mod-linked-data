@@ -4,6 +4,8 @@ import static jakarta.persistence.CascadeType.DETACH;
 import static jakarta.persistence.CascadeType.MERGE;
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REFRESH;
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -15,8 +17,6 @@ import java.util.Objects;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
@@ -25,28 +25,22 @@ import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 @Entity
 @NoArgsConstructor
 @Accessors(chain = true)
-@RequiredArgsConstructor
 @Table(name = "resource_edges")
 public class ResourceEdge {
 
-  @ToString.Exclude
   @EmbeddedId
   private ResourceEdgePk id = new ResourceEdgePk();
 
-  @NonNull
-  @ToString.Exclude
   @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
   @MapsId("sourceHash")
   @JoinColumn(name = "source_hash", nullable = false)
   private Resource source;
 
-  @NonNull
   @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
   @MapsId("targetHash")
   @JoinColumn(name = "target_hash", nullable = false)
   private Resource target;
 
-  @NonNull
   @ManyToOne
   @MapsId("predicateHash")
   @JoinColumn(name = "predicate_hash", nullable = false)
@@ -59,6 +53,15 @@ public class ResourceEdge {
   }
 
   @Override
+  public String toString() {
+    return "ResourceEdge{"
+      + "source=" + (nonNull(source) ? source.getTypes().iterator().next().getUri() : null)
+      + ", target=" + (nonNull(target) ? target.getTypes().iterator().next().getUri() : null)
+      + ", predicate=" + (nonNull(predicate) ? predicate.getUri() : null)
+      + '}';
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -67,13 +70,34 @@ public class ResourceEdge {
       return false;
     }
     ResourceEdge that = (ResourceEdge) o;
-    return Objects.equals(source.getResourceHash(), that.source.getResourceHash())
-      && Objects.equals(target.getResourceHash(), that.target.getResourceHash())
-      && Objects.equals(predicate.getHash(), that.predicate.getHash());
+    return Objects.equals(getSourceHash(), that.getSourceHash())
+      && Objects.equals(getTargetHash(), that.getTargetHash())
+      && Objects.equals(getPredicateHash(), that.getPredicateHash());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(source.getResourceHash(), target.getResourceHash(), predicate.getHash());
+    return Objects.hash(getSourceHash(), getTargetHash(), getPredicateHash());
+  }
+
+  private Long getSourceHash() {
+    return ofNullable(id)
+      .map(ResourceEdgePk::getSourceHash)
+      .or(() -> ofNullable(source).map(Resource::getResourceHash))
+      .orElse(null);
+  }
+
+  private Long getTargetHash() {
+    return ofNullable(id)
+      .map(ResourceEdgePk::getTargetHash)
+      .or(() -> ofNullable(target).map(Resource::getResourceHash))
+      .orElse(null);
+  }
+
+  private Long getPredicateHash() {
+    return ofNullable(id)
+      .map(ResourceEdgePk::getPredicateHash)
+      .or(() -> ofNullable(predicate).map(Predicate::getHash))
+      .orElse(null);
   }
 }

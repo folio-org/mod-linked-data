@@ -21,38 +21,38 @@ import org.folio.linked.data.domain.dto.ProviderEvent;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, dtoClass = Place.class)
-public class PlaceMapperUnit<T> implements SubResourceMapperUnit<T> {
+public class PlaceMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(ProviderEvent.class);
   private final CoreMapper coreMapper;
 
   @Override
-  public T toDto(Resource source, T destination) {
-    var place = coreMapper.readResourceDoc(source, Place.class);
-    place.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof ProviderEvent providerEvent) {
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    if (parentDto instanceof ProviderEvent providerEvent) {
+      var place = coreMapper.toDtoWithEdges(source, Place.class, false);
+      place.setId(String.valueOf(source.getResourceHash()));
       providerEvent.addProviderPlaceItem(place);
     } else {
-      throw new NotSupportedException(RESOURCE_TYPE + destination.getClass().getSimpleName()
+      throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + PROVIDER_PLACE.getUri() + RIGHT_SQUARE_BRACKET);
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Set<Class<?>> getParentDto() {
+  public Set<Class<?>> supportedParents() {
     return SUPPORTED_PARENTS;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var place = (Place) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(place::getLabel));

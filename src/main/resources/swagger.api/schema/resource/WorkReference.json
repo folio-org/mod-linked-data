@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Work Info",
+  "description": "Work Reference Info",
   "allOf": [
     {
       "$ref": "Topper.json"
@@ -8,48 +8,12 @@
     {
       "type": "object",
       "properties": {
-        "responsibiltyStatement": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/responsibilityStatement"
-        },
-        "targetAudience": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/targetAudience"
-        },
-        "tableOfContents": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/tableOfContents"
-        },
-        "summary": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/summary"
-        },
         "language": {
           "type": "array",
           "items": {
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/language"
-        },
-        "_notes": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "../noteDto.json"
-          },
-          "x-json-property": "_notes"
         },
         "subjects": {
           "type": "array",
@@ -88,13 +52,6 @@
             "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/content"
-        },
-        "_instanceReference": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "InstanceReference.json"
-          }
         }
       }
     }

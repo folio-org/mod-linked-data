@@ -25,40 +25,49 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkField;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.resource.monograph.common.NoteMapper;
+import org.folio.linked.data.mapper.resource.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
+/**
+ * Temporary support of current ui.
+ *
+ * @deprecated To be removed.
+ */
+@Deprecated(forRemoval = true)
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = WORK, dtoClass = WorkField.class)
-public class WorkMapperUnit implements SingleResourceMapperUnit {
+@MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = Work.class)
+public class WorkMapperUnitDeprecated implements InstanceSubResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(ResourceDto.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(Instance.class);
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof ResourceDto resourceDto) {
-      var work = coreMapper.toDtoWithEdges(source, Work.class, true);
+    if (parentDto instanceof Instance instance) {
+      var work = coreMapper.toDtoWithEdges(source, Work.class, false);
+      var workReference = coreMapper.toDtoWithEdges(source, WorkReference.class, false);
       work.setId(String.valueOf(source.getResourceHash()));
+      workReference.setId(String.valueOf(source.getResourceHash()));
       ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
-      resourceDto.setResource(new WorkField().work(work));
+      instance.addInstantiatesItem(work);
+      instance.addWorkReferenceItem(workReference);
     }
     return parentDto;
   }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var workDto = ((WorkField) dto).getWork();
+    var workDto = (Work) dto;
     var work = new Resource();
     work.addType(WORK);
     work.setDoc(getDoc(workDto));
@@ -67,7 +76,6 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getSubjects(), SUBJECT);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getCreator(), CREATOR);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getContributor(), CONTRIBUTOR);
-    coreMapper.addIncomingEdges(work, Work.class, workDto.getInstanceReference(), INSTANTIATES);
     work.setResourceHash(coreMapper.hash(work));
     return work;
   }
@@ -87,5 +95,4 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
   public Set<Class<?>> supportedParents() {
     return SUPPORTED_PARENTS;
   }
-
 }

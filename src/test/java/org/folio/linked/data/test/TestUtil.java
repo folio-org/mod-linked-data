@@ -24,7 +24,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.model.entity.Resource;
 import org.jeasy.random.EasyRandom;
@@ -39,7 +38,10 @@ public class TestUtil {
   public static final String FOLIO_TEST_PROFILE = "test-folio";
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
-  private static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
+  // to be removed after wireframe UI migration
+  public static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
+  public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
+  public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
   private static final String FOLIO_OKAPI_URL = "folio.okapi-url";
@@ -80,13 +82,20 @@ public class TestUtil {
     return IOUtils.toString(is, StandardCharsets.UTF_8);
   }
 
-  public static String getSampleInstanceString() {
-    return BIBFRAME_SAMPLE;
-  }
-
+  // to be removed after wireframe UI migration
   @SneakyThrows
   public static Map<String, Object> getSampleBibframeDtoMap() {
     return OBJECT_MAPPER.readValue(BIBFRAME_SAMPLE, Map.class);
+  }
+
+  @SneakyThrows
+  public static Map<String, Object> getSampleInstanceDtoMap() {
+    return OBJECT_MAPPER.readValue(INSTANCE_WITH_WORK_REF_SAMPLE, Map.class);
+  }
+
+  @SneakyThrows
+  public static Map<String, Object> getSampleWorkDtoMap() {
+    return OBJECT_MAPPER.readValue(WORK_WITH_INSTANCE_REF_SAMPLE, Map.class);
   }
 
   public static <T> T random(Class<T> clazz) {
@@ -99,13 +108,6 @@ public class TestUtil {
 
   public static Long randomLong() {
     return GENERATOR.nextLong();
-  }
-
-  public static Resource getSampleInstanceResource(Long resourceHash, ResourceTypeDictionary type) {
-    var bibframe = MonographTestUtil.getSampleInstanceResource();
-    bibframe.setResourceHash(resourceHash);
-    bibframe.addType(type);
-    return bibframe;
   }
 
   public static ObjectNode getObjectNode(String label, String name, String link) {

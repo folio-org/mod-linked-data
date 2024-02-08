@@ -83,7 +83,7 @@ class ResourceGraphControllerIT {
       ((Map<String, List<String>>) resourceGraphDto.getDoc()).get(PROVIDER_DATE.getValue()).get(0));
     assertEquals("production simple place",
       ((Map<String, List<String>>) resourceGraphDto.getDoc()).get(SIMPLE_PLACE.getValue()).get(0));
-    assertEquals("production label", resourceGraphDto.getLabel());
+    assertEquals("production name", resourceGraphDto.getLabel());
     assertNotNull(
       ((Map<String, List<String>>) resourceGraphDto.getOutgoingEdges()).get(PROVIDER_PLACE.getUri()).get(0));
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(date), resourceGraphDto.getIndexDate());

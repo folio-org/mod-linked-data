@@ -92,13 +92,18 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
+import static org.folio.linked.data.test.TestUtil.BIBFRAME_SAMPLE;
+import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleBibframeDtoMap;
-import static org.folio.linked.data.test.TestUtil.getSampleInstanceString;
+import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
+import static org.folio.linked.data.test.TestUtil.getSampleWorkDtoMap;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -136,6 +141,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
@@ -144,8 +150,6 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
-import org.folio.linked.data.test.TestUtil;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,12 +164,15 @@ import org.springframework.test.web.servlet.ResultActions;
 @IntegrationTest
 class ResourceControllerIT {
 
-  private static final String BIBFRAME_URL = "/resource";
+  private static final String RESOURCE_URL = "/resource";
   private static final String ROLES_PROPERTY = "_roles";
   private static final String NOTES_PROPERTY = "_notes";
+  private static final String INSTANCE_REF = "_instanceReference";
+  private static final String WORK_REF = "_workReference";
   private static final String VALUE_PROPERTY = "value";
   private static final String TYPE_PROPERTY = "type";
-
+  private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
+  private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -180,42 +187,108 @@ class ResourceControllerIT {
   private KafkaSender kafkaSender;
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  private LookupResources lookupResources;
 
   @BeforeEach
-  public void clean() {
+  public void beforeEach() {
     JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources");
+    lookupResources = saveLookupResources();
   }
 
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
   @Test
-  void createMonographInstanceBibframe_shouldSaveEntityCorrectly() throws Exception {
+  void createInstanceWithFullWork_shouldSaveEntityCorrectly() throws Exception {
     // given
-    LookupResources lookupResources = saveLookupResources();
-    var requestBuilder = post(BIBFRAME_URL)
+    var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getSampleInstanceString());
+      .content(BIBFRAME_SAMPLE);
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = validateInstanceResourceResponse(resultActions)
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
-    validateWorkResourceResponse(resultActions);
+    validateInstanceResponse(resultActions, toInstance());
+    validateWorkResponse(resultActions, toWorkInInstance());
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateInstance(bibframe, lookupResources);
+    validateInstance(bibframe, true);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
 
   @Test
+  void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
+    // given
+    var work = resourceRepo.save(getSampleWork(null));
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(INSTANCE_WITH_WORK_REF_SAMPLE.replaceAll(WORK_ID_PLACEHOLDER, work.getResourceHash().toString()));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    validateInstanceResponse(resultActions, toInstance());
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var bibframe = persistedOptional.get();
+    validateInstance(bibframe, true);
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+  }
+
+  @Test
+  void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
+    // given
+    var instanceForReference = resourceRepo.save(getSampleInstanceResource(null, null));
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/work_and_instance_ref.json")
+        .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getResourceHash().toString()));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    validateWorkResponse(resultActions, toWork());
+
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var bibframe = persistedOptional.get();
+    validateWork(bibframe, true);
+    // to be enabled after implementation of Work indexing
+    //checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+  }
+
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
+  @Test
   void createEmptyInstance_shouldSaveEmptyEntityAndNotSentIndexRequest() throws Exception {
     // given
-    var requestBuilder = post(BIBFRAME_URL)
+    var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/bibframe-empty.json"));
@@ -245,10 +318,12 @@ class ResourceControllerIT {
     verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
   @Test
   void createNoValuesInstance_shouldSaveEmptyEntityAndNotSentIndexRequest() throws Exception {
     // given
-    var requestBuilder = post(BIBFRAME_URL)
+    var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/bibframe-no-values.json"));
@@ -278,10 +353,12 @@ class ResourceControllerIT {
     verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
   @Test
   void createPartialValuesInstance_shouldSaveCorrectEntityAndSentIndexRequest() throws Exception {
     // given
-    var requestBuilder = post(BIBFRAME_URL)
+    var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/bibframe-partial-objects.json"));
@@ -311,24 +388,25 @@ class ResourceControllerIT {
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(instance.getResourceHash());
   }
 
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
   @Test
   void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
     // given
-    saveLookupResources();
-    var requestBuilder1 = post(BIBFRAME_URL)
+    var requestBuilder1 = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getSampleInstanceString());
+      .content(BIBFRAME_SAMPLE);
     var resultActions1 = mockMvc.perform(requestBuilder1);
     var response1 = resultActions1.andReturn().getResponse().getContentAsString();
     var resourceResponse1 = objectMapper.readValue(response1, ResourceDto.class);
     var id1 = ((InstanceField) resourceResponse1.getResource()).getInstance().getId();
     var persistedOptional1 = resourceRepo.findById(Long.parseLong(id1));
     assertThat(persistedOptional1).isPresent();
-    var requestBuilder2 = post(BIBFRAME_URL)
+    var requestBuilder2 = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getSampleInstanceString().replace("Instance: partName", "Instance: partName2"));
+      .content(BIBFRAME_SAMPLE.replace("Instance: partName", "Instance: partName2"));
 
     // when
     var response2 = mockMvc.perform(requestBuilder2);
@@ -340,14 +418,16 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toInstance(), notNullValue()));
   }
 
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
   @Test
   void createMonographInstanceWithNotCorrectStructure_shouldReturnValidationError() throws Exception {
     // given
     var wrongValue = "http://TitleWrong";
-    var requestBuilder = post(BIBFRAME_URL)
+    var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(getSampleInstanceString().replace("http://bibfra.me/vocab/marc/Title", wrongValue));
+      .content(BIBFRAME_SAMPLE.replace("http://bibfra.me/vocab/marc/Title", wrongValue));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -364,18 +444,19 @@ class ResourceControllerIT {
         + " dto class deserialization error: Unknown sub-element http://TitleWrong")));
   }
 
+  // to be removed after wireframe UI migration
+  @Deprecated(forRemoval = true)
   @Test
-  void update_shouldReturnCorrectlyUpdatedEntity() throws Exception {
+  void update_shouldReturnCorrectlyUpdatedInstanceWithFullWork_deleteOldOne_sendMessages() throws Exception {
     // given
-    saveLookupResources();
-    var originalInstance = resourceRepo.save(getSampleInstanceResource().setLabel("Instance: mainTitle"));
+    var originalInstance = resourceRepo.save(getSampleInstanceResource());
     var updateDto = getSampleBibframeDtoMap();
     var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
     instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
     instanceMap.remove("inventoryId");
     instanceMap.remove("srsId");
 
-    var updateRequest = put(BIBFRAME_URL + "/" + originalInstance.getResourceHash())
+    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(OBJECT_MAPPER.writeValueAsString(updateDto));
@@ -384,6 +465,7 @@ class ResourceControllerIT {
     var resultActions = mockMvc.perform(updateRequest);
 
     // then
+    assertFalse(resourceRepo.existsById(originalInstance.getResourceHash()));
     var response = resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -401,13 +483,102 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
+    checkKafkaMessageDeletedSent(originalInstance.getResourceHash());
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(id));
   }
 
   @Test
-  void getBibframeById_shouldReturnExistedEntity() throws Exception {
+  void update_shouldReturnCorrectlyUpdatedInstanceWithWorkRef_deleteOldOne_sendMessages() throws Exception {
+    // given
+    var work = getSampleWork(null);
+    var originalInstance = resourceRepo.save(getSampleInstanceResource(null, work));
+    var updateDto = getSampleInstanceDtoMap();
+    var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
+    instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
+    instanceMap.remove("inventoryId");
+    instanceMap.remove("srsId");
+
+    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getResourceHash())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(
+        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getResourceHash().toString())
+      );
+
+    // when
+    var resultActions = mockMvc.perform(updateRequest);
+
+    // then
+    assertFalse(resourceRepo.existsById(originalInstance.getResourceHash()));
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toInstance(), notNullValue()))
+      .andReturn().getResponse().getContentAsString();
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var updatedInstance = persistedOptional.get();
+    assertThat(updatedInstance.getResourceHash()).isNotNull();
+    assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
+    assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
+    assertThat(updatedInstance.getInventoryId()).isEqualTo(originalInstance.getInventoryId());
+    assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
+    assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
+    assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
+    checkKafkaMessageDeletedSent(originalInstance.getResourceHash());
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(id));
+  }
+
+  @Test
+  void update_shouldReturnCorrectlyUpdatedWorkWithInstanceRef_deleteOldOne_sendMessages() throws Exception {
+    // given
+    var instance = getSampleInstanceResource(null, null);
+    var originalWork = resourceRepo.save(getSampleWork(instance));
+    var updateDto = getSampleWorkDtoMap();
+    var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
+    var newlyAddedSummary = "newly added summary";
+    workMap.put(SUMMARY.getValue(), List.of(newlyAddedSummary));
+
+    var updateRequest = put(RESOURCE_URL + "/" + originalWork.getResourceHash())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(OBJECT_MAPPER.writeValueAsString(updateDto)
+        .replaceAll(INSTANCE_ID_PLACEHOLDER, instance.getResourceHash().toString())
+      );
+
+    // when
+    var resultActions = mockMvc.perform(updateRequest);
+
+    // then
+    assertFalse(resourceRepo.existsById(originalWork.getResourceHash()));
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toWork(), notNullValue()))
+      .andReturn().getResponse().getContentAsString();
+    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
+    var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    assertThat(persistedOptional).isPresent();
+    var updatedWork = persistedOptional.get();
+    assertThat(updatedWork.getResourceHash()).isNotNull();
+    assertThat(updatedWork.getLabel()).isEqualTo(originalWork.getLabel());
+    assertThat(updatedWork.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
+    assertThat(updatedWork.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo(newlyAddedSummary);
+    assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
+    assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
+    checkKafkaMessageDeletedSent(originalWork.getResourceHash());
+    // to be enabled after implementation of Work indexing
+    //checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(id));
+  }
+
+  @Test
+  void getInstanceById_shouldReturnInstanceWithWorkRef() throws Exception {
     // given
     var existed = resourceRepo.save(getSampleInstanceResource());
-    var requestBuilder = get(BIBFRAME_URL + "/" + existed.getResourceHash())
+    var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -415,15 +586,39 @@ class ResourceControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    validateInstanceResourceResponse(resultActions);
-    validateWorkResourceResponse(resultActions);
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    validateInstanceResponse(resultActions, toInstance());
+    // to be removed after wireframe UI migration
+    validateWorkResponse(resultActions, toWorkInInstance());
   }
 
   @Test
-  void getBibframeById_shouldReturn404_ifNoExistedEntity() throws Exception {
+  void getWorkById_shouldReturnWorkWithInstanceRef() throws Exception {
+    // given
+    var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
+    var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    validateWorkResponse(resultActions, toWork());
+  }
+
+  @Test
+  void getResourceById_shouldReturn404_ifNoExistedEntity() throws Exception {
     // given
     var notExistedId = randomLong();
-    var requestBuilder = get(BIBFRAME_URL + "/" + notExistedId)
+    var requestBuilder = get(RESOURCE_URL + "/" + notExistedId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -445,14 +640,14 @@ class ResourceControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-        resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE)),
-        resourceRepo.save(TestUtil.getSampleInstanceResource(2L, INSTANCE)),
-        resourceRepo.save(TestUtil.getSampleInstanceResource(3L, INSTANCE))
+        resourceRepo.save(getSampleInstanceResource(100L)),
+        resourceRepo.save(getSampleInstanceResource(200L)),
+        resourceRepo.save(getSampleInstanceResource(300L))
       ).stream()
       .map(Resource::getResourceHash)
       .map(Object::toString)
       .toList();
-    var requestBuilder = get(BIBFRAME_URL)
+    var requestBuilder = get(RESOURCE_URL)
       .param(TYPE, INSTANCE.getUri())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -472,21 +667,22 @@ class ResourceControllerIT {
   }
 
   @Test
-  void deleteBibframeById_shouldDeleteRootResourceAndRootEdge() throws Exception {
+  void deleteResourceById_shouldDeleteRootInstanceAndRootEdges() throws Exception {
     // given
     var existed = resourceRepo.save(getSampleInstanceResource());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(33);
     assertThat(resourceEdgeRepository.count()).isEqualTo(39);
-    var requestBuilder = delete(BIBFRAME_URL + "/" + existed.getResourceHash())
+    var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
     // when
-    mockMvc.perform(requestBuilder);
+    var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    assertThat(resourceRepo.findById(existed.getResourceHash())).isNotPresent();
+    resultActions.andExpect(status().isNoContent());
+    assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
     assertThat(resourceRepo.count()).isEqualTo(32);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(21);
@@ -494,33 +690,35 @@ class ResourceControllerIT {
   }
 
   @Test
-  void updateResource_should_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateSucceeded()
-    throws Exception {
-    //given
-    var existedResource = resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE));
-    var requestBuilder = put(BIBFRAME_URL + "/" + existedResource.getResourceHash())
+  void deleteResourceById_shouldDeleteRootWorkAndRootEdges() throws Exception {
+    // given
+    var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
+    assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
+    assertThat(resourceRepo.count()).isEqualTo(33);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(39);
+    var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(loadResourceAsString("samples/bibframe-partial-objects.json"));
+      .headers(defaultHeaders(env));
 
-    //when
-    var response = mockMvc.perform(requestBuilder).andReturn().getResponse().getContentAsString();
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
 
-    //then
-    assertFalse(resourceRepo.existsById(existedResource.getResourceHash()));
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var updatedId = Long.valueOf(((InstanceField) resourceResponse.getResource()).getInstance().getId());
-    assertTrue(resourceRepo.existsById(updatedId));
-    checkKafkaMessageDeletedSent(existedResource.getResourceHash());
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(updatedId);
+    // then
+    resultActions.andExpect(status().isNoContent());
+    assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
+    assertThat(resourceRepo.count()).isEqualTo(32);
+    assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceEdgeRepository.count()).isEqualTo(23);
+    // to be enabled after implementation of Work indexing
+    // checkKafkaMessageDeletedSent(existed.getResourceHash());
   }
 
   @Test
   void updateResource_shouldNot_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateFailed()
     throws Exception {
     //given
-    var existedResource = resourceRepo.save(TestUtil.getSampleInstanceResource(1L, INSTANCE));
-    var requestBuilder = put(BIBFRAME_URL + "/" + existedResource.getResourceHash())
+    var existedResource = resourceRepo.save(getSampleInstanceResource(100L));
+    var requestBuilder = put(RESOURCE_URL + "/" + existedResource.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content("{\"resource\": {\"id\": null}}");
@@ -542,150 +740,185 @@ class ResourceControllerIT {
     // nothing to check without Folio profile
   }
 
-  @NotNull
-  private ResultActions validateInstanceResourceResponse(ResultActions resultActions) throws Exception {
-    return resultActions
-      .andExpect(status().isOk())
+  private void validateInstanceResponse(ResultActions resultActions, String instanceBase) throws Exception {
+    resultActions
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toInstance(), notNullValue()))
-      .andExpect(jsonPath(toInventoryId(), equalTo("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")))
-      .andExpect(jsonPath(toSrsId(), equalTo("43d58061-decf-4d74-9747-0e1c368e861b")))
-      .andExpect(jsonPath(toSupplementaryContentLink(), equalTo("supplementaryContent link")))
-      .andExpect(jsonPath(toSupplementaryContentName(), equalTo("supplementaryContent name")))
-      .andExpect(jsonPath(toAccessLocationLink(), equalTo("accessLocation value")))
-      .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
-      .andExpect(jsonPath(toCarrierCode(), equalTo("carrier code")))
-      .andExpect(jsonPath(toCarrierLink(), equalTo("carrier link")))
-      .andExpect(jsonPath(toCarrierTerm(), equalTo("carrier term")))
-      .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
-      .andExpect(jsonPath(toExtent(), equalTo("extent info")))
-      .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
-      .andExpect(jsonPath(toEanValue(), equalTo(new JSONArray().appendElement("ean value"))))
-      .andExpect(jsonPath(toEanQualifier(), equalTo(new JSONArray().appendElement("ean qualifier"))))
-      .andExpect(jsonPath(toEditionStatement(), equalTo("edition statement")))
-      .andExpect(jsonPath(toInstanceTitlePartName(), equalTo(new JSONArray().appendElement("Instance: partName"))))
-      .andExpect(jsonPath(toInstanceTitlePartNumber(), equalTo(new JSONArray().appendElement("Instance: partNumber"))))
-      .andExpect(jsonPath(toInstanceTitleMain(), equalTo(new JSONArray().appendElement("Instance: mainTitle"))))
-      .andExpect(jsonPath(toInstanceTitleNonSortNum(), equalTo(new JSONArray().appendElement("Instance: nonSortNum"))))
-      .andExpect(jsonPath(toInstanceTitleSubtitle(), equalTo(new JSONArray().appendElement("Instance: subTitle"))))
-      .andExpect(jsonPath(toIsbnValue(), equalTo(new JSONArray().appendElement("isbn value"))))
-      .andExpect(jsonPath(toIsbnQualifier(), equalTo(new JSONArray().appendElement("isbn qualifier"))))
-      .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
-      .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
-      .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
-      .andExpect(jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
-        "description source note", "exhibitions note", "funding information", "issuance note", "issuing body",
-        "location of other archival material", "note", "original version note", "related parts", "reproduction note",
-        "type of report", "with note")))
-      .andExpect(jsonPath(toInstanceNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
-        "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/typeOfReport",
-        "http://bibfra.me/vocab/marc/issuanceNote", "http://bibfra.me/vocab/marc/computerDataNote",
-        "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/reproductionNote",
-        "http://bibfra.me/vocab/marc/originalVersionNote", "http://bibfra.me/vocab/marc/relatedParts",
-        "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
-        "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
-        "http://bibfra.me/vocab/marc/fundingInformation")))
-      .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
-      .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
-      .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
-      .andExpect(jsonPath(toLocalIdValue(), equalTo(new JSONArray().appendElement("localId value"))))
-      .andExpect(jsonPath(toLocalIdAssigner(), equalTo(new JSONArray().appendElement("localId assigner"))))
-      .andExpect(jsonPath(toMediaCode(), equalTo("media code")))
-      .andExpect(jsonPath(toMediaLink(), equalTo("media link")))
-      .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
-      .andExpect(jsonPath(toOtherIdValue(), equalTo(new JSONArray().appendElement("otherId value"))))
-      .andExpect(jsonPath(toOtherIdQualifier(), equalTo(new JSONArray().appendElement("otherId qualifier"))))
-      .andExpect(jsonPath(toParallelTitlePartName(), equalTo(new JSONArray().appendElement("Parallel: partName"))))
-      .andExpect(jsonPath(toParallelTitlePartNumber(), equalTo(new JSONArray().appendElement("Parallel: partNumber"))))
-      .andExpect(jsonPath(toParallelTitleMain(), equalTo(new JSONArray().appendElement("Parallel: mainTitle"))))
-      .andExpect(jsonPath(toParallelTitleNote(), equalTo(new JSONArray().appendElement("Parallel: noteLabel"))))
-      .andExpect(jsonPath(toParallelTitleDate(), equalTo(new JSONArray().appendElement("Parallel: date"))))
-      .andExpect(jsonPath(toParallelTitleSubtitle(), equalTo(new JSONArray().appendElement("Parallel: subTitle"))))
-      .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
-      .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
-      .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("production providerPlace code")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PRODUCTION), equalTo("production providerPlace label")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("production providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(PE_PRODUCTION), equalTo("production provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(PE_PRODUCTION), equalTo("production simple place")))
-      .andExpect(jsonPath(toProviderEventDate(PE_PUBLICATION), equalTo("publication date")))
-      .andExpect(jsonPath(toProviderEventName(PE_PUBLICATION), equalTo("publication name")))
-      .andExpect(jsonPath(toProviderEventPlaceCode(PE_PUBLICATION), equalTo("publication providerPlace code")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PUBLICATION), equalTo("publication providerPlace label")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("publication providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(PE_PUBLICATION), equalTo("publication provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(PE_PUBLICATION), equalTo("publication simple place")))
-      .andExpect(jsonPath(toProviderEventDate(PE_DISTRIBUTION), equalTo("distribution date")))
-      .andExpect(jsonPath(toProviderEventName(PE_DISTRIBUTION), equalTo("distribution name")))
-      .andExpect(jsonPath(toProviderEventPlaceCode(PE_DISTRIBUTION), equalTo("distribution providerPlace code")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(PE_DISTRIBUTION), equalTo("distribution providerPlace label")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("distribution providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(PE_DISTRIBUTION), equalTo("distribution provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(PE_DISTRIBUTION), equalTo("distribution simple place")))
-      .andExpect(jsonPath(toProviderEventDate(PE_MANUFACTURE), equalTo("manufacture date")))
-      .andExpect(jsonPath(toProviderEventName(PE_MANUFACTURE), equalTo("manufacture name")))
-      .andExpect(jsonPath(toProviderEventPlaceCode(PE_MANUFACTURE), equalTo("manufacture providerPlace code")))
-      .andExpect(jsonPath(toProviderEventPlaceLabel(PE_MANUFACTURE), equalTo("manufacture providerPlace label")))
-      .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("manufacture providerPlace link")))
-      .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
-      .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
-      .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
-      .andExpect(jsonPath(toVariantTitlePartName(), equalTo(new JSONArray().appendElement("Variant: partName"))))
-      .andExpect(jsonPath(toVariantTitlePartNumber(), equalTo(new JSONArray().appendElement("Variant: partNumber"))))
-      .andExpect(jsonPath(toVariantTitleMain(), equalTo(new JSONArray().appendElement("Variant: mainTitle"))))
-      .andExpect(jsonPath(toVariantTitleNote(), equalTo(new JSONArray().appendElement("Variant: noteLabel"))))
-      .andExpect(jsonPath(toVariantTitleDate(), equalTo(new JSONArray().appendElement("Variant: date"))))
-      .andExpect(jsonPath(toVariantTitleSubtitle(), equalTo(new JSONArray().appendElement("Variant: subTitle"))))
-      .andExpect(jsonPath(toVariantTitleType(), equalTo(new JSONArray().appendElement("Variant: variantType"))));
+      .andExpect(jsonPath(instanceBase, notNullValue()))
+      .andExpect(jsonPath(toId(instanceBase), notNullValue()))
+      .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("carrier code")))
+      .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("carrier link")))
+      .andExpect(jsonPath(toCarrierTerm(instanceBase), equalTo("carrier term")))
+      .andExpect(
+        jsonPath(toInstanceTitlePartName(instanceBase), equalTo(new JSONArray().appendElement("Instance: partName"))))
+      .andExpect(jsonPath(toInstanceTitlePartNumber(instanceBase),
+        equalTo(new JSONArray().appendElement("Instance: partNumber"))))
+      .andExpect(
+        jsonPath(toInstanceTitleMain(instanceBase), equalTo(new JSONArray().appendElement("Instance: mainTitle"))))
+      .andExpect(jsonPath(toInstanceTitleNonSortNum(instanceBase),
+        equalTo(new JSONArray().appendElement("Instance: nonSortNum"))))
+      .andExpect(
+        jsonPath(toInstanceTitleSubtitle(instanceBase), equalTo(new JSONArray().appendElement("Instance: subTitle"))))
+      .andExpect(
+        jsonPath(toParallelTitlePartName(instanceBase), equalTo(new JSONArray().appendElement("Parallel: partName"))))
+      .andExpect(jsonPath(toParallelTitlePartNumber(instanceBase),
+        equalTo(new JSONArray().appendElement("Parallel: partNumber"))))
+      .andExpect(
+        jsonPath(toParallelTitleMain(instanceBase), equalTo(new JSONArray().appendElement("Parallel: mainTitle"))))
+      .andExpect(
+        jsonPath(toParallelTitleNote(instanceBase), equalTo(new JSONArray().appendElement("Parallel: noteLabel"))))
+      .andExpect(jsonPath(toParallelTitleDate(instanceBase), equalTo(new JSONArray().appendElement("Parallel: date"))))
+      .andExpect(
+        jsonPath(toParallelTitleSubtitle(instanceBase), equalTo(new JSONArray().appendElement("Parallel: subTitle"))))
+      .andExpect(
+        jsonPath(toVariantTitlePartName(instanceBase), equalTo(new JSONArray().appendElement("Variant: partName"))))
+      .andExpect(
+        jsonPath(toVariantTitlePartNumber(instanceBase), equalTo(new JSONArray().appendElement("Variant: partNumber"))))
+      .andExpect(
+        jsonPath(toVariantTitleMain(instanceBase), equalTo(new JSONArray().appendElement("Variant: mainTitle"))))
+      .andExpect(
+        jsonPath(toVariantTitleNote(instanceBase), equalTo(new JSONArray().appendElement("Variant: noteLabel"))))
+      .andExpect(jsonPath(toVariantTitleDate(instanceBase), equalTo(new JSONArray().appendElement("Variant: date"))))
+      .andExpect(
+        jsonPath(toVariantTitleSubtitle(instanceBase), equalTo(new JSONArray().appendElement("Variant: subTitle"))))
+      .andExpect(
+        jsonPath(toVariantTitleType(instanceBase), equalTo(new JSONArray().appendElement("Variant: variantType"))));
+    if (instanceBase.equals(toInstance())) {
+      resultActions
+        .andExpect(jsonPath(toInventoryId(), equalTo("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")))
+        .andExpect(jsonPath(toSrsId(), equalTo("43d58061-decf-4d74-9747-0e1c368e861b")))
+        .andExpect(jsonPath(toSupplementaryContentLink(), equalTo("supplementaryContent link")))
+        .andExpect(jsonPath(toSupplementaryContentName(), equalTo("supplementaryContent name")))
+        .andExpect(jsonPath(toAccessLocationLink(), equalTo("accessLocation value")))
+        .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
+        .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
+        .andExpect(jsonPath(toExtent(), equalTo("extent info")))
+        .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
+        .andExpect(jsonPath(toEanValue(), equalTo(new JSONArray().appendElement("ean value"))))
+        .andExpect(jsonPath(toEanQualifier(), equalTo(new JSONArray().appendElement("ean qualifier"))))
+        .andExpect(jsonPath(toEditionStatement(), equalTo("edition statement")))
+        .andExpect(jsonPath(toIsbnValue(), equalTo(new JSONArray().appendElement("isbn value"))))
+        .andExpect(jsonPath(toIsbnQualifier(), equalTo(new JSONArray().appendElement("isbn qualifier"))))
+        .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
+        .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
+        .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
+        .andExpect(
+          jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
+            "description source note", "exhibitions note", "funding information", "issuance note", "issuing body",
+            "location of other archival material", "note", "original version note", "related parts",
+            "reproduction note",
+            "type of report", "with note")))
+        .andExpect(jsonPath(toInstanceNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
+          "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/typeOfReport",
+          "http://bibfra.me/vocab/marc/issuanceNote", "http://bibfra.me/vocab/marc/computerDataNote",
+          "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/reproductionNote",
+          "http://bibfra.me/vocab/marc/originalVersionNote", "http://bibfra.me/vocab/marc/relatedParts",
+          "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
+          "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
+          "http://bibfra.me/vocab/marc/fundingInformation")))
+        .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
+        .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
+        .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
+        .andExpect(jsonPath(toLocalIdValue(), equalTo(new JSONArray().appendElement("localId value"))))
+        .andExpect(jsonPath(toLocalIdAssigner(), equalTo(new JSONArray().appendElement("localId assigner"))))
+        .andExpect(jsonPath(toMediaCode(), equalTo("media code")))
+        .andExpect(jsonPath(toMediaLink(), equalTo("media link")))
+        .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
+        .andExpect(jsonPath(toOtherIdValue(), equalTo(new JSONArray().appendElement("otherId value"))))
+        .andExpect(jsonPath(toOtherIdQualifier(), equalTo(new JSONArray().appendElement("otherId qualifier"))))
+        .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
+        .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("production providerPlace code")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PRODUCTION), equalTo("production providerPlace label")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("production providerPlace link")))
+        .andExpect(jsonPath(toProviderEventProviderDate(PE_PRODUCTION), equalTo("production provider date")))
+        .andExpect(jsonPath(toProviderEventSimplePlace(PE_PRODUCTION), equalTo("production simple place")))
+        .andExpect(jsonPath(toProviderEventDate(PE_PUBLICATION), equalTo("publication date")))
+        .andExpect(jsonPath(toProviderEventName(PE_PUBLICATION), equalTo("publication name")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_PUBLICATION), equalTo("publication providerPlace code")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PUBLICATION), equalTo("publication providerPlace label")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("publication providerPlace link")))
+        .andExpect(jsonPath(toProviderEventProviderDate(PE_PUBLICATION), equalTo("publication provider date")))
+        .andExpect(jsonPath(toProviderEventSimplePlace(PE_PUBLICATION), equalTo("publication simple place")))
+        .andExpect(jsonPath(toProviderEventDate(PE_DISTRIBUTION), equalTo("distribution date")))
+        .andExpect(jsonPath(toProviderEventName(PE_DISTRIBUTION), equalTo("distribution name")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_DISTRIBUTION), equalTo("distribution providerPlace code")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_DISTRIBUTION), equalTo("distribution providerPlace label")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("distribution providerPlace link")))
+        .andExpect(jsonPath(toProviderEventProviderDate(PE_DISTRIBUTION), equalTo("distribution provider date")))
+        .andExpect(jsonPath(toProviderEventSimplePlace(PE_DISTRIBUTION), equalTo("distribution simple place")))
+        .andExpect(jsonPath(toProviderEventDate(PE_MANUFACTURE), equalTo("manufacture date")))
+        .andExpect(jsonPath(toProviderEventName(PE_MANUFACTURE), equalTo("manufacture name")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_MANUFACTURE), equalTo("manufacture providerPlace code")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_MANUFACTURE), equalTo("manufacture providerPlace label")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("manufacture providerPlace link")))
+        .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
+        .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
+        .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
+        .andExpect(jsonPath(toWorkReference(), notNullValue()));
+      validateWorkResponse(resultActions, toWorkReference());
+    }
   }
 
-  @NotNull
-  private ResultActions validateWorkResourceResponse(ResultActions resultActions) throws Exception {
-    return resultActions
-      .andExpect(status().isOk())
-      .andExpect(jsonPath(toWorkTargetAudience(), equalTo("target audience")))
-      .andExpect(jsonPath(toWorkLanguage(), equalTo("eng")))
-      .andExpect(jsonPath(toWorkSummary(), equalTo("summary text")))
-      .andExpect(jsonPath(toWorkTableOfContents(), equalTo("table of contents")))
-      .andExpect(jsonPath(toWorkResponsibilityStatement(), equalTo("statement of responsibility")))
-      .andExpect(jsonPath(toWorkNotesValues(), containsInAnyOrder("language note", "bibliography note", "note",
-        "another note", "another note")))
-      .andExpect(jsonPath(toWorkNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
-        "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
-        "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
-      .andExpect(jsonPath(toWorkDeweyCode(), equalTo("709.83")))
-      .andExpect(jsonPath(toWorkDeweySource(), equalTo("ddc")))
-      .andExpect(jsonPath(toWorkCreatorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
-      .andExpect(jsonPath(toWorkCreatorPersonRole(), equalTo(new JSONArray().appendElement(AUTHOR.getUri()))))
-      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(), equalTo(new JSONArray().appendElement("2002801801-PERSON"))))
-      .andExpect(jsonPath(toWorkCreatorMeetingName(), equalTo(new JSONArray().appendElement("name-MEETING"))))
-      .andExpect(jsonPath(toWorkCreatorMeetingLcnafId(), equalTo(new JSONArray().appendElement("2002801801-MEETING"))))
-      .andExpect(jsonPath(toWorkCreatorOrganizationName(), equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkCreatorOrganizationLcnafId(), equalTo(
-        new JSONArray().appendElement("2002801801-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkCreatorFamilyName(), equalTo(new JSONArray().appendElement("name-FAMILY"))))
-      .andExpect(jsonPath(toWorkCreatorFamilyLcnafId(), equalTo(new JSONArray().appendElement("2002801801-FAMILY"))))
-      .andExpect(jsonPath(toWorkContributorPersonName(), equalTo(new JSONArray().appendElement("name-PERSON"))))
-      .andExpect(jsonPath(toWorkContributorPersonLcnafId(), equalTo(
-        new JSONArray().appendElement("2002801801-PERSON"))))
-      .andExpect(jsonPath(toWorkContributorMeetingName(), equalTo(new JSONArray().appendElement("name-MEETING"))))
-      .andExpect(jsonPath(toWorkContributorMeetingLcnafId(), equalTo(
-        new JSONArray().appendElement("2002801801-MEETING"))))
-      .andExpect(jsonPath(toWorkContributorOrgName(), equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkContributorOrgLcnafId(), equalTo(
-        new JSONArray().appendElement("2002801801-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkContributorOrgRoles(), equalTo(
-        new JSONArray().appendElement(EDITOR.getUri()).appendElement(ASSIGNEE.getUri()))))
-      .andExpect(jsonPath(toWorkContributorFamilyName(), equalTo(new JSONArray().appendElement("name-FAMILY"))))
-      .andExpect(jsonPath(toWorkContributorFamilyLcnafId(), equalTo(
-        new JSONArray().appendElement("2002801801-FAMILY"))))
-      .andExpect(jsonPath(toWorkContentLink(), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
-      .andExpect(jsonPath(toWorkContentCode(), equalTo("txt")))
-      .andExpect(jsonPath(toWorkContentTerm(), equalTo("text")))
-      .andExpect(jsonPath(toWorkSubjectLabel(), equalTo(List.of("subject 1", "subject 2"))));
+  private void validateWorkResponse(ResultActions resultActions, String workBase) throws Exception {
+    resultActions
+      .andExpect(jsonPath(toId(workBase), notNullValue()))
+      .andExpect(jsonPath(toWorkLanguage(workBase), equalTo("eng")))
+      .andExpect(jsonPath(toWorkDeweyCode(workBase), equalTo("709.83")))
+      .andExpect(jsonPath(toWorkDeweySource(workBase), equalTo("ddc")))
+      .andExpect(jsonPath(toWorkCreatorPersonName(workBase), equalTo(new JSONArray().appendElement("name-PERSON"))))
+      .andExpect(jsonPath(toWorkCreatorPersonRole(workBase), equalTo(new JSONArray().appendElement(AUTHOR.getUri()))))
+      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-PERSON"))))
+      .andExpect(jsonPath(toWorkCreatorMeetingName(workBase), equalTo(new JSONArray().appendElement("name-MEETING"))))
+      .andExpect(jsonPath(toWorkCreatorMeetingLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-MEETING"))))
+      .andExpect(jsonPath(toWorkCreatorOrganizationName(workBase),
+        equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkCreatorOrganizationLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkCreatorFamilyName(workBase), equalTo(new JSONArray().appendElement("name-FAMILY"))))
+      .andExpect(jsonPath(toWorkCreatorFamilyLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-FAMILY"))))
+      .andExpect(jsonPath(toWorkContributorPersonName(workBase), equalTo(new JSONArray().appendElement("name-PERSON"))))
+      .andExpect(jsonPath(toWorkContributorPersonLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-PERSON"))))
+      .andExpect(jsonPath(toWorkContributorMeetingName(workBase),
+        equalTo(new JSONArray().appendElement("name-MEETING"))))
+      .andExpect(jsonPath(toWorkContributorMeetingLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-MEETING"))))
+      .andExpect(jsonPath(toWorkContributorOrgName(workBase),
+        equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkContributorOrgLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkContributorOrgRoles(workBase),
+        equalTo(new JSONArray().appendElement(EDITOR.getUri()).appendElement(ASSIGNEE.getUri()))))
+      .andExpect(jsonPath(toWorkContributorFamilyName(workBase), equalTo(new JSONArray().appendElement("name-FAMILY"))))
+      .andExpect(jsonPath(toWorkContributorFamilyLcnafId(workBase),
+        equalTo(new JSONArray().appendElement("2002801801-FAMILY"))))
+      .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
+      .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
+      .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
+      .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))));
+    // the second 'if' condition is to be removed after wireframe UI migration and two 'if's could be merged
+    if (workBase.equals(toWork()) || workBase.equals(toWorkInInstance())) {
+      resultActions
+        .andExpect(jsonPath(toWorkTargetAudience(workBase), equalTo("target audience")))
+        .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
+        .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
+        .andExpect(jsonPath(toWorkResponsibilityStatement(workBase), equalTo("statement of responsibility")))
+        .andExpect(jsonPath(toWorkNotesValues(workBase),
+          containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
+        .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
+          "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
+          "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")));
+    }
+    if (workBase.equals(toWork())) {
+      resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
+      validateInstanceResponse(resultActions, toInstanceReference(workBase));
+    }
   }
 
-  private void validateInstance(Resource instance, LookupResources lookupResources) {
+  private void validateInstance(Resource instance, boolean validateFullWork) {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -717,7 +950,14 @@ class ResourceControllerIT {
     validateCategory(edgeIterator.next(), instance, CARRIER);
     validateCategory(edgeIterator.next(), instance, MEDIA);
     validateLccn(edgeIterator.next(), instance);
-    validateWork(edgeIterator.next(), instance, lookupResources);
+    var edge = edgeIterator.next();
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(instance);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
+    var work = edge.getTarget();
+    if (validateFullWork) {
+      validateWork(work, false);
+    }
     validateAccessLocation(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION);
@@ -986,37 +1226,44 @@ class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateWork(ResourceEdge edge, Resource source, LookupResources lookupResources) {
+  private void validateWork(Resource work, boolean validateFullInstance) {
+    assertThat(work.getResourceHash()).isNotNull();
+    assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
+    assertThat(work.getDoc().size()).isEqualTo(8);
+    validateLiteral(work, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
+    validateLiteral(work, SUMMARY.getValue(), "summary text");
+    validateLiteral(work, LANGUAGE.getValue(), "eng");
+    validateLiteral(work, TARGET_AUDIENCE.getValue(), "target audience");
+    validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
+    validateLiteral(work, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
+    validateLiterals(work, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
+    validateLiterals(work, NOTE.getValue(), List.of("note", "another note"));
+    var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
+    validateWorkContentType(outgoingEdgeIterator.next(), work);
+    validateWorkClassification(outgoingEdgeIterator.next(), work);
+    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, ASSIGNEE.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, AUTHOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR.getUri());
+    assertThat(outgoingEdgeIterator.hasNext()).isFalse();
+    var incomingEdgeIterator = work.getIncomingEdges().iterator();
+    var edge = incomingEdgeIterator.next();
     assertThat(edge.getId()).isNotNull();
-    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getTarget()).isEqualTo(work);
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
-    var instantiates = edge.getTarget();
-    assertThat(instantiates.getResourceHash()).isNotNull();
-    assertThat(instantiates.getDoc().size()).isEqualTo(8);
-    validateLiteral(instantiates, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
-    validateLiteral(instantiates, SUMMARY.getValue(), "summary text");
-    validateLiteral(instantiates, LANGUAGE.getValue(), "eng");
-    validateLiteral(instantiates, TARGET_AUDIENCE.getValue(), "target audience");
-    validateLiteral(instantiates, TABLE_OF_CONTENTS.getValue(), "table of contents");
-    validateLiteral(instantiates, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
-    validateLiterals(instantiates, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
-    validateLiterals(instantiates, NOTE.getValue(), List.of("note", "another note"));
-    var edgeIterator = instantiates.getOutgoingEdges().iterator();
-    validateWorkContentType(edgeIterator.next(), instantiates);
-    validateWorkClassification(edgeIterator.next(), instantiates);
-    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, EDITOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, CONTRIBUTOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, ORGANIZATION, ASSIGNEE.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, FAMILY, CONTRIBUTOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, AUTHOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, PERSON, CONTRIBUTOR.getUri());
-    validateResourceEdge(edgeIterator.next(), instantiates, lookupResources.subjects().get(0), SUBJECT.getUri());
-    validateResourceEdge(edgeIterator.next(), instantiates, lookupResources.subjects().get(1), SUBJECT.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CREATOR.getUri());
-    validateWorkContributor(edgeIterator.next(), instantiates, MEETING, CONTRIBUTOR.getUri());
+    if (validateFullInstance) {
+      validateInstance(edge.getSource(), false);
+    }
+    assertThat(incomingEdgeIterator.hasNext()).isFalse();
   }
 
   private void validateWorkClassification(ResourceEdge edge, Resource source) {
@@ -1090,7 +1337,7 @@ class ResourceControllerIT {
   }
 
   @SneakyThrows
-  private Resource saveSubject(Long id)  {
+  private Resource saveSubject(Long id) {
     var subjectResource = new Resource();
     subjectResource.addType(new ResourceTypeEntity().setHash(CONCEPT.getHash()).setUri(CONCEPT.getUri()));
     subjectResource.setLabel("subject " + id);
@@ -1103,16 +1350,29 @@ class ResourceControllerIT {
     return join(".", "$", path("resource"), path(INSTANCE.getUri()));
   }
 
+  private String toInstanceReference(String workBase) {
+    return join(".", workBase, arrayPath(INSTANCE_REF));
+  }
+
+  private String toWork() {
+    return join(".", "$", path("resource"), path(WORK.getUri()));
+  }
+
+  private String toWorkReference() {
+    return join(".", toInstance(), arrayPath(WORK_REF));
+  }
+
+  // to be removed after wireframe UI migration
+  private String toWorkInInstance() {
+    return join(".", toInstance(), arrayPath(INSTANTIATES.getUri()));
+  }
+
   private String toInventoryId() {
     return join(".", toInstance(), path("inventoryId"));
   }
 
   private String toSrsId() {
     return join(".", toInstance(), path("srsId"));
-  }
-
-  private String toWork() {
-    return join(".", toInstance(), arrayPath(INSTANTIATES.getUri()));
   }
 
   private String toExtent() {
@@ -1147,28 +1407,28 @@ class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE.getValue()));
   }
 
-  private String toInstanceTitlePartName() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
+  private String toInstanceTitlePartName(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NAME.getValue()));
   }
 
-  private String toInstanceTitlePartNumber() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
+  private String toInstanceTitlePartNumber(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NUMBER.getValue()));
   }
 
-  private String toInstanceTitleMain() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
+  private String toInstanceTitleMain(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(MAIN_TITLE.getValue()));
   }
 
-  private String toInstanceTitleNonSortNum() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
+  private String toInstanceTitleNonSortNum(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(NON_SORT_NUM.getValue()));
   }
 
-  private String toInstanceTitleSubtitle() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()),
+  private String toInstanceTitleSubtitle(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(SUBTITLE.getValue()));
   }
 
@@ -1184,68 +1444,68 @@ class ResourceControllerIT {
     return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
-  private String toParallelTitlePartName() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
+  private String toParallelTitlePartName(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(PART_NAME.getValue()));
   }
 
-  private String toParallelTitlePartNumber() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
+  private String toParallelTitlePartNumber(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(PART_NUMBER.getValue()));
   }
 
-  private String toParallelTitleMain() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
+  private String toParallelTitleMain(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(MAIN_TITLE.getValue()));
   }
 
-  private String toParallelTitleDate() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
+  private String toParallelTitleDate(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(DATE.getValue()));
   }
 
-  private String toParallelTitleSubtitle() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
+  private String toParallelTitleSubtitle(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(SUBTITLE.getValue()));
   }
 
-  private String toParallelTitleNote() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
+  private String toParallelTitleNote(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
       arrayPath(NOTE.getValue()));
   }
 
-  private String toVariantTitlePartName() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
+  private String toVariantTitlePartName(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(PART_NAME.getValue()));
   }
 
-  private String toVariantTitlePartNumber() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
+  private String toVariantTitlePartNumber(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(PART_NUMBER.getValue()));
   }
 
-  private String toVariantTitleMain() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
+  private String toVariantTitleMain(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(MAIN_TITLE.getValue()));
   }
 
-  private String toVariantTitleDate() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
+  private String toVariantTitleDate(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(DATE.getValue()));
   }
 
-  private String toVariantTitleSubtitle() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
+  private String toVariantTitleSubtitle(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(SUBTITLE.getValue()));
   }
 
-  private String toVariantTitleType() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
+  private String toVariantTitleType(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(VARIANT_TYPE.getValue()));
   }
 
-  private String toVariantTitleNote() {
-    return join(".", toInstance(), dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
+  private String toVariantTitleNote(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
       arrayPath(NOTE.getValue()));
   }
 
@@ -1343,16 +1603,16 @@ class ResourceControllerIT {
       arrayPath(QUALIFIER.getValue()));
   }
 
-  private String toCarrierCode() {
-    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(CODE.getValue()));
+  private String toCarrierCode(String instanceBase) {
+    return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(CODE.getValue()));
   }
 
-  private String toCarrierLink() {
-    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(LINK.getValue()));
+  private String toCarrierLink(String instanceBase) {
+    return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(LINK.getValue()));
   }
 
-  private String toCarrierTerm() {
-    return join(".", toInstance(), arrayPath(CARRIER.getUri()), arrayPath(TERM.getValue()));
+  private String toCarrierTerm(String instanceBase) {
+    return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(TERM.getValue()));
   }
 
   private String toCopyrightDate() {
@@ -1371,142 +1631,146 @@ class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM.getValue()));
   }
 
-  private String toWorkTargetAudience() {
-    return join(".", toWork(), arrayPath(TARGET_AUDIENCE.getValue()));
+  private String toWorkTargetAudience(String workBase) {
+    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getValue()));
   }
 
-  private String toWorkResponsibilityStatement() {
-    return join(".", toWork(), arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
+  private String toWorkResponsibilityStatement(String workBase) {
+    return join(".", workBase, arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
 
-  private String toWorkNotesValues() {
-    return join(".", toWork(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
+  private String toWorkNotesValues(String workBase) {
+    return join(".", workBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
   }
 
-  private String toWorkNotesTypes() {
-    return join(".", toWork(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
+  private String toWorkNotesTypes(String workBase) {
+    return join(".", workBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
-  private String toWorkTableOfContents() {
-    return join(".", toWork(), arrayPath(TABLE_OF_CONTENTS.getValue()));
+  private String toWorkTableOfContents(String workBase) {
+    return join(".", workBase, arrayPath(TABLE_OF_CONTENTS.getValue()));
   }
 
-  private String toWorkSummary() {
-    return join(".", toWork(), arrayPath(SUMMARY.getValue()));
+  private String toWorkSummary(String workBase) {
+    return join(".", workBase, arrayPath(SUMMARY.getValue()));
   }
 
-  private String toWorkLanguage() {
-    return join(".", toWork(), arrayPath(LANGUAGE.getValue()));
+  private String toWorkLanguage(String workBase) {
+    return join(".", workBase, arrayPath(LANGUAGE.getValue()));
   }
 
-  private String toWorkDeweySource() {
-    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE.getValue()));
+  private String toWorkDeweySource(String workBase) {
+    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE.getValue()));
   }
 
-  private String toWorkDeweyCode() {
-    return join(".", toWork(), arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
+  private String toWorkDeweyCode(String workBase) {
+    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
   }
 
-  private String toWorkContributorOrgLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+  private String toWorkContributorOrgLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkContributorPersonLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
+  private String toWorkContributorPersonLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkContributorMeetingLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
+  private String toWorkContributorMeetingLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkContributorFamilyLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
+  private String toWorkContributorFamilyLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkContributorOrgName() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+  private String toWorkContributorOrgName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
       arrayPath(NAME.getValue()));
   }
 
-  private String toWorkContributorOrgRoles() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
+  private String toWorkContributorOrgRoles(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
       dynamicArrayPath(ROLES_PROPERTY));
   }
 
-  private String toWorkContributorPersonName() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
+  private String toWorkContributorPersonName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
       arrayPath(NAME.getValue()));
   }
 
-  private String toWorkContributorFamilyName() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
+  private String toWorkContributorFamilyName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
       arrayPath(NAME.getValue()));
   }
 
-  private String toWorkContributorMeetingName() {
-    return join(".", toWork(), dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
+  private String toWorkContributorMeetingName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
       arrayPath(NAME.getValue()));
   }
 
-  private String toWorkCreatorPersonLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()),
+  private String toWorkCreatorPersonLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkCreatorMeetingLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()),
+  private String toWorkCreatorMeetingLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkCreatorOrganizationLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
+  private String toWorkCreatorOrganizationLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkCreatorFamilyLcnafId() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()),
+  private String toWorkCreatorFamilyLcnafId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()),
       arrayPath(LCNAF_ID.getValue()));
   }
 
-  private String toWorkCreatorPersonName() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME.getValue()));
+  private String toWorkCreatorPersonName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME.getValue()));
   }
 
-  private String toWorkCreatorPersonRole() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(ROLES_PROPERTY));
+  private String toWorkCreatorPersonRole(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(ROLES_PROPERTY));
   }
 
-  private String toWorkCreatorMeetingName() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()), arrayPath(NAME.getValue()));
+  private String toWorkCreatorMeetingName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()), arrayPath(NAME.getValue()));
   }
 
-  private String toWorkCreatorOrganizationName() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
+  private String toWorkCreatorOrganizationName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
       arrayPath(NAME.getValue()));
   }
 
-  private String toWorkCreatorFamilyName() {
-    return join(".", toWork(), dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()), arrayPath(NAME.getValue()));
+  private String toWorkCreatorFamilyName(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()), arrayPath(NAME.getValue()));
   }
 
-  private String toWorkContentTerm() {
-    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
+  private String toWorkContentTerm(String workBase) {
+    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
   }
 
-  private String toWorkSubjectLabel() {
-    return join(".", toWork(), dynamicArrayPath(SUBJECT.getUri()), path("label"));
+  private String toWorkSubjectLabel(String workBase) {
+    return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path("label"));
   }
 
-  private String toWorkContentCode() {
-    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(CODE.getValue()));
+  private String toWorkContentCode(String workBase) {
+    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(CODE.getValue()));
   }
 
-  private String toWorkContentLink() {
-    return join(".", toWork(), arrayPath(CONTENT.getUri()), arrayPath(LINK.getValue()));
+  private String toWorkContentLink(String workBase) {
+    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(LINK.getValue()));
+  }
+
+  private String toId(String base) {
+    return join(".", base, path("id"));
   }
 
   private String toErrorType() {
@@ -1535,5 +1799,6 @@ class ResourceControllerIT {
 
   private record LookupResources(
     List<Resource> subjects
-  ) {}
+  ) {
+  }
 }

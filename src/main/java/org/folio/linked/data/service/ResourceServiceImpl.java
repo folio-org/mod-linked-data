@@ -7,6 +7,7 @@ import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
@@ -15,6 +16,7 @@ import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -83,8 +85,24 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public void deleteResource(Long id) {
-    resourceRepo.deleteById(id);
-    applicationEventPublisher.publishEvent(new ResourceDeletedEvent(id));
+    resourceRepo.findById(id).ifPresent(this::deleteResourceGraphWithCircularEdges);
+  }
+
+  private void deleteResourceGraphWithCircularEdges(Resource resource) {
+    breakCircularEdges(resource, false);
+    breakCircularEdges(resource, true);
+    resourceRepo.delete(resource);
+    applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource.getResourceHash()));
+  }
+
+  private void breakCircularEdges(Resource resource, boolean isIncoming) {
+    (isIncoming ? resource.getIncomingEdges() : resource.getOutgoingEdges()).forEach(edge -> {
+      var edges = isIncoming ? edge.getSource().getOutgoingEdges() : edge.getTarget().getIncomingEdges();
+      var filtered = edges.stream()
+        .filter(e -> resource.equals(isIncoming ? e.getTarget() : e.getSource()))
+        .collect(Collectors.toSet());
+      edges.removeAll(filtered);
+    });
   }
 
   @Override

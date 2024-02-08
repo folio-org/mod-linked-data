@@ -21,40 +21,40 @@ import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
-import org.folio.linked.data.mapper.resource.common.sub.SubResourceMapperUnit;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, dtoClass = Status.class)
-public class StatusMapperUnit<T> implements SubResourceMapperUnit<T> {
+public class StatusMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class);
   private final CoreMapper coreMapper;
 
   @Override
-  public T toDto(Resource source, T destination) {
-    var status = coreMapper.readResourceDoc(source, Status.class);
+  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    var status = coreMapper.toDtoWithEdges(source, Status.class, false);
     status.setId(String.valueOf(source.getResourceHash()));
-    if (destination instanceof Lccn lccn) {
+    if (parentDto instanceof Lccn lccn) {
       lccn.addStatusItem(status);
-    } else if (destination instanceof Isbn isbn) {
+    } else if (parentDto instanceof Isbn isbn) {
       isbn.addStatusItem(status);
     } else {
-      throw new NotSupportedException(RESOURCE_TYPE + destination.getClass().getSimpleName()
+      throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + PredicateDictionary.STATUS.getUri() + RIGHT_SQUARE_BRACKET);
     }
-    return destination;
+    return parentDto;
   }
 
   @Override
-  public Set<Class<?>> getParentDto() {
+  public Set<Class<?>> supportedParents() {
     return SUPPORTED_PARENTS;
   }
 
   @Override
-  public Resource toEntity(Object dto) {
+  public Resource toEntity(Object dto, Resource parentEntity) {
     var status = (Status) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(status::getValue));
