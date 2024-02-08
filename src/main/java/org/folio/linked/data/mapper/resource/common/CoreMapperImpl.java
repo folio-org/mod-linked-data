@@ -67,9 +67,9 @@ public class CoreMapperImpl implements CoreMapper {
       .flatMap(Collection::stream)
       .map(dto -> singleResourceMapper.toEntity(dto, parentDtoClass, predicate, parentEntity))
       .filter(
-        r -> nonNull(r.getDoc()) || isNotEmpty(isIncoming ? r.getIncomingEdges() : r.getOutgoingEdges()))
+        r -> nonNull(r.getDoc()) || isNotEmpty(r.getIncomingEdges()) || isNotEmpty(r.getOutgoingEdges()))
       .map(r -> new ResourceEdge(isIncoming ? r : parentEntity,
-          isIncoming ? parentEntity : r, predicate))
+        isIncoming ? parentEntity : r, predicate))
       .forEach((isIncoming ? parentEntity.getIncomingEdges() : parentEntity.getOutgoingEdges())::add);
   }
 

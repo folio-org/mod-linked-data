@@ -126,7 +126,7 @@ public class MonographTestUtil {
     return getSampleInstanceResource(id, getSampleWork(null));
   }
 
-  public static Resource getSampleInstanceResource(Long id, Resource withWork) {
+  public static Resource getSampleInstanceResource(Long id, Resource linkedWork) {
     var instanceTitleValue = "Instance: mainTitle" + (nonNull(id) ? id : "");
     var instanceTitle = createResource(
       Map.of(
@@ -306,16 +306,16 @@ public class MonographTestUtil {
       instance.setResourceHash(id);
     }
     instance.setLabel(instanceTitleValue);
-    if (nonNull(withWork)) {
-      var edge = new ResourceEdge(instance, withWork, INSTANTIATES);
+    if (nonNull(linkedWork)) {
+      var edge = new ResourceEdge(instance, linkedWork, INSTANTIATES);
       instance.getOutgoingEdges().add(edge);
-      withWork.getIncomingEdges().add(edge);
+      linkedWork.getIncomingEdges().add(edge);
     }
     setEdgesId(instance);
     return instance;
   }
 
-  public static Resource getSampleWork(Resource withInstance) {
+  public static Resource getSampleWork(Resource linkedInstance) {
     var content = createResource(
       Map.of(
         TERM, List.of("text"),
@@ -451,9 +451,9 @@ public class MonographTestUtil {
       Set.of(WORK),
       pred2OutgoingResources
     );
-    if (nonNull(withInstance)) {
-      var edge = new ResourceEdge(withInstance, work, INSTANTIATES);
-      withInstance.getOutgoingEdges().add(edge);
+    if (nonNull(linkedInstance)) {
+      var edge = new ResourceEdge(linkedInstance, work, INSTANTIATES);
+      linkedInstance.getOutgoingEdges().add(edge);
       work.getIncomingEdges().add(edge);
     }
     setEdgesId(work);

@@ -62,7 +62,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   @Override
   public Optional<BibframeIndex> toIndex(@NonNull Resource resource) {
-    Optional<BibframeIndex> result = extractInstance(resource)
+    var result = extractInstance(resource)
       .map(instance -> {
         var bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
         bibframeIndex.setTitles(extractTitles(instance));
