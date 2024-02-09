@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
@@ -67,6 +68,7 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getSubjects(), SUBJECT);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getCreator(), CREATOR);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getContributor(), CONTRIBUTOR);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getGeographicCoverageReference(), GEOGRAPHIC_COVERAGE);
     coreMapper.addIncomingEdges(work, Work.class, workDto.getInstanceReference(), INSTANTIATES);
     work.setResourceHash(coreMapper.hash(work));
     return work;

@@ -37,6 +37,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
+import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_AREA_CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
@@ -426,6 +428,28 @@ public class MonographTestUtil {
     ).setLabel("subject 2")
       .setResourceHash(2L);
 
+    var unitedStates = createResource(
+      Map.of(
+        NAME, List.of("United States"),
+        GEOGRAPHIC_AREA_CODE, List.of("n-us"),
+        GEOGRAPHIC_COVERAGE, List.of("https://id.loc.gov/vocabulary/geographicAreas/n-us")
+      ),
+      Set.of(PLACE),
+      emptyMap()
+    ).setLabel("United States")
+      .setResourceHash(101L);
+
+    var europe = createResource(
+      Map.of(
+        NAME, List.of("Europe"),
+        GEOGRAPHIC_AREA_CODE, List.of("e"),
+        GEOGRAPHIC_COVERAGE, List.of("https://id.loc.gov/vocabulary/geographicAreas/e")
+      ),
+      Set.of(PLACE),
+      emptyMap()
+    ).setLabel("Europe")
+      .setResourceHash(102L);
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
     pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
@@ -436,6 +460,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
     pred2OutgoingResources.put(CONTENT, List.of(content));
     pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
+    pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
 
     var work = createResource(
       Map.ofEntries(

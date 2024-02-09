@@ -16,6 +16,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
+import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
@@ -135,7 +136,6 @@ import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
 import java.util.List;
 import lombok.SneakyThrows;
-import net.minidev.json.JSONArray;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
@@ -221,7 +221,7 @@ class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateInstance(bibframe, true);
+    validateInstance(bibframe, true, true);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
 
@@ -249,7 +249,7 @@ class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateInstance(bibframe, true);
+    validateInstance(bibframe, true, false);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
 
@@ -278,7 +278,7 @@ class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
-    validateWork(bibframe, true);
+    validateWork(bibframe, true, false);
     // to be enabled after implementation of Work indexing
     //checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
@@ -671,8 +671,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleInstanceResource());
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(33);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(39);
+    assertThat(resourceRepo.count()).isEqualTo(35);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(41);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -683,9 +683,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(32);
+    assertThat(resourceRepo.count()).isEqualTo(34);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(21);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(23);
     checkKafkaMessageDeletedSent(existed.getResourceHash());
   }
 
@@ -694,8 +694,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(33);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(39);
+    assertThat(resourceRepo.count()).isEqualTo(35);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(41);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -706,7 +706,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(32);
+    assertThat(resourceRepo.count()).isEqualTo(34);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(23);
     // to be enabled after implementation of Work indexing
@@ -748,40 +748,24 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("carrier code")))
       .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("carrier link")))
       .andExpect(jsonPath(toCarrierTerm(instanceBase), equalTo("carrier term")))
-      .andExpect(
-        jsonPath(toInstanceTitlePartName(instanceBase), equalTo(new JSONArray().appendElement("Instance: partName"))))
-      .andExpect(jsonPath(toInstanceTitlePartNumber(instanceBase),
-        equalTo(new JSONArray().appendElement("Instance: partNumber"))))
-      .andExpect(
-        jsonPath(toInstanceTitleMain(instanceBase), equalTo(new JSONArray().appendElement("Instance: mainTitle"))))
-      .andExpect(jsonPath(toInstanceTitleNonSortNum(instanceBase),
-        equalTo(new JSONArray().appendElement("Instance: nonSortNum"))))
-      .andExpect(
-        jsonPath(toInstanceTitleSubtitle(instanceBase), equalTo(new JSONArray().appendElement("Instance: subTitle"))))
-      .andExpect(
-        jsonPath(toParallelTitlePartName(instanceBase), equalTo(new JSONArray().appendElement("Parallel: partName"))))
-      .andExpect(jsonPath(toParallelTitlePartNumber(instanceBase),
-        equalTo(new JSONArray().appendElement("Parallel: partNumber"))))
-      .andExpect(
-        jsonPath(toParallelTitleMain(instanceBase), equalTo(new JSONArray().appendElement("Parallel: mainTitle"))))
-      .andExpect(
-        jsonPath(toParallelTitleNote(instanceBase), equalTo(new JSONArray().appendElement("Parallel: noteLabel"))))
-      .andExpect(jsonPath(toParallelTitleDate(instanceBase), equalTo(new JSONArray().appendElement("Parallel: date"))))
-      .andExpect(
-        jsonPath(toParallelTitleSubtitle(instanceBase), equalTo(new JSONArray().appendElement("Parallel: subTitle"))))
-      .andExpect(
-        jsonPath(toVariantTitlePartName(instanceBase), equalTo(new JSONArray().appendElement("Variant: partName"))))
-      .andExpect(
-        jsonPath(toVariantTitlePartNumber(instanceBase), equalTo(new JSONArray().appendElement("Variant: partNumber"))))
-      .andExpect(
-        jsonPath(toVariantTitleMain(instanceBase), equalTo(new JSONArray().appendElement("Variant: mainTitle"))))
-      .andExpect(
-        jsonPath(toVariantTitleNote(instanceBase), equalTo(new JSONArray().appendElement("Variant: noteLabel"))))
-      .andExpect(jsonPath(toVariantTitleDate(instanceBase), equalTo(new JSONArray().appendElement("Variant: date"))))
-      .andExpect(
-        jsonPath(toVariantTitleSubtitle(instanceBase), equalTo(new JSONArray().appendElement("Variant: subTitle"))))
-      .andExpect(
-        jsonPath(toVariantTitleType(instanceBase), equalTo(new JSONArray().appendElement("Variant: variantType"))));
+      .andExpect(jsonPath(toInstanceTitlePartName(instanceBase), equalTo(List.of("Instance: partName"))))
+      .andExpect(jsonPath(toInstanceTitlePartNumber(instanceBase), equalTo(List.of("Instance: partNumber"))))
+      .andExpect(jsonPath(toInstanceTitleMain(instanceBase), equalTo(List.of("Instance: mainTitle"))))
+      .andExpect(jsonPath(toInstanceTitleNonSortNum(instanceBase), equalTo(List.of("Instance: nonSortNum"))))
+      .andExpect(jsonPath(toInstanceTitleSubtitle(instanceBase), equalTo(List.of("Instance: subTitle"))))
+      .andExpect(jsonPath(toParallelTitlePartName(instanceBase), equalTo(List.of("Parallel: partName"))))
+      .andExpect(jsonPath(toParallelTitlePartNumber(instanceBase), equalTo(List.of("Parallel: partNumber"))))
+      .andExpect(jsonPath(toParallelTitleMain(instanceBase), equalTo(List.of("Parallel: mainTitle"))))
+      .andExpect(jsonPath(toParallelTitleNote(instanceBase), equalTo(List.of("Parallel: noteLabel"))))
+      .andExpect(jsonPath(toParallelTitleDate(instanceBase), equalTo(List.of("Parallel: date"))))
+      .andExpect(jsonPath(toParallelTitleSubtitle(instanceBase), equalTo(List.of("Parallel: subTitle"))))
+      .andExpect(jsonPath(toVariantTitlePartName(instanceBase), equalTo(List.of("Variant: partName"))))
+      .andExpect(jsonPath(toVariantTitlePartNumber(instanceBase), equalTo(List.of("Variant: partNumber"))))
+      .andExpect(jsonPath(toVariantTitleMain(instanceBase), equalTo(List.of("Variant: mainTitle"))))
+      .andExpect(jsonPath(toVariantTitleNote(instanceBase), equalTo(List.of("Variant: noteLabel"))))
+      .andExpect(jsonPath(toVariantTitleDate(instanceBase), equalTo(List.of("Variant: date"))))
+      .andExpect(jsonPath(toVariantTitleSubtitle(instanceBase), equalTo(List.of("Variant: subTitle"))))
+      .andExpect(jsonPath(toVariantTitleType(instanceBase), equalTo(List.of("Variant: variantType"))));
     if (instanceBase.equals(toInstance())) {
       resultActions
         .andExpect(jsonPath(toInventoryId(), equalTo("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")))
@@ -793,13 +777,13 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
         .andExpect(jsonPath(toExtent(), equalTo("extent info")))
         .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
-        .andExpect(jsonPath(toEanValue(), equalTo(new JSONArray().appendElement("ean value"))))
-        .andExpect(jsonPath(toEanQualifier(), equalTo(new JSONArray().appendElement("ean qualifier"))))
+        .andExpect(jsonPath(toEanValue(), equalTo(List.of("ean value"))))
+        .andExpect(jsonPath(toEanQualifier(), equalTo(List.of("ean qualifier"))))
         .andExpect(jsonPath(toEditionStatement(), equalTo("edition statement")))
-        .andExpect(jsonPath(toIsbnValue(), equalTo(new JSONArray().appendElement("isbn value"))))
-        .andExpect(jsonPath(toIsbnQualifier(), equalTo(new JSONArray().appendElement("isbn qualifier"))))
-        .andExpect(jsonPath(toIsbnStatusValue(), equalTo(new JSONArray().appendElement("isbn status value"))))
-        .andExpect(jsonPath(toIsbnStatusLink(), equalTo(new JSONArray().appendElement("isbn status link"))))
+        .andExpect(jsonPath(toIsbnValue(), equalTo(List.of("isbn value"))))
+        .andExpect(jsonPath(toIsbnQualifier(), equalTo(List.of("isbn qualifier"))))
+        .andExpect(jsonPath(toIsbnStatusValue(), equalTo(List.of("isbn status value"))))
+        .andExpect(jsonPath(toIsbnStatusLink(), equalTo(List.of("isbn status link"))))
         .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
         .andExpect(
           jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
@@ -815,16 +799,16 @@ class ResourceControllerIT {
           "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
           "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
           "http://bibfra.me/vocab/marc/fundingInformation")))
-        .andExpect(jsonPath(toLccnValue(), equalTo(new JSONArray().appendElement("lccn value"))))
-        .andExpect(jsonPath(toLccnStatusValue(), equalTo(new JSONArray().appendElement("lccn status value"))))
-        .andExpect(jsonPath(toLccnStatusLink(), equalTo(new JSONArray().appendElement("lccn status link"))))
-        .andExpect(jsonPath(toLocalIdValue(), equalTo(new JSONArray().appendElement("localId value"))))
-        .andExpect(jsonPath(toLocalIdAssigner(), equalTo(new JSONArray().appendElement("localId assigner"))))
+        .andExpect(jsonPath(toLccnValue(), equalTo(List.of("lccn value"))))
+        .andExpect(jsonPath(toLccnStatusValue(), equalTo(List.of("lccn status value"))))
+        .andExpect(jsonPath(toLccnStatusLink(), equalTo(List.of("lccn status link"))))
+        .andExpect(jsonPath(toLocalIdValue(), equalTo(List.of("localId value"))))
+        .andExpect(jsonPath(toLocalIdAssigner(), equalTo(List.of("localId assigner"))))
         .andExpect(jsonPath(toMediaCode(), equalTo("media code")))
         .andExpect(jsonPath(toMediaLink(), equalTo("media link")))
         .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
-        .andExpect(jsonPath(toOtherIdValue(), equalTo(new JSONArray().appendElement("otherId value"))))
-        .andExpect(jsonPath(toOtherIdQualifier(), equalTo(new JSONArray().appendElement("otherId qualifier"))))
+        .andExpect(jsonPath(toOtherIdValue(), equalTo(List.of("otherId value"))))
+        .andExpect(jsonPath(toOtherIdQualifier(), equalTo(List.of("otherId qualifier"))))
         .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
         .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("production providerPlace code")))
@@ -865,40 +849,32 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkLanguage(workBase), equalTo("eng")))
       .andExpect(jsonPath(toWorkDeweyCode(workBase), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(workBase), equalTo("ddc")))
-      .andExpect(jsonPath(toWorkCreatorPersonName(workBase), equalTo(new JSONArray().appendElement("name-PERSON"))))
-      .andExpect(jsonPath(toWorkCreatorPersonRole(workBase), equalTo(new JSONArray().appendElement(AUTHOR.getUri()))))
-      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-PERSON"))))
-      .andExpect(jsonPath(toWorkCreatorMeetingName(workBase), equalTo(new JSONArray().appendElement("name-MEETING"))))
-      .andExpect(jsonPath(toWorkCreatorMeetingLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-MEETING"))))
-      .andExpect(jsonPath(toWorkCreatorOrganizationName(workBase),
-        equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkCreatorOrganizationLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkCreatorFamilyName(workBase), equalTo(new JSONArray().appendElement("name-FAMILY"))))
-      .andExpect(jsonPath(toWorkCreatorFamilyLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-FAMILY"))))
-      .andExpect(jsonPath(toWorkContributorPersonName(workBase), equalTo(new JSONArray().appendElement("name-PERSON"))))
-      .andExpect(jsonPath(toWorkContributorPersonLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-PERSON"))))
-      .andExpect(jsonPath(toWorkContributorMeetingName(workBase),
-        equalTo(new JSONArray().appendElement("name-MEETING"))))
-      .andExpect(jsonPath(toWorkContributorMeetingLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-MEETING"))))
-      .andExpect(jsonPath(toWorkContributorOrgName(workBase),
-        equalTo(new JSONArray().appendElement("name-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkContributorOrgLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkContributorOrgRoles(workBase),
-        equalTo(new JSONArray().appendElement(EDITOR.getUri()).appendElement(ASSIGNEE.getUri()))))
-      .andExpect(jsonPath(toWorkContributorFamilyName(workBase), equalTo(new JSONArray().appendElement("name-FAMILY"))))
-      .andExpect(jsonPath(toWorkContributorFamilyLcnafId(workBase),
-        equalTo(new JSONArray().appendElement("2002801801-FAMILY"))))
+      .andExpect(jsonPath(toWorkCreatorPersonName(workBase), equalTo(List.of("name-PERSON"))))
+      .andExpect(jsonPath(toWorkCreatorPersonRole(workBase), equalTo(List.of(AUTHOR.getUri()))))
+      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(workBase), equalTo(List.of("2002801801-PERSON"))))
+      .andExpect(jsonPath(toWorkCreatorMeetingName(workBase), equalTo(List.of("name-MEETING"))))
+      .andExpect(jsonPath(toWorkCreatorMeetingLcnafId(workBase), equalTo(List.of("2002801801-MEETING"))))
+      .andExpect(jsonPath(toWorkCreatorOrganizationName(workBase), equalTo(List.of("name-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkCreatorOrganizationLcnafId(workBase), equalTo(List.of("2002801801-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkCreatorFamilyName(workBase), equalTo(List.of("name-FAMILY"))))
+      .andExpect(jsonPath(toWorkCreatorFamilyLcnafId(workBase), equalTo(List.of("2002801801-FAMILY"))))
+      .andExpect(jsonPath(toWorkContributorPersonName(workBase), equalTo(List.of("name-PERSON"))))
+      .andExpect(jsonPath(toWorkContributorPersonLcnafId(workBase), equalTo(List.of("2002801801-PERSON"))))
+      .andExpect(jsonPath(toWorkContributorMeetingName(workBase), equalTo(List.of("name-MEETING"))))
+      .andExpect(jsonPath(toWorkContributorMeetingLcnafId(workBase), equalTo(List.of("2002801801-MEETING"))))
+      .andExpect(jsonPath(toWorkContributorOrgName(workBase), equalTo(List.of("name-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkContributorOrgLcnafId(workBase), equalTo(List.of("2002801801-ORGANIZATION"))))
+      .andExpect(jsonPath(toWorkContributorOrgRoles(workBase), equalTo(List.of(EDITOR.getUri(), ASSIGNEE.getUri()))))
+      .andExpect(jsonPath(toWorkContributorFamilyName(workBase), equalTo(List.of("name-FAMILY"))))
+      .andExpect(jsonPath(toWorkContributorFamilyLcnafId(workBase), equalTo(List.of("2002801801-FAMILY"))))
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
       .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))));
+    if (workBase.equals(toWork())) {
+      resultActions
+        .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))));
+    }
     // the second 'if' condition is to be removed after wireframe UI migration and two 'if's could be merged
     if (workBase.equals(toWork()) || workBase.equals(toWorkInInstance())) {
       resultActions
@@ -918,7 +894,7 @@ class ResourceControllerIT {
     }
   }
 
-  private void validateInstance(Resource instance, boolean validateFullWork) {
+  private void validateInstance(Resource instance, boolean validateFullWork, boolean isDeprecated) {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -956,7 +932,7 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var work = edge.getTarget();
     if (validateFullWork) {
-      validateWork(work, false);
+      validateWork(work, false, isDeprecated);
     }
     validateAccessLocation(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
@@ -1226,7 +1202,7 @@ class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateWork(Resource work, boolean validateFullInstance) {
+  private void validateWork(Resource work, boolean validateFullInstance, boolean isDeprecated) {
     assertThat(work.getResourceHash()).isNotNull();
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
     assertThat(work.getDoc().size()).isEqualTo(8);
@@ -1252,6 +1228,12 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
+    if (!isDeprecated) {
+      validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
+        GEOGRAPHIC_COVERAGE.getUri());
+      validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(1),
+        GEOGRAPHIC_COVERAGE.getUri());
+    }
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR.getUri());
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
@@ -1261,7 +1243,7 @@ class ResourceControllerIT {
     assertThat(edge.getTarget()).isEqualTo(work);
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     if (validateFullInstance) {
-      validateInstance(edge.getSource(), false);
+      validateInstance(edge.getSource(), false, isDeprecated);
     }
     assertThat(incomingEdgeIterator.hasNext()).isFalse();
   }
@@ -1329,21 +1311,24 @@ class ResourceControllerIT {
   }
 
   private LookupResources saveLookupResources() {
-    var subject1 = saveSubject(1L);
-    var subject2 = saveSubject(2L);
+    var subject1 = saveResource(1L, "subject 1", CONCEPT);
+    var subject2 = saveResource(2L, "subject 2", CONCEPT);
+    var unitedStates = saveResource(101L, "United States", PLACE);
+    var europe = saveResource(102L, "Europe", PLACE);
     return new LookupResources(
-      List.of(subject1, subject2)
+      List.of(subject1, subject2),
+      List.of(unitedStates, europe)
     );
   }
 
   @SneakyThrows
-  private Resource saveSubject(Long id) {
-    var subjectResource = new Resource();
-    subjectResource.addType(new ResourceTypeEntity().setHash(CONCEPT.getHash()).setUri(CONCEPT.getUri()));
-    subjectResource.setLabel("subject " + id);
-    subjectResource.setDoc(OBJECT_MAPPER.readTree("{}"));
-    subjectResource.setResourceHash(id);
-    return resourceRepo.save(subjectResource);
+  private Resource saveResource(Long id, String label, ResourceTypeDictionary type) {
+    var resource = new Resource();
+    resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
+    resource.setLabel(label);
+    resource.setDoc(OBJECT_MAPPER.readTree("{}"));
+    resource.setResourceHash(id);
+    return resourceRepo.save(resource);
   }
 
   private String toInstance() {
@@ -1761,6 +1746,10 @@ class ResourceControllerIT {
     return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path("label"));
   }
 
+  private String toWorkGeographicCoverageLabel(String workBase) {
+    return join(".", workBase, dynamicArrayPath(GEOGRAPHIC_COVERAGE.getUri()), path("label"));
+  }
+
   private String toWorkContentCode(String workBase) {
     return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(CODE.getValue()));
   }
@@ -1798,7 +1787,8 @@ class ResourceControllerIT {
   }
 
   private record LookupResources(
-    List<Resource> subjects
+    List<Resource> subjects,
+    List<Resource> geographicCoverages
   ) {
   }
 }
