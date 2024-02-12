@@ -26,7 +26,6 @@ public class GeographicCoverageMapperUnit implements WorkSubResourceMapperUnit {
     var geographicCoverage = new GeographicCoverage()
       .id(source.getResourceHash().toString())
       .label(source.getLabel());
-    geographicCoverage.setId(String.valueOf(source.getResourceHash()));
     if (parentDto instanceof Work work) {
       work.addGeographicCoverageReferenceItem(geographicCoverage);
     }
