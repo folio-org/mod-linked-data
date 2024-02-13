@@ -169,6 +169,7 @@ class ResourceControllerIT {
   private static final String NOTES_PROPERTY = "_notes";
   private static final String INSTANCE_REF = "_instanceReference";
   private static final String WORK_REF = "_workReference";
+  private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
   private static final String VALUE_PROPERTY = "value";
   private static final String TYPE_PROPERTY = "type";
   private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
@@ -221,6 +222,7 @@ class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
+    // the 'isDeprecated' argument is to be removed after wireframe UI migration
     validateInstance(bibframe, true, true);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
@@ -249,6 +251,7 @@ class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
+    // the 'isDeprecated' argument is to be removed after wireframe UI migration
     validateInstance(bibframe, true, false);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
@@ -278,6 +281,7 @@ class ResourceControllerIT {
     var persistedOptional = resourceRepo.findById(Long.parseLong(id));
     assertThat(persistedOptional).isPresent();
     var bibframe = persistedOptional.get();
+    // the 'isDeprecated' argument is to be removed after wireframe UI migration
     validateWork(bibframe, true, false);
     // to be enabled after implementation of Work indexing
     //checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
@@ -871,10 +875,6 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
       .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))));
-    if (workBase.equals(toWork())) {
-      resultActions
-        .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))));
-    }
     // the second 'if' condition is to be removed after wireframe UI migration and two 'if's could be merged
     if (workBase.equals(toWork()) || workBase.equals(toWorkInInstance())) {
       resultActions
@@ -889,11 +889,14 @@ class ResourceControllerIT {
           "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")));
     }
     if (workBase.equals(toWork())) {
-      resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
+      resultActions
+        .andExpect(jsonPath(toInstanceReference(workBase), notNullValue()))
+        .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
     }
   }
 
+  // the 'isDeprecated' parameter is to be removed after wireframe UI migration
   private void validateInstance(Resource instance, boolean validateFullWork, boolean isDeprecated) {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
@@ -932,6 +935,7 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var work = edge.getTarget();
     if (validateFullWork) {
+      // the 'isDeprecated' argument is to be removed after wireframe UI migration
       validateWork(work, false, isDeprecated);
     }
     validateAccessLocation(edgeIterator.next(), instance);
@@ -1202,6 +1206,7 @@ class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
+  // the 'isDeprecated' parameter is to be removed after wireframe UI migration
   private void validateWork(Resource work, boolean validateFullInstance, boolean isDeprecated) {
     assertThat(work.getResourceHash()).isNotNull();
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
@@ -1228,6 +1233,7 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
+    // the condition is to be removed after wireframe UI migration
     if (!isDeprecated) {
       validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
         GEOGRAPHIC_COVERAGE.getUri());
@@ -1243,6 +1249,7 @@ class ResourceControllerIT {
     assertThat(edge.getTarget()).isEqualTo(work);
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     if (validateFullInstance) {
+      // the 'isDeprecated' argument is to be removed after wireframe UI migration
       validateInstance(edge.getSource(), false, isDeprecated);
     }
     assertThat(incomingEdgeIterator.hasNext()).isFalse();
@@ -1747,7 +1754,7 @@ class ResourceControllerIT {
   }
 
   private String toWorkGeographicCoverageLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(GEOGRAPHIC_COVERAGE.getUri()), path("label"));
+    return join(".", workBase, dynamicArrayPath(GEOGRAPHIC_COVERAGE_REF), path("label"));
   }
 
   private String toWorkContentCode(String workBase) {

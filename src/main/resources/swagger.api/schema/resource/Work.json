@@ -101,8 +101,7 @@
           "items": {
             "type": "object",
             "$ref": "GeographicCoverage.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/geographicCoverage"
+          }
         }
       }
     }
