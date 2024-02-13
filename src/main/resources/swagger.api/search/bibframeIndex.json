@@ -1,10 +1,10 @@
 {
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "bibframe search dto",
+  "description": "Bibframe search dto, contains Work and linked Instances",
   "properties": {
     "id": {
-      "description": "The unique ID of the bibframe record",
+      "description": "The Linked Data ID of a Work",
       "type": "string"
     },
     "titles": {
@@ -23,22 +23,6 @@
         }
       }
     },
-    "identifiers": {
-      "type": "array",
-      "description": "Resource identifier array",
-      "items": {
-        "properties": {
-          "value": {
-            "type": "string",
-            "description": "Value of Identifier"
-          },
-          "type": {
-            "type": "string",
-            "enum": ["Ean", "ISBN", "LCCN", "LocalId", "UNKNOWN"]
-          }
-        }
-      }
-    },
     "contributors": {
       "type": "array",
       "description": "Contributor array",
@@ -50,7 +34,8 @@
           },
           "type": {
             "type": "string",
-            "enum": ["Family", "Jurisdiction", "Meeting", "Organization", "Person"]
+            "enum": [
+              "Family", "Jurisdiction", "Meeting", "Organization", "Person"]
           },
           "isCreator": {
             "type": "boolean",
@@ -59,26 +44,142 @@
         }
       }
     },
-    "publications": {
+    "languages": {
       "type": "array",
-      "description": "List of publication items",
+      "description": "Language array",
       "items": {
-        "type": "object",
         "properties": {
-          "publisher": {
+          "value": {
             "type": "string",
-            "description": "Name of publisher, distributor, etc."
-          },
-          "dateOfPublication": {
-            "type": "string",
-            "description": "Date (year YYYY) of publication, distribution, etc."
+            "description": "Language value"
           }
         }
       }
     },
-    "editionStatement": {
-      "type": "string"
+    "classifications": {
+      "type": "array",
+      "description": "List of classification items",
+      "items": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "Classification number"
+          },
+          "source": {
+            "type": "string",
+            "description": "The source of the classification"
+          }
+        }
+      }
+    },
+    "subjects": {
+      "type": "array",
+      "description": "Subject array",
+      "items": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Subject label"
+          }
+        }
+      }
+    },
+    "instances": {
+      "type": "array",
+      "description": "Instance array",
+      "items": {
+        "properties": {
+          "id": {
+            "description": "The Linked Data ID of an Instance",
+            "type": "string"
+          },
+          "titles": {
+            "type": "array",
+            "description": "Title array",
+            "items": {
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "description": "Value of Title"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["Main", "Sub"]
+                }
+              }
+            }
+          },
+          "identifiers": {
+            "type": "array",
+            "description": "Resource identifier array",
+            "items": {
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "description": "Value of Identifier"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["Ean", "ISBN", "LCCN", "LocalId", "UNKNOWN"]
+                }
+              }
+            }
+          },
+          "contributors": {
+            "type": "array",
+            "description": "Contributor array",
+            "items": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of contributor"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["Family", "Jurisdiction", "Meeting", "Organization", "Person"]
+                },
+                "isCreator": {
+                  "type": "boolean",
+                  "description": "A flag indicating whether the contributor is the creator"
+                }
+              }
+            }
+          },
+          "publications": {
+            "type": "array",
+            "description": "List of publication items",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of publisher, distributor, etc."
+                },
+                "date": {
+                  "type": "string",
+                  "description": "Date (year YYYY) of publication, distribution, etc."
+                }
+              }
+            }
+          },
+          "editionStatements": {
+            "type": "array",
+            "description": "Edition statement array",
+            "items": {
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "description": "Edition statement value"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
-  "required": ["id"]
+  "required": [
+    "id"
+  ]
 }

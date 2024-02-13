@@ -1,4 +1,4 @@
-package org.folio.linked.data.utils;
+package org.folio.linked.data.test;
 
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 

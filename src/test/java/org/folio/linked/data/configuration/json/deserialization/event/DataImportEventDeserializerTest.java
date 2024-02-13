@@ -1,7 +1,7 @@
 package org.folio.linked.data.configuration.json.deserialization.event;
 
+import static org.folio.linked.data.test.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
-import static org.folio.linked.data.utils.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;

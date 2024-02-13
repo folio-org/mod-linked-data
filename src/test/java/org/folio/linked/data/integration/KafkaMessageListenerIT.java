@@ -1,15 +1,13 @@
 package org.folio.linked.data.integration;
 
+import static org.folio.linked.data.test.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
+import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.utils.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
-import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
-import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -59,9 +57,7 @@ class KafkaMessageListenerIT {
       eventId, emittedEvent, defaultKafkaHeaders());
 
     eventKafkaTemplate.send(producerRecord);
-    await().atMost(FIVE_SECONDS)
-      .pollInterval(ONE_HUNDRED_MILLISECONDS)
-      .untilAsserted(() -> verify(dataImportEventConsumer, times(1)).handle(expectedEvent));
+    awaitAndAssert(() -> verify(dataImportEventConsumer, times(1)).handle(expectedEvent));
   }
 
   private String getTopicName(String tenantId, String topic) {

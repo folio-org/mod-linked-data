@@ -3,11 +3,11 @@ package org.folio.linked.data.mapper.resource.kafka;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
-import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
@@ -16,18 +16,19 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.FAMILY;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.MEETING;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.ORGANIZATION;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.PERSON;
-import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum;
-import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum.EAN;
-import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum.ISBN;
-import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum.LCCN;
-import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum.LOCALID;
-import static org.folio.search.domain.dto.BibframeIdentifiersInner.TypeEnum.UNKNOWN;
+import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
+import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.EAN;
+import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.ISBN;
+import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LCCN;
+import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LOCALID;
+import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
 import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.MAIN;
 import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.SUB;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,7 +46,7 @@ import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
-import org.folio.search.domain.dto.BibframeIdentifiersInner;
+import org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -99,41 +100,22 @@ class KafkaMessageMapperTest {
     var emptyId = new Resource();
     instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, MAP));
     instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyId, MAP));
-    var wrongContributor = getContributor(ANNOTATION);
-    var emptyContributor = new Resource();
-    instance.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .forEach(re -> re.getTarget().getOutgoingEdges().add(new ResourceEdge(instance, wrongContributor, CONTRIBUTOR)));
-    instance.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .forEach(re -> re.getTarget().getOutgoingEdges().add(new ResourceEdge(instance, emptyContributor, CONTRIBUTOR)));
     var emptyPublication = new Resource();
     instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
+    var work = getSampleWork(instance);
+    var wrongContributor = getContributor(ANNOTATION);
+    var emptyContributor = new Resource();
+    work.getOutgoingEdges().add(new ResourceEdge(instance, wrongContributor, CONTRIBUTOR));
+    work.getOutgoingEdges().add(new ResourceEdge(instance, emptyContributor, CONTRIBUTOR));
 
     // when
-    var resultOpt = kafkaMessageMapper.toIndex(instance);
+    var resultOpt = kafkaMessageMapper.toIndex(work);
 
     // then
     assertThat(resultOpt).isPresent();
     var result = resultOpt.get();
-    assertThat(result.getId()).isEqualTo(instance.getResourceHash().toString());
-    assertThat(result.getTitles()).hasSize(6);
-    assertTitle(result.getTitles().get(0), "Instance: mainTitle", MAIN);
-    assertTitle(result.getTitles().get(1), "Instance: subTitle", SUB);
-    assertTitle(result.getTitles().get(2), "Parallel: mainTitle", MAIN);
-    assertTitle(result.getTitles().get(3), "Parallel: subTitle", SUB);
-    assertTitle(result.getTitles().get(4), "Variant: mainTitle", MAIN);
-    assertTitle(result.getTitles().get(5), "Variant: subTitle", SUB);
-    assertThat(result.getIdentifiers()).hasSize(6);
-    assertId(result.getIdentifiers().get(0), "lccn value", LCCN);
-    assertId(result.getIdentifiers().get(1), "isbn value", ISBN);
-    assertId(result.getIdentifiers().get(2), "ean value", EAN);
-    assertId(result.getIdentifiers().get(3), "localId value", LOCALID);
-    assertId(result.getIdentifiers().get(4), "otherId value", UNKNOWN);
-    assertId(result.getIdentifiers().get(5), wrongId.getDoc().get(NAME.getValue()).get(0).asText(), null);
-    assertThat(result.getPublications()).hasSize(1);
-    assertThat(result.getPublications().get(0).getDateOfPublication()).isNull();
-    assertThat(result.getPublications().get(0).getPublisher()).isEqualTo("publication name");
+    assertThat(result.getId()).isEqualTo(work.getResourceHash().toString());
+    assertThat(result.getTitles()).isEmpty();
     assertThat(result.getContributors()).hasSize(9);
     assertContributor(result.getContributors().get(0), "name-PERSON", PERSON, true);
     assertContributor(result.getContributors().get(1), "name-MEETING", MEETING, true);
@@ -145,8 +127,38 @@ class KafkaMessageMapperTest {
     assertContributor(result.getContributors().get(7), "name-FAMILY", FAMILY, false);
     assertContributor(result.getContributors().get(8), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
       null, false);
-    assertThat(result.getEditionStatement()).isEqualTo(
-      instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).textValue());
+    assertThat(result.getLanguages()).hasSize(1);
+    assertThat(result.getLanguages().get(0).getValue())
+      .isEqualTo(work.getDoc().get(LANGUAGE.getValue()).get(0).asText());
+    assertThat(result.getClassifications()).hasSize(1);
+    assertThat(result.getClassifications().get(0).getNumber()).isEqualTo("709.83");
+    assertThat(result.getClassifications().get(0).getSource()).isEqualTo("ddc");
+    assertThat(result.getSubjects()).hasSize(2);
+    assertThat(result.getSubjects().get(0).getValue()).isEqualTo("subject 1");
+    assertThat(result.getSubjects().get(1).getValue()).isEqualTo("subject 2");
+    assertThat(result.getInstances()).hasSize(1);
+    var instanceIndex = result.getInstances().get(0);
+    assertThat(instanceIndex.getId()).isEqualTo(instance.getResourceHash().toString());
+    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle", MAIN);
+    assertTitle(instanceIndex.getTitles().get(1), "Instance: subTitle", SUB);
+    assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN);
+    assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB);
+    assertTitle(instanceIndex.getTitles().get(4), "Variant: mainTitle", MAIN);
+    assertTitle(instanceIndex.getTitles().get(5), "Variant: subTitle", SUB);
+    assertThat(instanceIndex.getIdentifiers()).hasSize(6);
+    assertId(instanceIndex.getIdentifiers().get(0), "lccn value", LCCN);
+    assertId(instanceIndex.getIdentifiers().get(1), "isbn value", ISBN);
+    assertId(instanceIndex.getIdentifiers().get(2), "ean value", EAN);
+    assertId(instanceIndex.getIdentifiers().get(3), "localId value", LOCALID);
+    assertId(instanceIndex.getIdentifiers().get(4), "otherId value", UNKNOWN);
+    assertId(instanceIndex.getIdentifiers().get(5), wrongId.getDoc().get(NAME.getValue()).get(0).asText(), null);
+    assertThat(instanceIndex.getContributors()).isEmpty();
+    assertThat(instanceIndex.getPublications()).hasSize(1);
+    assertThat(instanceIndex.getPublications().get(0).getDate()).isNull();
+    assertThat(instanceIndex.getPublications().get(0).getName()).isEqualTo("publication name");
+    assertThat(instanceIndex.getEditionStatements()).hasSize(1);
+    assertThat(instanceIndex.getEditionStatements().get(0).getValue())
+      .isEqualTo(instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).asText());
   }
 
   private Resource getIdentifier(String valueField, ResourceTypeDictionary type) {
@@ -170,7 +182,7 @@ class KafkaMessageMapperTest {
     assertThat(titleInner.getType()).isEqualTo(type);
   }
 
-  private void assertId(BibframeIdentifiersInner idInner, String value, TypeEnum type) {
+  private void assertId(BibframeInstancesInnerIdentifiersInner idInner, String value, TypeEnum type) {
     assertThat(idInner.getValue()).isEqualTo(value);
     assertThat(idInner.getType()).isEqualTo(type);
   }

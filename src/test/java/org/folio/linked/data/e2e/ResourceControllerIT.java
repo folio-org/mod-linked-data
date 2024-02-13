@@ -224,7 +224,8 @@ class ResourceControllerIT {
     var bibframe = persistedOptional.get();
     // the 'isDeprecated' argument is to be removed after wireframe UI migration
     validateInstance(bibframe, true, true);
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
 
   @Test
@@ -253,7 +254,8 @@ class ResourceControllerIT {
     var bibframe = persistedOptional.get();
     // the 'isDeprecated' argument is to be removed after wireframe UI migration
     validateInstance(bibframe, true, false);
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
 
   @Test
@@ -283,8 +285,7 @@ class ResourceControllerIT {
     var bibframe = persistedOptional.get();
     // the 'isDeprecated' argument is to be removed after wireframe UI migration
     validateWork(bibframe, true, false);
-    // to be enabled after implementation of Work indexing
-    //checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
   }
 
   // to be removed after wireframe UI migration
@@ -389,7 +390,8 @@ class ResourceControllerIT {
     assertThat(instance.getSrsId()).isNull();
     assertThat(instance.getDoc()).isNull();
     assertThat(instance.getOutgoingEdges()).hasSize(42);
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(instance.getResourceHash());
+    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
 
   // to be removed after wireframe UI migration
@@ -488,7 +490,8 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
     checkKafkaMessageDeletedSent(originalInstance.getResourceHash());
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(id));
+    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
 
   @Test
@@ -520,8 +523,8 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toInstance(), notNullValue()))
       .andReturn().getResponse().getContentAsString();
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
+    var instanceId = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var persistedOptional = resourceRepo.findById(Long.parseLong(instanceId));
     assertThat(persistedOptional).isPresent();
     var updatedInstance = persistedOptional.get();
     assertThat(updatedInstance.getResourceHash()).isNotNull();
@@ -532,7 +535,8 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
     checkKafkaMessageDeletedSent(originalInstance.getResourceHash());
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(id));
+    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
 
   @Test
@@ -574,8 +578,7 @@ class ResourceControllerIT {
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
     checkKafkaMessageDeletedSent(originalWork.getResourceHash());
-    // to be enabled after implementation of Work indexing
-    //checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(id));
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(id));
   }
 
   @Test
@@ -713,8 +716,7 @@ class ResourceControllerIT {
     assertThat(resourceRepo.count()).isEqualTo(34);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(23);
-    // to be enabled after implementation of Work indexing
-    // checkKafkaMessageDeletedSent(existed.getResourceHash());
+    checkKafkaMessageDeletedSent(existed.getResourceHash());
   }
 
   @Test

@@ -1,7 +1,7 @@
 package org.folio.linked.data.service;
 
 import static java.lang.Boolean.TRUE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import jakarta.persistence.EntityManager;
@@ -46,8 +46,8 @@ public class ReindexServiceIml implements ReindexService {
     var recordsIndexed = new AtomicLong(0);
     while (pageable.isPaged()) {
       var page = TRUE.equals(full)
-        ? resourceRepository.findAllByType(Set.of(INSTANCE.getUri()), pageable)
-        : resourceRepository.findNotIndexedByType(Set.of(INSTANCE.getUri()), pageable);
+        ? resourceRepository.findAllByType(Set.of(WORK.getUri()), pageable)
+        : resourceRepository.findNotIndexedByType(Set.of(WORK.getUri()), pageable);
       var indexedIds = page.get()
         .map(resource -> {
             try {
