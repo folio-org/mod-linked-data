@@ -40,6 +40,7 @@ import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
@@ -98,11 +99,11 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   private Optional<Resource> extractWork(Resource resource) {
-    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(WORK.getUri())) ? Optional.of(resource) :
-      resource.getOutgoingEdges().stream()
-        .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-        .map(ResourceEdge::getTarget)
-        .findFirst();
+    return isOfType(resource, WORK) ? Optional.of(resource)
+      : resource.getOutgoingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .map(ResourceEdge::getTarget)
+      .findFirst();
   }
 
   private List<BibframeTitlesInner> extractTitles(Resource resource) {
@@ -181,10 +182,13 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   }
 
   private List<BibframeInstancesInner> extractInstances(Resource resource) {
-    return (resource.getTypes().stream().anyMatch(t -> t.getUri().equals(INSTANCE.getUri())) ? Stream.of(resource)
-      : resource.getIncomingEdges().stream()
+    var workStream = isOfType(resource, INSTANCE) ? resource.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(ResourceEdge::getSource))
+      .map(ResourceEdge::getTarget) : Stream.of(resource);
+    return workStream
+      .flatMap(work -> work.getIncomingEdges().stream()
+        .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+        .map(ResourceEdge::getSource))
       .map(ir -> new BibframeInstancesInner()
         .id(String.valueOf(ir.getResourceHash()))
         .titles(extractTitles(ir))
@@ -198,6 +202,10 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         || isNotEmpty(bii.getEditionStatements()))
       .distinct()
       .toList();
+  }
+
+  private boolean isOfType(Resource resource, ResourceTypeDictionary type) {
+    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(type.getUri()));
   }
 
   private List<BibframeInstancesInnerIdentifiersInner> extractIdentifiers(Resource resource) {

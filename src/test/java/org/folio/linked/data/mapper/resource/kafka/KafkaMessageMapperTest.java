@@ -46,9 +46,12 @@ import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
+import org.folio.search.domain.dto.BibframeIndex;
+import org.folio.search.domain.dto.BibframeInstancesInner;
 import org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.folio.spring.test.type.UnitTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -64,21 +67,8 @@ class KafkaMessageMapperTest {
   @Mock
   private SingleResourceMapper singleResourceMapper;
 
-  @Test
-  void toIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
-    // given
-    Resource resource = null;
-
-    // when
-    var thrown = assertThrows(NullPointerException.class, () -> kafkaMessageMapper.toIndex(resource));
-
-    // then
-    assertThat(thrown.getMessage()).isEqualTo("resource is marked non-null but is null");
-  }
-
-  @Test
-  void mapToIndex_shouldReturnCorrectlyMappedObject() {
-    // given
+  @BeforeEach
+  public void setupMocks() {
     Set.of(
       ID_ISBN.getUri(),
       ID_LCCN.getUri(),
@@ -92,21 +82,30 @@ class KafkaMessageMapperTest {
     ).forEach(t ->
       lenient().when(singleResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
     );
+  }
 
-    var instance = getSampleInstanceResource();
-    var emptyTitle = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyTitle, TITLE));
-    var wrongId = getIdentifier(NAME.getValue(), ANNOTATION);
-    var emptyId = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, MAP));
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyId, MAP));
-    var emptyPublication = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
-    var work = getSampleWork(instance);
+  @Test
+  void toIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
+    // given
+    Resource resource = null;
+
+    // when
+    var thrown = assertThrows(NullPointerException.class, () -> kafkaMessageMapper.toIndex(resource));
+
+    // then
+    assertThat(thrown.getMessage()).isEqualTo("resource is marked non-null but is null");
+  }
+
+  @Test
+  void mapToIndex_shouldReturnCorrectlyMappedIndex_fromWork() {
+    // given
+    var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(instance, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(instance, emptyContributor, CONTRIBUTOR));
+    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    final var instance1 = getInstance(1L, work);
+    final var instance2 = getInstance(2L, work);
 
     // when
     var resultOpt = kafkaMessageMapper.toIndex(work);
@@ -114,6 +113,63 @@ class KafkaMessageMapperTest {
     // then
     assertThat(resultOpt).isPresent();
     var result = resultOpt.get();
+    validateWork(result, work, wrongContributor);
+    validateInstance(result.getInstances().get(0), instance1);
+    validateInstance(result.getInstances().get(1), instance2);
+  }
+
+  @Test
+  void mapToIndex_shouldReturnCorrectlyMappedIndex_fromInstance() {
+    // given
+    var work = getSampleWork(null);
+    var wrongContributor = getContributor(ANNOTATION);
+    var emptyContributor = new Resource();
+    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    final var instance1 = getInstance(1L, work);
+    final var instance2 = getInstance(2L, work);
+
+    // when
+    var resultOpt = kafkaMessageMapper.toIndex(instance1);
+
+    // then
+    assertThat(resultOpt).isPresent();
+    var result = resultOpt.get();
+    validateWork(result, work, wrongContributor);
+    validateInstance(result.getInstances().get(0), instance1);
+    validateInstance(result.getInstances().get(1), instance2);
+  }
+
+  private Resource getInstance(Long id, Resource work) {
+    var instance = getSampleInstanceResource(id, work);
+    var emptyTitle = new Resource();
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyTitle, TITLE));
+    var wrongId = getIdentifier();
+    var emptyId = new Resource();
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, MAP));
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyId, MAP));
+    var emptyPublication = new Resource();
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
+    return instance;
+  }
+
+  private Resource getIdentifier() {
+    var id = new Resource();
+    id.setResourceHash(randomLong());
+    id.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of("wrongId"))));
+    id.addType(ANNOTATION);
+    return id;
+  }
+
+  private Resource getContributor(ResourceTypeDictionary type) {
+    var contributor = new Resource();
+    contributor.setResourceHash(randomLong());
+    contributor.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(UUID.randomUUID().toString()))));
+    contributor.addType(type);
+    return contributor;
+  }
+
+  private void validateWork(BibframeIndex result, Resource work, Resource wrongContributor) {
     assertThat(result.getId()).isEqualTo(work.getResourceHash().toString());
     assertThat(result.getTitles()).isEmpty();
     assertThat(result.getContributors()).hasSize(9);
@@ -136,10 +192,12 @@ class KafkaMessageMapperTest {
     assertThat(result.getSubjects()).hasSize(2);
     assertThat(result.getSubjects().get(0).getValue()).isEqualTo("subject 1");
     assertThat(result.getSubjects().get(1).getValue()).isEqualTo("subject 2");
-    assertThat(result.getInstances()).hasSize(1);
-    var instanceIndex = result.getInstances().get(0);
+    assertThat(result.getInstances()).hasSize(2);
+  }
+
+  private void validateInstance(BibframeInstancesInner instanceIndex, Resource instance) {
     assertThat(instanceIndex.getId()).isEqualTo(instance.getResourceHash().toString());
-    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle", MAIN);
+    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle" + instance.getResourceHash(), MAIN);
     assertTitle(instanceIndex.getTitles().get(1), "Instance: subTitle", SUB);
     assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN);
     assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB);
@@ -151,7 +209,7 @@ class KafkaMessageMapperTest {
     assertId(instanceIndex.getIdentifiers().get(2), "ean value", EAN);
     assertId(instanceIndex.getIdentifiers().get(3), "localId value", LOCALID);
     assertId(instanceIndex.getIdentifiers().get(4), "otherId value", UNKNOWN);
-    assertId(instanceIndex.getIdentifiers().get(5), wrongId.getDoc().get(NAME.getValue()).get(0).asText(), null);
+    assertId(instanceIndex.getIdentifiers().get(5), "wrongId", null);
     assertThat(instanceIndex.getContributors()).isEmpty();
     assertThat(instanceIndex.getPublications()).hasSize(1);
     assertThat(instanceIndex.getPublications().get(0).getDate()).isNull();
@@ -159,22 +217,6 @@ class KafkaMessageMapperTest {
     assertThat(instanceIndex.getEditionStatements()).hasSize(1);
     assertThat(instanceIndex.getEditionStatements().get(0).getValue())
       .isEqualTo(instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).asText());
-  }
-
-  private Resource getIdentifier(String valueField, ResourceTypeDictionary type) {
-    var id = new Resource();
-    id.setResourceHash(randomLong());
-    id.setDoc(getJsonNode(Map.of(valueField, List.of(randomLong()))));
-    id.addType(type);
-    return id;
-  }
-
-  private Resource getContributor(ResourceTypeDictionary type) {
-    var contributor = new Resource();
-    contributor.setResourceHash(randomLong());
-    contributor.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(UUID.randomUUID().toString()))));
-    contributor.addType(type);
-    return contributor;
   }
 
   private void assertTitle(BibframeTitlesInner titleInner, String value, BibframeTitlesInner.TypeEnum type) {

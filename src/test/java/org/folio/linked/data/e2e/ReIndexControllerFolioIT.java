@@ -108,8 +108,8 @@ class ReIndexControllerFolioIT {
   @Test
   void indexResourceWithIndexDate_andFullIndexRequest() throws Exception {
     // given
-    var work = resourceRepo.save(getSampleWork(null));
-    resourceRepo.save(getSampleInstanceResource(null, work).setIndexDate(new Date()));
+    var work = resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));
+    resourceRepo.save(getSampleInstanceResource(null, work));
 
     var requestBuilder = put(INDEX_URL)
       .param("full", "true")
