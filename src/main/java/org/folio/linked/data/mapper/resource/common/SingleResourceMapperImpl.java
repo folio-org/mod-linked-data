@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.resource.common;
 
+import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.joining;
@@ -84,7 +85,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
           && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
           && (isNull(dtoClass) || dtoClass.equals(annotation.dtoClass()));
       })
-      .findFirst();
+      .min(comparing(o -> o.getClass().getSimpleName()));
   }
 
 }
