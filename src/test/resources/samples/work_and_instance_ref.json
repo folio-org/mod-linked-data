@@ -53,6 +53,14 @@
           "id": "2"
         }
       ],
+      "_geographicCoverageReference": [
+        {
+          "id": "101"
+        },
+        {
+          "id": "102"
+        }
+      ],
       "http://bibfra.me/vocab/marc/targetAudience": [
         "target audience"
       ],
