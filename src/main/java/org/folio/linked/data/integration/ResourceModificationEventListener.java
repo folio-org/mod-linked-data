@@ -5,6 +5,8 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
@@ -25,6 +27,7 @@ public class ResourceModificationEventListener {
   private final KafkaSender kafkaSender;
   private final ResourceMapper resourceMapper;
   private final ResourceRepository resourceRepository;
+  private final KafkaMessageMapper kafkaMessageMapper;
 
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
@@ -36,7 +39,9 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
     log.info("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
-    kafkaSender.sendResourceDeleted(resourceDeletedEvent.id());
+    kafkaMessageMapper.extractWork(resourceDeletedEvent.resource())
+      .map(Resource::getResourceHash)
+      .ifPresent(kafkaSender::sendResourceDeleted);
   }
 
   @EventListener

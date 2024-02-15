@@ -89,6 +89,15 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return result;
   }
 
+  @Override
+  public Optional<Resource> extractWork(Resource resource) {
+    return isOfType(resource, WORK) ? Optional.of(resource)
+      : resource.getOutgoingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .map(ResourceEdge::getTarget)
+      .findFirst();
+  }
+
   private boolean shouldBeIndexed(BibframeIndex bi) {
     return isNotEmpty(bi.getTitles())
       || isNotEmpty(bi.getContributors())
@@ -96,14 +105,6 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       || isNotEmpty(bi.getClassifications())
       || isNotEmpty(bi.getSubjects())
       || isNotEmpty(bi.getInstances());
-  }
-
-  private Optional<Resource> extractWork(Resource resource) {
-    return isOfType(resource, WORK) ? Optional.of(resource)
-      : resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(ResourceEdge::getTarget)
-      .findFirst();
   }
 
   private List<BibframeTitlesInner> extractTitles(Resource resource) {

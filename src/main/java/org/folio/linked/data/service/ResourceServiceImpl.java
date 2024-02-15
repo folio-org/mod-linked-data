@@ -92,7 +92,7 @@ public class ResourceServiceImpl implements ResourceService {
     breakCircularEdges(resource, false);
     breakCircularEdges(resource, true);
     resourceRepo.delete(resource);
-    applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource.getResourceHash()));
+    applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
   }
 
   private void breakCircularEdges(Resource resource, boolean isIncoming) {

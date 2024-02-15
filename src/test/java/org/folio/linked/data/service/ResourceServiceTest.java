@@ -170,7 +170,7 @@ class ResourceServiceTest {
 
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
-    assertEquals(id, resourceDeletedEventCaptor.getValue().id());
+    assertEquals(id, resourceDeletedEventCaptor.getValue().resource().getResourceHash());
   }
 
   @Test

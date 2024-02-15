@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
@@ -36,6 +37,9 @@ class ResourceModificationEventListenerTest {
   private KafkaSender kafkaSender;
   @Mock
   private ResourceRepository resourceRepository;
+
+  @Mock
+  private KafkaMessageMapper kafkaMessageMapper;
 
   @Test
   void afterCreate_shouldSendResourceCreatedMessageToKafka() {
@@ -69,13 +73,16 @@ class ResourceModificationEventListenerTest {
   @Test
   void afterDelete_shouldSendResourceDeletedMessageToKafka() {
     //given
-    var resourceDeletedEvent = new ResourceDeletedEvent(1L);
+    var resource = new Resource().setResourceHash(1L);
+    var resourceDeletedEvent = new ResourceDeletedEvent(resource);
+
+    when(kafkaMessageMapper.extractWork(resource)).thenReturn(Optional.of(resource));
 
     //when
     resourceModificationEventListener.afterDelete(resourceDeletedEvent);
 
     //then
-    verify(kafkaSender).sendResourceDeleted(resourceDeletedEvent.id());
+    verify(kafkaSender).sendResourceDeleted(resource.getResourceHash());
   }
 
   @Test

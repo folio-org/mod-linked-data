@@ -455,7 +455,8 @@ class ResourceControllerIT {
   @Test
   void update_shouldReturnCorrectlyUpdatedInstanceWithFullWork_deleteOldOne_sendMessages() throws Exception {
     // given
-    var originalInstance = resourceRepo.save(getSampleInstanceResource());
+    var work = getSampleWork(null);
+    var originalInstance = resourceRepo.save(getSampleInstanceResource(null, work));
     var updateDto = getSampleBibframeDtoMap();
     var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
     instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
@@ -489,7 +490,7 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
-    checkKafkaMessageDeletedSent(originalInstance.getResourceHash());
+    checkKafkaMessageDeletedSent(work.getResourceHash());
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
@@ -534,7 +535,7 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
-    checkKafkaMessageDeletedSent(originalInstance.getResourceHash());
+    checkKafkaMessageDeletedSent(work.getResourceHash());
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
@@ -676,7 +677,8 @@ class ResourceControllerIT {
   @Test
   void deleteResourceById_shouldDeleteRootInstanceAndRootEdges() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleInstanceResource());
+    var work = getSampleWork(null);
+    var existed = resourceRepo.save(getSampleInstanceResource(null, work));
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(35);
     assertThat(resourceEdgeRepository.count()).isEqualTo(41);
@@ -693,7 +695,7 @@ class ResourceControllerIT {
     assertThat(resourceRepo.count()).isEqualTo(34);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(23);
-    checkKafkaMessageDeletedSent(existed.getResourceHash());
+    checkKafkaMessageDeletedSent(work.getResourceHash());
   }
 
   @Test
