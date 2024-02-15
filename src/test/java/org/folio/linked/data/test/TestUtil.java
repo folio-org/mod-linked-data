@@ -11,6 +11,10 @@ import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
+import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+import static org.testcontainers.shaded.org.awaitility.Durations.ONE_MINUTE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +35,7 @@ import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
+import org.testcontainers.shaded.org.awaitility.core.ThrowingRunnable;
 
 @UtilityClass
 public class TestUtil {
@@ -126,5 +131,12 @@ public class TestUtil {
 
   public static JsonNode getJsonNode(Map<String, ?> map) {
     return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+  }
+
+  public static void awaitAndAssert(ThrowingRunnable throwingRunnable) {
+    await().atMost(ONE_MINUTE)
+      .pollDelay(FIVE_SECONDS)
+      .pollInterval(ONE_HUNDRED_MILLISECONDS)
+      .untilAsserted(throwingRunnable);
   }
 }

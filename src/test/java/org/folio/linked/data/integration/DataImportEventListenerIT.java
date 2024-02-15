@@ -2,19 +2,16 @@ package org.folio.linked.data.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.test.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.utils.KafkaEventsTestDataFixture.dataImportEvent;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
-import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
-import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.testcontainers.shaded.org.awaitility.Durations.ONE_MINUTE;
 
 import java.util.Set;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -87,10 +84,7 @@ class DataImportEventListenerIT {
     eventKafkaTemplate.send(producerRecord);
 
     // then
-    await().atMost(ONE_MINUTE)
-      .pollDelay(FIVE_SECONDS)
-      .pollInterval(ONE_HUNDRED_MILLISECONDS)
-      .untilAsserted(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
+    awaitAndAssert(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
 
     var found = tenantScopedExecutionService.executeTenantScoped(
       TENANT_ID,
