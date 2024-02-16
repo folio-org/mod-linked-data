@@ -59,7 +59,7 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   private void checkMessage(Long id, boolean createOrDelete) {
     awaitAndAssert(() ->
-      assertTrue(consumer.getMessages().stream().anyMatch(m -> m.contains(id.toString())
+      assertTrue(consumer.getMessages().stream().peek(System.out::println).anyMatch(m -> m.contains(id.toString())
         && m.contains(createOrDelete ? CREATE.getValue() : DELETE.getValue())))
     );
   }

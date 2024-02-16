@@ -491,8 +491,7 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
     checkKafkaMessageDeletedSent(work.getResourceHash());
-    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(work.getResourceHash());
   }
 
   @Test
@@ -536,8 +535,7 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
     checkKafkaMessageDeletedSent(work.getResourceHash());
-    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(work.getResourceHash());
   }
 
   @Test
@@ -675,7 +673,7 @@ class ResourceControllerIT {
   }
 
   @Test
-  void deleteResourceById_shouldDeleteRootInstanceAndRootEdges() throws Exception {
+  void deleteResourceById_shouldDeleteRootInstanceAndRootEdges_reindexWork() throws Exception {
     // given
     var work = getSampleWork(null);
     var existed = resourceRepo.save(getSampleInstanceResource(null, work));
@@ -696,6 +694,7 @@ class ResourceControllerIT {
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(23);
     checkKafkaMessageDeletedSent(work.getResourceHash());
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(work.getResourceHash());
   }
 
   @Test

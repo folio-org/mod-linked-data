@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper;
 
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -51,7 +52,7 @@ class ResourceMapperTest {
   @Test
   void mapToIndex_shouldCallKafkaMessageMapper_ifGivenResourceIsNotNull() {
     // given
-    var resource = new Resource();
+    var resource = new Resource().addType(WORK);
 
     // when
     resourceMapper.mapToIndex(resource);

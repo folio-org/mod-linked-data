@@ -9,6 +9,4 @@ public interface KafkaMessageMapper {
 
   Optional<BibframeIndex> toIndex(@NonNull Resource resource);
 
-  Optional<Resource> extractWork(Resource resource);
-
 }

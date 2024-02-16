@@ -3,7 +3,6 @@ package org.folio.linked.data.mapper.resource.kafka;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
-import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -16,8 +15,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
@@ -34,9 +31,7 @@ import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
 import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.MAIN;
 import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.SUB;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
@@ -50,7 +45,6 @@ import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.BibframeInstancesInner;
@@ -261,23 +255,4 @@ class KafkaMessageMapperTest {
     };
   }
 
-  @Test
-  void extractWork_shouldReturnWork_ifGivenResourceIsWork() {
-    var workResource = new Resource().addType(new ResourceTypeEntity(WORK.getHash(), WORK.getUri(), null));
-
-    var result = kafkaMessageMapper.extractWork(workResource);
-    assertTrue(result.isPresent());
-    assertEquals(workResource, result.get());
-  }
-
-  @Test
-  void extractWork_shouldReturnWork_ifGivenResourceIsInstance() {
-    var workResource = new Resource().addType(new ResourceTypeEntity(WORK.getHash(), WORK.getUri(), "W"));
-    var instanceResource = new Resource().addType(new ResourceTypeEntity(INSTANCE.getHash(), INSTANCE.getUri(), "I"));
-    instanceResource.setOutgoingEdges(Set.of(new ResourceEdge(instanceResource, workResource, INSTANTIATES)));
-
-    var result = kafkaMessageMapper.extractWork(instanceResource);
-    assertTrue(result.isPresent());
-    assertEquals(workResource, result.get());
-  }
 }

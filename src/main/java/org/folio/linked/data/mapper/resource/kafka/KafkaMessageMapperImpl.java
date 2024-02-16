@@ -27,6 +27,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.cleanDate;
+import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,7 +41,6 @@ import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
@@ -89,15 +89,6 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return result;
   }
 
-  @Override
-  public Optional<Resource> extractWork(Resource resource) {
-    return isOfType(resource, WORK) ? Optional.of(resource)
-      : resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(ResourceEdge::getTarget)
-      .findFirst();
-  }
-
   private boolean shouldBeIndexed(BibframeIndex bi) {
     return isNotEmpty(bi.getTitles())
       || isNotEmpty(bi.getContributors())
@@ -105,6 +96,18 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       || isNotEmpty(bi.getClassifications())
       || isNotEmpty(bi.getSubjects())
       || isNotEmpty(bi.getInstances());
+  }
+
+  private Optional<Resource> extractWork(Resource resource) {
+    return isOfType(resource, WORK) ? Optional.of(resource)
+      : resource.getOutgoingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .map(resourceEdge -> {
+        var work = resourceEdge.getTarget();
+        work.getIncomingEdges().add(resourceEdge);
+        return work;
+      })
+      .findFirst();
   }
 
   private List<BibframeTitlesInner> extractTitles(Resource resource) {
@@ -203,10 +206,6 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         || isNotEmpty(bii.getEditionStatements()))
       .distinct()
       .toList();
-  }
-
-  private boolean isOfType(Resource resource, ResourceTypeDictionary type) {
-    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(type.getUri()));
   }
 
   private List<BibframeInstancesInnerIdentifiersInner> extractIdentifiers(Resource resource) {

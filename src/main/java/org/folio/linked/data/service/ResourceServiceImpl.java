@@ -2,6 +2,8 @@ package org.folio.linked.data.service;
 
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.linked.data.util.Constants.EXISTS_ALREADY;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
@@ -71,7 +73,7 @@ public class ResourceServiceImpl implements ResourceService {
       throw getResourceNotFoundException(id);
     }
     addInternalFields(resourceDto, id);
-    deleteResource(id);
+    deleteResource(id, false);
     return createResource(resourceDto);
   }
 
@@ -85,14 +87,24 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public void deleteResource(Long id) {
-    resourceRepo.findById(id).ifPresent(this::deleteResourceGraphWithCircularEdges);
+    deleteResource(id, true);
+  }
+
+  private void deleteResource(Long id, boolean reindexWorkIfParent) {
+    resourceRepo.findById(id).ifPresent(resource -> {
+      deleteResourceGraphWithCircularEdges(resource);
+      if (isOfType(resource, WORK)) {
+        applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource.getResourceHash()));
+      } else if (reindexWorkIfParent) {
+        applicationEventPublisher.publishEvent(new ResourceCreatedEvent(resource));
+      }
+    });
   }
 
   private void deleteResourceGraphWithCircularEdges(Resource resource) {
     breakCircularEdges(resource, false);
     breakCircularEdges(resource, true);
     resourceRepo.delete(resource);
-    applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
   }
 
   private void breakCircularEdges(Resource resource, boolean isIncoming) {

@@ -74,9 +74,7 @@ class ResourceModificationEventListenerTest {
   void afterDelete_shouldSendResourceDeletedMessageToKafka() {
     //given
     var resource = new Resource().setResourceHash(1L);
-    var resourceDeletedEvent = new ResourceDeletedEvent(resource);
-
-    when(kafkaMessageMapper.extractWork(resource)).thenReturn(Optional.of(resource));
+    var resourceDeletedEvent = new ResourceDeletedEvent(resource.getResourceHash());
 
     //when
     resourceModificationEventListener.afterDelete(resourceDeletedEvent);

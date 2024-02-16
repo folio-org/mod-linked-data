@@ -1,6 +1,9 @@
 package org.folio.linked.data.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -8,7 +11,7 @@ import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,7 +19,6 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.Sets;
 import java.util.Optional;
 import java.util.function.Function;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
@@ -27,6 +29,7 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -121,7 +124,7 @@ class ResourceServiceTest {
     var pageNumber = 0;
     var pageSize = 10;
     var sort = Sort.by(Sort.Direction.ASC, "label");
-    var types = Sets.newHashSet(ResourceTypeDictionary.INSTANCE.getUri());
+    var types = Sets.newHashSet(INSTANCE.getUri());
     doReturn(pageOfShortEntities).when(resourceRepo).findAllShortByType(types,
       PageRequest.of(pageNumber, pageSize, sort));
     doReturn(pageOfDto).when(pageOfShortEntities)
@@ -140,7 +143,7 @@ class ResourceServiceTest {
   void getResourceShortInfoPageWithNoParams_shouldReturnExistedEntitiesShortInfoMapped(
     @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<ResourceShort> pageOfDto) {
     // given
-    var types = Sets.newHashSet(ResourceTypeDictionary.INSTANCE.getUri());
+    var types = Sets.newHashSet(INSTANCE.getUri());
     var sort = Sort.by(Sort.Direction.ASC, "label");
     doReturn(pageOfShortEntities).when(resourceRepo).findAllShortByType(types,
       PageRequest.of(0, 100, sort));
@@ -157,20 +160,39 @@ class ResourceServiceTest {
   }
 
   @Test
-  void delete_shouldDeleteBibframeAndPublishResourceDeletedEvent() {
+  void delete_shouldDeleteWorkAndPublishResourceDeletedEvent() {
     // given
-    var id = randomLong();
-    when(resourceRepo.findById(id)).thenReturn(Optional.of(new Resource().setResourceHash(id)));
+    var work = new Resource().setResourceHash(randomLong()).addType(WORK);
+    when(resourceRepo.findById(work.getResourceHash())).thenReturn(Optional.of(work));
 
     // when
-    resourceService.deleteResource(id);
+    resourceService.deleteResource(work.getResourceHash());
 
     // then
-    verify(resourceRepo).delete(any());
-
+    verify(resourceRepo).delete(work);
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
-    assertEquals(id, resourceDeletedEventCaptor.getValue().resource().getResourceHash());
+    assertEquals(work.getResourceHash(), resourceDeletedEventCaptor.getValue().id());
+  }
+
+  @Test
+  void delete_shouldDeleteInstanceAndPublishResourceCreatedEvent() {
+    // given
+    var work = new Resource().setResourceHash(randomLong()).addType(WORK);
+    var instance = new Resource().setResourceHash(randomLong()).addType(INSTANCE);
+    work.getIncomingEdges().add(new ResourceEdge(instance, work, INSTANTIATES));
+    instance.getOutgoingEdges().add(new ResourceEdge(instance, work, INSTANTIATES));
+    when(resourceRepo.findById(instance.getResourceHash())).thenReturn(Optional.of(instance));
+
+    // when
+    resourceService.deleteResource(instance.getResourceHash());
+
+    // then
+    verify(resourceRepo).delete(instance);
+    var resourceCreatedEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
+    verify(applicationEventPublisher).publishEvent(resourceCreatedEventCaptor.capture());
+    assertEquals(instance, resourceCreatedEventCaptor.getValue().resource());
+    assertTrue(work.getIncomingEdges().isEmpty());
   }
 
   @Test
