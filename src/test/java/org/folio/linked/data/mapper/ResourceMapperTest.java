@@ -2,11 +2,7 @@ package org.folio.linked.data.mapper;
 
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
@@ -20,7 +16,6 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.spring.test.type.UnitTest;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,30 +31,6 @@ class ResourceMapperTest {
 
   @Mock
   private KafkaMessageMapper kafkaMessageMapper;
-
-  @Test
-  void mapToIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
-    // given
-    Resource resource = null;
-
-    // when
-    var thrown = assertThrows(NullPointerException.class, () -> resourceMapper.mapToIndex(resource));
-
-    // then
-    MatcherAssert.assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
-  }
-
-  @Test
-  void mapToIndex_shouldCallKafkaMessageMapper_ifGivenResourceIsNotNull() {
-    // given
-    var resource = new Resource().addType(WORK);
-
-    // when
-    resourceMapper.mapToIndex(resource);
-
-    // then
-    verify(kafkaMessageMapper).toIndex(resource);
-  }
 
   @Test
   void toResourceGraphDto_shouldReturnResourceGraphDto() {

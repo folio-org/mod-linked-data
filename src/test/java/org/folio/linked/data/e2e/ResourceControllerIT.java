@@ -491,7 +491,8 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
     checkKafkaMessageDeletedSent(work.getResourceHash());
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(work.getResourceHash());
+    var newWorkId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(newWorkId));
   }
 
   @Test
@@ -676,11 +677,11 @@ class ResourceControllerIT {
   void deleteResourceById_shouldDeleteRootInstanceAndRootEdges_reindexWork() throws Exception {
     // given
     var work = getSampleWork(null);
-    var existed = resourceRepo.save(getSampleInstanceResource(null, work));
-    assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
+    var instance = resourceRepo.save(getSampleInstanceResource(null, work));
+    assertThat(resourceRepo.findById(instance.getResourceHash())).isPresent();
     assertThat(resourceRepo.count()).isEqualTo(35);
     assertThat(resourceEdgeRepository.count()).isEqualTo(41);
-    var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
+    var requestBuilder = delete(RESOURCE_URL + "/" + instance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -689,9 +690,9 @@ class ResourceControllerIT {
 
     // then
     resultActions.andExpect(status().isNoContent());
-    assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
+    assertThat(resourceRepo.existsById(instance.getResourceHash())).isFalse();
     assertThat(resourceRepo.count()).isEqualTo(34);
-    assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceEdgeRepository.findById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(23);
     checkKafkaMessageDeletedSent(work.getResourceHash());
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(work.getResourceHash());

@@ -68,11 +68,12 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message";
+  private static final String NO_WORK_FOUND = "Only Monograph Work is supported, and there is no Work found";
   private final SingleResourceMapper singleResourceMapper;
 
   @Override
-  public Optional<BibframeIndex> toIndex(@NonNull Resource resource) {
-    var result = extractWork(resource)
+  public Optional<BibframeIndex> toCreateIndex(@NonNull Resource resource) {
+    return extractWork(resource)
       .map(work -> {
         var workIndex = new BibframeIndex(work.getResourceHash().toString());
         workIndex.setTitles(extractTitles(work));
@@ -82,11 +83,20 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         workIndex.setSubjects(extractSubjects(work));
         workIndex.setInstances(extractInstances(resource));
         return shouldBeIndexed(workIndex) ? workIndex : null;
+      }).or(() -> {
+        log.warn(NO_WORK_FOUND);
+        return Optional.empty();
       });
-    if (result.isEmpty()) {
-      log.warn("Only Monograph Work is supported, and there is no Work found");
-    }
-    return result;
+  }
+
+  @Override
+  public Optional<Long> toDeleteIndex(@NonNull Resource resource) {
+    return extractWork(resource)
+      .map(Resource::getResourceHash)
+      .or(() -> {
+        log.warn(NO_WORK_FOUND);
+        return Optional.empty();
+      });
   }
 
   private boolean shouldBeIndexed(BibframeIndex bi) {

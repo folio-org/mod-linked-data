@@ -36,6 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,19 +86,19 @@ class KafkaMessageMapperTest {
   }
 
   @Test
-  void toIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
+  void toCreateIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
     // given
     Resource resource = null;
 
     // when
-    var thrown = assertThrows(NullPointerException.class, () -> kafkaMessageMapper.toIndex(resource));
+    var thrown = assertThrows(NullPointerException.class, () -> kafkaMessageMapper.toCreateIndex(resource));
 
     // then
     assertThat(thrown.getMessage()).isEqualTo("resource is marked non-null but is null");
   }
 
   @Test
-  void mapToIndex_shouldReturnCorrectlyMappedIndex_fromWork() {
+  void toCreateIndex_shouldReturnCorrectlyMappedIndex_fromWork() {
     // given
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
@@ -108,18 +109,18 @@ class KafkaMessageMapperTest {
     final var instance2 = getInstance(2L, work);
 
     // when
-    var resultOpt = kafkaMessageMapper.toIndex(work);
+    var resultOpt = kafkaMessageMapper.toCreateIndex(work);
 
     // then
     assertThat(resultOpt).isPresent();
     var result = resultOpt.get();
-    validateWork(result, work, wrongContributor);
+    validateWork(result, work, wrongContributor, 2);
     validateInstance(result.getInstances().get(0), instance1);
     validateInstance(result.getInstances().get(1), instance2);
   }
 
   @Test
-  void mapToIndex_shouldReturnCorrectlyMappedIndex_fromInstance() {
+  void toCreateIndex_shouldReturnCorrectlyMappedIndex_fromInstance() {
     // given
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
@@ -130,14 +131,85 @@ class KafkaMessageMapperTest {
     final var instance2 = getInstance(2L, work);
 
     // when
-    var resultOpt = kafkaMessageMapper.toIndex(instance1);
+    var resultOpt = kafkaMessageMapper.toCreateIndex(instance1);
 
     // then
     assertThat(resultOpt).isPresent();
     var result = resultOpt.get();
-    validateWork(result, work, wrongContributor);
+    validateWork(result, work, wrongContributor, 2);
     validateInstance(result.getInstances().get(0), instance1);
     validateInstance(result.getInstances().get(1), instance2);
+  }
+
+  @Test
+  void toCreateIndex_shouldReturnCorrectlyMappedIndex_fromDeprecatedInstance() {
+    // given
+    var work = getSampleWork(null);
+    var wrongContributor = getContributor(ANNOTATION);
+    var emptyContributor = new Resource();
+    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    final var instance1 = getInstance(1L, work);
+    work.setIncomingEdges(new LinkedHashSet<>());
+
+    // when
+    var resultOpt = kafkaMessageMapper.toCreateIndex(instance1);
+
+    // then
+    assertThat(resultOpt).isPresent();
+    var result = resultOpt.get();
+    validateWork(result, work, wrongContributor, 1);
+    validateInstance(result.getInstances().get(0), instance1);
+  }
+
+  @Test
+  void toDeleteIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
+    // given
+    Resource resource = null;
+
+    // when
+    var thrown = assertThrows(NullPointerException.class, () -> kafkaMessageMapper.toDeleteIndex(resource));
+
+    // then
+    assertThat(thrown.getMessage()).isEqualTo("resource is marked non-null but is null");
+  }
+
+  @Test
+  void toDeleteIndex_shouldReturnCorrectlyMappedId_fromWork() {
+    // given
+    var work = getSampleWork(null);
+    var wrongContributor = getContributor(ANNOTATION);
+    var emptyContributor = new Resource();
+    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    final var instance1 = getInstance(1L, work);
+    final var instance2 = getInstance(2L, work);
+
+    // when
+    var resultOpt = kafkaMessageMapper.toDeleteIndex(work);
+
+    // then
+    assertThat(resultOpt).isPresent();
+    assertThat(resultOpt.get()).isEqualTo(work.getResourceHash());
+  }
+
+  @Test
+  void toDeleteIndex_shouldReturnCorrectlyMappedId_fromInstance() {
+    // given
+    var work = getSampleWork(null);
+    var wrongContributor = getContributor(ANNOTATION);
+    var emptyContributor = new Resource();
+    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    final var instance1 = getInstance(1L, work);
+    final var instance2 = getInstance(2L, work);
+
+    // when
+    var resultOpt = kafkaMessageMapper.toDeleteIndex(instance1);
+
+    // then
+    assertThat(resultOpt).isPresent();
+    assertThat(resultOpt.get()).isEqualTo(work.getResourceHash());
   }
 
   private Resource getInstance(Long id, Resource work) {
@@ -169,7 +241,7 @@ class KafkaMessageMapperTest {
     return contributor;
   }
 
-  private void validateWork(BibframeIndex result, Resource work, Resource wrongContributor) {
+  private void validateWork(BibframeIndex result, Resource work, Resource wrongContributor, int instancesExpected) {
     assertThat(result.getId()).isEqualTo(work.getResourceHash().toString());
     assertThat(result.getTitles()).isEmpty();
     assertThat(result.getContributors()).hasSize(9);
@@ -192,7 +264,7 @@ class KafkaMessageMapperTest {
     assertThat(result.getSubjects()).hasSize(2);
     assertThat(result.getSubjects().get(0).getValue()).isEqualTo("subject 1");
     assertThat(result.getSubjects().get(1).getValue()).isEqualTo("subject 2");
-    assertThat(result.getInstances()).hasSize(2);
+    assertThat(result.getInstances()).hasSize(instancesExpected);
   }
 
   private void validateInstance(BibframeInstancesInner instanceIndex, Resource instance) {

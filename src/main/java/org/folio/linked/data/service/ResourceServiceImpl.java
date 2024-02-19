@@ -93,9 +93,8 @@ public class ResourceServiceImpl implements ResourceService {
   private void deleteResource(Long id, boolean reindexWorkIfParent) {
     resourceRepo.findById(id).ifPresent(resource -> {
       deleteResourceGraphWithCircularEdges(resource);
-      if (isOfType(resource, WORK)) {
-        applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource.getResourceHash()));
-      } else if (reindexWorkIfParent) {
+      applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
+      if (!isOfType(resource, WORK) && reindexWorkIfParent) {
         applicationEventPublisher.publishEvent(new ResourceCreatedEvent(resource));
       }
     });

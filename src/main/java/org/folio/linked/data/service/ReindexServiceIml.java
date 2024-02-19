@@ -51,7 +51,7 @@ public class ReindexServiceIml implements ReindexService {
       var indexedIds = page.get()
         .map(resource -> {
             try {
-              var id = kafkaMessageMapper.toIndex(resource)
+              var id = kafkaMessageMapper.toCreateIndex(resource)
                 .map(bibframeIndex -> {
                   log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
                   kafkaSender.sendResourceCreated(bibframeIndex, false);
