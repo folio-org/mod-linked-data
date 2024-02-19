@@ -27,6 +27,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.cleanDate;
+import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -40,7 +41,6 @@ import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
@@ -68,11 +68,12 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message";
+  private static final String NO_WORK_FOUND = "Only Monograph Work is supported, and there is no Work found";
   private final SingleResourceMapper singleResourceMapper;
 
   @Override
-  public Optional<BibframeIndex> toIndex(@NonNull Resource resource) {
-    var result = extractWork(resource)
+  public Optional<BibframeIndex> toCreateIndex(@NonNull Resource resource) {
+    return extractWork(resource)
       .map(work -> {
         var workIndex = new BibframeIndex(work.getResourceHash().toString());
         workIndex.setTitles(extractTitles(work));
@@ -82,11 +83,20 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         workIndex.setSubjects(extractSubjects(work));
         workIndex.setInstances(extractInstances(resource));
         return shouldBeIndexed(workIndex) ? workIndex : null;
+      }).or(() -> {
+        log.warn(NO_WORK_FOUND);
+        return Optional.empty();
       });
-    if (result.isEmpty()) {
-      log.warn("Only Monograph Work is supported, and there is no Work found");
-    }
-    return result;
+  }
+
+  @Override
+  public Optional<Long> toDeleteIndex(@NonNull Resource resource) {
+    return extractWork(resource)
+      .map(Resource::getResourceHash)
+      .or(() -> {
+        log.warn(NO_WORK_FOUND);
+        return Optional.empty();
+      });
   }
 
   private boolean shouldBeIndexed(BibframeIndex bi) {
@@ -102,7 +112,11 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return isOfType(resource, WORK) ? Optional.of(resource)
       : resource.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(ResourceEdge::getTarget)
+      .map(resourceEdge -> {
+        var work = resourceEdge.getTarget();
+        work.getIncomingEdges().add(resourceEdge);
+        return work;
+      })
       .findFirst();
   }
 
@@ -202,10 +216,6 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         || isNotEmpty(bii.getEditionStatements()))
       .distinct()
       .toList();
-  }
-
-  private boolean isOfType(Resource resource, ResourceTypeDictionary type) {
-    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(type.getUri()));
   }
 
   private List<BibframeInstancesInnerIdentifiersInner> extractIdentifiers(Resource resource) {

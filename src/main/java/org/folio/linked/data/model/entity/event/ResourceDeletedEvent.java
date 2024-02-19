@@ -1,4 +1,6 @@
 package org.folio.linked.data.model.entity.event;
 
-public record ResourceDeletedEvent(Long id) {
+import org.folio.linked.data.model.entity.Resource;
+
+public record ResourceDeletedEvent(Resource resource) {
 }

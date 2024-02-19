@@ -14,6 +14,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.ld.dictionary.api.ResourceType;
 import org.folio.linked.data.model.entity.Resource;
 
 @Log4j2
@@ -61,6 +62,10 @@ public class BibframeUtils {
         }
       })
       .orElse(null);
+  }
+
+  public static boolean isOfType(Resource resource, ResourceType type) {
+    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(type.getUri()));
   }
 
   public static void setEdgesId(Resource resource) {

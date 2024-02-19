@@ -7,6 +7,8 @@ import org.folio.search.domain.dto.BibframeIndex;
 
 public interface KafkaMessageMapper {
 
-  Optional<BibframeIndex> toIndex(@NonNull Resource resource);
+  Optional<BibframeIndex> toCreateIndex(@NonNull Resource resource);
+
+  Optional<Long> toDeleteIndex(@NonNull Resource resource);
 
 }

@@ -4,9 +4,7 @@ import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceDto;
@@ -16,11 +14,9 @@ import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
-import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.search.domain.dto.BibframeIndex;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +28,6 @@ public abstract class ResourceMapper {
 
   @Autowired
   private SingleResourceMapper singleResourceMapper;
-  @Autowired
-  private KafkaMessageMapper kafkaMessageMapper;
 
   @Mapping(target = "id", source = "resourceHash")
   @Mapping(target = "type", expression = "java(resourceShortInfo.getFirstType().getUri())")
@@ -64,10 +58,6 @@ public abstract class ResourceMapper {
 
   public ResourceDto toDto(Resource resource) {
     return singleResourceMapper.toDto(resource, new ResourceDto(), null, null);
-  }
-
-  public Optional<BibframeIndex> mapToIndex(@NonNull Resource resource) {
-    return kafkaMessageMapper.toIndex(resource);
   }
 
   @Mapping(target = "id", source = "resourceHash")
