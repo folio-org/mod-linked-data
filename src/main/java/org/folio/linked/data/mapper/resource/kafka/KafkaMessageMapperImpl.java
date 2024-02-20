@@ -68,7 +68,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message";
-  private static final String NO_WORK_FOUND = "Only Monograph Work is supported, and there is no Work found";
+  private static final String NO_WORK_FOUND = "No index-able work found for [{}] operation of the resource [{}]";
   private final SingleResourceMapper singleResourceMapper;
 
   @Override
@@ -84,7 +84,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         workIndex.setInstances(extractInstances(resource));
         return shouldBeIndexed(workIndex) ? workIndex : null;
       }).or(() -> {
-        log.warn(NO_WORK_FOUND);
+        log.warn(NO_WORK_FOUND, "CREATE", resource);
         return Optional.empty();
       });
   }
@@ -94,7 +94,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     return extractWork(resource)
       .map(Resource::getResourceHash)
       .or(() -> {
-        log.warn(NO_WORK_FOUND);
+        log.warn(NO_WORK_FOUND, "DELETE", resource);
         return Optional.empty();
       });
   }
