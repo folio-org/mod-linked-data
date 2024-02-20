@@ -102,6 +102,20 @@
             "type": "object",
             "$ref": "GeographicCoverage.json"
           }
+        },
+        "dateStart": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/dateStart"
+        },
+        "dateEnd": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/dateEnd"
         }
       }
     }

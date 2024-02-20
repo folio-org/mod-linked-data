@@ -9,6 +9,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
@@ -81,6 +83,8 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     putProperty(map, LANGUAGE, dto.getLanguage());
     putProperty(map, SUMMARY, dto.getSummary());
     putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());
+    putProperty(map, DATE_START, dto.getDateStart());
+    putProperty(map, DATE_END, dto.getDateEnd());
     noteMapper.putNotes(dto.getNotes(), map);
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
