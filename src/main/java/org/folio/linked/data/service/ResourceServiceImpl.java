@@ -90,20 +90,18 @@ public class ResourceServiceImpl implements ResourceService {
     deleteResource(id, true);
   }
 
-  private void deleteResource(Long id, boolean reindexWorkIfParent) {
+  private void deleteResource(Long id, boolean reindexParentWork) {
     resourceRepo.findById(id).ifPresent(resource -> {
-      deleteResourceGraphWithCircularEdges(resource);
+      breakCircularEdges(resource);
+      resourceRepo.delete(resource);
       applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
-      if (!isOfType(resource, WORK) && reindexWorkIfParent) {
-        applicationEventPublisher.publishEvent(new ResourceCreatedEvent(resource));
-      }
+      reindexParentWork(resource, reindexParentWork);
     });
   }
 
-  private void deleteResourceGraphWithCircularEdges(Resource resource) {
+  private void breakCircularEdges(Resource resource) {
     breakCircularEdges(resource, false);
     breakCircularEdges(resource, true);
-    resourceRepo.delete(resource);
   }
 
   private void breakCircularEdges(Resource resource, boolean isIncoming) {
@@ -114,6 +112,12 @@ public class ResourceServiceImpl implements ResourceService {
         .collect(Collectors.toSet());
       edges.removeAll(filtered);
     });
+  }
+
+  private void reindexParentWork(Resource resource, boolean reindexParentWork) {
+    if (!isOfType(resource, WORK) && reindexParentWork) {
+      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(resource));
+    }
   }
 
   @Override

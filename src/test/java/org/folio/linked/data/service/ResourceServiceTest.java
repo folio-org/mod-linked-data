@@ -11,7 +11,6 @@ import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -180,8 +179,11 @@ class ResourceServiceTest {
     // given
     var work = new Resource().setResourceHash(randomLong()).addType(WORK);
     var instance = new Resource().setResourceHash(randomLong()).addType(INSTANCE);
+    var instance2 = new Resource().setResourceHash(randomLong()).addType(INSTANCE);
     work.getIncomingEdges().add(new ResourceEdge(instance, work, INSTANTIATES));
+    work.getIncomingEdges().add(new ResourceEdge(instance2, work, INSTANTIATES));
     instance.getOutgoingEdges().add(new ResourceEdge(instance, work, INSTANTIATES));
+    instance.getOutgoingEdges().add(new ResourceEdge(instance2, work, INSTANTIATES));
     when(resourceRepo.findById(instance.getResourceHash())).thenReturn(Optional.of(instance));
 
     // when
@@ -192,7 +194,8 @@ class ResourceServiceTest {
     var resourceCreatedEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreatedEventCaptor.capture());
     assertEquals(instance, resourceCreatedEventCaptor.getValue().resource());
-    assertTrue(work.getIncomingEdges().isEmpty());
+    assertThat(work.getIncomingEdges()).hasSize(1);
+    assertEquals(work.getIncomingEdges().iterator().next().getSource(), instance2);
   }
 
   @Test
