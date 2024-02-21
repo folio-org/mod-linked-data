@@ -114,7 +114,7 @@
     },
     "env": [
       { "name": "ENV", "value": "folio" },
-      { "name": "JAVA_OPTIONS", "value": "-XX:MaxRAMPercentage=85.0" },
+      { "name": "JAVA_OPTIONS", "value": "-XX:MaxRAMPercentage=85.0 -Xss4m" },
       { "name": "DB_HOST", "value": "postgres" },
       { "name": "DB_PORT", "value": "5432" },
       { "name": "DB_USERNAME", "value": "folio_admin" },

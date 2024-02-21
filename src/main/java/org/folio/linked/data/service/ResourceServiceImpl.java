@@ -11,6 +11,7 @@ import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
@@ -29,6 +30,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -48,6 +50,7 @@ public class ResourceServiceImpl implements ResourceService {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     var persisted = resourceRepo.save(mapped);
+    log.info("createResource [{}]\nfrom Marva DTO [{}]", persisted, resourceDto);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return resourceMapper.toDto(persisted);
   }
@@ -56,6 +59,7 @@ public class ResourceServiceImpl implements ResourceService {
   public Long createResource(org.folio.marc4ld.model.Resource marc4ldResource) {
     var mapped = resourceMapper.toEntity(marc4ldResource);
     var persisted = resourceRepo.save(mapped);
+    log.info("createResource [{}]\nfrom marc4ldResource [{}]", persisted, marc4ldResource);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return persisted.getResourceHash();
   }
@@ -69,6 +73,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public ResourceDto updateResource(Long id, ResourceDto resourceDto) {
+    log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
     if (!resourceRepo.existsById(id)) {
       throw getResourceNotFoundException(id);
     }
@@ -87,23 +92,22 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public void deleteResource(Long id) {
+    log.info("deleteResource [{}]", id);
     deleteResource(id, true);
   }
 
-  private void deleteResource(Long id, boolean reindexWorkIfParent) {
+  private void deleteResource(Long id, boolean reindexParentWork) {
     resourceRepo.findById(id).ifPresent(resource -> {
-      deleteResourceGraphWithCircularEdges(resource);
+      breakCircularEdges(resource);
+      resourceRepo.delete(resource);
       applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
-      if (!isOfType(resource, WORK) && reindexWorkIfParent) {
-        applicationEventPublisher.publishEvent(new ResourceCreatedEvent(resource));
-      }
+      reindexParentWork(resource, reindexParentWork);
     });
   }
 
-  private void deleteResourceGraphWithCircularEdges(Resource resource) {
+  private void breakCircularEdges(Resource resource) {
     breakCircularEdges(resource, false);
     breakCircularEdges(resource, true);
-    resourceRepo.delete(resource);
   }
 
   private void breakCircularEdges(Resource resource, boolean isIncoming) {
@@ -114,6 +118,12 @@ public class ResourceServiceImpl implements ResourceService {
         .collect(Collectors.toSet());
       edges.removeAll(filtered);
     });
+  }
+
+  private void reindexParentWork(Resource resource, boolean reindexParentWork) {
+    if (!isOfType(resource, WORK) && reindexParentWork) {
+      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(resource));
+    }
   }
 
   @Override

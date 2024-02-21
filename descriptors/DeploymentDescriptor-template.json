@@ -2,6 +2,6 @@
   "srvcId": "@artifactId@-@version@",
   "nodeId": "localhost",
   "descriptor": {
-    "exec": "java -Dserver.port=%p -Dspring.profiles.active=folio,search -jar ../mod-linked-data/target/@artifactId@-@version@.jar"
+    "exec": "java -Dserver.port=%p -Dspring.profiles.active=folio,search -Xss4m -jar ../mod-linked-data/target/@artifactId@-@version@.jar"
   }
 }
