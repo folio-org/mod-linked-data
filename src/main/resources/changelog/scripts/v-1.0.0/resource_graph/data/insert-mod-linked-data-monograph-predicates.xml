@@ -3674,7 +3674,7 @@
       </sqlCheck>
     </preConditions>
     <insert tableName="predicate_lookup">
-      <column name="predicate_hash" value="7957687350759571585L"/>
+      <column name="predicate_hash" value="7957687350759571585"/>
       <column name="predicate" value="http://bibfra.me/vocab/lite/isDefinedBy"/>
     </insert>
   </changeSet>
