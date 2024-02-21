@@ -184,6 +184,12 @@
           }
         }
       ],
+      "http://bibfra.me/vocab/lite/dateStart": [
+        "2024"
+      ],
+      "http://bibfra.me/vocab/lite/dateEnd": [
+        "2025"
+      ],
       "_instanceReference": [
         {
           "id": "%INSTANCE_ID%"

@@ -35,6 +35,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
@@ -1214,7 +1216,13 @@ class ResourceControllerIT {
   private void validateWork(Resource work, boolean validateFullInstance, boolean isDeprecated) {
     assertThat(work.getResourceHash()).isNotNull();
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
-    assertThat(work.getDoc().size()).isEqualTo(8);
+    if (isDeprecated) {
+      assertThat(work.getDoc().size()).isEqualTo(8);
+    } else {
+      assertThat(work.getDoc().size()).isEqualTo(10);
+      validateLiterals(work, DATE_START.getValue(), List.of("2024"));
+      validateLiterals(work, DATE_END.getValue(), List.of("2025"));
+    }
     validateLiteral(work, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, LANGUAGE.getValue(), "eng");

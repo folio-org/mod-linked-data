@@ -30,6 +30,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
@@ -471,7 +473,9 @@ public class MonographTestUtil {
         entry(RESPONSIBILITY_STATEMENT, List.of("statement of responsibility")),
         entry(BIBLIOGRAPHY_NOTE, List.of("bibliography note")),
         entry(LANGUAGE_NOTE, List.of("language note", "another note")),
-        entry(NOTE, List.of("note", "another note"))
+        entry(NOTE, List.of("note", "another note")),
+        entry(DATE_START, List.of("2024")),
+        entry(DATE_END, List.of("2025"))
       ),
       Set.of(WORK),
       pred2OutgoingResources
