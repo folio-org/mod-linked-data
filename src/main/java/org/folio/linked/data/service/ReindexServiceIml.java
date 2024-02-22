@@ -3,6 +3,7 @@ package org.folio.linked.data.service;
 import static java.lang.Boolean.TRUE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
+import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 
 import jakarta.persistence.EntityManager;
 import java.util.Objects;
@@ -49,25 +50,25 @@ public class ReindexServiceIml implements ReindexService {
         ? resourceRepository.findAllByType(Set.of(WORK.getUri()), pageable)
         : resourceRepository.findNotIndexedByType(Set.of(WORK.getUri()), pageable);
       var indexedIds = page.get()
-        .map(resource -> {
+        .map(work -> {
             try {
-              var id = kafkaMessageMapper.toCreateIndex(resource)
+              var id = kafkaMessageMapper.toIndex(work, CREATE)
                 .map(bibframeIndex -> {
-                  log.info("Sending resource for reindexing with id {}", bibframeIndex.getId());
+                  log.info("Sending work for reindexing with id {}", bibframeIndex.getId());
                   kafkaSender.sendResourceCreated(bibframeIndex, false);
                   recordsIndexed.getAndIncrement();
-                  return resource.getResourceHash();
+                  return work.getResourceHash();
                 })
                 .orElseGet(() -> {
-                  log.info("Resource with id {} wasn't sent for reindexing, because it doesn't contain any "
-                    + "indexable values", resource.getResourceHash());
+                  log.info("Work with id {} wasn't sent for reindexing, because it doesn't contain any "
+                    + "indexable values", work.getResourceHash());
                   return null;
                 });
               // detach the resource entity from entity manager, enabling garbage collection
-              entityManager.detach(resource);
+              entityManager.detach(work);
               return id;
             } catch (Exception ex) {
-              log.warn("Failed to send resource for reindexing with id {}", resource.getResourceHash(), ex);
+              log.warn("Failed to send work for reindexing with id {}", work.getResourceHash(), ex);
               return null;
             }
           }

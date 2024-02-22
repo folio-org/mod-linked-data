@@ -1,13 +1,16 @@
 package org.folio.linked.data.service;
 
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.linked.data.util.Constants.EXISTS_ALREADY;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +23,10 @@ import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.ResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
+import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
+  private static final String NOT_INDEXED =
+    "Resource [%s] has been %s without indexing, because no Work was found in it's graph";
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
@@ -51,7 +58,11 @@ public class ResourceServiceImpl implements ResourceService {
     }
     var persisted = resourceRepo.save(mapped);
     log.info("createResource [{}]\nfrom Marva DTO [{}]", persisted, resourceDto);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    extractWork(persisted)
+      .map(ResourceCreatedEvent::new)
+      .ifPresentOrElse(applicationEventPublisher::publishEvent,
+        () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "created"))
+      );
     return resourceMapper.toDto(persisted);
   }
 
@@ -60,7 +71,11 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceMapper.toEntity(marc4ldResource);
     var persisted = resourceRepo.save(mapped);
     log.info("createResource [{}]\nfrom marc4ldResource [{}]", persisted, marc4ldResource);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    extractWork(persisted)
+      .map(ResourceCreatedEvent::new)
+      .ifPresentOrElse(applicationEventPublisher::publishEvent,
+        () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "created"))
+      );
     return persisted.getResourceHash();
   }
 
@@ -74,12 +89,19 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceDto updateResource(Long id, ResourceDto resourceDto) {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
-    if (!resourceRepo.existsById(id)) {
-      throw getResourceNotFoundException(id);
-    }
+    var old = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
     addInternalFields(resourceDto, id);
-    deleteResource(id, false);
-    return createResource(resourceDto);
+    var oldWork = extractWork(old).map(Resource::new).orElse(null);
+    breakCircularEdges(old);
+    resourceRepo.delete(old);
+    var mapped = resourceMapper.toEntity(resourceDto);
+    var persisted = resourceRepo.save(mapped);
+    extractWork(persisted)
+      .map(newWork -> new ResourceUpdatedEvent(newWork, oldWork))
+      .ifPresentOrElse(applicationEventPublisher::publishEvent,
+        () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "updated"))
+      );
+    return resourceMapper.toDto(persisted);
   }
 
   private void addInternalFields(ResourceDto resourceDto, Long id) {
@@ -93,37 +115,62 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public void deleteResource(Long id) {
     log.info("deleteResource [{}]", id);
-    deleteResource(id, true);
-  }
-
-  private void deleteResource(Long id, boolean reindexParentWork) {
     resourceRepo.findById(id).ifPresent(resource -> {
+      var oldWork = extractWork(resource).map(Resource::new).orElse(null);
       breakCircularEdges(resource);
       resourceRepo.delete(resource);
-      applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
-      reindexParentWork(resource, reindexParentWork);
+      if (isOfType(resource, WORK)) {
+        applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
+      } else {
+        reindexParentWork(id, resource, oldWork);
+      }
     });
+  }
+
+  private void reindexParentWork(Long id, Resource resource, Resource oldWork) {
+    extractWork(resource)
+      .map(work -> {
+        work.getIncomingEdges().remove(new ResourceEdge(resource, work, INSTANTIATES));
+        return new ResourceUpdatedEvent(work, oldWork);
+      })
+      .ifPresentOrElse(applicationEventPublisher::publishEvent,
+        () -> log.warn(format(NOT_INDEXED, id, "deleted"))
+      );
+  }
+
+  private Optional<Resource> extractWork(Resource resource) {
+    return isOfType(resource, WORK) ? Optional.of(resource)
+      : resource.getOutgoingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .map(resourceEdge -> {
+        var work = resourceEdge.getTarget();
+        work.getIncomingEdges().add(resourceEdge);
+        return work;
+      })
+      .findFirst();
   }
 
   private void breakCircularEdges(Resource resource) {
-    breakCircularEdges(resource, false);
-    breakCircularEdges(resource, true);
+    breakOutgoingCircularEdges(resource);
+    breakIncomingCircularEdges(resource);
   }
 
-  private void breakCircularEdges(Resource resource, boolean isIncoming) {
-    (isIncoming ? resource.getIncomingEdges() : resource.getOutgoingEdges()).forEach(edge -> {
-      var edges = isIncoming ? edge.getSource().getOutgoingEdges() : edge.getTarget().getIncomingEdges();
-      var filtered = edges.stream()
-        .filter(e -> resource.equals(isIncoming ? e.getTarget() : e.getSource()))
+  private void breakOutgoingCircularEdges(Resource resource) {
+    resource.getOutgoingEdges().forEach(edge -> {
+      var filtered = edge.getTarget().getIncomingEdges().stream()
+        .filter(e -> resource.equals(e.getSource()))
         .collect(Collectors.toSet());
-      edges.removeAll(filtered);
+      edge.getTarget().getIncomingEdges().removeAll(filtered);
     });
   }
 
-  private void reindexParentWork(Resource resource, boolean reindexParentWork) {
-    if (!isOfType(resource, WORK) && reindexParentWork) {
-      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(resource));
-    }
+  private void breakIncomingCircularEdges(Resource resource) {
+    resource.getIncomingEdges().forEach(edge -> {
+      var filtered = edge.getSource().getOutgoingEdges().stream()
+        .filter(e -> resource.equals(e.getTarget()))
+        .collect(Collectors.toSet());
+      edge.getSource().getOutgoingEdges().removeAll(filtered);
+    });
   }
 
   @Override

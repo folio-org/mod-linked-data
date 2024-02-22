@@ -1,6 +1,8 @@
 package org.folio.linked.data.integration;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.search.domain.dto.ResourceEventType.CREATE;
+import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -8,6 +10,7 @@ import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
+import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.springframework.context.annotation.Profile;
@@ -29,14 +32,23 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
-    kafkaMessageMapper.toCreateIndex(resourceCreatedEvent.resource())
+    kafkaMessageMapper.toIndex(resourceCreatedEvent.work(), CREATE)
       .ifPresent(bibframeIndex -> kafkaSender.sendResourceCreated(bibframeIndex, true));
+  }
+
+  @TransactionalEventListener
+  public void afterUpdate(ResourceUpdatedEvent resourceUpdatedEvent) {
+    log.info("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
+    kafkaMessageMapper.toIndex(resourceUpdatedEvent.newWork(), UPDATE)
+      .ifPresent(newWorkIndex -> kafkaSender.sendResourceUpdated(newWorkIndex,
+        kafkaMessageMapper.toIndex(resourceUpdatedEvent.oldWork(), UPDATE).orElse(null))
+      );
   }
 
   @TransactionalEventListener
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
     log.info("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
-    kafkaMessageMapper.toDeleteIndex(resourceDeletedEvent.resource())
+    kafkaMessageMapper.toDeleteIndexId(resourceDeletedEvent.work())
       .ifPresent(kafkaSender::sendResourceDeleted);
   }
 
@@ -44,7 +56,7 @@ public class ResourceModificationEventListener {
   @Transactional
   public void afterIndex(ResourceIndexedEvent resourceIndexedEvent) {
     log.info("ResourceIndexedEvent received [{}]", resourceIndexedEvent);
-    resourceRepository.updateIndexDate(resourceIndexedEvent.id());
+    resourceRepository.updateIndexDate(resourceIndexedEvent.workId());
   }
 
 }

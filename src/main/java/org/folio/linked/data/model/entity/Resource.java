@@ -3,6 +3,7 @@ package org.folio.linked.data.model.entity;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -71,7 +73,24 @@ public class Resource {
   @OneToMany(mappedBy = "source", cascade = ALL, orphanRemoval = true)
   private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
 
-  public Resource addType(ResourceTypeEntity type) {
+  public Resource(@NonNull Resource that) {
+    this.resourceHash = that.resourceHash;
+    this.label = that.label;
+    this.doc = (JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
+    this.inventoryId = that.inventoryId;
+    this.srsId = that.srsId;
+    this.indexDate = that.indexDate;
+    this.types = new LinkedHashSet<>(that.getTypes());
+    this.outgoingEdges = that.getOutgoingEdges().stream().map(ResourceEdge::new).collect(Collectors.toSet());
+    this.incomingEdges = that.getIncomingEdges().stream()
+      .map(ie -> this.getOutgoingEdges().stream()
+        .filter(oe -> oe.equals(ie))
+        .findFirst()
+        .orElse(new ResourceEdge(ie)))
+      .collect(Collectors.toSet());
+  }
+
+  public Resource addType(@NonNull ResourceTypeEntity type) {
     if (isNull(types)) {
       types = new LinkedHashSet<>();
     }
@@ -79,7 +98,7 @@ public class Resource {
     return this;
   }
 
-  public Resource addType(org.folio.ld.dictionary.ResourceTypeDictionary typeDictionary) {
+  public Resource addType(@NonNull org.folio.ld.dictionary.ResourceTypeDictionary typeDictionary) {
     this.addType(new ResourceTypeEntity(typeDictionary.getHash(), typeDictionary.getUri(), null));
     return this;
   }

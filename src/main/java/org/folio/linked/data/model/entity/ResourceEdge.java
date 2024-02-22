@@ -52,6 +52,13 @@ public class ResourceEdge {
     this.predicate = new PredicateEntity(predicate.getHash(), predicate.getUri());
   }
 
+  public ResourceEdge(@NonNull ResourceEdge that) {
+    this.id = new ResourceEdgePk(that.id.getSourceHash(), that.id.getTargetHash(), that.id.getPredicateHash());
+    this.source = that.getSource();
+    this.target = that.getTarget();
+    this.predicate = that.getPredicate();
+  }
+
   @Override
   public String toString() {
     return "ResourceEdge{"

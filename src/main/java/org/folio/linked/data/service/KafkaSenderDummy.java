@@ -20,6 +20,11 @@ public class KafkaSenderDummy implements KafkaSender {
   }
 
   @Override
+  public void sendResourceUpdated(BibframeIndex newBibframeIndex, BibframeIndex oldBibframeIndex) {
+    log.debug("sendResourceUpdated is ignored by dummy kafka sender, because search feature is disabled");
+  }
+
+  @Override
   public void sendResourceDeleted(Long id) {
     log.debug("sendResourceDeleted is ignored by dummy kafka sender, because search feature is disabled");
   }

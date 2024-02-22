@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.resource.kafka;
 
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
@@ -29,6 +30,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.cleanDate;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
+import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.api.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -58,6 +61,7 @@ import org.folio.search.domain.dto.BibframeInstancesInnerPublicationsInner;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
 import org.folio.search.domain.dto.BibframeSubjectsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
+import org.folio.search.domain.dto.ResourceEventType;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 
@@ -67,36 +71,38 @@ import org.springframework.stereotype.Component;
 public class KafkaMessageMapperImpl implements KafkaMessageMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
-    "Unknown type(s) [{}] of [{}] was ignored during Resource [id = {}] conversion to BibframeIndex message";
-  private static final String NO_WORK_FOUND = "No index-able work found for [{}] operation of the resource [{}]";
+    "Unknown type(s) [{}] of [{}] was ignored during Resource [workId = {}] conversion to BibframeIndex message";
+  private static final String NO_INDEXABLE_WORK_FOUND =
+    "No index-able work found for [{}] operation of the resource [{}]";
+  private static final String NOT_A_WORK = "Not a Work resource [%s] has been passed to indexation for [%s] operation";
   private final SingleResourceMapper singleResourceMapper;
 
   @Override
-  public Optional<BibframeIndex> toCreateIndex(@NonNull Resource resource) {
-    return extractWork(resource)
-      .map(work -> {
-        var workIndex = new BibframeIndex(work.getResourceHash().toString());
-        workIndex.setTitles(extractTitles(work));
-        workIndex.setContributors(extractContributors(work));
-        workIndex.setLanguages(extractLanguages(work));
-        workIndex.setClassifications(extractClassifications(work));
-        workIndex.setSubjects(extractSubjects(work));
-        workIndex.setInstances(extractInstances(resource));
-        return shouldBeIndexed(workIndex) ? workIndex : null;
-      }).or(() -> {
-        log.warn(NO_WORK_FOUND, "CREATE", resource);
-        return Optional.empty();
-      });
+  public Optional<BibframeIndex> toIndex(@NonNull Resource work, ResourceEventType eventType) {
+    if (!isOfType(work, WORK)) {
+      throw new LinkedDataServiceException(format(NOT_A_WORK, work, eventType.getValue()));
+    }
+    var workIndex = new BibframeIndex(String.valueOf(work.getResourceHash()));
+    workIndex.setTitles(extractTitles(work));
+    workIndex.setContributors(extractContributors(work));
+    workIndex.setLanguages(extractLanguages(work));
+    workIndex.setClassifications(extractClassifications(work));
+    workIndex.setSubjects(extractSubjects(work));
+    workIndex.setInstances(extractInstances(work));
+    if (shouldBeIndexed(workIndex)) {
+      return Optional.of(workIndex);
+    } else {
+      log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), work);
+      return Optional.empty();
+    }
   }
 
   @Override
-  public Optional<Long> toDeleteIndex(@NonNull Resource resource) {
-    return extractWork(resource)
-      .map(Resource::getResourceHash)
-      .or(() -> {
-        log.warn(NO_WORK_FOUND, "DELETE", resource);
-        return Optional.empty();
-      });
+  public Optional<Long> toDeleteIndexId(@NonNull Resource work) {
+    if (!isOfType(work, WORK)) {
+      throw new LinkedDataServiceException(format(NOT_A_WORK, work, DELETE.getValue()));
+    }
+    return Optional.of(work.getResourceHash());
   }
 
   private boolean shouldBeIndexed(BibframeIndex bi) {
@@ -106,18 +112,6 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       || isNotEmpty(bi.getClassifications())
       || isNotEmpty(bi.getSubjects())
       || isNotEmpty(bi.getInstances());
-  }
-
-  private Optional<Resource> extractWork(Resource resource) {
-    return isOfType(resource, WORK) ? Optional.of(resource)
-      : resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(resourceEdge -> {
-        var work = resourceEdge.getTarget();
-        work.getIncomingEdges().add(resourceEdge);
-        return work;
-      })
-      .findFirst();
   }
 
   private List<BibframeTitlesInner> extractTitles(Resource resource) {
