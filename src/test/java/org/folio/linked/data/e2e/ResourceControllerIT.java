@@ -903,8 +903,7 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
         .andExpect(jsonPath(toWorkGovernmentPublicationCode(workBase), equalTo("a")))
         .andExpect(jsonPath(toWorkGovernmentPublicationTerm(workBase), equalTo("Autonomous")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtypea")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationLabel(workBase), equalTo("Autonomous")));
+        .andExpect(jsonPath(toWorkGovernmentPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
     }
   }
@@ -1329,7 +1328,7 @@ class ResourceControllerIT {
     assertThat(governmentPublication.getDoc().size()).isEqualTo(3);
     validateLiterals(governmentPublication, CODE.getValue(), List.of("a"));
     validateLiterals(governmentPublication, TERM.getValue(), List.of("Autonomous"));
-    validateLiterals(governmentPublication, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mgovtpubtypea"));
+    validateLiterals(governmentPublication, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a"));
   }
 
   private void validateResourceEdge(ResourceEdge edge, Resource source, Resource target, String predicate) {
@@ -1811,10 +1810,6 @@ class ResourceControllerIT {
 
   private String toWorkGovernmentPublicationLink(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toWorkGovernmentPublicationLabel(String workBase) {
-    return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), path("label"));
   }
 
   private String toWorkContentCode(String workBase) {

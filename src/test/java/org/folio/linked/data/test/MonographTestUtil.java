@@ -457,7 +457,7 @@ public class MonographTestUtil {
       Map.of(
         CODE, List.of("a"),
         TERM, List.of("Autonomous"),
-        LINK, List.of("http://id.loc.gov/vocabulary/mgovtpubtypea")
+        LINK, List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a")
       ),
       Set.of(CATEGORY),
       emptyMap()

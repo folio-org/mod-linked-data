@@ -121,7 +121,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "GovernmentPublication.json"
+            "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
         }
