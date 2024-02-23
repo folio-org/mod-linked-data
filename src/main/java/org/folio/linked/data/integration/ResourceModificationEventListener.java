@@ -1,5 +1,6 @@
 package org.folio.linked.data.integration;
 
+import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
@@ -40,8 +41,13 @@ public class ResourceModificationEventListener {
   public void afterUpdate(ResourceUpdatedEvent resourceUpdatedEvent) {
     log.info("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
     kafkaMessageMapper.toIndex(resourceUpdatedEvent.newWork(), UPDATE)
-      .ifPresent(newWorkIndex -> kafkaSender.sendResourceUpdated(newWorkIndex,
-        kafkaMessageMapper.toIndex(resourceUpdatedEvent.oldWork(), UPDATE).orElse(null))
+      .ifPresentOrElse(newWorkIndex -> kafkaSender.sendResourceUpdated(newWorkIndex,
+          kafkaMessageMapper.toIndex(resourceUpdatedEvent.oldWork(), UPDATE).orElse(null)),
+        () -> ofNullable(resourceUpdatedEvent.oldWork()).ifPresent(oldWork -> {
+          log.info("Updated Work resource [{}] contains no indexable values, removing it's index",
+            oldWork.getResourceHash());
+          kafkaSender.sendResourceDeleted(oldWork.getResourceHash());
+        })
       );
   }
 

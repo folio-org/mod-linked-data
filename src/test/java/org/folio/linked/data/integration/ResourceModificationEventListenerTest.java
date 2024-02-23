@@ -84,7 +84,7 @@ class ResourceModificationEventListenerTest {
   }
 
   @Test
-  void afterUpdate_shouldNotSendResourceCreatedMessageToKafka_whenNothingToIndex() {
+  void afterUpdate_shouldNotSendResourceCreatedMessageToKafka_whenNothingToIndexAndNoOldWork() {
     //given
     var resource = new Resource().setResourceHash(1L);
     when(kafkaMessageMapper.toIndex(resource, UPDATE)).thenReturn(Optional.empty());
@@ -94,6 +94,20 @@ class ResourceModificationEventListenerTest {
 
     //then
     verify(kafkaSender, never()).sendResourceUpdated(any(), any());
+  }
+
+  @Test
+  void afterUpdate_shouldSendResourceDeletedMessageToKafka_whenNothingToIndexInNewWorkButOldWorkProvided() {
+    //given
+    var resource = new Resource().setResourceHash(1L);
+    when(kafkaMessageMapper.toIndex(resource, UPDATE)).thenReturn(Optional.empty());
+    var oldWork = new Resource().setResourceHash(2L);
+
+    //when
+    resourceModificationEventListener.afterUpdate(new ResourceUpdatedEvent(resource, oldWork));
+
+    //then
+    verify(kafkaSender).sendResourceDeleted(oldWork.getResourceHash());
   }
 
   @Test
