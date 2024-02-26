@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.resource.monograph.instance.sub;
+package org.folio.linked.data.mapper.resource.common;
 
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -10,25 +10,32 @@ import static org.folio.linked.data.util.BibframeUtils.putProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Category;
-import org.folio.linked.data.mapper.resource.common.CoreMapper;
+import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceReference;
+import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.model.entity.Resource;
 
 @RequiredArgsConstructor
-public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUnit {
+public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
+
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Instance.class, InstanceReference.class, Work.class,
+    WorkReference.class);
 
   private final CoreMapper coreMapper;
-  private final BiFunction<Category, Object, Object> categoryConsumer;
+  private final BiConsumer<Category, Object> categoryConsumer;
   private final ResourceTypeDictionary type;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var category = coreMapper.toDtoWithEdges(source, Category.class, false);
     category.setId(String.valueOf(source.getResourceHash()));
-    categoryConsumer.apply(category, parentDto);
+    categoryConsumer.accept(category, parentDto);
     return parentDto;
   }
 
@@ -50,6 +57,11 @@ public abstract class CategoryMapperUnit implements InstanceSubResourceMapperUni
     putProperty(map, LINK, dto.getLink());
     putProperty(map, SOURCE, dto.getSource());
     return map.isEmpty() ? null : coreMapper.toJson(map);
+  }
+
+  @Override
+  public Set<Class<?>> supportedParents() {
+    return SUPPORTED_PARENTS;
   }
 
 }

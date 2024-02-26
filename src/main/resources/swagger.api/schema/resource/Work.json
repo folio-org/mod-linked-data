@@ -116,6 +116,14 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/dateEnd"
+        },
+        "governmentPublication": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
         }
       }
     }

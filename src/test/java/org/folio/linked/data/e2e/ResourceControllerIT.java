@@ -17,6 +17,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
+import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
@@ -681,8 +682,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceRepo.save(getSampleInstanceResource(null, work));
     assertThat(resourceRepo.findById(instance.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(35);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(41);
+    assertThat(resourceRepo.count()).isEqualTo(36);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(42);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -693,9 +694,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(instance.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(34);
+    assertThat(resourceRepo.count()).isEqualTo(35);
     assertThat(resourceEdgeRepository.findById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(23);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(24);
     checkKafkaMessageDeletedSent(work.getResourceHash());
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(work.getResourceHash());
   }
@@ -705,8 +706,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(35);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(41);
+    assertThat(resourceRepo.count()).isEqualTo(36);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(42);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -717,7 +718,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(34);
+    assertThat(resourceRepo.count()).isEqualTo(35);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(23);
     checkKafkaMessageDeletedSent(existed.getResourceHash());
@@ -897,7 +898,12 @@ class ResourceControllerIT {
     if (workBase.equals(toWork())) {
       resultActions
         .andExpect(jsonPath(toInstanceReference(workBase), notNullValue()))
-        .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))));
+        .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
+        .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
+        .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
+        .andExpect(jsonPath(toWorkGovernmentPublicationCode(workBase), equalTo("a")))
+        .andExpect(jsonPath(toWorkGovernmentPublicationTerm(workBase), equalTo("Autonomous")))
+        .andExpect(jsonPath(toWorkGovernmentPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
     }
   }
@@ -1234,6 +1240,9 @@ class ResourceControllerIT {
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkClassification(outgoingEdgeIterator.next(), work);
+    if (!isDeprecated) {
+      validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
+    }
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR.getUri());
@@ -1306,6 +1315,20 @@ class ResourceControllerIT {
     assertThat(creator.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("name-" + type);
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).size()).isEqualTo(1);
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).get(0).asText()).isEqualTo("2002801801-" + type);
+  }
+
+  private void validateWorkGovernmentPublication(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(GOVERNMENT_PUBLICATION.getUri());
+    var governmentPublication = edge.getTarget();
+    var types = governmentPublication.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(CATEGORY.getUri());
+    assertThat(governmentPublication.getLabel()).isEqualTo("Autonomous");
+    assertThat(governmentPublication.getDoc().size()).isEqualTo(3);
+    validateLiterals(governmentPublication, CODE.getValue(), List.of("a"));
+    validateLiterals(governmentPublication, TERM.getValue(), List.of("Autonomous"));
+    validateLiterals(governmentPublication, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a"));
   }
 
   private void validateResourceEdge(ResourceEdge edge, Resource source, Resource target, String predicate) {
@@ -1767,6 +1790,26 @@ class ResourceControllerIT {
 
   private String toWorkGeographicCoverageLabel(String workBase) {
     return join(".", workBase, dynamicArrayPath(GEOGRAPHIC_COVERAGE_REF), path("label"));
+  }
+
+  private String toWorkDateStart(String workBase) {
+    return join(".", workBase, arrayPath(DATE_START.getValue()));
+  }
+
+  private String toWorkDateEnd(String workBase) {
+    return join(".", workBase, arrayPath(DATE_END.getValue()));
+  }
+
+  private String toWorkGovernmentPublicationCode(String workBase) {
+    return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(CODE.getValue()));
+  }
+
+  private String toWorkGovernmentPublicationTerm(String workBase) {
+    return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(TERM.getValue()));
+  }
+
+  private String toWorkGovernmentPublicationLink(String workBase) {
+    return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toWorkContentCode(String workBase) {

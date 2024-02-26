@@ -13,6 +13,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
+import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
@@ -452,6 +453,16 @@ public class MonographTestUtil {
     ).setLabel("Europe")
       .setResourceHash(102L);
 
+    var governmentPublication = createResource(
+      Map.of(
+        CODE, List.of("a"),
+        TERM, List.of("Autonomous"),
+        LINK, List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a")
+      ),
+      Set.of(CATEGORY),
+      emptyMap()
+    ).setLabel("Autonomous");
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
     pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
@@ -463,6 +474,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(CONTENT, List.of(content));
     pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
     pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
+    pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
 
     var work = createResource(
       Map.ofEntries(
