@@ -152,8 +152,8 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
-import org.folio.linked.data.service.ResourceService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
+import org.folio.linked.data.utils.ResourceTestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,7 +193,7 @@ class ResourceControllerIT {
   @Autowired
   private JdbcTemplate jdbcTemplate;
   @Autowired
-  private ResourceService resourceService;
+  private ResourceTestService resourceTestService;
   private LookupResources lookupResources;
 
   @BeforeEach
@@ -225,11 +225,9 @@ class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var bibframe = persistedOptional.get();
+    var instanceResource = resourceTestService.getResourceById(id, 3);
     // the 'isDeprecated' argument is to be removed after wireframe UI migration
-    validateInstance(bibframe, true, true);
+    validateInstance(instanceResource, true, true);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
@@ -255,11 +253,9 @@ class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var bibframe = persistedOptional.get();
+    var instanceResource = resourceTestService.getResourceById(id, 3);
     // the 'isDeprecated' argument is to be removed after wireframe UI migration
-    validateInstance(bibframe, true, false);
+    validateInstance(instanceResource, true, false);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(Long.valueOf(workId));
   }
@@ -286,7 +282,7 @@ class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
-    var workResource = resourceService.getResource(Long.parseLong(id), true);
+    var workResource = resourceTestService.getResourceById(id, 4);
     // the 'isDeprecated' argument is to be removed after wireframe UI migration
     validateWork(workResource, true, false);
     checkKafkaMessageCreatedSentAndMarkedAsIndexed(workResource.getResourceHash());
@@ -314,9 +310,7 @@ class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var instance = persistedOptional.get();
+    var instance = resourceTestService.getResourceById(id, 1);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEmpty();
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -349,9 +343,7 @@ class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var instance = persistedOptional.get();
+    var instance = resourceTestService.getResourceById(id, 1);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEmpty();
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -384,9 +376,7 @@ class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var instance = persistedOptional.get();
+    var instance = resourceTestService.getResourceById(id, 1);
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEmpty();
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -484,9 +474,7 @@ class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var updatedInstance = persistedOptional.get();
+    var updatedInstance = resourceTestService.getResourceById(id, 1);
     assertThat(updatedInstance.getResourceHash()).isNotNull();
     assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
     assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -529,9 +517,7 @@ class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var instanceId = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(instanceId));
-    assertThat(persistedOptional).isPresent();
-    var updatedInstance = persistedOptional.get();
+    var updatedInstance = resourceTestService.getResourceById(instanceId, 1);
     assertThat(updatedInstance.getResourceHash()).isNotNull();
     assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
     assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -573,7 +559,7 @@ class ResourceControllerIT {
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
 
-    var updatedWork = resourceService.getResource(Long.parseLong(id), true);
+    var updatedWork = resourceTestService.getResourceById(id, 1);
     assertThat(updatedWork.getResourceHash()).isNotNull();
     assertThat(updatedWork.getLabel()).isEqualTo(originalWork.getLabel());
     assertThat(updatedWork.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());

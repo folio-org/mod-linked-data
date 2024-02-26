@@ -153,19 +153,6 @@ public class ResourceServiceImpl implements ResourceService {
     return resourceMapper.toResourceGraphDto(resource);
   }
 
-  @Override
-  public Resource getResource(Long id, boolean includeIncomingEdges) {
-    return resourceRepo.findById(id)
-      .map(resource -> {
-        if (includeIncomingEdges) {
-          // force loading of incoming edges
-          resource.getIncomingEdges().size();
-        }
-        return resource;
-      })
-      .orElseThrow(() -> getResourceNotFoundException(id));
-  }
-
   private NotFoundException getResourceNotFoundException(Long id) {
     return new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
   }
