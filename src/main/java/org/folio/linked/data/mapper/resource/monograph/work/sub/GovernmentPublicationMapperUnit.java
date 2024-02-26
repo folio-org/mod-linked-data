@@ -17,9 +17,8 @@ public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
   public GovernmentPublicationMapperUnit(CoreMapper coreMapper) {
     super(coreMapper, (category, destination) -> {
       if (destination instanceof Work work) {
-        return work.addGovernmentPublicationItem(category);
+        work.addGovernmentPublicationItem(category);
       }
-      return null;
     }, CATEGORY);
   }
 }

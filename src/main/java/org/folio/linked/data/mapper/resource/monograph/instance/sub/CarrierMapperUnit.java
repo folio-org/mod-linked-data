@@ -18,12 +18,11 @@ public class CarrierMapperUnit extends CategoryMapperUnit {
   public CarrierMapperUnit(CoreMapper coreMapper) {
     super(coreMapper, (category, destination) -> {
       if (destination instanceof Instance instance) {
-        return instance.addCarrierItem(category);
+        instance.addCarrierItem(category);
       }
       if (destination instanceof InstanceReference instance) {
-        return instance.addCarrierItem(category);
+        instance.addCarrierItem(category);
       }
-      return null;
     }, CATEGORY);
   }
 }

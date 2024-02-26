@@ -17,9 +17,8 @@ public class MediaMapperUnit extends CategoryMapperUnit {
   public MediaMapperUnit(CoreMapper coreMapper) {
     super(coreMapper, (category, destination) -> {
       if (destination instanceof Instance instance) {
-        return instance.addMediaItem(category);
+        instance.addMediaItem(category);
       }
-      return null;
     }, CATEGORY);
   }
 }

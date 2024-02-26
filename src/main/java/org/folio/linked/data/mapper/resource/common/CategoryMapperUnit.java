@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Category;
@@ -28,14 +28,14 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
     WorkReference.class);
 
   private final CoreMapper coreMapper;
-  private final BiFunction<Category, Object, Object> categoryConsumer;
+  private final BiConsumer<Category, Object> categoryConsumer;
   private final ResourceTypeDictionary type;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var category = coreMapper.toDtoWithEdges(source, Category.class, false);
     category.setId(String.valueOf(source.getResourceHash()));
-    categoryConsumer.apply(category, parentDto);
+    categoryConsumer.accept(category, parentDto);
     return parentDto;
   }
 

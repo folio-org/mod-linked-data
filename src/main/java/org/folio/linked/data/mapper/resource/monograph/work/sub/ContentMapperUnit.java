@@ -18,12 +18,11 @@ public class ContentMapperUnit extends CategoryMapperUnit {
   public ContentMapperUnit(CoreMapper coreMapper) {
     super(coreMapper, (category, destination) -> {
       if (destination instanceof Work work) {
-        return work.addContentItem(category);
+        work.addContentItem(category);
       }
       if (destination instanceof WorkReference work) {
-        return work.addContentItem(category);
+        work.addContentItem(category);
       }
-      return null;
     }, CATEGORY);
   }
 }
