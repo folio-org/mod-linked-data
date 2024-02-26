@@ -78,7 +78,11 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   private final SingleResourceMapper singleResourceMapper;
 
   @Override
-  public Optional<BibframeIndex> toIndex(@NonNull Resource work, ResourceEventType eventType) {
+  public Optional<BibframeIndex> toIndex(Resource work, ResourceEventType eventType) {
+    if (isNull(work)) {
+      log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), "null");
+      return Optional.empty();
+    }
     if (!isOfType(work, WORK)) {
       throw new LinkedDataServiceException(format(NOT_A_WORK, work, eventType.getValue()));
     }

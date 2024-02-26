@@ -89,18 +89,6 @@ class KafkaMessageMapperTest {
   }
 
   @Test
-  void toIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
-    // given
-    Resource resource = null;
-
-    // when
-    var thrown = assertThrows(NullPointerException.class, () -> kafkaMessageMapper.toIndex(resource, CREATE));
-
-    // then
-    assertThat(thrown.getMessage()).isEqualTo("work is marked non-null but is null");
-  }
-
-  @Test
   void toIndex_shouldReturnCorrectlyMappedIndex_fromWork() {
     // given
     var work = getSampleWork(null);

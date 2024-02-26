@@ -8,7 +8,7 @@ import org.folio.search.domain.dto.ResourceEventType;
 
 public interface KafkaMessageMapper {
 
-  Optional<BibframeIndex> toIndex(@NonNull Resource work, ResourceEventType eventType);
+  Optional<BibframeIndex> toIndex(Resource work, ResourceEventType eventType);
 
   Optional<Long> toDeleteIndexId(@NonNull Resource work);
 

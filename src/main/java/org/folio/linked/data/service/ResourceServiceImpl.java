@@ -91,24 +91,35 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
     var old = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
     addInternalFields(resourceDto, id);
-    var oldWork = extractWork(old).map(Resource::new).orElse(null);
+    var oldWorkOptional = extractWork(old).map(Resource::new);
     breakCircularEdges(old);
     resourceRepo.delete(old);
     var mapped = resourceMapper.toEntity(resourceDto);
     var persisted = resourceRepo.save(mapped);
-    extractWork(persisted)
-      .map(newWork -> new ResourceUpdatedEvent(newWork, oldWork))
-      .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "updated"))
-      );
+    var newWorkOptional = extractWork(persisted);
+    if (newWorkOptional.isPresent() && oldWorkOptional.isPresent()) {
+      if (newWorkOptional.get().getResourceHash().equals(oldWorkOptional.get().getResourceHash())) {
+        applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWorkOptional.get(), oldWorkOptional.get()));
+      } else {
+        applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWorkOptional.get(), null));
+        applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWorkOptional.get(), null));
+      }
+    } else if (newWorkOptional.isPresent()) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWorkOptional.get(), null));
+    } else if (oldWorkOptional.isPresent()) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWorkOptional.get(), null));
+    } else {
+      log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "updated"));
+    }
     return resourceMapper.toDto(persisted);
   }
 
   private void addInternalFields(ResourceDto resourceDto, Long id) {
     if (resourceDto.getResource() instanceof InstanceField instanceField) {
-      var resourceInternal = resourceRepo.findByResourceHash(id);
-      ofNullable(resourceInternal.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
-      ofNullable(resourceInternal.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);
+      ofNullable(resourceRepo.findByResourceHash(id)).ifPresent(resourceInternal -> {
+        ofNullable(resourceInternal.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
+        ofNullable(resourceInternal.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);
+      });
     }
   }
 
