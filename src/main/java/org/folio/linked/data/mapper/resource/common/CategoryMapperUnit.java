@@ -55,9 +55,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
     putProperty(map, CODE, dto.getCode());
     putProperty(map, TERM, dto.getTerm());
     putProperty(map, LINK, dto.getLink());
-    if (dto.getSource() != null) {
-      putProperty(map, SOURCE, dto.getSource());
-    }
+    putProperty(map, SOURCE, dto.getSource());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
