@@ -2,6 +2,7 @@ package org.folio.linked.data.model.entity;
 
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.LAZY;
 import static java.util.Objects.isNull;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -63,7 +64,7 @@ public class Resource {
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "target", cascade = ALL, fetch = EAGER, orphanRemoval = true)
+  @OneToMany(mappedBy = "target", cascade = ALL, fetch = LAZY, orphanRemoval = true)
   private Set<ResourceEdge> incomingEdges = new LinkedHashSet<>();
 
   @OrderBy

@@ -4,6 +4,7 @@ import java.util.Set;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
+import org.folio.linked.data.model.entity.Resource;
 
 public interface ResourceService {
 
@@ -22,4 +23,6 @@ public interface ResourceService {
   void updateIndexDateBatch(Set<Long> ids);
 
   ResourceGraphDto getResourceGraphById(Long id);
+
+  Resource getResource(Long id, boolean includeIncomingEdges);
 }

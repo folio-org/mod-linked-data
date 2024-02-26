@@ -152,6 +152,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
+import org.folio.linked.data.service.ResourceService;
 import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -191,6 +192,8 @@ class ResourceControllerIT {
   private KafkaSender kafkaSender;
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  @Autowired
+  private ResourceService resourceService;
   private LookupResources lookupResources;
 
   @BeforeEach
@@ -283,12 +286,10 @@ class ResourceControllerIT {
 
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var bibframe = persistedOptional.get();
+    var workResource = resourceService.getResource(Long.parseLong(id), true);
     // the 'isDeprecated' argument is to be removed after wireframe UI migration
-    validateWork(bibframe, true, false);
-    checkKafkaMessageCreatedSentAndMarkedAsIndexed(bibframe.getResourceHash());
+    validateWork(workResource, true, false);
+    checkKafkaMessageCreatedSentAndMarkedAsIndexed(workResource.getResourceHash());
   }
 
   // to be removed after wireframe UI migration
@@ -571,9 +572,8 @@ class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
-    var persistedOptional = resourceRepo.findById(Long.parseLong(id));
-    assertThat(persistedOptional).isPresent();
-    var updatedWork = persistedOptional.get();
+
+    var updatedWork = resourceService.getResource(Long.parseLong(id), true);
     assertThat(updatedWork.getResourceHash()).isNotNull();
     assertThat(updatedWork.getLabel()).isEqualTo(originalWork.getLabel());
     assertThat(updatedWork.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
@@ -1264,16 +1264,17 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR.getUri());
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
-    var incomingEdgeIterator = work.getIncomingEdges().iterator();
-    var edge = incomingEdgeIterator.next();
-    assertThat(edge.getId()).isNotNull();
-    assertThat(edge.getTarget()).isEqualTo(work);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     if (validateFullInstance) {
+      var incomingEdgeIterator = work.getIncomingEdges().iterator();
+      var edge = incomingEdgeIterator.next();
+      assertThat(edge.getId()).isNotNull();
+      assertThat(edge.getTarget()).isEqualTo(work);
+      assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
+
       // the 'isDeprecated' argument is to be removed after wireframe UI migration
       validateInstance(edge.getSource(), false, isDeprecated);
+      assertThat(incomingEdgeIterator.hasNext()).isFalse();
     }
-    assertThat(incomingEdgeIterator.hasNext()).isFalse();
   }
 
   private void validateWorkClassification(ResourceEdge edge, Resource source) {
