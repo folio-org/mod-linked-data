@@ -156,6 +156,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.test.ResourceEdgeRepository;
+import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
