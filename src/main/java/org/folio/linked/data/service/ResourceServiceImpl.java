@@ -2,6 +2,7 @@ package org.folio.linked.data.service;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -90,36 +91,58 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceDto updateResource(Long id, ResourceDto resourceDto) {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
     var old = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
-    addInternalFields(resourceDto, id);
-    var oldWorkOptional = extractWork(old).map(Resource::new);
+    addInternalFields(resourceDto, old);
+    var oldWork = extractWork(old).map(Resource::new).orElse(null);
     breakCircularEdges(old);
     resourceRepo.delete(old);
     var mapped = resourceMapper.toEntity(resourceDto);
     var persisted = resourceRepo.save(mapped);
-    var newWorkOptional = extractWork(persisted);
-    if (newWorkOptional.isPresent() && oldWorkOptional.isPresent()) {
-      if (newWorkOptional.get().getResourceHash().equals(oldWorkOptional.get().getResourceHash())) {
-        applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWorkOptional.get(), oldWorkOptional.get()));
-      } else {
-        applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWorkOptional.get(), null));
-        applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWorkOptional.get(), null));
-      }
-    } else if (newWorkOptional.isPresent()) {
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWorkOptional.get(), null));
-    } else if (oldWorkOptional.isPresent()) {
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWorkOptional.get(), null));
+    if (isOfType(persisted, WORK)) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(persisted, oldWork));
     } else {
-      log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "updated"));
+      reindexParentWorkAfterInstanceUpdate(persisted, oldWork);
     }
     return resourceMapper.toDto(persisted);
   }
 
-  private void addInternalFields(ResourceDto resourceDto, Long id) {
+  private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {
+    extractWork(instance).ifPresentOrElse(newWork -> {
+        if (nonNull(oldWork) && newWork.getResourceHash().equals(oldWork.getResourceHash())) {
+          log.info("Instance [{}] update under the same Work [{}] triggered it's reindexing",
+            instance.getResourceHash(), newWork.getResourceHash());
+          applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, oldWork));
+        } else {
+          if (nonNull(oldWork)) {
+            indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, newWork);
+          }
+          log.info("Instance [{}] update under newly linked Work [{}] triggered it's reindexing",
+            instance.getResourceHash(), newWork.getResourceHash());
+          applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, null));
+        }
+      },
+      () -> {
+        if (nonNull(oldWork)) {
+          indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, null);
+        } else {
+          log.info("Instance [{}] not linked to Work update under no Work has not triggered any Work reindexing",
+            instance.getResourceHash());
+        }
+      }
+    );
+  }
+
+  private void indexOldWorkDisconnectedFromUpdatedInstance(Resource instance, Resource oldWork, Resource newWork) {
+    oldWork.getIncomingEdges().remove(new ResourceEdge(instance, oldWork, INSTANTIATES));
+    log.info("Instance [{}] update under {} triggered old Work [{}] reindexing",
+      instance.getResourceHash(), isNull(newWork) ? "no Work" : "different Work [" + newWork.getResourceHash() + "]",
+      oldWork.getResourceHash());
+    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWork, null));
+  }
+
+  private void addInternalFields(ResourceDto resourceDto, Resource old) {
     if (resourceDto.getResource() instanceof InstanceField instanceField) {
-      ofNullable(resourceRepo.findByResourceHash(id)).ifPresent(resourceInternal -> {
-        ofNullable(resourceInternal.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
-        ofNullable(resourceInternal.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);
-      });
+      ofNullable(old.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
+      ofNullable(old.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);
     }
   }
 
@@ -133,12 +156,12 @@ public class ResourceServiceImpl implements ResourceService {
       if (isOfType(resource, WORK)) {
         applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
       } else {
-        reindexParentWork(id, resource, oldWork);
+        reindexParentWorkAfterInstanceDeletion(id, resource, oldWork);
       }
     });
   }
 
-  private void reindexParentWork(Long id, Resource resource, Resource oldWork) {
+  private void reindexParentWorkAfterInstanceDeletion(Long id, Resource resource, Resource oldWork) {
     extractWork(resource)
       .map(work -> {
         work.getIncomingEdges().remove(new ResourceEdge(resource, work, INSTANTIATES));

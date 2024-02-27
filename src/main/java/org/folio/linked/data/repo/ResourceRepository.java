@@ -1,7 +1,6 @@
 package org.folio.linked.data.repo;
 
 import java.util.Set;
-import org.folio.linked.data.model.ResourceInternal;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.data.domain.Page;
@@ -24,8 +23,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
   @Query("SELECT r FROM Resource r JOIN r.types t WHERE r.indexDate IS NULL AND t.uri IN :types")
   Page<Resource> findNotIndexedByType(@Param("types") Set<String> types, Pageable pageable);
-
-  ResourceInternal findByResourceHash(Long id);
 
   @Modifying
   @Query("update Resource r set r.indexDate = current_timestamp() where r.resourceHash = :id")
