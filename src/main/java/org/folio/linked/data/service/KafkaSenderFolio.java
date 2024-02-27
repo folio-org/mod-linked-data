@@ -52,6 +52,24 @@ public class KafkaSenderFolio implements KafkaSender {
 
   @SneakyThrows
   @Override
+  public void sendResourceUpdated(BibframeIndex newBibframeIndex, BibframeIndex oldBibframeIndex) {
+    var tenant = folioExecutionContext.getTenantId();
+    var tenantTopicName = getTenantTopicName(tenant);
+    var future = kafkaTemplate.send(tenantTopicName, newBibframeIndex.getId(),
+      new ResourceEvent()
+        .id(newBibframeIndex.getId())
+        .type(ResourceEventType.UPDATE)
+        .tenant(tenant)
+        .resourceName(SEARCH_RESOURCE_NAME)
+        ._new(newBibframeIndex)
+        .old(oldBibframeIndex)
+    );
+    future.thenRun(() -> eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(newBibframeIndex.getId()))));
+    log.info("sendResourceUpdated result to topic [{}]: [{}]", tenantTopicName, future.get().toString());
+  }
+
+  @SneakyThrows
+  @Override
   public void sendResourceDeleted(Long id) {
     var tenant = folioExecutionContext.getTenantId();
     var tenantTopicName = getTenantTopicName(tenant);
