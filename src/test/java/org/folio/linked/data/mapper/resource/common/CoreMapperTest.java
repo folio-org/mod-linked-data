@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.ld.dictionary.api.Predicate;
+import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.model.entity.PredicateEntity;

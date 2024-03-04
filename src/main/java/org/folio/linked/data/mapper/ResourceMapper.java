@@ -37,10 +37,10 @@ public abstract class ResourceMapper {
 
   @Mapping(target = "outgoingEdges", expression = "java(marc4ldResource.getOutgoingEdges().stream()"
     + ".map(marc2ldEdge -> toEntity(marc2ldEdge, resource)).collect(Collectors.toSet()))")
-  public abstract Resource toEntity(org.folio.marc4ld.model.Resource marc4ldResource);
+  public abstract Resource toEntity(org.folio.ld.dictionary.model.Resource marc4ldResource);
 
   @Mapping(target = "source", source = "source")
-  public abstract ResourceEdge toEntity(org.folio.marc4ld.model.ResourceEdge marc4ldEdge, Resource source);
+  public abstract ResourceEdge toEntity(org.folio.ld.dictionary.model.ResourceEdge marc4ldEdge, Resource source);
 
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {

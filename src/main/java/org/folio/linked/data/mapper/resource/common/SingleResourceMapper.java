@@ -2,7 +2,7 @@ package org.folio.linked.data.mapper.resource.common;
 
 import java.util.Optional;
 import lombok.NonNull;
-import org.folio.ld.dictionary.api.Predicate;
+import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 
 public interface SingleResourceMapper {

@@ -18,7 +18,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
-import org.folio.ld.dictionary.api.Predicate;
+import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 
 @Data

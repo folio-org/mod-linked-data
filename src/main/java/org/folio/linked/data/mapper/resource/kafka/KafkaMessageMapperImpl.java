@@ -43,7 +43,7 @@ import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.api.Predicate;
+import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.LinkedDataServiceException;

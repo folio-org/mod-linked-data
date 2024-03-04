@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import org.folio.ld.dictionary.api.Predicate;
+import org.folio.ld.dictionary.model.Predicate;
 
 @Data
 @Entity
