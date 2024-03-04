@@ -9,7 +9,7 @@ public interface ResourceService {
 
   ResourceDto createResource(ResourceDto resourceRequest);
 
-  Long createResource(org.folio.marc4ld.model.Resource resource);
+  Long createResource(org.folio.ld.dictionary.model.Resource resource);
 
   ResourceDto getResourceById(Long id);
 

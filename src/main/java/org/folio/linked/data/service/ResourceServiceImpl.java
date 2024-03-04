@@ -68,7 +68,7 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
-  public Long createResource(org.folio.marc4ld.model.Resource marc4ldResource) {
+  public Long createResource(org.folio.ld.dictionary.model.Resource marc4ldResource) {
     var mapped = resourceMapper.toEntity(marc4ldResource);
     var persisted = resourceRepo.save(mapped);
     log.info("createResource [{}]\nfrom marc4ldResource [{}]", persisted, marc4ldResource);

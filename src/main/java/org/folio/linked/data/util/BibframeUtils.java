@@ -14,7 +14,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.ld.dictionary.api.ResourceType;
+import org.folio.ld.dictionary.model.ResourceType;
 import org.folio.linked.data.model.entity.Resource;
 
 @Log4j2

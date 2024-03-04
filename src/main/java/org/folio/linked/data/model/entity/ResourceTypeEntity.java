@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
-import org.folio.ld.dictionary.api.ResourceType;
+import org.folio.ld.dictionary.model.ResourceType;
 
 @Data
 @Entity

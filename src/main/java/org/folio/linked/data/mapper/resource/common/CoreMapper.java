@@ -3,7 +3,7 @@ package org.folio.linked.data.mapper.resource.common;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import lombok.NonNull;
-import org.folio.ld.dictionary.api.Predicate;
+import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.model.entity.Resource;
 
 public interface CoreMapper {
