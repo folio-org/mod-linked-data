@@ -44,7 +44,7 @@
     <hibernate-types.version>2.21.1</hibernate-types.version>
     <lib-linked-data-dictionary.version>1.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>1.0.1-SNAPSHOT</lib-linked-data-marc4ld.version>
-    <maven-checkstyle-plugin.checkstyle.version>10.13.0</maven-checkstyle-plugin.checkstyle.version>
+    <maven-checkstyle-plugin.checkstyle.version>10.14.0</maven-checkstyle-plugin.checkstyle.version>
 
     <!-- Test dependencies versions -->
     <testcontainers.version>1.19.6</testcontainers.version>
