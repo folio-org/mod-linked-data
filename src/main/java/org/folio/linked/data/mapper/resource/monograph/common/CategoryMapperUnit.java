@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.resource.common;
+package org.folio.linked.data.mapper.resource.monograph.common;
 
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
@@ -21,6 +21,8 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.mapper.resource.common.CoreMapper;
+import org.folio.linked.data.mapper.resource.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 

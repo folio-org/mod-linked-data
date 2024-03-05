@@ -13,9 +13,9 @@ import java.util.Optional;
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkReference;
-import org.folio.linked.data.mapper.resource.common.CategoryMapperUnit;
 import org.folio.linked.data.mapper.resource.common.CoreMapper;
 import org.folio.linked.data.mapper.resource.common.MapperUnit;
+import org.folio.linked.data.mapper.resource.monograph.common.CategoryMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
