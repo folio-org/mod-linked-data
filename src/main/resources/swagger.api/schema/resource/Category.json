@@ -35,6 +35,14 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/source"
+        },
+        "isDefinedBy": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "CategorySet.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/isDefinedBy"
         }
       }
     }

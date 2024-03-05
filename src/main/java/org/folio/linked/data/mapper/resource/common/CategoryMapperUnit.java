@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.resource.common;
 
+import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
@@ -10,6 +11,7 @@ import static org.folio.linked.data.util.BibframeUtils.putProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 
 @RequiredArgsConstructor
 public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
@@ -30,6 +33,10 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final BiConsumer<Category, Object> categoryConsumer;
   private final ResourceTypeDictionary type;
+
+  protected Optional<Resource> getCategorySet() {
+    return Optional.empty();
+  }
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
@@ -46,6 +53,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
     resource.setLabel(getFirstValue(category::getTerm));
     resource.addType(type);
     resource.setDoc(getDoc(category));
+    getCategorySet().ifPresent(cs -> resource.getOutgoingEdges().add(new ResourceEdge(resource, cs, IS_DEFINED_BY)));
     resource.setResourceHash(coreMapper.hash(resource));
     return resource;
   }

@@ -200,8 +200,7 @@
           ],
           "http://bibfra.me/vocab/lite/link": [
             "http://id.loc.gov/vocabulary/mgovtpubtype/a"
-          ],
-          "label": "Autonomous"
+          ]
         }
       ],
       "_instanceReference": [
