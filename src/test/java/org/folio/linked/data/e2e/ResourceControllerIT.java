@@ -880,9 +880,6 @@ class ResourceControllerIT {
     if (workBase.equals(toWork())) {
       resultActions
         .andExpect(jsonPath(toInstanceReference(workBase), notNullValue()))
-        .andExpect(jsonPath(toWorkContentCategorySetLink(workBase),
-          equalTo("http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent")))
-        .andExpect(jsonPath(toWorkContentCategorySetLabel(workBase), equalTo("rdacontent")))
         .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
         .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
         .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
@@ -1286,6 +1283,12 @@ class ResourceControllerIT {
     validateLiteral(contentType, CODE.getValue(), "txt");
     validateLiteral(contentType, TERM.getValue(), "text");
     validateLiteral(contentType, SOURCE.getValue(), "content source");
+    var resourceEdge = contentType.getOutgoingEdges().iterator().next();
+    var categorySet = resourceEdge.getTarget();
+    validateResourceEdge(resourceEdge, contentType, categorySet, IS_DEFINED_BY.getUri());
+    assertThat(categorySet.getDoc().size()).isEqualTo(2);
+    validateLiteral(categorySet, LINK.getValue(), "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent");
+    validateLiteral(categorySet, LABEL.getValue(), "rdacontent");
   }
 
   private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
@@ -1776,16 +1779,6 @@ class ResourceControllerIT {
 
   private String toWorkGeographicCoverageLabel(String workBase) {
     return join(".", workBase, dynamicArrayPath(GEOGRAPHIC_COVERAGE_REF), path("label"));
-  }
-
-  private String toWorkContentCategorySetLink(String workBase) {
-    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(IS_DEFINED_BY.getUri()),
-      arrayPath(LINK.getValue()));
-  }
-
-  private String toWorkContentCategorySetLabel(String workBase) {
-    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(IS_DEFINED_BY.getUri()),
-      arrayPath(LABEL.getValue()));
   }
 
   private String toWorkDateStart(String workBase) {
