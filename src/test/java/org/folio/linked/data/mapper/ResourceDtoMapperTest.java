@@ -24,10 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceMapperTest {
+class ResourceDtoMapperTest {
 
   @InjectMocks
-  private ResourceMapperImpl resourceMapper;
+  private ResourceDtoMapperImpl resourceMapper;
 
   @Mock
   private KafkaMessageMapper kafkaMessageMapper;

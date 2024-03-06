@@ -100,6 +100,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
+import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 
 import java.util.ArrayList;
@@ -123,7 +124,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 public class MonographTestUtil {
 
   public static final CoreMapper CORE_MAPPER =
-    new CoreMapperImpl(OBJECT_MAPPER, new SingleResourceMapperImpl(OBJECT_MAPPER, new ArrayList<>()));
+    new CoreMapperImpl(OBJECT_MAPPER, new SingleResourceMapperImpl(OBJECT_MAPPER, new ArrayList<>()), null, null);
 
   public static Resource getSampleInstanceResource() {
     return getSampleInstanceResource(null, getSampleWork(null));
@@ -565,7 +566,7 @@ public class MonographTestUtil {
       .collect(Collectors.toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
     types.forEach(resource::addType);
-    resource.setResourceHash(CORE_MAPPER.hash(resource));
+    resource.setResourceHash(randomLong());
     return resource;
   }
 

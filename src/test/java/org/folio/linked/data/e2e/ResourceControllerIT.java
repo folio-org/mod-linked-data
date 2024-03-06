@@ -387,7 +387,7 @@ class ResourceControllerIT {
     assertThat(instance.getInventoryId()).isNull();
     assertThat(instance.getSrsId()).isNull();
     assertThat(instance.getDoc()).isNull();
-    assertThat(instance.getOutgoingEdges()).hasSize(42);
+    assertThat(instance.getOutgoingEdges()).hasSize(43);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkKafkaMessage(Long.valueOf(workId), CREATE);
   }
@@ -410,7 +410,7 @@ class ResourceControllerIT {
     var requestBuilder2 = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(BIBFRAME_SAMPLE.replace("Instance: partName", "Instance: partName2"));
+      .content(BIBFRAME_SAMPLE.replace("Instance: mainTitle", "Instance: mainTitle2"));
 
     // when
     var response2 = mockMvc.perform(requestBuilder2);
@@ -669,7 +669,7 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceRepo.save(getSampleInstanceResource(null, work));
     assertThat(resourceRepo.findById(instance.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(37);
+    assertThat(resourceRepo.count()).isEqualTo(41);
     assertThat(resourceEdgeRepository.count()).isEqualTo(43);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getResourceHash())
       .contentType(APPLICATION_JSON)
@@ -681,7 +681,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(instance.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(36);
+    assertThat(resourceRepo.count()).isEqualTo(40);
     assertThat(resourceEdgeRepository.findById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(25);
     checkKafkaMessage(work.getResourceHash(), UPDATE);
@@ -692,7 +692,7 @@ class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(37);
+    assertThat(resourceRepo.count()).isEqualTo(41);
     assertThat(resourceEdgeRepository.count()).isEqualTo(43);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
@@ -704,7 +704,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(36);
+    assertThat(resourceRepo.count()).isEqualTo(40);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(24);
     checkKafkaMessage(existed.getResourceHash(), DELETE);

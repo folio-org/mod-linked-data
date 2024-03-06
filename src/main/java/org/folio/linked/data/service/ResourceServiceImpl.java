@@ -22,7 +22,8 @@ import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.mapper.ResourceMapper;
+import org.folio.linked.data.mapper.ResourceDtoMapper;
+import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -48,12 +49,13 @@ public class ResourceServiceImpl implements ResourceService {
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
   private final ResourceRepository resourceRepo;
-  private final ResourceMapper resourceMapper;
+  private final ResourceDtoMapper resourceDtoMapper;
+  private final ResourceModelMapper resourceModelMapper;
   private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
   public ResourceDto createResource(ResourceDto resourceDto) {
-    var mapped = resourceMapper.toEntity(resourceDto);
+    var mapped = resourceDtoMapper.toEntity(resourceDto);
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
@@ -64,14 +66,14 @@ public class ResourceServiceImpl implements ResourceService {
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "created"))
       );
-    return resourceMapper.toDto(persisted);
+    return resourceDtoMapper.toDto(persisted);
   }
 
   @Override
-  public Long createResource(org.folio.ld.dictionary.model.Resource marc4ldResource) {
-    var mapped = resourceMapper.toEntity(marc4ldResource);
+  public Long createResource(org.folio.ld.dictionary.model.Resource modelResource) {
+    var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = resourceRepo.save(mapped);
-    log.info("createResource [{}]\nfrom marc4ldResource [{}]", persisted, marc4ldResource);
+    log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
@@ -84,7 +86,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Transactional(readOnly = true)
   public ResourceDto getResourceById(Long id) {
     var resource = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
-    return resourceMapper.toDto(resource);
+    return resourceDtoMapper.toDto(resource);
   }
 
   @Override
@@ -95,14 +97,14 @@ public class ResourceServiceImpl implements ResourceService {
     var oldWork = extractWork(old).map(Resource::new).orElse(null);
     breakCircularEdges(old);
     resourceRepo.delete(old);
-    var mapped = resourceMapper.toEntity(resourceDto);
+    var mapped = resourceDtoMapper.toEntity(resourceDto);
     var persisted = resourceRepo.save(mapped);
     if (isOfType(persisted, WORK)) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(persisted, oldWork));
     } else {
       reindexParentWorkAfterInstanceUpdate(persisted, oldWork);
     }
-    return resourceMapper.toDto(persisted);
+    return resourceDtoMapper.toDto(persisted);
   }
 
   private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {
@@ -218,8 +220,8 @@ public class ResourceServiceImpl implements ResourceService {
     var pageRequest = PageRequest.of(pageNumber, pageSize, DEFAULT_SORT);
     var page = isNull(type) ? resourceRepo.findAllShort(pageRequest)
       : resourceRepo.findAllShortByType(Set.of(type), pageRequest);
-    var pageOfDto = page.map(resourceMapper::map);
-    return resourceMapper.map(pageOfDto);
+    var pageOfDto = page.map(resourceDtoMapper::map);
+    return resourceDtoMapper.map(pageOfDto);
   }
 
   @Async
@@ -231,7 +233,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceGraphDto getResourceGraphById(Long id) {
     var resource = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
-    return resourceMapper.toResourceGraphDto(resource);
+    return resourceDtoMapper.toResourceGraphDto(resource);
   }
 
   private NotFoundException getResourceNotFoundException(Long id) {

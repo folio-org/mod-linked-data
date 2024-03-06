@@ -16,15 +16,15 @@ import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.resource.common.SingleResourceMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 @Log4j2
-@Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class})
-public abstract class ResourceMapper {
+@Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class, ResourceTypeEntity.class})
+public abstract class ResourceDtoMapper {
 
   @Autowired
   private SingleResourceMapper singleResourceMapper;
@@ -34,13 +34,6 @@ public abstract class ResourceMapper {
   public abstract ResourceShort map(ResourceShortInfo resourceShortInfo);
 
   public abstract ResourceShortInfoPage map(Page<ResourceShort> page);
-
-  @Mapping(target = "outgoingEdges", expression = "java(marc4ldResource.getOutgoingEdges().stream()"
-    + ".map(marc2ldEdge -> toEntity(marc2ldEdge, resource)).collect(Collectors.toSet()))")
-  public abstract Resource toEntity(org.folio.ld.dictionary.model.Resource marc4ldResource);
-
-  @Mapping(target = "source", source = "source")
-  public abstract ResourceEdge toEntity(org.folio.ld.dictionary.model.ResourceEdge marc4ldEdge, Resource source);
 
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {
