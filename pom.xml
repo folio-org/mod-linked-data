@@ -47,7 +47,7 @@
     <maven-checkstyle-plugin.checkstyle.version>10.14.0</maven-checkstyle-plugin.checkstyle.version>
 
     <!-- Test dependencies versions -->
-    <testcontainers.version>1.19.6</testcontainers.version>
+    <testcontainers.version>1.19.7</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.1</jsonassert.version>
     <folio-service-tools.version>3.1.0</folio-service-tools.version>
