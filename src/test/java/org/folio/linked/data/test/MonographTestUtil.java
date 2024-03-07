@@ -15,6 +15,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
@@ -77,6 +78,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -321,17 +323,6 @@ public class MonographTestUtil {
   }
 
   public static Resource getSampleWork(Resource linkedInstance) {
-    var content = createResource(
-      Map.of(
-        TERM, List.of("text"),
-        LINK, List.of("http://id.loc.gov/vocabulary/contentTypes/txt"),
-        CODE, List.of("txt"),
-        SOURCE, List.of("content source")
-      ),
-      Set.of(CATEGORY),
-      emptyMap()
-    ).setLabel("text");
-
     var deweyClassification = createResource(
       Map.of(
         CODE, List.of("709.83"),
@@ -471,7 +462,7 @@ public class MonographTestUtil {
       contributorFamily));
     pred2OutgoingResources.put(EDITOR, List.of(contributorOrganization));
     pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
-    pred2OutgoingResources.put(CONTENT, List.of(content));
+    pred2OutgoingResources.put(CONTENT, List.of(createContent()));
     pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
     pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
@@ -499,6 +490,28 @@ public class MonographTestUtil {
     }
     setEdgesId(work);
     return work;
+  }
+
+  private static Resource createContent() {
+    var categorySet = createResource(
+      Map.of(
+        LINK, List.of("http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent"),
+        LABEL, List.of("rdacontent")
+      ),
+      Set.of(CATEGORY_SET),
+      emptyMap());
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(IS_DEFINED_BY, List.of(categorySet));
+    return createResource(
+      Map.of(
+        TERM, List.of("text"),
+        LINK, List.of("http://id.loc.gov/vocabulary/contentTypes/txt"),
+        CODE, List.of("txt"),
+        SOURCE, List.of("content source")
+      ),
+      Set.of(CATEGORY),
+      pred2OutgoingResources
+    ).setLabel("text");
   }
 
   private Resource status(String prefix) {
