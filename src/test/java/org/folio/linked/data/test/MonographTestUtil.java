@@ -98,12 +98,10 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,17 +112,11 @@ import lombok.experimental.UtilityClass;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.resource.common.CoreMapper;
-import org.folio.linked.data.mapper.resource.common.CoreMapperImpl;
-import org.folio.linked.data.mapper.resource.common.SingleResourceMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 
 @UtilityClass
 public class MonographTestUtil {
-
-  public static final CoreMapper CORE_MAPPER =
-    new CoreMapperImpl(OBJECT_MAPPER, new SingleResourceMapperImpl(OBJECT_MAPPER, new ArrayList<>()), null, null);
 
   public static Resource getSampleInstanceResource() {
     return getSampleInstanceResource(null, getSampleWork(null));

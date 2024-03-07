@@ -6,7 +6,7 @@ import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.mapper.resource.kafka.KafkaMessageMapper;
+import org.folio.linked.data.mapper.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;

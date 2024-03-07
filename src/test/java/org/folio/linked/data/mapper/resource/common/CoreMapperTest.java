@@ -23,6 +23,8 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Isbn;
+import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
+import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,18 +75,6 @@ class CoreMapperTest {
 
     // then
     assertThat(thrown.getMessage(), is("dtoClass is marked non-null but is null"));
-  }
-
-  @Test
-  void hash_shouldThrowNpe_ifGivenResourceIsNull() {
-    // given
-    Resource resource = null;
-
-    // when
-    NullPointerException thrown = assertThrows(NullPointerException.class, () -> coreMapper.hash(resource));
-
-    // then
-    assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
   }
 
   @Test
