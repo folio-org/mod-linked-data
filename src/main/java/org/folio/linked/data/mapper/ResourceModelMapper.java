@@ -2,35 +2,44 @@ package org.folio.linked.data.mapper;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.mapstruct.BeforeMapping;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Qualifier;
+import org.mapstruct.TargetType;
 
 @Log4j2
-@Mapper(componentModel = SPRING, imports = {Objects.class, Collectors.class})
+@Mapper(componentModel = SPRING)
 public abstract class ResourceModelMapper {
 
-  @Mapping(target = "outgoingEdges", expression = "java(modelResource.getOutgoingEdges().stream()"
-    + ".map(modelEdge -> toOutgoingEdgeEntity(modelEdge, resource)).collect(Collectors.toCollection(LinkedHashSet::new)))")
-  @Mapping(target = "incomingEdges", ignore = true)
-  public abstract Resource toEntity(org.folio.ld.dictionary.model.Resource modelResource);
+  @NotForGeneration
+  public Resource toEntity(org.folio.ld.dictionary.model.Resource model) {
+    return toEntity(model, new CyclicGraphContext());
+  }
 
-  @Mapping(target = "source", source = "source")
-  public abstract ResourceEdge toOutgoingEdgeEntity(org.folio.ld.dictionary.model.ResourceEdge modelEdge,
-                                                    Resource source);
+  protected abstract Resource toEntity(org.folio.ld.dictionary.model.Resource model,
+                                       @Context CyclicGraphContext cycleContext);
 
-  @Mapping(target = "outgoingEdges", expression = "java(entity.getOutgoingEdges().stream()"
-    + ".map(entityEdge -> toOutgoingEdgeModel(entityEdge, resource)).collect(Collectors.toCollection(LinkedHashSet::new)))")
-  @Mapping(target = "incomingEdges", ignore = true)
-  public abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity);
+  @NotForGeneration
+  public org.folio.ld.dictionary.model.Resource toModel(Resource entity) {
+    return toModel(entity, new CyclicGraphContext());
+  }
+
+  protected abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity,
+                                                                    @Context CyclicGraphContext cycleContext);
 
   public ResourceTypeDictionary map(ResourceTypeEntity typeEntity) {
     return ResourceTypeDictionary.fromUri(typeEntity.getUri()).orElse(null);
@@ -40,8 +49,36 @@ public abstract class ResourceModelMapper {
     return PredicateDictionary.fromUri(predicateEntity.getUri()).orElse(null);
   }
 
-  @Mapping(target = "source", source = "source")
-  public abstract org.folio.ld.dictionary.model.ResourceEdge toOutgoingEdgeModel(
-    ResourceEdge entityEdge, org.folio.ld.dictionary.model.Resource source);
+  @Qualifier
+  @Target(ElementType.METHOD)
+  @Retention(RetentionPolicy.CLASS)
+  public @interface NotForGeneration {
+  }
 
+  public static class CyclicGraphContext {
+    private final Map<Resource, org.folio.ld.dictionary.model.Resource> convertedModels = new HashMap<>();
+    private final Map<org.folio.ld.dictionary.model.Resource, Resource> convertedEntities = new HashMap<>();
+
+    @BeforeMapping
+    public org.folio.ld.dictionary.model.Resource getMappedModel(
+      Resource source, @TargetType Class<org.folio.ld.dictionary.model.Resource> target) {
+      return convertedModels.get(source);
+    }
+
+    @BeforeMapping
+    public void storeMappedModel(Resource source, @MappingTarget org.folio.ld.dictionary.model.Resource target) {
+      convertedModels.put(source, target);
+    }
+
+    @BeforeMapping
+    public Resource getMappedEntity(org.folio.ld.dictionary.model.Resource source, @TargetType Class<Resource> target) {
+      return convertedEntities.get(source);
+    }
+
+    @BeforeMapping
+    public void storeMappedEntity(org.folio.ld.dictionary.model.Resource source, @MappingTarget Resource target) {
+      convertedEntities.put(source, target);
+    }
+
+  }
 }

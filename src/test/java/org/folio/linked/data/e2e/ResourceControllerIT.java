@@ -387,7 +387,7 @@ class ResourceControllerIT {
     assertThat(instance.getInventoryId()).isNull();
     assertThat(instance.getSrsId()).isNull();
     assertThat(instance.getDoc()).isNull();
-    assertThat(instance.getOutgoingEdges()).hasSize(43);
+    assertThat(instance.getOutgoingEdges()).hasSize(39);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkKafkaMessage(Long.valueOf(workId), CREATE);
   }
