@@ -62,7 +62,17 @@
         }
       ],
       "http://bibfra.me/vocab/marc/targetAudience": [
-        "target audience"
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "b"
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+            "Primary"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "http://id.loc.gov/vocabulary/maudience/pri"
+          ]
+        }
       ],
       "http://bibfra.me/vocab/marc/tableOfContents": [
         "table of contents"

@@ -14,7 +14,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -85,7 +84,6 @@ public class WorkMapperUnitDeprecated implements InstanceSubResourceMapperUnit {
   private JsonNode getDoc(Work dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, RESPONSIBILITY_STATEMENT, dto.getResponsibiltyStatement());
-    putProperty(map, TARGET_AUDIENCE, dto.getTargetAudience());
     putProperty(map, LANGUAGE, dto.getLanguage());
     putProperty(map, SUMMARY, dto.getSummary());
     putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());

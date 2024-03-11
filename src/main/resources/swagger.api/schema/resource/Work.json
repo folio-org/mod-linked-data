@@ -18,7 +18,8 @@
         "targetAudience": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/targetAudience"
         },

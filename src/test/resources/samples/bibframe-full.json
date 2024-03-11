@@ -496,9 +496,6 @@
               "id": "2"
             }
           ],
-          "http://bibfra.me/vocab/marc/targetAudience": [
-            "target audience"
-          ],
           "http://bibfra.me/vocab/marc/tableOfContents": [
             "table of contents"
           ],
