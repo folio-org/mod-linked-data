@@ -12,7 +12,7 @@ import org.folio.linked.data.domain.dto.FamilyField;
 import org.folio.linked.data.domain.dto.MeetingField;
 import org.folio.linked.data.domain.dto.OrganizationField;
 import org.folio.linked.data.domain.dto.PersonField;
-import org.folio.linked.data.mapper.resource.monograph.work.sub.AgentRoleAssigner;
+import org.folio.linked.data.mapper.dto.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;

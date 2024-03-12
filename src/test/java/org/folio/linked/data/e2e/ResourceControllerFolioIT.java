@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import lombok.SneakyThrows;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;

@@ -44,6 +44,7 @@
     <hibernate-types.version>2.21.1</hibernate-types.version>
     <lib-linked-data-dictionary.version>1.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>1.0.1-SNAPSHOT</lib-linked-data-marc4ld.version>
+    <lib-linked-data-fingerprint.version>1.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
     <maven-checkstyle-plugin.checkstyle.version>10.14.0</maven-checkstyle-plugin.checkstyle.version>
 
     <!-- Test dependencies versions -->
@@ -86,6 +87,11 @@
       <groupId>org.folio</groupId>
       <artifactId>lib-linked-data-marc4ld</artifactId>
       <version>${lib-linked-data-marc4ld.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.folio</groupId>
+      <artifactId>lib-linked-data-fingerprint</artifactId>
+      <version>${lib-linked-data-fingerprint.version}</version>
     </dependency>
 
     <dependency>

@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.integration.consumer.DataImportEventHandler;
+import org.folio.linked.data.integration.kafka.consumer.DataImportEventHandler;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
