@@ -108,6 +108,30 @@ public class ResourceServiceImpl implements ResourceService {
     return resourceDtoMapper.toDto(persisted);
   }
 
+  @Override
+  public void saveMergingGraph(Resource resource) {
+    resource = takeExistingAddingNewEdges(resource);
+    resourceRepo.save(resource);
+  }
+
+  private Resource takeExistingAddingNewEdges(Resource newResource) {
+    return resourceRepo.findById(newResource.getResourceHash())
+      .map(existed -> {
+        newResource.getOutgoingEdges().stream()
+          .map(newOe -> new ResourceEdge(existed, takeExistingAddingNewEdges(newOe.getTarget()), newOe.getPredicate()))
+          .forEach(existed.getOutgoingEdges()::add);
+        newResource.getIncomingEdges().stream()
+          .map(newIe -> new ResourceEdge(takeExistingAddingNewEdges(newIe.getSource()), existed, newIe.getPredicate()))
+          .forEach(existed.getIncomingEdges()::add);
+        return existed;
+      })
+      .orElseGet(() -> {
+        newResource.getOutgoingEdges().forEach(oe -> oe.setTarget(takeExistingAddingNewEdges(oe.getTarget())));
+        newResource.getIncomingEdges().forEach(ie -> ie.setSource(takeExistingAddingNewEdges(ie.getSource())));
+        return newResource;
+      });
+  }
+
   private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {
     extractWork(instance).ifPresentOrElse(newWork -> {
         if (nonNull(oldWork) && newWork.getResourceHash().equals(oldWork.getResourceHash())) {
