@@ -8,7 +8,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.PredicateEntity;
@@ -21,7 +20,6 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
 
-@Log4j2
 @Mapper(componentModel = SPRING)
 public abstract class ResourceModelMapper {
 

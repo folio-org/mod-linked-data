@@ -2,7 +2,6 @@ package org.folio.linked.data.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -11,7 +10,6 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.impl.HashServiceImpl;
 import org.folio.spring.test.type.UnitTest;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,10 +33,10 @@ class HashServiceTest {
     Resource resource = null;
 
     // when
-    NullPointerException thrown = assertThrows(NullPointerException.class, () -> hashService.hash(resource));
+    var thrown = assertThrows(NullPointerException.class, () -> hashService.hash(resource));
 
     // then
-    MatcherAssert.assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
+    assertThat(thrown.getMessage()).isEqualTo("resource is marked non-null but is null");
   }
 
   @Test
