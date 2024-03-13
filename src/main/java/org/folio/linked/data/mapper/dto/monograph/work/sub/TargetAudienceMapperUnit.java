@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = CATEGORY, predicate = TARGET_AUDIENCE, dtoClass = Category.class)
 public class TargetAudienceMapperUnit extends CategoryMapperUnit {
 
+  private static final String CATEGORY_LABEL = "Target audience";
+  private static final String CATEGORY_LINK = "https://id.loc.gov/vocabulary/maudience";
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
@@ -39,11 +41,12 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
   @Override
   protected Optional<Resource> getCategorySet() {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, LINK, List.of("https://id.loc.gov/vocabulary/maudience"));
-    putProperty(map, LABEL, List.of("Target audience"));
+    putProperty(map, LINK, List.of(CATEGORY_LINK));
+    putProperty(map, LABEL, List.of(CATEGORY_LABEL));
     var categorySet = new Resource()
       .addType(CATEGORY_SET)
-      .setDoc(coreMapper.toJson(map));
+      .setDoc(coreMapper.toJson(map))
+      .setLabel(CATEGORY_LABEL);
     categorySet.setResourceHash(hashService.hash(categorySet));
     return Optional.of(categorySet);
   }

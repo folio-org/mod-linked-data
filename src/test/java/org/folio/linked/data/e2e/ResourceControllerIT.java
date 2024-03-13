@@ -1291,6 +1291,7 @@ class ResourceControllerIT {
     assertThat(categorySet.getDoc().size()).isEqualTo(2);
     validateLiteral(categorySet, LINK.getValue(), "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent");
     validateLiteral(categorySet, LABEL.getValue(), "rdacontent");
+    assertThat(categorySet.getLabel()).isEqualTo("rdacontent");
   }
 
   private void validateWorkTargetAudience(ResourceEdge edge, Resource source) {
@@ -1308,6 +1309,7 @@ class ResourceControllerIT {
     assertThat(categorySet.getDoc().size()).isEqualTo(2);
     validateLiteral(categorySet, LINK.getValue(), "https://id.loc.gov/vocabulary/maudience");
     validateLiteral(categorySet, LABEL.getValue(), "Target audience");
+    assertThat(categorySet.getLabel()).isEqualTo("Target audience");
   }
 
   private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
