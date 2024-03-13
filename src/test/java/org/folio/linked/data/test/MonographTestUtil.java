@@ -25,6 +25,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
+import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
@@ -71,7 +72,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
@@ -459,10 +459,10 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
     pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
+    pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
 
     var work = createResource(
       Map.ofEntries(
-        entry(TARGET_AUDIENCE, List.of("target audience")),
         entry(LANGUAGE, List.of("eng")),
         entry(SUMMARY, List.of("summary text")),
         entry(TABLE_OF_CONTENTS, List.of("table of contents")),
@@ -505,6 +505,27 @@ public class MonographTestUtil {
       Set.of(CATEGORY),
       pred2OutgoingResources
     ).setLabel("text");
+  }
+
+  private static Resource createTargetAudience() {
+    var categorySet = createResource(
+      Map.of(
+        LINK, List.of("https://id.loc.gov/vocabulary/maudience"),
+        LABEL, List.of("Target audience")
+      ),
+      Set.of(CATEGORY_SET),
+      emptyMap());
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(IS_DEFINED_BY, List.of(categorySet));
+    return createResource(
+      Map.of(
+        TERM, List.of("Primary"),
+        LINK, List.of("http://id.loc.gov/vocabulary/maudience/pri"),
+        CODE, List.of("b")
+      ),
+      Set.of(CATEGORY),
+      pred2OutgoingResources
+    ).setLabel("Primary");
   }
 
   private Resource status(String prefix) {

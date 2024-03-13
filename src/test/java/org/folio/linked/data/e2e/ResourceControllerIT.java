@@ -30,6 +30,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
@@ -74,7 +75,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
@@ -669,8 +669,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceRepo.save(getSampleInstanceResource(null, work));
     assertThat(resourceRepo.findById(instance.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(41);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(43);
+    assertThat(resourceRepo.count()).isEqualTo(43);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(45);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -681,9 +681,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(instance.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(40);
+    assertThat(resourceRepo.count()).isEqualTo(42);
     assertThat(resourceEdgeRepository.findById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(25);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(27);
     checkKafkaMessage(work.getResourceHash(), UPDATE);
   }
 
@@ -692,8 +692,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(41);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(43);
+    assertThat(resourceRepo.count()).isEqualTo(43);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(45);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -704,9 +704,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(40);
+    assertThat(resourceRepo.count()).isEqualTo(42);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(24);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(25);
     checkKafkaMessage(existed.getResourceHash(), DELETE);
   }
 
@@ -867,7 +867,6 @@ class ResourceControllerIT {
     // the second 'if' condition is to be removed after wireframe UI migration and two 'if's could be merged
     if (workBase.equals(toWork()) || workBase.equals(toWorkInInstance())) {
       resultActions
-        .andExpect(jsonPath(toWorkTargetAudience(workBase), equalTo("target audience")))
         .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
         .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
         .andExpect(jsonPath(toWorkResponsibilityStatement(workBase), equalTo("statement of responsibility")))
@@ -885,7 +884,10 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
         .andExpect(jsonPath(toWorkGovernmentPublicationCode(workBase), equalTo("a")))
         .andExpect(jsonPath(toWorkGovernmentPublicationTerm(workBase), equalTo("Autonomous")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")));
+        .andExpect(jsonPath(toWorkGovernmentPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
+        .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
+        .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
+        .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
     }
   }
@@ -1205,22 +1207,24 @@ class ResourceControllerIT {
     assertThat(work.getResourceHash()).isNotNull();
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
     if (isDeprecated) {
-      assertThat(work.getDoc().size()).isEqualTo(8);
+      assertThat(work.getDoc().size()).isEqualTo(7);
     } else {
-      assertThat(work.getDoc().size()).isEqualTo(10);
+      assertThat(work.getDoc().size()).isEqualTo(9);
       validateLiterals(work, DATE_START.getValue(), List.of("2024"));
       validateLiterals(work, DATE_END.getValue(), List.of("2025"));
     }
     validateLiteral(work, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, LANGUAGE.getValue(), "eng");
-    validateLiteral(work, TARGET_AUDIENCE.getValue(), "target audience");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
     validateLiteral(work, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
     validateLiterals(work, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
     validateLiterals(work, NOTE.getValue(), List.of("note", "another note"));
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
     validateWorkContentType(outgoingEdgeIterator.next(), work);
+    if (!isDeprecated) {
+      validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
+    }
     validateWorkClassification(outgoingEdgeIterator.next(), work);
     if (!isDeprecated) {
       validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
@@ -1277,10 +1281,8 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(CONTENT.getUri());
     var contentType = edge.getTarget();
     assertThat(contentType.getDoc().size()).isEqualTo(4);
-    assertThat(contentType.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(contentType.getDoc().get(LINK.getValue()).get(0).asText())
-      .isEqualTo("http://id.loc.gov/vocabulary/contentTypes/txt");
     validateLiteral(contentType, CODE.getValue(), "txt");
+    validateLiteral(contentType, LINK.getValue(), "http://id.loc.gov/vocabulary/contentTypes/txt");
     validateLiteral(contentType, TERM.getValue(), "text");
     validateLiteral(contentType, SOURCE.getValue(), "content source");
     var resourceEdge = contentType.getOutgoingEdges().iterator().next();
@@ -1289,6 +1291,25 @@ class ResourceControllerIT {
     assertThat(categorySet.getDoc().size()).isEqualTo(2);
     validateLiteral(categorySet, LINK.getValue(), "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent");
     validateLiteral(categorySet, LABEL.getValue(), "rdacontent");
+    assertThat(categorySet.getLabel()).isEqualTo("rdacontent");
+  }
+
+  private void validateWorkTargetAudience(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(TARGET_AUDIENCE.getUri());
+    var contentType = edge.getTarget();
+    assertThat(contentType.getDoc().size()).isEqualTo(3);
+    validateLiteral(contentType, CODE.getValue(), "b");
+    validateLiteral(contentType, LINK.getValue(), "http://id.loc.gov/vocabulary/maudience/pri");
+    validateLiteral(contentType, TERM.getValue(), "Primary");
+    var resourceEdge = contentType.getOutgoingEdges().iterator().next();
+    var categorySet = resourceEdge.getTarget();
+    validateResourceEdge(resourceEdge, contentType, categorySet, IS_DEFINED_BY.getUri());
+    assertThat(categorySet.getDoc().size()).isEqualTo(2);
+    validateLiteral(categorySet, LINK.getValue(), "https://id.loc.gov/vocabulary/maudience");
+    validateLiteral(categorySet, LABEL.getValue(), "Target audience");
+    assertThat(categorySet.getLabel()).isEqualTo("Target audience");
   }
 
   private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
@@ -1647,10 +1668,6 @@ class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM.getValue()));
   }
 
-  private String toWorkTargetAudience(String workBase) {
-    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getValue()));
-  }
-
   private String toWorkResponsibilityStatement(String workBase) {
     return join(".", workBase, arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
@@ -1799,6 +1816,18 @@ class ResourceControllerIT {
 
   private String toWorkGovernmentPublicationLink(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(LINK.getValue()));
+  }
+
+  private String toWorkTargetAudienceCode(String workBase) {
+    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(CODE.getValue()));
+  }
+
+  private String toWorkTargetAudienceTerm(String workBase) {
+    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(TERM.getValue()));
+  }
+
+  private String toWorkTargetAudienceLink(String workBase) {
+    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toWorkContentCode(String workBase) {

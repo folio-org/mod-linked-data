@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
-import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
@@ -21,21 +20,18 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = CATEGORY, predicate = CONTENT, dtoClass = Category.class)
-public class ContentMapperUnit extends CategoryMapperUnit {
+@MapperUnit(type = CATEGORY, predicate = TARGET_AUDIENCE, dtoClass = Category.class)
+public class TargetAudienceMapperUnit extends CategoryMapperUnit {
 
-  private static final String CATEGORY_LABEL = "rdacontent";
-  private static final String CATEGORY_LINK = "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent";
+  private static final String CATEGORY_LABEL = "Target audience";
+  private static final String CATEGORY_LINK = "https://id.loc.gov/vocabulary/maudience";
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
-  public ContentMapperUnit(CoreMapper coreMapper, HashService hashService) {
+  public TargetAudienceMapperUnit(CoreMapper coreMapper, HashService hashService) {
     super(coreMapper, hashService, (category, destination) -> {
       if (destination instanceof Work work) {
-        work.addContentItem(category);
-      }
-      if (destination instanceof WorkReference work) {
-        work.addContentItem(category);
+        work.addTargetAudienceItem(category);
       }
     }, CATEGORY);
     this.coreMapper = coreMapper;
