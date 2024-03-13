@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.impl;
+package org.folio.linked.data.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.util.Constants.PROFILE_NOT_FOUND;
@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.repo.ProfileRepository;
+import org.folio.linked.data.service.impl.ProfileServiceImpl;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

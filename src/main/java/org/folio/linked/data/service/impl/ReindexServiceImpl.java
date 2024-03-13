@@ -64,8 +64,9 @@ public class ReindexServiceImpl implements ReindexService {
                 })
                 .orElseGet(() -> {
                   log.info("Work with id {} wasn't sent for reindexing, because it doesn't contain any "
-                    + "indexable values", work.getResourceHash());
-                  return null;
+                    + "indexable values. Saving with indexDate to keep it ignored in future reindexing",
+                    work.getResourceHash());
+                  return work.getResourceHash();
                 });
               // detach the resource entity from entity manager, enabling garbage collection
               entityManager.detach(work);
