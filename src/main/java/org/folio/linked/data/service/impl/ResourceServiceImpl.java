@@ -57,6 +57,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceDto createResource(ResourceDto resourceDto) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
+    log.info("mapped DTO [{}] to resource", resourceDto);
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
