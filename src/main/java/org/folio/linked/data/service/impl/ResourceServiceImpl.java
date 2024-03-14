@@ -11,6 +11,7 @@ import static org.folio.linked.data.util.Constants.EXISTS_ALREADY;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,7 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceDto createResource(ResourceDto resourceDto) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    log.info("mapped DTO [{}] to resource", resourceDto);
+    log.info("mapped DTO [{}] to resources [{}]", resourceDto, getAllHashes(mapped));
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
@@ -240,5 +241,16 @@ public class ResourceServiceImpl implements ResourceService {
 
   private NotFoundException getResourceNotFoundException(Long id) {
     return new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
+  }
+
+  private List<Long> getAllHashes(Resource resource) {
+    if (resource.getOutgoingEdges().isEmpty()) {
+      return List.of(resource.getResourceHash());
+    }
+    return resource.getOutgoingEdges().stream()
+      .map(ResourceEdge::getTarget)
+      .map(this::getAllHashes)
+      .flatMap(List::stream)
+      .toList();
   }
 }
