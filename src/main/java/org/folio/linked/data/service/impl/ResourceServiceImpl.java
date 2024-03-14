@@ -62,7 +62,7 @@ public class ResourceServiceImpl implements ResourceService {
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
-    var persisted = resourceRepo.save(mapped);
+    var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom Marva DTO [{}]", persisted, resourceDto);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
@@ -252,5 +252,28 @@ public class ResourceServiceImpl implements ResourceService {
       .map(this::getAllHashes)
       .flatMap(List::stream)
       .toList();
+  }
+
+  private Resource saveMergingGraph(Resource resource) {
+    resource = takeExistingAddingNewEdges(resource);
+    return resourceRepo.save(resource);
+  }
+
+  private Resource takeExistingAddingNewEdges(Resource newResource) {
+    return resourceRepo.findById(newResource.getResourceHash())
+      .map(existed -> {
+        newResource.getOutgoingEdges().stream()
+          .map(newOe -> new ResourceEdge(existed, takeExistingAddingNewEdges(newOe.getTarget()), newOe.getPredicate()))
+          .forEach(existed.getOutgoingEdges()::add);
+        newResource.getIncomingEdges().stream()
+          .map(newIe -> new ResourceEdge(takeExistingAddingNewEdges(newIe.getSource()), existed, newIe.getPredicate()))
+          .forEach(existed.getIncomingEdges()::add);
+        return existed;
+      })
+      .orElseGet(() -> {
+        newResource.getOutgoingEdges().forEach(oe -> oe.setTarget(takeExistingAddingNewEdges(oe.getTarget())));
+        newResource.getIncomingEdges().forEach(ie -> ie.setSource(takeExistingAddingNewEdges(ie.getSource())));
+        return newResource;
+      });
   }
 }
