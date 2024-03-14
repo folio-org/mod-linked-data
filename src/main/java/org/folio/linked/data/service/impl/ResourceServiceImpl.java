@@ -58,11 +58,13 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceDto createResource(ResourceDto resourceDto) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    log.info("mapped DTO [{}] to resources [{}]", resourceDto, getAllHashes(mapped));
+    log.info("mapped DTO [{}] to resources", resourceDto);
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
-    var persisted = saveMergingGraph(mapped);
+
+    var persisted = resourceRepo.save(mapped);
+    // var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom Marva DTO [{}]", persisted, resourceDto);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
@@ -241,17 +243,6 @@ public class ResourceServiceImpl implements ResourceService {
 
   private NotFoundException getResourceNotFoundException(Long id) {
     return new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
-  }
-
-  private List<Long> getAllHashes(Resource resource) {
-    if (resource.getOutgoingEdges().isEmpty()) {
-      return List.of(resource.getResourceHash());
-    }
-    return resource.getOutgoingEdges().stream()
-      .map(ResourceEdge::getTarget)
-      .map(this::getAllHashes)
-      .flatMap(List::stream)
-      .toList();
   }
 
   private Resource saveMergingGraph(Resource resource) {

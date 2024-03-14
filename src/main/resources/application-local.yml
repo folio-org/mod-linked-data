@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/okapi_modules
+    url: jdbc:postgresql://localhost:5434/folio
   kafka:
     bootstrap-servers: localhost:9092
   cloud:

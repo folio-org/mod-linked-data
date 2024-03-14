@@ -8,9 +8,9 @@ spring:
       okhttp:
         enabled: true
   datasource:
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-    url: jdbc:postgresql://${DB_HOST:postgres}:${DB_PORT:5432}/${DB_DATABASE:okapi_modules}
+    username: folio
+    password: QdA6j4QyrfDUwW4Vx80B9nBx
+    url: jdbc:postgresql://localhost:5434/folio
   liquibase:
     change-log: classpath:changelog/changelog-master.xml
   main:
