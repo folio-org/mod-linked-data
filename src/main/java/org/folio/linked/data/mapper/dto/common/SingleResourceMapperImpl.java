@@ -48,7 +48,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       throw blde;
     } catch (Exception e) {
       log.warn("Exception during toEntity mapping", e);
-      throw new ValidationException(predicate.getUri(), objectMapper.writeValueAsString(dto));
+      throw new ValidationException(predicate == null ? "-" : predicate.getUri(), objectMapper.writeValueAsString(dto));
     }
   }
 
