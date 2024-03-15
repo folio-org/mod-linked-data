@@ -7,7 +7,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.PredicateEntity;
@@ -16,6 +20,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
@@ -36,11 +41,15 @@ public abstract class ResourceModelMapper {
     return toModel(entity, new CyclicGraphContext());
   }
 
+  @Mapping(ignore = true, target = "incomingEdges")
   protected abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity,
                                                                     @Context CyclicGraphContext cycleContext);
 
-  public ResourceTypeDictionary map(ResourceTypeEntity typeEntity) {
-    return ResourceTypeDictionary.fromUri(typeEntity.getUri()).orElse(null);
+  public Set<ResourceTypeDictionary> map(Set<ResourceTypeEntity> typeEntities) {
+    return typeEntities.stream()
+      .map(typeEntity -> ResourceTypeDictionary.fromUri(typeEntity.getUri()).orElse(null))
+      .filter(Objects::nonNull)
+      .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   public PredicateDictionary map(PredicateEntity predicateEntity) {
