@@ -40,9 +40,9 @@ public class StandaloneConfig implements ApplicationListener<ContextRefreshedEve
   @Override
   @SneakyThrows
   public void onApplicationEvent(@NotNull ContextRefreshedEvent event) {
-//    log.log(Level.INFO, "Standalone mode is on, activating default DB schema [{}]", defaultSchema);
-//    folioSpringLiquibase.setDefaultSchema(defaultSchema);
-//    folioSpringLiquibase.performLiquibaseUpdate();
+    log.log(Level.INFO, "Standalone mode is on, activating default DB schema [{}]", defaultSchema);
+    folioSpringLiquibase.setDefaultSchema(defaultSchema);
+    folioSpringLiquibase.performLiquibaseUpdate();
   }
 
   @Primary

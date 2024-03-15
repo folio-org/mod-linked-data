@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.dto.common;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.linked.data.util.Constants.AND;
@@ -48,7 +49,9 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       throw blde;
     } catch (Exception e) {
       log.warn("Exception during toEntity mapping", e);
-      throw new ValidationException(predicate == null ? "-" : predicate.getUri(), objectMapper.writeValueAsString(dto));
+      throw new ValidationException(dto.getClass().getSimpleName()
+        + ofNullable(predicate).map(p -> " under Predicate: " + p.getUri()).orElse(""),
+        objectMapper.writeValueAsString(dto));
     }
   }
 

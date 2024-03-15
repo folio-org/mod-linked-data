@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    username: folio
+    password: QdA6j4QyrfDUwW4Vx80B9nBx
+    url: jdbc:postgresql://localhost:5434/folio
+  kafka:
+    bootstrap-servers: localhost:9092
+  cloud:
+    openfeign:
+      client:
+        config:
+          search:
+            url: https://okapi-missinglinks.int.aws.folio.org/search
