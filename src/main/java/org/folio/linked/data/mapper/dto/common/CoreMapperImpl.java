@@ -3,16 +3,19 @@ package org.folio.linked.data.mapper.dto.common;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import org.folio.ld.dictionary.model.Predicate;
+import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -79,7 +82,16 @@ public class CoreMapperImpl implements CoreMapper {
 
   private <T> T readDoc(JsonNode node, Class<T> dtoClass) {
     try {
-      return jsonMapper.treeToValue(nonNull(node) ? node : jsonMapper.createObjectNode(), dtoClass);
+      if (nonNull(node)) {
+        if (dtoClass == Work.class) {
+          // Temp fix - targetAudience loaded through the Python ETL have targetAudience in text format
+          // causing the deserialization to fail. Here remove the targetAudience from node
+          ((ObjectNode) node).remove(TARGET_AUDIENCE.getValue());
+        }
+        return jsonMapper.treeToValue(node, dtoClass);
+      } else {
+        return jsonMapper.treeToValue(jsonMapper.createObjectNode(), dtoClass);
+      }
     } catch (JsonProcessingException e) {
       throw new JsonException(e.getMessage());
     }
