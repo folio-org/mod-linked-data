@@ -60,8 +60,8 @@ public class ResourceServiceImpl implements ResourceService {
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
+    log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
     var persisted = resourceRepo.save(mapped);
-    log.info("createResource [{}]\nfrom Marva DTO [{}]", persisted, resourceDto);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
