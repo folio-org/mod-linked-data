@@ -82,10 +82,10 @@ public class CoreMapperImpl implements CoreMapper {
 
   private <T> T readDoc(JsonNode node, Class<T> dtoClass) {
     try {
-      // Temp fix - targetAudience loaded through the Python ETL have targetAudience in text format
-      // causing the deserialization to fail. Here remove the targetAudience from node
       if (nonNull(node)) {
         if (dtoClass == Work.class) {
+          // Temp fix - targetAudience loaded through the Python ETL have targetAudience in text format
+          // causing the deserialization to fail. Here remove the targetAudience from node
           ((ObjectNode) node).remove(TARGET_AUDIENCE.getValue());
         }
         return jsonMapper.treeToValue(node, dtoClass);
