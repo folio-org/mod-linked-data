@@ -60,8 +60,8 @@ public class ResourceServiceImpl implements ResourceService {
     if (resourceRepo.existsById(mapped.getResourceHash())) {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
-    var persisted = resourceRepo.save(mapped);
-    log.info("createResource [{}]\nfrom Marva DTO [{}]", persisted, resourceDto);
+    log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
+    var persisted = saveMergingGraph(mapped);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
@@ -73,7 +73,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public Long createResource(org.folio.ld.dictionary.model.Resource modelResource) {
     var mapped = resourceModelMapper.toEntity(modelResource);
-    var persisted = resourceRepo.save(mapped);
+    var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
@@ -99,13 +99,43 @@ public class ResourceServiceImpl implements ResourceService {
     breakCircularEdges(old);
     resourceRepo.delete(old);
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    var persisted = resourceRepo.save(mapped);
+    var persisted = saveMergingGraph(mapped);
     if (isOfType(persisted, WORK)) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(persisted, oldWork));
     } else {
       reindexParentWorkAfterInstanceUpdate(persisted, oldWork);
     }
     return resourceDtoMapper.toDto(persisted);
+  }
+
+  @Override
+  public Resource saveMergingGraph(Resource resource) {
+    resource = takeExistingAddingNewEdges(resource, 4);
+    return resourceRepo.save(resource);
+  }
+
+  private Resource takeExistingAddingNewEdges(Resource newResource, int edgesDeep) {
+    final var counter = --edgesDeep;
+    if (counter <= 0) {
+      return newResource;
+    }
+    return resourceRepo.findById(newResource.getResourceHash())
+      .map(existed -> {
+        newResource.getOutgoingEdges().stream()
+          .map(newOe -> new ResourceEdge(existed, takeExistingAddingNewEdges(newOe.getTarget(), counter),
+            newOe.getPredicate()))
+          .forEach(existed.getOutgoingEdges()::add);
+        newResource.getIncomingEdges().stream()
+          .map(newIe -> new ResourceEdge(takeExistingAddingNewEdges(newIe.getSource(), counter), existed,
+            newIe.getPredicate()))
+          .forEach(existed.getIncomingEdges()::add);
+        return existed;
+      })
+      .orElseGet(() -> {
+        newResource.getOutgoingEdges().forEach(oe -> oe.setTarget(takeExistingAddingNewEdges(oe.getTarget(), counter)));
+        newResource.getIncomingEdges().forEach(ie -> ie.setSource(takeExistingAddingNewEdges(ie.getSource(), counter)));
+        return newResource;
+      });
   }
 
   private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {

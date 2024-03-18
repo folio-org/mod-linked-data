@@ -1,6 +1,6 @@
 package org.folio.linked.data.service;
 
-import static com.google.inject.matcher.Matchers.any;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -12,6 +12,7 @@ import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -365,7 +366,7 @@ class ResourceServiceTest {
     var instance = new Resource().setResourceHash(id).setLabel("saved").addType(INSTANCE);
     var newWork = new Resource().setResourceHash(123L).addType(WORK);
     instance.getOutgoingEdges().add(new ResourceEdge(instance, newWork, INSTANTIATES));
-    when(resourceRepo.save(mapped)).thenReturn(instance);
+    when(resourceRepo.save(any(Resource.class))).thenReturn(instance);
     var expectedDto = new ResourceDto().resource(new WorkField().work(new Work().id(id.toString())));
     when(resourceDtoMapper.toDto(instance)).thenReturn(expectedDto);
 
@@ -375,7 +376,7 @@ class ResourceServiceTest {
     // then
     assertEquals(expectedDto, result);
     verify(resourceRepo).delete(oldInstance);
-    verify(resourceRepo).save(mapped);
+    verify(resourceRepo).save(any());
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(newWork, null));
   }
 
