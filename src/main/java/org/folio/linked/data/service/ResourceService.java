@@ -24,6 +24,6 @@ public interface ResourceService {
 
   ResourceGraphDto getResourceGraphById(Long id);
 
-  void saveMergingGraph(Resource resource);
+  Resource saveMergingGraph(Resource resource);
 
 }

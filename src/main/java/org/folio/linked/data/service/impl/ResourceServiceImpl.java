@@ -61,7 +61,7 @@ public class ResourceServiceImpl implements ResourceService {
       throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
     }
     log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
-    var persisted = resourceRepo.save(mapped);
+    var persisted = saveMergingGraph(mapped);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
@@ -73,7 +73,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public Long createResource(org.folio.ld.dictionary.model.Resource modelResource) {
     var mapped = resourceModelMapper.toEntity(modelResource);
-    var persisted = resourceRepo.save(mapped);
+    var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
@@ -99,7 +99,7 @@ public class ResourceServiceImpl implements ResourceService {
     breakCircularEdges(old);
     resourceRepo.delete(old);
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    var persisted = resourceRepo.save(mapped);
+    var persisted = saveMergingGraph(mapped);
     if (isOfType(persisted, WORK)) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(persisted, oldWork));
     } else {
@@ -109,25 +109,31 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
-  public void saveMergingGraph(Resource resource) {
-    resource = takeExistingAddingNewEdges(resource);
-    resourceRepo.save(resource);
+  public Resource saveMergingGraph(Resource resource) {
+    resource = takeExistingAddingNewEdges(resource, 4);
+    return resourceRepo.save(resource);
   }
 
-  private Resource takeExistingAddingNewEdges(Resource newResource) {
+  private Resource takeExistingAddingNewEdges(Resource newResource, int edgesDeep) {
+    final var counter = --edgesDeep;
+    if (counter <= 0) {
+      return newResource;
+    }
     return resourceRepo.findById(newResource.getResourceHash())
       .map(existed -> {
         newResource.getOutgoingEdges().stream()
-          .map(newOe -> new ResourceEdge(existed, takeExistingAddingNewEdges(newOe.getTarget()), newOe.getPredicate()))
+          .map(newOe -> new ResourceEdge(existed, takeExistingAddingNewEdges(newOe.getTarget(), counter),
+            newOe.getPredicate()))
           .forEach(existed.getOutgoingEdges()::add);
         newResource.getIncomingEdges().stream()
-          .map(newIe -> new ResourceEdge(takeExistingAddingNewEdges(newIe.getSource()), existed, newIe.getPredicate()))
+          .map(newIe -> new ResourceEdge(takeExistingAddingNewEdges(newIe.getSource(), counter), existed,
+            newIe.getPredicate()))
           .forEach(existed.getIncomingEdges()::add);
         return existed;
       })
       .orElseGet(() -> {
-        newResource.getOutgoingEdges().forEach(oe -> oe.setTarget(takeExistingAddingNewEdges(oe.getTarget())));
-        newResource.getIncomingEdges().forEach(ie -> ie.setSource(takeExistingAddingNewEdges(ie.getSource())));
+        newResource.getOutgoingEdges().forEach(oe -> oe.setTarget(takeExistingAddingNewEdges(oe.getTarget(), counter)));
+        newResource.getIncomingEdges().forEach(ie -> ie.setSource(takeExistingAddingNewEdges(ie.getSource(), counter)));
         return newResource;
       });
   }

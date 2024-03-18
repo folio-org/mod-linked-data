@@ -38,16 +38,16 @@ class MergeResourcesIT {
   @Test
   void testResourcesMerging_1() {
     // given
-    var graph1 = createGraph1__2();
+    var graph1 = createGraph1toto2();
     resourceService.saveMergingGraph(graph1);
     var fp1Resource = resourceTestService.getResourceById("1", 4);
     // Should be: 1 -> [2]
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge1_2 = fp1Resource.getOutgoingEdges().iterator().next();
-    assertThat(fpEdge1_2.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_2.getId().getTargetHash()).isEqualTo(2L);
-    assertThat(fpEdge1_2.getSource()).isEqualTo(fp1Resource);
-    var graph2 = createGraph3__1_5__4();
+    var fpEdge1to2 = fp1Resource.getOutgoingEdges().iterator().next();
+    assertThat(fpEdge1to2.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to2.getId().getTargetHash()).isEqualTo(2L);
+    assertThat(fpEdge1to2.getSource()).isEqualTo(fp1Resource);
+    var graph2 = createGraph3toto1to5toto4();
 
     // when
     resourceService.saveMergingGraph(graph2);
@@ -58,60 +58,60 @@ class MergeResourcesIT {
     fp1Resource = resourceTestService.getResourceById("1", 4);
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
     var fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1_2 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_2.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_2.getId().getTargetHash()).isEqualTo(2L);
-    assertThat(fpEdge1_2.getSource()).isEqualTo(fp1Resource);
-    var fpEdge1_5 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_5.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_5.getId().getTargetHash()).isEqualTo(5L);
-    assertThat(fpEdge1_5.getSource()).isEqualTo(fp1Resource);
+    fpEdge1to2 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to2.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to2.getId().getTargetHash()).isEqualTo(2L);
+    assertThat(fpEdge1to2.getSource()).isEqualTo(fp1Resource);
+    var fpEdge1to5 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to5.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to5.getId().getTargetHash()).isEqualTo(5L);
+    assertThat(fpEdge1to5.getSource()).isEqualTo(fp1Resource);
     // fp3Resource should be: 3 -> [1, 4]
     var fp3Resource = resourceTestService.getResourceById("3", 4);
     assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
     var fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    var fpEdge3_1 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_1.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_1.getId().getTargetHash()).isEqualTo(1L);
-    assertThat(fpEdge3_1.getSource()).isEqualTo(fp3Resource);
-    assertThat(fpEdge3_1.getTarget()).isEqualTo(fp1Resource);
-    var fpEdge3_4 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_4.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_4.getId().getTargetHash()).isEqualTo(4L);
-    assertThat(fpEdge3_4.getSource()).isEqualTo(fp3Resource);
+    var fpEdge3to1 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to1.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to1.getId().getTargetHash()).isEqualTo(1L);
+    assertThat(fpEdge3to1.getSource()).isEqualTo(fp3Resource);
+    assertThat(fpEdge3to1.getTarget()).isEqualTo(fp1Resource);
+    var fpEdge3to4 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to4.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to4.getId().getTargetHash()).isEqualTo(4L);
+    assertThat(fpEdge3to4.getSource()).isEqualTo(fp3Resource);
   }
 
   @Test
   void testResourcesMerging_2() {
     // given
-    var graph1 = createGraph3__1_2_5__4();
+    var graph1 = createGraph3toto1to2to5toto4();
     resourceService.saveMergingGraph(graph1);
     // fp3Resource should be: 3 -> [1, 4]
     var fp3Resource = resourceTestService.getResourceById("3", 4);
     assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
     var fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    var fpEdge3_1 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_1.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_1.getId().getTargetHash()).isEqualTo(1L);
-    assertThat(fpEdge3_1.getSource()).isEqualTo(fp3Resource);
-    var fpEdge3_4 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_4.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_4.getId().getTargetHash()).isEqualTo(4L);
-    assertThat(fpEdge3_4.getSource()).isEqualTo(fp3Resource);
-    assertThat(fpEdge3_4.getTarget().getOutgoingEdges()).isEmpty();
+    var fpEdge3to1 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to1.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to1.getId().getTargetHash()).isEqualTo(1L);
+    assertThat(fpEdge3to1.getSource()).isEqualTo(fp3Resource);
+    var fpEdge3to4 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to4.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to4.getId().getTargetHash()).isEqualTo(4L);
+    assertThat(fpEdge3to4.getSource()).isEqualTo(fp3Resource);
+    assertThat(fpEdge3to4.getTarget().getOutgoingEdges()).isEmpty();
     // fp1Resource should be: 3 -> 1 -> [2, 5]
-    var fp1Resource = fpEdge3_1.getTarget();
+    var fp1Resource = fpEdge3to1.getTarget();
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
     var fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    var fpEdge1_2 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_2.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_2.getId().getTargetHash()).isEqualTo(2L);
-    assertThat(fpEdge1_2.getSource()).isEqualTo(fp1Resource);
-    var fpEdge1_5 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_5.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_5.getId().getTargetHash()).isEqualTo(5L);
-    assertThat(fpEdge1_5.getSource()).isEqualTo(fp1Resource);
-    var graph2 = createGraph6__1__4_5();
+    var fpEdge1to2 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to2.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to2.getId().getTargetHash()).isEqualTo(2L);
+    assertThat(fpEdge1to2.getSource()).isEqualTo(fp1Resource);
+    var fpEdge1to5 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to5.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to5.getId().getTargetHash()).isEqualTo(5L);
+    assertThat(fpEdge1to5.getSource()).isEqualTo(fp1Resource);
+    var graph2 = createGraph6toto1toto4to5();
 
     // when
     resourceService.saveMergingGraph(graph2);
@@ -122,66 +122,66 @@ class MergeResourcesIT {
     fp3Resource = resourceTestService.getResourceById("3", 10);
     assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
     fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    fpEdge3_1 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_1.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_1.getId().getTargetHash()).isEqualTo(1L);
-    assertThat(fpEdge3_1.getSource()).isEqualTo(fp3Resource);
-    fpEdge3_4 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_4.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_4.getId().getTargetHash()).isEqualTo(4L);
-    assertThat(fpEdge3_4.getSource()).isEqualTo(fp3Resource);
+    fpEdge3to1 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to1.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to1.getId().getTargetHash()).isEqualTo(1L);
+    assertThat(fpEdge3to1.getSource()).isEqualTo(fp3Resource);
+    fpEdge3to4 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to4.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to4.getId().getTargetHash()).isEqualTo(4L);
+    assertThat(fpEdge3to4.getSource()).isEqualTo(fp3Resource);
     // fp1Resource should be: 3 -> 1 -> [2, 5]
-    fp1Resource = fpEdge3_1.getTarget();
+    fp1Resource = fpEdge3to1.getTarget();
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
     fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1_2 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_2.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_2.getId().getTargetHash()).isEqualTo(2L);
-    assertThat(fpEdge1_2.getSource()).isEqualTo(fp1Resource);
-    fpEdge1_5 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_5.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_5.getId().getTargetHash()).isEqualTo(5L);
-    assertThat(fpEdge1_5.getSource()).isEqualTo(fp1Resource);
+    fpEdge1to2 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to2.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to2.getId().getTargetHash()).isEqualTo(2L);
+    assertThat(fpEdge1to2.getSource()).isEqualTo(fp1Resource);
+    fpEdge1to5 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to5.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to5.getId().getTargetHash()).isEqualTo(5L);
+    assertThat(fpEdge1to5.getSource()).isEqualTo(fp1Resource);
     // fp4Resource should be: 3 -> 4 -> 5
-    var fp4Resource = fpEdge3_4.getTarget();
+    var fp4Resource = fpEdge3to4.getTarget();
     assertThat(fp4Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge4_5 = fp4Resource.getOutgoingEdges().iterator().next();
-    assertThat(fpEdge4_5.getId().getSourceHash()).isEqualTo(4L);
-    assertThat(fpEdge4_5.getId().getTargetHash()).isEqualTo(5L);
-    assertThat(fpEdge4_5.getSource()).isEqualTo(fp4Resource);
+    var fpEdge4to5 = fp4Resource.getOutgoingEdges().iterator().next();
+    assertThat(fpEdge4to5.getId().getSourceHash()).isEqualTo(4L);
+    assertThat(fpEdge4to5.getId().getTargetHash()).isEqualTo(5L);
+    assertThat(fpEdge4to5.getSource()).isEqualTo(fp4Resource);
 
     // whole graph should be: 6 -> [(1 -> [2, 5]), 4 -> 5]
     // fp6Resource should be: 6 -> [1, 4]
     var fp6Resource = resourceTestService.getResourceById("6", 4);
     assertThat(fp6Resource.getOutgoingEdges()).hasSize(2);
     var fp6EdgeIterator = fp6Resource.getOutgoingEdges().iterator();
-    var fp6_1Edge = fp6EdgeIterator.next();
-    assertThat(fp6_1Edge.getId().getSourceHash()).isEqualTo(6L);
-    assertThat(fp6_1Edge.getId().getTargetHash()).isEqualTo(1L);
-    assertThat(fp6_1Edge.getSource()).isEqualTo(fp6Resource);
+    var fp6to1Edge = fp6EdgeIterator.next();
+    assertThat(fp6to1Edge.getId().getSourceHash()).isEqualTo(6L);
+    assertThat(fp6to1Edge.getId().getTargetHash()).isEqualTo(1L);
+    assertThat(fp6to1Edge.getSource()).isEqualTo(fp6Resource);
     // fp1Resource is already asserted
-    assertThat(fp6_1Edge.getTarget()).isEqualTo(fp1Resource);
-    var fp6_4Edge = fp6EdgeIterator.next();
-    assertThat(fp6_4Edge.getId().getSourceHash()).isEqualTo(6L);
-    assertThat(fp6_4Edge.getId().getTargetHash()).isEqualTo(4L);
-    assertThat(fp6_4Edge.getSource()).isEqualTo(fp6Resource);
+    assertThat(fp6to1Edge.getTarget()).isEqualTo(fp1Resource);
+    var fp6to4Edge = fp6EdgeIterator.next();
+    assertThat(fp6to4Edge.getId().getSourceHash()).isEqualTo(6L);
+    assertThat(fp6to4Edge.getId().getTargetHash()).isEqualTo(4L);
+    assertThat(fp6to4Edge.getSource()).isEqualTo(fp6Resource);
     // fp4Resource is already asserted
-    assertThat(fp6_4Edge.getTarget()).isEqualTo(fp4Resource);
+    assertThat(fp6to4Edge.getTarget()).isEqualTo(fp4Resource);
   }
 
   @Test
   void testResourcesMerging1_and_2() {
     // given
-    var graph1 = createGraph1__2();
+    var graph1 = createGraph1toto2();
     resourceService.saveMergingGraph(graph1);
     var fp1Resource = resourceTestService.getResourceById("1", 4);
     // Should be: 1 -> [2]
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge1_2 = fp1Resource.getOutgoingEdges().iterator().next();
-    assertThat(fpEdge1_2.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_2.getId().getTargetHash()).isEqualTo(2L);
-    assertThat(fpEdge1_2.getSource()).isEqualTo(fp1Resource);
-    var graph2 = createGraph3__1_5__4();
+    var fpEdge1to2 = fp1Resource.getOutgoingEdges().iterator().next();
+    assertThat(fpEdge1to2.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to2.getId().getTargetHash()).isEqualTo(2L);
+    assertThat(fpEdge1to2.getSource()).isEqualTo(fp1Resource);
+    var graph2 = createGraph3toto1to5toto4();
 
     // when
     resourceService.saveMergingGraph(graph2);
@@ -191,30 +191,30 @@ class MergeResourcesIT {
     // fp1Resource should be: 1 -> [2, 5]
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
     var fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1_2 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_2.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_2.getId().getTargetHash()).isEqualTo(2L);
-    assertThat(fpEdge1_2.getSource()).isEqualTo(fp1Resource);
-    var fpEdge1_5 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_5.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_5.getId().getTargetHash()).isEqualTo(5L);
-    assertThat(fpEdge1_5.getSource()).isEqualTo(fp1Resource);
+    fpEdge1to2 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to2.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to2.getId().getTargetHash()).isEqualTo(2L);
+    assertThat(fpEdge1to2.getSource()).isEqualTo(fp1Resource);
+    var fpEdge1to5 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to5.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to5.getId().getTargetHash()).isEqualTo(5L);
+    assertThat(fpEdge1to5.getSource()).isEqualTo(fp1Resource);
     // fp3Resource should be: 3 -> [(1 -> [2, 5]), 4]
     var fp3Resource = resourceTestService.getResourceById("3", 4);
     assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
     var fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    var fpEdge3_1 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_1.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_1.getId().getTargetHash()).isEqualTo(1L);
-    assertThat(fpEdge3_1.getSource()).isEqualTo(fp3Resource);
-    assertThat(fpEdge3_1.getTarget()).isEqualTo(fp1Resource);
-    var fpEdge3_4 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_4.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_4.getId().getTargetHash()).isEqualTo(4L);
-    assertThat(fpEdge3_4.getSource()).isEqualTo(fp3Resource);
+    var fpEdge3to1 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to1.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to1.getId().getTargetHash()).isEqualTo(1L);
+    assertThat(fpEdge3to1.getSource()).isEqualTo(fp3Resource);
+    assertThat(fpEdge3to1.getTarget()).isEqualTo(fp1Resource);
+    var fpEdge3to4 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to4.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to4.getId().getTargetHash()).isEqualTo(4L);
+    assertThat(fpEdge3to4.getSource()).isEqualTo(fp3Resource);
 
     // when
-    var graph3 = createGraph6__1__4_5();
+    var graph3 = createGraph6toto1toto4to5();
     resourceService.saveMergingGraph(graph3);
 
     // then
@@ -222,57 +222,57 @@ class MergeResourcesIT {
     fp3Resource = resourceTestService.getResourceById("3", 10);
     assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
     fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    fpEdge3_1 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_1.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_1.getId().getTargetHash()).isEqualTo(1L);
-    assertThat(fpEdge3_1.getSource()).isEqualTo(fp3Resource);
-    fpEdge3_4 = fp3EdgeIterator.next();
-    assertThat(fpEdge3_4.getId().getSourceHash()).isEqualTo(3L);
-    assertThat(fpEdge3_4.getId().getTargetHash()).isEqualTo(4L);
-    assertThat(fpEdge3_4.getSource()).isEqualTo(fp3Resource);
+    fpEdge3to1 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to1.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to1.getId().getTargetHash()).isEqualTo(1L);
+    assertThat(fpEdge3to1.getSource()).isEqualTo(fp3Resource);
+    fpEdge3to4 = fp3EdgeIterator.next();
+    assertThat(fpEdge3to4.getId().getSourceHash()).isEqualTo(3L);
+    assertThat(fpEdge3to4.getId().getTargetHash()).isEqualTo(4L);
+    assertThat(fpEdge3to4.getSource()).isEqualTo(fp3Resource);
     // fp1Resource should be: 3 -> 1 -> [2, 5]
-    fp1Resource = fpEdge3_1.getTarget();
+    fp1Resource = fpEdge3to1.getTarget();
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
     fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1_2 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_2.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_2.getId().getTargetHash()).isEqualTo(2L);
-    assertThat(fpEdge1_2.getSource()).isEqualTo(fp1Resource);
-    fpEdge1_5 = fp1Edgeiterator.next();
-    assertThat(fpEdge1_5.getId().getSourceHash()).isEqualTo(1L);
-    assertThat(fpEdge1_5.getId().getTargetHash()).isEqualTo(5L);
-    assertThat(fpEdge1_5.getSource()).isEqualTo(fp1Resource);
+    fpEdge1to2 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to2.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to2.getId().getTargetHash()).isEqualTo(2L);
+    assertThat(fpEdge1to2.getSource()).isEqualTo(fp1Resource);
+    fpEdge1to5 = fp1Edgeiterator.next();
+    assertThat(fpEdge1to5.getId().getSourceHash()).isEqualTo(1L);
+    assertThat(fpEdge1to5.getId().getTargetHash()).isEqualTo(5L);
+    assertThat(fpEdge1to5.getSource()).isEqualTo(fp1Resource);
     // fp4Resource should be: 3 -> 4 -> 5
-    var fp4Resource = fpEdge3_4.getTarget();
+    var fp4Resource = fpEdge3to4.getTarget();
     assertThat(fp4Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge4_5 = fp4Resource.getOutgoingEdges().iterator().next();
-    assertThat(fpEdge4_5.getId().getSourceHash()).isEqualTo(4L);
-    assertThat(fpEdge4_5.getId().getTargetHash()).isEqualTo(5L);
-    assertThat(fpEdge4_5.getSource()).isEqualTo(fp4Resource);
+    var fpEdge4to5 = fp4Resource.getOutgoingEdges().iterator().next();
+    assertThat(fpEdge4to5.getId().getSourceHash()).isEqualTo(4L);
+    assertThat(fpEdge4to5.getId().getTargetHash()).isEqualTo(5L);
+    assertThat(fpEdge4to5.getSource()).isEqualTo(fp4Resource);
 
     // fp6Resource should be: 6 -> [1, 4]
     var fp6Resource = resourceTestService.getResourceById("6", 4);
     assertThat(fp6Resource.getOutgoingEdges()).hasSize(2);
     var fp6EdgeIterator = fp6Resource.getOutgoingEdges().iterator();
-    var fp6_1Edge = fp6EdgeIterator.next();
-    assertThat(fp6_1Edge.getId().getSourceHash()).isEqualTo(6L);
-    assertThat(fp6_1Edge.getId().getTargetHash()).isEqualTo(1L);
-    assertThat(fp6_1Edge.getSource()).isEqualTo(fp6Resource);
-    assertThat(fp6_1Edge.getTarget()).isEqualTo(fp1Resource);
-    var fp6_4Edge = fp6EdgeIterator.next();
-    assertThat(fp6_4Edge.getId().getSourceHash()).isEqualTo(6L);
-    assertThat(fp6_4Edge.getId().getTargetHash()).isEqualTo(4L);
-    assertThat(fp6_4Edge.getSource()).isEqualTo(fp6Resource);
-    assertThat(fp6_4Edge.getTarget()).isEqualTo(fp4Resource);
+    var fp6to1Edge = fp6EdgeIterator.next();
+    assertThat(fp6to1Edge.getId().getSourceHash()).isEqualTo(6L);
+    assertThat(fp6to1Edge.getId().getTargetHash()).isEqualTo(1L);
+    assertThat(fp6to1Edge.getSource()).isEqualTo(fp6Resource);
+    assertThat(fp6to1Edge.getTarget()).isEqualTo(fp1Resource);
+    var fp6to4Edge = fp6EdgeIterator.next();
+    assertThat(fp6to4Edge.getId().getSourceHash()).isEqualTo(6L);
+    assertThat(fp6to4Edge.getId().getTargetHash()).isEqualTo(4L);
+    assertThat(fp6to4Edge.getSource()).isEqualTo(fp6Resource);
+    assertThat(fp6to4Edge.getTarget()).isEqualTo(fp4Resource);
   }
 
-  private Resource createGraph1__2() {
+  private Resource createGraph1toto2() {
     // 1 -> [2]
     var fp2Resource = createResource(2L, Map.of());
     return createResource(1L, Map.of(PredicateDictionary.ABRIDGER, List.of(fp2Resource)));
   }
 
-  private Resource createGraph3__1_5__4() {
+  private Resource createGraph3toto1to5toto4() {
     // 3 -> [(1 -> 5), 4]
     var fp5Resource = createResource(5L, Map.of());
     var fp1Resource = createResource(1L, Map.of(PredicateDictionary.BINDER, List.of(fp5Resource)));
@@ -280,7 +280,7 @@ class MergeResourcesIT {
     return createResource(3L, Map.of(PredicateDictionary.CREATOR, List.of(fp1Resource, fp4Resource)));
   }
 
-  private Resource createGraph3__1_2_5__4() {
+  private Resource createGraph3toto1to2to5toto4() {
     // 3 -> [(1 -> 2, 5), 4]
     var fp2Resource = createResource(2L, Map.of());
     var fp5Resource = createResource(5L, Map.of());
@@ -289,7 +289,7 @@ class MergeResourcesIT {
     return createResource(3L, Map.of(PredicateDictionary.EDITOR, List.of(fp1Resource, fp4Resource)));
   }
 
-  private Resource createGraph6__1__4_5() {
+  private Resource createGraph6toto1toto4to5() {
     // 6 -> [1, (4 -> 5)]
     var fp1Resource = createResource(1L, Map.of());
     var fp5Resource = createResource(5L, Map.of());
