@@ -9,6 +9,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.BaseLinkedDataException;
@@ -52,6 +53,11 @@ public abstract class ResourceDtoMapper {
   public ResourceDto toDto(Resource resource) {
     return singleResourceMapper.toDto(resource, new ResourceDto(), null, null);
   }
+
+  @Mapping(target = "id", source = "resource.resourceHash")
+  @Mapping(target = "recordType", constant = "MARC_BIB")
+  @Mapping(target = "parsedRecord.content", source = "marc")
+  public abstract ResourceMarcViewDto toMarcViewDto(Resource resource, String marc);
 
   @Mapping(target = "id", source = "resourceHash")
   @Mapping(target = "types", expression = """

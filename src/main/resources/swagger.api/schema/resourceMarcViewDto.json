@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource marc view DTO",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ID of the resource"
+    },
+    "recordType": {
+      "type": "string",
+      "description": "view format of the resource"
+    },
+    "parsedRecord": {
+      "type": "object",
+      "$ref": "resource/MarkRecord.json"
+    }
+  }
+}

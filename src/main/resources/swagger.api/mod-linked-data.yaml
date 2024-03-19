@@ -120,6 +120,27 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /resource/{id}/marc:
+    get:
+      operationId: getResourceMarcViewById
+      description: Get a marc view of resource by id
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: Marc view of resource as json string
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceMarcViewDto.json
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          description: No Resource is found by id
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /profile:
     get:
       operationId: getProfile

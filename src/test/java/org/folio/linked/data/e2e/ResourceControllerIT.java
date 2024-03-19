@@ -161,6 +161,8 @@ import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
@@ -611,11 +613,16 @@ class ResourceControllerIT {
     validateWorkResponse(resultActions, toWork());
   }
 
-  @Test
-  void getResourceById_shouldReturn404_ifNoExistedEntity() throws Exception {
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "%s/%s",
+    "%s/%s/marc"
+  })
+  void getResourceById_shouldReturn404_ifNoExistedEntity(String pattern) throws Exception {
     // given
     var notExistedId = randomLong();
-    var requestBuilder = get(RESOURCE_URL + "/" + notExistedId)
+    var path = format(pattern, RESOURCE_URL, notExistedId);
+    var requestBuilder = get(path)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -727,6 +734,29 @@ class ResourceControllerIT {
     assertTrue(resourceRepo.existsById(existedResource.getResourceHash()));
     verify(kafkaSender, never()).sendResourceDeleted(existedResource.getResourceHash());
     verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
+  }
+
+  @Test
+  void getResourceViewById_shouldReturnInstance() throws Exception {
+    // given
+    var existed = resourceRepo.save(getSampleInstanceResource());
+    var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash() + "/marc")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+
+    resultActions
+      .andExpect(jsonPath("id", equalTo(existed.getResourceHash().toString())))
+      .andExpect(jsonPath("recordType", equalTo("MARC_BIB")))
+      .andExpect(jsonPath("parsedRecord.content", notNullValue()));
   }
 
   protected void checkKafkaMessage(Long id, ResourceEventType eventType) {

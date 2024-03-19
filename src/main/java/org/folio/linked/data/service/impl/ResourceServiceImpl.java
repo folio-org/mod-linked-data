@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.linked.data.util.Constants.EXISTS_ALREADY;
@@ -19,18 +20,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceService;
+import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -53,6 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceModelMapper resourceModelMapper;
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final Bibframe2MarcMapper bibframe2MarcMapper;
 
   @Override
   public ResourceDto createResource(ResourceDto resourceDto) {
@@ -86,14 +92,14 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   @Transactional(readOnly = true)
   public ResourceDto getResourceById(Long id) {
-    var resource = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
+    var resource = getResource(id);
     return resourceDtoMapper.toDto(resource);
   }
 
   @Override
   public ResourceDto updateResource(Long id, ResourceDto resourceDto) {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
-    var old = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
+    var old = getResource(id);
     addInternalFields(resourceDto, old);
     var oldWork = extractWork(old).map(Resource::new).orElse(null);
     breakCircularEdges(old);
@@ -194,6 +200,28 @@ public class ResourceServiceImpl implements ResourceService {
     });
   }
 
+  @Override
+  @Transactional(readOnly = true)
+  public ResourceMarcViewDto getResourceMarcViewById(Long id) {
+    var resource = getResource(id);
+    validateMarkViewSupportedType(resource);
+    var resourceModel = resourceModelMapper.toModel(resource);
+    var marc = bibframe2MarcMapper.toMarcJson(resourceModel);
+    return resourceDtoMapper.toMarcViewDto(resource, marc);
+  }
+
+  private void validateMarkViewSupportedType(Resource resource) {
+    if (isOfType(resource, INSTANCE)) {
+      return;
+    }
+    throw new ValidationException(
+      "Resource is not supported for MARC view",
+      "type", resource.getTypes().stream()
+      .map(ResourceTypeEntity::getUri)
+      .collect(Collectors.joining(", ", "[", "]"))
+    );
+  }
+
   private void reindexParentWorkAfterInstanceDeletion(Long id, Resource resource, Resource oldWork) {
     extractWork(resource)
       .map(work -> {
@@ -263,11 +291,12 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public ResourceGraphDto getResourceGraphById(Long id) {
-    var resource = resourceRepo.findById(id).orElseThrow(() -> getResourceNotFoundException(id));
+    var resource = getResource(id);
     return resourceDtoMapper.toResourceGraphDto(resource);
   }
 
-  private NotFoundException getResourceNotFoundException(Long id) {
-    return new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
+  private Resource getResource(Long id) {
+    return resourceRepo.findById(id)
+      .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND));
   }
 }

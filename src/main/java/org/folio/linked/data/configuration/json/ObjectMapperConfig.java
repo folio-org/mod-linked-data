@@ -11,10 +11,12 @@ import org.folio.linked.data.configuration.json.deserialization.instance.AgentCo
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceReferenceTitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceTitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.MapDeserializer;
+import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
 import org.folio.linked.data.domain.dto.AgentContainer;
 import org.folio.linked.data.domain.dto.InstanceAllOfMap;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceReferenceAllOfTitle;
+import org.folio.linked.data.domain.dto.MarkRecord;
 import org.folio.linked.data.domain.dto.ResourceField;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
@@ -27,12 +29,13 @@ public class ObjectMapperConfig {
 
   @Bean
   public ObjectMapper objectMapper() {
-    ObjectMapper mapper = new ObjectMapper();
+    var mapper = new ObjectMapper();
     mapper
       .setSerializationInclusion(JsonInclude.Include.NON_NULL)
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
-      .registerModule(monographModule(mapper));
+      .registerModule(monographModule(mapper))
+      .addMixIn(MarkRecord.class, MarcRecordSerializationConfig.class);
     return mapper;
   }
 

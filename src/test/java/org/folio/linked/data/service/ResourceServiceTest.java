@@ -2,10 +2,12 @@ package org.folio.linked.data.service;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -26,11 +28,14 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.ValidationException;
+import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
@@ -40,6 +45,7 @@ import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.ResourceServiceImpl;
+import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,10 +68,12 @@ class ResourceServiceTest {
 
   @Mock
   private ResourceRepository resourceRepo;
-
   @Mock
   private ResourceDtoMapper resourceDtoMapper;
-
+  @Mock
+  private ResourceModelMapper resourceModelMapper;
+  @Mock
+  private Bibframe2MarcMapper bibframe2MarcMapper;
   @Mock
   private ApplicationEventPublisher applicationEventPublisher;
 
@@ -423,6 +431,59 @@ class ResourceServiceTest {
     assertThat(eventCaptor.getValue().oldWork().getResourceHash()).isEqualTo(work.getResourceHash());
     assertThat(eventCaptor.getValue().oldWork().getIncomingEdges()).hasSize(2);
     assertThat(eventCaptor.getValue().oldWork().getIncomingEdges()).contains(edge1, edge2);
+  }
+
+
+  @Test
+  void getResourceMarcViewById_shouldReturnExistedEntity() {
+    // given
+    var id = randomLong();
+    var existedResource = getSampleInstanceResource();
+    var expectedModelResource = random(org.folio.ld.dictionary.model.Resource.class);
+    var expectedMarcString = "{mark: \"json\"}";
+    var expectedResponse = random(ResourceMarcViewDto.class);
+
+    when(resourceRepo.findById(id))
+      .thenReturn(Optional.of(existedResource));
+    when(resourceModelMapper.toModel(existedResource))
+      .thenReturn(expectedModelResource);
+    when(bibframe2MarcMapper.toMarcJson(expectedModelResource))
+      .thenReturn(expectedMarcString);
+    when(resourceDtoMapper.toMarcViewDto(existedResource, expectedMarcString))
+      .thenReturn(expectedResponse);
+
+    // when
+    var result = resourceService.getResourceMarcViewById(id);
+
+    // then
+    assertThat(result)
+      .isEqualTo(expectedResponse);
+  }
+
+  @Test
+  void getResourceMarcViewById_shouldThrowNotFoundException_ifNoEntityExists() {
+    // given
+    var notExistedId = randomLong();
+    when(resourceRepo.findById(notExistedId))
+      .thenReturn(Optional.empty());
+
+    // when
+    assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceService.getResourceMarcViewById(notExistedId));
+  }
+
+  @Test
+  void getResourceMarcViewById_shouldThrowException_ifNotInstance() {
+    // given
+    var notExistedId = randomLong();
+    var existedResource = getSampleWork(null);
+
+    when(resourceRepo.findById(notExistedId))
+      .thenReturn(Optional.of(existedResource));
+
+    // when
+    assertThatExceptionOfType(ValidationException.class)
+      .isThrownBy(() -> resourceService.getResourceMarcViewById(notExistedId));
   }
 
   @Test

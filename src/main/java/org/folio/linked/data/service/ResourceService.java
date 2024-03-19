@@ -3,6 +3,7 @@ package org.folio.linked.data.service;
 import java.util.Set;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.model.entity.Resource;
 
@@ -17,6 +18,8 @@ public interface ResourceService {
   ResourceDto updateResource(Long id, ResourceDto bibframeRequest);
 
   void deleteResource(Long id);
+
+  ResourceMarcViewDto getResourceMarcViewById(Long id);
 
   ResourceShortInfoPage getResourceShortInfoPage(String type, Integer pageNumber, Integer pageSize);
 
