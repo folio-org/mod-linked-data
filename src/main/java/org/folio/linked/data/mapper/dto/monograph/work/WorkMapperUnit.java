@@ -66,7 +66,7 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var workDto = ((WorkField) dto).getWork();
-    var work = new Resource();
+    var work = new Resource(true);
     work.addType(WORK);
     work.setDoc(getDoc(workDto));
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);

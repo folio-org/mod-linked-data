@@ -43,7 +43,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var isbn = ((IsbnField) dto).getIsbn();
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(isbn::getValue));
     resource.addType(ID_ISBN);
     resource.setDoc(getDoc(isbn));

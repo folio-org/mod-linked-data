@@ -43,7 +43,7 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
     var map = new HashMap<String, List<String>>();
     putProperty(map, LINK, List.of(CATEGORY_SET_LINK));
     putProperty(map, LABEL, List.of(CATEGORY_SET_LABEL));
-    var categorySet = new Resource()
+    var categorySet = new Resource(true)
       .addType(CATEGORY_SET)
       .setDoc(coreMapper.toJson(map))
       .setLabel(CATEGORY_SET_LABEL);

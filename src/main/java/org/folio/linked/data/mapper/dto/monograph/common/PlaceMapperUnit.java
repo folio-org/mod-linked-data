@@ -56,7 +56,7 @@ public class PlaceMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var place = (Place) dto;
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(place::getLabel));
     resource.addType(PLACE);
     resource.setDoc(getDoc(place));

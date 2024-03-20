@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.MonographTestUtil;
+import org.folio.linked.data.utils.ResourceTestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ class ResourceGraphControllerIT {
   private JdbcTemplate jdbcTemplate;
 
   @Autowired
-  private ResourceRepository resourceRepository;
+  private ResourceTestService resourceTestService;
 
   @Autowired
   private Environment env;
@@ -60,7 +60,7 @@ class ResourceGraphControllerIT {
     var providerEvent = MonographTestUtil.providerEvent("production");
     var date = Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55"));
     providerEvent.setIndexDate(date);
-    var existingResource = resourceRepository.save(providerEvent);
+    var existingResource = resourceTestService.saveGraph(providerEvent);
     var requestBuilder = get("/graph/resource/" + existingResource.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));

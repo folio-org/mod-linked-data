@@ -151,9 +151,7 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
-import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.junit.jupiter.api.BeforeEach;
@@ -189,10 +187,6 @@ class ResourceControllerIT {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
-  private ResourceRepository resourceRepo;
-  @Autowired
-  private ResourceEdgeRepository resourceEdgeRepository;
-  @Autowired
   private ObjectMapper objectMapper;
   @Autowired
   private Environment env;
@@ -213,7 +207,7 @@ class ResourceControllerIT {
   @Test
   void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var work = resourceRepo.save(getSampleWork(null));
+    var work = resourceTestService.saveGraph(getSampleWork(null));
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -240,7 +234,7 @@ class ResourceControllerIT {
   @Test
   void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var instanceForReference = resourceRepo.save(getSampleInstanceResource(null, null));
+    var instanceForReference = resourceTestService.saveGraph(getSampleInstanceResource(null, null));
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -268,7 +262,7 @@ class ResourceControllerIT {
   void update_shouldReturnCorrectlyUpdatedInstanceWithWorkRef_deleteOldOne_sendMessages() throws Exception {
     // given
     var work = getSampleWork(null);
-    var originalInstance = resourceRepo.save(getSampleInstanceResource(null, work));
+    var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     var updateDto = getSampleInstanceDtoMap();
     var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
     instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
@@ -286,7 +280,7 @@ class ResourceControllerIT {
     var resultActions = mockMvc.perform(updateRequest);
 
     // then
-    assertFalse(resourceRepo.existsById(originalInstance.getResourceHash()));
+    assertFalse(resourceTestService.existsById(originalInstance.getResourceHash()));
     var response = resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -309,7 +303,7 @@ class ResourceControllerIT {
   void update_shouldReturnCorrectlyUpdatedWorkWithInstanceRef_deleteOldOne_sendMessages() throws Exception {
     // given
     var instance = getSampleInstanceResource(null, null);
-    var originalWork = resourceRepo.save(getSampleWork(instance));
+    var originalWork = resourceTestService.saveGraph(getSampleWork(instance));
     var updateDto = getSampleWorkDtoMap();
     var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
     var newlyAddedSummary = "newly added summary";
@@ -326,7 +320,7 @@ class ResourceControllerIT {
     var resultActions = mockMvc.perform(updateRequest);
 
     // then
-    assertFalse(resourceRepo.existsById(originalWork.getResourceHash()));
+    assertFalse(resourceTestService.existsById(originalWork.getResourceHash()));
     var response = resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -348,7 +342,7 @@ class ResourceControllerIT {
   @Test
   void getInstanceById_shouldReturnInstanceWithWorkRef() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleInstanceResource());
+    var existed = resourceTestService.saveGraph(getSampleInstanceResource());
     var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -367,7 +361,7 @@ class ResourceControllerIT {
   @Test
   void getWorkById_shouldReturnWorkWithInstanceRef() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
+    var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -414,9 +408,9 @@ class ResourceControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-        resourceRepo.save(getSampleInstanceResource(100L)),
-        resourceRepo.save(getSampleInstanceResource(200L)),
-        resourceRepo.save(getSampleInstanceResource(300L))
+        resourceTestService.saveGraph(getSampleInstanceResource(100L)),
+        resourceTestService.saveGraph(getSampleInstanceResource(200L)),
+        resourceTestService.saveGraph(getSampleInstanceResource(300L))
       ).stream()
       .map(Resource::getResourceHash)
       .map(Object::toString)
@@ -444,10 +438,10 @@ class ResourceControllerIT {
   void deleteResourceById_shouldDeleteRootInstanceAndRootEdges_reindexWork() throws Exception {
     // given
     var work = getSampleWork(null);
-    var instance = resourceRepo.save(getSampleInstanceResource(null, work));
-    assertThat(resourceRepo.findById(instance.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(45);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(47);
+    var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
+    assertThat(resourceTestService.findById(instance.getResourceHash())).isPresent();
+    assertThat(resourceTestService.countResources()).isEqualTo(45);
+    assertThat(resourceTestService.countEdges()).isEqualTo(47);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -457,20 +451,20 @@ class ResourceControllerIT {
 
     // then
     resultActions.andExpect(status().isNoContent());
-    assertThat(resourceRepo.existsById(instance.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(44);
-    assertThat(resourceEdgeRepository.findById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(29);
+    assertThat(resourceTestService.existsById(instance.getResourceHash())).isFalse();
+    assertThat(resourceTestService.countResources()).isEqualTo(44);
+    assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceTestService.countEdges()).isEqualTo(29);
     checkKafkaMessage(work.getResourceHash(), UPDATE);
   }
 
   @Test
   void deleteResourceById_shouldDeleteRootWorkAndRootEdges() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
-    assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(45);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(47);
+    var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
+    assertThat(resourceTestService.findById(existed.getResourceHash())).isPresent();
+    assertThat(resourceTestService.countResources()).isEqualTo(45);
+    assertThat(resourceTestService.countEdges()).isEqualTo(47);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -480,10 +474,10 @@ class ResourceControllerIT {
 
     // then
     resultActions.andExpect(status().isNoContent());
-    assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(44);
-    assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(25);
+    assertThat(resourceTestService.existsById(existed.getResourceHash())).isFalse();
+    assertThat(resourceTestService.countResources()).isEqualTo(44);
+    assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceTestService.countEdges()).isEqualTo(25);
     checkKafkaMessage(existed.getResourceHash(), DELETE);
   }
 
@@ -491,7 +485,7 @@ class ResourceControllerIT {
   void updateResource_shouldNot_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateFailed()
     throws Exception {
     //given
-    var existedResource = resourceRepo.save(getSampleInstanceResource(100L));
+    var existedResource = resourceTestService.saveGraph(getSampleInstanceResource(100L));
     var requestBuilder = put(RESOURCE_URL + "/" + existedResource.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -501,7 +495,7 @@ class ResourceControllerIT {
     mockMvc.perform(requestBuilder);
 
     //then
-    assertTrue(resourceRepo.existsById(existedResource.getResourceHash()));
+    assertTrue(resourceTestService.existsById(existedResource.getResourceHash()));
     verify(kafkaSender, never()).sendResourceDeleted(existedResource.getResourceHash());
     verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
@@ -509,7 +503,7 @@ class ResourceControllerIT {
   @Test
   void getResourceViewById_shouldReturnInstance() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleInstanceResource());
+    var existed = resourceTestService.saveGraph(getSampleInstanceResource());
     var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash() + "/marc")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -1175,12 +1169,12 @@ class ResourceControllerIT {
 
   @SneakyThrows
   private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc) {
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
     resource.setResourceHash(id);
-    return resourceRepo.save(resource);
+    return resourceTestService.saveGraph(resource);
   }
 
   private String toInstance() {

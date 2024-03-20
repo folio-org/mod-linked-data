@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.dto;
 
-import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.Arrays;
@@ -39,9 +38,7 @@ public abstract class ResourceDtoMapper {
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {
     try {
-      var resource = singleResourceMapper.toEntity(dto.getResource(), ResourceDto.class, null, null);
-      setEdgesId(resource);
-      return resource;
+      return singleResourceMapper.toEntity(dto.getResource(), ResourceDto.class, null, null);
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {

@@ -42,7 +42,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var localId = ((LocalIdField) dto).getLocalId();
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(localId::getValue));
     resource.addType(ID_LOCAL);
     resource.setDoc(getDoc(localId));

@@ -42,7 +42,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var lccn = ((LccnField) dto).getLccn();
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(lccn::getValue));
     resource.addType(ID_LCCN);
     resource.setDoc(getDoc(lccn));

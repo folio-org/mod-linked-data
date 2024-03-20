@@ -51,7 +51,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(variantTitle::getMainTitle));
     resource.addType(VARIANT_TITLE);
     resource.setDoc(getDoc(variantTitle));

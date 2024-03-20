@@ -50,7 +50,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var parallelTitle = ((ParallelTitleField) dto).getParallelTitle();
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(parallelTitle::getMainTitle));
     resource.addType(PARALLEL_TITLE);
     resource.setDoc(getDoc(parallelTitle));

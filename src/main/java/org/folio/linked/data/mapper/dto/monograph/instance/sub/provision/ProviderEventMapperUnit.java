@@ -43,7 +43,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var providerEvent = (ProviderEvent) dto;
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addType(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));

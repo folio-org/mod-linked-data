@@ -58,7 +58,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var status = (Status) dto;
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(status::getValue));
     resource.addType(STATUS);
     resource.setDoc(getDoc(status));

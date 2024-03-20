@@ -114,7 +114,7 @@ class KafkaMessageMapperTest {
   @Test
   void toIndex_shouldReturnEmptyResult_fromWorkWithNoIndexableInfo() {
     // given
-    var work = new Resource().addType(WORK);
+    var work = new Resource(true).addType(WORK);
     // when
     var resultOpt = kafkaMessageMapper.toIndex(work, CREATE);
 

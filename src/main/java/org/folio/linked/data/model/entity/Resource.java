@@ -1,6 +1,6 @@
 package org.folio.linked.data.model.entity;
 
-import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.EAGER;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
@@ -61,17 +61,17 @@ public class Resource {
     joinColumns = @JoinColumn(name = "resource_hash"),
     inverseJoinColumns = @JoinColumn(name = "type_hash")
   )
-  private Set<ResourceTypeEntity> types = new LinkedHashSet<>();
+  private Set<ResourceTypeEntity> types;
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "target", cascade = ALL, orphanRemoval = true)
-  private Set<ResourceEdge> incomingEdges = new LinkedHashSet<>();
+  @OneToMany(mappedBy = "target", cascade = REMOVE, orphanRemoval = true)
+  private Set<ResourceEdge> incomingEdges;
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "source", cascade = ALL, orphanRemoval = true)
-  private Set<ResourceEdge> outgoingEdges = new LinkedHashSet<>();
+  @OneToMany(mappedBy = "source", cascade = REMOVE, orphanRemoval = true)
+  private Set<ResourceEdge> outgoingEdges;
 
   public Resource(@NonNull Resource that) {
     this.resourceHash = that.resourceHash;
@@ -81,13 +81,23 @@ public class Resource {
     this.srsId = that.srsId;
     this.indexDate = that.indexDate;
     this.types = new LinkedHashSet<>(that.getTypes());
-    this.outgoingEdges = that.getOutgoingEdges().stream().map(ResourceEdge::new).collect(Collectors.toSet());
-    this.incomingEdges = that.getIncomingEdges().stream()
-      .map(ie -> this.getOutgoingEdges().stream()
-        .filter(oe -> oe.equals(ie))
-        .findFirst()
-        .orElse(new ResourceEdge(ie)))
-      .collect(Collectors.toSet());
+    this.outgoingEdges = ofNullable(that.getOutgoingEdges())
+      .map(outEdges -> outEdges.stream().map(ResourceEdge::new).collect(Collectors.toSet()))
+      .orElse(null);
+    this.incomingEdges = ofNullable(that.getIncomingEdges())
+      .map(inEdges -> inEdges.stream()
+        .map(
+          ie -> this.getOutgoingEdges().stream().filter(oe -> oe.equals(ie)).findFirst().orElse(new ResourceEdge(ie)))
+        .collect(Collectors.toSet()))
+      .orElse(null);
+  }
+
+  public Resource(boolean initCollections) {
+    if (initCollections) {
+      this.types = new LinkedHashSet<>();
+      this.outgoingEdges = new LinkedHashSet<>();
+      this.incomingEdges = new LinkedHashSet<>();
+    }
   }
 
   public Resource addType(@NonNull ResourceTypeEntity type) {

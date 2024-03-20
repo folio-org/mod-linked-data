@@ -12,12 +12,10 @@ public class Constants {
   public static final String IS_NOT_SUPPORTED_FOR_PREDICATE = IS_NOT_SUPPORTED_FOR + PREDICATE;
   public static final String FOLIO_PROFILE = "folio";
   public static final String SEARCH_PROFILE = "search";
-  public static final String ERROR_JSON_PROCESSING = "Error while json processing";
   public static final String DTO_UNKNOWN_SUB_ELEMENT = " dto class deserialization error: Unknown sub-element ";
   public static final String AND = " and ";
   public static final String RESOURCE_WITH_GIVEN_ID = "Resource with given id [";
   public static final String IS_NOT_FOUND = "] is not found";
-  public static final String EXISTS_ALREADY = "] exists already";
   public static final String SEARCH_RESOURCE_NAME = "bibframe";
   public static final String TYPE = "type";
   public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";

@@ -42,7 +42,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var otherId = ((OtherIdField) dto).getIdentifier();
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(otherId::getValue));
     resource.addType(ID_UNKNOWN);
     resource.setDoc(getDoc(otherId));

@@ -68,26 +68,4 @@ public class BibframeUtils {
     return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(type.getUri()));
   }
 
-  public static void setEdgesId(Resource resource) {
-    setIncomingEdgesId(resource);
-    setOutgoingEdgesId(resource);
-  }
-
-  private static void setIncomingEdgesId(Resource resource) {
-    resource.getIncomingEdges().forEach(edge -> {
-      edge.getId().setSourceHash(edge.getSource().getResourceHash());
-      edge.getId().setTargetHash(edge.getTarget().getResourceHash());
-      edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setIncomingEdgesId(edge.getSource());
-    });
-  }
-
-  private static void setOutgoingEdgesId(Resource resource) {
-    resource.getOutgoingEdges().forEach(edge -> {
-      edge.getId().setSourceHash(edge.getSource().getResourceHash());
-      edge.getId().setTargetHash(edge.getTarget().getResourceHash());
-      edge.getId().setPredicateHash(edge.getPredicate().getHash());
-      setOutgoingEdgesId(edge.getTarget());
-    });
-  }
 }

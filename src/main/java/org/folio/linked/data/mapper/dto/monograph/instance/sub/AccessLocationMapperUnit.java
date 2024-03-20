@@ -40,7 +40,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var accessLocation = (AccessLocation) dto;
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(accessLocation::getLink));
     resource.addType(ANNOTATION);
     resource.setDoc(getDoc(accessLocation));

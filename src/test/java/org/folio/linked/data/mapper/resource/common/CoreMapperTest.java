@@ -144,7 +144,7 @@ class CoreMapperTest {
   void addOutgoingEdges_shouldDoNothing_ifGivenDtoListIsNull() {
     // given
     List dtoList = null;
-    var source = new Resource();
+    var source = new Resource(true);
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
 
@@ -160,7 +160,7 @@ class CoreMapperTest {
   void addOutgoingEdges_shouldDoNothing_ifGivenDtoListIsEmpty() {
     // given
     var dtoList = new ArrayList<>();
-    var source = new Resource();
+    var source = new Resource(true);
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
 
@@ -179,7 +179,7 @@ class CoreMapperTest {
     var dto2 = new Isbn().id(randomLong().toString());
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
-    var source = new Resource();
+    var source = new Resource(true);
     var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setResourceHash(111L);
     doReturn(expectedTarget1).when(singleResourceMapper).toEntity(dto1, parent, predicate, source);
     var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setResourceHash(222L);

@@ -3,6 +3,7 @@ package org.folio.linked.data.test;
 import static java.util.Collections.emptyMap;
 import static java.util.Map.entry;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
@@ -102,14 +103,12 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -313,7 +312,6 @@ public class MonographTestUtil {
       instance.getOutgoingEdges().add(edge);
       linkedWork.getIncomingEdges().add(edge);
     }
-    setEdgesId(instance);
     return instance;
   }
 
@@ -510,7 +508,6 @@ public class MonographTestUtil {
       linkedInstance.getOutgoingEdges().add(edge);
       work.getIncomingEdges().add(edge);
     }
-    setEdgesId(work);
     return work;
   }
 
@@ -596,9 +593,9 @@ public class MonographTestUtil {
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
-                                  Set<ResourceTypeDictionary> types,
-                                  Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
-    var resource = new Resource();
+                                        Set<ResourceTypeDictionary> types,
+                                        Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
+    var resource = new Resource(true);
     pred2OutgoingResources.keySet()
       .stream()
       .flatMap(pred -> pred2OutgoingResources.get(pred)
@@ -606,8 +603,7 @@ public class MonographTestUtil {
         .map(target -> new ResourceEdge(resource, target, pred)))
       .forEach(edge -> resource.getOutgoingEdges().add(edge));
 
-    Map<String, List<String>> properties = propertiesDic.entrySet().stream()
-      .collect(Collectors.toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
+    var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
     types.forEach(resource::addType);
     resource.setResourceHash(randomLong());

@@ -92,7 +92,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var instanceDto = ((InstanceField) dto).getInstance();
-    var instance = new Resource();
+    var instance = new Resource(true);
     instance.addType(INSTANCE);
     instance.setDoc(getDoc(instanceDto));
     instance.setLabel(getFirstValue(() -> getPossibleLabels(instanceDto)));

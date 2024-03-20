@@ -39,7 +39,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var copyrightEvent = (CopyrightEvent) dto;
-    var resource = new Resource();
+    var resource = new Resource(true);
     resource.setLabel(getFirstValue(copyrightEvent::getDate));
     resource.addType(COPYRIGHT_EVENT);
     resource.setDoc(getDoc(copyrightEvent));
