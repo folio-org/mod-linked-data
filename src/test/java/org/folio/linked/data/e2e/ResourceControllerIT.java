@@ -99,14 +99,11 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
-import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
-import static org.folio.linked.data.test.TestUtil.BIBFRAME_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.getSampleBibframeDtoMap;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
 import static org.folio.linked.data.test.TestUtil.getSampleWorkDtoMap;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
@@ -127,7 +124,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -145,7 +141,6 @@ import java.util.List;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.WorkField;
@@ -166,7 +161,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -176,13 +170,17 @@ import org.springframework.test.web.servlet.ResultActions;
 class ResourceControllerIT {
 
   private static final String RESOURCE_URL = "/resource";
-  private static final String ROLES_PROPERTY = "_roles";
+  private static final String ROLES_PROPERTY = "roles";
   private static final String NOTES_PROPERTY = "_notes";
-  private static final String INSTANCE_REF = "_instanceReference";
-  private static final String WORK_REF = "_workReference";
-  private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
+  private static final String ID_PROPERTY = "id";
+  private static final String LABEL_PROPERTY = "label";
   private static final String VALUE_PROPERTY = "value";
   private static final String TYPE_PROPERTY = "type";
+  private static final String INSTANCE_REF = "_instanceReference";
+  private static final String WORK_REF = "_workReference";
+  private static final String CREATOR_REF = "_creatorReference";
+  private static final String CONTRIBUTOR_REF = "_contributorReference";
+  private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
   private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
   private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
   @Autowired
@@ -209,36 +207,6 @@ class ResourceControllerIT {
     lookupResources = saveLookupResources();
   }
 
-  // to be removed after wireframe UI migration
-  @Deprecated(forRemoval = true)
-  @Test
-  void createInstanceWithFullWork_shouldSaveEntityCorrectly() throws Exception {
-    // given
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(BIBFRAME_SAMPLE);
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    var response = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andReturn().getResponse().getContentAsString();
-    validateInstanceResponse(resultActions, toInstance());
-    validateWorkResponse(resultActions, toWorkInInstance());
-
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var instanceResource = resourceTestService.getResourceById(id, 3);
-    // the 'isDeprecated' argument is to be removed after wireframe UI migration
-    validateInstance(instanceResource, true, true);
-    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
-    checkKafkaMessage(Long.valueOf(workId), CREATE);
-  }
-
   @Test
   void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
     // given
@@ -261,8 +229,7 @@ class ResourceControllerIT {
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
     var instanceResource = resourceTestService.getResourceById(id, 3);
-    // the 'isDeprecated' argument is to be removed after wireframe UI migration
-    validateInstance(instanceResource, true, false);
+    validateInstance(instanceResource, true);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkKafkaMessage(Long.valueOf(workId), CREATE);
   }
@@ -290,206 +257,8 @@ class ResourceControllerIT {
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
-    // the 'isDeprecated' argument is to be removed after wireframe UI migration
-    validateWork(workResource, true, false);
+    validateWork(workResource, true);
     checkKafkaMessage(workResource.getResourceHash(), CREATE);
-  }
-
-  // to be removed after wireframe UI migration
-  @Deprecated(forRemoval = true)
-  @Test
-  void createEmptyInstance_shouldSaveEmptyEntityAndNotSentIndexRequest() throws Exception {
-    // given
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(loadResourceAsString("samples/bibframe-empty.json"));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    var response = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toInstance(), notNullValue()))
-      .andReturn().getResponse().getContentAsString();
-
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var instance = resourceTestService.getResourceById(id, 1);
-    assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getLabel()).isEmpty();
-    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getInventoryId()).isNull();
-    assertThat(instance.getSrsId()).isNull();
-    assertThat(instance.getDoc()).isNull();
-    assertThat(instance.getOutgoingEdges()).isEmpty();
-    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
-  }
-
-  // to be removed after wireframe UI migration
-  @Deprecated(forRemoval = true)
-  @Test
-  void createNoValuesInstance_shouldSaveEmptyEntityAndNotSentIndexRequest() throws Exception {
-    // given
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(loadResourceAsString("samples/bibframe-no-values.json"));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    var response = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toInstance(), notNullValue()))
-      .andReturn().getResponse().getContentAsString();
-
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var instance = resourceTestService.getResourceById(id, 1);
-    assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getLabel()).isEmpty();
-    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getInventoryId()).isNull();
-    assertThat(instance.getSrsId()).isNull();
-    assertThat(instance.getDoc()).isNull();
-    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
-  }
-
-  // to be removed after wireframe UI migration
-  @Deprecated(forRemoval = true)
-  @Test
-  void createPartialValuesInstance_shouldSaveCorrectEntityAndSentIndexRequest() throws Exception {
-    // given
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(loadResourceAsString("samples/bibframe-partial-objects.json"));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    var response = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toInstance(), notNullValue()))
-      .andReturn().getResponse().getContentAsString();
-
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var instance = resourceTestService.getResourceById(id, 1);
-    assertThat(instance.getResourceHash()).isNotNull();
-    assertThat(instance.getLabel()).isEmpty();
-    assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getInventoryId()).isNull();
-    assertThat(instance.getSrsId()).isNull();
-    assertThat(instance.getDoc()).isNull();
-    assertThat(instance.getOutgoingEdges()).hasSize(39);
-    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
-    checkKafkaMessage(Long.valueOf(workId), CREATE);
-  }
-
-  // to be removed after wireframe UI migration
-  @Deprecated(forRemoval = true)
-  @Test
-  void createTwoMonographInstancesWithSharedResources_shouldSaveBothCorrectly() throws Exception {
-    // given
-    var requestBuilder1 = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(BIBFRAME_SAMPLE);
-    var resultActions1 = mockMvc.perform(requestBuilder1);
-    var response1 = resultActions1.andReturn().getResponse().getContentAsString();
-    var resourceResponse1 = objectMapper.readValue(response1, ResourceDto.class);
-    var id1 = ((InstanceField) resourceResponse1.getResource()).getInstance().getId();
-    var persistedOptional1 = resourceRepo.findById(Long.parseLong(id1));
-    assertThat(persistedOptional1).isPresent();
-    var requestBuilder2 = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(BIBFRAME_SAMPLE.replace("Instance: mainTitle", "Instance: mainTitle2"));
-
-    // when
-    var response2 = mockMvc.perform(requestBuilder2);
-
-    // then
-    response2
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toInstance(), notNullValue()));
-  }
-
-  // to be removed after wireframe UI migration
-  @Deprecated(forRemoval = true)
-  @Test
-  void createMonographInstanceWithNotCorrectStructure_shouldReturnValidationError() throws Exception {
-    // given
-    var wrongValue = "http://TitleWrong";
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(BIBFRAME_SAMPLE.replace("http://bibfra.me/vocab/marc/Title", wrongValue));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-
-    // then
-    resultActions.andExpect(status().is(UNPROCESSABLE_ENTITY.value()))
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors", notNullValue()))
-      .andExpect(jsonPath("$." + toErrorType(), equalTo(HttpMessageNotReadableException.class.getSimpleName())))
-      .andExpect(jsonPath("$." + toErrorCode(), equalTo(VALIDATION_ERROR.getValue())))
-      .andExpect(jsonPath("$." + toErrorMessage(), equalTo("JSON parse error: "
-        + InstanceAllOfTitle.class.getSimpleName()
-        + " dto class deserialization error: Unknown sub-element http://TitleWrong")));
-  }
-
-  // to be removed after wireframe UI migration
-  @Deprecated(forRemoval = true)
-  @Test
-  void update_shouldReturnCorrectlyUpdatedInstanceWithFullWork_deleteOldOne_sendMessages() throws Exception {
-    // given
-    var work = getSampleWork(null);
-    var originalInstance = resourceRepo.save(getSampleInstanceResource(null, work));
-    var updateDto = getSampleBibframeDtoMap();
-    var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
-    instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
-    instanceMap.remove("inventoryId");
-    instanceMap.remove("srsId");
-
-    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getResourceHash())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(OBJECT_MAPPER.writeValueAsString(updateDto));
-
-    // when
-    var resultActions = mockMvc.perform(updateRequest);
-
-    // then
-    assertFalse(resourceRepo.existsById(originalInstance.getResourceHash()));
-    var response = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toInstance(), notNullValue()))
-      .andReturn().getResponse().getContentAsString();
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var updatedInstance = resourceTestService.getResourceById(id, 1);
-    assertThat(updatedInstance.getResourceHash()).isNotNull();
-    assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
-    assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(updatedInstance.getInventoryId()).isEqualTo(originalInstance.getInventoryId());
-    assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
-    assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
-    assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
-    var newWorkId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
-    checkKafkaMessage(Long.valueOf(newWorkId), UPDATE);
   }
 
   @Test
@@ -590,8 +359,6 @@ class ResourceControllerIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
     validateInstanceResponse(resultActions, toInstance());
-    // to be removed after wireframe UI migration
-    validateWorkResponse(resultActions, toWorkInInstance());
   }
 
   @Test
@@ -872,30 +639,24 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkLanguage(workBase), equalTo("eng")))
       .andExpect(jsonPath(toWorkDeweyCode(workBase), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(workBase), equalTo("ddc")))
-      .andExpect(jsonPath(toWorkCreatorPersonName(workBase), equalTo(List.of("name-PERSON"))))
-      .andExpect(jsonPath(toWorkCreatorPersonRole(workBase), equalTo(List.of(AUTHOR.getUri()))))
-      .andExpect(jsonPath(toWorkCreatorPersonLcnafId(workBase), equalTo(List.of("2002801801-PERSON"))))
-      .andExpect(jsonPath(toWorkCreatorMeetingName(workBase), equalTo(List.of("name-MEETING"))))
-      .andExpect(jsonPath(toWorkCreatorMeetingLcnafId(workBase), equalTo(List.of("2002801801-MEETING"))))
-      .andExpect(jsonPath(toWorkCreatorOrganizationName(workBase), equalTo(List.of("name-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkCreatorOrganizationLcnafId(workBase), equalTo(List.of("2002801801-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkCreatorFamilyName(workBase), equalTo(List.of("name-FAMILY"))))
-      .andExpect(jsonPath(toWorkCreatorFamilyLcnafId(workBase), equalTo(List.of("2002801801-FAMILY"))))
-      .andExpect(jsonPath(toWorkContributorPersonName(workBase), equalTo(List.of("name-PERSON"))))
-      .andExpect(jsonPath(toWorkContributorPersonLcnafId(workBase), equalTo(List.of("2002801801-PERSON"))))
-      .andExpect(jsonPath(toWorkContributorMeetingName(workBase), equalTo(List.of("name-MEETING"))))
-      .andExpect(jsonPath(toWorkContributorMeetingLcnafId(workBase), equalTo(List.of("2002801801-MEETING"))))
-      .andExpect(jsonPath(toWorkContributorOrgName(workBase), equalTo(List.of("name-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkContributorOrgLcnafId(workBase), equalTo(List.of("2002801801-ORGANIZATION"))))
-      .andExpect(jsonPath(toWorkContributorOrgRoles(workBase), equalTo(List.of(EDITOR.getUri(), ASSIGNEE.getUri()))))
-      .andExpect(jsonPath(toWorkContributorFamilyName(workBase), equalTo(List.of("name-FAMILY"))))
-      .andExpect(jsonPath(toWorkContributorFamilyLcnafId(workBase), equalTo(List.of("2002801801-FAMILY"))))
+      .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("1001", "1002", "1003", "1004")))
+      .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-MEETING", "name-PERSON",
+        "name-ORGANIZATION", "name-FAMILY")))
+      .andExpect(jsonPath(toWorkCreatorType(workBase), containsInAnyOrder(MEETING.getUri(), PERSON.getUri(),
+        ORGANIZATION.getUri(), FAMILY.getUri())))
+      .andExpect(jsonPath(toWorkCreatorRoles(workBase), equalTo(List.of(List.of(AUTHOR.getUri())))))
+      .andExpect(jsonPath(toWorkContributorId(workBase), containsInAnyOrder("1005", "1006", "1007", "1008")))
+      .andExpect(jsonPath(toWorkContributorLabel(workBase), containsInAnyOrder("name-ORGANIZATION",
+        "name-FAMILY", "name-PERSON", "name-MEETING")))
+      .andExpect(jsonPath(toWorkContributorType(workBase), containsInAnyOrder(ORGANIZATION.getUri(), FAMILY.getUri(),
+        PERSON.getUri(), MEETING.getUri())))
+      .andExpect(jsonPath(toWorkContributorRoles(workBase), equalTo(List.of(List.of(EDITOR.getUri(),
+        ASSIGNEE.getUri())))))
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
       .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))));
-    // the second 'if' condition is to be removed after wireframe UI migration and two 'if's could be merged
-    if (workBase.equals(toWork()) || workBase.equals(toWorkInInstance())) {
+    if (workBase.equals(toWork())) {
       resultActions
         .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
         .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
@@ -904,10 +665,7 @@ class ResourceControllerIT {
           containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
         .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
           "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
-          "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")));
-    }
-    if (workBase.equals(toWork())) {
-      resultActions
+          "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
         .andExpect(jsonPath(toInstanceReference(workBase), notNullValue()))
         .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
         .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
@@ -922,8 +680,7 @@ class ResourceControllerIT {
     }
   }
 
-  // the 'isDeprecated' parameter is to be removed after wireframe UI migration
-  private void validateInstance(Resource instance, boolean validateFullWork, boolean isDeprecated) {
+  private void validateInstance(Resource instance, boolean validateFullWork) {
     assertThat(instance.getResourceHash()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -961,8 +718,7 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var work = edge.getTarget();
     if (validateFullWork) {
-      // the 'isDeprecated' argument is to be removed after wireframe UI migration
-      validateWork(work, false, isDeprecated);
+      validateWork(work, false);
     }
     validateAccessLocation(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
@@ -1232,17 +988,12 @@ class ResourceControllerIT {
     assertThat(media.getOutgoingEdges()).isEmpty();
   }
 
-  // the 'isDeprecated' parameter is to be removed after wireframe UI migration
-  private void validateWork(Resource work, boolean validateFullInstance, boolean isDeprecated) {
+  private void validateWork(Resource work, boolean validateFullInstance) {
     assertThat(work.getResourceHash()).isNotNull();
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
-    if (isDeprecated) {
-      assertThat(work.getDoc().size()).isEqualTo(7);
-    } else {
-      assertThat(work.getDoc().size()).isEqualTo(9);
-      validateLiterals(work, DATE_START.getValue(), List.of("2024"));
-      validateLiterals(work, DATE_END.getValue(), List.of("2025"));
-    }
+    assertThat(work.getDoc().size()).isEqualTo(9);
+    validateLiterals(work, DATE_START.getValue(), List.of("2024"));
+    validateLiterals(work, DATE_END.getValue(), List.of("2025"));
     validateLiteral(work, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, LANGUAGE.getValue(), "eng");
@@ -1252,13 +1003,9 @@ class ResourceControllerIT {
     validateLiterals(work, NOTE.getValue(), List.of("note", "another note"));
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
     validateWorkContentType(outgoingEdgeIterator.next(), work);
-    if (!isDeprecated) {
-      validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
-    }
+    validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
     validateWorkClassification(outgoingEdgeIterator.next(), work);
-    if (!isDeprecated) {
-      validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
-    }
+    validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR.getUri());
@@ -1270,13 +1017,10 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
-    // the condition is to be removed after wireframe UI migration
-    if (!isDeprecated) {
-      validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
-        GEOGRAPHIC_COVERAGE.getUri());
-      validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(1),
-        GEOGRAPHIC_COVERAGE.getUri());
-    }
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
+      GEOGRAPHIC_COVERAGE.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(1),
+      GEOGRAPHIC_COVERAGE.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR.getUri());
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
@@ -1286,9 +1030,7 @@ class ResourceControllerIT {
       assertThat(edge.getId()).isNotNull();
       assertThat(edge.getTarget()).isEqualTo(work);
       assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
-
-      // the 'isDeprecated' argument is to be removed after wireframe UI migration
-      validateInstance(edge.getSource(), false, isDeprecated);
+      validateInstance(edge.getSource(), false);
       assertThat(incomingEdgeIterator.hasNext()).isFalse();
     }
   }
@@ -1355,6 +1097,7 @@ class ResourceControllerIT {
     assertThat(creator.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("name-" + type);
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).size()).isEqualTo(1);
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).get(0).asText()).isEqualTo("2002801801-" + type);
+    assertThat(creator.getLabel()).isEqualTo("name-" + type);
   }
 
   private void validateWorkGovernmentPublication(ResourceEdge edge, Resource source) {
@@ -1393,22 +1136,40 @@ class ResourceControllerIT {
   }
 
   private LookupResources saveLookupResources() {
-    var subject1 = saveResource(1L, "subject 1", CONCEPT);
-    var subject2 = saveResource(2L, "subject 2", CONCEPT);
-    var unitedStates = saveResource(101L, "United States", PLACE);
-    var europe = saveResource(102L, "Europe", PLACE);
+    var subject1 = saveResource(1L, "subject 1", CONCEPT, "{}");
+    var subject2 = saveResource(2L, "subject 2", CONCEPT, "{}");
+    var unitedStates = saveResource(101L, "United States", PLACE, "{}");
+    var europe = saveResource(102L, "Europe", PLACE, "{}");
+    var creatorMeeting = saveResource(1001L, "name-MEETING", MEETING,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-MEETING\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
+    var creatorPerson = saveResource(1002L, "name-PERSON", PERSON,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
+    var creatorOrganization = saveResource(1003L, "name-ORGANIZATION", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-ORGANIZATION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
+    var creatorFamily = saveResource(1004L, "name-FAMILY", FAMILY,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
+    var contributorMeeting = saveResource(1008L, "name-MEETING", MEETING,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-MEETING\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
+    var contributorPerson = saveResource(1007L, "name-PERSON", PERSON,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
+    var contributorOrganization = saveResource(1005L, "name-ORGANIZATION", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-ORGANIZATION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
+    var contributorFamily = saveResource(1006L, "name-FAMILY", FAMILY,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
     return new LookupResources(
       List.of(subject1, subject2),
-      List.of(unitedStates, europe)
+      List.of(unitedStates, europe),
+      List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily,
+        contributorPerson, contributorMeeting, contributorOrganization, contributorFamily)
     );
   }
 
   @SneakyThrows
-  private Resource saveResource(Long id, String label, ResourceTypeDictionary type) {
+  private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc) {
     var resource = new Resource();
     resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
     resource.setLabel(label);
-    resource.setDoc(OBJECT_MAPPER.readTree("{}"));
+    resource.setDoc(OBJECT_MAPPER.readTree(doc));
     resource.setResourceHash(id);
     return resourceRepo.save(resource);
   }
@@ -1427,11 +1188,6 @@ class ResourceControllerIT {
 
   private String toWorkReference() {
     return join(".", toInstance(), arrayPath(WORK_REF));
-  }
-
-  // to be removed after wireframe UI migration
-  private String toWorkInInstance() {
-    return join(".", toInstance(), arrayPath(INSTANTIATES.getUri()));
   }
 
   private String toInventoryId() {
@@ -1730,90 +1486,36 @@ class ResourceControllerIT {
     return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
   }
 
-  private String toWorkContributorOrgLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
+  private String toWorkCreatorId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ID_PROPERTY));
   }
 
-  private String toWorkContributorPersonLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
+  private String toWorkCreatorLabel(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(LABEL_PROPERTY));
   }
 
-  private String toWorkContributorMeetingLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
+  private String toWorkCreatorType(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(TYPE_PROPERTY));
   }
 
-  private String toWorkContributorFamilyLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
+  private String toWorkCreatorRoles(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ROLES_PROPERTY));
   }
 
-  private String toWorkContributorOrgName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
-      arrayPath(NAME.getValue()));
+  private String toWorkContributorId(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ID_PROPERTY));
   }
 
-  private String toWorkContributorOrgRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(ORGANIZATION.getUri()),
-      dynamicArrayPath(ROLES_PROPERTY));
+  private String toWorkContributorLabel(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(LABEL_PROPERTY));
   }
 
-  private String toWorkContributorPersonName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(PERSON.getUri()),
-      arrayPath(NAME.getValue()));
+  private String toWorkContributorType(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(TYPE_PROPERTY));
   }
 
-  private String toWorkContributorFamilyName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(FAMILY.getUri()),
-      arrayPath(NAME.getValue()));
-  }
-
-  private String toWorkContributorMeetingName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR.getUri()), path(MEETING.getUri()),
-      arrayPath(NAME.getValue()));
-  }
-
-  private String toWorkCreatorPersonLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
-  }
-
-  private String toWorkCreatorMeetingLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
-  }
-
-  private String toWorkCreatorOrganizationLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
-  }
-
-  private String toWorkCreatorFamilyLcnafId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()),
-      arrayPath(LCNAF_ID.getValue()));
-  }
-
-  private String toWorkCreatorPersonName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(NAME.getValue()));
-  }
-
-  private String toWorkCreatorPersonRole(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(PERSON.getUri()), arrayPath(ROLES_PROPERTY));
-  }
-
-  private String toWorkCreatorMeetingName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(MEETING.getUri()), arrayPath(NAME.getValue()));
-  }
-
-  private String toWorkCreatorOrganizationName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(ORGANIZATION.getUri()),
-      arrayPath(NAME.getValue()));
-  }
-
-  private String toWorkCreatorFamilyName(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR.getUri()), path(FAMILY.getUri()), arrayPath(NAME.getValue()));
+  private String toWorkContributorRoles(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path("roles"));
   }
 
   private String toWorkContentTerm(String workBase) {
@@ -1898,7 +1600,8 @@ class ResourceControllerIT {
 
   private record LookupResources(
     List<Resource> subjects,
-    List<Resource> geographicCoverages
+    List<Resource> geographicCoverages,
+    List<Resource> creators
   ) {
   }
 }

@@ -71,8 +71,8 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getContent(), CONTENT);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getSubjects(), SUBJECT);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getCreator(), CREATOR);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContributor(), CONTRIBUTOR);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getCreatorReference(), CREATOR);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContributorReference(), CONTRIBUTOR);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getGeographicCoverageReference(), GEOGRAPHIC_COVERAGE);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getGovernmentPublication(), GOVERNMENT_PUBLICATION);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getTargetAudience(), TARGET_AUDIENCE);

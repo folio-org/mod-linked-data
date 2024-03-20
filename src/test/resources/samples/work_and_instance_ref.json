@@ -103,95 +103,55 @@
           ]
         }
       ],
-      "http://bibfra.me/vocab/lite/creator": [
+      "_creatorReference": [
         {
-          "http://bibfra.me/vocab/lite/Meeting": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-MEETING"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-MEETING"
-            ]
-          }
+          "id": "1001",
+          "label": "name-MEETING",
+          "type": "http://bibfra.me/vocab/lite/Meeting"
         },
         {
-          "http://bibfra.me/vocab/lite/Person": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-PERSON"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-PERSON"
-            ],
-            "_roles": [
-              "http://bibfra.me/vocab/relation/author"
-            ]
-          }
+          "id": "1002",
+          "label": "name-PERSON",
+          "type": "http://bibfra.me/vocab/lite/Person",
+          "roles": [
+            "http://bibfra.me/vocab/relation/author"
+          ]
         },
         {
-          "http://bibfra.me/vocab/lite/Organization": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-ORGANIZATION"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-ORGANIZATION"
-            ]
-          }
+          "id": "1003",
+          "label": "name-ORGANIZATION",
+          "type": "http://bibfra.me/vocab/lite/Organization"
         },
         {
-          "http://bibfra.me/vocab/lite/Family": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-FAMILY"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-FAMILY"
-            ]
-          }
+          "id": "1004",
+          "label": "name-FAMILY",
+          "type": "http://bibfra.me/vocab/lite/Family"
         }
       ],
-      "http://bibfra.me/vocab/lite/contributor": [
+      "_contributorReference": [
         {
-          "http://bibfra.me/vocab/lite/Meeting": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-MEETING"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-MEETING"
-            ]
-          }
+          "id": "1005",
+          "label": "name-ORGANIZATION",
+          "type": "http://bibfra.me/vocab/lite/Organization",
+          "roles": [
+            "http://bibfra.me/vocab/relation/editor",
+            "http://bibfra.me/vocab/relation/assignee"
+          ]
         },
         {
-          "http://bibfra.me/vocab/lite/Person": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-PERSON"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-PERSON"
-            ]
-          }
+          "id": "1006",
+          "label": "name-FAMILY",
+          "type": "http://bibfra.me/vocab/lite/Family"
         },
         {
-          "http://bibfra.me/vocab/lite/Organization": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-ORGANIZATION"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-ORGANIZATION"
-            ],
-            "_roles": [
-              "http://bibfra.me/vocab/relation/editor",
-              "http://bibfra.me/vocab/relation/assignee"
-            ]
-          }
+          "id": "1007",
+          "label": "name-PERSON",
+          "type": "http://bibfra.me/vocab/lite/Person"
         },
         {
-          "http://bibfra.me/vocab/lite/Family": {
-            "http://bibfra.me/vocab/lite/name": [
-              "name-FAMILY"
-            ],
-            "http://bibfra.me/vocab/marc/lcnafId": [
-              "2002801801-FAMILY"
-            ]
-          }
+          "id": "1008",
+          "label": "name-MEETING",
+          "type": "http://bibfra.me/vocab/lite/Meeting"
         }
       ],
       "http://bibfra.me/vocab/lite/dateStart": [

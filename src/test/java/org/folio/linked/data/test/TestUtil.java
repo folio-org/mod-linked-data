@@ -43,8 +43,6 @@ public class TestUtil {
   public static final String FOLIO_TEST_PROFILE = "test-folio";
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
-  // to be removed after wireframe UI migration
-  public static final String BIBFRAME_SAMPLE = loadResourceAsString("samples/bibframe-full.json");
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
@@ -85,12 +83,6 @@ public class TestUtil {
     var classLoader = ResourceLoader.class.getClassLoader();
     var is = Objects.requireNonNull(classLoader.getResourceAsStream(resourceName));
     return IOUtils.toString(is, StandardCharsets.UTF_8);
-  }
-
-  // to be removed after wireframe UI migration
-  @SneakyThrows
-  public static Map<String, Object> getSampleBibframeDtoMap() {
-    return OBJECT_MAPPER.readValue(BIBFRAME_SAMPLE, Map.class);
   }
 
   @SneakyThrows
