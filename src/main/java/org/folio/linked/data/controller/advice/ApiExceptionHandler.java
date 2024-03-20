@@ -110,7 +110,7 @@ public class ApiExceptionHandler {
 
   @ExceptionHandler(NotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NotFoundException exception) {
-    logException(exception);
+    log.info("Not found: {}", exception.getMessage());
     return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
   }
 
