@@ -1,9 +1,8 @@
 package org.folio.linked.data.controller;
 
-import static org.springframework.http.ResponseEntity.noContent;
-
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.rest.resource.ResourceApi;
 import org.folio.linked.data.service.ResourceService;
@@ -37,7 +36,12 @@ public class ResourceController implements ResourceApi {
   @Override
   public ResponseEntity<Void> deleteResource(Long id, String okapiTenant) {
     resourceService.deleteResource(id);
-    return noContent().build();
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<ResourceMarcViewDto> getResourceMarcViewById(Long id, String okapiTenant) {
+    return ResponseEntity.ok(resourceService.getResourceMarcViewById(id));
   }
 
   @Override

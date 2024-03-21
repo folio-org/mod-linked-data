@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,15 +37,7 @@ class ResourceDtoMapperTest {
   @Test
   void toResourceGraphDto_shouldReturnResourceGraphDto() {
     //given
-    var resource = new Resource()
-      .setResourceHash(3856321131L)
-      .setTypes(Set.of(new ResourceTypeEntity().setUri(PROVIDER_EVENT.getUri())))
-      .setDoc(new ObjectMapper().valueToTree(Map.of(
-        "http://bibfra.me/vocab/lite/name", List.of("name $ 2023"),
-        "http://bibfra.me/vocab/lite/providerDate", List.of("1981"),
-        "http://bibfra.me/vocab/lite/place", List.of("Alaska"))))
-      .setLabel("Alaska")
-      .setIndexDate(Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55")));
+    var resource = generateTestResource();
     var providerPlace = new Resource().setResourceHash(1654360880L);
     resource.setOutgoingEdges(Set.of(new ResourceEdge(resource, providerPlace, PROVIDER_PLACE)));
 
@@ -61,5 +54,38 @@ class ResourceDtoMapperTest {
         .get(resource.getOutgoingEdges().iterator().next().getPredicate().getUri()).get(0));
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(resource.getIndexDate()),
       resourceGraphDto.getIndexDate());
+  }
+
+  @Test
+  void toMarcViewDto_shouldReturnResourceMarcViewDto() {
+    //given
+    var expectedDocumentType = "MARC_BIB";
+    var resource = generateTestResource();
+    var marc = "{value: \"some marc json string\"";
+
+    //when
+    var resourceMarcViewDto = resourceMapper.toMarcViewDto(resource, marc);
+
+    //then
+    assertThat(resourceMarcViewDto)
+      .isNotNull()
+      .hasFieldOrPropertyWithValue("id", resource.getResourceHash().toString())
+      .hasFieldOrPropertyWithValue("recordType", expectedDocumentType)
+      .extracting("parsedRecord")
+      .isNotNull()
+      .hasFieldOrPropertyWithValue("content", marc);
+  }
+
+  private Resource generateTestResource() {
+    return new Resource()
+      .setResourceHash(3856321131L)
+      .setTypes(Set.of(new ResourceTypeEntity().setUri(PROVIDER_EVENT.getUri())))
+      .setDoc(new ObjectMapper().valueToTree(Map.of(
+        "http://bibfra.me/vocab/lite/name", List.of("name $ 2023"),
+        "http://bibfra.me/vocab/lite/providerDate", List.of("1981"),
+        "http://bibfra.me/vocab/lite/place", List.of("Alaska")))
+      )
+      .setLabel("Alaska")
+      .setIndexDate(Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55")));
   }
 }
