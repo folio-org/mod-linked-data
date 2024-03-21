@@ -25,6 +25,12 @@
           "modulePermissions": []
         },
         {
+          "methods": [ "GET" ],
+          "pathPattern": "/resource/{id}/marc",
+          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "modulePermissions": []
+        },
+        {
           "methods": [ "PUT" ],
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked.data.bibframe.post" ],
