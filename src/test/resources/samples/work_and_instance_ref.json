@@ -61,6 +61,14 @@
           "id": "102"
         }
       ],
+      "_genreReference": [
+        {
+          "id": "201"
+        },
+        {
+          "id": "202"
+        }
+      ],
       "http://bibfra.me/vocab/marc/targetAudience": [
         {
           "http://bibfra.me/vocab/marc/code": [

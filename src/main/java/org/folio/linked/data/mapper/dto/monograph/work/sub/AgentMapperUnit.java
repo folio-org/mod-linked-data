@@ -8,8 +8,6 @@ import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -29,12 +27,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
       .label(source.getLabel())
       .type(source.getTypes().iterator().next().getUri());
     agentRoleAssigner.assignRoles(agent, parentResource);
-    if (parentDto instanceof Work work) {
-      agentConsumer.accept(work, agent);
-    }
-    if (parentDto instanceof WorkReference work) {
-      agentConsumer.accept(work, agent);
-    }
+    agentConsumer.accept(parentDto, agent);
     return parentDto;
   }
 

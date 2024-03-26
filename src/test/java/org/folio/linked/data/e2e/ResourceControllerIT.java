@@ -16,6 +16,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
+import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -84,6 +85,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
@@ -181,6 +183,7 @@ class ResourceControllerIT {
   private static final String CREATOR_REF = "_creatorReference";
   private static final String CONTRIBUTOR_REF = "_contributorReference";
   private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
+  private static final String GENRE_REF = "_genreReference";
   private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
   private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
   @Autowired
@@ -443,8 +446,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceRepo.save(getSampleInstanceResource(null, work));
     assertThat(resourceRepo.findById(instance.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(43);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(45);
+    assertThat(resourceRepo.count()).isEqualTo(45);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(47);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -455,9 +458,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(instance.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(42);
+    assertThat(resourceRepo.count()).isEqualTo(44);
     assertThat(resourceEdgeRepository.findById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(27);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(29);
     checkKafkaMessage(work.getResourceHash(), UPDATE);
   }
 
@@ -466,8 +469,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(43);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(45);
+    assertThat(resourceRepo.count()).isEqualTo(45);
+    assertThat(resourceEdgeRepository.count()).isEqualTo(47);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -478,7 +481,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(42);
+    assertThat(resourceRepo.count()).isEqualTo(44);
     assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceEdgeRepository.count()).isEqualTo(25);
     checkKafkaMessage(existed.getResourceHash(), DELETE);
@@ -668,6 +671,7 @@ class ResourceControllerIT {
           "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
         .andExpect(jsonPath(toInstanceReference(workBase), notNullValue()))
         .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
+        .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
         .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
         .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
         .andExpect(jsonPath(toWorkGovernmentPublicationCode(workBase), equalTo("a")))
@@ -1017,6 +1021,8 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(0), GENRE.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
       GEOGRAPHIC_COVERAGE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(1),
@@ -1140,6 +1146,8 @@ class ResourceControllerIT {
     var subject2 = saveResource(2L, "subject 2", CONCEPT, "{}");
     var unitedStates = saveResource(101L, "United States", PLACE, "{}");
     var europe = saveResource(102L, "Europe", PLACE, "{}");
+    var genre1 = saveResource(201L, "genre 1", FORM, "{}");
+    var genre2 = saveResource(202L, "genre 2", FORM, "{}");
     var creatorMeeting = saveResource(1001L, "name-MEETING", MEETING,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-MEETING\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
     var creatorPerson = saveResource(1002L, "name-PERSON", PERSON,
@@ -1159,6 +1167,7 @@ class ResourceControllerIT {
     return new LookupResources(
       List.of(subject1, subject2),
       List.of(unitedStates, europe),
+      List.of(genre1, genre2),
       List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily,
         contributorPerson, contributorMeeting, contributorOrganization, contributorFamily)
     );
@@ -1530,6 +1539,10 @@ class ResourceControllerIT {
     return join(".", workBase, dynamicArrayPath(GEOGRAPHIC_COVERAGE_REF), path("label"));
   }
 
+  private String toWorkGenreLabel(String workBase) {
+    return join(".", workBase, dynamicArrayPath(GENRE_REF), path("label"));
+  }
+
   private String toWorkDateStart(String workBase) {
     return join(".", workBase, arrayPath(DATE_START.getValue()));
   }
@@ -1601,6 +1614,7 @@ class ResourceControllerIT {
   private record LookupResources(
     List<Resource> subjects,
     List<Resource> geographicCoverages,
+    List<Resource> genres,
     List<Resource> creators
   ) {
   }

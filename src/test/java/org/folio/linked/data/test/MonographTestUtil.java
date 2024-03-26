@@ -13,6 +13,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
+import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
@@ -82,6 +83,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -445,6 +447,24 @@ public class MonographTestUtil {
     ).setLabel("Europe")
       .setResourceHash(102L);
 
+    var genre1 = createResource(
+      Map.of(
+        NAME, List.of("genre 1")
+      ),
+      Set.of(FORM),
+      emptyMap()
+    ).setLabel("genre 1")
+      .setResourceHash(201L);
+
+    var genre2 = createResource(
+      Map.of(
+        NAME, List.of("genre 2")
+      ),
+      Set.of(FORM),
+      emptyMap()
+    ).setLabel("genre 2")
+      .setResourceHash(202L);
+
     var governmentPublication = createResource(
       Map.of(
         CODE, List.of("a"),
@@ -466,6 +486,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(CONTENT, List.of(createContent()));
     pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
     pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
+    pred2OutgoingResources.put(GENRE, List.of(genre1, genre2));
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
     pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
 
