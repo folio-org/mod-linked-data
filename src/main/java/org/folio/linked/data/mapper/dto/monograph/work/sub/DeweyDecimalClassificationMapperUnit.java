@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,7 +44,7 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var deweyDecimalClassification = (DeweyDecimalClassification) dto;
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.addType(CATEGORY);
     resource.setDoc(getDoc(deweyDecimalClassification));
     resource.setResourceHash(hashService.hash(resource));

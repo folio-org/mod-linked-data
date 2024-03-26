@@ -101,6 +101,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 
@@ -595,7 +596,7 @@ public class MonographTestUtil {
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
                                         Set<ResourceTypeDictionary> types,
                                         Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     pred2OutgoingResources.keySet()
       .stream()
       .flatMap(pred -> pred2OutgoingResources.get(pred)

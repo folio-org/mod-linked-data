@@ -54,17 +54,17 @@ public class ResourceTestService {
 
   private Resource saveGraphSkippingAlreadySaved(Resource resource, Resource skipping) {
     resourceRepository.save(resource);
-    resource.getOutgoingEdges().stream().filter(oe -> !oe.getTarget().equals(skipping)).forEach(oe -> {
-      saveGraphSkippingAlreadySaved(oe.getTarget(), resource);
-      oe.setId();
-      edgeRepository.save(oe);
-    });
-    resource.getIncomingEdges().stream().filter(ie -> !ie.getSource().equals(skipping)).forEach(ie -> {
-      saveGraphSkippingAlreadySaved(ie.getSource(), resource);
-      ie.setId();
-      edgeRepository.save(ie);
-    });
+    resource.getOutgoingEdges().stream().filter(edge -> !edge.getTarget().equals(skipping))
+      .forEach(oe -> saveEdge(oe.getTarget(), resource, oe));
+    resource.getIncomingEdges().stream().filter(edge -> !edge.getSource().equals(skipping))
+      .forEach(ie -> saveEdge(ie.getSource(), resource, ie));
     return resource;
+  }
+
+  private void saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
+    saveGraphSkippingAlreadySaved(edgeResource, resource);
+    edge.computeId();
+    edgeRepository.save(edge);
   }
 
   public Optional<Resource> findById(long id) {

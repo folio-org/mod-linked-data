@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -40,7 +41,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var accessLocation = (AccessLocation) dto;
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(accessLocation::getLink));
     resource.addType(ANNOTATION);
     resource.setDoc(getDoc(accessLocation));

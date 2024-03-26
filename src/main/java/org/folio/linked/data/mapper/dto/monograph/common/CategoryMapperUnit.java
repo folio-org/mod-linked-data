@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -53,7 +54,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var category = (Category) dto;
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(category::getTerm));
     resource.addType(type);
     resource.setDoc(getDoc(category));

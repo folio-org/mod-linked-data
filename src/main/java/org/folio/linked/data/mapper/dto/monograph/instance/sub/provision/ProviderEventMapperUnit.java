@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -43,7 +44,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var providerEvent = (ProviderEvent) dto;
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addType(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));

@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.dto.monograph.instance.sub;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -40,7 +41,7 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var supplementaryContent = (SupplementaryContent) dto;
-    var resource = new Resource(true)
+    var resource = withInitializedSets()
       .setLabel(getFirstValue(supplementaryContent::getName))
       .addType(SUPPLEMENTARY_CONTENT)
       .setDoc(getDoc(supplementaryContent));

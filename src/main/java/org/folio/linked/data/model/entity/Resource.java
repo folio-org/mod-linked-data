@@ -92,12 +92,11 @@ public class Resource {
       .orElse(null);
   }
 
-  public Resource(boolean initCollections) {
-    if (initCollections) {
-      this.types = new LinkedHashSet<>();
-      this.outgoingEdges = new LinkedHashSet<>();
-      this.incomingEdges = new LinkedHashSet<>();
-    }
+  public static Resource withInitializedSets() {
+    return new Resource()
+      .setTypes(new LinkedHashSet<>())
+      .setIncomingEdges(new LinkedHashSet<>())
+      .setOutgoingEdges(new LinkedHashSet<>());
   }
 
   public Resource addType(@NonNull ResourceTypeEntity type) {

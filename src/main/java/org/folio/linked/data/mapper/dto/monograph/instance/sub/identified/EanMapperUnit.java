@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -42,7 +43,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var ean = ((EanField) dto).getEan();
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(ean::getValue));
     resource.addType(ID_EAN);
     resource.setDoc(getDoc(ean));

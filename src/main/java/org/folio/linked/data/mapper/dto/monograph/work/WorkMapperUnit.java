@@ -21,6 +21,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMEN
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,7 +67,7 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var workDto = ((WorkField) dto).getWork();
-    var work = new Resource(true);
+    var work = withInitializedSets();
     work.addType(WORK);
     work.setDoc(getDoc(workDto));
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);

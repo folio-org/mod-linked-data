@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -50,7 +51,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var parallelTitle = ((ParallelTitleField) dto).getParallelTitle();
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(parallelTitle::getMainTitle));
     resource.addType(PARALLEL_TITLE);
     resource.setDoc(getDoc(parallelTitle));

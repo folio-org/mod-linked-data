@@ -31,4 +31,8 @@ public class PredicateEntity implements Predicate {
   @Column(name = "predicate", nullable = false)
   private String uri;
 
+  public PredicateEntity(@NonNull Predicate that) {
+    this.hash = that.getHash();
+    this.uri = that.getUri();
+  }
 }

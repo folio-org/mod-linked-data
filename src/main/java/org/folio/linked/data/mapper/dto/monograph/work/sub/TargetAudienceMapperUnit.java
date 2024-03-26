@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
     var map = new HashMap<String, List<String>>();
     putProperty(map, LINK, List.of(CATEGORY_SET_LINK));
     putProperty(map, LABEL, List.of(CATEGORY_SET_LABEL));
-    var categorySet = new Resource(true)
+    var categorySet = withInitializedSets()
       .addType(CATEGORY_SET)
       .setDoc(coreMapper.toJson(map))
       .setLabel(CATEGORY_SET_LABEL);

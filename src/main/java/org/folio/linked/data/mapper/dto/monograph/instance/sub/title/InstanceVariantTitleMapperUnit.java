@@ -9,6 +9,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -51,7 +52,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(variantTitle::getMainTitle));
     resource.addType(VARIANT_TITLE);
     resource.setDoc(getDoc(variantTitle));

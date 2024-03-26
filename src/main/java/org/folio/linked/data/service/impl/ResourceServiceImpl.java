@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -13,6 +14,7 @@ import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -116,25 +118,36 @@ public class ResourceServiceImpl implements ResourceService {
     return saveMergingGraphSkippingAlreadySaved(resource, null);
   }
 
-  private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource skipping) {
-    if (!resourceRepo.existsById(resource.getResourceHash())) {
+  private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
+    if (doesNotExists(resource)) {
       resourceRepo.save(resource);
     }
-    resource.getOutgoingEdges().stream().filter(oe -> !oe.getTarget().equals(skipping)).forEach(oe -> {
-      saveMergingGraphSkippingAlreadySaved(oe.getTarget(), resource);
-      oe.setId();
-      if (!edgeRepo.existsById(oe.getId())) {
-        edgeRepo.save(oe);
-      }
-    });
-    resource.getIncomingEdges().stream().filter(ie -> !ie.getSource().equals(skipping)).forEach(ie -> {
-      saveMergingGraphSkippingAlreadySaved(ie.getSource(), resource);
-      ie.setId();
-      if (!edgeRepo.existsById(ie.getId())) {
-        edgeRepo.save(ie);
-      }
-    });
+    saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
+    saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     return resource;
+  }
+
+  private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
+                         Resource saved) {
+    edges.stream()
+      .filter(edge -> notEqual(resourceSelector.apply(edge), saved))
+      .forEach(edge -> saveEdge(resourceSelector.apply(edge), resource, edge));
+  }
+
+  private void saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
+    saveMergingGraphSkippingAlreadySaved(edgeResource, resource);
+    edge.computeId();
+    if (doesNotExists(edge)) {
+      edgeRepo.save(edge);
+    }
+  }
+
+  private boolean doesNotExists(Resource resource) {
+    return !resourceRepo.existsById(resource.getResourceHash());
+  }
+
+  private boolean doesNotExists(ResourceEdge edge) {
+    return !edgeRepo.existsById(edge.getId());
   }
 
   private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {

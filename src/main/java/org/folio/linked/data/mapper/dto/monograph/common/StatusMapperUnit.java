@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.dto.monograph.common;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
@@ -58,7 +59,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var status = (Status) dto;
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(status::getValue));
     resource.addType(STATUS);
     resource.setDoc(getDoc(status));

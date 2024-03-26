@@ -16,6 +16,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
@@ -114,7 +115,7 @@ class KafkaMessageMapperTest {
   @Test
   void toIndex_shouldReturnEmptyResult_fromWorkWithNoIndexableInfo() {
     // given
-    var work = new Resource(true).addType(WORK);
+    var work = withInitializedSets().addType(WORK);
     // when
     var resultOpt = kafkaMessageMapper.toIndex(work, CREATE);
 

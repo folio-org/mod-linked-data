@@ -45,19 +45,19 @@ public class ResourceEdge {
   public ResourceEdge(@NonNull Resource source, @NonNull Resource target, @NonNull Predicate predicate) {
     this.source = source;
     this.target = target;
-    this.predicate = new PredicateEntity(predicate.getHash(), predicate.getUri());
+    this.predicate = new PredicateEntity(predicate);
   }
 
   public ResourceEdge(@NonNull ResourceEdge that) {
-    this.source = that.getSource();
-    this.target = that.getTarget();
-    this.predicate = that.getPredicate();
-    if (nonNull(that.getId())) {
-      this.setId(new ResourceEdgePk(that.id.getSourceHash(), that.id.getTargetHash(), that.id.getPredicateHash()));
+    if (nonNull(that.id)) {
+      this.id = new ResourceEdgePk(that.id);
     }
+    this.source = that.source;
+    this.target = that.target;
+    this.predicate = that.predicate;
   }
 
-  public void setId() {
+  public void computeId() {
     if (nonNull(source) && nonNull(target) && nonNull(predicate)) {
       id = new ResourceEdgePk(source.getResourceHash(), target.getResourceHash(), predicate.getHash());
     }

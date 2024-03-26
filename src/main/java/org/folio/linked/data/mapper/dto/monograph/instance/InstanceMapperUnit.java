@@ -34,6 +34,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -92,7 +93,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var instanceDto = ((InstanceField) dto).getInstance();
-    var instance = new Resource(true);
+    var instance = withInitializedSets();
     instance.addType(INSTANCE);
     instance.setDoc(getDoc(instanceDto));
     instance.setLabel(getFirstValue(() -> getPossibleLabels(instanceDto)));

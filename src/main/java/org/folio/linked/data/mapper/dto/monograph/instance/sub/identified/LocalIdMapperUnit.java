@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
+import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -42,7 +43,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var localId = ((LocalIdField) dto).getLocalId();
-    var resource = new Resource(true);
+    var resource = withInitializedSets();
     resource.setLabel(getFirstValue(localId::getValue));
     resource.addType(ID_LOCAL);
     resource.setDoc(getDoc(localId));
