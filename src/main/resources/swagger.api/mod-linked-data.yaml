@@ -171,7 +171,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: schema/resourceGraphDto.json
+                $ref: schema/graphDto/resourceGraphDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
