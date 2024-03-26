@@ -6,9 +6,16 @@ import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
+/**
+ * Class responsible for assigning roles to Agents.
+ */
 @Component
 public class AgentRoleAssigner {
 
+  /**
+   * Assigns roles to the given agent. Roles can be found in the work resource as outgoing edges with a predicate that
+   * starts with "http://bibfra.me/vocab/relation/" and has the agent's id as target.
+   */
   public void assignRoles(Agent agent, Resource workResource) {
     var roles = workResource
       .getOutgoingEdges()
