@@ -9,11 +9,11 @@ import org.folio.linked.data.mapper.dto.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("CreatorPersonMapperUnit")
 @MapperUnit(type = PERSON, dtoClass = Agent.class, predicate = CREATOR)
-public class CreatorPersonMapperUnit extends CreatorMapperUnit {
+public class PersonMapperUnit extends CreatorMapperUnit {
 
-  public CreatorPersonMapperUnit(AgentRoleAssigner agentRoleAssigner, ResourceRepository resourceRepository) {
+  public PersonMapperUnit(AgentRoleAssigner agentRoleAssigner, ResourceRepository resourceRepository) {
     super(agentRoleAssigner, resourceRepository);
   }
 }
