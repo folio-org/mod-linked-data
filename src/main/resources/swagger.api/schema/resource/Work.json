@@ -56,7 +56,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Subject.json"
+            "$ref": "Reference.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/subject"
         },
@@ -101,7 +101,14 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "GeographicCoverage.json"
+            "$ref": "Reference.json"
+          }
+        },
+        "_genreReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Reference.json"
           }
         },
         "dateStart": {

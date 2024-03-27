@@ -19,7 +19,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Subject.json"
+            "$ref": "Reference.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/subject"
         },

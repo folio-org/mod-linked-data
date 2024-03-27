@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Subject Info",
+  "description": "Reference object",
   "allOf": [
     {
       "$ref": "Topper.json"
