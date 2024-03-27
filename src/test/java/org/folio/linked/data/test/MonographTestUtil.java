@@ -305,7 +305,7 @@ public class MonographTestUtil {
       .setSrsId(UUID.fromString("43d58061-decf-4d74-9747-0e1c368e861b"));
 
     if (nonNull(id)) {
-      instance.setResourceHash(id);
+      instance.setId(id);
     }
     instance.setLabel(instanceTitleValue);
     if (nonNull(linkedWork)) {
@@ -334,7 +334,7 @@ public class MonographTestUtil {
       Set.of(MEETING),
       emptyMap()
     ).setLabel("name-MEETING")
-      .setResourceHash(1001L);
+      .setId(1001L);
 
     var creatorPerson = createResource(
       Map.of(
@@ -344,7 +344,7 @@ public class MonographTestUtil {
       Set.of(PERSON),
       emptyMap()
     ).setLabel("name-PERSON")
-      .setResourceHash(1002L);
+      .setId(1002L);
 
     var creatorOrganization = createResource(
       Map.of(
@@ -354,7 +354,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("name-ORGANIZATION")
-      .setResourceHash(1003L);
+      .setId(1003L);
 
     var creatorFamily = createResource(
       Map.of(
@@ -364,7 +364,7 @@ public class MonographTestUtil {
       Set.of(FAMILY),
       emptyMap()
     ).setLabel("name-FAMILY")
-      .setResourceHash(1004L);
+      .setId(1004L);
 
     var contributorPerson = createResource(
       Map.of(
@@ -374,7 +374,7 @@ public class MonographTestUtil {
       Set.of(PERSON),
       emptyMap()
     ).setLabel("name-PERSON")
-      .setResourceHash(1007L);
+      .setId(1007L);
 
     var contributorMeeting = createResource(
       Map.of(
@@ -384,7 +384,7 @@ public class MonographTestUtil {
       Set.of(MEETING),
       emptyMap()
     ).setLabel("name-MEETING")
-      .setResourceHash(1008L);
+      .setId(1008L);
 
     var contributorOrganization = createResource(
       Map.of(
@@ -394,7 +394,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("name-ORGANIZATION")
-      .setResourceHash(1005L);
+      .setId(1005L);
 
     var contributorFamily = createResource(
       Map.of(
@@ -404,7 +404,7 @@ public class MonographTestUtil {
       Set.of(FAMILY),
       emptyMap()
     ).setLabel("name-FAMILY")
-      .setResourceHash(1006L);
+      .setId(1006L);
 
     var subject1 = createResource(
       Map.of(
@@ -413,7 +413,7 @@ public class MonographTestUtil {
       Set.of(CONCEPT),
       emptyMap()
     ).setLabel("subject 1")
-      .setResourceHash(1L);
+      .setId(1L);
 
     var subject2 = createResource(
       Map.of(
@@ -422,7 +422,7 @@ public class MonographTestUtil {
       Set.of(CONCEPT),
       emptyMap()
     ).setLabel("subject 2")
-      .setResourceHash(2L);
+      .setId(2L);
 
     var unitedStates = createResource(
       Map.of(
@@ -433,7 +433,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("United States")
-      .setResourceHash(101L);
+      .setId(101L);
 
     var europe = createResource(
       Map.of(
@@ -444,7 +444,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("Europe")
-      .setResourceHash(102L);
+      .setId(102L);
 
     var genre1 = createResource(
       Map.of(
@@ -453,7 +453,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 1")
-      .setResourceHash(201L);
+      .setId(201L);
 
     var genre2 = createResource(
       Map.of(
@@ -462,7 +462,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 2")
-      .setResourceHash(202L);
+      .setId(202L);
 
     var governmentPublication = createResource(
       Map.of(
@@ -607,7 +607,7 @@ public class MonographTestUtil {
     var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
     types.forEach(resource::addType);
-    resource.setResourceHash(randomLong());
+    resource.setId(randomLong());
     return resource;
   }
 

@@ -57,7 +57,7 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ResourceDto resourceDto) {
       var work = coreMapper.toDtoWithEdges(source, Work.class, true);
-      work.setId(String.valueOf(source.getResourceHash()));
+      work.setId(String.valueOf(source.getId()));
       ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.setResource(new WorkField().work(work));
     }
@@ -80,7 +80,7 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getGovernmentPublication(), GOVERNMENT_PUBLICATION);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getTargetAudience(), TARGET_AUDIENCE);
     coreMapper.addIncomingEdges(work, Work.class, workDto.getInstanceReference(), INSTANTIATES);
-    work.setResourceHash(hashService.hash(work));
+    work.setId(hashService.hash(work));
     return work;
   }
 

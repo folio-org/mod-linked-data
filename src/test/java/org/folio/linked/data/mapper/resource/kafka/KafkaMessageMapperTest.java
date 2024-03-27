@@ -170,7 +170,7 @@ class KafkaMessageMapperTest {
     var resultOpt = kafkaMessageMapper.toDeleteIndexId(work);
 
     // then
-    assertThat(resultOpt).isPresent().contains(work.getResourceHash());
+    assertThat(resultOpt).isPresent().contains(work.getId());
   }
 
   @Test
@@ -207,7 +207,7 @@ class KafkaMessageMapperTest {
 
   private Resource getIdentifier() {
     var id = new Resource();
-    id.setResourceHash(randomLong());
+    id.setId(randomLong());
     id.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of("wrongId"))));
     id.addType(ANNOTATION);
     return id;
@@ -215,14 +215,14 @@ class KafkaMessageMapperTest {
 
   private Resource getContributor(ResourceTypeDictionary type) {
     var contributor = new Resource();
-    contributor.setResourceHash(randomLong());
+    contributor.setId(randomLong());
     contributor.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(UUID.randomUUID().toString()))));
     contributor.addType(type);
     return contributor;
   }
 
   private void validateWork(BibframeIndex result, Resource work, Resource wrongContributor, int instancesExpected) {
-    assertThat(result.getId()).isEqualTo(work.getResourceHash().toString());
+    assertThat(result.getId()).isEqualTo(work.getId().toString());
     assertThat(result.getTitles()).isEmpty();
     assertThat(result.getContributors()).hasSize(9);
     assertContributor(result.getContributors().get(0), "name-PERSON", PERSON, true);
@@ -248,8 +248,8 @@ class KafkaMessageMapperTest {
   }
 
   private void validateInstance(BibframeInstancesInner instanceIndex, Resource instance) {
-    assertThat(instanceIndex.getId()).isEqualTo(instance.getResourceHash().toString());
-    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle" + instance.getResourceHash(), MAIN);
+    assertThat(instanceIndex.getId()).isEqualTo(instance.getId().toString());
+    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle" + instance.getId(), MAIN);
     assertTitle(instanceIndex.getTitles().get(1), "Instance: subTitle", SUB);
     assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN);
     assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB);

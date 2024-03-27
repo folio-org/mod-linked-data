@@ -181,9 +181,9 @@ class CoreMapperTest {
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
     var source = withInitializedSets();
-    var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setResourceHash(111L);
+    var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setId(111L);
     doReturn(expectedTarget1).when(singleResourceMapper).toEntity(dto1, parent, predicate, source);
-    var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setResourceHash(222L);
+    var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setId(222L);
     doReturn(expectedTarget2).when(singleResourceMapper).toEntity(dto2, parent, predicate, source);
     var dtoList = List.of(dto1, dto2);
 

@@ -38,7 +38,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitle.class, false);
-    parallelTitle.setId(String.valueOf(source.getResourceHash()));
+    parallelTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     }
@@ -55,7 +55,7 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
     resource.setLabel(getFirstValue(parallelTitle::getMainTitle));
     resource.addType(PARALLEL_TITLE);
     resource.setDoc(getDoc(parallelTitle));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

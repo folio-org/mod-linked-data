@@ -35,7 +35,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var isbn = coreMapper.toDtoWithEdges(source, Isbn.class, false);
-      isbn.setId(String.valueOf(source.getResourceHash()));
+      isbn.setId(String.valueOf(source.getId()));
       instance.addMapItem(new IsbnField().isbn(isbn));
     }
     return parentDto;
@@ -49,7 +49,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.addType(ID_ISBN);
     resource.setDoc(getDoc(isbn));
     coreMapper.addOutgoingEdges(resource, Isbn.class, isbn.getStatus(), STATUS);
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

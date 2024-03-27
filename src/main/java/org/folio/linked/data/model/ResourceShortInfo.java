@@ -7,7 +7,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 
 public interface ResourceShortInfo {
 
-  Long getResourceHash();
+  Long getId();
 
   String getLabel();
 

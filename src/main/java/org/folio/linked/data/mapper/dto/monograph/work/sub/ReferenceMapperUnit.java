@@ -19,7 +19,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var reference = new Reference()
-      .id(source.getResourceHash().toString())
+      .id(String.valueOf(source.getId()))
       .label(source.getLabel());
     referenceConsumer.accept(reference, parentDto);
     return parentDto;
@@ -30,6 +30,8 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
     var reference = (Reference) dto;
     return resourceRepository
       .findById(Long.parseLong(reference.getId()))
+      .map(Resource::copyWithNoEdges)
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + reference.getId() + IS_NOT_FOUND));
   }
+
 }

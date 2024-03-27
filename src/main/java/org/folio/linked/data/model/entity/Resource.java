@@ -15,7 +15,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -28,17 +31,19 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Data
 @NoArgsConstructor
 @Accessors(chain = true)
 @Table(name = "resources")
-@EqualsAndHashCode(of = "resourceHash")
-public class Resource {
+@EqualsAndHashCode(of = "id")
+public class Resource implements Persistable<Long> {
 
   @Id
-  private Long resourceHash;
+  @Column(name = "resource_hash")
+  private Long id;
 
   @NonNull
   @Column(nullable = false)
@@ -73,8 +78,11 @@ public class Resource {
   @OneToMany(mappedBy = "source", cascade = REMOVE, orphanRemoval = true)
   private Set<ResourceEdge> outgoingEdges;
 
+  @Transient
+  private boolean managed = false;
+
   public Resource(@NonNull Resource that) {
-    this.resourceHash = that.resourceHash;
+    this.id = that.id;
     this.label = that.label;
     this.doc = (JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
     this.inventoryId = that.inventoryId;
@@ -97,6 +105,30 @@ public class Resource {
       .setTypes(new LinkedHashSet<>())
       .setIncomingEdges(new LinkedHashSet<>())
       .setOutgoingEdges(new LinkedHashSet<>());
+  }
+
+  public static Resource copyWithNoEdges(@NonNull Resource that) {
+    return new Resource()
+      .setId(that.id)
+      .setLabel(that.label)
+      .setDoc((JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null))
+      .setInventoryId(that.inventoryId)
+      .setSrsId(that.srsId)
+      .setIndexDate(that.indexDate)
+      .setTypes(new LinkedHashSet<>(that.getTypes()))
+      .setIncomingEdges(new LinkedHashSet<>())
+      .setOutgoingEdges(new LinkedHashSet<>());
+  }
+
+  @Override
+  public boolean isNew() {
+    return !managed;
+  }
+
+  @PostLoad
+  @PrePersist
+  void markManaged() {
+    this.managed = true;
   }
 
   public Resource addType(@NonNull ResourceTypeEntity type) {

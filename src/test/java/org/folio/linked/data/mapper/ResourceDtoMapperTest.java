@@ -38,18 +38,18 @@ class ResourceDtoMapperTest {
   void toResourceGraphDto_shouldReturnResourceGraphDto() {
     //given
     var resource = generateTestResource();
-    var providerPlace = new Resource().setResourceHash(1654360880L);
+    var providerPlace = new Resource().setId(1654360880L);
     resource.setOutgoingEdges(Set.of(new ResourceEdge(resource, providerPlace, PROVIDER_PLACE)));
 
     //when
     var resourceGraphDto = resourceMapper.toResourceGraphDto(resource);
 
     //then
-    assertEquals(resource.getResourceHash().toString(), resourceGraphDto.getId());
+    assertEquals(resource.getId().toString(), resourceGraphDto.getId());
     assertEquals(resource.getTypes().iterator().next().getUri(), resourceGraphDto.getTypes().get(0));
     assertEquals(resource.getDoc(), resourceGraphDto.getDoc());
     assertEquals(resource.getLabel(), resourceGraphDto.getLabel());
-    assertEquals(String.valueOf(resource.getOutgoingEdges().iterator().next().getTarget().getResourceHash()),
+    assertEquals(String.valueOf(resource.getOutgoingEdges().iterator().next().getTarget().getId()),
       ((Map<String, List<String>>) resourceGraphDto.getOutgoingEdges())
         .get(resource.getOutgoingEdges().iterator().next().getPredicate().getUri()).get(0));
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(resource.getIndexDate()),
@@ -69,7 +69,7 @@ class ResourceDtoMapperTest {
     //then
     assertThat(resourceMarcViewDto)
       .isNotNull()
-      .hasFieldOrPropertyWithValue("id", resource.getResourceHash().toString())
+      .hasFieldOrPropertyWithValue("id", resource.getId().toString())
       .hasFieldOrPropertyWithValue("recordType", expectedDocumentType)
       .extracting("parsedRecord")
       .isNotNull()
@@ -78,7 +78,7 @@ class ResourceDtoMapperTest {
 
   private Resource generateTestResource() {
     return new Resource()
-      .setResourceHash(3856321131L)
+      .setId(3856321131L)
       .setTypes(Set.of(new ResourceTypeEntity().setUri(PROVIDER_EVENT.getUri())))
       .setDoc(new ObjectMapper().valueToTree(Map.of(
         "http://bibfra.me/vocab/lite/name", List.of("name $ 2023"),

@@ -246,7 +246,7 @@ class MergeResourcesIT {
       Map.of(PropertyDictionary.NAME, List.of("John Doe")),
       Set.of(ResourceTypeDictionary.IDENTIFIER),
       pred2OutgoingResources
-    ).setResourceHash(hash);
+    ).setId(hash);
   }
 
   private void assertEdge(ResourceEdge edge, long sourceHash, long targetHash, Resource source) {

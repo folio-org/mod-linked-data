@@ -8,9 +8,9 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -22,6 +22,8 @@ public class ResourceTestService {
   private ResourceRepository resourceRepository;
   @Autowired
   private ResourceEdgeRepository edgeRepository;
+  @Autowired
+  private ResourceService resourceService;
 
   /**
    * Retrieves a resource by its unique identifier along with its associated edges up to a specified depth.
@@ -47,24 +49,8 @@ public class ResourceTestService {
       });
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public Resource saveGraph(Resource resource) {
-    return saveGraphSkippingAlreadySaved(resource, null);
-  }
-
-  private Resource saveGraphSkippingAlreadySaved(Resource resource, Resource skipping) {
-    resourceRepository.save(resource);
-    resource.getOutgoingEdges().stream().filter(edge -> !edge.getTarget().equals(skipping))
-      .forEach(oe -> saveEdge(oe.getTarget(), resource, oe));
-    resource.getIncomingEdges().stream().filter(edge -> !edge.getSource().equals(skipping))
-      .forEach(ie -> saveEdge(ie.getSource(), resource, ie));
-    return resource;
-  }
-
-  private void saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
-    saveGraphSkippingAlreadySaved(edgeResource, resource);
-    edge.computeId();
-    edgeRepository.save(edge);
+    return resourceService.saveMergingGraph(resource);
   }
 
   public Optional<Resource> findById(long id) {

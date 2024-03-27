@@ -39,7 +39,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var status = coreMapper.toDtoWithEdges(source, Status.class, false);
-    status.setId(String.valueOf(source.getResourceHash()));
+    status.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Lccn lccn) {
       lccn.addStatusItem(status);
     } else if (parentDto instanceof Isbn isbn) {
@@ -63,7 +63,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
     resource.setLabel(getFirstValue(status::getValue));
     resource.addType(STATUS);
     resource.setDoc(getDoc(status));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

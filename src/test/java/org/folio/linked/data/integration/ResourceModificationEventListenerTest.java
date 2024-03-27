@@ -42,8 +42,8 @@ class ResourceModificationEventListenerTest {
   @Test
   void afterCreate_shouldSendResourceCreatedMessageToKafka() {
     //given
-    var resource = new Resource().setResourceHash(1L);
-    var bibframeIndex = new BibframeIndex(resource.getResourceHash().toString());
+    var resource = new Resource().setId(1L);
+    var bibframeIndex = new BibframeIndex(resource.getId().toString());
     when(kafkaMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(bibframeIndex));
 
     //when
@@ -56,7 +56,7 @@ class ResourceModificationEventListenerTest {
   @Test
   void afterCreate_shouldNotSendResourceCreatedMessageToKafka_whenNothingToIndex() {
     //given
-    var resource = new Resource().setResourceHash(1L);
+    var resource = new Resource().setId(1L);
     when(kafkaMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
 
     //when
@@ -69,11 +69,11 @@ class ResourceModificationEventListenerTest {
   @Test
   void afterUpdate_shouldSendResourceCreatedMessageToKafka() {
     //given
-    var resourceNew = new Resource().setResourceHash(1L);
-    var resourceOld = new Resource().setResourceHash(2L);
-    var bibframeIndexNew = new BibframeIndex(resourceNew.getResourceHash().toString());
+    var resourceNew = new Resource().setId(1L);
+    var resourceOld = new Resource().setId(2L);
+    var bibframeIndexNew = new BibframeIndex(resourceNew.getId().toString());
     when(kafkaMessageMapper.toIndex(resourceNew, UPDATE)).thenReturn(Optional.of(bibframeIndexNew));
-    var bibframeIndexOld = new BibframeIndex(resourceOld.getResourceHash().toString());
+    var bibframeIndexOld = new BibframeIndex(resourceOld.getId().toString());
     when(kafkaMessageMapper.toIndex(resourceOld, UPDATE)).thenReturn(Optional.of(bibframeIndexOld));
 
     //when
@@ -86,7 +86,7 @@ class ResourceModificationEventListenerTest {
   @Test
   void afterUpdate_shouldNotSendResourceCreatedMessageToKafka_whenNothingToIndexAndNoOldWork() {
     //given
-    var resource = new Resource().setResourceHash(1L);
+    var resource = new Resource().setId(1L);
     when(kafkaMessageMapper.toIndex(resource, UPDATE)).thenReturn(Optional.empty());
 
     //when
@@ -99,29 +99,29 @@ class ResourceModificationEventListenerTest {
   @Test
   void afterUpdate_shouldSendResourceDeletedMessageToKafka_whenNothingToIndexInNewWork() {
     //given
-    var resource = new Resource().setResourceHash(1L);
+    var resource = new Resource().setId(1L);
     when(kafkaMessageMapper.toIndex(resource, UPDATE)).thenReturn(Optional.empty());
 
     //when
     resourceModificationEventListener.afterUpdate(new ResourceUpdatedEvent(resource, null));
 
     //then
-    verify(kafkaSender).sendResourceDeleted(resource.getResourceHash());
+    verify(kafkaSender).sendResourceDeleted(resource.getId());
     verify(kafkaSender, never()).sendResourceUpdated(any(), any());
   }
 
   @Test
   void afterDelete_shouldSendResourceDeletedMessageToKafka() {
     //given
-    var resource = new Resource().setResourceHash(randomLong());
+    var resource = new Resource().setId(randomLong());
     var resourceDeletedEvent = new ResourceDeletedEvent(resource);
-    when(kafkaMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.of(resource.getResourceHash()));
+    when(kafkaMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.of(resource.getId()));
 
     //when
     resourceModificationEventListener.afterDelete(resourceDeletedEvent);
 
     //then
-    verify(kafkaSender).sendResourceDeleted(resource.getResourceHash());
+    verify(kafkaSender).sendResourceDeleted(resource.getId());
   }
 
   @Test

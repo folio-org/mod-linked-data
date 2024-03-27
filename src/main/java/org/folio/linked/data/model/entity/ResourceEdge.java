@@ -1,5 +1,6 @@
 package org.folio.linked.data.model.entity;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
@@ -8,7 +9,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.Objects;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,13 +20,14 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
+import org.springframework.data.domain.Persistable;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Accessors(chain = true)
 @Table(name = "resource_edges")
-public class ResourceEdge {
+public class ResourceEdge implements Persistable<ResourceEdgePk>  {
 
   @EmbeddedId
   private ResourceEdgePk id;
@@ -42,6 +47,9 @@ public class ResourceEdge {
   @JoinColumn(name = "predicate_hash", nullable = false)
   private PredicateEntity predicate;
 
+  @Transient
+  private boolean managed = false;
+
   public ResourceEdge(@NonNull Resource source, @NonNull Resource target, @NonNull Predicate predicate) {
     this.source = source;
     this.target = target;
@@ -59,8 +67,19 @@ public class ResourceEdge {
 
   public void computeId() {
     if (nonNull(source) && nonNull(target) && nonNull(predicate)) {
-      id = new ResourceEdgePk(source.getResourceHash(), target.getResourceHash(), predicate.getHash());
+      id = new ResourceEdgePk(source.getId(), target.getId(), predicate.getHash());
     }
+  }
+
+  @Override
+  public boolean isNew() {
+    return !managed && isNull(id);
+  }
+
+  @PostLoad
+  @PrePersist
+  void markManaged() {
+    this.managed = true;
   }
 
   @Override
@@ -94,14 +113,14 @@ public class ResourceEdge {
   private Long getSourceHash() {
     return ofNullable(id)
       .map(ResourceEdgePk::getSourceHash)
-      .or(() -> ofNullable(source).map(Resource::getResourceHash))
+      .or(() -> ofNullable(source).map(Resource::getId))
       .orElse(null);
   }
 
   private Long getTargetHash() {
     return ofNullable(id)
       .map(ResourceEdgePk::getTargetHash)
-      .or(() -> ofNullable(target).map(Resource::getResourceHash))
+      .or(() -> ofNullable(target).map(Resource::getId))
       .orElse(null);
   }
 

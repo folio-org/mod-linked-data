@@ -61,7 +61,7 @@ class ResourceGraphControllerIT {
     var date = Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55"));
     providerEvent.setIndexDate(date);
     var existingResource = resourceTestService.saveGraph(providerEvent);
-    var requestBuilder = get("/graph/resource/" + existingResource.getResourceHash())
+    var requestBuilder = get("/graph/resource/" + existingResource.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 

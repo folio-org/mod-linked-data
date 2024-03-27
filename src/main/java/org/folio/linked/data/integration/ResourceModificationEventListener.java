@@ -44,8 +44,8 @@ public class ResourceModificationEventListener {
           kafkaMessageMapper.toIndex(resourceUpdatedEvent.oldWork(), UPDATE).orElse(null)),
         () -> {
           log.info("Updated Work resource [{}] contains no indexable values, removing it's index",
-            resourceUpdatedEvent.newWork().getResourceHash());
-          kafkaSender.sendResourceDeleted(resourceUpdatedEvent.newWork().getResourceHash());
+            resourceUpdatedEvent.newWork().getId());
+          kafkaSender.sendResourceDeleted(resourceUpdatedEvent.newWork().getId());
         }
       );
   }

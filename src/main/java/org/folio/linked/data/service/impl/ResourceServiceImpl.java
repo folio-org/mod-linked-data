@@ -70,7 +70,7 @@ public class ResourceServiceImpl implements ResourceService {
     extractWork(mapped)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, mapped.getResourceHash(), "created"))
+        () -> log.warn(format(NOT_INDEXED, mapped.getId(), "created"))
       );
     return resourceDtoMapper.toDto(mapped);
   }
@@ -83,9 +83,9 @@ public class ResourceServiceImpl implements ResourceService {
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "created"))
+        () -> log.warn(format(NOT_INDEXED, persisted.getId(), "created"))
       );
-    return persisted.getResourceHash();
+    return persisted.getId();
   }
 
   @Override
@@ -119,11 +119,13 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
-    if (doesNotExists(resource)) {
-      resourceRepo.save(resource);
+    if (resource.isNew()) {
+      if (doesNotExists(resource)) {
+        resourceRepo.save(resource);
+      }
+      saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
+      saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     }
-    saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
-    saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     return resource;
   }
 
@@ -135,15 +137,17 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   private void saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
-    saveMergingGraphSkippingAlreadySaved(edgeResource, resource);
-    edge.computeId();
-    if (doesNotExists(edge)) {
-      edgeRepo.save(edge);
+    if (edge.isNew()) {
+      saveMergingGraphSkippingAlreadySaved(edgeResource, resource);
+      edge.computeId();
+      if (doesNotExists(edge)) {
+        edgeRepo.save(edge);
+      }
     }
   }
 
   private boolean doesNotExists(Resource resource) {
-    return !resourceRepo.existsById(resource.getResourceHash());
+    return !resourceRepo.existsById(resource.getId());
   }
 
   private boolean doesNotExists(ResourceEdge edge) {
@@ -152,16 +156,16 @@ public class ResourceServiceImpl implements ResourceService {
 
   private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {
     extractWork(instance).ifPresentOrElse(newWork -> {
-        if (nonNull(oldWork) && newWork.getResourceHash().equals(oldWork.getResourceHash())) {
+        if (nonNull(oldWork) && newWork.getId().equals(oldWork.getId())) {
           log.info("Instance [{}] update under the same Work [{}] triggered it's reindexing",
-            instance.getResourceHash(), newWork.getResourceHash());
+            instance.getId(), newWork.getId());
           applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, oldWork));
         } else {
           if (nonNull(oldWork)) {
             indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, newWork);
           }
           log.info("Instance [{}] update under newly linked Work [{}] triggered it's reindexing",
-            instance.getResourceHash(), newWork.getResourceHash());
+            instance.getId(), newWork.getId());
           applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, null));
         }
       },
@@ -170,7 +174,7 @@ public class ResourceServiceImpl implements ResourceService {
           indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, null);
         } else {
           log.info("Instance [{}] not linked to Work update under no Work has not triggered any Work reindexing",
-            instance.getResourceHash());
+            instance.getId());
         }
       }
     );
@@ -179,8 +183,8 @@ public class ResourceServiceImpl implements ResourceService {
   private void indexOldWorkDisconnectedFromUpdatedInstance(Resource instance, Resource oldWork, Resource newWork) {
     oldWork.getIncomingEdges().remove(new ResourceEdge(instance, oldWork, INSTANTIATES));
     log.info("Instance [{}] update under {} triggered old Work [{}] reindexing",
-      instance.getResourceHash(), isNull(newWork) ? "no Work" : "different Work [" + newWork.getResourceHash() + "]",
-      oldWork.getResourceHash());
+      instance.getId(), isNull(newWork) ? "no Work" : "different Work [" + newWork.getId() + "]",
+      oldWork.getId());
     applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWork, null));
   }
 
