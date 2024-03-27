@@ -31,19 +31,19 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/classification"
         },
-        "creator": {
+        "_creatorReference": {
           "type": "array",
           "items": {
-            "$ref": "AgentContainer.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/lite/creator"
+            "type": "object",
+            "$ref": "Agent.json"
+          }
         },
-        "contributor": {
+        "_contributorReference": {
           "type": "array",
           "items": {
-            "$ref": "AgentContainer.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/lite/contributor"
+            "type": "object",
+            "$ref": "Agent.json"
+          }
         },
         "content": {
           "type": "array",

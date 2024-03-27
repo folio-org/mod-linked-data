@@ -3,15 +3,8 @@ package org.folio.linked.data.mapper.resource.monograph.work;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.domain.dto.AgentContainer;
-import org.folio.linked.data.domain.dto.FamilyField;
-import org.folio.linked.data.domain.dto.MeetingField;
-import org.folio.linked.data.domain.dto.OrganizationField;
-import org.folio.linked.data.domain.dto.PersonField;
 import org.folio.linked.data.mapper.dto.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
@@ -32,22 +25,22 @@ class AgentRoleAssignerTest {
 
   @Test
   void shouldAssignRolesToAgent() {
-    Agent agent = new Agent().id("1");
-    testAssignRoles(agent, a -> new FamilyField().family(a));
-    testAssignRoles(agent, a -> new MeetingField().meeting(a));
-    testAssignRoles(agent, a -> new OrganizationField().organization(a));
-    testAssignRoles(agent, a -> new PersonField().person(a));
+    var agent = new Agent().id("1");
+    testAssignRoles(agent);
+    testAssignRoles(agent);
+    testAssignRoles(agent);
+    testAssignRoles(agent);
   }
 
-  private void testAssignRoles(Agent agent, Function<Agent, AgentContainer> agentConverter) {
+  private void testAssignRoles(Agent agent) {
     // given
-    String role1Predicate = "http://bibfra.me/vocab/relation/role1";
-    String role2Predicate = "http://bibfra.me/vocab/relation/role2";
-    String nonRolePredicate = "http://bibfra.me/vocab/some/other/predicate";
+    var role1Predicate = "http://bibfra.me/vocab/relation/role1";
+    var role2Predicate = "http://bibfra.me/vocab/relation/role2";
+    var nonRolePredicate = "http://bibfra.me/vocab/some/other/predicate";
 
-    Resource workResource = new Resource();
-    Resource sameAgentResource = new Resource().setResourceHash(Long.parseLong(agent.getId()));
-    Resource anotherAgentResource = new Resource().setResourceHash(Long.parseLong(agent.getId()) + 1);
+    var workResource = new Resource();
+    var sameAgentResource = new Resource().setResourceHash(Long.parseLong(agent.getId()));
+    var anotherAgentResource = new Resource().setResourceHash(Long.parseLong(agent.getId()) + 1);
 
     workResource.setOutgoingEdges(Set.of(
       // "relation" edges pointing to the agent
@@ -66,10 +59,10 @@ class AgentRoleAssignerTest {
     ));
 
     // when
-    agentRoleAssigner.assignRoles(agentConverter.apply(agent), workResource);
+    agentRoleAssigner.assignRoles(agent, workResource);
 
     // then
-    List<String> roles = agent.getRoles();
+    var roles = agent.getRoles();
     assertEquals(2, roles.size());
     assertTrue(roles.contains(role1Predicate));
     assertTrue(roles.contains(role2Predicate));

@@ -110,8 +110,6 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCarrier(), CARRIER);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getWorkReference(), INSTANTIATES);
-    // DEPRECATED: to be removed, temporary support of current ui
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getInstantiates(), INSTANTIATES);
     instance.setResourceHash(hashService.hash(instance));
     return instance;
   }

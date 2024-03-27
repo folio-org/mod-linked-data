@@ -325,15 +325,6 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("709.83");
 
-    var creatorPerson = createResource(
-      Map.of(
-        NAME, List.of("name-PERSON"),
-        LCNAF_ID, List.of("2002801801-PERSON")
-      ),
-      Set.of(PERSON),
-      emptyMap()
-    );
-
     var creatorMeeting = createResource(
       Map.of(
         NAME, List.of("name-MEETING"),
@@ -341,7 +332,18 @@ public class MonographTestUtil {
       ),
       Set.of(MEETING),
       emptyMap()
-    );
+    ).setLabel("name-MEETING")
+      .setResourceHash(1001L);
+
+    var creatorPerson = createResource(
+      Map.of(
+        NAME, List.of("name-PERSON"),
+        LCNAF_ID, List.of("2002801801-PERSON")
+      ),
+      Set.of(PERSON),
+      emptyMap()
+    ).setLabel("name-PERSON")
+      .setResourceHash(1002L);
 
     var creatorOrganization = createResource(
       Map.of(
@@ -350,7 +352,8 @@ public class MonographTestUtil {
       ),
       Set.of(ORGANIZATION),
       emptyMap()
-    );
+    ).setLabel("name-ORGANIZATION")
+      .setResourceHash(1003L);
 
     var creatorFamily = createResource(
       Map.of(
@@ -359,7 +362,8 @@ public class MonographTestUtil {
       ),
       Set.of(FAMILY),
       emptyMap()
-    );
+    ).setLabel("name-FAMILY")
+      .setResourceHash(1004L);
 
     var contributorPerson = createResource(
       Map.of(
@@ -368,7 +372,8 @@ public class MonographTestUtil {
       ),
       Set.of(PERSON),
       emptyMap()
-    );
+    ).setLabel("name-PERSON")
+      .setResourceHash(1007L);
 
     var contributorMeeting = createResource(
       Map.of(
@@ -377,7 +382,8 @@ public class MonographTestUtil {
       ),
       Set.of(MEETING),
       emptyMap()
-    );
+    ).setLabel("name-MEETING")
+      .setResourceHash(1008L);
 
     var contributorOrganization = createResource(
       Map.of(
@@ -386,7 +392,8 @@ public class MonographTestUtil {
       ),
       Set.of(ORGANIZATION),
       emptyMap()
-    );
+    ).setLabel("name-ORGANIZATION")
+      .setResourceHash(1005L);
 
     var contributorFamily = createResource(
       Map.of(
@@ -395,7 +402,8 @@ public class MonographTestUtil {
       ),
       Set.of(FAMILY),
       emptyMap()
-    );
+    ).setLabel("name-FAMILY")
+      .setResourceHash(1006L);
 
     var subject1 = createResource(
       Map.of(

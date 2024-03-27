@@ -7,12 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.AgentContainerDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceReferenceTitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceTitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.MapDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
-import org.folio.linked.data.domain.dto.AgentContainer;
 import org.folio.linked.data.domain.dto.InstanceAllOfMap;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceReferenceAllOfTitle;
@@ -45,7 +43,6 @@ public class ObjectMapperConfig {
     module.addDeserializer(InstanceAllOfTitle.class, new InstanceTitleDeserializer());
     module.addDeserializer(InstanceReferenceAllOfTitle.class, new InstanceReferenceTitleDeserializer());
     module.addDeserializer(InstanceAllOfMap.class, new MapDeserializer());
-    module.addDeserializer(AgentContainer.class, new AgentContainerDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;
   }
