@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -50,7 +49,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var instanceTitle = ((InstanceTitleField) dto).getInstanceTitle();
-    var resource = withInitializedSets();
+    var resource = new Resource();
     resource.setLabel(getFirstValue(instanceTitle::getMainTitle));
     resource.addType(TITLE);
     resource.setDoc(getDoc(instanceTitle));

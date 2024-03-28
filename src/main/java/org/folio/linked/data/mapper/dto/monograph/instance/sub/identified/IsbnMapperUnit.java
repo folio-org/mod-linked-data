@@ -5,7 +5,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -44,7 +43,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var isbn = ((IsbnField) dto).getIsbn();
-    var resource = withInitializedSets();
+    var resource = new Resource();
     resource.setLabel(getFirstValue(isbn::getValue));
     resource.addType(ID_ISBN);
     resource.setDoc(getDoc(isbn));

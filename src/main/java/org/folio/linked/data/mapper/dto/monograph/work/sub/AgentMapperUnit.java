@@ -39,7 +39,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + agent.getId() + IS_NOT_FOUND));
     ofNullable(agent.getRoles())
       .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
-        .ifPresent(p -> parentEntity.getOutgoingEdges().add(new ResourceEdge(parentEntity, resource, p)))));
+        .ifPresent(p -> parentEntity.addOutgoingEdge(new ResourceEdge(parentEntity, resource, p)))));
     return resource;
   }
 }

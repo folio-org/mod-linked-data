@@ -16,7 +16,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
@@ -96,8 +95,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     final var instance2 = getInstance(2L, work);
 
@@ -115,7 +114,7 @@ class KafkaMessageMapperTest {
   @Test
   void toIndex_shouldReturnEmptyResult_fromWorkWithNoIndexableInfo() {
     // given
-    var work = withInitializedSets().addType(WORK);
+    var work = new Resource().addType(WORK);
     // when
     var resultOpt = kafkaMessageMapper.toIndex(work, CREATE);
 
@@ -129,8 +128,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     getInstance(2L, work);
     work.setIncomingEdges(new LinkedHashSet<>());
@@ -161,8 +160,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     getInstance(1L, work);
     getInstance(2L, work);
 
@@ -179,8 +178,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     getInstance(2L, work);
 
@@ -195,13 +194,13 @@ class KafkaMessageMapperTest {
   private Resource getInstance(Long id, Resource work) {
     var instance = getSampleInstanceResource(id, work);
     var emptyTitle = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyTitle, TITLE));
+    instance.addOutgoingEdge(new ResourceEdge(instance, emptyTitle, TITLE));
     var wrongId = getIdentifier();
     var emptyId = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, MAP));
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyId, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, wrongId, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, emptyId, MAP));
     var emptyPublication = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
+    instance.addOutgoingEdge(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
     return instance;
   }
 

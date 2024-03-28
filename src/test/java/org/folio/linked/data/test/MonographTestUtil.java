@@ -101,7 +101,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 
@@ -310,8 +309,8 @@ public class MonographTestUtil {
     instance.setLabel(instanceTitleValue);
     if (nonNull(linkedWork)) {
       var edge = new ResourceEdge(instance, linkedWork, INSTANTIATES);
-      instance.getOutgoingEdges().add(edge);
-      linkedWork.getIncomingEdges().add(edge);
+      instance.addOutgoingEdge(edge);
+      linkedWork.addIncomingEdge(edge);
     }
     return instance;
   }
@@ -506,8 +505,8 @@ public class MonographTestUtil {
     );
     if (nonNull(linkedInstance)) {
       var edge = new ResourceEdge(linkedInstance, work, INSTANTIATES);
-      linkedInstance.getOutgoingEdges().add(edge);
-      work.getIncomingEdges().add(edge);
+      linkedInstance.addOutgoingEdge(edge);
+      work.addIncomingEdge(edge);
     }
     return work;
   }
@@ -596,13 +595,13 @@ public class MonographTestUtil {
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
                                         Set<ResourceTypeDictionary> types,
                                         Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
-    var resource = withInitializedSets();
+    var resource = new Resource();
     pred2OutgoingResources.keySet()
       .stream()
       .flatMap(pred -> pred2OutgoingResources.get(pred)
         .stream()
         .map(target -> new ResourceEdge(resource, target, pred)))
-      .forEach(edge -> resource.getOutgoingEdges().add(edge));
+      .forEach(resource::addOutgoingEdge);
 
     var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));

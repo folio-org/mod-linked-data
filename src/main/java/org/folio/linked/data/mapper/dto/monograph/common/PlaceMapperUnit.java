@@ -5,7 +5,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
@@ -57,7 +56,7 @@ public class PlaceMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var place = (Place) dto;
-    var resource = withInitializedSets();
+    var resource = new Resource();
     resource.setLabel(getFirstValue(place::getLabel));
     resource.addType(PLACE);
     resource.setDoc(getDoc(place));

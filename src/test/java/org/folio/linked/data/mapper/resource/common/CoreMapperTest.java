@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.resource.common;
 
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -145,7 +144,7 @@ class CoreMapperTest {
   void addOutgoingEdges_shouldDoNothing_ifGivenDtoListIsNull() {
     // given
     List dtoList = null;
-    var source = withInitializedSets();
+    var source = new Resource();
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
 
@@ -161,7 +160,7 @@ class CoreMapperTest {
   void addOutgoingEdges_shouldDoNothing_ifGivenDtoListIsEmpty() {
     // given
     var dtoList = new ArrayList<>();
-    var source = withInitializedSets();
+    var source = new Resource();
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
 
@@ -180,7 +179,7 @@ class CoreMapperTest {
     var dto2 = new Isbn().id(randomLong().toString());
     var predicate = PredicateDictionary.MAP;
     var parent = Instance.class;
-    var source = withInitializedSets();
+    var source = new Resource();
     var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setId(111L);
     doReturn(expectedTarget1).when(singleResourceMapper).toEntity(dto1, parent, predicate, source);
     var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setId(222L);

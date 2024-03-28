@@ -249,7 +249,7 @@ public class ResourceServiceImpl implements ResourceService {
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(resourceEdge -> {
         var work = resourceEdge.getTarget();
-        work.getIncomingEdges().add(resourceEdge);
+        work.addIncomingEdge(resourceEdge);
         return work;
       })
       .findFirst();

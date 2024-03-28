@@ -101,7 +101,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
@@ -1170,7 +1169,7 @@ class ResourceControllerIT {
 
   @SneakyThrows
   private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc) {
-    var resource = withInitializedSets();
+    var resource = new Resource();
     resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));

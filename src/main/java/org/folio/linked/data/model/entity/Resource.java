@@ -1,5 +1,6 @@
 package org.folio.linked.data.model.entity;
 
+import static jakarta.persistence.CascadeType.DETACH;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.EAGER;
 import static java.util.Objects.isNull;
@@ -70,16 +71,16 @@ public class Resource implements Persistable<Long> {
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "target", cascade = REMOVE, orphanRemoval = true)
+  @OneToMany(mappedBy = "target", cascade = {DETACH, REMOVE}, orphanRemoval = true)
   private Set<ResourceEdge> incomingEdges;
 
   @OrderBy
   @ToString.Exclude
-  @OneToMany(mappedBy = "source", cascade = REMOVE, orphanRemoval = true)
+  @OneToMany(mappedBy = "source", cascade = {DETACH, REMOVE}, orphanRemoval = true)
   private Set<ResourceEdge> outgoingEdges;
 
   @Transient
-  private boolean managed = false;
+  private boolean managed;
 
   public Resource(@NonNull Resource that) {
     this.id = that.id;
@@ -98,13 +99,6 @@ public class Resource implements Persistable<Long> {
           ie -> this.getOutgoingEdges().stream().filter(oe -> oe.equals(ie)).findFirst().orElse(new ResourceEdge(ie)))
         .collect(Collectors.toSet()))
       .orElse(null);
-  }
-
-  public static Resource withInitializedSets() {
-    return new Resource()
-      .setTypes(new LinkedHashSet<>())
-      .setIncomingEdges(new LinkedHashSet<>())
-      .setOutgoingEdges(new LinkedHashSet<>());
   }
 
   public static Resource copyWithNoEdges(@NonNull Resource that) {
@@ -131,16 +125,44 @@ public class Resource implements Persistable<Long> {
     this.managed = true;
   }
 
-  public Resource addType(@NonNull ResourceTypeEntity type) {
+  public Set<ResourceTypeEntity> getTypes() {
     if (isNull(types)) {
       types = new LinkedHashSet<>();
     }
-    types.add(type);
+    return types;
+  }
+
+  public Resource addType(@NonNull ResourceTypeEntity type) {
+    getTypes().add(type);
     return this;
   }
 
   public Resource addType(@NonNull org.folio.ld.dictionary.ResourceTypeDictionary typeDictionary) {
     this.addType(new ResourceTypeEntity(typeDictionary.getHash(), typeDictionary.getUri(), null));
+    return this;
+  }
+
+  public Set<ResourceEdge> getOutgoingEdges() {
+    if (isNull(outgoingEdges)) {
+      outgoingEdges = new LinkedHashSet<>();
+    }
+    return outgoingEdges;
+  }
+
+  public Resource addOutgoingEdge(@NonNull ResourceEdge outgoingEdge) {
+    getOutgoingEdges().add(outgoingEdge);
+    return this;
+  }
+
+  public Set<ResourceEdge> getIncomingEdges() {
+    if (isNull(incomingEdges)) {
+      incomingEdges = new LinkedHashSet<>();
+    }
+    return incomingEdges;
+  }
+
+  public Resource addIncomingEdge(@NonNull ResourceEdge incomingEdge) {
+    getIncomingEdges().add(incomingEdge);
     return this;
   }
 

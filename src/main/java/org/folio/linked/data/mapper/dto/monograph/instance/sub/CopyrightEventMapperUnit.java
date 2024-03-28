@@ -3,7 +3,6 @@ package org.folio.linked.data.mapper.dto.monograph.instance.sub;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -40,7 +39,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var copyrightEvent = (CopyrightEvent) dto;
-    var resource = withInitializedSets();
+    var resource = new Resource();
     resource.setLabel(getFirstValue(copyrightEvent::getDate));
     resource.addType(COPYRIGHT_EVENT);
     resource.setDoc(getDoc(copyrightEvent));

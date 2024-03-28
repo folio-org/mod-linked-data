@@ -1,5 +1,6 @@
 package org.folio.linked.data.model.entity;
 
+import static jakarta.persistence.CascadeType.DETACH;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
@@ -32,23 +33,23 @@ public class ResourceEdge implements Persistable<ResourceEdgePk>  {
   @EmbeddedId
   private ResourceEdgePk id;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("sourceHash")
   @JoinColumn(name = "source_hash", nullable = false)
   private Resource source;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("targetHash")
   @JoinColumn(name = "target_hash", nullable = false)
   private Resource target;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("predicateHash")
   @JoinColumn(name = "predicate_hash", nullable = false)
   private PredicateEntity predicate;
 
   @Transient
-  private boolean managed = false;
+  private boolean managed;
 
   public ResourceEdge(@NonNull Resource source, @NonNull Resource target, @NonNull Predicate predicate) {
     this.source = source;

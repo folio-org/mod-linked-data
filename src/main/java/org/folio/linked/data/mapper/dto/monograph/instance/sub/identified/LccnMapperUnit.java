@@ -4,7 +4,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
-import static org.folio.linked.data.model.entity.Resource.withInitializedSets;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -43,7 +42,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var lccn = ((LccnField) dto).getLccn();
-    var resource = withInitializedSets();
+    var resource = new Resource();
     resource.setLabel(getFirstValue(lccn::getValue));
     resource.addType(ID_LCCN);
     resource.setDoc(getDoc(lccn));
