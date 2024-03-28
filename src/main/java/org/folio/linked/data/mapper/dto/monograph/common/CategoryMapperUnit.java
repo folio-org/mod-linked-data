@@ -45,7 +45,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var category = coreMapper.toDtoWithEdges(source, Category.class, false);
-    category.setId(String.valueOf(source.getResourceHash()));
+    category.setId(String.valueOf(source.getId()));
     categoryConsumer.accept(category, parentDto);
     return parentDto;
   }
@@ -57,8 +57,8 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
     resource.setLabel(getFirstValue(category::getTerm));
     resource.addType(type);
     resource.setDoc(getDoc(category));
-    getCategorySet().ifPresent(cs -> resource.getOutgoingEdges().add(new ResourceEdge(resource, cs, IS_DEFINED_BY)));
-    resource.setResourceHash(hashService.hash(resource));
+    getCategorySet().ifPresent(cs -> resource.addOutgoingEdge(new ResourceEdge(resource, cs, IS_DEFINED_BY)));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

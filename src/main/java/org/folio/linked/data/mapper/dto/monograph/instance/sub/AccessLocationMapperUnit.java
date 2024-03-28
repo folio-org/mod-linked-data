@@ -31,7 +31,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var accessLocation = coreMapper.toDtoWithEdges(source, AccessLocation.class, false);
-      accessLocation.setId(String.valueOf(source.getResourceHash()));
+      accessLocation.setId(String.valueOf(source.getId()));
       instance.addAccessLocationItem(accessLocation);
     }
     return parentDto;
@@ -44,7 +44,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(accessLocation::getLink));
     resource.addType(ANNOTATION);
     resource.setDoc(getDoc(accessLocation));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

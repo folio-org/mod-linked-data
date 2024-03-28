@@ -33,7 +33,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var lccn = coreMapper.toDtoWithEdges(source, Lccn.class, false);
-      lccn.setId(String.valueOf(source.getResourceHash()));
+      lccn.setId(String.valueOf(source.getId()));
       instance.addMapItem(new LccnField().lccn(lccn));
     }
     return parentDto;
@@ -47,7 +47,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.addType(ID_LCCN);
     resource.setDoc(getDoc(lccn));
     coreMapper.addOutgoingEdges(resource, Lccn.class, lccn.getStatus(), STATUS);
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

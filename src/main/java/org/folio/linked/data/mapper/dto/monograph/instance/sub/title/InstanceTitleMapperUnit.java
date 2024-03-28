@@ -36,7 +36,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var instanceTitle = coreMapper.toDtoWithEdges(source, InstanceTitle.class, false);
-    instanceTitle.setId(String.valueOf(source.getResourceHash()));
+    instanceTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
     }
@@ -53,7 +53,7 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(instanceTitle::getMainTitle));
     resource.addType(TITLE);
     resource.setDoc(getDoc(instanceTitle));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

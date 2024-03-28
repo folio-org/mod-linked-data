@@ -21,7 +21,7 @@ public class AgentRoleAssigner {
       .getOutgoingEdges()
       .stream()
       .filter(re -> re.getPredicate().getUri().startsWith(RELATION_PREDICATE_PREFIX))
-      .filter(re -> String.valueOf(re.getTarget().getResourceHash()).equals(agent.getId()))
+      .filter(re -> String.valueOf(re.getTarget().getId()).equals(agent.getId()))
       .map(re -> re.getPredicate().getUri())
       .toList();
 

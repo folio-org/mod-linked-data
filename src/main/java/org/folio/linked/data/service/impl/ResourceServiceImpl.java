@@ -4,16 +4,17 @@ import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
-import static org.folio.linked.data.util.Constants.EXISTS_ALREADY;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,6 @@ import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
-import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -33,6 +33,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
+import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceService;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
@@ -55,6 +56,7 @@ public class ResourceServiceImpl implements ResourceService {
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
   private final ResourceRepository resourceRepo;
+  private final ResourceEdgeRepository edgeRepo;
   private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceModelMapper resourceModelMapper;
   private final ApplicationEventPublisher applicationEventPublisher;
@@ -63,17 +65,14 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceDto createResource(ResourceDto resourceDto) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    if (resourceRepo.existsById(mapped.getResourceHash())) {
-      throw new AlreadyExistsException(RESOURCE_WITH_GIVEN_ID + mapped.getResourceHash() + EXISTS_ALREADY);
-    }
     log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
-    var persisted = saveMergingGraph(mapped);
-    extractWork(persisted)
+    saveMergingGraph(mapped);
+    extractWork(mapped)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "created"))
+        () -> log.warn(format(NOT_INDEXED, mapped.getId(), "created"))
       );
-    return resourceDtoMapper.toDto(persisted);
+    return resourceDtoMapper.toDto(mapped);
   }
 
   @Override
@@ -84,9 +83,9 @@ public class ResourceServiceImpl implements ResourceService {
     extractWork(persisted)
       .map(ResourceCreatedEvent::new)
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, persisted.getResourceHash(), "created"))
+        () -> log.warn(format(NOT_INDEXED, persisted.getId(), "created"))
       );
-    return persisted.getResourceHash();
+    return persisted.getId();
   }
 
   @Override
@@ -116,46 +115,57 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public Resource saveMergingGraph(Resource resource) {
-    resource = takeExistingAddingNewEdges(resource, 4);
-    return resourceRepo.save(resource);
+    return saveMergingGraphSkippingAlreadySaved(resource, null);
   }
 
-  private Resource takeExistingAddingNewEdges(Resource newResource, int edgesDeep) {
-    final var counter = --edgesDeep;
-    if (counter <= 0) {
-      return newResource;
+  private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
+    if (resource.isNew()) {
+      if (doesNotExists(resource)) {
+        resourceRepo.save(resource);
+      }
+      saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
+      saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     }
-    return resourceRepo.findById(newResource.getResourceHash())
-      .map(existed -> {
-        newResource.getOutgoingEdges().stream()
-          .map(newOe -> new ResourceEdge(existed, takeExistingAddingNewEdges(newOe.getTarget(), counter),
-            newOe.getPredicate()))
-          .forEach(existed.getOutgoingEdges()::add);
-        newResource.getIncomingEdges().stream()
-          .map(newIe -> new ResourceEdge(takeExistingAddingNewEdges(newIe.getSource(), counter), existed,
-            newIe.getPredicate()))
-          .forEach(existed.getIncomingEdges()::add);
-        return existed;
-      })
-      .orElseGet(() -> {
-        newResource.getOutgoingEdges().forEach(oe -> oe.setTarget(takeExistingAddingNewEdges(oe.getTarget(), counter)));
-        newResource.getIncomingEdges().forEach(ie -> ie.setSource(takeExistingAddingNewEdges(ie.getSource(), counter)));
-        return newResource;
-      });
+    return resource;
+  }
+
+  private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
+                         Resource saved) {
+    edges.stream()
+      .filter(edge -> notEqual(resourceSelector.apply(edge), saved))
+      .forEach(edge -> saveEdge(resourceSelector.apply(edge), resource, edge));
+  }
+
+  private void saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
+    if (edge.isNew()) {
+      saveMergingGraphSkippingAlreadySaved(edgeResource, resource);
+      edge.computeId();
+      if (doesNotExists(edge)) {
+        edgeRepo.save(edge);
+      }
+    }
+  }
+
+  private boolean doesNotExists(Resource resource) {
+    return !resourceRepo.existsById(resource.getId());
+  }
+
+  private boolean doesNotExists(ResourceEdge edge) {
+    return !edgeRepo.existsById(edge.getId());
   }
 
   private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {
     extractWork(instance).ifPresentOrElse(newWork -> {
-        if (nonNull(oldWork) && newWork.getResourceHash().equals(oldWork.getResourceHash())) {
+        if (nonNull(oldWork) && newWork.getId().equals(oldWork.getId())) {
           log.info("Instance [{}] update under the same Work [{}] triggered it's reindexing",
-            instance.getResourceHash(), newWork.getResourceHash());
+            instance.getId(), newWork.getId());
           applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, oldWork));
         } else {
           if (nonNull(oldWork)) {
             indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, newWork);
           }
           log.info("Instance [{}] update under newly linked Work [{}] triggered it's reindexing",
-            instance.getResourceHash(), newWork.getResourceHash());
+            instance.getId(), newWork.getId());
           applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, null));
         }
       },
@@ -164,7 +174,7 @@ public class ResourceServiceImpl implements ResourceService {
           indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, null);
         } else {
           log.info("Instance [{}] not linked to Work update under no Work has not triggered any Work reindexing",
-            instance.getResourceHash());
+            instance.getId());
         }
       }
     );
@@ -173,8 +183,8 @@ public class ResourceServiceImpl implements ResourceService {
   private void indexOldWorkDisconnectedFromUpdatedInstance(Resource instance, Resource oldWork, Resource newWork) {
     oldWork.getIncomingEdges().remove(new ResourceEdge(instance, oldWork, INSTANTIATES));
     log.info("Instance [{}] update under {} triggered old Work [{}] reindexing",
-      instance.getResourceHash(), isNull(newWork) ? "no Work" : "different Work [" + newWork.getResourceHash() + "]",
-      oldWork.getResourceHash());
+      instance.getId(), isNull(newWork) ? "no Work" : "different Work [" + newWork.getId() + "]",
+      oldWork.getId());
     applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWork, null));
   }
 
@@ -239,7 +249,7 @@ public class ResourceServiceImpl implements ResourceService {
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(resourceEdge -> {
         var work = resourceEdge.getTarget();
-        work.getIncomingEdges().add(resourceEdge);
+        work.addIncomingEdge(resourceEdge);
         return work;
       })
       .findFirst();

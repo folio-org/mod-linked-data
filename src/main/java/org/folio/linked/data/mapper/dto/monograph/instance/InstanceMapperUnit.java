@@ -79,7 +79,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ResourceDto resourceDto) {
       var instance = coreMapper.toDtoWithEdges(source, Instance.class, false);
-      instance.setId(String.valueOf(source.getResourceHash()));
+      instance.setId(String.valueOf(source.getId()));
       instance.setInventoryId(source.getInventoryId());
       instance.setSrsId(source.getSrsId());
       ofNullable(source.getDoc())
@@ -110,7 +110,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCarrier(), CARRIER);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getWorkReference(), INSTANTIATES);
-    instance.setResourceHash(hashService.hash(instance));
+    instance.setId(hashService.hash(instance));
     return instance;
   }
 

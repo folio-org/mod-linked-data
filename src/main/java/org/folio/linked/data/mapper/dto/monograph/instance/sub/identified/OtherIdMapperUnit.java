@@ -33,7 +33,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var otherId = coreMapper.toDtoWithEdges(source, OtherId.class, false);
-      otherId.setId(String.valueOf(source.getResourceHash()));
+      otherId.setId(String.valueOf(source.getId()));
       instance.addMapItem(new OtherIdField().identifier(otherId));
     }
     return parentDto;
@@ -46,7 +46,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(otherId::getValue));
     resource.addType(ID_UNKNOWN);
     resource.setDoc(getDoc(otherId));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

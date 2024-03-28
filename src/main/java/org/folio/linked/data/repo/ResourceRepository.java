@@ -25,10 +25,10 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   Page<Resource> findNotIndexedByType(@Param("types") Set<String> types, Pageable pageable);
 
   @Modifying
-  @Query("update Resource r set r.indexDate = current_timestamp() where r.resourceHash = :id")
+  @Query("update Resource r set r.indexDate = current_timestamp() where r.id = :id")
   void updateIndexDate(@Param("id") Long id);
 
   @Modifying
-  @Query("update Resource r set r.indexDate = current_timestamp() where r.resourceHash in (:ids)")
+  @Query("update Resource r set r.indexDate = current_timestamp() where r.id in (:ids)")
   void updateIndexDateBatch(@Param("ids") Set<Long> ids);
 }

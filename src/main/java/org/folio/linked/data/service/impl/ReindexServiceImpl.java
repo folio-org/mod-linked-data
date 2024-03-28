@@ -46,7 +46,7 @@ public class ReindexServiceImpl implements ReindexService {
   @Override
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public void reindex(Boolean full) {
-    Pageable pageable = PageRequest.of(0, Integer.parseInt(reindexPageSize), Sort.by("resourceHash"));
+    Pageable pageable = PageRequest.of(0, Integer.parseInt(reindexPageSize), Sort.by("id"));
     var recordsIndexed = new AtomicLong(0);
     while (pageable.isPaged()) {
       var page = TRUE.equals(full)
@@ -60,19 +60,19 @@ public class ReindexServiceImpl implements ReindexService {
                   log.info("Sending work for reindexing with id {}", bibframeIndex.getId());
                   kafkaSender.sendResourceCreated(bibframeIndex, false);
                   recordsIndexed.getAndIncrement();
-                  return work.getResourceHash();
+                  return work.getId();
                 })
                 .orElseGet(() -> {
                   log.info("Work with id {} wasn't sent for reindexing, because it doesn't contain any "
                     + "indexable values. Saving with indexDate to keep it ignored in future reindexing",
-                    work.getResourceHash());
-                  return work.getResourceHash();
+                    work.getId());
+                  return work.getId();
                 });
               // detach the resource entity from entity manager, enabling garbage collection
               entityManager.detach(work);
               return id;
             } catch (Exception ex) {
-              log.warn("Failed to send work for reindexing with id {}", work.getResourceHash(), ex);
+              log.warn("Failed to send work for reindexing with id {}", work.getId(), ex);
               return null;
             }
           }

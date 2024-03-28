@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.dto;
 
-import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.Arrays;
@@ -30,7 +29,6 @@ public abstract class ResourceDtoMapper {
   @Autowired
   private SingleResourceMapper singleResourceMapper;
 
-  @Mapping(target = "id", source = "resourceHash")
   @Mapping(target = "type", expression = "java(resourceShortInfo.getFirstType().getUri())")
   public abstract ResourceShort map(ResourceShortInfo resourceShortInfo);
 
@@ -39,9 +37,7 @@ public abstract class ResourceDtoMapper {
   @SneakyThrows
   public Resource toEntity(ResourceDto dto) {
     try {
-      var resource = singleResourceMapper.toEntity(dto.getResource(), ResourceDto.class, null, null);
-      setEdgesId(resource);
-      return resource;
+      return singleResourceMapper.toEntity(dto.getResource(), ResourceDto.class, null, null);
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
@@ -54,12 +50,10 @@ public abstract class ResourceDtoMapper {
     return singleResourceMapper.toDto(resource, new ResourceDto(), null, null);
   }
 
-  @Mapping(target = "id", source = "resource.resourceHash")
   @Mapping(target = "recordType", constant = "MARC_BIB")
   @Mapping(target = "parsedRecord.content", source = "marc")
   public abstract ResourceMarcViewDto toMarcViewDto(Resource resource, String marc);
 
-  @Mapping(target = "id", source = "resourceHash")
   @Mapping(target = "types", expression = """
     java(resource.getTypes().stream()
       .map(ResourceTypeEntity::getUri)
@@ -67,7 +61,7 @@ public abstract class ResourceDtoMapper {
   @Mapping(target = "outgoingEdges", expression = """
     java(resource.getOutgoingEdges().stream()
       .collect(Collectors.toMap(re -> re.getPredicate().getUri(),
-        re -> new ArrayList<>(Arrays.asList(String.valueOf(re.getTarget().getResourceHash()))),
+        re -> new ArrayList<>(Arrays.asList(String.valueOf(re.getTarget().getId()))),
         (a, b) -> {
           a.addAll(b);
           return a;

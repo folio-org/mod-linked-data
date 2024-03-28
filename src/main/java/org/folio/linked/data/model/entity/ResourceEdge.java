@@ -1,9 +1,7 @@
 package org.folio.linked.data.model.entity;
 
 import static jakarta.persistence.CascadeType.DETACH;
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-import static jakarta.persistence.CascadeType.REFRESH;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 
@@ -12,7 +10,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.Objects;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,43 +21,66 @@ import lombok.NonNull;
 import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
+import org.springframework.data.domain.Persistable;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Accessors(chain = true)
 @Table(name = "resource_edges")
-public class ResourceEdge {
+public class ResourceEdge implements Persistable<ResourceEdgePk>  {
 
   @EmbeddedId
-  private ResourceEdgePk id = new ResourceEdgePk();
+  private ResourceEdgePk id;
 
-  @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
+  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("sourceHash")
   @JoinColumn(name = "source_hash", nullable = false)
   private Resource source;
 
-  @ManyToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH})
+  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("targetHash")
   @JoinColumn(name = "target_hash", nullable = false)
   private Resource target;
 
-  @ManyToOne
+  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("predicateHash")
   @JoinColumn(name = "predicate_hash", nullable = false)
   private PredicateEntity predicate;
 
+  @Transient
+  private boolean managed;
+
   public ResourceEdge(@NonNull Resource source, @NonNull Resource target, @NonNull Predicate predicate) {
     this.source = source;
     this.target = target;
-    this.predicate = new PredicateEntity(predicate.getHash(), predicate.getUri());
+    this.predicate = new PredicateEntity(predicate);
   }
 
   public ResourceEdge(@NonNull ResourceEdge that) {
-    this.id = new ResourceEdgePk(that.id.getSourceHash(), that.id.getTargetHash(), that.id.getPredicateHash());
-    this.source = that.getSource();
-    this.target = that.getTarget();
-    this.predicate = that.getPredicate();
+    if (nonNull(that.id)) {
+      this.id = new ResourceEdgePk(that.id);
+    }
+    this.source = that.source;
+    this.target = that.target;
+    this.predicate = that.predicate;
+  }
+
+  public void computeId() {
+    if (nonNull(source) && nonNull(target) && nonNull(predicate)) {
+      id = new ResourceEdgePk(source.getId(), target.getId(), predicate.getHash());
+    }
+  }
+
+  @Override
+  public boolean isNew() {
+    return !managed && isNull(id);
+  }
+
+  @PostLoad
+  @PrePersist
+  void markManaged() {
+    this.managed = true;
   }
 
   @Override
@@ -90,14 +114,14 @@ public class ResourceEdge {
   private Long getSourceHash() {
     return ofNullable(id)
       .map(ResourceEdgePk::getSourceHash)
-      .or(() -> ofNullable(source).map(Resource::getResourceHash))
+      .or(() -> ofNullable(source).map(Resource::getId))
       .orElse(null);
   }
 
   private Long getTargetHash() {
     return ofNullable(id)
       .map(ResourceEdgePk::getTargetHash)
-      .or(() -> ofNullable(target).map(Resource::getResourceHash))
+      .or(() -> ofNullable(target).map(Resource::getId))
       .orElse(null);
   }
 

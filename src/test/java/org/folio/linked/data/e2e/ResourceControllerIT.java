@@ -151,9 +151,7 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.KafkaSender;
-import org.folio.linked.data.test.ResourceEdgeRepository;
 import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.junit.jupiter.api.BeforeEach;
@@ -189,10 +187,6 @@ class ResourceControllerIT {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
-  private ResourceRepository resourceRepo;
-  @Autowired
-  private ResourceEdgeRepository resourceEdgeRepository;
-  @Autowired
   private ObjectMapper objectMapper;
   @Autowired
   private Environment env;
@@ -213,11 +207,11 @@ class ResourceControllerIT {
   @Test
   void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var work = resourceRepo.save(getSampleWork(null));
+    var work = resourceTestService.saveGraph(getSampleWork(null));
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(INSTANCE_WITH_WORK_REF_SAMPLE.replaceAll(WORK_ID_PLACEHOLDER, work.getResourceHash().toString()));
+      .content(INSTANCE_WITH_WORK_REF_SAMPLE.replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -240,12 +234,12 @@ class ResourceControllerIT {
   @Test
   void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var instanceForReference = resourceRepo.save(getSampleInstanceResource(null, null));
+    var instanceForReference = resourceTestService.saveGraph(getSampleInstanceResource(null, null));
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/work_and_instance_ref.json")
-        .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getResourceHash().toString()));
+        .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString()));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -261,32 +255,32 @@ class ResourceControllerIT {
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
     validateWork(workResource, true);
-    checkKafkaMessage(workResource.getResourceHash(), CREATE);
+    checkKafkaMessage(workResource.getId(), CREATE);
   }
 
   @Test
   void update_shouldReturnCorrectlyUpdatedInstanceWithWorkRef_deleteOldOne_sendMessages() throws Exception {
     // given
     var work = getSampleWork(null);
-    var originalInstance = resourceRepo.save(getSampleInstanceResource(null, work));
+    var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     var updateDto = getSampleInstanceDtoMap();
     var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
     instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
     instanceMap.remove("inventoryId");
     instanceMap.remove("srsId");
 
-    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getResourceHash())
+    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(
-        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getResourceHash().toString())
+        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
       );
 
     // when
     var resultActions = mockMvc.perform(updateRequest);
 
     // then
-    assertFalse(resourceRepo.existsById(originalInstance.getResourceHash()));
+    assertFalse(resourceTestService.existsById(originalInstance.getId()));
     var response = resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -295,38 +289,38 @@ class ResourceControllerIT {
     var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
     var instanceId = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
     var updatedInstance = resourceTestService.getResourceById(instanceId, 1);
-    assertThat(updatedInstance.getResourceHash()).isNotNull();
+    assertThat(updatedInstance.getId()).isNotNull();
     assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
     assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(updatedInstance.getInventoryId()).isEqualTo(originalInstance.getInventoryId());
     assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
-    checkKafkaMessage(work.getResourceHash(), UPDATE);
+    checkKafkaMessage(work.getId(), UPDATE);
   }
 
   @Test
   void update_shouldReturnCorrectlyUpdatedWorkWithInstanceRef_deleteOldOne_sendMessages() throws Exception {
     // given
     var instance = getSampleInstanceResource(null, null);
-    var originalWork = resourceRepo.save(getSampleWork(instance));
+    var originalWork = resourceTestService.saveGraph(getSampleWork(instance));
     var updateDto = getSampleWorkDtoMap();
     var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
     var newlyAddedSummary = "newly added summary";
     workMap.put(SUMMARY.getValue(), List.of(newlyAddedSummary));
 
-    var updateRequest = put(RESOURCE_URL + "/" + originalWork.getResourceHash())
+    var updateRequest = put(RESOURCE_URL + "/" + originalWork.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(OBJECT_MAPPER.writeValueAsString(updateDto)
-        .replaceAll(INSTANCE_ID_PLACEHOLDER, instance.getResourceHash().toString())
+        .replaceAll(INSTANCE_ID_PLACEHOLDER, instance.getId().toString())
       );
 
     // when
     var resultActions = mockMvc.perform(updateRequest);
 
     // then
-    assertFalse(resourceRepo.existsById(originalWork.getResourceHash()));
+    assertFalse(resourceTestService.existsById(originalWork.getId()));
     var response = resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -336,7 +330,7 @@ class ResourceControllerIT {
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
 
     var updatedWork = resourceTestService.getResourceById(id, 1);
-    assertThat(updatedWork.getResourceHash()).isNotNull();
+    assertThat(updatedWork.getId()).isNotNull();
     assertThat(updatedWork.getLabel()).isEqualTo(originalWork.getLabel());
     assertThat(updatedWork.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
     assertThat(updatedWork.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo(newlyAddedSummary);
@@ -348,8 +342,8 @@ class ResourceControllerIT {
   @Test
   void getInstanceById_shouldReturnInstanceWithWorkRef() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleInstanceResource());
-    var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash())
+    var existed = resourceTestService.saveGraph(getSampleInstanceResource());
+    var requestBuilder = get(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -367,8 +361,8 @@ class ResourceControllerIT {
   @Test
   void getWorkById_shouldReturnWorkWithInstanceRef() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
-    var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash())
+    var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
+    var requestBuilder = get(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -414,11 +408,11 @@ class ResourceControllerIT {
   void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
     // given
     var existed = Lists.newArrayList(
-        resourceRepo.save(getSampleInstanceResource(100L)),
-        resourceRepo.save(getSampleInstanceResource(200L)),
-        resourceRepo.save(getSampleInstanceResource(300L))
+        resourceTestService.saveGraph(getSampleInstanceResource(100L)),
+        resourceTestService.saveGraph(getSampleInstanceResource(200L)),
+        resourceTestService.saveGraph(getSampleInstanceResource(300L))
       ).stream()
-      .map(Resource::getResourceHash)
+      .map(Resource::getId)
       .map(Object::toString)
       .toList();
     var requestBuilder = get(RESOURCE_URL)
@@ -444,11 +438,11 @@ class ResourceControllerIT {
   void deleteResourceById_shouldDeleteRootInstanceAndRootEdges_reindexWork() throws Exception {
     // given
     var work = getSampleWork(null);
-    var instance = resourceRepo.save(getSampleInstanceResource(null, work));
-    assertThat(resourceRepo.findById(instance.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(45);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(47);
-    var requestBuilder = delete(RESOURCE_URL + "/" + instance.getResourceHash())
+    var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
+    assertThat(resourceTestService.findById(instance.getId())).isPresent();
+    assertThat(resourceTestService.countResources()).isEqualTo(45);
+    assertThat(resourceTestService.countEdges()).isEqualTo(47);
+    var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -457,21 +451,21 @@ class ResourceControllerIT {
 
     // then
     resultActions.andExpect(status().isNoContent());
-    assertThat(resourceRepo.existsById(instance.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(44);
-    assertThat(resourceEdgeRepository.findById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(29);
-    checkKafkaMessage(work.getResourceHash(), UPDATE);
+    assertThat(resourceTestService.existsById(instance.getId())).isFalse();
+    assertThat(resourceTestService.countResources()).isEqualTo(44);
+    assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceTestService.countEdges()).isEqualTo(29);
+    checkKafkaMessage(work.getId(), UPDATE);
   }
 
   @Test
   void deleteResourceById_shouldDeleteRootWorkAndRootEdges() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleWork(getSampleInstanceResource(null, null)));
-    assertThat(resourceRepo.findById(existed.getResourceHash())).isPresent();
-    assertThat(resourceRepo.count()).isEqualTo(45);
-    assertThat(resourceEdgeRepository.count()).isEqualTo(47);
-    var requestBuilder = delete(RESOURCE_URL + "/" + existed.getResourceHash())
+    var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
+    assertThat(resourceTestService.findById(existed.getId())).isPresent();
+    assertThat(resourceTestService.countResources()).isEqualTo(45);
+    assertThat(resourceTestService.countEdges()).isEqualTo(47);
+    var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -480,19 +474,19 @@ class ResourceControllerIT {
 
     // then
     resultActions.andExpect(status().isNoContent());
-    assertThat(resourceRepo.existsById(existed.getResourceHash())).isFalse();
-    assertThat(resourceRepo.count()).isEqualTo(44);
-    assertThat(resourceEdgeRepository.findById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceEdgeRepository.count()).isEqualTo(25);
-    checkKafkaMessage(existed.getResourceHash(), DELETE);
+    assertThat(resourceTestService.existsById(existed.getId())).isFalse();
+    assertThat(resourceTestService.countResources()).isEqualTo(44);
+    assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
+    assertThat(resourceTestService.countEdges()).isEqualTo(25);
+    checkKafkaMessage(existed.getId(), DELETE);
   }
 
   @Test
   void updateResource_shouldNot_deleteExistedResource_createNewResource_sendRelevantKafkaMessages_whenUpdateFailed()
     throws Exception {
     //given
-    var existedResource = resourceRepo.save(getSampleInstanceResource(100L));
-    var requestBuilder = put(RESOURCE_URL + "/" + existedResource.getResourceHash())
+    var existedResource = resourceTestService.saveGraph(getSampleInstanceResource(100L));
+    var requestBuilder = put(RESOURCE_URL + "/" + existedResource.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content("{\"resource\": {\"id\": null}}");
@@ -501,16 +495,16 @@ class ResourceControllerIT {
     mockMvc.perform(requestBuilder);
 
     //then
-    assertTrue(resourceRepo.existsById(existedResource.getResourceHash()));
-    verify(kafkaSender, never()).sendResourceDeleted(existedResource.getResourceHash());
+    assertTrue(resourceTestService.existsById(existedResource.getId()));
+    verify(kafkaSender, never()).sendResourceDeleted(existedResource.getId());
     verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
   }
 
   @Test
   void getResourceViewById_shouldReturnInstance() throws Exception {
     // given
-    var existed = resourceRepo.save(getSampleInstanceResource());
-    var requestBuilder = get(RESOURCE_URL + "/" + existed.getResourceHash() + "/marc")
+    var existed = resourceTestService.saveGraph(getSampleInstanceResource());
+    var requestBuilder = get(RESOURCE_URL + "/" + existed.getId() + "/marc")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 
@@ -524,7 +518,7 @@ class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
 
     resultActions
-      .andExpect(jsonPath("id", equalTo(existed.getResourceHash().toString())))
+      .andExpect(jsonPath("id", equalTo(existed.getId().toString())))
       .andExpect(jsonPath("recordType", equalTo("MARC_BIB")))
       .andExpect(jsonPath("parsedRecord.content", notNullValue()));
   }
@@ -685,7 +679,7 @@ class ResourceControllerIT {
   }
 
   private void validateInstance(Resource instance, boolean validateFullWork) {
-    assertThat(instance.getResourceHash()).isNotNull();
+    assertThat(instance.getId()).isNotNull();
     assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
@@ -792,7 +786,7 @@ class ResourceControllerIT {
     var title = edge.getTarget();
     assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle");
     assertThat(title.getTypes().iterator().next().getUri()).isEqualTo(type.getUri());
-    assertThat(title.getResourceHash()).isNotNull();
+    assertThat(title.getId()).isNotNull();
     assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
     assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asText()).isEqualTo(prefix + "partName");
     assertThat(title.getDoc().get(PART_NUMBER.getValue()).size()).isEqualTo(1);
@@ -811,7 +805,7 @@ class ResourceControllerIT {
     var providerEvent = edge.getTarget();
     assertThat(providerEvent.getLabel()).isEqualTo(type + " name");
     assertThat(providerEvent.getTypes().iterator().next().getUri()).isEqualTo(PROVIDER_EVENT.getUri());
-    assertThat(providerEvent.getResourceHash()).isNotNull();
+    assertThat(providerEvent.getId()).isNotNull();
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo(type + " date");
@@ -832,7 +826,7 @@ class ResourceControllerIT {
     var place = edge.getTarget();
     assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace label");
     assertThat(place.getTypes().iterator().next().getUri()).isEqualTo(PLACE.getUri());
-    assertThat(place.getResourceHash()).isNotNull();
+    assertThat(place.getId()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(3);
     assertThat(place.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
     assertThat(place.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace code");
@@ -850,7 +844,7 @@ class ResourceControllerIT {
     var lccn = edge.getTarget();
     assertThat(lccn.getLabel()).isEqualTo("lccn value");
     assertThat(lccn.getTypes().iterator().next().getUri()).isEqualTo(ID_LCCN.getUri());
-    assertThat(lccn.getResourceHash()).isNotNull();
+    assertThat(lccn.getId()).isNotNull();
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("lccn value");
@@ -865,7 +859,7 @@ class ResourceControllerIT {
     var isbn = edge.getTarget();
     assertThat(isbn.getLabel()).isEqualTo("isbn value");
     assertThat(isbn.getTypes().iterator().next().getUri()).isEqualTo(ID_ISBN.getUri());
-    assertThat(isbn.getResourceHash()).isNotNull();
+    assertThat(isbn.getId()).isNotNull();
     assertThat(isbn.getDoc().size()).isEqualTo(2);
     assertThat(isbn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(isbn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("isbn value");
@@ -882,7 +876,7 @@ class ResourceControllerIT {
     var ean = edge.getTarget();
     assertThat(ean.getLabel()).isEqualTo("ean value");
     assertThat(ean.getTypes().iterator().next().getUri()).isEqualTo(ID_EAN.getUri());
-    assertThat(ean.getResourceHash()).isNotNull();
+    assertThat(ean.getId()).isNotNull();
     assertThat(ean.getDoc().size()).isEqualTo(2);
     assertThat(ean.getDoc().get(EAN_VALUE.getValue()).size()).isEqualTo(1);
     assertThat(ean.getDoc().get(EAN_VALUE.getValue()).get(0).asText()).isEqualTo("ean value");
@@ -898,7 +892,7 @@ class ResourceControllerIT {
     var localId = edge.getTarget();
     assertThat(localId.getLabel()).isEqualTo("localId value");
     assertThat(localId.getTypes().iterator().next().getUri()).isEqualTo(ID_LOCAL.getUri());
-    assertThat(localId.getResourceHash()).isNotNull();
+    assertThat(localId.getId()).isNotNull();
     assertThat(localId.getDoc().size()).isEqualTo(2);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).size()).isEqualTo(1);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).get(0).asText()).isEqualTo("localId value");
@@ -914,7 +908,7 @@ class ResourceControllerIT {
     var otherId = edge.getTarget();
     assertThat(otherId.getLabel()).isEqualTo("otherId value");
     assertThat(otherId.getTypes().iterator().next().getUri()).isEqualTo(ID_UNKNOWN.getUri());
-    assertThat(otherId.getResourceHash()).isNotNull();
+    assertThat(otherId.getId()).isNotNull();
     assertThat(otherId.getDoc().size()).isEqualTo(2);
     assertThat(otherId.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(otherId.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("otherId value");
@@ -930,7 +924,7 @@ class ResourceControllerIT {
     var status = edge.getTarget();
     assertThat(status.getLabel()).isEqualTo(prefix + " status value");
     assertThat(status.getTypes().iterator().next().getUri()).isEqualTo(ResourceTypeDictionary.STATUS.getUri());
-    assertThat(status.getResourceHash()).isNotNull();
+    assertThat(status.getId()).isNotNull();
     assertThat(status.getDoc().size()).isEqualTo(2);
     assertThat(status.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(status.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " status link");
@@ -949,7 +943,7 @@ class ResourceControllerIT {
     assertThat(supplementaryContent.getLabel()).isEqualTo("supplementaryContent name");
     assertThat(supplementaryContent.getTypes().iterator().next().getUri())
       .isEqualTo(ResourceTypeDictionary.SUPPLEMENTARY_CONTENT.getUri());
-    assertThat(supplementaryContent.getResourceHash()).isNotNull();
+    assertThat(supplementaryContent.getId()).isNotNull();
 
     var doc = supplementaryContent.getDoc();
 
@@ -966,7 +960,7 @@ class ResourceControllerIT {
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo("accessLocation value");
     assertThat(locator.getTypes().iterator().next().getUri()).isEqualTo(ANNOTATION.getUri());
-    assertThat(locator.getResourceHash()).isNotNull();
+    assertThat(locator.getId()).isNotNull();
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(locator.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("accessLocation value");
@@ -983,7 +977,7 @@ class ResourceControllerIT {
     var media = edge.getTarget();
     assertThat(media.getLabel()).isEqualTo(prefix + " term");
     assertThat(media.getTypes().iterator().next().getUri()).isEqualTo(CATEGORY.getUri());
-    assertThat(media.getResourceHash()).isNotNull();
+    assertThat(media.getId()).isNotNull();
     assertThat(media.getDoc().size()).isEqualTo(4);
     validateLiteral(media, CODE.getValue(), prefix + " code");
     validateLiteral(media, TERM.getValue(), prefix + " term");
@@ -993,7 +987,7 @@ class ResourceControllerIT {
   }
 
   private void validateWork(Resource work, boolean validateFullInstance) {
-    assertThat(work.getResourceHash()).isNotNull();
+    assertThat(work.getId()).isNotNull();
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
     assertThat(work.getDoc().size()).isEqualTo(9);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
@@ -1134,7 +1128,7 @@ class ResourceControllerIT {
     var copyrightEvent = edge.getTarget();
     assertThat(copyrightEvent.getLabel()).isEqualTo("copyright date value");
     assertThat(copyrightEvent.getTypes().iterator().next().getUri()).isEqualTo(COPYRIGHT_EVENT.getUri());
-    assertThat(copyrightEvent.getResourceHash()).isNotNull();
+    assertThat(copyrightEvent.getId()).isNotNull();
     assertThat(copyrightEvent.getDoc().size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("copyright date value");
@@ -1179,8 +1173,8 @@ class ResourceControllerIT {
     resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
-    resource.setResourceHash(id);
-    return resourceRepo.save(resource);
+    resource.setId(id);
+    return resourceTestService.saveGraph(resource);
   }
 
   private String toInstance() {

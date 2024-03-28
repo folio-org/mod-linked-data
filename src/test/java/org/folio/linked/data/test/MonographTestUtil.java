@@ -3,6 +3,7 @@ package org.folio.linked.data.test;
 import static java.util.Collections.emptyMap;
 import static java.util.Map.entry;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
@@ -102,14 +103,12 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.BibframeUtils.setEdgesId;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -305,15 +304,14 @@ public class MonographTestUtil {
       .setSrsId(UUID.fromString("43d58061-decf-4d74-9747-0e1c368e861b"));
 
     if (nonNull(id)) {
-      instance.setResourceHash(id);
+      instance.setId(id);
     }
     instance.setLabel(instanceTitleValue);
     if (nonNull(linkedWork)) {
       var edge = new ResourceEdge(instance, linkedWork, INSTANTIATES);
-      instance.getOutgoingEdges().add(edge);
-      linkedWork.getIncomingEdges().add(edge);
+      instance.addOutgoingEdge(edge);
+      linkedWork.addIncomingEdge(edge);
     }
-    setEdgesId(instance);
     return instance;
   }
 
@@ -335,7 +333,7 @@ public class MonographTestUtil {
       Set.of(MEETING),
       emptyMap()
     ).setLabel("name-MEETING")
-      .setResourceHash(1001L);
+      .setId(1001L);
 
     var creatorPerson = createResource(
       Map.of(
@@ -345,7 +343,7 @@ public class MonographTestUtil {
       Set.of(PERSON),
       emptyMap()
     ).setLabel("name-PERSON")
-      .setResourceHash(1002L);
+      .setId(1002L);
 
     var creatorOrganization = createResource(
       Map.of(
@@ -355,7 +353,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("name-ORGANIZATION")
-      .setResourceHash(1003L);
+      .setId(1003L);
 
     var creatorFamily = createResource(
       Map.of(
@@ -365,7 +363,7 @@ public class MonographTestUtil {
       Set.of(FAMILY),
       emptyMap()
     ).setLabel("name-FAMILY")
-      .setResourceHash(1004L);
+      .setId(1004L);
 
     var contributorPerson = createResource(
       Map.of(
@@ -375,7 +373,7 @@ public class MonographTestUtil {
       Set.of(PERSON),
       emptyMap()
     ).setLabel("name-PERSON")
-      .setResourceHash(1007L);
+      .setId(1007L);
 
     var contributorMeeting = createResource(
       Map.of(
@@ -385,7 +383,7 @@ public class MonographTestUtil {
       Set.of(MEETING),
       emptyMap()
     ).setLabel("name-MEETING")
-      .setResourceHash(1008L);
+      .setId(1008L);
 
     var contributorOrganization = createResource(
       Map.of(
@@ -395,7 +393,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("name-ORGANIZATION")
-      .setResourceHash(1005L);
+      .setId(1005L);
 
     var contributorFamily = createResource(
       Map.of(
@@ -405,7 +403,7 @@ public class MonographTestUtil {
       Set.of(FAMILY),
       emptyMap()
     ).setLabel("name-FAMILY")
-      .setResourceHash(1006L);
+      .setId(1006L);
 
     var subject1 = createResource(
       Map.of(
@@ -414,7 +412,7 @@ public class MonographTestUtil {
       Set.of(CONCEPT),
       emptyMap()
     ).setLabel("subject 1")
-      .setResourceHash(1L);
+      .setId(1L);
 
     var subject2 = createResource(
       Map.of(
@@ -423,7 +421,7 @@ public class MonographTestUtil {
       Set.of(CONCEPT),
       emptyMap()
     ).setLabel("subject 2")
-      .setResourceHash(2L);
+      .setId(2L);
 
     var unitedStates = createResource(
       Map.of(
@@ -434,7 +432,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("United States")
-      .setResourceHash(101L);
+      .setId(101L);
 
     var europe = createResource(
       Map.of(
@@ -445,7 +443,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("Europe")
-      .setResourceHash(102L);
+      .setId(102L);
 
     var genre1 = createResource(
       Map.of(
@@ -454,7 +452,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 1")
-      .setResourceHash(201L);
+      .setId(201L);
 
     var genre2 = createResource(
       Map.of(
@@ -463,7 +461,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 2")
-      .setResourceHash(202L);
+      .setId(202L);
 
     var governmentPublication = createResource(
       Map.of(
@@ -507,10 +505,9 @@ public class MonographTestUtil {
     );
     if (nonNull(linkedInstance)) {
       var edge = new ResourceEdge(linkedInstance, work, INSTANTIATES);
-      linkedInstance.getOutgoingEdges().add(edge);
-      work.getIncomingEdges().add(edge);
+      linkedInstance.addOutgoingEdge(edge);
+      work.addIncomingEdge(edge);
     }
-    setEdgesId(work);
     return work;
   }
 
@@ -596,21 +593,20 @@ public class MonographTestUtil {
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,
-                                  Set<ResourceTypeDictionary> types,
-                                  Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
+                                        Set<ResourceTypeDictionary> types,
+                                        Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
     var resource = new Resource();
     pred2OutgoingResources.keySet()
       .stream()
       .flatMap(pred -> pred2OutgoingResources.get(pred)
         .stream()
         .map(target -> new ResourceEdge(resource, target, pred)))
-      .forEach(edge -> resource.getOutgoingEdges().add(edge));
+      .forEach(resource::addOutgoingEdge);
 
-    Map<String, List<String>> properties = propertiesDic.entrySet().stream()
-      .collect(Collectors.toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
+    var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
     types.forEach(resource::addType);
-    resource.setResourceHash(randomLong());
+    resource.setId(randomLong());
     return resource;
   }
 

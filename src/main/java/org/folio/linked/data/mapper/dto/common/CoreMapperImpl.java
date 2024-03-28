@@ -67,7 +67,7 @@ public class CoreMapperImpl implements CoreMapper {
         r -> nonNull(r.getDoc()) || isNotEmpty(r.getIncomingEdges()) || isNotEmpty(r.getOutgoingEdges()))
       .map(r -> new ResourceEdge(isIncoming ? r : parentEntity,
         isIncoming ? parentEntity : r, predicate))
-      .forEach((isIncoming ? parentEntity.getIncomingEdges() : parentEntity.getOutgoingEdges())::add);
+      .forEach(isIncoming ? parentEntity::addIncomingEdge : parentEntity::addOutgoingEdge);
   }
 
   private <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass) {

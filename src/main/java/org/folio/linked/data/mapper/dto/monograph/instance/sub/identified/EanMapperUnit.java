@@ -33,7 +33,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var ean = coreMapper.toDtoWithEdges(source, Ean.class, false);
-      ean.setId(String.valueOf(source.getResourceHash()));
+      ean.setId(String.valueOf(source.getId()));
       instance.addMapItem(new EanField().ean(ean));
     }
     return parentDto;
@@ -46,7 +46,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(ean::getValue));
     resource.addType(ID_EAN);
     resource.setDoc(getDoc(ean));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

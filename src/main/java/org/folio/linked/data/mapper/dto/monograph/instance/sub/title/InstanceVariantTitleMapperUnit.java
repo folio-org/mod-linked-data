@@ -38,7 +38,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitle.class, false);
-    variantTitle.setId(String.valueOf(source.getResourceHash()));
+    variantTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
@@ -55,7 +55,7 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
     resource.setLabel(getFirstValue(variantTitle::getMainTitle));
     resource.addType(VARIANT_TITLE);
     resource.setDoc(getDoc(variantTitle));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

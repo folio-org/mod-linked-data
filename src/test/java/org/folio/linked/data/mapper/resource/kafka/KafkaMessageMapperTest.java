@@ -95,8 +95,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     final var instance2 = getInstance(2L, work);
 
@@ -128,8 +128,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     getInstance(2L, work);
     work.setIncomingEdges(new LinkedHashSet<>());
@@ -160,8 +160,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     getInstance(1L, work);
     getInstance(2L, work);
 
@@ -169,7 +169,7 @@ class KafkaMessageMapperTest {
     var resultOpt = kafkaMessageMapper.toDeleteIndexId(work);
 
     // then
-    assertThat(resultOpt).isPresent().contains(work.getResourceHash());
+    assertThat(resultOpt).isPresent().contains(work.getId());
   }
 
   @Test
@@ -178,8 +178,8 @@ class KafkaMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
-    work.getOutgoingEdges().add(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.getOutgoingEdges().add(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
+    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     getInstance(2L, work);
 
@@ -194,19 +194,19 @@ class KafkaMessageMapperTest {
   private Resource getInstance(Long id, Resource work) {
     var instance = getSampleInstanceResource(id, work);
     var emptyTitle = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyTitle, TITLE));
+    instance.addOutgoingEdge(new ResourceEdge(instance, emptyTitle, TITLE));
     var wrongId = getIdentifier();
     var emptyId = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, wrongId, MAP));
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyId, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, wrongId, MAP));
+    instance.addOutgoingEdge(new ResourceEdge(instance, emptyId, MAP));
     var emptyPublication = new Resource();
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
+    instance.addOutgoingEdge(new ResourceEdge(instance, emptyPublication, PE_PUBLICATION));
     return instance;
   }
 
   private Resource getIdentifier() {
     var id = new Resource();
-    id.setResourceHash(randomLong());
+    id.setId(randomLong());
     id.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of("wrongId"))));
     id.addType(ANNOTATION);
     return id;
@@ -214,14 +214,14 @@ class KafkaMessageMapperTest {
 
   private Resource getContributor(ResourceTypeDictionary type) {
     var contributor = new Resource();
-    contributor.setResourceHash(randomLong());
+    contributor.setId(randomLong());
     contributor.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(UUID.randomUUID().toString()))));
     contributor.addType(type);
     return contributor;
   }
 
   private void validateWork(BibframeIndex result, Resource work, Resource wrongContributor, int instancesExpected) {
-    assertThat(result.getId()).isEqualTo(work.getResourceHash().toString());
+    assertThat(result.getId()).isEqualTo(work.getId().toString());
     assertThat(result.getTitles()).isEmpty();
     assertThat(result.getContributors()).hasSize(9);
     assertContributor(result.getContributors().get(0), "name-PERSON", PERSON, true);
@@ -247,8 +247,8 @@ class KafkaMessageMapperTest {
   }
 
   private void validateInstance(BibframeInstancesInner instanceIndex, Resource instance) {
-    assertThat(instanceIndex.getId()).isEqualTo(instance.getResourceHash().toString());
-    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle" + instance.getResourceHash(), MAIN);
+    assertThat(instanceIndex.getId()).isEqualTo(instance.getId().toString());
+    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle" + instance.getId(), MAIN);
     assertTitle(instanceIndex.getTitles().get(1), "Instance: subTitle", SUB);
     assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN);
     assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB);

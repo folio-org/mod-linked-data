@@ -31,7 +31,7 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var workReference = coreMapper.toDtoWithEdges(source, WorkReference.class, false);
-      workReference.setId(String.valueOf(source.getResourceHash()));
+      workReference.setId(String.valueOf(source.getId()));
       instance.addWorkReferenceItem(workReference);
     }
     return parentDto;

@@ -129,8 +129,8 @@ class ReIndexControllerFolioIT {
     if (nonNull(indexed)) {
       awaitAndAssert(() -> assertTrue(consumer.getMessages()
         .stream()
-        .anyMatch(m -> m.contains(indexed.getResourceHash().toString()) && m.contains(CREATE.getValue()))));
-      var freshPersistedOptional = resourceRepo.findById(indexed.getResourceHash());
+        .anyMatch(m -> m.contains(indexed.getId().toString()) && m.contains(CREATE.getValue()))));
+      var freshPersistedOptional = resourceRepo.findById(indexed.getId());
       assertThat(freshPersistedOptional).isPresent();
       var freshPersisted = freshPersistedOptional.get();
       assertThat(freshPersisted.getIndexDate()).isNotNull();

@@ -30,7 +30,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var copyrightEvent = coreMapper.toDtoWithEdges(source, CopyrightEvent.class, false);
-      copyrightEvent.setId(String.valueOf(source.getResourceHash()));
+      copyrightEvent.setId(String.valueOf(source.getId()));
       instance.addCopyrightItem(copyrightEvent);
     }
     return parentDto;
@@ -43,7 +43,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(copyrightEvent::getDate));
     resource.addType(COPYRIGHT_EVENT);
     resource.setDoc(getDoc(copyrightEvent));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

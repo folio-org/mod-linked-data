@@ -86,7 +86,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     if (!isOfType(work, WORK)) {
       throw new LinkedDataServiceException(format(NOT_A_WORK, work, eventType.getValue()));
     }
-    var workIndex = new BibframeIndex(String.valueOf(work.getResourceHash()));
+    var workIndex = new BibframeIndex(String.valueOf(work.getId()));
     workIndex.setTitles(extractTitles(work));
     workIndex.setContributors(extractContributors(work));
     workIndex.setLanguages(extractLanguages(work));
@@ -106,7 +106,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     if (!isOfType(work, WORK)) {
       throw new LinkedDataServiceException(format(NOT_A_WORK, work, DELETE.getValue()));
     }
-    return Optional.of(work.getResourceHash());
+    return Optional.of(work.getId());
   }
 
   private boolean shouldBeIndexed(BibframeIndex bi) {
@@ -202,7 +202,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
         .map(ResourceEdge::getSource))
       .map(ir -> new BibframeInstancesInner()
-        .id(String.valueOf(ir.getResourceHash()))
+        .id(String.valueOf(ir.getId()))
         .titles(extractTitles(ir))
         .identifiers(extractIdentifiers(ir))
         .contributors(extractContributors(ir))
@@ -250,7 +250,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
         var enumNameWithParent = getTypeEnumNameWithParent(enumClass);
         log.warn(MSG_UNKNOWN_TYPES,
           resource.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", ")),
-          enumNameWithParent, resource.getResourceHash());
+          enumNameWithParent, resource.getId());
         return null;
       });
   }

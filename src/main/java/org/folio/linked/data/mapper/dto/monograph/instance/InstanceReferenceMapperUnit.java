@@ -31,7 +31,7 @@ public class InstanceReferenceMapperUnit implements WorkSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Work work) {
       var instanceReference = coreMapper.toDtoWithEdges(source, InstanceReference.class, false);
-      instanceReference.setId(String.valueOf(source.getResourceHash()));
+      instanceReference.setId(String.valueOf(source.getId()));
       work.addInstanceReferenceItem(instanceReference);
     }
     return parentDto;

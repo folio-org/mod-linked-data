@@ -39,7 +39,7 @@ public class PlaceMapperUnit implements SingleResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ProviderEvent providerEvent) {
       var place = coreMapper.toDtoWithEdges(source, Place.class, false);
-      place.setId(String.valueOf(source.getResourceHash()));
+      place.setId(String.valueOf(source.getId()));
       providerEvent.addProviderPlaceItem(place);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
@@ -60,7 +60,7 @@ public class PlaceMapperUnit implements SingleResourceMapperUnit {
     resource.setLabel(getFirstValue(place::getLabel));
     resource.addType(PLACE);
     resource.setDoc(getDoc(place));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

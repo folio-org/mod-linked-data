@@ -33,7 +33,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var localId = coreMapper.toDtoWithEdges(source, LocalId.class, false);
-      localId.setId(String.valueOf(source.getResourceHash()));
+      localId.setId(String.valueOf(source.getId()));
       instance.addMapItem(new LocalIdField().localId(localId));
     }
     return parentDto;
@@ -46,7 +46,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(localId::getValue));
     resource.addType(ID_LOCAL);
     resource.setDoc(getDoc(localId));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

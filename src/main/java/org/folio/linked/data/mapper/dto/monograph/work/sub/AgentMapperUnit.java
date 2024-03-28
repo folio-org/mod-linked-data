@@ -23,7 +23,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var agent = new Agent()
-      .id(source.getResourceHash().toString())
+      .id(String.valueOf(source.getId()))
       .label(source.getLabel())
       .type(source.getTypes().iterator().next().getUri());
     agentRoleAssigner.assignRoles(agent, parentResource);
@@ -35,10 +35,11 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var agent = (Agent) dto;
     var resource = resourceRepository.findById(Long.parseLong(agent.getId()))
+      .map(Resource::copyWithNoEdges)
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + agent.getId() + IS_NOT_FOUND));
     ofNullable(agent.getRoles())
       .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
-        .ifPresent(p -> parentEntity.getOutgoingEdges().add(new ResourceEdge(parentEntity, resource, p)))));
+        .ifPresent(p -> parentEntity.addOutgoingEdge(new ResourceEdge(parentEntity, resource, p)))));
     return resource;
   }
 }

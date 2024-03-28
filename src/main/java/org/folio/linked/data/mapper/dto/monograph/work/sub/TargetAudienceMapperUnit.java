@@ -47,7 +47,7 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
       .addType(CATEGORY_SET)
       .setDoc(coreMapper.toJson(map))
       .setLabel(CATEGORY_SET_LABEL);
-    categorySet.setResourceHash(hashService.hash(categorySet));
+    categorySet.setId(hashService.hash(categorySet));
     return Optional.of(categorySet);
   }
 }

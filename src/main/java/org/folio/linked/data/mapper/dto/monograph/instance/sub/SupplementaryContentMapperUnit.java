@@ -31,7 +31,7 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
       var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContent.class, false);
-      supplementaryContent.setId(String.valueOf(source.getResourceHash()));
+      supplementaryContent.setId(String.valueOf(source.getId()));
       instance.addSupplementaryContentItem(supplementaryContent);
     }
     return parentDto;
@@ -44,7 +44,7 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
       .setLabel(getFirstValue(supplementaryContent::getName))
       .addType(SUPPLEMENTARY_CONTENT)
       .setDoc(getDoc(supplementaryContent));
-    resource.setResourceHash(hashService.hash(resource));
+    resource.setId(hashService.hash(resource));
     return resource;
   }
 

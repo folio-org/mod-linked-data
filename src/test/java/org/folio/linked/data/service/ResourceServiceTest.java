@@ -43,6 +43,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
+import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.ResourceServiceImpl;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
@@ -69,6 +70,8 @@ class ResourceServiceTest {
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
+  private ResourceEdgeRepository edgeRepo;
+  @Mock
   private ResourceDtoMapper resourceDtoMapper;
   @Mock
   private ResourceModelMapper resourceModelMapper;
@@ -81,13 +84,13 @@ class ResourceServiceTest {
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
     // given
     var request = new ResourceDto();
-    var mapped = new Resource().setResourceHash(12345L);
+    var mapped = new Resource().setId(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
-    var persisted = new Resource().setResourceHash(67890L);
+    var persisted = new Resource().setId(67890L);
     when(resourceRepo.save(mapped)).thenReturn(persisted);
     var expectedResponse = new ResourceDto();
     expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
-    when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedResponse);
+    when(resourceDtoMapper.toDto(mapped)).thenReturn(expectedResponse);
 
     // when
     var response = resourceService.createResource(request);
@@ -101,15 +104,14 @@ class ResourceServiceTest {
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceWithWork() {
     // given
     var request = new ResourceDto();
-    var mapped = new Resource().setResourceHash(12345L);
-    when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
-    var persisted = new Resource().setResourceHash(67890L);
     var work = new Resource().addType(WORK);
-    persisted.getOutgoingEdges().add(new ResourceEdge(persisted, work, INSTANTIATES));
-    when(resourceRepo.save(mapped)).thenReturn(persisted);
+    var instance = new Resource().setId(12345L);
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    when(resourceDtoMapper.toEntity(request)).thenReturn(instance);
+    when(resourceRepo.save(instance)).thenReturn(instance);
     var expectedResponse = new ResourceDto();
     expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
-    when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedResponse);
+    when(resourceDtoMapper.toDto(instance)).thenReturn(expectedResponse);
 
     // when
     var response = resourceService.createResource(request);
@@ -125,10 +127,9 @@ class ResourceServiceTest {
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceIsWork() {
     // given
     var request = new ResourceDto();
-    var mapped = new Resource().setResourceHash(12345L);
-    when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     var work = new Resource().addType(WORK);
-    when(resourceRepo.save(mapped)).thenReturn(work);
+    when(resourceDtoMapper.toEntity(request)).thenReturn(work);
+    when(resourceRepo.save(work)).thenReturn(work);
     var expectedResponse = new ResourceDto();
     expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedResponse);
@@ -222,14 +223,13 @@ class ResourceServiceTest {
     // given
     var id = randomLong();
     var workDto = new ResourceDto().resource(new WorkField().work(new Work().id(id.toString())));
-    var oldWork = new Resource().setResourceHash(id).addType(WORK).setLabel("oldWork");
+    var oldWork = new Resource().setId(id).addType(WORK).setLabel("oldWork");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldWork));
-    var mapped = new Resource().setResourceHash(id).setLabel("mapped");
-    when(resourceDtoMapper.toEntity(workDto)).thenReturn(mapped);
-    var persisted = new Resource().setResourceHash(id).setLabel("saved").addType(WORK);
-    when(resourceRepo.save(mapped)).thenReturn(persisted);
+    var work = new Resource().setId(id).setLabel("saved").addType(WORK);
+    when(resourceDtoMapper.toEntity(workDto)).thenReturn(work);
+    when(resourceRepo.save(work)).thenReturn(work);
     var expectedDto = new ResourceDto().resource(new WorkField().work(new Work().id(id.toString())));
-    when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
+    when(resourceDtoMapper.toDto(work)).thenReturn(expectedDto);
 
     // when
     var result = resourceService.updateResource(id, workDto);
@@ -237,27 +237,27 @@ class ResourceServiceTest {
     // then
     assertEquals(expectedDto, result);
     verify(resourceRepo).delete(oldWork);
-    verify(resourceRepo).save(mapped);
-    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(persisted, oldWork));
+    verify(resourceRepo).save(work);
+    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work, oldWork));
   }
 
   @Test
   void update_shouldSaveUpdatedResourceAndSendUpdatedEventForExistedWorkFromInstance_forIncomingInstanceWithNoWork() {
     // given
     var id = randomLong();
-    var instanceDto = new ResourceDto().resource(new InstanceField().instance(new Instance().id(id.toString())));
-    var oldWork = new Resource().setResourceHash(id).addType(WORK).setLabel("oldWork");
-    var oldInstance = new Resource().setResourceHash(id).addType(INSTANCE).setLabel("oldInstance");
+    var oldWork = new Resource().setId(id).addType(WORK).setLabel("oldWork");
+    var oldInstance = new Resource().setId(id).addType(INSTANCE).setLabel("oldInstance");
     var edge = new ResourceEdge(oldInstance, oldWork, INSTANTIATES);
-    oldInstance.getOutgoingEdges().add(edge);
-    oldWork.getOutgoingEdges().add(edge);
+    oldInstance.addOutgoingEdge(edge);
+    oldWork.addOutgoingEdge(edge);
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().setResourceHash(id).setLabel("mapped");
+    var mapped = new Resource().setId(id).setLabel("mapped");
+    var instanceDto = new ResourceDto().resource(new InstanceField().instance(new Instance().id(id.toString())));
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    var persisted = new Resource().setResourceHash(id).setLabel("saved");
+    var persisted = new Resource().setId(id).setLabel("saved");
     when(resourceRepo.save(mapped)).thenReturn(persisted);
     var expectedDto = new ResourceDto().resource(new InstanceField().instance(new Instance().id(id.toString())));
-    when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
+    when(resourceDtoMapper.toDto(mapped)).thenReturn(expectedDto);
 
     // when
     var result = resourceService.updateResource(id, instanceDto);
@@ -275,11 +275,11 @@ class ResourceServiceTest {
     // given
     var id = randomLong();
     var instanceDto = new ResourceDto().resource(new InstanceField().instance(new Instance().id(id.toString())));
-    var oldInstance = new Resource().setResourceHash(id).addType(INSTANCE).setLabel("oldInstance");
+    var oldInstance = new Resource().setId(id).addType(INSTANCE).setLabel("oldInstance");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().setResourceHash(id).setLabel("mapped");
+    var mapped = new Resource().setId(id).setLabel("mapped");
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    var persisted = new Resource().setResourceHash(id).setLabel("saved");
+    var persisted = new Resource().setId(id).setLabel("saved");
     when(resourceRepo.save(mapped)).thenReturn(persisted);
     var expectedDto = new ResourceDto().resource(new InstanceField().instance(new Instance().id(id.toString())));
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
@@ -299,20 +299,19 @@ class ResourceServiceTest {
     // given
     var instanceId = randomLong();
     var workId = randomLong();
+    var oldInstance = new Resource().setId(instanceId).addType(INSTANCE).setLabel("oldInstance");
+    var oldWork = new Resource().setId(workId).addType(WORK).setLabel("oldWork");
+    var edge = new ResourceEdge(oldInstance, oldWork, INSTANTIATES);
+    oldInstance.addOutgoingEdge(edge);
+    oldWork.addIncomingEdge(edge);
+    when(resourceRepo.findById(instanceId)).thenReturn(Optional.of(oldInstance));
+    var instance = new Resource().setId(instanceId).setLabel("saved").addType(INSTANCE);
+    var newWork = new Resource().setId(workId).addType(WORK);
+    instance.addOutgoingEdge(new ResourceEdge(instance, newWork, INSTANTIATES));
     var instanceDto =
       new ResourceDto().resource(new InstanceField().instance(new Instance().id(instanceId.toString())));
-    var oldInstance = new Resource().setResourceHash(instanceId).addType(INSTANCE).setLabel("oldInstance");
-    var oldWork = new Resource().setResourceHash(workId).addType(WORK).setLabel("oldWork");
-    var edge = new ResourceEdge(oldInstance, oldWork, INSTANTIATES);
-    oldInstance.getOutgoingEdges().add(edge);
-    oldWork.getIncomingEdges().add(edge);
-    when(resourceRepo.findById(instanceId)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().setResourceHash(instanceId).setLabel("mapped");
-    when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    var instance = new Resource().setResourceHash(instanceId).setLabel("saved").addType(INSTANCE);
-    var newWork = new Resource().setResourceHash(workId).addType(WORK);
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, newWork, INSTANTIATES));
-    when(resourceRepo.save(mapped)).thenReturn(instance);
+    when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(instance);
+    when(resourceRepo.save(instance)).thenReturn(instance);
     var expectedDto =
       new ResourceDto().resource(new InstanceField().instance(new Instance().id(instanceId.toString())));
     when(resourceDtoMapper.toDto(instance)).thenReturn(expectedDto);
@@ -323,7 +322,7 @@ class ResourceServiceTest {
     // then
     assertEquals(expectedDto, result);
     verify(resourceRepo).delete(oldInstance);
-    verify(resourceRepo).save(mapped);
+    verify(resourceRepo).save(instance);
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(newWork, oldWork));
   }
 
@@ -332,20 +331,19 @@ class ResourceServiceTest {
     // given
     var instanceId = randomLong();
     var workId = randomLong();
+    var oldInstance = new Resource().setId(instanceId).addType(INSTANCE).setLabel("oldInstance");
+    var oldWork = new Resource().setId(workId).addType(WORK).setLabel("oldWork");
+    var edge = new ResourceEdge(oldInstance, oldWork, INSTANTIATES);
+    oldInstance.addOutgoingEdge(edge);
+    oldWork.addIncomingEdge(edge);
+    when(resourceRepo.findById(instanceId)).thenReturn(Optional.of(oldInstance));
+    var instance = new Resource().setId(instanceId).setLabel("saved").addType(INSTANCE);
+    var newWork = new Resource().setId(workId + 1).addType(WORK);
+    instance.addOutgoingEdge(new ResourceEdge(instance, newWork, INSTANTIATES));
     var instanceDto =
       new ResourceDto().resource(new InstanceField().instance(new Instance().id(instanceId.toString())));
-    var oldInstance = new Resource().setResourceHash(instanceId).addType(INSTANCE).setLabel("oldInstance");
-    var oldWork = new Resource().setResourceHash(workId).addType(WORK).setLabel("oldWork");
-    var edge = new ResourceEdge(oldInstance, oldWork, INSTANTIATES);
-    oldInstance.getOutgoingEdges().add(edge);
-    oldWork.getIncomingEdges().add(edge);
-    when(resourceRepo.findById(instanceId)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().setResourceHash(instanceId).setLabel("mapped");
-    when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    var instance = new Resource().setResourceHash(instanceId).setLabel("saved").addType(INSTANCE);
-    var newWork = new Resource().setResourceHash(workId + 1).addType(WORK);
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, newWork, INSTANTIATES));
-    when(resourceRepo.save(mapped)).thenReturn(instance);
+    when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(instance);
+    when(resourceRepo.save(instance)).thenReturn(instance);
     var expectedDto =
       new ResourceDto().resource(new InstanceField().instance(new Instance().id(instanceId.toString())));
     when(resourceDtoMapper.toDto(instance)).thenReturn(expectedDto);
@@ -357,7 +355,7 @@ class ResourceServiceTest {
     assertEquals(expectedDto, result);
     assertThat(oldWork.getIncomingEdges()).doesNotContain(edge);
     verify(resourceRepo).delete(oldInstance);
-    verify(resourceRepo).save(mapped);
+    verify(resourceRepo).save(instance);
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(newWork, null));
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(oldWork, null));
   }
@@ -369,12 +367,11 @@ class ResourceServiceTest {
     var instanceDto = new ResourceDto().resource(new InstanceField().instance(new Instance().id(id.toString())));
     var oldInstance = new Resource().addType(INSTANCE).setLabel("oldInstance");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().setResourceHash(id).setLabel("mapped");
-    when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    var instance = new Resource().setResourceHash(id).setLabel("saved").addType(INSTANCE);
-    var newWork = new Resource().setResourceHash(123L).addType(WORK);
-    instance.getOutgoingEdges().add(new ResourceEdge(instance, newWork, INSTANTIATES));
-    when(resourceRepo.save(any(Resource.class))).thenReturn(instance);
+    var instance = new Resource().setId(id).setLabel("saved").addType(INSTANCE);
+    var newWork = new Resource().setId(123L).addType(WORK);
+    instance.addOutgoingEdge(new ResourceEdge(instance, newWork, INSTANTIATES));
+    when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(instance);
+    when(resourceRepo.save(instance)).thenReturn(instance);
     var expectedDto = new ResourceDto().resource(new WorkField().work(new Work().id(id.toString())));
     when(resourceDtoMapper.toDto(instance)).thenReturn(expectedDto);
 
@@ -384,18 +381,19 @@ class ResourceServiceTest {
     // then
     assertEquals(expectedDto, result);
     verify(resourceRepo).delete(oldInstance);
-    verify(resourceRepo).save(any());
+    verify(resourceRepo).save(instance);
+    verify(resourceRepo).save(newWork);
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(newWork, null));
   }
 
   @Test
   void delete_shouldDeleteWorkAndPublishResourceDeletedEvent() {
     // given
-    var work = new Resource().setResourceHash(randomLong()).addType(WORK);
-    when(resourceRepo.findById(work.getResourceHash())).thenReturn(Optional.of(work));
+    var work = new Resource().setId(randomLong()).addType(WORK);
+    when(resourceRepo.findById(work.getId())).thenReturn(Optional.of(work));
 
     // when
-    resourceService.deleteResource(work.getResourceHash());
+    resourceService.deleteResource(work.getId());
 
     // then
     verify(resourceRepo).delete(work);
@@ -407,28 +405,28 @@ class ResourceServiceTest {
   @Test
   void delete_shouldDeleteInstanceAndPublishResourceUpdatedEventWithNewAndOldWorks() {
     // given
-    var work = new Resource().setResourceHash(randomLong()).addType(WORK);
-    var instance = new Resource().setResourceHash(randomLong()).addType(INSTANCE);
-    var instance2 = new Resource().setResourceHash(randomLong()).addType(INSTANCE);
+    var work = new Resource().setId(randomLong()).addType(WORK);
+    var instance = new Resource().setId(randomLong()).addType(INSTANCE);
+    var instance2 = new Resource().setId(randomLong()).addType(INSTANCE);
     var edge1 = new ResourceEdge(instance, work, INSTANTIATES);
     var edge2 = new ResourceEdge(instance2, work, INSTANTIATES);
-    work.getIncomingEdges().add(edge1);
-    work.getIncomingEdges().add(edge2);
-    instance.getOutgoingEdges().add(edge1);
-    instance2.getOutgoingEdges().add(edge2);
-    when(resourceRepo.findById(instance.getResourceHash())).thenReturn(Optional.of(instance));
+    work.addIncomingEdge(edge1);
+    work.addIncomingEdge(edge2);
+    instance.addOutgoingEdge(edge1);
+    instance2.addOutgoingEdge(edge2);
+    when(resourceRepo.findById(instance.getId())).thenReturn(Optional.of(instance));
 
     // when
-    resourceService.deleteResource(instance.getResourceHash());
+    resourceService.deleteResource(instance.getId());
 
     // then
     verify(resourceRepo).delete(instance);
     var eventCaptor = ArgumentCaptor.forClass(ResourceUpdatedEvent.class);
     verify(applicationEventPublisher).publishEvent(eventCaptor.capture());
-    assertThat(eventCaptor.getValue().newWork().getResourceHash()).isEqualTo(work.getResourceHash());
+    assertThat(eventCaptor.getValue().newWork().getId()).isEqualTo(work.getId());
     assertThat(eventCaptor.getValue().newWork().getIncomingEdges()).hasSize(1);
     assertThat(eventCaptor.getValue().newWork().getIncomingEdges()).contains(edge2);
-    assertThat(eventCaptor.getValue().oldWork().getResourceHash()).isEqualTo(work.getResourceHash());
+    assertThat(eventCaptor.getValue().oldWork().getId()).isEqualTo(work.getId());
     assertThat(eventCaptor.getValue().oldWork().getIncomingEdges()).hasSize(2);
     assertThat(eventCaptor.getValue().oldWork().getIncomingEdges()).contains(edge1, edge2);
   }
@@ -490,7 +488,7 @@ class ResourceServiceTest {
   void getResourceGraphById_shouldReturnResourceGraphDto_whenResourceExists() {
     //given
     var id = randomLong();
-    var resource = new Resource().setResourceHash(id);
+    var resource = new Resource().setId(id);
     var expectedResourceGraphDto = new ResourceGraphDto().id(String.valueOf(id));
 
     when(resourceRepo.findById(id)).thenReturn(Optional.of(resource));
