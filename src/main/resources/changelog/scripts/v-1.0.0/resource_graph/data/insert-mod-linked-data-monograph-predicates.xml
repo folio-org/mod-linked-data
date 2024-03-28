@@ -6,10 +6,6 @@
 
   <changeSet id="01_insert_predicate_lookup" author="Pavel_Bobylev@epam.com">
     <insert tableName="predicate_lookup">
-      <column name="predicate_hash" value="-6368122725352320482"/>
-      <column name="predicate" value="http://bibfra.me/vocab/lite/Instance"/>
-    </insert>
-    <insert tableName="predicate_lookup">
       <column name="predicate_hash" value="5549969427228480763"/>
       <column name="predicate" value="http://bibfra.me/vocab/marc/title"/>
     </insert>
