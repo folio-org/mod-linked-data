@@ -8,7 +8,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.BatchReindexService;
+import org.folio.linked.data.service.BatchIndexService;
 import org.folio.linked.data.service.ReindexService;
 import org.folio.linked.data.service.ResourceService;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +30,7 @@ public class ReindexServiceImpl implements ReindexService {
 
   private final ResourceRepository resourceRepository;
   private final ResourceService resourceService;
-  private final BatchReindexService batchReindexService;
+  private final BatchIndexService batchIndexService;
   @Value("${mod-linked-data.reindex.page-size}")
   private int reindexPageSize;
 
@@ -44,7 +44,7 @@ public class ReindexServiceImpl implements ReindexService {
       var page = TRUE.equals(full)
         ? resourceRepository.findAllByType(Set.of(WORK.getUri()), pageable)
         : resourceRepository.findNotIndexedByType(Set.of(WORK.getUri()), pageable);
-      var batchReindexResult = batchReindexService.batchReindex(page);
+      var batchReindexResult = batchIndexService.index(page.get());
       recordsIndexed += batchReindexResult.recordsIndexed();
       resourceService.updateIndexDateBatch(batchReindexResult.indexedIds());
       pageable = page.nextPageable();

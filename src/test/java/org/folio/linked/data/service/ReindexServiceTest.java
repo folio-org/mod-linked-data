@@ -8,8 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Set;
+import java.util.stream.Stream;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.BatchReindexService.BatchReindexResult;
+import org.folio.linked.data.service.BatchIndexService.BatchIndexResult;
 import org.folio.linked.data.service.impl.ReindexServiceImpl;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +35,7 @@ class ReindexServiceTest {
   @Mock
   private ResourceService resourceService;
   @Mock
-  private BatchReindexService batchReindexService;
+  private BatchIndexService batchIndexService;
 
   @BeforeEach
   public void setUp() {
@@ -44,11 +46,13 @@ class ReindexServiceTest {
   void reindexFull_shouldReindexAllWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
     // given
     var notIndexedWorkPage = mock(Page.class);
+    var workStream = Stream.of(new Resource());
     when(resourceRepository.findAllByType(eq(Set.of(WORK.getUri())), any(Pageable.class)))
       .thenReturn(notIndexedWorkPage);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
-    when(batchReindexService.batchReindex(notIndexedWorkPage))
-      .thenReturn(new BatchReindexResult(1, Set.of(1L, 2L)));
+    when(notIndexedWorkPage.get()).thenReturn(workStream);
+    when(batchIndexService.index(workStream))
+      .thenReturn(new BatchIndexResult(1, Set.of(1L, 2L)));
 
     // when
     reindexService.reindex(true);
@@ -61,11 +65,13 @@ class ReindexServiceTest {
   void reindexNotFull_shouldReindexNotIndexedWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
     // given
     var notIndexedWorkPage = mock(Page.class);
+    var workStream = Stream.of(new Resource());
     when(resourceRepository.findNotIndexedByType(eq(Set.of(WORK.getUri())), any(Pageable.class)))
       .thenReturn(notIndexedWorkPage);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
-    when(batchReindexService.batchReindex(notIndexedWorkPage))
-      .thenReturn(new BatchReindexResult(1, Set.of(1L, 2L)));
+    when(notIndexedWorkPage.get()).thenReturn(workStream);
+    when(batchIndexService.index(workStream))
+      .thenReturn(new BatchIndexResult(1, Set.of(1L, 2L)));
 
     // when
     reindexService.reindex(false);

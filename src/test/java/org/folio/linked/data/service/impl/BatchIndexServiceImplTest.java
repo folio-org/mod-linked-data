@@ -2,7 +2,6 @@ package org.folio.linked.data.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,11 +19,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class BatchReindexServiceImplTest {
+class BatchIndexServiceImplTest {
 
   @Mock
   private KafkaSender kafkaSender;
@@ -34,31 +32,29 @@ class BatchReindexServiceImplTest {
   private EntityManager entityManager;
 
   @InjectMocks
-  private BatchReindexServiceImpl batchReindexService;
+  private BatchIndexServiceImpl batchIndexService;
 
   @Test
-  void batchReindex_shouldReturnNumberOfIndexedWorks_andIdsOfWorksThatWereProcessedWithoutException() {
+  void index_shouldReturnNumberOfIndexedResources_andIdsOfResourcesThatWereProcessedWithoutException() {
     //given
-    var workPage = mock(Page.class);
-    var indexedWork = new Resource().setId(1L);
-    var workIndex = new BibframeIndex("1");
-    var notIndexedWork = new Resource().setId(2L);
-    var workThatWasProcessedWithException = new Resource().setId(3L);
-    var workStream = Stream.of(indexedWork, notIndexedWork, workThatWasProcessedWithException);
+    var indexedResource = new Resource().setId(1L);
+    var resourceIndex = new BibframeIndex("1");
+    var notIndexedResource = new Resource().setId(2L);
+    var resourceThatWasProcessedWithException = new Resource().setId(3L);
+    var resources = Stream.of(indexedResource, notIndexedResource, resourceThatWasProcessedWithException);
 
-    when(workPage.get()).thenReturn(workStream);
-    when(kafkaMessageMapper.toIndex(indexedWork, CREATE)).thenReturn(Optional.of(workIndex));
-    when(kafkaMessageMapper.toIndex(notIndexedWork, CREATE)).thenReturn(Optional.empty());
-    when(kafkaMessageMapper.toIndex(workThatWasProcessedWithException, CREATE)).thenThrow(new RuntimeException());
+    when(kafkaMessageMapper.toIndex(indexedResource, CREATE)).thenReturn(Optional.of(resourceIndex));
+    when(kafkaMessageMapper.toIndex(notIndexedResource, CREATE)).thenReturn(Optional.empty());
+    when(kafkaMessageMapper.toIndex(resourceThatWasProcessedWithException, CREATE)).thenThrow(new RuntimeException());
 
     //when
-    var result = batchReindexService.batchReindex(workPage);
+    var result = batchIndexService.index(resources);
 
     //then
     assertThat(result.recordsIndexed()).isEqualTo(1);
     assertThat(result.indexedIds()).isEqualTo(Set.of(1L, 2L));
-    verify(kafkaSender).sendResourceCreated(workIndex, false);
-    verify(entityManager).detach(indexedWork);
-    verify(entityManager).detach(notIndexedWork);
+    verify(kafkaSender).sendResourceCreated(resourceIndex, false);
+    verify(entityManager).detach(indexedResource);
+    verify(entityManager).detach(notIndexedResource);
   }
 }
