@@ -5,6 +5,7 @@ import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 
 import jakarta.persistence.EntityManager;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class BatchReindexServiceImpl implements BatchReindexService {
 
   @Override
   public BatchReindexResult batchReindex(Page<Resource> page) {
-    var recordsIndexed = new AtomicLong(0);
+    var recordsIndexed = new AtomicInteger(0);
     var indexedIds = page.get()
       .map(work -> {
           try {

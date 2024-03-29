@@ -8,5 +8,5 @@ public interface BatchReindexService {
 
   BatchReindexResult batchReindex(Page<Resource> page);
 
-  record BatchReindexResult(long recordsIndexed, Set<Long> indexedIds) {}
+  record BatchReindexResult(int recordsIndexed, Set<Long> indexedIds) {}
 }
