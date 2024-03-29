@@ -39,7 +39,7 @@ public class ReindexServiceImpl implements ReindexService {
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
   public void reindex(Boolean full) {
     Pageable pageable = PageRequest.of(0, reindexPageSize, Sort.by("id"));
-    var recordsIndexed = 0;
+    var recordsIndexed = 0L;
     while (pageable.isPaged()) {
       var page = TRUE.equals(full)
         ? resourceRepository.findAllByType(Set.of(WORK.getUri()), pageable)
