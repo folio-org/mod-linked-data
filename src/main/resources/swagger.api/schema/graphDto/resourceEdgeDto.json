@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Edges",
+  "type": "object",
+  "properties": {
+    "total_elements": {
+      "type": "integer",
+      "description": "Total number of elements in the edges map."
+    },
+    "edges": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    }
+  },
+  "required": ["total_elements", "edges"]
+}

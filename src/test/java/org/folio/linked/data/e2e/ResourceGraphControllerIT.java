@@ -30,6 +30,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
 class ResourceGraphControllerIT {
@@ -60,32 +61,53 @@ class ResourceGraphControllerIT {
     var providerEvent = MonographTestUtil.providerEvent("production");
     var date = Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55"));
     providerEvent.setIndexDate(date);
-    var existingResource = resourceTestService.saveGraph(providerEvent);
-    var requestBuilder = get("/graph/resource/" + existingResource.getId())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
+    var providerEventResource = resourceTestService.saveGraph(providerEvent);
 
     // when
-    var resultActions = mockMvc.perform(requestBuilder);
+    var providerEventResultActions = performGet(providerEventResource.getId());
 
     // then
-    var response = resultActions
+    var providerEventResponse = providerEventResultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
-    var resourceGraphDto = objectMapper.readValue(response, ResourceGraphDto.class);
+    var providerEventGraphDto = objectMapper.readValue(providerEventResponse, ResourceGraphDto.class);
 
-    assertNotNull(resourceGraphDto.getId());
-    assertEquals(List.of(PROVIDER_EVENT.getUri()), resourceGraphDto.getTypes());
+    assertNotNull(providerEventGraphDto.getId());
+    assertEquals(List.of(PROVIDER_EVENT.getUri()), providerEventGraphDto.getTypes());
     assertEquals("production name",
-      ((Map<String, List<String>>) resourceGraphDto.getDoc()).get(NAME.getValue()).get(0));
+      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(NAME.getValue()).get(0));
     assertEquals("production provider date",
-      ((Map<String, List<String>>) resourceGraphDto.getDoc()).get(PROVIDER_DATE.getValue()).get(0));
+      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(PROVIDER_DATE.getValue()).get(0));
     assertEquals("production simple place",
-      ((Map<String, List<String>>) resourceGraphDto.getDoc()).get(SIMPLE_PLACE.getValue()).get(0));
-    assertEquals("production name", resourceGraphDto.getLabel());
-    assertNotNull(
-      ((Map<String, List<String>>) resourceGraphDto.getOutgoingEdges()).get(PROVIDER_PLACE.getUri()).get(0));
-    assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(date), resourceGraphDto.getIndexDate());
+      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(SIMPLE_PLACE.getValue()).get(0));
+    assertEquals("production name", providerEventGraphDto.getLabel());
+    var providerPlaceHash = (providerEventGraphDto.getOutgoingEdges()).getEdges()
+      .get(PROVIDER_PLACE.getUri()).get(0);
+    assertNotNull(providerPlaceHash);
+    assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(date),
+      providerEventGraphDto.getIndexDate());
+    assertEquals(0, providerEventGraphDto.getIncomingEdges().getTotalElements()); // No incoming edges to ProviderEvent
+    assertEquals(1, providerEventGraphDto.getOutgoingEdges().getTotalElements()); // 1 outgoing edge to Place resource
+
+    var providerPlaceResultActions = performGet(providerPlaceHash);
+    var providerPlaceResponse = providerPlaceResultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    var providerPlaceGraphDto = objectMapper.readValue(providerPlaceResponse, ResourceGraphDto.class);
+    var providerPlaceSourceHash = providerPlaceGraphDto.getIncomingEdges().getEdges()
+      .get(PROVIDER_PLACE.getUri()).get(0);
+    assertEquals(providerPlaceSourceHash, providerEventResource.getId());
+    assertEquals(1, providerPlaceGraphDto.getIncomingEdges().getTotalElements()); // 1 incoming edge from ProviderEvent
+    assertEquals(0, providerPlaceGraphDto.getOutgoingEdges().getTotalElements()); // No outgoing edges from Place
+  }
+
+  private ResultActions performGet(Long resourceId) throws Exception {
+    var requestBuilder = get("/graph/resource/" + resourceId)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    return mockMvc.perform(requestBuilder);
   }
 }

@@ -49,8 +49,8 @@ class ResourceDtoMapperTest {
     assertEquals(resource.getTypes().iterator().next().getUri(), resourceGraphDto.getTypes().get(0));
     assertEquals(resource.getDoc(), resourceGraphDto.getDoc());
     assertEquals(resource.getLabel(), resourceGraphDto.getLabel());
-    assertEquals(String.valueOf(resource.getOutgoingEdges().iterator().next().getTarget().getId()),
-      ((Map<String, List<String>>) resourceGraphDto.getOutgoingEdges())
+    assertEquals(resource.getOutgoingEdges().iterator().next().getTarget().getId(),
+      resourceGraphDto.getOutgoingEdges().getEdges()
         .get(resource.getOutgoingEdges().iterator().next().getPredicate().getUri()).get(0));
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(resource.getIndexDate()),
       resourceGraphDto.getIndexDate());

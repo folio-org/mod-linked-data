@@ -24,7 +24,13 @@
     },
     "outgoingEdges": {
       "type": "object",
-      "description": "Predicate and the IDs of the resources to which that predicate points to"
+      "$ref": "resourceEdgeDto.json",
+      "description": "List of outgoing edges. A maximum of 1000 edges will be included in response."
+    },
+    "incomingEdges": {
+      "type": "object",
+      "$ref": "resourceEdgeDto.json",
+      "description": "List of incoming edges. A maximum of 1000 edges will be included in response."
     },
     "indexDate": {
       "type": "string",
