@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @Profile(SEARCH_PROFILE)
 @RequiredArgsConstructor
 public class BatchIndexServiceImpl implements BatchIndexService {
