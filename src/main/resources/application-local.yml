@@ -9,3 +9,9 @@ spring:
         config:
           search:
             url: http://localhost:8085/search
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info,health,liquibase,threaddump,heapdump,loggers,env,httptrace,metrics,prometheus,beans

@@ -14,9 +14,6 @@
   <include file="tables/resource_generator_map.sql" relativeToChangelogFile="true"/>
   <include file="tables/initial_partitions.sql" relativeToChangelogFile="true"/>
 
-  <include file="data/insert-mod-linked-data-monograph-predicates.xml" relativeToChangelogFile="true"/>
-  <include file="data/insert-mod-linked-data-monograph-types.xml" relativeToChangelogFile="true"/>
-
   <include file="functions/drop_staging_tables.sql" relativeToChangelogFile="true"/>
   <include file="functions/create_staging_tables.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
