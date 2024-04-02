@@ -336,7 +336,8 @@ class ResourceControllerIT {
     assertThat(updatedWork.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo(newlyAddedSummary);
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
-    checkKafkaMessage(Long.valueOf(id), UPDATE);
+    checkKafkaMessage(originalWork.getId(), DELETE);
+    checkKafkaMessage(Long.valueOf(id), CREATE);
   }
 
   @Test
@@ -673,9 +674,9 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
         .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
         .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationCode(workBase), equalTo("a")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationTerm(workBase), equalTo("Autonomous")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
+        .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
+        .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
+        .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
         .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
         .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
         .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
@@ -1554,15 +1555,15 @@ class ResourceControllerIT {
     return join(".", workBase, arrayPath(DATE_END.getValue()));
   }
 
-  private String toWorkGovernmentPublicationCode(String workBase) {
+  private String toWorkGovPublicationCode(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(CODE.getValue()));
   }
 
-  private String toWorkGovernmentPublicationTerm(String workBase) {
+  private String toWorkGovPublicationTerm(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(TERM.getValue()));
   }
 
-  private String toWorkGovernmentPublicationLink(String workBase) {
+  private String toWorkGovPublicationLink(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(LINK.getValue()));
   }
 

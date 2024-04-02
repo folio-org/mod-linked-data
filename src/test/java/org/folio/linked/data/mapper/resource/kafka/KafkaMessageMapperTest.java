@@ -155,6 +155,18 @@ class KafkaMessageMapperTest {
   }
 
   @Test
+  void toDeleteIndex_shouldReturnEmptyOptional_ifGivenWorkIdIsNull() {
+    // given
+    var work = new Resource().addType(WORK);
+
+    // when
+    var result = kafkaMessageMapper.toDeleteIndexId(work);
+
+    // then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
   void toDeleteIndex_shouldReturnCorrectlyMappedId_fromWork() {
     // given
     var work = getSampleWork(null);
