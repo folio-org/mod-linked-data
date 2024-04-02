@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.monograph.instance.sub.title;
+package org.folio.linked.data.mapper.dto.monograph.common.title;
 
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
@@ -19,9 +19,10 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
+import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = PARALLEL_TITLE, predicate = TITLE, dtoClass = ParallelTitleField.class)
-public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMapperUnit {
+public class ParallelTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
@@ -41,8 +42,14 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     }
-    if (parentDto instanceof InstanceReference instance) {
-      instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+    if (parentDto instanceof InstanceReference instanceReference) {
+      instanceReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+    }
+    if (parentDto instanceof Work work) {
+      work.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+    }
+    if (parentDto instanceof WorkReference workReference) {
+      workReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     }
     return parentDto;
   }
@@ -68,5 +75,4 @@ public class InstanceParallelTitleMapperUnit implements InstanceSubResourceMappe
     putProperty(map, NOTE, dto.getNote());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
-
 }

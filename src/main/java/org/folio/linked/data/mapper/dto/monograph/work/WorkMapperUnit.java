@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
@@ -21,10 +22,10 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMEN
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -32,10 +33,11 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkAllOfTitle;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.ResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
@@ -44,10 +46,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = WORK, dtoClass = WorkField.class)
-public class WorkMapperUnit implements SingleResourceMapperUnit {
+public class WorkMapperUnit extends ResourceMapperUnit<WorkAllOfTitle> {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(ResourceDto.class);
+
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
   private final HashService hashService;
@@ -69,6 +71,8 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     var work = new Resource();
     work.addType(WORK);
     work.setDoc(getDoc(workDto));
+    work.setLabel(getFirstValue(() -> getPossibleLabels(workDto.getTitle())));
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getTitle(), TITLE);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getContent(), CONTENT);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getSubjects(), SUBJECT);
@@ -93,11 +97,6 @@ public class WorkMapperUnit implements SingleResourceMapperUnit {
     putProperty(map, DATE_END, dto.getDateEnd());
     noteMapper.putNotes(dto.getNotes(), map);
     return map.isEmpty() ? null : coreMapper.toJson(map);
-  }
-
-  @Override
-  public Set<Class<?>> supportedParents() {
-    return SUPPORTED_PARENTS;
   }
 
 }

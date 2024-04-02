@@ -14,11 +14,11 @@
             "oneOf": [
               {
                 "type": "object",
-                "title": "InstanceTitleField",
+                "title": "BasicTitleField",
                 "properties": {
-                  "InstanceTitle": {
+                  "BasicTitle": {
                     "type": "object",
-                    "$ref": "title/InstanceTitle.json",
+                    "$ref": "title/BasicTitle.json",
                     "x-json-property": "http://bibfra.me/vocab/marc/Title"
                   }
                 }

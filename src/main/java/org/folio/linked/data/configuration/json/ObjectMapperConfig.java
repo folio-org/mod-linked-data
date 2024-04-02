@@ -10,12 +10,16 @@ import org.folio.linked.data.configuration.json.deserialization.event.DataImport
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceReferenceTitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceTitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.MapDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.work.WorkReferenceTitleDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.work.WorkTitleDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
 import org.folio.linked.data.domain.dto.InstanceAllOfMap;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceReferenceAllOfTitle;
 import org.folio.linked.data.domain.dto.MarkRecord;
 import org.folio.linked.data.domain.dto.ResourceField;
+import org.folio.linked.data.domain.dto.WorkAllOfTitle;
+import org.folio.linked.data.domain.dto.WorkReferenceAllOfTitle;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +46,8 @@ public class ObjectMapperConfig {
     module.addDeserializer(ResourceField.class, new ResourceFieldDeserializer());
     module.addDeserializer(InstanceAllOfTitle.class, new InstanceTitleDeserializer());
     module.addDeserializer(InstanceReferenceAllOfTitle.class, new InstanceReferenceTitleDeserializer());
+    module.addDeserializer(WorkAllOfTitle.class, new WorkTitleDeserializer());
+    module.addDeserializer(WorkReferenceAllOfTitle.class, new WorkReferenceTitleDeserializer());
     module.addDeserializer(InstanceAllOfMap.class, new MapDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;

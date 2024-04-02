@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.dto.monograph.instance;
 
-import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
@@ -38,23 +37,18 @@ import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceField;
-import org.folio.linked.data.domain.dto.InstanceTitleField;
-import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.ResourceDto;
-import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.ResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
@@ -63,13 +57,12 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = INSTANCE, dtoClass = InstanceField.class)
-public class InstanceMapperUnit implements SingleResourceMapperUnit {
+public class InstanceMapperUnit extends ResourceMapperUnit<InstanceAllOfTitle> {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(ADDITIONAL_PHYSICAL_FORM, COMPUTER_DATA_NOTE,
     DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION, ISSUANCE_NOTE, ISSUING_BODY,
     LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE, RELATED_PARTS, REPRODUCTION_NOTE, TYPE_OF_REPORT,
     WITH_NOTE);
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(ResourceDto.class);
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
@@ -95,7 +88,7 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
     var instance = new Resource();
     instance.addType(INSTANCE);
     instance.setDoc(getDoc(instanceDto));
-    instance.setLabel(getFirstValue(() -> getPossibleLabels(instanceDto)));
+    instance.setLabel(getFirstValue(() -> getPossibleLabels(instanceDto.getTitle())));
     instance.setInventoryId(instanceDto.getInventoryId());
     instance.setSrsId(instanceDto.getSrsId());
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getTitle(), TITLE);
@@ -112,34 +105,6 @@ public class InstanceMapperUnit implements SingleResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getWorkReference(), INSTANTIATES);
     instance.setId(hashService.hash(instance));
     return instance;
-  }
-
-  @Override
-  public Set<Class<?>> supportedParents() {
-    return SUPPORTED_PARENTS;
-  }
-
-  private List<String> getPossibleLabels(Instance instance) {
-    if (isNull(instance.getTitle())) {
-      return new ArrayList<>();
-    }
-    return instance.getTitle().stream()
-      .sorted(Comparator.comparing(o -> o.getClass().getSimpleName()))
-      .map(t -> {
-        if (t instanceof InstanceTitleField instanceTitleField) {
-          var instanceTitle = instanceTitleField.getInstanceTitle();
-          return getFirstValue(instanceTitle::getMainTitle);
-        }
-        if (t instanceof ParallelTitleField parallelTitleField) {
-          var parallelTitle = parallelTitleField.getParallelTitle();
-          return getFirstValue(parallelTitle::getMainTitle);
-        }
-        if (t instanceof VariantTitleField variantTitleField) {
-          var variantTitle = variantTitleField.getVariantTitle();
-          return getFirstValue(variantTitle::getMainTitle);
-        }
-        return "";
-      }).toList();
   }
 
   private JsonNode getDoc(Instance dto) {

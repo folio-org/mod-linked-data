@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.monograph.instance.sub.title;
+package org.folio.linked.data.mapper.dto.monograph.common.title;
 
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
@@ -20,9 +20,10 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
+import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = VARIANT_TITLE, predicate = TITLE, dtoClass = VariantTitleField.class)
-public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapperUnit {
+public class VariantTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
@@ -42,8 +43,14 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
-    if (parentDto instanceof InstanceReference instance) {
-      instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    if (parentDto instanceof InstanceReference instanceReference) {
+      instanceReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    }
+    if (parentDto instanceof Work work) {
+      work.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    }
+    if (parentDto instanceof WorkReference workReference) {
+      workReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
     return parentDto;
   }
@@ -70,5 +77,4 @@ public class InstanceVariantTitleMapperUnit implements InstanceSubResourceMapper
     putProperty(map, NOTE, dto.getNote());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
-
 }

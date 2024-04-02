@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.monograph.instance.sub.title;
+package org.folio.linked.data.mapper.dto.monograph.common.title;
 
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
@@ -14,50 +14,57 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.linked.data.domain.dto.BasicTitle;
+import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
-import org.folio.linked.data.domain.dto.InstanceTitle;
-import org.folio.linked.data.domain.dto.InstanceTitleField;
+import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = TITLE, predicate = PredicateDictionary.TITLE, dtoClass = InstanceTitleField.class)
-public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
+@MapperUnit(type = TITLE, predicate = PredicateDictionary.TITLE, dtoClass = BasicTitleField.class)
+public class BasicTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var instanceTitle = coreMapper.toDtoWithEdges(source, InstanceTitle.class, false);
-    instanceTitle.setId(String.valueOf(source.getId()));
+    var basicTitle = coreMapper.toDtoWithEdges(source, BasicTitle.class, false);
+    basicTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
-      instance.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
+      instance.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     }
-    if (parentDto instanceof InstanceReference instance) {
-      instance.addTitleItem(new InstanceTitleField().instanceTitle(instanceTitle));
+    if (parentDto instanceof InstanceReference instanceReference) {
+      instanceReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
+    }
+    if (parentDto instanceof Work work) {
+      work.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
+    }
+    if (parentDto instanceof WorkReference workReference) {
+      workReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     }
     return parentDto;
   }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var instanceTitle = ((InstanceTitleField) dto).getInstanceTitle();
+    var basicTitle = ((BasicTitleField) dto).getBasicTitle();
     var resource = new Resource();
-    resource.setLabel(getFirstValue(instanceTitle::getMainTitle));
+    resource.setLabel(getFirstValue(basicTitle::getMainTitle));
     resource.addType(TITLE);
-    resource.setDoc(getDoc(instanceTitle));
+    resource.setDoc(getDoc(basicTitle));
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(InstanceTitle dto) {
+  private JsonNode getDoc(BasicTitle dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, PART_NAME, dto.getPartName());
     putProperty(map, PART_NUMBER, dto.getPartNumber());
@@ -66,5 +73,4 @@ public class InstanceTitleMapperUnit implements InstanceSubResourceMapperUnit {
     putProperty(map, SUBTITLE, dto.getSubTitle());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
-
 }

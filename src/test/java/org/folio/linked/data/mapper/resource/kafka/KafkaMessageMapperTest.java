@@ -222,7 +222,12 @@ class KafkaMessageMapperTest {
 
   private void validateWork(BibframeIndex result, Resource work, Resource wrongContributor, int instancesExpected) {
     assertThat(result.getId()).isEqualTo(work.getId().toString());
-    assertThat(result.getTitles()).isEmpty();
+    assertTitle(result.getTitles().get(0), "Basic: mainTitle", MAIN);
+    assertTitle(result.getTitles().get(1), "Basic: subTitle", SUB);
+    assertTitle(result.getTitles().get(2), "Parallel: mainTitle", MAIN);
+    assertTitle(result.getTitles().get(3), "Parallel: subTitle", SUB);
+    assertTitle(result.getTitles().get(4), "Variant: mainTitle", MAIN);
+    assertTitle(result.getTitles().get(5), "Variant: subTitle", SUB);
     assertThat(result.getContributors()).hasSize(9);
     assertContributor(result.getContributors().get(0), "name-PERSON", PERSON, true);
     assertContributor(result.getContributors().get(1), "name-MEETING", MEETING, true);
@@ -248,8 +253,8 @@ class KafkaMessageMapperTest {
 
   private void validateInstance(BibframeInstancesInner instanceIndex, Resource instance) {
     assertThat(instanceIndex.getId()).isEqualTo(instance.getId().toString());
-    assertTitle(instanceIndex.getTitles().get(0), "Instance: mainTitle" + instance.getId(), MAIN);
-    assertTitle(instanceIndex.getTitles().get(1), "Instance: subTitle", SUB);
+    assertTitle(instanceIndex.getTitles().get(0), "Basic: mainTitle" + instance.getId(), MAIN);
+    assertTitle(instanceIndex.getTitles().get(1), "Basic: subTitle", SUB);
     assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN);
     assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB);
     assertTitle(instanceIndex.getTitles().get(4), "Variant: mainTitle", MAIN);

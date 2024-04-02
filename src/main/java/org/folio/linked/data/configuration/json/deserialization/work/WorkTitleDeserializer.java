@@ -1,4 +1,4 @@
-package org.folio.linked.data.configuration.json.deserialization.instance;
+package org.folio.linked.data.configuration.json.deserialization.work;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
@@ -14,12 +14,13 @@ import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.VariantTitleField;
+import org.folio.linked.data.domain.dto.WorkAllOfTitle;
 import org.folio.linked.data.exception.JsonException;
 
-public class InstanceTitleDeserializer extends JsonDeserializer<InstanceAllOfTitle> {
+public class WorkTitleDeserializer extends JsonDeserializer<WorkAllOfTitle> {
 
   @Override
-  public InstanceAllOfTitle deserialize(JsonParser jp, DeserializationContext deserializationContext)
+  public WorkAllOfTitle deserialize(JsonParser jp, DeserializationContext deserializationContext)
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     if (node.has(TITLE.getUri())) {
