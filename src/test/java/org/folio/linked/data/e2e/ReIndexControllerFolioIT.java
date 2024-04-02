@@ -8,6 +8,7 @@ import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
@@ -54,7 +55,10 @@ class ReIndexControllerFolioIT {
   void indexResourceWithNoIndexDate_andNotFullIndexRequest() throws Exception {
     // given
     var work = resourceRepo.save(getSampleWork(null));
-    resourceRepo.save(getSampleInstanceResource(null, work));
+    var instance = resourceRepo.save(getSampleInstanceResource(null, work));
+    var anotherWork = getSampleWork(instance);
+    anotherWork.setId(randomLong());
+    resourceRepo.save(anotherWork);
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)

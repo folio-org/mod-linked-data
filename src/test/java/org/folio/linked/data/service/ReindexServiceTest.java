@@ -1,22 +1,18 @@
 package org.folio.linked.data.service;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import jakarta.persistence.EntityManager;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.folio.linked.data.mapper.kafka.KafkaMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.BatchIndexService.BatchIndexResult;
 import org.folio.linked.data.service.impl.ReindexServiceImpl;
-import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.test.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,66 +33,50 @@ class ReindexServiceTest {
   @Mock
   private ResourceRepository resourceRepository;
   @Mock
-  private KafkaSender kafkaSender;
-  @Mock
-  private KafkaMessageMapper kafkaMessageMapper;
-  @Mock
   private ResourceService resourceService;
   @Mock
-  private EntityManager entityManager;
+  private BatchIndexService batchIndexService;
 
   @BeforeEach
   public void setUp() {
-    ReflectionTestUtils.setField(reindexService, "reindexPageSize", "100");
+    ReflectionTestUtils.setField(reindexService, "reindexPageSize", 100);
   }
 
   @Test
-  void reindexFull_shouldSendAllIndexableWorksToKafka_detachAndSaveWithIndexDateAllWorks() {
+  void reindexFull_shouldReindexAllWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
     // given
     var notIndexedWorkPage = mock(Page.class);
+    var workStream = Stream.of(new Resource());
     when(resourceRepository.findAllByType(eq(Set.of(WORK.getUri())), any(Pageable.class)))
       .thenReturn(notIndexedWorkPage);
-    var indexableWork1 = new Resource().setId(1L);
-    var notIndexableWork2 = new Resource().setId(2L);
-    var notIndexedWorkStream = Stream.of(indexableWork1, notIndexableWork2);
-    when(notIndexedWorkPage.get()).thenReturn(notIndexedWorkStream);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
-    var work1Index = new BibframeIndex("1");
-    when(kafkaMessageMapper.toIndex(indexableWork1, CREATE)).thenReturn(Optional.of(work1Index));
-    when(kafkaMessageMapper.toIndex(notIndexableWork2, CREATE)).thenReturn(Optional.empty());
+    when(notIndexedWorkPage.get()).thenReturn(workStream);
+    when(batchIndexService.index(workStream))
+      .thenReturn(new BatchIndexResult(1, Set.of(1L, 2L)));
 
     // when
     reindexService.reindex(true);
 
     // then
-    verify(kafkaSender).sendResourceCreated(work1Index, false);
-    verify(entityManager).detach(indexableWork1);
-    verify(entityManager).detach(notIndexableWork2);
     verify(resourceService).updateIndexDateBatch(Set.of(1L, 2L));
   }
 
   @Test
-  void reindexNotFull_shouldSendNotIndexedIndexableWorksToKafka_detachAndSaveWithIndexDateAllWorks() {
+  void reindexNotFull_shouldReindexNotIndexedWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
     // given
     var notIndexedWorkPage = mock(Page.class);
+    var workStream = Stream.of(new Resource());
     when(resourceRepository.findNotIndexedByType(eq(Set.of(WORK.getUri())), any(Pageable.class)))
       .thenReturn(notIndexedWorkPage);
-    var indexableWork1 = new Resource().setId(1L);
-    var notIndexableWork2 = new Resource().setId(2L);
-    var notIndexedWorkStream = Stream.of(indexableWork1, notIndexableWork2);
-    when(notIndexedWorkPage.get()).thenReturn(notIndexedWorkStream);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
-    var work1Index = new BibframeIndex("1");
-    when(kafkaMessageMapper.toIndex(indexableWork1, CREATE)).thenReturn(Optional.of(work1Index));
-    when(kafkaMessageMapper.toIndex(notIndexableWork2, CREATE)).thenReturn(Optional.empty());
+    when(notIndexedWorkPage.get()).thenReturn(workStream);
+    when(batchIndexService.index(workStream))
+      .thenReturn(new BatchIndexResult(1, Set.of(1L, 2L)));
 
     // when
     reindexService.reindex(false);
 
     // then
-    verify(kafkaSender).sendResourceCreated(work1Index, false);
-    verify(entityManager).detach(indexableWork1);
-    verify(entityManager).detach(notIndexableWork2);
     verify(resourceService).updateIndexDateBatch(Set.of(1L, 2L));
   }
 
