@@ -33,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkAllOfTitle;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -46,7 +45,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = WORK, dtoClass = WorkField.class)
-public class WorkMapperUnit extends ResourceMapperUnit<WorkAllOfTitle> {
+public class WorkMapperUnit extends ResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
 

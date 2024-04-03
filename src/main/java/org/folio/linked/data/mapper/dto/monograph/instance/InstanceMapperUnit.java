@@ -43,7 +43,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
@@ -57,7 +56,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = INSTANCE, dtoClass = InstanceField.class)
-public class InstanceMapperUnit extends ResourceMapperUnit<InstanceAllOfTitle> {
+public class InstanceMapperUnit extends ResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(ADDITIONAL_PHYSICAL_FORM, COMPUTER_DATA_NOTE,
     DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION, ISSUANCE_NOTE, ISSUING_BODY,

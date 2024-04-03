@@ -40,14 +40,11 @@ public class BasicTitleMapperUnit extends TitleMapperUnit {
     basicTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
-    }
-    if (parentDto instanceof InstanceReference instanceReference) {
+    } else if (parentDto instanceof InstanceReference instanceReference) {
       instanceReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
-    }
-    if (parentDto instanceof Work work) {
+    } else if (parentDto instanceof Work work) {
       work.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
-    }
-    if (parentDto instanceof WorkReference workReference) {
+    } else if (parentDto instanceof WorkReference workReference) {
       workReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     }
     return parentDto;

@@ -42,14 +42,11 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
     variantTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
-    }
-    if (parentDto instanceof InstanceReference instanceReference) {
+    } else if (parentDto instanceof InstanceReference instanceReference) {
       instanceReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
-    }
-    if (parentDto instanceof Work work) {
+    } else if (parentDto instanceof Work work) {
       work.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
-    }
-    if (parentDto instanceof WorkReference workReference) {
+    } else if (parentDto instanceof WorkReference workReference) {
       workReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
     return parentDto;

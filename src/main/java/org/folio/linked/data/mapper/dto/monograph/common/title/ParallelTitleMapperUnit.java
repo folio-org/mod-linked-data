@@ -41,14 +41,11 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
     parallelTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
       instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
-    }
-    if (parentDto instanceof InstanceReference instanceReference) {
+    } else if (parentDto instanceof InstanceReference instanceReference) {
       instanceReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
-    }
-    if (parentDto instanceof Work work) {
+    } else if (parentDto instanceof Work work) {
       work.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
-    }
-    if (parentDto instanceof WorkReference workReference) {
+    } else if (parentDto instanceof WorkReference workReference) {
       workReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     }
     return parentDto;

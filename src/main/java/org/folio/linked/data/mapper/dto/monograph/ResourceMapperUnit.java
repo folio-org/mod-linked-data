@@ -11,10 +11,11 @@ import java.util.Set;
 import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.TitleTitleInner;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 
-public abstract class ResourceMapperUnit<T> implements SingleResourceMapperUnit {
+public abstract class ResourceMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(ResourceDto.class);
 
@@ -23,26 +24,28 @@ public abstract class ResourceMapperUnit<T> implements SingleResourceMapperUnit 
     return SUPPORTED_PARENTS;
   }
 
-  protected List<String> getPossibleLabels(List<T> titles) {
+  protected List<String> getPossibleLabels(List<TitleTitleInner> titles) {
     if (isNull(titles)) {
       return new ArrayList<>();
     }
     return titles.stream()
       .sorted(Comparator.comparing(o -> o.getClass().getSimpleName()))
-      .map(t -> {
-        if (t instanceof BasicTitleField basicTitleField) {
-          var basicTitle = basicTitleField.getBasicTitle();
-          return getFirstValue(basicTitle::getMainTitle);
-        }
-        if (t instanceof ParallelTitleField parallelTitleField) {
-          var parallelTitle = parallelTitleField.getParallelTitle();
-          return getFirstValue(parallelTitle::getMainTitle);
-        }
-        if (t instanceof VariantTitleField variantTitleField) {
-          var variantTitle = variantTitleField.getVariantTitle();
-          return getFirstValue(variantTitle::getMainTitle);
-        }
-        return "";
-      }).toList();
+      .map(ResourceMapperUnit::getMainTitle).toList();
+  }
+
+  private static String getMainTitle(TitleTitleInner t) {
+    if (t instanceof BasicTitleField basicTitleField) {
+      var basicTitle = basicTitleField.getBasicTitle();
+      return getFirstValue(basicTitle::getMainTitle);
+    }
+    if (t instanceof ParallelTitleField parallelTitleField) {
+      var parallelTitle = parallelTitleField.getParallelTitle();
+      return getFirstValue(parallelTitle::getMainTitle);
+    }
+    if (t instanceof VariantTitleField variantTitleField) {
+      var variantTitle = variantTitleField.getVariantTitle();
+      return getFirstValue(variantTitle::getMainTitle);
+    }
+    return "";
   }
 }

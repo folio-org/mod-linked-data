@@ -9,8 +9,12 @@ import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 
 public abstract class TitleMapperUnit implements SingleResourceMapperUnit {
 
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Instance.class, InstanceReference.class, Work.class,
-    WorkReference.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
+    Instance.class,
+    InstanceReference.class,
+    Work.class,
+    WorkReference.class
+  );
 
   @Override
   public Set<Class<?>> supportedParents() {
