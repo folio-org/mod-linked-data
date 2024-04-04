@@ -1,13 +1,15 @@
 package org.folio.linked.data.service;
 
-import org.folio.search.domain.dto.BibframeIndex;
+import org.folio.linked.data.model.entity.Resource;
 
 public interface KafkaSender {
 
-  void sendResourceCreated(BibframeIndex bibframeIndex, boolean isSingle);
+  void sendSingleResourceCreated(Resource resource);
 
-  void sendResourceUpdated(BibframeIndex newBibframeIndex, BibframeIndex oldBibframeIndex);
+  boolean sendMultipleResourceCreated(Resource resource);
 
-  void sendResourceDeleted(Long id);
+  void sendResourceUpdated(Resource newResource, Resource oldResource);
+
+  void sendResourceDeleted(Resource resource);
 
 }

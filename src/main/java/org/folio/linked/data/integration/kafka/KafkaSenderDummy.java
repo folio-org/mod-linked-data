@@ -4,8 +4,8 @@ import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.KafkaSender;
-import org.folio.search.domain.dto.BibframeIndex;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +16,23 @@ import org.springframework.stereotype.Service;
 public class KafkaSenderDummy implements KafkaSender {
 
   @Override
-  public void sendResourceCreated(BibframeIndex bibframeIndex, boolean isSingle) {
-    log.debug("sendResourceCreated is ignored by dummy kafka sender, because search feature is disabled");
+  public void sendSingleResourceCreated(Resource resource) {
+    log.debug("sendSingleResourceCreated is ignored by dummy kafka sender, because search feature is disabled");
   }
 
   @Override
-  public void sendResourceUpdated(BibframeIndex newBibframeIndex, BibframeIndex oldBibframeIndex) {
+  public boolean sendMultipleResourceCreated(Resource resource) {
+    log.debug("sendMultipleResourceCreated is ignored by dummy kafka sender, because search feature is disabled");
+    return false;
+  }
+
+  @Override
+  public void sendResourceUpdated(Resource newResource, Resource oldResource) {
     log.debug("sendResourceUpdated is ignored by dummy kafka sender, because search feature is disabled");
   }
 
   @Override
-  public void sendResourceDeleted(Long id) {
+  public void sendResourceDeleted(Resource resource) {
     log.debug("sendResourceDeleted is ignored by dummy kafka sender, because search feature is disabled");
   }
 }

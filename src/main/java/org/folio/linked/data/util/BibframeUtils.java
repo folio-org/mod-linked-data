@@ -1,6 +1,7 @@
 package org.folio.linked.data.util;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.model.ResourceType;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.search.domain.dto.BibframeIndex;
 
 @Log4j2
 @UtilityClass
@@ -66,6 +68,14 @@ public class BibframeUtils {
 
   public static boolean isOfType(Resource resource, ResourceType type) {
     return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(type.getUri()));
+  }
+
+  public static boolean isSameResource(BibframeIndex index, Resource resource) {
+    if (nonNull(index) && nonNull(resource) && nonNull(resource.getId())) {
+      return String.valueOf(resource.getId()).equals(index.getId());
+    } else {
+      return false;
+    }
   }
 
 }

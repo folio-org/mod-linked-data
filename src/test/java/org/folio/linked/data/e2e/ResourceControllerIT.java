@@ -123,7 +123,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -497,8 +496,8 @@ class ResourceControllerIT {
 
     //then
     assertTrue(resourceTestService.existsById(existedResource.getId()));
-    verify(kafkaSender, never()).sendResourceDeleted(existedResource.getId());
-    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
+    verify(kafkaSender, never()).sendResourceDeleted(existedResource);
+    verify(kafkaSender, never()).sendSingleResourceCreated(any());
   }
 
   @Test
