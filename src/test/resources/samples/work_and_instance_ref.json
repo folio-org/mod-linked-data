@@ -1,6 +1,74 @@
 {
   "resource": {
     "http://bibfra.me/vocab/lite/Work": {
+      "http://bibfra.me/vocab/marc/title": [
+        {
+          "http://bibfra.me/vocab/marc/Title": {
+            "http://bibfra.me/vocab/marc/partName": [
+              "Basic: partName"
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+              "Basic: partNumber"
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+              "Basic: mainTitle"
+            ],
+            "http://bibfra.me/vocab/bflc/nonSortNum": [
+              "Basic: nonSortNum"
+            ],
+            "http://bibfra.me/vocab/marc/subTitle": [
+              "Basic: subTitle"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/marc/ParallelTitle": {
+            "http://bibfra.me/vocab/marc/partName": [
+              "Parallel: partName"
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+              "Parallel: partNumber"
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+              "Parallel: mainTitle"
+            ],
+            "http://bibfra.me/vocab/lite/note": [
+              "Parallel: noteLabel"
+            ],
+            "http://bibfra.me/vocab/lite/date": [
+              "Parallel: date"
+            ],
+            "http://bibfra.me/vocab/marc/subTitle": [
+              "Parallel: subTitle"
+            ]
+          }
+        },
+        {
+          "http://bibfra.me/vocab/marc/VariantTitle": {
+            "http://bibfra.me/vocab/marc/partName": [
+              "Variant: partName"
+            ],
+            "http://bibfra.me/vocab/marc/partNumber": [
+              "Variant: partNumber"
+            ],
+            "http://bibfra.me/vocab/marc/mainTitle": [
+              "Variant: mainTitle"
+            ],
+            "http://bibfra.me/vocab/lite/note": [
+              "Variant: noteLabel"
+            ],
+            "http://bibfra.me/vocab/lite/date": [
+              "Variant: date"
+            ],
+            "http://bibfra.me/vocab/marc/subTitle": [
+              "Variant: subTitle"
+            ],
+            "http://bibfra.me/vocab/marc/variantType": [
+              "Variant: variantType"
+            ]
+          }
+        }
+      ],
       "http://bibfra.me/vocab/marc/responsibilityStatement": [
         "statement of responsibility"
       ],

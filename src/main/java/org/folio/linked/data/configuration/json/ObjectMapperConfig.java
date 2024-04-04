@@ -6,16 +6,14 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceFieldDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.TitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.InstanceReferenceTitleDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.InstanceTitleDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.MapDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
 import org.folio.linked.data.domain.dto.InstanceAllOfMap;
-import org.folio.linked.data.domain.dto.InstanceAllOfTitle;
-import org.folio.linked.data.domain.dto.InstanceReferenceAllOfTitle;
 import org.folio.linked.data.domain.dto.MarkRecord;
 import org.folio.linked.data.domain.dto.ResourceField;
+import org.folio.linked.data.domain.dto.TitleTitleInner;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +38,7 @@ public class ObjectMapperConfig {
   private Module monographModule(ObjectMapper mapper) {
     var module = new SimpleModule();
     module.addDeserializer(ResourceField.class, new ResourceFieldDeserializer());
-    module.addDeserializer(InstanceAllOfTitle.class, new InstanceTitleDeserializer());
-    module.addDeserializer(InstanceReferenceAllOfTitle.class, new InstanceReferenceTitleDeserializer());
+    module.addDeserializer(TitleTitleInner.class, new TitleDeserializer());
     module.addDeserializer(InstanceAllOfMap.class, new MapDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;

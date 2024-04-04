@@ -440,8 +440,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(45);
-    assertThat(resourceTestService.countEdges()).isEqualTo(47);
+    assertThat(resourceTestService.countResources()).isEqualTo(48);
+    assertThat(resourceTestService.countEdges()).isEqualTo(50);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -452,9 +452,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(44);
+    assertThat(resourceTestService.countResources()).isEqualTo(47);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(29);
+    assertThat(resourceTestService.countEdges()).isEqualTo(32);
     checkKafkaMessage(work.getId(), UPDATE);
   }
 
@@ -463,8 +463,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(45);
-    assertThat(resourceTestService.countEdges()).isEqualTo(47);
+    assertThat(resourceTestService.countResources()).isEqualTo(48);
+    assertThat(resourceTestService.countEdges()).isEqualTo(50);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -475,7 +475,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(44);
+    assertThat(resourceTestService.countResources()).isEqualTo(47);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(25);
     checkKafkaMessage(existed.getId(), DELETE);
@@ -535,11 +535,11 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("carrier code")))
       .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("carrier link")))
       .andExpect(jsonPath(toCarrierTerm(instanceBase), equalTo("carrier term")))
-      .andExpect(jsonPath(toInstanceTitlePartName(instanceBase), equalTo(List.of("Instance: partName"))))
-      .andExpect(jsonPath(toInstanceTitlePartNumber(instanceBase), equalTo(List.of("Instance: partNumber"))))
-      .andExpect(jsonPath(toInstanceTitleMain(instanceBase), equalTo(List.of("Instance: mainTitle"))))
-      .andExpect(jsonPath(toInstanceTitleNonSortNum(instanceBase), equalTo(List.of("Instance: nonSortNum"))))
-      .andExpect(jsonPath(toInstanceTitleSubtitle(instanceBase), equalTo(List.of("Instance: subTitle"))))
+      .andExpect(jsonPath(toBasicTitlePartName(instanceBase), equalTo(List.of("Basic: partName"))))
+      .andExpect(jsonPath(toBasicTitlePartNumber(instanceBase), equalTo(List.of("Basic: partNumber"))))
+      .andExpect(jsonPath(toBasicTitleMain(instanceBase), equalTo(List.of("Basic: mainTitle"))))
+      .andExpect(jsonPath(toBasicTitleNonSortNum(instanceBase), equalTo(List.of("Basic: nonSortNum"))))
+      .andExpect(jsonPath(toBasicTitleSubtitle(instanceBase), equalTo(List.of("Basic: subTitle"))))
       .andExpect(jsonPath(toParallelTitlePartName(instanceBase), equalTo(List.of("Parallel: partName"))))
       .andExpect(jsonPath(toParallelTitlePartNumber(instanceBase), equalTo(List.of("Parallel: partNumber"))))
       .andExpect(jsonPath(toParallelTitleMain(instanceBase), equalTo(List.of("Parallel: mainTitle"))))
@@ -633,6 +633,11 @@ class ResourceControllerIT {
   private void validateWorkResponse(ResultActions resultActions, String workBase) throws Exception {
     resultActions
       .andExpect(jsonPath(toId(workBase), notNullValue()))
+      .andExpect(jsonPath(toBasicTitlePartName(workBase), equalTo(List.of("Basic: partName"))))
+      .andExpect(jsonPath(toBasicTitlePartNumber(workBase), equalTo(List.of("Basic: partNumber"))))
+      .andExpect(jsonPath(toBasicTitleMain(workBase), equalTo(List.of("Basic: mainTitle"))))
+      .andExpect(jsonPath(toBasicTitleNonSortNum(workBase), equalTo(List.of("Basic: nonSortNum"))))
+      .andExpect(jsonPath(toBasicTitleSubtitle(workBase), equalTo(List.of("Basic: subTitle"))))
       .andExpect(jsonPath(toWorkLanguage(workBase), equalTo("eng")))
       .andExpect(jsonPath(toWorkDeweyCode(workBase), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(workBase), equalTo("ddc")))
@@ -680,7 +685,7 @@ class ResourceControllerIT {
 
   private void validateInstance(Resource instance, boolean validateFullWork) {
     assertThat(instance.getId()).isNotNull();
-    assertThat(instance.getLabel()).isEqualTo("Instance: mainTitle");
+    assertThat(instance.getLabel()).isEqualTo("Basic: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
@@ -725,7 +730,7 @@ class ResourceControllerIT {
     validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION);
     validateOtherId(edgeIterator.next(), instance);
     validateEan(edgeIterator.next(), instance);
-    validateInstanceTitle(edgeIterator.next(), instance);
+    validateBasicTitle(edgeIterator.next(), instance);
     validateSupplementaryContent(edgeIterator.next(), instance);
     validateIsbn(edgeIterator.next(), instance);
     validateLocalId(edgeIterator.next(), instance);
@@ -746,12 +751,12 @@ class ResourceControllerIT {
       .hasSameElementsAs(expectedValues);
   }
 
-  private void validateInstanceTitle(ResourceEdge edge, Resource source) {
-    validateSampleTitleBase(edge, source, ResourceTypeDictionary.TITLE, "Instance: ");
+  private void validateBasicTitle(ResourceEdge edge, Resource source) {
+    validateSampleTitleBase(edge, source, ResourceTypeDictionary.TITLE, "Basic: ");
     var title = edge.getTarget();
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).get(0).asText()).isEqualTo("Instance: nonSortNum");
+    assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).get(0).asText()).isEqualTo("Basic: nonSortNum");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
@@ -988,6 +993,7 @@ class ResourceControllerIT {
 
   private void validateWork(Resource work, boolean validateFullInstance) {
     assertThat(work.getId()).isNotNull();
+    assertThat(work.getLabel()).isEqualTo("Basic: mainTitle");
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
     assertThat(work.getDoc().size()).isEqualTo(9);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
@@ -1000,6 +1006,7 @@ class ResourceControllerIT {
     validateLiterals(work, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
     validateLiterals(work, NOTE.getValue(), List.of("note", "another note"));
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
+    validateParallelTitle(outgoingEdgeIterator.next(), work);
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
     validateWorkClassification(outgoingEdgeIterator.next(), work);
@@ -1010,9 +1017,11 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, ASSIGNEE.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
+    validateBasicTitle(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, AUTHOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
+    validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(0), GENRE.getUri());
@@ -1233,27 +1242,27 @@ class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE.getValue()));
   }
 
-  private String toInstanceTitlePartName(String instanceBase) {
+  private String toBasicTitlePartName(String instanceBase) {
     return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NAME.getValue()));
   }
 
-  private String toInstanceTitlePartNumber(String instanceBase) {
+  private String toBasicTitlePartNumber(String instanceBase) {
     return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NUMBER.getValue()));
   }
 
-  private String toInstanceTitleMain(String instanceBase) {
+  private String toBasicTitleMain(String instanceBase) {
     return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(MAIN_TITLE.getValue()));
   }
 
-  private String toInstanceTitleNonSortNum(String instanceBase) {
+  private String toBasicTitleNonSortNum(String instanceBase) {
     return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(NON_SORT_NUM.getValue()));
   }
 
-  private String toInstanceTitleSubtitle(String instanceBase) {
+  private String toBasicTitleSubtitle(String instanceBase) {
     return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
       path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(SUBTITLE.getValue()));
   }

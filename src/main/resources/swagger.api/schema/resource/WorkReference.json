@@ -6,6 +6,9 @@
       "$ref": "Topper.json"
     },
     {
+      "$ref": "title/Title.json"
+    },
+    {
       "type": "object",
       "properties": {
         "language": {
