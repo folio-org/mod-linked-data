@@ -123,7 +123,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -336,7 +335,8 @@ class ResourceControllerIT {
     assertThat(updatedWork.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo(newlyAddedSummary);
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
-    checkKafkaMessage(Long.valueOf(id), UPDATE);
+    checkKafkaMessage(originalWork.getId(), DELETE);
+    checkKafkaMessage(Long.valueOf(id), CREATE);
   }
 
   @Test
@@ -496,8 +496,8 @@ class ResourceControllerIT {
 
     //then
     assertTrue(resourceTestService.existsById(existedResource.getId()));
-    verify(kafkaSender, never()).sendResourceDeleted(existedResource.getId());
-    verify(kafkaSender, never()).sendResourceCreated(any(), eq(true));
+    verify(kafkaSender, never()).sendResourceDeleted(existedResource);
+    verify(kafkaSender, never()).sendSingleResourceCreated(any());
   }
 
   @Test
@@ -673,9 +673,9 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
         .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
         .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationCode(workBase), equalTo("a")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationTerm(workBase), equalTo("Autonomous")))
-        .andExpect(jsonPath(toWorkGovernmentPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
+        .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
+        .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
+        .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
         .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
         .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
         .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
@@ -1554,15 +1554,15 @@ class ResourceControllerIT {
     return join(".", workBase, arrayPath(DATE_END.getValue()));
   }
 
-  private String toWorkGovernmentPublicationCode(String workBase) {
+  private String toWorkGovPublicationCode(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(CODE.getValue()));
   }
 
-  private String toWorkGovernmentPublicationTerm(String workBase) {
+  private String toWorkGovPublicationTerm(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(TERM.getValue()));
   }
 
-  private String toWorkGovernmentPublicationLink(String workBase) {
+  private String toWorkGovPublicationLink(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(LINK.getValue()));
   }
 

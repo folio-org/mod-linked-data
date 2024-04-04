@@ -3,6 +3,8 @@ package org.folio.linked.data.mapper.kafka;
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -81,7 +83,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   public Optional<BibframeIndex> toIndex(Resource work, ResourceEventType eventType) {
     if (isNull(work)) {
       log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), "null");
-      return Optional.empty();
+      return empty();
     }
     if (!isOfType(work, WORK)) {
       throw new LinkedDataServiceException(format(NOT_A_WORK, work, eventType.getValue()));
@@ -94,10 +96,10 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     workIndex.setSubjects(extractSubjects(work));
     workIndex.setInstances(extractInstances(work));
     if (shouldBeIndexed(workIndex)) {
-      return Optional.of(workIndex);
+      return of(workIndex);
     } else {
       log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), work);
-      return Optional.empty();
+      return empty();
     }
   }
 
@@ -106,7 +108,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
     if (!isOfType(work, WORK)) {
       throw new LinkedDataServiceException(format(NOT_A_WORK, work, DELETE.getValue()));
     }
-    return Optional.of(work.getId());
+    return ofNullable(work.getId());
   }
 
   private boolean shouldBeIndexed(BibframeIndex bi) {
