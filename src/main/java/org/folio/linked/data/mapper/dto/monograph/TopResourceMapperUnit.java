@@ -15,7 +15,7 @@ import org.folio.linked.data.domain.dto.TitleTitleInner;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 
-public abstract class ResourceMapperUnit implements SingleResourceMapperUnit {
+public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(ResourceDto.class);
 
@@ -30,7 +30,7 @@ public abstract class ResourceMapperUnit implements SingleResourceMapperUnit {
     }
     return titles.stream()
       .sorted(Comparator.comparing(o -> o.getClass().getSimpleName()))
-      .map(ResourceMapperUnit::getMainTitle).toList();
+      .map(TopResourceMapperUnit::getMainTitle).toList();
   }
 
   private static String getMainTitle(TitleTitleInner t) {

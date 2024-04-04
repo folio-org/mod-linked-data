@@ -47,7 +47,7 @@ import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.ResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
@@ -56,7 +56,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = INSTANCE, dtoClass = InstanceField.class)
-public class InstanceMapperUnit extends ResourceMapperUnit {
+public class InstanceMapperUnit extends TopResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(ADDITIONAL_PHYSICAL_FORM, COMPUTER_DATA_NOTE,
     DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION, ISSUANCE_NOTE, ISSUING_BODY,

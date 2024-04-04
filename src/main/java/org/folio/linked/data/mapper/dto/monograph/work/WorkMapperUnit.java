@@ -36,7 +36,7 @@ import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.ResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = WORK, dtoClass = WorkField.class)
-public class WorkMapperUnit extends ResourceMapperUnit {
+public class WorkMapperUnit extends TopResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
 
