@@ -20,6 +20,7 @@ import jakarta.persistence.PostLoad;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -137,8 +138,10 @@ public class Resource implements Persistable<Long> {
     return this;
   }
 
-  public Resource addType(@NonNull org.folio.ld.dictionary.ResourceTypeDictionary typeDictionary) {
-    this.addType(new ResourceTypeEntity(typeDictionary.getHash(), typeDictionary.getUri(), null));
+  public Resource addType(@NonNull org.folio.ld.dictionary.ResourceTypeDictionary... typeDictionary) {
+    Arrays.stream(typeDictionary)
+      .map(type -> new ResourceTypeEntity(type.getHash(), type.getUri(), null))
+      .forEach(this::addType);
     return this;
   }
 

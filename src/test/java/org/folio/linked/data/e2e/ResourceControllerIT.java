@@ -86,6 +86,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
@@ -105,10 +106,10 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
 import static org.folio.linked.data.test.TestUtil.getSampleWorkDtoMap;
-import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
@@ -237,8 +238,9 @@ class ResourceControllerIT {
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(loadResourceAsString("samples/work_and_instance_ref.json")
-        .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString()));
+      .content(
+        WORK_WITH_INSTANCE_REF_SAMPLE.replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
+      );
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -848,7 +850,9 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var lccn = edge.getTarget();
     assertThat(lccn.getLabel()).isEqualTo("lccn value");
-    assertThat(lccn.getTypes().iterator().next().getUri()).isEqualTo(ID_LCCN.getUri());
+    var typesIterator = lccn.getTypes().iterator();
+    assertThat(typesIterator.next().getUri()).isEqualTo(ID_LCCN.getUri());
+    assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
     assertThat(lccn.getId()).isNotNull();
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
@@ -863,7 +867,10 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var isbn = edge.getTarget();
     assertThat(isbn.getLabel()).isEqualTo("isbn value");
-    assertThat(isbn.getTypes().iterator().next().getUri()).isEqualTo(ID_ISBN.getUri());
+    var typesIterator = isbn.getTypes().iterator();
+    assertThat(typesIterator.next().getUri()).isEqualTo(ID_ISBN.getUri());
+    assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
+    assertThat(typesIterator.hasNext()).isFalse();
     assertThat(isbn.getId()).isNotNull();
     assertThat(isbn.getDoc().size()).isEqualTo(2);
     assertThat(isbn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
@@ -880,7 +887,10 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var ean = edge.getTarget();
     assertThat(ean.getLabel()).isEqualTo("ean value");
-    assertThat(ean.getTypes().iterator().next().getUri()).isEqualTo(ID_EAN.getUri());
+    var typesIterator = ean.getTypes().iterator();
+    assertThat(typesIterator.next().getUri()).isEqualTo(ID_EAN.getUri());
+    assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
+    assertThat(typesIterator.hasNext()).isFalse();
     assertThat(ean.getId()).isNotNull();
     assertThat(ean.getDoc().size()).isEqualTo(2);
     assertThat(ean.getDoc().get(EAN_VALUE.getValue()).size()).isEqualTo(1);
@@ -896,7 +906,10 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var localId = edge.getTarget();
     assertThat(localId.getLabel()).isEqualTo("localId value");
-    assertThat(localId.getTypes().iterator().next().getUri()).isEqualTo(ID_LOCAL.getUri());
+    var typesIterator = localId.getTypes().iterator();
+    assertThat(typesIterator.next().getUri()).isEqualTo(ID_LOCAL.getUri());
+    assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
+    assertThat(typesIterator.hasNext()).isFalse();
     assertThat(localId.getId()).isNotNull();
     assertThat(localId.getDoc().size()).isEqualTo(2);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).size()).isEqualTo(1);
@@ -912,7 +925,10 @@ class ResourceControllerIT {
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
     var otherId = edge.getTarget();
     assertThat(otherId.getLabel()).isEqualTo("otherId value");
-    assertThat(otherId.getTypes().iterator().next().getUri()).isEqualTo(ID_UNKNOWN.getUri());
+    var typesIterator = otherId.getTypes().iterator();
+    assertThat(typesIterator.next().getUri()).isEqualTo(ID_UNKNOWN.getUri());
+    assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
+    assertThat(typesIterator.hasNext()).isFalse();
     assertThat(otherId.getId()).isNotNull();
     assertThat(otherId.getDoc().size()).isEqualTo(2);
     assertThat(otherId.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
