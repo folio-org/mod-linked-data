@@ -60,7 +60,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
     var status = (Status) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(status::getValue));
-    resource.addType(STATUS);
+    resource.addTypes(STATUS);
     resource.setDoc(getDoc(status));
     resource.setId(hashService.hash(resource));
     return resource;

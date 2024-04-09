@@ -55,7 +55,7 @@ public class BasicTitleMapperUnit extends TitleMapperUnit {
     var basicTitle = ((BasicTitleField) dto).getBasicTitle();
     var resource = new Resource();
     resource.setLabel(getFirstValue(basicTitle::getMainTitle));
-    resource.addType(TITLE);
+    resource.addTypes(TITLE);
     resource.setDoc(getDoc(basicTitle));
     resource.setId(hashService.hash(resource));
     return resource;

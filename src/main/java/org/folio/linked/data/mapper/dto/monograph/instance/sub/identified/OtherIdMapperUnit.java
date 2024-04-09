@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.dto.monograph.instance.sub.identified;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
@@ -44,7 +45,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
     var otherId = ((OtherIdField) dto).getIdentifier();
     var resource = new Resource();
     resource.setLabel(getFirstValue(otherId::getValue));
-    resource.addType(ID_UNKNOWN);
+    resource.addTypes(IDENTIFIER, ID_UNKNOWN);
     resource.setDoc(getDoc(otherId));
     resource.setId(hashService.hash(resource));
     return resource;

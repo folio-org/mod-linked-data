@@ -41,7 +41,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
     var copyrightEvent = (CopyrightEvent) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(copyrightEvent::getDate));
-    resource.addType(COPYRIGHT_EVENT);
+    resource.addTypes(COPYRIGHT_EVENT);
     resource.setDoc(getDoc(copyrightEvent));
     resource.setId(hashService.hash(resource));
     return resource;

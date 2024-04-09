@@ -48,7 +48,7 @@ public class ContentMapperUnit extends CategoryMapperUnit {
     putProperty(map, LINK, List.of(CATEGORY_SET_LINK));
     putProperty(map, LABEL, List.of(CATEGORY_SET_LABEL));
     var categorySet = new Resource()
-      .addType(CATEGORY_SET)
+      .addTypes(CATEGORY_SET)
       .setDoc(coreMapper.toJson(map))
       .setLabel(CATEGORY_SET_LABEL);
     categorySet.setId(hashService.hash(categorySet));

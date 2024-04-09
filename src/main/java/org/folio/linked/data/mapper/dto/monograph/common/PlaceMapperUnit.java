@@ -58,7 +58,7 @@ public class PlaceMapperUnit implements SingleResourceMapperUnit {
     var place = (Place) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(place::getLabel));
-    resource.addType(PLACE);
+    resource.addTypes(PLACE);
     resource.setDoc(getDoc(place));
     resource.setId(hashService.hash(resource));
     return resource;

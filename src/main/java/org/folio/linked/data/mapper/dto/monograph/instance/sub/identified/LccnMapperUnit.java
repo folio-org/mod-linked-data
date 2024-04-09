@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.dto.monograph.instance.sub.identified;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
@@ -44,7 +45,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
     var lccn = ((LccnField) dto).getLccn();
     var resource = new Resource();
     resource.setLabel(getFirstValue(lccn::getValue));
-    resource.addType(ID_LCCN);
+    resource.addTypes(IDENTIFIER, ID_LCCN);
     resource.setDoc(getDoc(lccn));
     coreMapper.addOutgoingEdges(resource, Lccn.class, lccn.getStatus(), STATUS);
     resource.setId(hashService.hash(resource));

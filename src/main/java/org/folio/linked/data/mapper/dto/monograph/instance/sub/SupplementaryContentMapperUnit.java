@@ -42,7 +42,7 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
     var supplementaryContent = (SupplementaryContent) dto;
     var resource = new Resource()
       .setLabel(getFirstValue(supplementaryContent::getName))
-      .addType(SUPPLEMENTARY_CONTENT)
+      .addTypes(SUPPLEMENTARY_CONTENT)
       .setDoc(getDoc(supplementaryContent));
     resource.setId(hashService.hash(resource));
     return resource;

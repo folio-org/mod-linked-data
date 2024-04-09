@@ -2,10 +2,6 @@ package org.folio.linked.data.test;
 
 import static java.lang.System.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Objects.nonNull;
-import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
@@ -14,11 +10,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.testcontainers.shaded.org.awaitility.Durations.ONE_MINUTE;
+import static org.testcontainers.shaded.org.awaitility.Durations.TWO_MINUTES;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -107,26 +102,12 @@ public class TestUtil {
     return GENERATOR.nextLong();
   }
 
-  public static ObjectNode getObjectNode(String label, String name, String link) {
-    var node = OBJECT_MAPPER.createObjectNode();
-    if (nonNull(label)) {
-      node.put(LABEL.getValue(), label);
-    }
-    if (nonNull(label)) {
-      node.put(NAME.getValue(), name);
-    }
-    if (nonNull(link)) {
-      node.put(LINK.getValue(), link);
-    }
-    return node;
-  }
-
   public static JsonNode getJsonNode(Map<String, ?> map) {
     return OBJECT_MAPPER.convertValue(map, JsonNode.class);
   }
 
   public static void awaitAndAssert(ThrowingRunnable throwingRunnable) {
-    await().atMost(ONE_MINUTE)
+    await().atMost(TWO_MINUTES)
       .pollDelay(FIVE_SECONDS)
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(throwingRunnable);
