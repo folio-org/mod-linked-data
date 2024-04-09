@@ -36,7 +36,7 @@
 
     <!-- Dependencies versions -->
     <folio-spring-base.version>8.1.0</folio-spring-base.version>
-    <apache-commons-io.version>2.16.0</apache-commons-io.version>
+    <apache-commons-io.version>2.16.1</apache-commons-io.version>
     <apache-commons-collections.version>4.4</apache-commons-collections.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
     <lombok.version>1.18.32</lombok.version>
