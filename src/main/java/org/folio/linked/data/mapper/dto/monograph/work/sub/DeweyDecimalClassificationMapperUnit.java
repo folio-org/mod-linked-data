@@ -44,7 +44,7 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
   public Resource toEntity(Object dto, Resource parentEntity) {
     var deweyDecimalClassification = (DeweyDecimalClassification) dto;
     var resource = new Resource();
-    resource.addType(CATEGORY);
+    resource.addTypes(CATEGORY);
     resource.setDoc(getDoc(deweyDecimalClassification));
     resource.setId(hashService.hash(resource));
     return resource;

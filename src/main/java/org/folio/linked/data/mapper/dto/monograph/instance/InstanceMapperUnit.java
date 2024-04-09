@@ -85,7 +85,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var instanceDto = ((InstanceField) dto).getInstance();
     var instance = new Resource();
-    instance.addType(INSTANCE);
+    instance.addTypes(INSTANCE);
     instance.setDoc(getDoc(instanceDto));
     instance.setLabel(getFirstValue(() -> getPossibleLabels(instanceDto.getTitle())));
     instance.setInventoryId(instanceDto.getInventoryId());

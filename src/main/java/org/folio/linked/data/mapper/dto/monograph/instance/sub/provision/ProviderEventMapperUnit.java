@@ -45,7 +45,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
     var providerEvent = (ProviderEvent) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
-    resource.addType(PROVIDER_EVENT);
+    resource.addTypes(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));
     coreMapper.addOutgoingEdges(resource, ProviderEvent.class, providerEvent.getProviderPlace(), PROVIDER_PLACE);
     resource.setId(hashService.hash(resource));

@@ -618,7 +618,7 @@ public class MonographTestUtil {
 
     var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
-    types.forEach(resource::addType);
+    types.forEach(resource::addTypes);
     resource.setId(randomLong());
     return resource;
   }

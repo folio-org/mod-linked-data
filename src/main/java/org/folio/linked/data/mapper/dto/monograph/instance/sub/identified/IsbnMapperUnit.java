@@ -46,7 +46,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
     var isbn = ((IsbnField) dto).getIsbn();
     var resource = new Resource();
     resource.setLabel(getFirstValue(isbn::getValue));
-    resource.addType(IDENTIFIER, ID_ISBN);
+    resource.addTypes(IDENTIFIER, ID_ISBN);
     resource.setDoc(getDoc(isbn));
     coreMapper.addOutgoingEdges(resource, Isbn.class, isbn.getStatus(), STATUS);
     resource.setId(hashService.hash(resource));

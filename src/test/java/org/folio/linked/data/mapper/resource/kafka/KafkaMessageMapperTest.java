@@ -114,7 +114,7 @@ class KafkaMessageMapperTest {
   @Test
   void toIndex_shouldReturnEmptyResult_fromWorkWithNoIndexableInfo() {
     // given
-    var work = new Resource().addType(WORK);
+    var work = new Resource().addTypes(WORK);
     // when
     var resultOpt = kafkaMessageMapper.toIndex(work, CREATE);
 
@@ -157,7 +157,7 @@ class KafkaMessageMapperTest {
   @Test
   void toDeleteIndex_shouldReturnEmptyOptional_ifGivenWorkIdIsNull() {
     // given
-    var work = new Resource().addType(WORK);
+    var work = new Resource().addTypes(WORK);
 
     // when
     var result = kafkaMessageMapper.toDeleteIndexId(work);
@@ -220,7 +220,7 @@ class KafkaMessageMapperTest {
     var id = new Resource();
     id.setId(randomLong());
     id.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of("wrongId"))));
-    id.addType(ANNOTATION);
+    id.addTypes(ANNOTATION);
     return id;
   }
 
@@ -228,7 +228,7 @@ class KafkaMessageMapperTest {
     var contributor = new Resource();
     contributor.setId(randomLong());
     contributor.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(UUID.randomUUID().toString()))));
-    contributor.addType(type);
+    contributor.addTypes(type);
     return contributor;
   }
 

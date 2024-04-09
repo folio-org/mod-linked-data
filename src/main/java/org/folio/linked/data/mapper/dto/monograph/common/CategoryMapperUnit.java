@@ -55,7 +55,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
     var category = (Category) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(category::getTerm));
-    resource.addType(type);
+    resource.addTypes(type);
     resource.setDoc(getDoc(category));
     getCategorySet().ifPresent(cs -> resource.addOutgoingEdge(new ResourceEdge(resource, cs, IS_DEFINED_BY)));
     resource.setId(hashService.hash(resource));

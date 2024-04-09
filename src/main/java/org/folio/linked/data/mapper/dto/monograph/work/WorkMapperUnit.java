@@ -68,7 +68,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var workDto = ((WorkField) dto).getWork();
     var work = new Resource();
-    work.addType(WORK);
+    work.addTypes(WORK);
     work.setDoc(getDoc(workDto));
     work.setLabel(getFirstValue(() -> getPossibleLabels(workDto.getTitle())));
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getTitle(), TITLE);

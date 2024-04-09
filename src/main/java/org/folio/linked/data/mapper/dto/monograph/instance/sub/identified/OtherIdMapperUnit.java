@@ -45,7 +45,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
     var otherId = ((OtherIdField) dto).getIdentifier();
     var resource = new Resource();
     resource.setLabel(getFirstValue(otherId::getValue));
-    resource.addType(IDENTIFIER, ID_UNKNOWN);
+    resource.addTypes(IDENTIFIER, ID_UNKNOWN);
     resource.setDoc(getDoc(otherId));
     resource.setId(hashService.hash(resource));
     return resource;

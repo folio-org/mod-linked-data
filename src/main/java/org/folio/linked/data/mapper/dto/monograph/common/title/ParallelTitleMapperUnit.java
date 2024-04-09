@@ -56,7 +56,7 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
     var parallelTitle = ((ParallelTitleField) dto).getParallelTitle();
     var resource = new Resource();
     resource.setLabel(getFirstValue(parallelTitle::getMainTitle));
-    resource.addType(PARALLEL_TITLE);
+    resource.addTypes(PARALLEL_TITLE);
     resource.setDoc(getDoc(parallelTitle));
     resource.setId(hashService.hash(resource));
     return resource;
