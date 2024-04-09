@@ -15,7 +15,6 @@ import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -267,7 +266,7 @@ class ResourceServiceTest {
     assertThat(oldWork.getIncomingEdges()).doesNotContain(edge);
     verify(resourceRepo).delete(oldWork);
     verify(resourceRepo).save(mapped);
-    verify(applicationEventPublisher).publishEvent(eq(new ResourceUpdatedEvent(oldWork, null)));
+    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(oldWork, null));
   }
 
   @Test
