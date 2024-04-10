@@ -1,0 +1,6 @@
+{
+  "type": "string",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Types of titles",
+  "enum": ["Main", "Sub", "Main Parallel", "Sub Parallel", "Main Variant", "Sub Variant"]
+}

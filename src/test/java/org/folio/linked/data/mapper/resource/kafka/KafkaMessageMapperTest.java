@@ -24,14 +24,18 @@ import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.FAM
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.MEETING;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.ORGANIZATION;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.PERSON;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_PARALLEL;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_VARIANT;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_PARALLEL;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_VARIANT;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.EAN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.ISBN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LCCN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LOCALID;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
-import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.MAIN;
-import static org.folio.search.domain.dto.BibframeTitlesInner.TypeEnum.SUB;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,6 +56,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIndex;
+import org.folio.search.domain.dto.BibframeIndexTitleType;
 import org.folio.search.domain.dto.BibframeInstancesInner;
 import org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
@@ -236,10 +241,10 @@ class KafkaMessageMapperTest {
     assertThat(result.getId()).isEqualTo(work.getId().toString());
     assertTitle(result.getTitles().get(0), "Basic: mainTitle", MAIN);
     assertTitle(result.getTitles().get(1), "Basic: subTitle", SUB);
-    assertTitle(result.getTitles().get(2), "Parallel: mainTitle", MAIN);
-    assertTitle(result.getTitles().get(3), "Parallel: subTitle", SUB);
-    assertTitle(result.getTitles().get(4), "Variant: mainTitle", MAIN);
-    assertTitle(result.getTitles().get(5), "Variant: subTitle", SUB);
+    assertTitle(result.getTitles().get(2), "Parallel: mainTitle", MAIN_PARALLEL);
+    assertTitle(result.getTitles().get(3), "Parallel: subTitle", SUB_PARALLEL);
+    assertTitle(result.getTitles().get(4), "Variant: mainTitle", MAIN_VARIANT);
+    assertTitle(result.getTitles().get(5), "Variant: subTitle", SUB_VARIANT);
     assertThat(result.getContributors()).hasSize(9);
     assertContributor(result.getContributors().get(0), "name-PERSON", PERSON, true);
     assertContributor(result.getContributors().get(1), "name-MEETING", MEETING, true);
@@ -267,10 +272,10 @@ class KafkaMessageMapperTest {
     assertThat(instanceIndex.getId()).isEqualTo(instance.getId().toString());
     assertTitle(instanceIndex.getTitles().get(0), "Basic: mainTitle" + instance.getId(), MAIN);
     assertTitle(instanceIndex.getTitles().get(1), "Basic: subTitle", SUB);
-    assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN);
-    assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB);
-    assertTitle(instanceIndex.getTitles().get(4), "Variant: mainTitle", MAIN);
-    assertTitle(instanceIndex.getTitles().get(5), "Variant: subTitle", SUB);
+    assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN_PARALLEL);
+    assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB_PARALLEL);
+    assertTitle(instanceIndex.getTitles().get(4), "Variant: mainTitle", MAIN_VARIANT);
+    assertTitle(instanceIndex.getTitles().get(5), "Variant: subTitle", SUB_VARIANT);
     assertThat(instanceIndex.getIdentifiers()).hasSize(6);
     assertId(instanceIndex.getIdentifiers().get(0), "lccn value", LCCN);
     assertId(instanceIndex.getIdentifiers().get(1), "isbn value", ISBN);
@@ -287,7 +292,7 @@ class KafkaMessageMapperTest {
       .isEqualTo(instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).asText());
   }
 
-  private void assertTitle(BibframeTitlesInner titleInner, String value, BibframeTitlesInner.TypeEnum type) {
+  private void assertTitle(BibframeTitlesInner titleInner, String value, BibframeIndexTitleType type) {
     assertThat(titleInner.getValue()).isEqualTo(value);
     assertThat(titleInner.getType()).isEqualTo(type);
   }

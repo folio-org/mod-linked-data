@@ -31,6 +31,12 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.cleanDate;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_PARALLEL;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_VARIANT;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_PARALLEL;
+import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_VARIANT;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 
@@ -45,6 +51,8 @@ import java.util.stream.StreamSupport;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
@@ -56,6 +64,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeClassificationsInner;
 import org.folio.search.domain.dto.BibframeContributorsInner;
 import org.folio.search.domain.dto.BibframeIndex;
+import org.folio.search.domain.dto.BibframeIndexTitleType;
 import org.folio.search.domain.dto.BibframeInstancesInner;
 import org.folio.search.domain.dto.BibframeInstancesInnerEditionStatementsInner;
 import org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner;
@@ -65,6 +74,7 @@ import org.folio.search.domain.dto.BibframeSubjectsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -126,21 +136,47 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
       .map(ResourceEdge::getTarget)
       .flatMap(t -> {
         var titles = new ArrayList<BibframeTitlesInner>();
-        addTitle(t, MAIN_TITLE.getValue(), titles, BibframeTitlesInner.TypeEnum.MAIN);
-        addTitle(t, SUBTITLE.getValue(), titles, BibframeTitlesInner.TypeEnum.SUB);
+        addTitle(t, MAIN_TITLE, titles);
+        addTitle(t, SUBTITLE, titles);
         return titles.stream();
       })
       .distinct()
       .toList();
   }
 
-  private void addTitle(Resource t, String field, List<BibframeTitlesInner> titles,
-                        BibframeTitlesInner.TypeEnum type) {
-    if (nonNull(getValue(t.getDoc(), field))) {
-      titles.add(new BibframeTitlesInner()
-        .value(getValue(t.getDoc(), field))
-        .type(type));
+  private void addTitle(Resource t, PropertyDictionary field, List<BibframeTitlesInner> titles) {
+    var titleText = getValue(t.getDoc(), field.getValue());
+    if (nonNull(titleText)) {
+      var titleType = getTitleType(t);
+      ofNullable(titleType)
+        .map(type -> getIndexTitleType(type, field))
+        .map(indexTitleType -> new BibframeTitlesInner().value(titleText).type(indexTitleType))
+        .ifPresent(titles::add);
     }
+  }
+
+  @Nullable
+  private ResourceTypeDictionary getTitleType(Resource title) {
+    var typeUris = title.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.TITLE.getUri().equals(uri))) {
+      return ResourceTypeDictionary.TITLE;
+    } else if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.PARALLEL_TITLE.getUri().equals(uri))) {
+      return ResourceTypeDictionary.PARALLEL_TITLE;
+    } else if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.VARIANT_TITLE.getUri().equals(uri))) {
+      return ResourceTypeDictionary.VARIANT_TITLE;
+    }
+    return null;
+  }
+
+  @Nullable
+  private BibframeIndexTitleType getIndexTitleType(ResourceTypeDictionary type, PropertyDictionary property) {
+    var isMain = property.equals(MAIN_TITLE);
+    return switch (type) {
+      case TITLE -> isMain ? MAIN : SUB;
+      case PARALLEL_TITLE -> isMain ? MAIN_PARALLEL : SUB_PARALLEL;
+      case VARIANT_TITLE -> isMain ? MAIN_VARIANT : SUB_VARIANT;
+      default -> null;
+    };
   }
 
   private List<BibframeContributorsInner> extractContributors(Resource resource) {
