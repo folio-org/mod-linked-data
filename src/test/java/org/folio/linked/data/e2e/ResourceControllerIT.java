@@ -1195,7 +1195,7 @@ class ResourceControllerIT {
   @SneakyThrows
   private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc) {
     var resource = new Resource();
-    resource.addTypes(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
+    resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
     resource.setId(id);

@@ -17,7 +17,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.PredicateRepository;
 import org.folio.linked.data.repo.ResourceTypeRepository;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

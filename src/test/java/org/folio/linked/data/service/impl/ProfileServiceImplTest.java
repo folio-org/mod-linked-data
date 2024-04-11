@@ -10,7 +10,7 @@ import java.util.Optional;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.repo.ProfileRepository;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

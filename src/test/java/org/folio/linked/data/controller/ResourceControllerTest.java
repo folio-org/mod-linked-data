@@ -5,7 +5,7 @@ import static org.mockito.Mockito.when;
 
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.service.ResourceService;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

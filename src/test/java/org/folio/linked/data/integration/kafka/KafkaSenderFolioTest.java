@@ -24,7 +24,7 @@ import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
 import org.folio.search.domain.dto.ResourceEvent;
 import org.folio.spring.FolioExecutionContext;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

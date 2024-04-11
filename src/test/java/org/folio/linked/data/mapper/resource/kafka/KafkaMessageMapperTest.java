@@ -55,7 +55,7 @@ import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.BibframeInstancesInner;
 import org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
