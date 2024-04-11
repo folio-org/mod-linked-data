@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.impl.tenant.workers;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -34,7 +33,7 @@ class SearchWorkerTest {
     searchWorker.afterTenantUpdate(attributes);
 
     //then
-    verify(searchClient)
-      .createIndex(eq(expectedRequest));
+    verify(searchClient).createIndex(expectedRequest);
   }
+
 }

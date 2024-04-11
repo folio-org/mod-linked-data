@@ -147,11 +147,11 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   private boolean doesNotExists(Resource resource) {
-    return !resourceRepo.existsById(resource.getId());
+    return isNull(resource) || isNull(resource.getId()) || !resourceRepo.existsById(resource.getId());
   }
 
   private boolean doesNotExists(ResourceEdge edge) {
-    return !edgeRepo.existsById(edge.getId());
+    return isNull(edge) || isNull(edge.getId()) || !edgeRepo.existsById(edge.getId());
   }
 
   private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {

@@ -133,7 +133,7 @@ public class Resource implements Persistable<Long> {
     return types;
   }
 
-  public Resource addTypes(@NonNull ResourceTypeEntity type) {
+  public Resource addType(@NonNull ResourceTypeEntity type) {
     getTypes().add(type);
     return this;
   }
@@ -141,7 +141,7 @@ public class Resource implements Persistable<Long> {
   public Resource addTypes(@NonNull org.folio.ld.dictionary.ResourceTypeDictionary... typeDictionary) {
     Arrays.stream(typeDictionary)
       .map(type -> new ResourceTypeEntity(type.getHash(), type.getUri(), null))
-      .forEach(this::addTypes);
+      .forEach(this::addType);
     return this;
   }
 
