@@ -46,7 +46,7 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.ResourceServiceImpl;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

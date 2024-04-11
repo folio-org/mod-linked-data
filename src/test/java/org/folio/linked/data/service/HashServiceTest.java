@@ -9,7 +9,7 @@ import org.folio.ld.fingerprint.service.FingerprintHashService;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.impl.HashServiceImpl;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

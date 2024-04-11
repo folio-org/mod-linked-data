@@ -51,7 +51,7 @@
     <testcontainers.version>1.19.7</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.1</jsonassert.version>
-    <folio-service-tools.version>3.1.1</folio-service-tools.version>
+    <folio-service-tools.version>4.0.1</folio-service-tools.version>
     <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
@@ -223,8 +223,8 @@
 
     <dependency>
       <groupId>org.folio</groupId>
-      <artifactId>folio-service-tools-spring-test</artifactId>
-      <version>${folio-service-tools.version}</version>
+      <artifactId>folio-spring-testing</artifactId>
+      <version>${folio-spring-base.version}</version>
       <scope>test</scope>
     </dependency>
 

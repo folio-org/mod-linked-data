@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import org.folio.linked.data.client.SearchClient;
 import org.folio.search.domain.dto.CreateIndexRequest;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

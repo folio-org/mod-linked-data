@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 import org.folio.linked.data.domain.dto.MarkRecord;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 
 @UnitTest

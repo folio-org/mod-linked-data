@@ -5,9 +5,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.folio.linked.data.LinkedDataApplication;
-import org.folio.spring.test.extension.EnableKafka;
-import org.folio.spring.test.extension.EnableOkapi;
-import org.folio.spring.test.extension.EnablePostgres;
+import org.folio.spring.testing.extension.EnableKafka;
+import org.folio.spring.testing.extension.EnableOkapi;
+import org.folio.spring.testing.extension.EnablePostgres;
 import org.folio.spring.tools.kafka.FolioKafkaProperties;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 @DirtiesContext
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@org.folio.spring.test.type.IntegrationTest
+@org.folio.spring.testing.type.IntegrationTest
 @ExtendWith(TenantInstallationExtension.class)
 @SpringBootTest(classes = {KafkaAdminService.class, KafkaAutoConfiguration.class,
   FolioKafkaProperties.class, LinkedDataApplication.class})

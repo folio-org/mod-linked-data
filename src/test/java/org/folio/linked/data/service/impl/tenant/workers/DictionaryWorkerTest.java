@@ -4,7 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.folio.linked.data.service.DictionaryService;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

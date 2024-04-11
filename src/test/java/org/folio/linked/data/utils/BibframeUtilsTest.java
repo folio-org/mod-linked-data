@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.util.BibframeUtils;
 import org.folio.search.domain.dto.BibframeIndex;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 import java.util.List;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

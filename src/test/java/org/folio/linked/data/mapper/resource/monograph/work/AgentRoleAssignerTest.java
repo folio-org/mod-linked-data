@@ -9,7 +9,7 @@ import org.folio.linked.data.mapper.dto.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

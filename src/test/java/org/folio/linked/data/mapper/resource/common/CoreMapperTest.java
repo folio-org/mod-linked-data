@@ -26,7 +26,7 @@ import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.spring.test.type.UnitTest;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
