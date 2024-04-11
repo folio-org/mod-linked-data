@@ -51,7 +51,7 @@
     <testcontainers.version>1.19.7</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.1</jsonassert.version>
-    <folio-service-tools.version>3.1.0</folio-service-tools.version>
+    <folio-service-tools.version>3.1.1</folio-service-tools.version>
     <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
