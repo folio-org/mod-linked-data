@@ -18,7 +18,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["Main", "Sub"]
+            "$ref": "bibframeIndexTitleType.json"
           }
         }
       }
@@ -105,7 +105,7 @@
                 },
                 "type": {
                   "type": "string",
-                  "enum": ["Main", "Sub"]
+                  "$ref": "bibframeIndexTitleType.json"
                 }
               }
             }
