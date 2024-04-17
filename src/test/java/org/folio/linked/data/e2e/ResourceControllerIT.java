@@ -23,6 +23,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
+import static org.folio.ld.dictionary.PredicateDictionary.ORIGIN_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
@@ -442,8 +443,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(48);
-    assertThat(resourceTestService.countEdges()).isEqualTo(50);
+    assertThat(resourceTestService.countResources()).isEqualTo(49);
+    assertThat(resourceTestService.countEdges()).isEqualTo(51);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -454,9 +455,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(47);
+    assertThat(resourceTestService.countResources()).isEqualTo(48);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(32);
+    assertThat(resourceTestService.countEdges()).isEqualTo(33);
     checkKafkaMessage(work.getId(), UPDATE);
   }
 
@@ -465,8 +466,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(48);
-    assertThat(resourceTestService.countEdges()).isEqualTo(50);
+    assertThat(resourceTestService.countResources()).isEqualTo(49);
+    assertThat(resourceTestService.countEdges()).isEqualTo(51);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -477,7 +478,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(47);
+    assertThat(resourceTestService.countResources()).isEqualTo(48);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(25);
     checkKafkaMessage(existed.getId(), DELETE);
@@ -1042,6 +1043,7 @@ class ResourceControllerIT {
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(0), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
+    validateOriginPlace(outgoingEdgeIterator.next(), work);
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
       GEOGRAPHIC_COVERAGE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(1),
@@ -1137,6 +1139,20 @@ class ResourceControllerIT {
     validateLiterals(governmentPublication, CODE.getValue(), List.of("a"));
     validateLiterals(governmentPublication, TERM.getValue(), List.of("Autonomous"));
     validateLiterals(governmentPublication, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a"));
+  }
+
+  private void validateOriginPlace(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(ORIGIN_PLACE.getUri());
+    var originPlace = edge.getTarget();
+    var types = originPlace.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(PLACE.getUri());
+    assertThat(originPlace.getLabel()).isEqualTo("France");
+    assertThat(originPlace.getDoc().size()).isEqualTo(3);
+    validateLiterals(originPlace, NAME.getValue(), List.of("France"));
+    validateLiterals(originPlace, CODE.getValue(), List.of("code"));
+    validateLiterals(originPlace, LINK.getValue(), List.of("link"));
   }
 
   private void validateResourceEdge(ResourceEdge edge, Resource source, Resource target, String predicate) {

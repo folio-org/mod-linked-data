@@ -249,6 +249,19 @@
           ]
         }
       ],
+      "http://bibfra.me/vocab/marc/originPlace": [
+        {
+          "http://bibfra.me/vocab/lite/name": [
+            "France"
+          ],
+          "http://bibfra.me/vocab/marc/code": [
+            "code"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "link"
+          ]
+        }
+      ],
       "_instanceReference": [
         {
           "id": "%INSTANCE_ID%"

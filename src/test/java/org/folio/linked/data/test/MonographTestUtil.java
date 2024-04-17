@@ -20,6 +20,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
+import static org.folio.ld.dictionary.PredicateDictionary.ORIGIN_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
@@ -484,6 +485,16 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("Autonomous");
 
+    var originPlace = createResource(
+      Map.of(
+        NAME, List.of("France"),
+        CODE, List.of("code"),
+        LINK, List.of("link")
+      ),
+      Set.of(PLACE),
+      emptyMap()
+    ).setLabel("France");
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(basicTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
@@ -498,6 +509,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
     pred2OutgoingResources.put(GENRE, List.of(genre1, genre2));
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
+    pred2OutgoingResources.put(ORIGIN_PLACE, List.of(originPlace));
     pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
 
     var work = createResource(
