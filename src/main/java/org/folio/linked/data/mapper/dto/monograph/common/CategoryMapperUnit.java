@@ -1,5 +1,7 @@
 package org.folio.linked.data.mapper.dto.monograph.common;
 
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -13,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Category;
@@ -35,18 +36,25 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
-  private final BiConsumer<Category, Object> categoryConsumer;
   private final ResourceTypeDictionary type;
 
   protected Optional<Resource> getCategorySet() {
     return Optional.empty();
   }
 
+  protected Optional<String> getMarcCode(String linkSuffix) {
+    return ofNullable(linkSuffix);
+  }
+
+  protected abstract void addToParent(Category category, Object parentDto);
+
+  protected abstract String getLinkPrefix();
+
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var category = coreMapper.toDtoWithEdges(source, Category.class, false);
     category.setId(String.valueOf(source.getId()));
-    categoryConsumer.accept(category, parentDto);
+    addToParent(category, parentDto);
     return parentDto;
   }
 
@@ -64,7 +72,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
 
   private JsonNode getDoc(Category dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, CODE, dto.getCode());
+    putProperty(map, CODE, getMarcCodes(dto.getLink()));
     putProperty(map, TERM, dto.getTerm());
     putProperty(map, LINK, dto.getLink());
     putProperty(map, SOURCE, dto.getSource());
@@ -76,4 +84,15 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
     return SUPPORTED_PARENTS;
   }
 
+  private  List<String> getMarcCodes(List<String> links) {
+    if (isNull(links)) {
+      return List.of();
+    }
+    final var linkPrefix = getLinkPrefix().endsWith("/") ? getLinkPrefix() : getLinkPrefix() + "/";
+    return links.stream()
+      .filter(link -> link.startsWith(linkPrefix))
+      .map(link -> link.substring(linkPrefix.length()))
+      .flatMap(linkSuffix -> getMarcCode(linkSuffix).stream())
+      .toList();
+  }
 }

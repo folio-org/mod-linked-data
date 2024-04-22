@@ -16,14 +16,24 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = CATEGORY, predicate = CARRIER, dtoClass = Category.class)
 public class CarrierMapperUnit extends CategoryMapperUnit {
 
+  private static final String CARRIER_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/carriers/";
+
   public CarrierMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService, (category, destination) -> {
-      if (destination instanceof Instance instance) {
-        instance.addCarrierItem(category);
-      }
-      if (destination instanceof InstanceReference instance) {
-        instance.addCarrierItem(category);
-      }
-    }, CATEGORY);
+    super(coreMapper, hashService, CATEGORY);
+  }
+
+  @Override
+  protected void addToParent(Category category, Object parentDto) {
+    if (parentDto instanceof Instance instance) {
+      instance.addCarrierItem(category);
+    }
+    if (parentDto instanceof InstanceReference instanceReference) {
+      instanceReference.addCarrierItem(category);
+    }
+  }
+
+  @Override
+  protected String getLinkPrefix() {
+    return CARRIER_TYPE_LINK_PREFIX;
   }
 }

@@ -534,8 +534,8 @@ class ResourceControllerIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(instanceBase, notNullValue()))
       .andExpect(jsonPath(toId(instanceBase), notNullValue()))
-      .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("carrier code")))
-      .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("carrier link")))
+      .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("ha")))
+      .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("http://id.loc.gov/vocabulary/carriers/ha")))
       .andExpect(jsonPath(toCarrierTerm(instanceBase), equalTo("carrier term")))
       .andExpect(jsonPath(toBasicTitlePartName(instanceBase), equalTo(List.of("Basic: partName"))))
       .andExpect(jsonPath(toBasicTitlePartNumber(instanceBase), equalTo(List.of("Basic: partNumber"))))
@@ -593,8 +593,8 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toLccnStatusLink(), equalTo(List.of("lccn status link"))))
         .andExpect(jsonPath(toLocalIdValue(), equalTo(List.of("localId value"))))
         .andExpect(jsonPath(toLocalIdAssigner(), equalTo(List.of("localId assigner"))))
-        .andExpect(jsonPath(toMediaCode(), equalTo("media code")))
-        .andExpect(jsonPath(toMediaLink(), equalTo("media link")))
+        .andExpect(jsonPath(toMediaCode(), equalTo("s")))
+        .andExpect(jsonPath(toMediaLink(), equalTo("http://id.loc.gov/vocabulary/mediaTypes/s")))
         .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
         .andExpect(jsonPath(toOtherIdValue(), equalTo(List.of("otherId value"))))
         .andExpect(jsonPath(toOtherIdQualifier(), equalTo(List.of("otherId qualifier"))))
@@ -714,8 +714,8 @@ class ResourceControllerIT {
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateParallelTitle(edgeIterator.next(), instance);
-    validateCategory(edgeIterator.next(), instance, CARRIER);
-    validateCategory(edgeIterator.next(), instance, MEDIA);
+    validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
+    validateCategory(edgeIterator.next(), instance, MEDIA, "http://id.loc.gov/vocabulary/mediaTypes/s", "s");
     validateLccn(edgeIterator.next(), instance);
     var edge = edgeIterator.next();
     assertThat(edge.getId()).isNotNull();
@@ -990,21 +990,22 @@ class ResourceControllerIT {
     assertThat(locator.getOutgoingEdges()).isEmpty();
   }
 
-  private void validateCategory(ResourceEdge edge, Resource source, PredicateDictionary pred) {
+  private void validateCategory(ResourceEdge edge, Resource source, PredicateDictionary pred,
+                                String expectedLink, String expectedCode) {
     var prefix = pred.getUri().substring(pred.getUri().lastIndexOf("/") + 1);
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(pred.getUri());
-    var media = edge.getTarget();
-    assertThat(media.getLabel()).isEqualTo(prefix + " term");
-    assertThat(media.getTypes().iterator().next().getUri()).isEqualTo(CATEGORY.getUri());
-    assertThat(media.getId()).isNotNull();
-    assertThat(media.getDoc().size()).isEqualTo(4);
-    validateLiteral(media, CODE.getValue(), prefix + " code");
-    validateLiteral(media, TERM.getValue(), prefix + " term");
-    validateLiteral(media, LINK.getValue(), prefix + " link");
-    validateLiteral(media, SOURCE.getValue(), prefix + " source");
-    assertThat(media.getOutgoingEdges()).isEmpty();
+    var category = edge.getTarget();
+    assertThat(category.getLabel()).isEqualTo(prefix + " term");
+    assertThat(category.getTypes().iterator().next().getUri()).isEqualTo(CATEGORY.getUri());
+    assertThat(category.getId()).isNotNull();
+    assertThat(category.getDoc().size()).isEqualTo(4);
+    validateLiteral(category, CODE.getValue(), expectedCode);
+    validateLiteral(category, TERM.getValue(), prefix + " term");
+    validateLiteral(category, LINK.getValue(), expectedLink);
+    validateLiteral(category, SOURCE.getValue(), prefix + " source");
+    assertThat(category.getOutgoingEdges()).isEmpty();
   }
 
   private void validateWork(Resource work, boolean validateFullInstance) {
@@ -1104,7 +1105,7 @@ class ResourceControllerIT {
     var categorySet = resourceEdge.getTarget();
     validateResourceEdge(resourceEdge, contentType, categorySet, IS_DEFINED_BY.getUri());
     assertThat(categorySet.getDoc().size()).isEqualTo(2);
-    validateLiteral(categorySet, LINK.getValue(), "https://id.loc.gov/vocabulary/maudience");
+    validateLiteral(categorySet, LINK.getValue(), "http://id.loc.gov/vocabulary/maudience");
     validateLiteral(categorySet, LABEL.getValue(), "Target audience");
     assertThat(categorySet.getLabel()).isEqualTo("Target audience");
   }

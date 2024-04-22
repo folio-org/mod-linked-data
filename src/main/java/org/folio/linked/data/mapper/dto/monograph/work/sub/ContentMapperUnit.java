@@ -26,18 +26,13 @@ public class ContentMapperUnit extends CategoryMapperUnit {
 
   private static final String CATEGORY_SET_LABEL = "rdacontent";
   private static final String CATEGORY_SET_LINK = "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent";
+  private static final String CONTENT_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/contentTypes/";
+
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   public ContentMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService, (category, destination) -> {
-      if (destination instanceof Work work) {
-        work.addContentItem(category);
-      }
-      if (destination instanceof WorkReference work) {
-        work.addContentItem(category);
-      }
-    }, CATEGORY);
+    super(coreMapper, hashService, CATEGORY);
     this.coreMapper = coreMapper;
     this.hashService = hashService;
   }
@@ -53,5 +48,20 @@ public class ContentMapperUnit extends CategoryMapperUnit {
       .setLabel(CATEGORY_SET_LABEL);
     categorySet.setId(hashService.hash(categorySet));
     return Optional.of(categorySet);
+  }
+
+  @Override
+  protected void addToParent(Category category, Object parentDto) {
+    if (parentDto instanceof Work work) {
+      work.addContentItem(category);
+    }
+    if (parentDto instanceof WorkReference workReference) {
+      workReference.addContentItem(category);
+    }
+  }
+
+  @Override
+  protected String getLinkPrefix() {
+    return CONTENT_TYPE_LINK_PREFIX;
   }
 }

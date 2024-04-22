@@ -24,16 +24,12 @@ import org.springframework.stereotype.Component;
 public class TargetAudienceMapperUnit extends CategoryMapperUnit {
 
   private static final String CATEGORY_SET_LABEL = "Target audience";
-  private static final String CATEGORY_SET_LINK = "https://id.loc.gov/vocabulary/maudience";
+  private static final String TARGET_AUDIENCE_LINK_PREFIX = "http://id.loc.gov/vocabulary/maudience";
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   public TargetAudienceMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService, (category, destination) -> {
-      if (destination instanceof Work work) {
-        work.addTargetAudienceItem(category);
-      }
-    }, CATEGORY);
+    super(coreMapper, hashService, CATEGORY);
     this.coreMapper = coreMapper;
     this.hashService = hashService;
   }
@@ -41,7 +37,7 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
   @Override
   protected Optional<Resource> getCategorySet() {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, LINK, List.of(CATEGORY_SET_LINK));
+    putProperty(map, LINK, List.of(TARGET_AUDIENCE_LINK_PREFIX));
     putProperty(map, LABEL, List.of(CATEGORY_SET_LABEL));
     var categorySet = new Resource()
       .addTypes(CATEGORY_SET)
@@ -49,5 +45,33 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
       .setLabel(CATEGORY_SET_LABEL);
     categorySet.setId(hashService.hash(categorySet));
     return Optional.of(categorySet);
+  }
+
+  @Override
+  protected void addToParent(Category category, Object parentDto) {
+    if (parentDto instanceof Work work) {
+      work.addTargetAudienceItem(category);
+    }
+  }
+
+  @Override
+  protected Optional<String> getMarcCode(String linkSuffix) {
+    var result = switch (linkSuffix) {
+      case "pre" -> "a";
+      case "pri" -> "b";
+      case "pad" -> "c";
+      case "ado" -> "d";
+      case "adu" -> "e";
+      case "spe" -> "f";
+      case "gen" -> "g";
+      case "juv" -> "j";
+      default -> null;
+    };
+    return Optional.ofNullable(result);
+  }
+
+  @Override
+  protected String getLinkPrefix() {
+    return TARGET_AUDIENCE_LINK_PREFIX;
   }
 }
