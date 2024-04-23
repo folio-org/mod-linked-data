@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Provider place",
+  "description": "Place",
   "allOf": [
     {
       "$ref": "Topper.json"
@@ -8,6 +8,13 @@
     {
       "type": "object",
       "properties": {
+        "name": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/name"
+        },
         "code": {
           "type": "array",
           "items": {

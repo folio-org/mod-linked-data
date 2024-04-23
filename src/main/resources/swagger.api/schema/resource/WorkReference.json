@@ -55,6 +55,14 @@
             "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/content"
+        },
+        "originPlace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Place.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
         }
       }
     }

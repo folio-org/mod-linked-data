@@ -135,6 +135,14 @@
             "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
+        },
+        "originPlace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Place.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
         }
       }
     }
