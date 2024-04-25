@@ -27,7 +27,7 @@ public class ObjectMapperConfig {
   public ObjectMapper objectMapper() {
     var mapper = new ObjectMapper();
     mapper
-      .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+      .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
       .registerModule(monographModule(mapper))
