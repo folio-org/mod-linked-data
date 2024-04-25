@@ -198,9 +198,9 @@ public class MonographTestUtil {
 
     var media = createResource(
       Map.of(
-        CODE, List.of("media code"),
+        CODE, List.of("s"),
         TERM, List.of("media term"),
-        LINK, List.of("media link"),
+        LINK, List.of("http://id.loc.gov/vocabulary/mediaTypes/s"),
         SOURCE, List.of("media source")
       ),
       Set.of(CATEGORY),
@@ -209,9 +209,9 @@ public class MonographTestUtil {
 
     var carrier = createResource(
       Map.of(
-        CODE, List.of("carrier code"),
+        CODE, List.of("ha"),
         TERM, List.of("carrier term"),
-        LINK, List.of("carrier link"),
+        LINK, List.of("http://id.loc.gov/vocabulary/carriers/ha"),
         SOURCE, List.of("carrier source")
       ),
       Set.of(CATEGORY),
@@ -562,7 +562,7 @@ public class MonographTestUtil {
   private static Resource createTargetAudience() {
     var categorySet = createResource(
       Map.of(
-        LINK, List.of("https://id.loc.gov/vocabulary/maudience"),
+        LINK, List.of("http://id.loc.gov/vocabulary/maudience"),
         LABEL, List.of("Target audience")
       ),
       Set.of(CATEGORY_SET),

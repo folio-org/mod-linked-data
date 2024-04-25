@@ -15,11 +15,21 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = CATEGORY, predicate = MEDIA, dtoClass = Category.class)
 public class MediaMapperUnit extends CategoryMapperUnit {
 
+  private static final String MEDIA_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/mediaTypes/";
+
   public MediaMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService, (category, destination) -> {
-      if (destination instanceof Instance instance) {
-        instance.addMediaItem(category);
-      }
-    }, CATEGORY);
+    super(coreMapper, hashService, CATEGORY);
+  }
+
+  @Override
+  protected void addToParent(Category category, Object parentDto) {
+    if (parentDto instanceof Instance instance) {
+      instance.addMediaItem(category);
+    }
+  }
+
+  @Override
+  protected String getLinkPrefix() {
+    return MEDIA_TYPE_LINK_PREFIX;
   }
 }

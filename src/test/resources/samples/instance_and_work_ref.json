@@ -276,14 +276,11 @@
       ],
       "http://bibfra.me/vocab/marc/media": [
         {
-          "http://bibfra.me/vocab/marc/code": [
-            "media code"
-          ],
           "http://bibfra.me/vocab/marc/term": [
             "media term"
           ],
           "http://bibfra.me/vocab/lite/link": [
-            "media link"
+            "http://id.loc.gov/vocabulary/mediaTypes/s"
           ],
           "http://bibfra.me/vocab/marc/source": [
             "media source"
@@ -292,14 +289,11 @@
       ],
       "http://bibfra.me/vocab/marc/carrier": [
         {
-          "http://bibfra.me/vocab/marc/code": [
-            "carrier code"
-          ],
           "http://bibfra.me/vocab/marc/term": [
             "carrier term"
           ],
           "http://bibfra.me/vocab/lite/link": [
-            "carrier link"
+            "http://id.loc.gov/vocabulary/carriers/ha"
           ],
           "http://bibfra.me/vocab/marc/source": [
             "carrier source"
