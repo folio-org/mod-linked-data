@@ -28,7 +28,7 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
-    kafkaSender.sendSingleResourceCreated(resourceCreatedEvent.work());
+    kafkaSender.sendSingleResourceCreated(resourceRepository.getReferenceById(resourceCreatedEvent.work().getId()));
   }
 
   @TransactionalEventListener
