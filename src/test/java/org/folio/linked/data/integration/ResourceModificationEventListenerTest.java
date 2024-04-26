@@ -2,6 +2,7 @@ package org.folio.linked.data.integration;
 
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -32,6 +33,7 @@ class ResourceModificationEventListenerTest {
   void afterCreate_shouldCall_sendSingleResourceCreated() {
     //given
     var resource = new Resource().setId(1L);
+    when(resourceRepository.getReferenceById(1L)).thenReturn(resource);
 
     //when
     resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
