@@ -58,7 +58,7 @@ class ResourceGraphControllerIT {
   @Test
   void getResourceGraphById_shouldReturnResourceGraph() throws Exception {
     // given
-    var providerEvent = MonographTestUtil.providerEvent("production");
+    var providerEvent = MonographTestUtil.providerEvent("production", "af", "Afghanistan");
     var date = Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55"));
     providerEvent.setIndexDate(date);
     var providerEventResource = resourceTestService.saveGraph(providerEvent);

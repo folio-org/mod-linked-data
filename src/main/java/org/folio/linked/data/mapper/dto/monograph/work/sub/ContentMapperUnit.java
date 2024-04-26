@@ -61,7 +61,7 @@ public class ContentMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected String getLinkPrefix() {
+  public String getLinkPrefix() {
     return CONTENT_TYPE_LINK_PREFIX;
   }
 }

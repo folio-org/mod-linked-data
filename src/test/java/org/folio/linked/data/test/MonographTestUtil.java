@@ -131,10 +131,10 @@ public class MonographTestUtil {
   public static Resource getSampleInstanceResource(Long id, Resource linkedWork) {
     var basicTitle = createBasicTitle(id);
 
-    var production = providerEvent("production");
-    var publication = providerEvent("publication");
-    var distribution = providerEvent("distribution");
-    var manufacture = providerEvent("manufacture");
+    var production = providerEvent("production", "af", "Afghanistan");
+    var publication = providerEvent("publication", "al", "Albania");
+    var distribution = providerEvent("distribution", "dz", "Algeria");
+    var manufacture = providerEvent("manufacture", "as", "American Samoa");
 
     var supplementaryContent = createResource(
       Map.of(
@@ -488,8 +488,8 @@ public class MonographTestUtil {
     var originPlace = createResource(
       Map.of(
         NAME, List.of("France"),
-        CODE, List.of("code"),
-        LINK, List.of("link")
+        CODE, List.of("fr"),
+        LINK, List.of("http://id.loc.gov/vocabulary/countries/fr")
       ),
       Set.of(PLACE),
       emptyMap()
@@ -592,7 +592,7 @@ public class MonographTestUtil {
     ).setLabel(prefix + " status value");
   }
 
-  public Resource providerEvent(String type) {
+  public Resource providerEvent(String type, String code, String label) {
     return createResource(
       Map.of(
         DATE, List.of(type + " date"),
@@ -601,20 +601,20 @@ public class MonographTestUtil {
         SIMPLE_PLACE, List.of(type + " simple place")
       ),
       Set.of(PROVIDER_EVENT),
-      Map.of(PROVIDER_PLACE, List.of(providerPlace(type)))
+      Map.of(PROVIDER_PLACE, List.of(providerPlace(code, label)))
     ).setLabel(type + " name");
   }
 
-  private Resource providerPlace(String providerEventType) {
+  private Resource providerPlace(String code, String label) {
     return createResource(
       Map.of(
-        CODE, List.of(providerEventType + " providerPlace code"),
-        LABEL, List.of(providerEventType + " providerPlace label"),
-        LINK, List.of(providerEventType + " providerPlace link")
+        CODE, List.of(code),
+        LABEL, List.of(label),
+        LINK, List.of("http://id.loc.gov/vocabulary/countries/" + code)
       ),
       Set.of(PLACE),
       emptyMap()
-    ).setLabel(providerEventType + " providerPlace label");
+    ).setLabel(label);
   }
 
   public static Resource createResource(Map<PropertyDictionary, List<String>> propertiesDic,

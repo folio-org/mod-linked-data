@@ -254,11 +254,8 @@
           "http://bibfra.me/vocab/lite/name": [
             "France"
           ],
-          "http://bibfra.me/vocab/marc/code": [
-            "code"
-          ],
           "http://bibfra.me/vocab/lite/link": [
-            "link"
+            "http://id.loc.gov/vocabulary/countries/fr"
           ]
         }
       ],

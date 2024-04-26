@@ -1,7 +1,5 @@
 package org.folio.linked.data.mapper.dto.monograph.common;
 
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -29,7 +27,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.service.HashService;
 
 @RequiredArgsConstructor
-public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
+public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Instance.class, InstanceReference.class, Work.class,
     WorkReference.class);
@@ -42,13 +40,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
     return Optional.empty();
   }
 
-  protected Optional<String> getMarcCode(String linkSuffix) {
-    return ofNullable(linkSuffix);
-  }
-
   protected abstract void addToParent(Category category, Object parentDto);
-
-  protected abstract String getLinkPrefix();
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
@@ -82,17 +74,5 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Set<Class<?>> supportedParents() {
     return SUPPORTED_PARENTS;
-  }
-
-  private  List<String> getMarcCodes(List<String> links) {
-    if (isNull(links)) {
-      return List.of();
-    }
-    final var linkPrefix = getLinkPrefix().endsWith("/") ? getLinkPrefix() : getLinkPrefix() + "/";
-    return links.stream()
-      .filter(link -> link.startsWith(linkPrefix))
-      .map(link -> link.substring(linkPrefix.length()))
-      .flatMap(linkSuffix -> getMarcCode(linkSuffix).stream())
-      .toList();
   }
 }

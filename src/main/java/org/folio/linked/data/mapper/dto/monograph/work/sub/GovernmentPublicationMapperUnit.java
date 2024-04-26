@@ -32,7 +32,7 @@ public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected Optional<String> getMarcCode(String linkSuffix) {
+  public Optional<String> getMarcCode(String linkSuffix) {
     if (LINK_SUFFIX_G.equals(linkSuffix)) {
       return Optional.of(MARC_CODE_O);
     }
@@ -40,7 +40,7 @@ public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected String getLinkPrefix() {
+  public String getLinkPrefix() {
     return GOVERNMENT_PUBLICATION_LINK_PREFIX;
   }
 }
