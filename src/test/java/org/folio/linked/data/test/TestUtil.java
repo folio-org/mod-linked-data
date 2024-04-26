@@ -36,7 +36,6 @@ import org.testcontainers.shaded.org.awaitility.core.ThrowingRunnable;
 public class TestUtil {
 
   public static final String FOLIO_TEST_PROFILE = "test-folio";
-  public static final String SEARCH_TEST_PROFILE = "test-search";
   public static final String TENANT_ID = "test_tenant";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
