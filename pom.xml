@@ -45,7 +45,7 @@
     <lib-linked-data-dictionary.version>1.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>1.0.1-SNAPSHOT</lib-linked-data-marc4ld.version>
     <lib-linked-data-fingerprint.version>1.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
-    <maven-checkstyle-plugin.checkstyle.version>10.15.0</maven-checkstyle-plugin.checkstyle.version>
+    <maven-checkstyle-plugin.checkstyle.version>10.16.0</maven-checkstyle-plugin.checkstyle.version>
 
     <!-- Test dependencies versions -->
     <testcontainers.version>1.19.7</testcontainers.version>
