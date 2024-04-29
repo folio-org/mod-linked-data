@@ -601,30 +601,30 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toOtherIdQualifier(), equalTo(List.of("otherId qualifier"))))
         .andExpect(jsonPath(toProviderEventDate(PE_PRODUCTION), equalTo("production date")))
         .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
-        .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("production providerPlace code")))
-        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PRODUCTION), equalTo("production providerPlace label")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("production providerPlace link")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("af")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PRODUCTION), equalTo("Afghanistan")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("http://id.loc.gov/vocabulary/countries/af")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_PRODUCTION), equalTo("production provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_PRODUCTION), equalTo("production simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_PUBLICATION), equalTo("publication date")))
         .andExpect(jsonPath(toProviderEventName(PE_PUBLICATION), equalTo("publication name")))
-        .andExpect(jsonPath(toProviderEventPlaceCode(PE_PUBLICATION), equalTo("publication providerPlace code")))
-        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PUBLICATION), equalTo("publication providerPlace label")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("publication providerPlace link")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_PUBLICATION), equalTo("al")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PUBLICATION), equalTo("Albania")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("http://id.loc.gov/vocabulary/countries/al")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_PUBLICATION), equalTo("publication provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_PUBLICATION), equalTo("publication simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_DISTRIBUTION), equalTo("distribution date")))
         .andExpect(jsonPath(toProviderEventName(PE_DISTRIBUTION), equalTo("distribution name")))
-        .andExpect(jsonPath(toProviderEventPlaceCode(PE_DISTRIBUTION), equalTo("distribution providerPlace code")))
-        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_DISTRIBUTION), equalTo("distribution providerPlace label")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("distribution providerPlace link")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_DISTRIBUTION), equalTo("dz")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_DISTRIBUTION), equalTo("Algeria")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("http://id.loc.gov/vocabulary/countries/dz")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_DISTRIBUTION), equalTo("distribution provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_DISTRIBUTION), equalTo("distribution simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_MANUFACTURE), equalTo("manufacture date")))
         .andExpect(jsonPath(toProviderEventName(PE_MANUFACTURE), equalTo("manufacture name")))
-        .andExpect(jsonPath(toProviderEventPlaceCode(PE_MANUFACTURE), equalTo("manufacture providerPlace code")))
-        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_MANUFACTURE), equalTo("manufacture providerPlace label")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("manufacture providerPlace link")))
+        .andExpect(jsonPath(toProviderEventPlaceCode(PE_MANUFACTURE), equalTo("as")))
+        .andExpect(jsonPath(toProviderEventPlaceLabel(PE_MANUFACTURE), equalTo("American Samoa")))
+        .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("http://id.loc.gov/vocabulary/countries/as")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
         .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
@@ -727,10 +727,10 @@ class ResourceControllerIT {
       validateWork(work, false);
     }
     validateAccessLocation(edgeIterator.next(), instance);
-    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE);
-    validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION);
-    validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION);
-    validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION);
+    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE, "as", "American Samoa");
+    validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION, "dz", "Algeria");
+    validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION, "af", "Afghanistan");
+    validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION, "al", "Albania");
     validateOtherId(edgeIterator.next(), instance);
     validateEan(edgeIterator.next(), instance);
     validateBasicTitle(edgeIterator.next(), instance);
@@ -805,7 +805,8 @@ class ResourceControllerIT {
     assertThat(title.getDoc().get(SUBTITLE.getValue()).get(0).asText()).isEqualTo(prefix + "subTitle");
   }
 
-  private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate) {
+  private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate,
+                                     String expectedCode, String expectedLabel) {
     var type = predicate.getUri().substring(predicate.getUri().indexOf("marc/") + 5);
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -824,24 +825,25 @@ class ResourceControllerIT {
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asText()).isEqualTo(type + " simple place");
     assertThat(providerEvent.getOutgoingEdges()).hasSize(1);
-    validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, type);
+    validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, expectedCode,
+      expectedLabel);
   }
 
-  private void validateProviderPlace(ResourceEdge edge, Resource source, String prefix) {
+  private void validateProviderPlace(ResourceEdge edge, Resource source, String expectedCode, String expectedLabel) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(PROVIDER_PLACE.getUri());
     var place = edge.getTarget();
-    assertThat(place.getLabel()).isEqualTo(prefix + " providerPlace label");
+    assertThat(place.getLabel()).isEqualTo(expectedLabel);
     assertThat(place.getTypes().iterator().next().getUri()).isEqualTo(PLACE.getUri());
     assertThat(place.getId()).isNotNull();
     assertThat(place.getDoc().size()).isEqualTo(3);
     assertThat(place.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace code");
+    assertThat(place.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo(expectedCode);
     assertThat(place.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace label");
+    assertThat(place.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(expectedLabel);
     assertThat(place.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " providerPlace link");
+    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("http://id.loc.gov/vocabulary/countries/" + expectedCode);
     assertThat(place.getOutgoingEdges()).isEmpty();
   }
 
@@ -1152,8 +1154,8 @@ class ResourceControllerIT {
     assertThat(originPlace.getLabel()).isEqualTo("France");
     assertThat(originPlace.getDoc().size()).isEqualTo(3);
     validateLiterals(originPlace, NAME.getValue(), List.of("France"));
-    validateLiterals(originPlace, CODE.getValue(), List.of("code"));
-    validateLiterals(originPlace, LINK.getValue(), List.of("link"));
+    validateLiterals(originPlace, CODE.getValue(), List.of("fr"));
+    validateLiterals(originPlace, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/countries/fr"));
   }
 
   private void validateResourceEdge(ResourceEdge edge, Resource source, Resource target, String predicate) {

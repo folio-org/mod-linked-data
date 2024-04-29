@@ -29,7 +29,7 @@ public class MediaMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected String getLinkPrefix() {
+  public String getLinkPrefix() {
     return MEDIA_TYPE_LINK_PREFIX;
   }
 }

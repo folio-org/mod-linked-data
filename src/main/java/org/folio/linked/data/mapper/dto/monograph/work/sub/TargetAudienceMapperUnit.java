@@ -55,7 +55,7 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected Optional<String> getMarcCode(String linkSuffix) {
+  public Optional<String> getMarcCode(String linkSuffix) {
     var result = switch (linkSuffix) {
       case "pre" -> "a";
       case "pri" -> "b";
@@ -71,7 +71,7 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected String getLinkPrefix() {
+  public String getLinkPrefix() {
     return TARGET_AUDIENCE_LINK_PREFIX;
   }
 }

@@ -33,7 +33,7 @@ public class CarrierMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected String getLinkPrefix() {
+  public String getLinkPrefix() {
     return CARRIER_TYPE_LINK_PREFIX;
   }
 }

@@ -18,12 +18,14 @@ import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.common.MarcCodeProvider;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
 
 @RequiredArgsConstructor
-public abstract class PlaceMapperUnit implements SingleResourceMapperUnit {
+public abstract class PlaceMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {
 
+  private static final String PLACE_LINK_PREFIX = "http://id.loc.gov/vocabulary/countries/";
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
     ProviderEvent.class,
     Work.class,
@@ -35,6 +37,11 @@ public abstract class PlaceMapperUnit implements SingleResourceMapperUnit {
   private final HashService hashService;
 
   protected abstract String getLabel(Place place);
+
+  @Override
+  public String getLinkPrefix() {
+    return PLACE_LINK_PREFIX;
+  }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
@@ -55,7 +62,7 @@ public abstract class PlaceMapperUnit implements SingleResourceMapperUnit {
   private JsonNode getDoc(Place dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getName());
-    putProperty(map, CODE, dto.getCode());
+    putProperty(map, CODE, getMarcCodes(dto.getLink()));
     putProperty(map, LABEL, dto.getLabel());
     putProperty(map, LINK, dto.getLink());
     return map.isEmpty() ? null : coreMapper.toJson(map);

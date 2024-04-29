@@ -76,14 +76,11 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/marc/code": [
-                "production providerPlace code"
-              ],
               "http://bibfra.me/vocab/lite/link": [
-                "production providerPlace link"
+                "http://id.loc.gov/vocabulary/countries/af"
               ],
               "http://bibfra.me/vocab/lite/label": [
-                "production providerPlace label"
+                "Afghanistan"
               ]
             }
           ],
@@ -105,14 +102,11 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/marc/code": [
-                "publication providerPlace code"
-              ],
               "http://bibfra.me/vocab/lite/link": [
-                "publication providerPlace link"
+                "http://id.loc.gov/vocabulary/countries/al"
               ],
               "http://bibfra.me/vocab/lite/label": [
-                "publication providerPlace label"
+                "Albania"
               ]
             }
           ],
@@ -134,14 +128,11 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/marc/code": [
-                "distribution providerPlace code"
-              ],
               "http://bibfra.me/vocab/lite/link": [
-                "distribution providerPlace link"
+                "http://id.loc.gov/vocabulary/countries/dz"
               ],
               "http://bibfra.me/vocab/lite/label": [
-                "distribution providerPlace label"
+                "Algeria"
               ]
             }
           ],
@@ -163,14 +154,11 @@
           ],
           "http://bibfra.me/vocab/lite/providerPlace": [
             {
-              "http://bibfra.me/vocab/marc/code": [
-                "manufacture providerPlace code"
-              ],
               "http://bibfra.me/vocab/lite/link": [
-                "manufacture providerPlace link"
+                "http://id.loc.gov/vocabulary/countries/as"
               ],
               "http://bibfra.me/vocab/lite/label": [
-                "manufacture providerPlace label"
+                "American Samoa"
               ]
             }
           ],
