@@ -194,7 +194,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "WorkReference.json"
+            "$ref": "Work.json"
           }
         },
         "inventoryId": {
