@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Place;
 import org.folio.linked.data.domain.dto.ProviderEvent;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.MarcCodeProvider;
@@ -26,11 +25,7 @@ import org.folio.linked.data.service.HashService;
 public abstract class PlaceMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {
 
   private static final String PLACE_LINK_PREFIX = "http://id.loc.gov/vocabulary/countries/";
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
-    ProviderEvent.class,
-    Work.class,
-    WorkReference.class
-  );
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(ProviderEvent.class, Work.class);
 
   protected final CoreMapper coreMapper;
 

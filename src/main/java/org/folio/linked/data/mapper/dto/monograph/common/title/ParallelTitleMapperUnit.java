@@ -20,7 +20,6 @@ import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -45,8 +44,6 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
       instanceReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     } else if (parentDto instanceof Work work) {
       work.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
-    } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
     }
     return parentDto;
   }

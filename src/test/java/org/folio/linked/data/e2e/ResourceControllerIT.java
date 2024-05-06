@@ -660,28 +660,27 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
-      .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))));
+      .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))))
+      .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
+      .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
+      .andExpect(jsonPath(toWorkResponsibilityStatement(workBase), equalTo("statement of responsibility")))
+      .andExpect(jsonPath(toWorkNotesValues(workBase),
+        containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
+      .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
+        "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
+        "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
+      .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
+      .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
+      .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
+      .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
+      .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
+      .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
+      .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
+      .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
+      .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
+      .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
     if (workBase.equals(toWork())) {
-      resultActions
-        .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
-        .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
-        .andExpect(jsonPath(toWorkResponsibilityStatement(workBase), equalTo("statement of responsibility")))
-        .andExpect(jsonPath(toWorkNotesValues(workBase),
-          containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
-        .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
-          "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
-          "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
-        .andExpect(jsonPath(toInstanceReference(workBase), notNullValue()))
-        .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
-        .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
-        .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
-        .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
-        .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
-        .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
-        .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
-        .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
-        .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
-        .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
+      resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
     }
   }

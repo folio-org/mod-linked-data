@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
@@ -54,9 +53,6 @@ public class ContentMapperUnit extends CategoryMapperUnit {
   protected void addToParent(Category category, Object parentDto) {
     if (parentDto instanceof Work work) {
       work.addContentItem(category);
-    }
-    if (parentDto instanceof WorkReference workReference) {
-      workReference.addContentItem(category);
     }
   }
 
