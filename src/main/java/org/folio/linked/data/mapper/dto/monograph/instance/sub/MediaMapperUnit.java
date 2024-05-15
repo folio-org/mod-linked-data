@@ -7,18 +7,30 @@ import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.common.CategorySetMapperUnit;
 import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = CATEGORY, predicate = MEDIA, dtoClass = Category.class)
-public class MediaMapperUnit extends CategoryMapperUnit {
+public class MediaMapperUnit extends CategorySetMapperUnit {
 
+  private static final String CATEGORY_SET_LABEL = "rdamedia";
+  private static final String CATEGORY_SET_LINK = "http://id.loc.gov/vocabulary/genreFormSchemes/rdamedia";
   private static final String MEDIA_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/mediaTypes/";
 
   public MediaMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService, CATEGORY);
+    super(coreMapper, hashService);
+  }
+
+  @Override
+  protected String getLabel() {
+    return CATEGORY_SET_LABEL;
+  }
+
+  @Override
+  protected String getLink() {
+    return CATEGORY_SET_LINK;
   }
 
   @Override
