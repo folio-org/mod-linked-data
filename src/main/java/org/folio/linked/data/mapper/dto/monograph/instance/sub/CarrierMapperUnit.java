@@ -8,18 +8,30 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.common.CategorySetMapperUnit;
 import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = CATEGORY, predicate = CARRIER, dtoClass = Category.class)
-public class CarrierMapperUnit extends CategoryMapperUnit {
+public class CarrierMapperUnit extends CategorySetMapperUnit {
 
+  private static final String CATEGORY_SET_LABEL = "rdacarrier  ";
+  private static final String CATEGORY_SET_LINK = "http://id.loc.gov/vocabulary/genreFormSchemes/rdacarrier";
   private static final String CARRIER_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/carriers/";
 
   public CarrierMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService, CATEGORY);
+    super(coreMapper, hashService);
+  }
+
+  @Override
+  protected String getLabel() {
+    return CATEGORY_SET_LABEL;
+  }
+
+  @Override
+  protected String getLink() {
+    return CATEGORY_SET_LINK;
   }
 
   @Override
