@@ -24,12 +24,12 @@ public class MediaMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected String getLabel() {
+  protected String getCategorySetLabel() {
     return CATEGORY_SET_LABEL;
   }
 
   @Override
-  protected String getLink() {
+  protected String getCategorySetLink() {
     return CATEGORY_SET_LINK;
   }
 

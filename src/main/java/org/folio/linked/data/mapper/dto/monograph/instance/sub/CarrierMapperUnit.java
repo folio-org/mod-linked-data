@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = CATEGORY, predicate = CARRIER, dtoClass = Category.class)
 public class CarrierMapperUnit extends CategoryMapperUnit {
 
-  private static final String CATEGORY_SET_LABEL = "rdacarrier  ";
+  private static final String CATEGORY_SET_LABEL = "rdacarrier";
   private static final String CATEGORY_SET_LINK = "http://id.loc.gov/vocabulary/genreFormSchemes/rdacarrier";
   private static final String CARRIER_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/carriers/";
 
@@ -25,12 +25,12 @@ public class CarrierMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected String getLabel() {
+  protected String getCategorySetLabel() {
     return CATEGORY_SET_LABEL;
   }
 
   @Override
-  protected String getLink() {
+  protected String getCategorySetLink() {
     return CATEGORY_SET_LINK;
   }
 

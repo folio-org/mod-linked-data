@@ -62,13 +62,13 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
     return SUPPORTED_PARENTS;
   }
 
-  protected abstract String getLabel();
+  protected abstract String getCategorySetLabel();
 
-  protected abstract String getLink();
+  protected abstract String getCategorySetLink();
 
   private Resource getCategorySet() {
-    var label  = getLabel();
-    var link  = getLink();
+    var label  = getCategorySetLabel();
+    var link  = getCategorySetLink();
     var map = new HashMap<String, List<String>>();
     putProperty(map, LINK, List.of(link));
     putProperty(map, LABEL, List.of(label));
