@@ -7,13 +7,13 @@ import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.common.CategorySetMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
 import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = CATEGORY, predicate = CONTENT, dtoClass = Category.class)
-public class ContentMapperUnit extends CategorySetMapperUnit {
+public class ContentMapperUnit extends CategoryMapperUnit {
 
   private static final String CATEGORY_SET_LABEL = "rdacontent";
   private static final String CATEGORY_SET_LINK = "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent";
