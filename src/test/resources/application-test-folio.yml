@@ -12,7 +12,7 @@ folio:
     topics:
       - name: search.bibframe
         numPartitions: 1
-      - name: DI_INVENTORY_INSTANCE_CREATED_READY_FOR_POST_PROCESSING
+      - name: DI_COMPLETED
         num-partitions: 1
 
 test:
