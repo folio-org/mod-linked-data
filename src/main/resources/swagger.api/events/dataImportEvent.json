@@ -15,8 +15,12 @@
       "description": "Unique Event type, human-readable String, not UUID",
       "type": "string"
     },
-    "marc": {
-      "description": "Marc record",
+    "marcBib": {
+      "description": "Marc Bib record",
+      "type": "string"
+    },
+    "marcAuthority": {
+      "description": "Marc Authority record",
       "type": "string"
     }
   }

@@ -1,6 +1,6 @@
 package org.folio.linked.data.integration;
 
-import static org.folio.linked.data.test.KafkaEventsTestDataFixture.dataImportEvent;
+import static org.folio.linked.data.test.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
@@ -26,7 +26,7 @@ import org.springframework.test.context.ActiveProfiles;
 class KafkaMessageListenerIT {
 
   private static final String TENANT_ID = "tenant_01";
-  private static final String DI_INSTANCE_CREATED_TOPIC = "DI_INVENTORY_INSTANCE_CREATED_READY_FOR_POST_PROCESSING";
+  private static final String DI_COMPLETED_TOPIC = "DI_COMPLETED";
 
   @Autowired
   private KafkaTemplate<String, String> eventKafkaTemplate;
@@ -42,18 +42,17 @@ class KafkaMessageListenerIT {
   @Test
   void shouldConsumeInstanceCreatedEventFromDataImport() {
     String eventId = "event_id_01";
-    String eventType = "eventType_01";
     String tenantId = "tenant_01";
     String marc = "{}";
 
-    String emittedEvent = dataImportEvent(eventId, tenantId, eventType, marc);
+    String emittedEvent = instanceCreatedEvent(eventId, tenantId, marc);
     DataImportEvent expectedEvent = new DataImportEvent()
       .id(eventId)
       .tenant(tenantId)
-      .eventType(eventType)
-      .marc(marc);
+      .eventType("DI_COMPLETED")
+      .marcBib(marc);
 
-    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), 0,
+    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
       eventId, emittedEvent, defaultKafkaHeaders());
 
     eventKafkaTemplate.send(producerRecord);

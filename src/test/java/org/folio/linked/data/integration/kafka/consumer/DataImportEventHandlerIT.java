@@ -54,7 +54,7 @@ class DataImportEventHandlerIT {
       .id("eventId")
       .tenant(TENANT_ID)
       .eventType("eventType")
-      .marc(loadResourceAsString("samples/full_marc_sample.jsonl"));
+      .marcBib(loadResourceAsString("samples/full_marc_sample.jsonl"));
 
     //when
     dataImportEventHandler.handle(event);
