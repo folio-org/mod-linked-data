@@ -69,9 +69,6 @@
           }
         }
       ],
-      "http://bibfra.me/vocab/marc/responsibilityStatement": [
-        "statement of responsibility"
-      ],
       "http://bibfra.me/vocab/marc/summary": [
         "summary text"
       ],

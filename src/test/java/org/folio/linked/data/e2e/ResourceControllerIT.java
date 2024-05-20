@@ -71,7 +71,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
@@ -665,7 +664,6 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))))
       .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
       .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
-      .andExpect(jsonPath(toWorkResponsibilityStatement(workBase), equalTo("statement of responsibility")))
       .andExpect(jsonPath(toWorkNotesValues(workBase),
         containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
       .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
@@ -1027,10 +1025,9 @@ class ResourceControllerIT {
     assertThat(work.getId()).isNotNull();
     assertThat(work.getLabel()).isEqualTo("Basic: mainTitle");
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
-    assertThat(work.getDoc().size()).isEqualTo(9);
+    assertThat(work.getDoc().size()).isEqualTo(8);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
     validateLiterals(work, DATE_END.getValue(), List.of("2025"));
-    validateLiteral(work, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, LANGUAGE.getValue(), "eng");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
@@ -1511,10 +1508,6 @@ class ResourceControllerIT {
 
   private String toMediaTerm() {
     return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toWorkResponsibilityStatement(String workBase) {
-    return join(".", workBase, arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
 
   private String toWorkNotesValues(String workBase) {
