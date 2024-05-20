@@ -83,6 +83,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -149,6 +150,7 @@ import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -1007,7 +1009,18 @@ class ResourceControllerIT {
     validateLiteral(category, TERM.getValue(), prefix + " term");
     validateLiteral(category, LINK.getValue(), expectedLink);
     validateLiteral(category, SOURCE.getValue(), prefix + " source");
-    assertThat(category.getOutgoingEdges()).isEmpty();
+    if (category.getOutgoingEdges().isEmpty()) {
+      return;
+    }
+    assertThat(category.getOutgoingEdges())
+      .extracting(ResourceEdge::getPredicate)
+      .extracting(PredicateEntity::getUri)
+      .containsOnly(IS_DEFINED_BY.getUri());
+    assertThat(category.getOutgoingEdges())
+      .extracting(ResourceEdge::getTarget)
+      .flatExtracting(Resource::getTypes)
+      .extracting(ResourceTypeEntity::getUri)
+      .containsOnly(CATEGORY_SET.getUri());
   }
 
   private void validateWork(Resource work, boolean validateFullInstance) {
