@@ -73,6 +73,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
@@ -576,6 +577,7 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toIsbnStatusValue(), equalTo(List.of("isbn status value"))))
         .andExpect(jsonPath(toIsbnStatusLink(), equalTo(List.of("isbn status link"))))
         .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
+        .andExpect(jsonPath(toStatementOfResponsibility(), equalTo("statement of responsibility")))
         .andExpect(
           jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
             "description source note", "exhibitions note", "funding information", "issuance note", "issuing body",
@@ -691,11 +693,12 @@ class ResourceControllerIT {
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
-    assertThat(instance.getDoc().size()).isEqualTo(19);
+    assertThat(instance.getDoc().size()).isEqualTo(20);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
+    validateLiteral(instance, STATEMENT_OF_RESPONSIBILITY.getValue(), "statement of responsibility");
     validateLiteral(instance, ADDITIONAL_PHYSICAL_FORM.getValue(), "additional physical form");
     validateLiteral(instance, COMPUTER_DATA_NOTE.getValue(), "computer data note");
     validateLiteral(instance, DESCRIPTION_SOURCE_NOTE.getValue(), "description source note");
@@ -1313,6 +1316,10 @@ class ResourceControllerIT {
 
   private String toIssuance() {
     return join(".", toInstance(), arrayPath(ISSUANCE.getValue()));
+  }
+
+  private String toStatementOfResponsibility() {
+    return join(".", toInstance(), arrayPath(STATEMENT_OF_RESPONSIBILITY.getValue()));
   }
 
   private String toInstanceNotesValues() {
