@@ -2,7 +2,7 @@ package org.folio.linked.data.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.linked.data.test.KafkaEventsTestDataFixture.dataImportEvent;
+import static org.folio.linked.data.test.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class DataImportEventListenerIT {
 
-  private static final String DI_INSTANCE_CREATED_TOPIC = "DI_INVENTORY_INSTANCE_CREATED_READY_FOR_POST_PROCESSING";
+  private static final String DI_COMPLETED_TOPIC = "DI_COMPLETED";
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
@@ -69,15 +69,14 @@ class DataImportEventListenerIT {
   void shouldConsumeInstanceCreatedEventFromDataImport() {
     // given
     var eventId = "event_id_01";
-    var eventType = "eventType_01";
     var marc = loadResourceAsString("samples/full_marc_sample.jsonl");
-    var emittedEvent = dataImportEvent(eventId, TENANT_ID, eventType, marc);
+    var emittedEvent = instanceCreatedEvent(eventId, TENANT_ID, marc);
     var expectedEvent = new DataImportEvent()
       .id(eventId)
       .tenant(TENANT_ID)
-      .eventType(eventType)
-      .marc(marc);
-    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_INSTANCE_CREATED_TOPIC), 0,
+      .eventType("DI_COMPLETED")
+      .marcBib(marc);
+    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
       eventId, emittedEvent, defaultKafkaHeaders());
 
     // when

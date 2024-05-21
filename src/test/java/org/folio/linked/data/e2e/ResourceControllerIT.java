@@ -71,9 +71,9 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
@@ -83,6 +83,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -149,6 +150,7 @@ import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -575,6 +577,7 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toIsbnStatusValue(), equalTo(List.of("isbn status value"))))
         .andExpect(jsonPath(toIsbnStatusLink(), equalTo(List.of("isbn status link"))))
         .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
+        .andExpect(jsonPath(toStatementOfResponsibility(), equalTo("statement of responsibility")))
         .andExpect(
           jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
             "description source note", "exhibitions note", "funding information", "issuance note", "issuing body",
@@ -660,28 +663,26 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
-      .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))));
+      .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))))
+      .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
+      .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
+      .andExpect(jsonPath(toWorkNotesValues(workBase),
+        containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
+      .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
+        "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
+        "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
+      .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
+      .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
+      .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
+      .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
+      .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
+      .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
+      .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
+      .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
+      .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
+      .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
     if (workBase.equals(toWork())) {
-      resultActions
-        .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
-        .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
-        .andExpect(jsonPath(toWorkResponsibilityStatement(workBase), equalTo("statement of responsibility")))
-        .andExpect(jsonPath(toWorkNotesValues(workBase),
-          containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
-        .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
-          "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
-          "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
-        .andExpect(jsonPath(toInstanceReference(workBase), notNullValue()))
-        .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
-        .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
-        .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
-        .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
-        .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
-        .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
-        .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
-        .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
-        .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
-        .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
+      resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
     }
   }
@@ -692,11 +693,12 @@ class ResourceControllerIT {
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     assertThat(instance.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
-    assertThat(instance.getDoc().size()).isEqualTo(19);
+    assertThat(instance.getDoc().size()).isEqualTo(20);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
+    validateLiteral(instance, STATEMENT_OF_RESPONSIBILITY.getValue(), "statement of responsibility");
     validateLiteral(instance, ADDITIONAL_PHYSICAL_FORM.getValue(), "additional physical form");
     validateLiteral(instance, COMPUTER_DATA_NOTE.getValue(), "computer data note");
     validateLiteral(instance, DESCRIPTION_SOURCE_NOTE.getValue(), "description source note");
@@ -1008,17 +1010,27 @@ class ResourceControllerIT {
     validateLiteral(category, TERM.getValue(), prefix + " term");
     validateLiteral(category, LINK.getValue(), expectedLink);
     validateLiteral(category, SOURCE.getValue(), prefix + " source");
-    assertThat(category.getOutgoingEdges()).isEmpty();
+    if (category.getOutgoingEdges().isEmpty()) {
+      return;
+    }
+    assertThat(category.getOutgoingEdges())
+      .extracting(ResourceEdge::getPredicate)
+      .extracting(PredicateEntity::getUri)
+      .containsOnly(IS_DEFINED_BY.getUri());
+    assertThat(category.getOutgoingEdges())
+      .extracting(ResourceEdge::getTarget)
+      .flatExtracting(Resource::getTypes)
+      .extracting(ResourceTypeEntity::getUri)
+      .containsOnly(CATEGORY_SET.getUri());
   }
 
   private void validateWork(Resource work, boolean validateFullInstance) {
     assertThat(work.getId()).isNotNull();
     assertThat(work.getLabel()).isEqualTo("Basic: mainTitle");
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
-    assertThat(work.getDoc().size()).isEqualTo(9);
+    assertThat(work.getDoc().size()).isEqualTo(8);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
     validateLiterals(work, DATE_END.getValue(), List.of("2025"));
-    validateLiteral(work, RESPONSIBILITY_STATEMENT.getValue(), "statement of responsibility");
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, LANGUAGE.getValue(), "eng");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
@@ -1306,6 +1318,10 @@ class ResourceControllerIT {
     return join(".", toInstance(), arrayPath(ISSUANCE.getValue()));
   }
 
+  private String toStatementOfResponsibility() {
+    return join(".", toInstance(), arrayPath(STATEMENT_OF_RESPONSIBILITY.getValue()));
+  }
+
   private String toInstanceNotesValues() {
     return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
   }
@@ -1499,10 +1515,6 @@ class ResourceControllerIT {
 
   private String toMediaTerm() {
     return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toWorkResponsibilityStatement(String workBase) {
-    return join(".", workBase, arrayPath(RESPONSIBILITY_STATEMENT.getValue()));
   }
 
   private String toWorkNotesValues(String workBase) {

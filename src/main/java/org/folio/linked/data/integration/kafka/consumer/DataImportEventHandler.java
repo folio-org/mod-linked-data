@@ -21,10 +21,13 @@ public class DataImportEventHandler {
   private final ResourceService resourceService;
 
   public void handle(DataImportEvent event) {
-    if (isNotEmpty(event.getMarc())) {
-      var marc4ldResource = marc2BibframeMapper.fromMarcJson(event.getMarc());
+    if (isNotEmpty(event.getMarcBib())) {
+      var marc4ldResource = marc2BibframeMapper.fromMarcJson(event.getMarcBib());
       var id = resourceService.createResource(marc4ldResource);
       log.info("DataImportEvent with id [{}] was saved as LD resource with id [{}]", event.getId(), id);
+    } else if (isNotEmpty(event.getMarcAuthority())) {
+      // TODO - Process MARC authority record
+      log.info("Processing MARC Authority record with event ID [{}]", event.getId());
     } else {
       log.error("DataImportEvent with id [{}], tenant [{}], eventType [{}] has no Marc record inside",
         event.getId(), event.getTenant(), event.getEventType());

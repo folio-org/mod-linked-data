@@ -16,12 +16,14 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = CATEGORY, predicate = GOVERNMENT_PUBLICATION, dtoClass = Category.class)
 public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
 
+  private static final String CATEGORY_SET_LABEL = "Government Publication Type";
+  private static final String CATEGORY_SET_LINK = "http://id.loc.gov/vocabulary/mgovtpubtype";
   private static final String GOVERNMENT_PUBLICATION_LINK_PREFIX = "http://id.loc.gov/vocabulary/mgovtpubtype/";
   private static final String LINK_SUFFIX_G = "g";
   private static final String MARC_CODE_O = "o";
 
   public GovernmentPublicationMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService, CATEGORY);
+    super(coreMapper, hashService);
   }
 
   @Override
@@ -42,5 +44,15 @@ public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
   @Override
   public String getLinkPrefix() {
     return GOVERNMENT_PUBLICATION_LINK_PREFIX;
+  }
+
+  @Override
+  protected String getCategorySetLabel() {
+    return CATEGORY_SET_LABEL;
+  }
+
+  @Override
+  protected String getCategorySetLink() {
+    return CATEGORY_SET_LINK;
   }
 }

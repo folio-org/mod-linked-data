@@ -12,7 +12,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.DeweyDecimalClassification;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -32,9 +31,6 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
     var deweyDecimalClassification = coreMapper.toDtoWithEdges(source, DeweyDecimalClassification.class, false);
     deweyDecimalClassification.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Work work) {
-      work.addClassificationItem(deweyDecimalClassification);
-    }
-    if (parentDto instanceof WorkReference work) {
       work.addClassificationItem(deweyDecimalClassification);
     }
     return parentDto;

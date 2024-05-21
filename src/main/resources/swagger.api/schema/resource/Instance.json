@@ -182,6 +182,13 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/issuance"
         },
+        "statementOfResponsibility": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/statementOfResponsibility"
+        },
         "_notes": {
           "type": "array",
           "items": {
@@ -194,7 +201,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "WorkReference.json"
+            "$ref": "Work.json"
           }
         },
         "inventoryId": {

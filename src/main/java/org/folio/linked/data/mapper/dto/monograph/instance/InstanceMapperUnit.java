@@ -30,6 +30,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -113,6 +114,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     putProperty(map, EDITION_STATEMENT, dto.getEdition());
     putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
     putProperty(map, ISSUANCE, dto.getIssuance());
+    putProperty(map, STATEMENT_OF_RESPONSIBILITY, dto.getStatementOfResponsibility());
     noteMapper.putNotes(dto.getNotes(), map);
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }

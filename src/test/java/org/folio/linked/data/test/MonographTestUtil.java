@@ -69,9 +69,9 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
@@ -246,6 +246,7 @@ public class MonographTestUtil {
         entry(EDITION_STATEMENT, List.of("edition statement")),
         entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),
         entry(ISSUANCE, List.of("single unit")),
+        entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility")),
         entry(ADDITIONAL_PHYSICAL_FORM, List.of("additional physical form")),
         entry(COMPUTER_DATA_NOTE, List.of("computer data note")),
         entry(DESCRIPTION_SOURCE_NOTE, List.of("description source note")),
@@ -517,7 +518,6 @@ public class MonographTestUtil {
         entry(LANGUAGE, List.of("eng")),
         entry(SUMMARY, List.of("summary text")),
         entry(TABLE_OF_CONTENTS, List.of("table of contents")),
-        entry(RESPONSIBILITY_STATEMENT, List.of("statement of responsibility")),
         entry(BIBLIOGRAPHY_NOTE, List.of("bibliography note")),
         entry(LANGUAGE_NOTE, List.of("language note", "another note")),
         entry(NOTE, List.of("note", "another note")),

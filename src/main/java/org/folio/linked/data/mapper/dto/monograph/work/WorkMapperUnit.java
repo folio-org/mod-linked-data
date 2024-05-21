@@ -19,7 +19,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -90,7 +89,6 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
 
   private JsonNode getDoc(Work dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, RESPONSIBILITY_STATEMENT, dto.getResponsibiltyStatement());
     putProperty(map, LANGUAGE, dto.getLanguage());
     putProperty(map, SUMMARY, dto.getSummary());
     putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());
