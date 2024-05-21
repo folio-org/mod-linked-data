@@ -69,7 +69,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.RESPONSIBILITY_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
@@ -517,7 +516,6 @@ public class MonographTestUtil {
         entry(LANGUAGE, List.of("eng")),
         entry(SUMMARY, List.of("summary text")),
         entry(TABLE_OF_CONTENTS, List.of("table of contents")),
-        entry(RESPONSIBILITY_STATEMENT, List.of("statement of responsibility")),
         entry(BIBLIOGRAPHY_NOTE, List.of("bibliography note")),
         entry(LANGUAGE_NOTE, List.of("language note", "another note")),
         entry(NOTE, List.of("note", "another note")),
