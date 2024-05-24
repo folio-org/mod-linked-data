@@ -7,7 +7,6 @@ import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
-import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -19,6 +18,7 @@ import org.folio.linked.data.service.KafkaSender;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.ResourceEvent;
 import org.folio.spring.FolioExecutionContext;
+import org.folio.spring.tools.kafka.KafkaUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
@@ -135,7 +135,7 @@ public class KafkaSenderFolio implements KafkaSender {
   }
 
   private String getTenantTopicName(String tenantId) {
-    return String.format("%s.%s.%s", getFolioEnvName(), tenantId, initialBibframeIndexTopicName);
+    return KafkaUtils.getTenantTopicName(initialBibframeIndexTopicName, tenantId);
   }
 
 }
