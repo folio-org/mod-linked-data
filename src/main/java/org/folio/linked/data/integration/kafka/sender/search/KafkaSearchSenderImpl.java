@@ -1,4 +1,4 @@
-package org.folio.linked.data.integration.kafka;
+package org.folio.linked.data.integration.kafka.sender.search;
 
 import static java.lang.Long.parseLong;
 import static org.folio.linked.data.util.BibframeUtils.isSameResource;
@@ -7,18 +7,18 @@ import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
+import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
+import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.mapper.kafka.KafkaMessageMapper;
+import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.linked.data.service.KafkaSender;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.ResourceEvent;
 import org.folio.spring.FolioExecutionContext;
-import org.folio.spring.tools.kafka.KafkaUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
@@ -29,25 +29,24 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile(SEARCH_PROFILE)
 @RequiredArgsConstructor
-public class KafkaSenderFolio implements KafkaSender {
+public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   private final KafkaTemplate<String, ResourceEvent> kafkaTemplate;
   private final FolioExecutionContext folioExecutionContext;
   private final ApplicationEventPublisher eventPublisher;
-  private final KafkaMessageMapper kafkaMessageMapper;
+  private final KafkaSearchMessageMapper kafkaSearchMessageMapper;
   @Value("${mod-linked-data.kafka.topic.bibframe-index}")
   private String initialBibframeIndexTopicName;
 
   @SneakyThrows
   @Override
   public void sendSingleResourceCreated(Resource resource) {
-    kafkaMessageMapper.toIndex(resource, CREATE)
-      .ifPresent(bibframeIndex -> sendCreate(bibframeIndex, true));
+    kafkaSearchMessageMapper.toIndex(resource, CREATE).ifPresent(bibframeIndex -> sendCreate(bibframeIndex, true));
   }
 
   @Override
   public boolean sendMultipleResourceCreated(Resource resource) {
-    return kafkaMessageMapper.toIndex(resource, CREATE)
+    return kafkaSearchMessageMapper.toIndex(resource, CREATE)
       .map(bibframeIndex -> {
         sendCreate(bibframeIndex, false);
         return true;
@@ -58,7 +57,7 @@ public class KafkaSenderFolio implements KafkaSender {
   @SneakyThrows
   private void sendCreate(BibframeIndex bibframeIndex, boolean publishIndexEvent) {
     var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(tenant);
+    var tenantTopicName = getTenantTopicName(tenant, initialBibframeIndexTopicName);
     var future = kafkaTemplate.send(tenantTopicName, bibframeIndex.getId(),
       new ResourceEvent()
         .id(bibframeIndex.getId())
@@ -75,7 +74,7 @@ public class KafkaSenderFolio implements KafkaSender {
 
   @Override
   public void sendResourceUpdated(Resource newResource, Resource oldResource) {
-    kafkaMessageMapper.toIndex(newResource, UPDATE).ifPresentOrElse(
+    kafkaSearchMessageMapper.toIndex(newResource, UPDATE).ifPresentOrElse(
       newWorkIndex -> indexUpdatedWork(newWorkIndex, oldResource),
       () -> {
         sendResourceDeleted(oldResource);
@@ -86,7 +85,7 @@ public class KafkaSenderFolio implements KafkaSender {
 
   private void indexUpdatedWork(BibframeIndex newWorkIndex, Resource oldWork) {
     if (isSameResource(newWorkIndex, oldWork)) {
-      var oldWorkIndex = kafkaMessageMapper.toIndex(oldWork, UPDATE).orElse(null);
+      var oldWorkIndex = kafkaSearchMessageMapper.toIndex(oldWork, UPDATE).orElse(null);
       sendUpdate(newWorkIndex, oldWorkIndex);
       log.info("Updated Work [{}] has the same id as before update, sending UPDATE event", newWorkIndex.getId());
     } else {
@@ -100,7 +99,7 @@ public class KafkaSenderFolio implements KafkaSender {
   @SneakyThrows
   private void sendUpdate(BibframeIndex newWorkIndex, BibframeIndex oldWorkIndex) {
     var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(tenant);
+    var tenantTopicName = getTenantTopicName(tenant, initialBibframeIndexTopicName);
     var future = kafkaTemplate.send(tenantTopicName, newWorkIndex.getId(),
       new ResourceEvent()
         .id(newWorkIndex.getId())
@@ -116,13 +115,13 @@ public class KafkaSenderFolio implements KafkaSender {
 
   @Override
   public void sendResourceDeleted(Resource resource) {
-    kafkaMessageMapper.toDeleteIndexId(resource).ifPresent(this::sendDelete);
+    kafkaSearchMessageMapper.toDeleteIndexId(resource).ifPresent(this::sendDelete);
   }
 
   @SneakyThrows
   private void sendDelete(Long id) {
     var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(tenant);
+    var tenantTopicName = getTenantTopicName(initialBibframeIndexTopicName, tenant);
     var future = kafkaTemplate.send(tenantTopicName, id.toString(),
       new ResourceEvent()
         .id(id.toString())
@@ -132,10 +131,6 @@ public class KafkaSenderFolio implements KafkaSender {
         ._new(new BibframeIndex(id.toString()))
     );
     log.info("sendResourceDeleted result to topic [{}]: [{}]", tenantTopicName, future.get().toString());
-  }
-
-  private String getTenantTopicName(String tenantId) {
-    return KafkaUtils.getTenantTopicName(initialBibframeIndexTopicName, tenantId);
   }
 
 }

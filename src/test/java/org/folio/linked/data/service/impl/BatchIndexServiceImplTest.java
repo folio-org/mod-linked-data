@@ -8,7 +8,7 @@ import jakarta.persistence.EntityManager;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.KafkaSender;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class BatchIndexServiceImplTest {
 
   @Mock
-  private KafkaSender kafkaSender;
+  private KafkaSearchSender kafkaSearchSender;
   @Mock
   private EntityManager entityManager;
 
@@ -35,9 +35,9 @@ class BatchIndexServiceImplTest {
     var notIndexedResource = new Resource().setId(2L);
     var resourceWithException = new Resource().setId(3L);
     var resources = Stream.of(indexedResource, notIndexedResource, resourceWithException);
-    when(kafkaSender.sendMultipleResourceCreated(indexedResource)).thenReturn(true);
-    when(kafkaSender.sendMultipleResourceCreated(notIndexedResource)).thenReturn(false);
-    when(kafkaSender.sendMultipleResourceCreated(resourceWithException)).thenThrow(new RuntimeException());
+    when(kafkaSearchSender.sendMultipleResourceCreated(indexedResource)).thenReturn(true);
+    when(kafkaSearchSender.sendMultipleResourceCreated(notIndexedResource)).thenReturn(false);
+    when(kafkaSearchSender.sendMultipleResourceCreated(resourceWithException)).thenThrow(new RuntimeException());
 
     //when
     var result = batchIndexService.index(resources);

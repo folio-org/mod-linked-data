@@ -14,7 +14,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.KafkaSender;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +36,7 @@ class DataImportEventHandlerIT {
 
   @SpyBean
   @Autowired
-  private KafkaSender kafkaSender;
+  private KafkaSearchSender kafkaSearchSender;
 
   @Autowired
   private DataImportEventHandler dataImportEventHandler;
@@ -61,7 +61,7 @@ class DataImportEventHandlerIT {
 
     //then
     var resourceCaptor = ArgumentCaptor.forClass(Resource.class);
-    verify(kafkaSender).sendSingleResourceCreated(resourceCaptor.capture());
+    verify(kafkaSearchSender).sendSingleResourceCreated(resourceCaptor.capture());
     assertThat(resourceCaptor.getValue().getIncomingEdges()).hasSize(2);
   }
 }

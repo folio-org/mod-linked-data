@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka;
+package org.folio.linked.data.mapper.kafka.impl;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -58,6 +58,7 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
+import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -80,7 +81,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class KafkaMessageMapperImpl implements KafkaMessageMapper {
+public class KafkaSearchMessageMapperImpl implements KafkaSearchMessageMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [workId = {}] conversion to BibframeIndex message";

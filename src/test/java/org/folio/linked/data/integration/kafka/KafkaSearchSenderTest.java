@@ -17,7 +17,8 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.SneakyThrows;
-import org.folio.linked.data.mapper.kafka.KafkaMessageMapper;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSenderImpl;
+import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
@@ -39,13 +40,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class KafkaSenderFolioTest {
+class KafkaSearchSenderTest {
 
   private static final String TOPIC = "topic";
   private static final String TENANT = "tenant";
   private static final String TOPIC_FULL = "folio." + TENANT + "." + TOPIC;
   @InjectMocks
-  private KafkaSenderFolio kafkaSenderFolio;
+  private KafkaSearchSenderImpl kafkaSearchSender;
   @Mock
   private KafkaTemplate<String, ResourceEvent> kafkaTemplate;
   @Mock
@@ -53,11 +54,11 @@ class KafkaSenderFolioTest {
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Mock
-  private KafkaMessageMapper kafkaMessageMapper;
+  private KafkaSearchMessageMapper kafkaSearchMessageMapper;
 
   @BeforeEach
   public void setup() {
-    ReflectionTestUtils.setField(kafkaSenderFolio, "initialBibframeIndexTopicName", TOPIC);
+    ReflectionTestUtils.setField(kafkaSearchSender, "initialBibframeIndexTopicName", TOPIC);
     lenient().when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
   }
 
@@ -65,10 +66,10 @@ class KafkaSenderFolioTest {
   void sendSingleResourceCreated_shouldNotSendMessage_ifGivenResourceIsNotIndexable() {
     // given
     var resource = new Resource();
-    when(kafkaMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
 
     // when
-    kafkaSenderFolio.sendSingleResourceCreated(resource);
+    kafkaSearchSender.sendSingleResourceCreated(resource);
 
     // then
     verify(kafkaTemplate, never()).send(any(), any(), any());
@@ -80,7 +81,7 @@ class KafkaSenderFolioTest {
     // given
     var resource = new Resource().setId(randomLong());
     var index = new BibframeIndex().id(String.valueOf(resource.getId()));
-    when(kafkaMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
+    when(kafkaSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
     var expectedEvent = new ResourceEvent()
       .id(String.valueOf(resource.getId()))
       .type(CREATE)
@@ -91,7 +92,7 @@ class KafkaSenderFolioTest {
     when(kafkaTemplate.send(TOPIC_FULL, index.getId(), expectedEvent)).thenReturn(futureMock);
 
     // when
-    kafkaSenderFolio.sendSingleResourceCreated(resource);
+    kafkaSearchSender.sendSingleResourceCreated(resource);
 
     // then
     verify(kafkaTemplate).send(TOPIC_FULL, index.getId(), expectedEvent);
@@ -102,10 +103,10 @@ class KafkaSenderFolioTest {
   void sendMultipleResourceCreated_shouldReturnFalseAndNotSendMessage_ifGivenResourceIsNotIndexable() {
     // given
     var resource = new Resource();
-    when(kafkaMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
 
     // when
-    var result = kafkaSenderFolio.sendMultipleResourceCreated(resource);
+    var result = kafkaSearchSender.sendMultipleResourceCreated(resource);
 
     // then
     assertThat(result).isFalse();
@@ -118,7 +119,7 @@ class KafkaSenderFolioTest {
     // given
     var resource = new Resource().setId(randomLong());
     var index = new BibframeIndex().id(String.valueOf(resource.getId()));
-    when(kafkaMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
+    when(kafkaSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
     var expectedEvent = new ResourceEvent()
       .id(String.valueOf(resource.getId()))
       .type(CREATE)
@@ -129,7 +130,7 @@ class KafkaSenderFolioTest {
     when(kafkaTemplate.send(TOPIC_FULL, index.getId(), expectedEvent)).thenReturn(futureMock);
 
     // when
-    var result = kafkaSenderFolio.sendMultipleResourceCreated(resource);
+    var result = kafkaSearchSender.sendMultipleResourceCreated(resource);
 
     // then
     assertThat(result).isTrue();
@@ -142,11 +143,11 @@ class KafkaSenderFolioTest {
     // given
     var newResource = new Resource().setId(1L);
     var oldResource = new Resource().setId(2L);
-    when(kafkaMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
-    when(kafkaMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
 
     // when
-    kafkaSenderFolio.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
     verify(kafkaTemplate, never()).send(any(), any(), any());
@@ -161,7 +162,7 @@ class KafkaSenderFolioTest {
     var oldResource = new Resource().setId(id).setLabel("old");
     var indexNew = new BibframeIndex().id(String.valueOf(id));
     var indexOld = new BibframeIndex().id(String.valueOf(id)).addLanguagesItem(new BibframeLanguagesInner());
-    when(kafkaMessageMapper.toIndex(newResource, UPDATE))
+    when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE))
       .thenReturn(Optional.of(indexNew))
       .thenReturn(Optional.of(indexOld));
     var expectedEvent = new ResourceEvent()
@@ -175,7 +176,7 @@ class KafkaSenderFolioTest {
     when(kafkaTemplate.send(TOPIC_FULL, String.valueOf(id), expectedEvent)).thenReturn(futureMock);
 
     // when
-    kafkaSenderFolio.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
     verify(kafkaTemplate).send(TOPIC_FULL, String.valueOf(id), expectedEvent);
@@ -190,8 +191,8 @@ class KafkaSenderFolioTest {
     var newResource = new Resource().setId(newId).setLabel("new");
     var oldResource = new Resource().setId(oldId).setLabel("old");
     var indexNew = new BibframeIndex().id(newId.toString());
-    when(kafkaMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.of(indexNew));
-    when(kafkaMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
+    when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.of(indexNew));
+    when(kafkaSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
     var expectedFuture = getFutureMock();
     var expectedDeleteEvent = new ResourceEvent()
       .id(oldId.toString())
@@ -209,7 +210,7 @@ class KafkaSenderFolioTest {
     when(kafkaTemplate.send(TOPIC_FULL, newId.toString(), expectedCreateEvent)).thenReturn(expectedFuture);
 
     // when
-    kafkaSenderFolio.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
     verify(kafkaTemplate).send(TOPIC_FULL, oldId.toString(), expectedDeleteEvent);
@@ -224,8 +225,8 @@ class KafkaSenderFolioTest {
     Long oldId = 2L;
     var newResource = new Resource().setId(newId).setLabel("new");
     var oldResource = new Resource().setId(oldId).setLabel("old");
-    when(kafkaMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
-    when(kafkaMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
+    when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
     var expectedFuture = getFutureMock();
     var expectedDeleteEvent = new ResourceEvent()
       .id(oldId.toString())
@@ -236,7 +237,7 @@ class KafkaSenderFolioTest {
     when(kafkaTemplate.send(TOPIC_FULL, oldId.toString(), expectedDeleteEvent)).thenReturn(expectedFuture);
 
     // when
-    kafkaSenderFolio.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
     verify(kafkaTemplate).send(TOPIC_FULL, oldId.toString(), expectedDeleteEvent);
@@ -250,11 +251,11 @@ class KafkaSenderFolioTest {
     Long oldId = 2L;
     var newResource = new Resource().setId(newId).setLabel("new");
     var oldResource = new Resource().setId(oldId).setLabel("old");
-    when(kafkaMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
-    when(kafkaMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
 
     // when
-    kafkaSenderFolio.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
     verify(kafkaTemplate, never()).send(any(), any(), any());
@@ -266,7 +267,7 @@ class KafkaSenderFolioTest {
     // given
     Long id = 1L;
     var resource = new Resource().setId(id);
-    when(kafkaMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.of(id));
+    when(kafkaSearchMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.of(id));
     var expectedFuture = getFutureMock();
     var expectedDeleteEvent = new ResourceEvent()
       .id(id.toString())
@@ -277,7 +278,7 @@ class KafkaSenderFolioTest {
     when(kafkaTemplate.send(TOPIC_FULL, id.toString(), expectedDeleteEvent)).thenReturn(expectedFuture);
 
     // when
-    kafkaSenderFolio.sendResourceDeleted(resource);
+    kafkaSearchSender.sendResourceDeleted(resource);
 
     // then
     verify(kafkaTemplate).send(TOPIC_FULL, id.toString(), expectedDeleteEvent);
@@ -289,10 +290,10 @@ class KafkaSenderFolioTest {
     // given
     Long id = 1L;
     var resource = new Resource().setId(id);
-    when(kafkaMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.empty());
+    when(kafkaSearchMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.empty());
 
     // when
-    kafkaSenderFolio.sendResourceDeleted(resource);
+    kafkaSearchSender.sendResourceDeleted(resource);
 
     // then
     verify(kafkaTemplate, never()).send(any(), any(), any());

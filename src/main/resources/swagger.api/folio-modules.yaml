@@ -20,3 +20,5 @@ components:
       $ref: search/bibframeIndex.json
     dataImportEvent:
       $ref: events/dataImportEvent.json
+    inventoryInstanceIngressEvent:
+      $ref: inventory/instanceIngressEvent.json

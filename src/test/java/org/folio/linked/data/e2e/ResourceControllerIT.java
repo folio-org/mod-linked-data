@@ -157,7 +157,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.service.KafkaSender;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.junit.jupiter.api.BeforeEach;
@@ -198,7 +198,7 @@ class ResourceControllerIT {
   @Autowired
   private Environment env;
   @SpyBean
-  private KafkaSender kafkaSender;
+  private KafkaSearchSender kafkaSearchSender;
   @Autowired
   private JdbcTemplate jdbcTemplate;
   @Autowired
@@ -505,8 +505,8 @@ class ResourceControllerIT {
 
     //then
     assertTrue(resourceTestService.existsById(existedResource.getId()));
-    verify(kafkaSender, never()).sendResourceDeleted(existedResource);
-    verify(kafkaSender, never()).sendSingleResourceCreated(any());
+    verify(kafkaSearchSender, never()).sendResourceDeleted(existedResource);
+    verify(kafkaSearchSender, never()).sendSingleResourceCreated(any());
   }
 
   @Test

@@ -30,3 +30,8 @@ spring:
       key-store-location: ${KAFKA_SSL_KEYSTORE_LOCATION:}
       trust-store-password: ${KAFKA_SSL_TRUSTSTORE_PASSWORD:}
       trust-store-location: ${KAFKA_SSL_TRUSTSTORE_LOCATION:}
+
+mod-linked-data:
+  kafka:
+    topic:
+      instance-ingress: search.bibframe

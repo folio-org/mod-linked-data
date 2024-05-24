@@ -119,7 +119,7 @@ class ResourceServiceTest {
     assertThat(response).isEqualTo(expectedResponse);
     var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertEquals(work, resourceCreateEventCaptor.getValue().work());
+    assertEquals(work, resourceCreateEventCaptor.getValue().resource());
   }
 
   @Test
@@ -140,7 +140,7 @@ class ResourceServiceTest {
     assertThat(response).isEqualTo(expectedResponse);
     var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertEquals(work, resourceCreateEventCaptor.getValue().work());
+    assertEquals(work, resourceCreateEventCaptor.getValue().resource());
   }
 
   @Test

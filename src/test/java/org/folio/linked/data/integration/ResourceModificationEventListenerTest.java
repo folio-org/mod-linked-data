@@ -10,7 +10,7 @@ import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.KafkaSender;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +25,7 @@ class ResourceModificationEventListenerTest {
   @InjectMocks
   private ResourceModificationEventListener resourceModificationEventListener;
   @Mock
-  private KafkaSender kafkaSender;
+  private KafkaSearchSender kafkaSearchSender;
   @Mock
   private ResourceRepository resourceRepository;
 
@@ -39,7 +39,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource));
 
     //then
-    verify(kafkaSender).sendSingleResourceCreated(resource);
+    verify(kafkaSearchSender).sendSingleResourceCreated(resource);
   }
 
   @Test
@@ -52,7 +52,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterUpdate(new ResourceUpdatedEvent(resourceNew, resourceOld));
 
     //then
-    verify(kafkaSender).sendResourceUpdated(resourceNew, resourceOld);
+    verify(kafkaSearchSender).sendResourceUpdated(resourceNew, resourceOld);
   }
 
   @Test
@@ -64,7 +64,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterDelete(new ResourceDeletedEvent(resource));
 
     //then
-    verify(kafkaSender).sendResourceDeleted(resource);
+    verify(kafkaSearchSender).sendResourceDeleted(resource);
   }
 
   @Test

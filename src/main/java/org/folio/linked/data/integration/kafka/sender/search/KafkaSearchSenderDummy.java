@@ -1,11 +1,10 @@
-package org.folio.linked.data.integration.kafka;
+package org.folio.linked.data.integration.kafka.sender.search;
 
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.KafkaSender;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile("!" + SEARCH_PROFILE)
 @RequiredArgsConstructor
-public class KafkaSenderDummy implements KafkaSender {
+public class KafkaSearchSenderDummy implements KafkaSearchSender {
 
   @Override
   public void sendSingleResourceCreated(Resource resource) {

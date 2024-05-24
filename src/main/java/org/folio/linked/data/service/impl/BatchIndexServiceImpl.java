@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.BatchIndexService;
-import org.folio.linked.data.service.KafkaSender;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BatchIndexServiceImpl implements BatchIndexService {
 
-  private final KafkaSender kafkaSender;
+  private final KafkaSearchSender kafkaSearchSender;
   private final EntityManager entityManager;
 
   @Override
@@ -39,7 +39,7 @@ public class BatchIndexServiceImpl implements BatchIndexService {
 
   private Optional<Long> handleResource(Resource resource, AtomicInteger recordsIndexed) {
     try {
-      boolean indexed = kafkaSender.sendMultipleResourceCreated(resource);
+      boolean indexed = kafkaSearchSender.sendMultipleResourceCreated(resource);
       if (indexed) {
         recordsIndexed.getAndIncrement();
       } else {
