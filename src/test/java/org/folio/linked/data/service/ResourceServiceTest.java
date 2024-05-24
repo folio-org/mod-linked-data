@@ -103,30 +103,7 @@ class ResourceServiceTest {
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceWithWork() {
     // given
     var request = new ResourceDto();
-    var work = new Resource().addTypes(WORK);
-    var instance = new Resource().setId(12345L);
-    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
-    when(resourceDtoMapper.toEntity(request)).thenReturn(instance);
-    when(resourceRepo.save(instance)).thenReturn(instance);
-    var expectedResponse = new ResourceDto();
-    expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
-    when(resourceDtoMapper.toDto(instance)).thenReturn(expectedResponse);
-
-    // when
-    var response = resourceService.createResource(request);
-
-    // then
-    assertThat(response).isEqualTo(expectedResponse);
-    var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
-    verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertEquals(work, resourceCreateEventCaptor.getValue().resource());
-  }
-
-  @Test
-  void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceIsWork() {
-    // given
-    var request = new ResourceDto();
-    var work = new Resource().addTypes(WORK);
+    var work = new Resource().addTypes(WORK).setId(555L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     when(resourceRepo.save(work)).thenReturn(work);
     var expectedResponse = new ResourceDto();
@@ -140,7 +117,28 @@ class ResourceServiceTest {
     assertThat(response).isEqualTo(expectedResponse);
     var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertEquals(work, resourceCreateEventCaptor.getValue().resource());
+    assertEquals(work.getId(), resourceCreateEventCaptor.getValue().id());
+  }
+
+  @Test
+  void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceIsWork() {
+    // given
+    var request = new ResourceDto();
+    var work = new Resource().addTypes(WORK).setId(444L);
+    when(resourceDtoMapper.toEntity(request)).thenReturn(work);
+    when(resourceRepo.save(work)).thenReturn(work);
+    var expectedResponse = new ResourceDto();
+    expectedResponse.setResource(new InstanceField().instance(new Instance().id("123")));
+    when(resourceDtoMapper.toDto(work)).thenReturn(expectedResponse);
+
+    // when
+    var response = resourceService.createResource(request);
+
+    // then
+    assertThat(response).isEqualTo(expectedResponse);
+    var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
+    verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
+    assertEquals(work.getId(), resourceCreateEventCaptor.getValue().id());
   }
 
   @Test

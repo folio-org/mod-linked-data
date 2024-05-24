@@ -11,10 +11,10 @@ import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.mockito.Mockito.verify;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

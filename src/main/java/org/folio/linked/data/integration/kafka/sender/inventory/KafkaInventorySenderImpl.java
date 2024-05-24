@@ -1,23 +1,23 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
+
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.mapper.kafka.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
+import org.folio.search.domain.dto.InventoryInstanceIngressEventEventMetadata;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
 @Log4j2
 @Service
@@ -35,7 +35,7 @@ public class KafkaInventorySenderImpl implements KafkaInventorySender {
   @SneakyThrows
   public void sendInstanceCreated(Resource resource) {
     var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(tenant, initialInventoryInstanceIngressTopicName);
+    var tenantTopicName = getTenantTopicName(initialInventoryInstanceIngressTopicName, tenant);
     kafkaInventoryMessageMapper.toInstanceIngressPayload(resource)
       .map(p -> {
           String id = UUID.randomUUID().toString();
@@ -43,7 +43,11 @@ public class KafkaInventorySenderImpl implements KafkaInventorySender {
             new InstanceIngressEvent()
               .id(id)
               .eventType(InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE)
-              .eventPayload(p));
+              .eventPayload(p)
+              .eventMetadata(new InventoryInstanceIngressEventEventMetadata()
+                .tenantId(tenant)
+              )
+          );
         }
       ).ifPresent(f -> logSending(tenantTopicName, f));
   }

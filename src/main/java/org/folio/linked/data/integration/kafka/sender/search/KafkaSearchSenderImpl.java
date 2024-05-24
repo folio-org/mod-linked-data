@@ -7,7 +7,6 @@ import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
-import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
 import lombok.RequiredArgsConstructor;
@@ -57,7 +56,7 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
   @SneakyThrows
   private void sendCreate(BibframeIndex bibframeIndex, boolean publishIndexEvent) {
     var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(tenant, initialBibframeIndexTopicName);
+    var tenantTopicName = getTenantTopicName(initialBibframeIndexTopicName, tenant);
     var future = kafkaTemplate.send(tenantTopicName, bibframeIndex.getId(),
       new ResourceEvent()
         .id(bibframeIndex.getId())
@@ -99,7 +98,7 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
   @SneakyThrows
   private void sendUpdate(BibframeIndex newWorkIndex, BibframeIndex oldWorkIndex) {
     var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(tenant, initialBibframeIndexTopicName);
+    var tenantTopicName = getTenantTopicName(initialBibframeIndexTopicName, tenant);
     var future = kafkaTemplate.send(tenantTopicName, newWorkIndex.getId(),
       new ResourceEvent()
         .id(newWorkIndex.getId())

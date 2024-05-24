@@ -119,6 +119,8 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
+import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum;
+import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
@@ -153,11 +155,11 @@ import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.junit.jupiter.api.BeforeEach;
@@ -235,7 +237,8 @@ class ResourceControllerIT {
     var instanceResource = resourceTestService.getResourceById(id, 3);
     validateInstance(instanceResource, true);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
-    checkKafkaMessage(Long.valueOf(workId), CREATE);
+    checkSearchIndexMessage(Long.valueOf(workId), CREATE);
+    checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
   }
 
   @Test
@@ -263,7 +266,7 @@ class ResourceControllerIT {
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
     validateWork(workResource, true);
-    checkKafkaMessage(workResource.getId(), CREATE);
+    checkSearchIndexMessage(workResource.getId(), CREATE);
   }
 
   @Test
@@ -304,7 +307,7 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
-    checkKafkaMessage(work.getId(), UPDATE);
+    checkSearchIndexMessage(work.getId(), UPDATE);
   }
 
   @Test
@@ -344,8 +347,8 @@ class ResourceControllerIT {
     assertThat(updatedWork.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo(newlyAddedSummary);
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
-    checkKafkaMessage(originalWork.getId(), DELETE);
-    checkKafkaMessage(Long.valueOf(id), CREATE);
+    checkSearchIndexMessage(originalWork.getId(), DELETE);
+    checkSearchIndexMessage(Long.valueOf(id), CREATE);
   }
 
   @Test
@@ -464,7 +467,7 @@ class ResourceControllerIT {
     assertThat(resourceTestService.countResources()).isEqualTo(52);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(37);
-    checkKafkaMessage(work.getId(), UPDATE);
+    checkSearchIndexMessage(work.getId(), UPDATE);
   }
 
   @Test
@@ -487,7 +490,7 @@ class ResourceControllerIT {
     assertThat(resourceTestService.countResources()).isEqualTo(52);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(28);
-    checkKafkaMessage(existed.getId(), DELETE);
+    checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
   @Test
@@ -532,7 +535,11 @@ class ResourceControllerIT {
       .andExpect(jsonPath("parsedRecord.content", notNullValue()));
   }
 
-  protected void checkKafkaMessage(Long id, ResourceEventType eventType) {
+  protected void checkSearchIndexMessage(Long id, ResourceEventType eventType) {
+    // nothing to check without Folio profile
+  }
+
+  protected void checkInventoryMessage(Long id, EventTypeEnum eventType) {
     // nothing to check without Folio profile
   }
 

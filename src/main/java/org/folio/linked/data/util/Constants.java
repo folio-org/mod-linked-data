@@ -20,6 +20,7 @@ public class Constants {
   public static final String TYPE = "type";
   public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";
   public static final String PROFILE_NOT_FOUND = "Profile not found";
-  public static final String NOT_INDEXED = "Resource [%s] has been %s without indexing, because no Work was found in it's graph";
+  public static final String NOT_INDEXED = "Resource [%s] has been %s without indexing, "
+    + "because no Work was found in it's graph";
 
 }

@@ -12,7 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import lombok.SneakyThrows;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
+import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.search.domain.dto.ResourceEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +26,9 @@ import org.springframework.test.context.ActiveProfiles;
 public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @Autowired
-  private KafkaSearchIndexTopicListener consumer;
+  private KafkaSearchIndexTopicListener searchIndexTopicListener;
+  @Autowired
+  private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
@@ -37,14 +41,15 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @BeforeEach
   public void beforeEach() {
-    consumer.getMessages().clear();
+    searchIndexTopicListener.getMessages().clear();
+    inventoryTopicListener.getMessages().clear();
     tenantScopedExecutionService.execute(TENANT_ID, super::beforeEach);
   }
 
   @SneakyThrows
   @Override
-  protected void checkKafkaMessage(Long id, ResourceEventType eventType) {
-    checkMessage(id, eventType);
+  protected void checkSearchIndexMessage(Long id, ResourceEventType eventType) {
+    checkSearchIndexKafkaMessage(id, eventType);
     if (eventType != DELETE) {
       var freshPersistedOptional = resourceRepository.findById(id);
       assertThat(freshPersistedOptional).isPresent();
@@ -53,9 +58,17 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
     }
   }
 
-  private void checkMessage(Long id, ResourceEventType eventType) {
+  private void checkSearchIndexKafkaMessage(Long id, ResourceEventType eventType) {
     awaitAndAssert(() ->
-      assertTrue(consumer.getMessages().stream().anyMatch(m -> m.contains(id.toString())
+      assertTrue(searchIndexTopicListener.getMessages().stream().anyMatch(m -> m.contains(id.toString())
+        && m.contains(eventType.getValue())))
+    );
+  }
+
+  @Override
+  protected void checkInventoryMessage(Long id, InstanceIngressEvent.EventTypeEnum eventType) {
+    awaitAndAssert(() ->
+      assertTrue(inventoryTopicListener.getMessages().stream().anyMatch(m -> m.contains(id.toString())
         && m.contains(eventType.getValue())))
     );
   }

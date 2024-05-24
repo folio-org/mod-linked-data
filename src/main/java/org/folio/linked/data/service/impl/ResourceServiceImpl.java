@@ -10,7 +10,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.extractWork;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
-import static org.folio.linked.data.util.Constants.*;
+import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
+import static org.folio.linked.data.util.Constants.NOT_INDEXED;
+import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
 import java.util.Set;
 import java.util.function.Function;

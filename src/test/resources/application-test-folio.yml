@@ -18,3 +18,4 @@ folio:
 test:
   topic:
     search: folio.test_tenant.search.bibframe
+    inventory: folio.test_tenant.inventory.instance_ingress

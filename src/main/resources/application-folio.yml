@@ -34,4 +34,5 @@ spring:
 mod-linked-data:
   kafka:
     topic:
-      instance-ingress: search.bibframe
+      inventory:
+        instance-ingress: inventory.instance_ingress

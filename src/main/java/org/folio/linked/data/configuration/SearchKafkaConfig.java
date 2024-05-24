@@ -36,12 +36,12 @@ public class SearchKafkaConfig {
 
   @Bean
   @Profile(SEARCH_PROFILE)
-  public KafkaTemplate<String, ResourceEvent> searchKafkaTemplate(ProducerFactory<String, ResourceEvent> producerFactory) {
-    return new KafkaTemplate<>(producerFactory);
+  public KafkaTemplate<String, ResourceEvent> searchTemplate(ProducerFactory<String, ResourceEvent> factory) {
+    return new KafkaTemplate<>(factory);
   }
 
   @Bean
-  public KafkaTemplate<String, InstanceIngressEvent> inventoryKafkaTemplate(ProducerFactory<String, InstanceIngressEvent> producerFactory) {
-    return new KafkaTemplate<>(producerFactory);
+  public KafkaTemplate<String, InstanceIngressEvent> iiTemplate(ProducerFactory<String, InstanceIngressEvent> factory) {
+    return new KafkaTemplate<>(factory);
   }
 }
