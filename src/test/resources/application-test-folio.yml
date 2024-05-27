@@ -12,6 +12,8 @@ folio:
     topics:
       - name: search.bibframe
         numPartitions: 1
+      - name: inventory.instance_ingress
+        numPartitions: 1
       - name: DI_COMPLETED
         num-partitions: 1
 

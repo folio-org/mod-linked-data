@@ -27,11 +27,21 @@ public class FolioKafkaConfig {
   private final KafkaProperties kafkaProperties;
 
   @Bean
-  public ProducerFactory<String, ResourceEvent> producerFactory() {
+  @Profile(SEARCH_PROFILE)
+  public ProducerFactory<String, ResourceEvent> searchIndexProducerFactory() {
+    return new DefaultKafkaProducerFactory<>(getProducerFactoryProperties());
+  }
+
+  @Bean
+  public ProducerFactory<String, InstanceIngressEvent> instanceIngressProducerFactory() {
+    return new DefaultKafkaProducerFactory<>(getProducerFactoryProperties());
+  }
+
+  private Map<String, Object> getProducerFactoryProperties() {
     Map<String, Object> configProps = new HashMap<>(kafkaProperties.buildProducerProperties(null));
     configProps.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     configProps.put(VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
-    return new DefaultKafkaProducerFactory<>(configProps);
+    return configProps;
   }
 
   @Bean

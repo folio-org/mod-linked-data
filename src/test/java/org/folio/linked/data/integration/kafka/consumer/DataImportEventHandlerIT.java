@@ -25,7 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @IntegrationTest
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE, SEARCH_PROFILE})
-@SpringBootTest(properties = { "spring.kafka.producer.properties.retries: 0" })
+@SpringBootTest(properties = { "spring.kafka.producer.properties.retries: 1" })
 class DataImportEventHandlerIT {
 
   @Autowired
