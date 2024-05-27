@@ -23,7 +23,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 @Configuration
 @RequiredArgsConstructor
 @Profile(FOLIO_PROFILE)
-public class SearchKafkaConfig {
+public class FolioKafkaConfig {
   private final KafkaProperties kafkaProperties;
 
   @Bean
