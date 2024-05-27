@@ -75,7 +75,7 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(mapped.getId()));
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
     return persisted.getId();
   }
 
