@@ -41,6 +41,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
@@ -50,6 +52,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
+import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
@@ -329,15 +332,6 @@ public class MonographTestUtil {
   public static Resource getSampleWork(Resource linkedInstance) {
     var basicTitle = createBasicTitle(null);
 
-    var deweyClassification = createResource(
-      Map.of(
-        CODE, List.of("709.83"),
-        SOURCE, List.of("ddc")
-      ),
-      Set.of(CATEGORY),
-      emptyMap()
-    ).setLabel("709.83");
-
     var creatorMeeting = createResource(
       Map.of(
         NAME, List.of("name-MEETING"),
@@ -498,7 +492,7 @@ public class MonographTestUtil {
 
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(basicTitle, createParallelTitle(), createVariantTitle()));
-    pred2OutgoingResources.put(CLASSIFICATION, List.of(deweyClassification));
+    pred2OutgoingResources.put(CLASSIFICATION, List.of(createDeweyClassification()));
     pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
     pred2OutgoingResources.put(AUTHOR, List.of(creatorPerson));
     pred2OutgoingResources.put(CONTRIBUTOR, List.of(contributorPerson, contributorMeeting, contributorOrganization,
@@ -534,6 +528,28 @@ public class MonographTestUtil {
     }
     work.setLabel(basicTitle.getLabel());
     return work;
+  }
+
+  private static Resource createDeweyClassification() {
+    var assigningSource = createResource(
+      emptyMap(),
+      Set.of(ORGANIZATION),
+      emptyMap()
+    ).setLabel("assigning agency")
+      .setId(11L);
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(PredicateDictionary.ASSIGNING_SOURCE, List.of(assigningSource));
+    return createResource(
+      Map.of(
+        CODE, List.of("709.83"),
+        SOURCE, List.of("ddc"),
+        ITEM_NUMBER, List.of("item number"),
+        EDITION_NUMBER, List.of("edition number"),
+        EDITION, List.of("edition")
+      ),
+      Set.of(ResourceTypeDictionary.CLASSIFICATION),
+      pred2OutgoingResources
+    );
   }
 
   private static Resource createContent() {

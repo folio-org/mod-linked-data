@@ -21,6 +21,34 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/source"
+        },
+        "itemNumber": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/itemNumber"
+        },
+        "editionNumber": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/editionNumber"
+        },
+        "edition": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/edition"
+        },
+        "_assigningSourceReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Reference.json"
+          }
         }
       }
     }
