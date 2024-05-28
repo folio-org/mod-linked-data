@@ -19,7 +19,7 @@ public class DictionaryWorker implements TenantServiceWorker {
   private final DictionaryService dictionaryService;
 
   @Override
-  public void afterTenantUpdate(TenantAttributes tenantAttributes) {
+  public void afterTenantUpdate(String tenantId, TenantAttributes tenantAttributes) {
     dictionaryService.init();
     log.info("Dictionaries updated");
   }

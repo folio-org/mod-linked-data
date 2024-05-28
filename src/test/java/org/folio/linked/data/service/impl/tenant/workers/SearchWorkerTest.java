@@ -28,9 +28,10 @@ class SearchWorkerTest {
     //given
     var expectedRequest = new CreateIndexRequest("bibframe");
     var attributes = mock(TenantAttributes.class);
+    var tenantId = "tenant-01";
 
     //when
-    searchWorker.afterTenantUpdate(attributes);
+    searchWorker.afterTenantUpdate(tenantId, attributes);
 
     //then
     verify(searchClient).createIndex(expectedRequest);
