@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.DeweyDecimalClassification;
+import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = ResourceTypeDictionary.CLASSIFICATION, predicate = CLASSIFICATION,
-  dtoClass = DeweyDecimalClassification.class)
+  dtoClass = Classification.class)
 public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -33,7 +33,7 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var deweyDecimalClassification = coreMapper.toDtoWithEdges(source, DeweyDecimalClassification.class, false);
+    var deweyDecimalClassification = coreMapper.toDtoWithEdges(source, Classification.class, false);
     deweyDecimalClassification.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Work work) {
       work.addClassificationItem(deweyDecimalClassification);
@@ -43,17 +43,17 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var deweyDecimalClassification = (DeweyDecimalClassification) dto;
+    var deweyDecimalClassification = (Classification) dto;
     var resource = new Resource();
     resource.addTypes(ResourceTypeDictionary.CLASSIFICATION);
     resource.setDoc(getDoc(deweyDecimalClassification));
-    coreMapper.addOutgoingEdges(resource, DeweyDecimalClassification.class,
+    coreMapper.addOutgoingEdges(resource, Classification.class,
       deweyDecimalClassification.getAssigningSourceReference(), ASSIGNING_SOURCE);
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(DeweyDecimalClassification dto) {
+  private JsonNode getDoc(Classification dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, CODE, dto.getCode());
     putProperty(map, SOURCE, dto.getSource());
