@@ -2,6 +2,7 @@ package org.folio.linked.data.service.impl.tenant;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.folio.spring.FolioExecutionContext;
@@ -20,15 +21,16 @@ import org.springframework.jdbc.core.JdbcTemplate;
 class LinkedTenantServiceTest {
 
   @Mock
-  JdbcTemplate jdbcTemplate;
+  private JdbcTemplate jdbcTemplate;
   @Mock
-  FolioExecutionContext context;
+  private FolioExecutionContext context;
   @Mock
-  FolioSpringLiquibase folioSpringLiquibase;
+  private FolioSpringLiquibase folioSpringLiquibase;
   @Mock
-  TenantServiceWorker testWorker;
+  private TenantServiceWorker testWorker;
 
-  LinkedTenantService tenantService;
+  private LinkedTenantService tenantService;
+  private final String tenantId = "tenant-01";
 
   @BeforeEach
   void init() {
@@ -38,6 +40,7 @@ class LinkedTenantServiceTest {
       folioSpringLiquibase,
       List.of(testWorker)
     );
+    when(context.getTenantId()).thenReturn(tenantId);
   }
 
   @Test
@@ -50,7 +53,7 @@ class LinkedTenantServiceTest {
 
     //then
     verify(testWorker)
-      .beforeTenantUpdate(attributes);
+      .beforeTenantUpdate(tenantId, attributes);
   }
 
   @Test
@@ -63,6 +66,6 @@ class LinkedTenantServiceTest {
 
     //then
     verify(testWorker)
-      .afterTenantUpdate(attributes);
+      .afterTenantUpdate(tenantId, attributes);
   }
 }

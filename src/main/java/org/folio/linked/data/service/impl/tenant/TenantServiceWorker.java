@@ -4,11 +4,11 @@ import org.folio.tenant.domain.dto.TenantAttributes;
 
 public interface TenantServiceWorker {
 
-  default void beforeTenantUpdate(TenantAttributes tenantAttributes) {
+  default void beforeTenantUpdate(String tenantId, TenantAttributes tenantAttributes) {
     // no action by default
   }
 
-  default void afterTenantUpdate(TenantAttributes tenantAttributes) {
+  default void afterTenantUpdate(String tenantId, TenantAttributes tenantAttributes) {
     // no action by default
   }
 }

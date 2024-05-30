@@ -23,7 +23,7 @@ public class SearchWorker implements TenantServiceWorker {
   private final SearchClient searchClient;
 
   @Override
-  public void afterTenantUpdate(TenantAttributes tenantAttributes) {
+  public void afterTenantUpdate(String tenantId, TenantAttributes tenantAttributes) {
     try {
       var request = new CreateIndexRequest(SEARCH_RESOURCE_NAME);
       ResponseEntity<FolioCreateIndexResponse> response = searchClient.createIndex(request);

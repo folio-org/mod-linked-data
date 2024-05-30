@@ -32,12 +32,12 @@ public class LinkedTenantService extends TenantService {
   @Override
   public void beforeTenantUpdate(TenantAttributes tenantAttributes) {
     log.debug("Start before actions for the tenant [{}]", context.getTenantId());
-    workers.forEach(worker -> worker.beforeTenantUpdate(tenantAttributes));
+    workers.forEach(worker -> worker.beforeTenantUpdate(context.getTenantId(), tenantAttributes));
   }
 
   @Override
   public void afterTenantUpdate(TenantAttributes tenantAttributes) {
     log.info("Start after actions for the tenant [{}]", context.getTenantId());
-    workers.forEach(worker -> worker.afterTenantUpdate(tenantAttributes));
+    workers.forEach(worker -> worker.afterTenantUpdate(context.getTenantId(), tenantAttributes));
   }
 }

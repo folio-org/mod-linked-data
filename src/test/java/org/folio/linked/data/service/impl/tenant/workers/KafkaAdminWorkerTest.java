@@ -3,8 +3,8 @@ package org.folio.linked.data.service.impl.tenant.workers;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import org.folio.linked.data.service.DictionaryService;
 import org.folio.spring.testing.type.UnitTest;
+import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,25 +14,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class DictionaryWorkerTest {
-
+class KafkaAdminWorkerTest {
   @Mock
-  private DictionaryService dictionaryService;
+  private KafkaAdminService kafkaAdminService;
 
   @InjectMocks
-  private DictionaryWorker dictionaryWorker;
+  private KafkaAdminWorker kafkaAdminWorker;
 
   @Test
-  void shouldInitDictionaries() {
-    //given
+  void shouldCreateTopics() {
+    // given
     var attributes = mock(TenantAttributes.class);
     var tenantId = "tenant-01";
 
-    //when
-    dictionaryWorker.afterTenantUpdate(tenantId, attributes);
+    // when
+    kafkaAdminWorker.afterTenantUpdate(tenantId, attributes);
 
-    //then
-    verify(dictionaryService)
-      .init();
+    // then
+    verify(kafkaAdminService).createTopics(tenantId);
+    verify(kafkaAdminService).restartEventListeners();
   }
 }
