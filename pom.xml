@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.2.5</version>
+    <version>3.3.0</version>
     <relativePath />
   </parent>
 
@@ -35,7 +35,7 @@
     </sonar.exclusions>
 
     <!-- Dependencies versions -->
-    <folio-spring-base.version>8.1.0</folio-spring-base.version>
+    <folio-spring-base.version>8.2.0-SNAPSHOT</folio-spring-base.version>
     <apache-commons-io.version>2.16.1</apache-commons-io.version>
     <apache-commons-collections.version>4.4</apache-commons-collections.version>
     <mapstruct.version>1.5.5.Final</mapstruct.version>
@@ -51,7 +51,7 @@
     <testcontainers.version>1.19.8</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.1</jsonassert.version>
-    <folio-service-tools.version>4.0.1</folio-service-tools.version>
+    <folio-service-tools.version>4.1.0-SNAPSHOT</folio-service-tools.version>
     <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
