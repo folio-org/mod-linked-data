@@ -45,6 +45,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
@@ -52,6 +54,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
+import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
@@ -185,6 +188,7 @@ class ResourceControllerIT {
   private static final String CONTRIBUTOR_REF = "_contributorReference";
   private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
   private static final String GENRE_REF = "_genreReference";
+  private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
   private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
   private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
   @Autowired
@@ -445,8 +449,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(49);
-    assertThat(resourceTestService.countEdges()).isEqualTo(51);
+    assertThat(resourceTestService.countResources()).isEqualTo(50);
+    assertThat(resourceTestService.countEdges()).isEqualTo(52);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -457,9 +461,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(48);
+    assertThat(resourceTestService.countResources()).isEqualTo(49);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(33);
+    assertThat(resourceTestService.countEdges()).isEqualTo(34);
     checkKafkaMessage(work.getId(), UPDATE);
   }
 
@@ -468,8 +472,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(49);
-    assertThat(resourceTestService.countEdges()).isEqualTo(51);
+    assertThat(resourceTestService.countResources()).isEqualTo(50);
+    assertThat(resourceTestService.countEdges()).isEqualTo(52);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -480,9 +484,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(48);
+    assertThat(resourceTestService.countResources()).isEqualTo(49);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(25);
+    assertThat(resourceTestService.countEdges()).isEqualTo(26);
     checkKafkaMessage(existed.getId(), DELETE);
   }
 
@@ -647,6 +651,11 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkLanguage(workBase), equalTo("eng")))
       .andExpect(jsonPath(toWorkDeweyCode(workBase), equalTo("709.83")))
       .andExpect(jsonPath(toWorkDeweySource(workBase), equalTo("ddc")))
+      .andExpect(jsonPath(toWorkDeweyItemNumber(workBase), equalTo("item number")))
+      .andExpect(jsonPath(toWorkDeweyEditionNumber(workBase), equalTo("edition number")))
+      .andExpect(jsonPath(toWorkDeweyEdition(workBase), equalTo("edition")))
+      .andExpect(jsonPath(toDeweyAssigningSourceId(workBase), containsInAnyOrder("11")))
+      .andExpect(jsonPath(toDeweyAssigningSourceLabel(workBase), containsInAnyOrder("assigning agency")))
       .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("1001", "1002", "1003", "1004")))
       .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-MEETING", "name-PERSON",
         "name-ORGANIZATION", "name-FAMILY")))
@@ -1041,7 +1050,6 @@ class ResourceControllerIT {
     validateParallelTitle(outgoingEdgeIterator.next(), work);
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
-    validateWorkClassification(outgoingEdgeIterator.next(), work);
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
@@ -1049,6 +1057,7 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, ASSIGNEE.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkClassification(outgoingEdgeIterator.next(), work);
     validateBasicTitle(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, AUTHOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR.getUri());
@@ -1082,11 +1091,19 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(CLASSIFICATION.getUri());
     var classification = edge.getTarget();
-    assertThat(classification.getDoc().size()).isEqualTo(2);
-    assertThat(classification.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
-    assertThat(classification.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo("709.83");
-    assertThat(classification.getDoc().get(SOURCE.getValue()).size()).isEqualTo(1);
-    assertThat(classification.getDoc().get(SOURCE.getValue()).get(0).asText()).isEqualTo("ddc");
+    var types = classification.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(ResourceTypeDictionary.CLASSIFICATION.getUri());
+    assertThat(classification.getDoc().size()).isEqualTo(5);
+    validateLiteral(classification, CODE.getValue(), "709.83");
+    validateLiteral(classification, SOURCE.getValue(), "ddc");
+    validateLiteral(classification, ITEM_NUMBER.getValue(), "item number");
+    validateLiteral(classification, EDITION_NUMBER.getValue(), "edition number");
+    validateLiteral(classification, EDITION.getValue(), "edition");
+    var resourceEdge = classification.getOutgoingEdges().iterator().next();
+    var assigningSource = resourceEdge.getTarget();
+    validateResourceEdge(resourceEdge, classification, assigningSource, PredicateDictionary.ASSIGNING_SOURCE.getUri());
+    assertThat(assigningSource.getDoc().size()).isZero();
+    assertThat(assigningSource.getLabel()).isEqualTo("assigning agency");
   }
 
   private void validateWorkContentType(ResourceEdge edge, Resource source) {
@@ -1219,7 +1236,8 @@ class ResourceControllerIT {
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
       List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily,
-        contributorPerson, contributorMeeting, contributorOrganization, contributorFamily)
+        contributorPerson, contributorMeeting, contributorOrganization, contributorFamily),
+      List.of(saveResource(11L, "assigning agency", ORGANIZATION, "{}"))
     );
   }
 
@@ -1545,6 +1563,28 @@ class ResourceControllerIT {
     return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
   }
 
+  private String toWorkDeweyItemNumber(String workBase) {
+    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(ITEM_NUMBER.getValue()));
+  }
+
+  private String toWorkDeweyEditionNumber(String workBase) {
+    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION_NUMBER.getValue()));
+  }
+
+  private String toWorkDeweyEdition(String workBase) {
+    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION.getValue()));
+  }
+
+  private String toDeweyAssigningSourceId(String workBase) {
+    return join(".", join(".", workBase, arrayPath(CLASSIFICATION.getUri())),
+      dynamicArrayPath(ASSIGNING_SOURCE_REF), path(ID_PROPERTY));
+  }
+
+  private String toDeweyAssigningSourceLabel(String workBase) {
+    return join(".", join(".", workBase, arrayPath(CLASSIFICATION.getUri())),
+      dynamicArrayPath(ASSIGNING_SOURCE_REF), path(LABEL_PROPERTY));
+  }
+
   private String toWorkCreatorId(String workBase) {
     return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ID_PROPERTY));
   }
@@ -1665,7 +1705,8 @@ class ResourceControllerIT {
     List<Resource> subjects,
     List<Resource> geographicCoverages,
     List<Resource> genres,
-    List<Resource> creators
+    List<Resource> creators,
+    List<Resource> assigningSources
   ) {
   }
 }

@@ -157,6 +157,20 @@
           ],
           "http://bibfra.me/vocab/marc/source": [
             "ddc"
+          ],
+          "http://bibfra.me/vocab/marc/itemNumber": [
+            "item number"
+          ],
+          "http://bibfra.me/vocab/marc/editionNumber": [
+            "edition number"
+          ],
+          "http://bibfra.me/vocab/marc/edition": [
+            "edition"
+          ],
+          "_assigningSourceReference": [
+            {
+              "id": "11"
+            }
           ]
         }
       ],

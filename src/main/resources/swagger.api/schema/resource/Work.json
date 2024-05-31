@@ -60,7 +60,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "DeweyDecimalClassification.json"
+            "$ref": "Classification.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/classification"
         },
