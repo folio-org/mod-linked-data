@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.domain.dto.Lccn;
 import org.folio.linked.data.domain.dto.Status;
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, dtoClass = Status.class)
 public class StatusMapperUnit implements SingleResourceMapperUnit {
 
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class, Classification.class);
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
@@ -43,6 +44,8 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
       lccn.addStatusItem(status);
     } else if (parentDto instanceof Isbn isbn) {
       isbn.addStatusItem(status);
+    } else if (parentDto instanceof Classification classification) {
+      classification.addStatusItem(status);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + PredicateDictionary.STATUS.getUri() + RIGHT_SQUARE_BRACKET);

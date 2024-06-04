@@ -449,8 +449,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(50);
-    assertThat(resourceTestService.countEdges()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
+    assertThat(resourceTestService.countEdges()).isEqualTo(55);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -461,9 +461,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(49);
+    assertThat(resourceTestService.countResources()).isEqualTo(52);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(34);
+    assertThat(resourceTestService.countEdges()).isEqualTo(37);
     checkKafkaMessage(work.getId(), UPDATE);
   }
 
@@ -472,8 +472,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(50);
-    assertThat(resourceTestService.countEdges()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
+    assertThat(resourceTestService.countEdges()).isEqualTo(55);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -484,9 +484,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(49);
+    assertThat(resourceTestService.countResources()).isEqualTo(52);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(26);
+    assertThat(resourceTestService.countEdges()).isEqualTo(28);
     checkKafkaMessage(existed.getId(), DELETE);
   }
 
@@ -649,13 +649,17 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toBasicTitleNonSortNum(workBase), equalTo(List.of("Basic: nonSortNum"))))
       .andExpect(jsonPath(toBasicTitleSubtitle(workBase), equalTo(List.of("Basic: subTitle"))))
       .andExpect(jsonPath(toWorkLanguage(workBase), equalTo("eng")))
-      .andExpect(jsonPath(toWorkDeweyCode(workBase), equalTo("709.83")))
-      .andExpect(jsonPath(toWorkDeweySource(workBase), equalTo("ddc")))
-      .andExpect(jsonPath(toWorkDeweyItemNumber(workBase), equalTo("item number")))
-      .andExpect(jsonPath(toWorkDeweyEditionNumber(workBase), equalTo("edition number")))
-      .andExpect(jsonPath(toWorkDeweyEdition(workBase), equalTo("edition")))
-      .andExpect(jsonPath(toDeweyAssigningSourceId(workBase), containsInAnyOrder("11")))
-      .andExpect(jsonPath(toDeweyAssigningSourceLabel(workBase), containsInAnyOrder("assigning agency")))
+      .andExpect(jsonPath(toClassificationCodes(workBase), containsInAnyOrder("ddc code", "lc code")))
+      .andExpect(jsonPath(toClassificationSources(workBase), containsInAnyOrder("ddc", "lc")))
+      .andExpect(jsonPath(toClassificationItemNumbers(workBase), containsInAnyOrder("ddc item number",
+        "lc item number")))
+      .andExpect(jsonPath(toWorkDeweyEditionNumber(workBase), equalTo(List.of("edition number"))))
+      .andExpect(jsonPath(toWorkDeweyEdition(workBase), equalTo(List.of("edition"))))
+      .andExpect(jsonPath(toLcStatusValue(workBase), equalTo(List.of("lc status value"))))
+      .andExpect(jsonPath(toLcStatusLink(workBase), equalTo(List.of("lc status link"))))
+      .andExpect(jsonPath(toClassificationAssigningSourceIds(workBase), containsInAnyOrder("11", "22")))
+      .andExpect(jsonPath(toClassificationAssigningSourceLabels(workBase), containsInAnyOrder("assigning agency",
+        "United States, Library of Congress")))
       .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("1001", "1002", "1003", "1004")))
       .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-MEETING", "name-PERSON",
         "name-ORGANIZATION", "name-FAMILY")))
@@ -1057,7 +1061,13 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, ASSIGNEE.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
-    validateWorkClassification(outgoingEdgeIterator.next(), work);
+    if (!validateFullInstance) {
+      validateDdcClassification(outgoingEdgeIterator.next(), work);
+      outgoingEdgeIterator.next();
+    } else {
+      validateLcClassification(outgoingEdgeIterator.next(), work);
+      validateDdcClassification(outgoingEdgeIterator.next(), work);
+    }
     validateBasicTitle(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, AUTHOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR.getUri());
@@ -1086,7 +1096,7 @@ class ResourceControllerIT {
     }
   }
 
-  private void validateWorkClassification(ResourceEdge edge, Resource source) {
+  private void validateDdcClassification(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(CLASSIFICATION.getUri());
@@ -1094,9 +1104,9 @@ class ResourceControllerIT {
     var types = classification.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(ResourceTypeDictionary.CLASSIFICATION.getUri());
     assertThat(classification.getDoc().size()).isEqualTo(5);
-    validateLiteral(classification, CODE.getValue(), "709.83");
+    validateLiteral(classification, CODE.getValue(), "ddc code");
     validateLiteral(classification, SOURCE.getValue(), "ddc");
-    validateLiteral(classification, ITEM_NUMBER.getValue(), "item number");
+    validateLiteral(classification, ITEM_NUMBER.getValue(), "ddc item number");
     validateLiteral(classification, EDITION_NUMBER.getValue(), "edition number");
     validateLiteral(classification, EDITION.getValue(), "edition");
     var resourceEdge = classification.getOutgoingEdges().iterator().next();
@@ -1104,6 +1114,24 @@ class ResourceControllerIT {
     validateResourceEdge(resourceEdge, classification, assigningSource, PredicateDictionary.ASSIGNING_SOURCE.getUri());
     assertThat(assigningSource.getDoc().size()).isZero();
     assertThat(assigningSource.getLabel()).isEqualTo("assigning agency");
+  }
+
+  private void validateLcClassification(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(CLASSIFICATION.getUri());
+    var classification = edge.getTarget();
+    var types = classification.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(ResourceTypeDictionary.CLASSIFICATION.getUri());
+    assertThat(classification.getDoc().size()).isEqualTo(3);
+    validateLiteral(classification, CODE.getValue(), "lc code");
+    validateLiteral(classification, SOURCE.getValue(), "lc");
+    validateLiteral(classification, ITEM_NUMBER.getValue(), "lc item number");
+    var iterator = classification.getOutgoingEdges().iterator();
+    validateStatus(iterator.next(), classification, "lc");
+    var assigningSourceEdge = iterator.next();
+    validateResourceEdge(assigningSourceEdge, classification, assigningSourceEdge.getTarget(),
+      PredicateDictionary.ASSIGNING_SOURCE.getUri());
   }
 
   private void validateWorkContentType(ResourceEdge edge, Resource source) {
@@ -1231,13 +1259,15 @@ class ResourceControllerIT {
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-ORGANIZATION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
     var contributorFamily = saveResource(1006L, "name-FAMILY", FAMILY,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
+    var assigningAgency = saveResource(11L, "assigning agency", ORGANIZATION, "{}");
+    var libraryOfCongress = saveResource(22L, "United States, Library of Congress", ORGANIZATION, "{}");
     return new LookupResources(
       List.of(subject1, subject2),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
       List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily,
         contributorPerson, contributorMeeting, contributorOrganization, contributorFamily),
-      List.of(saveResource(11L, "assigning agency", ORGANIZATION, "{}"))
+      List.of(assigningAgency, libraryOfCongress)
     );
   }
 
@@ -1555,33 +1585,43 @@ class ResourceControllerIT {
     return join(".", workBase, arrayPath(LANGUAGE.getValue()));
   }
 
-  private String toWorkDeweySource(String workBase) {
-    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE.getValue()));
+  private String toClassificationSources(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE.getValue()));
   }
 
-  private String toWorkDeweyCode(String workBase) {
-    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
+  private String toClassificationCodes(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
   }
 
-  private String toWorkDeweyItemNumber(String workBase) {
-    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(ITEM_NUMBER.getValue()));
+  private String toClassificationItemNumbers(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(ITEM_NUMBER.getValue()));
   }
 
   private String toWorkDeweyEditionNumber(String workBase) {
-    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION_NUMBER.getValue()));
+    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION_NUMBER.getValue()));
   }
 
   private String toWorkDeweyEdition(String workBase) {
-    return join(".", workBase, arrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION.getValue()));
+    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION.getValue()));
   }
 
-  private String toDeweyAssigningSourceId(String workBase) {
-    return join(".", join(".", workBase, arrayPath(CLASSIFICATION.getUri())),
+  private String toLcStatusValue(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(STATUS.getUri()),
+      arrayPath(LABEL.getValue()));
+  }
+
+  private String toLcStatusLink(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(STATUS.getUri()),
+      arrayPath(LINK.getValue()));
+  }
+
+  private String toClassificationAssigningSourceIds(String workBase) {
+    return join(".", join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri())),
       dynamicArrayPath(ASSIGNING_SOURCE_REF), path(ID_PROPERTY));
   }
 
-  private String toDeweyAssigningSourceLabel(String workBase) {
-    return join(".", join(".", workBase, arrayPath(CLASSIFICATION.getUri())),
+  private String toClassificationAssigningSourceLabels(String workBase) {
+    return join(".", join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri())),
       dynamicArrayPath(ASSIGNING_SOURCE_REF), path(LABEL_PROPERTY));
   }
 

@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNING_SOURCE;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
@@ -26,29 +27,33 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @MapperUnit(type = ResourceTypeDictionary.CLASSIFICATION, predicate = CLASSIFICATION,
   dtoClass = Classification.class)
-public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapperUnit {
+public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var deweyDecimalClassification = coreMapper.toDtoWithEdges(source, Classification.class, false);
-    deweyDecimalClassification.setId(String.valueOf(source.getId()));
+    var classification = coreMapper.toDtoWithEdges(source, Classification.class, false);
+    classification.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Work work) {
-      work.addClassificationItem(deweyDecimalClassification);
+      work.addClassificationItem(classification);
     }
     return parentDto;
   }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var deweyDecimalClassification = (Classification) dto;
+    var classification = (Classification) dto;
     var resource = new Resource();
     resource.addTypes(ResourceTypeDictionary.CLASSIFICATION);
-    resource.setDoc(getDoc(deweyDecimalClassification));
+    resource.setDoc(getDoc(classification));
     coreMapper.addOutgoingEdges(resource, Classification.class,
-      deweyDecimalClassification.getAssigningSourceReference(), ASSIGNING_SOURCE);
+      classification.getAssigningSourceReference(), ASSIGNING_SOURCE);
+    if ("lc".equals(classification.getSource().get(0))) {
+      coreMapper.addOutgoingEdges(resource, Classification.class,
+        classification.getStatus(), STATUS);
+    }
     resource.setId(hashService.hash(resource));
     return resource;
   }
@@ -58,8 +63,10 @@ public class DeweyDecimalClassificationMapperUnit implements WorkSubResourceMapp
     putProperty(map, CODE, dto.getCode());
     putProperty(map, SOURCE, dto.getSource());
     putProperty(map, ITEM_NUMBER, dto.getItemNumber());
-    putProperty(map, EDITION_NUMBER, dto.getEditionNumber());
-    putProperty(map, EDITION, dto.getEdition());
+    if ("ddc".equals(dto.getSource().get(0))) {
+      putProperty(map, EDITION_NUMBER, dto.getEditionNumber());
+      putProperty(map, EDITION, dto.getEdition());
+    }
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 

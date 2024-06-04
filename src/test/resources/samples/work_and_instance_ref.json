@@ -153,13 +153,39 @@
       "http://bibfra.me/vocab/lite/classification": [
         {
           "http://bibfra.me/vocab/marc/code": [
-            "709.83"
+            "lc code"
+          ],
+          "http://bibfra.me/vocab/marc/source": [
+            "lc"
+          ],
+          "http://bibfra.me/vocab/marc/itemNumber": [
+            "lc item number"
+          ],
+          "http://bibfra.me/vocab/marc/status": [
+            {
+              "http://bibfra.me/vocab/lite/label": [
+                "lc status value"
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+                "lc status link"
+              ]
+            }
+          ],
+          "_assigningSourceReference": [
+            {
+              "id": "22"
+            }
+          ]
+        },
+        {
+          "http://bibfra.me/vocab/marc/code": [
+            "ddc code"
           ],
           "http://bibfra.me/vocab/marc/source": [
             "ddc"
           ],
           "http://bibfra.me/vocab/marc/itemNumber": [
-            "item number"
+            "ddc item number"
           ],
           "http://bibfra.me/vocab/marc/editionNumber": [
             "edition number"
