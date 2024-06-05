@@ -9,6 +9,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
+import static org.folio.marc4ld.util.Constants.Classification.DDC;
+import static org.folio.marc4ld.util.Constants.Classification.LC;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -50,7 +52,7 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
     resource.setDoc(getDoc(classification));
     coreMapper.addOutgoingEdges(resource, Classification.class,
       classification.getAssigningSourceReference(), ASSIGNING_SOURCE);
-    if ("lc".equals(classification.getSource().get(0))) {
+    if (LC.equals(classification.getSource().get(0))) {
       coreMapper.addOutgoingEdges(resource, Classification.class,
         classification.getStatus(), STATUS);
     }
@@ -63,7 +65,7 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
     putProperty(map, CODE, dto.getCode());
     putProperty(map, SOURCE, dto.getSource());
     putProperty(map, ITEM_NUMBER, dto.getItemNumber());
-    if ("ddc".equals(dto.getSource().get(0))) {
+    if (DDC.equals(dto.getSource().get(0))) {
       putProperty(map, EDITION_NUMBER, dto.getEditionNumber());
       putProperty(map, EDITION, dto.getEdition());
     }
