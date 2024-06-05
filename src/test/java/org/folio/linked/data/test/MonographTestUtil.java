@@ -492,7 +492,7 @@ public class MonographTestUtil {
 
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(basicTitle, createParallelTitle(), createVariantTitle()));
-    pred2OutgoingResources.put(CLASSIFICATION, List.of(createDeweyClassification()));
+    pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
     pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
     pred2OutgoingResources.put(AUTHOR, List.of(creatorPerson));
     pred2OutgoingResources.put(CONTRIBUTOR, List.of(contributorPerson, contributorMeeting, contributorOrganization,
@@ -541,14 +541,35 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(PredicateDictionary.ASSIGNING_SOURCE, List.of(assigningSource));
     return createResource(
       Map.of(
-        CODE, List.of("709.83"),
+        CODE, List.of("ddc code"),
         SOURCE, List.of("ddc"),
-        ITEM_NUMBER, List.of("item number"),
+        ITEM_NUMBER, List.of("ddc item number"),
         EDITION_NUMBER, List.of("edition number"),
         EDITION, List.of("edition")
       ),
       Set.of(ResourceTypeDictionary.CLASSIFICATION),
       pred2OutgoingResources
+    );
+  }
+
+  private static Resource createLcClassification() {
+    var assigningSource = createResource(
+      emptyMap(),
+      Set.of(ORGANIZATION),
+      emptyMap()
+    ).setLabel("United States, Library of Congress")
+      .setId(22L);
+    return createResource(
+      Map.of(
+        CODE, List.of("lc code"),
+        SOURCE, List.of("lc"),
+        ITEM_NUMBER, List.of("lc item number")
+      ),
+      Set.of(ResourceTypeDictionary.CLASSIFICATION),
+      Map.of(
+        PredicateDictionary.ASSIGNING_SOURCE, List.of(assigningSource),
+        STATUS, List.of(status("lc"))
+      )
     );
   }
 

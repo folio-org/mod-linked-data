@@ -43,6 +43,14 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/edition"
         },
+        "status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Status.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/status"
+        },
         "_assigningSourceReference": {
           "type": "array",
           "items": {

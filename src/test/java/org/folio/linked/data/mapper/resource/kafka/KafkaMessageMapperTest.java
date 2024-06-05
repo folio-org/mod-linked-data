@@ -259,9 +259,11 @@ class KafkaMessageMapperTest {
     assertThat(result.getLanguages()).hasSize(1);
     assertThat(result.getLanguages().get(0).getValue())
       .isEqualTo(work.getDoc().get(LANGUAGE.getValue()).get(0).asText());
-    assertThat(result.getClassifications()).hasSize(1);
-    assertThat(result.getClassifications().get(0).getNumber()).isEqualTo("709.83");
-    assertThat(result.getClassifications().get(0).getSource()).isEqualTo("ddc");
+    assertThat(result.getClassifications()).hasSize(2);
+    assertThat(result.getClassifications().get(0).getNumber()).isEqualTo("lc code");
+    assertThat(result.getClassifications().get(0).getSource()).isEqualTo("lc");
+    assertThat(result.getClassifications().get(1).getNumber()).isEqualTo("ddc code");
+    assertThat(result.getClassifications().get(1).getSource()).isEqualTo("ddc");
     assertThat(result.getSubjects()).hasSize(2);
     assertThat(result.getSubjects().get(0).getValue()).isEqualTo("subject 1");
     assertThat(result.getSubjects().get(1).getValue()).isEqualTo("subject 2");
