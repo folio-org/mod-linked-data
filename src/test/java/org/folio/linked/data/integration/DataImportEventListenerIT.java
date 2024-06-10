@@ -1,7 +1,10 @@
 package org.folio.linked.data.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.linked.data.test.KafkaEventsTestDataFixture.authorityEvent;
 import static org.folio.linked.data.test.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
@@ -13,10 +16,12 @@ import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolio
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Objects;
 import java.util.Set;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.kafka.consumer.DataImportEventHandler;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
@@ -106,4 +111,46 @@ class DataImportEventListenerIT {
     });
   }
 
+  @Test
+  void shouldConsumeAuthorityEventFromDataImport() {
+    // given
+    var eventId = "event_id_01";
+    var marc = loadResourceAsString("samples/authority_100.jsonl");
+    var emittedEvent = authorityEvent(eventId, TENANT_ID, marc);
+    var expectedEvent = new DataImportEvent()
+      .id(eventId)
+      .tenant(TENANT_ID)
+      .eventType("DI_COMPLETED")
+      .marcAuthority(marc);
+    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
+      eventId, emittedEvent, defaultKafkaHeaders());
+
+    // when
+    eventKafkaTemplate.send(producerRecord);
+
+    // then
+    awaitAndAssert(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
+
+    var found = tenantScopedExecutionService.executeTenantScoped(
+      TENANT_ID,
+      () -> resourceRepo.findAllByType(Set.of(CONCEPT.getUri(), PERSON.getUri()), Pageable.ofSize(1))
+        .stream()
+        .findFirst()
+    );
+
+    assertThat(found)
+      .isPresent()
+      .get()
+      .hasFieldOrPropertyWithValue("label",
+        "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue")
+      .satisfies(resource -> assertThat(resource.getDoc()).isNotEmpty())
+      .satisfies(resource -> assertThat(resource.getOutgoingEdges()).isNotEmpty())
+      .extracting(Resource::getOutgoingEdges)
+      .satisfies(resourceEdges -> assertThat(resourceEdges)
+        .isNotEmpty()
+        .allMatch(edge -> Objects.nonNull(edge.getSource()))
+        .allMatch(edge -> Objects.nonNull(edge.getTarget()))
+        .allMatch(edge -> Objects.nonNull(edge.getPredicate()))
+      );
+  }
 }
