@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.kafka.impl;
 import static java.util.Objects.isNull;
 
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KafkaInventoryMessageMapperImpl implements KafkaInventoryMessageMapper {
 
+  private static final String LINKED_DATA_ID = "linkedDataId";
   private final Bibframe2MarcMapper bibframe2MarcMapper;
   private final ResourceModelMapper resourceModelMapper;
 
@@ -31,9 +33,10 @@ public class KafkaInventoryMessageMapperImpl implements KafkaInventoryMessageMap
       return Optional.empty();
     }
     var payload = new InstanceIngressPayload()
-      .sourceRecordIdentifier(String.valueOf(instance.getId()))
-      .sourceType(InstanceIngressPayload.SourceTypeEnum.BIBFRAME)
-      .sourceRecordObject(marcJson);
+      .sourceRecordIdentifier(UUID.randomUUID().toString())
+      .sourceType(InstanceIngressPayload.SourceTypeEnum.LINKED_DATA)
+      .sourceRecordObject(marcJson)
+      .putAdditionalProperty(LINKED_DATA_ID, instance.getId());
     return Optional.of(payload);
   }
 

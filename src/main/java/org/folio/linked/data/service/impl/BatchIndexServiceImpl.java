@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.impl;
 
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import jakarta.persistence.EntityManager;
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 @Transactional(readOnly = true)
-@Profile(SEARCH_PROFILE)
+@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
 @RequiredArgsConstructor
 public class BatchIndexServiceImpl implements BatchIndexService {
 

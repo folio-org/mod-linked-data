@@ -5,7 +5,6 @@ import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE, SEARCH_PROFILE})
+@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @Autowired

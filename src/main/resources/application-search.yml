@@ -1,3 +1,20 @@
+mod-linked-data:
+  reindex:
+    page-size: 1000
+  kafka:
+    topic:
+      search:
+        bibframe-index: search.bibframe
+
+folio:
+  kafka:
+    retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
+    retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
+    topics:
+      - name: ${mod-linked-data.kafka.topic.search.bibframe-index:search.bibframe}
+        numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
+        replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
+
 spring:
   kafka:
     bootstrap-servers: ${KAFKA_HOST:kafka}:${KAFKA_PORT:9092}
@@ -15,19 +32,3 @@ spring:
         max.in.flight.requests.per.connection: 5
         retries: 5
         spring.json.add.type.headers: false
-
-mod-linked-data:
-  reindex:
-    page-size: 1000
-  kafka:
-    topic:
-      bibframe-index: search.bibframe
-
-folio:
-  kafka:
-    retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
-    retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
-    topics:
-      - name: ${mod-linked-data.kafka.topic.bibframe-index:search.bibframe}
-        numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
-        replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}

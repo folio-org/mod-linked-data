@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.impl.tenant.workers;
 
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 
@@ -14,10 +15,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-@Profile(SEARCH_PROFILE)
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
 public class SearchWorker implements TenantServiceWorker {
 
   private final SearchClient searchClient;

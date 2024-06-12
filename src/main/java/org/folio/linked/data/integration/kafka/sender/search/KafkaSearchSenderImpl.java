@@ -2,6 +2,7 @@ package org.folio.linked.data.integration.kafka.sender.search;
 
 import static java.lang.Long.parseLong;
 import static org.folio.linked.data.util.BibframeUtils.isSameResource;
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
-@Profile(SEARCH_PROFILE)
+@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
 @RequiredArgsConstructor
 public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
@@ -34,7 +35,7 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
   private final FolioExecutionContext folioExecutionContext;
   private final ApplicationEventPublisher eventPublisher;
   private final KafkaSearchMessageMapper kafkaSearchMessageMapper;
-  @Value("${mod-linked-data.kafka.topic.bibframe-index}")
+  @Value("${mod-linked-data.kafka.topic.search.bibframe-index}")
   private String initialBibframeIndexTopicName;
 
   @SneakyThrows

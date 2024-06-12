@@ -1,3 +1,13 @@
+mod-linked-data:
+  reindex:
+    page-size: 1000
+  kafka:
+    topic:
+      search:
+        bibframe-index: search.bibframe
+      inventory:
+        instance-ingress: inventory.instance_ingress
+
 folio:
   environment: ${ENV:folio}
   okapiUrl: ${okapi.url}
@@ -17,6 +27,15 @@ folio:
         concurrency: ${KAFKA_DATA_IMPORT_INSTANCE_CREATE_CONCURRENCY:1}
         topic-pattern: ${KAFKA_DI_INSTANCE_CREATED_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)DI_COMPLETED}
         group-id: ${folio.environment}-linked-data-data-import-instances-created-group
+    retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
+    retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
+    topics:
+      - name: ${mod-linked-data.kafka.topic.search.bibframe-index:search.bibframe}
+        numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
+        replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
+      - name: ${mod-linked-data.kafka.topic.inventory.instance-ingress:inventory.instance_ingress}
+        numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
+        replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
 
 spring:
   kafka:
@@ -37,9 +56,3 @@ spring:
         max.in.flight.requests.per.connection: 5
         retries: 5
         spring.json.add.type.headers: false
-
-mod-linked-data:
-  kafka:
-    topic:
-      inventory:
-        instance-ingress: inventory.instance_ingress

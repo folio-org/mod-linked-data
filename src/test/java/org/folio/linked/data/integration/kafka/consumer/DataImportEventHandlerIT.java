@@ -7,7 +7,6 @@ import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.mockito.Mockito.verify;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -19,13 +18,11 @@ import org.folio.search.domain.dto.DataImportEvent;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 
 @IntegrationTest
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE, SEARCH_PROFILE})
-@SpringBootTest(properties = { "spring.kafka.producer.properties.retries: 1" })
+@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class DataImportEventHandlerIT {
 
   @Autowired

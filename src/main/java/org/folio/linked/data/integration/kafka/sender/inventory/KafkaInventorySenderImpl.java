@@ -1,6 +1,8 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
 import java.util.UUID;
@@ -8,11 +10,13 @@ import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.mapper.kafka.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.search.domain.dto.InventoryInstanceIngressEventEventMetadata;
 import org.folio.spring.FolioExecutionContext;
+import org.folio.spring.integration.XOkapiHeaders;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -35,19 +39,21 @@ public class KafkaInventorySenderImpl implements KafkaInventorySender {
   @SneakyThrows
   public void sendInstanceCreated(Resource resource) {
     var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(initialInventoryInstanceIngressTopicName, tenant);
+    var tenantTopicName = getTenantTopicName(initialInventoryInstanceIngressTopicName, getFolioEnvName(), tenant);
     kafkaInventoryMessageMapper.toInstanceIngressPayload(resource)
       .map(p -> {
-          String id = UUID.randomUUID().toString();
-          return inventoryKafkaTemplate.send(tenantTopicName, id,
-            new InstanceIngressEvent()
-              .id(id)
-              .eventType(InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE)
-              .eventPayload(p)
-              .eventMetadata(new InventoryInstanceIngressEventEventMetadata()
-                .tenantId(tenant)
-              )
-          );
+          var id = UUID.randomUUID().toString();
+          var event = new InstanceIngressEvent()
+            .id(id)
+            .eventType(InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE)
+            .eventPayload(p)
+            .eventMetadata(new InventoryInstanceIngressEventEventMetadata()
+              .tenantId(tenant)
+            );
+          var pr = new ProducerRecord<>(tenantTopicName, id, event);
+          pr.headers().add(XOkapiHeaders.URL, folioExecutionContext.getOkapiUrl().getBytes(UTF_8));
+          pr.headers().add(XOkapiHeaders.TOKEN, folioExecutionContext.getToken().getBytes(UTF_8));
+          return inventoryKafkaTemplate.send(pr);
         }
       ).ifPresent(f -> logSending(tenantTopicName, f));
   }

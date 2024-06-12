@@ -1,5 +1,6 @@
 package org.folio.linked.data.test.kafka;
 
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import java.util.List;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @Getter
-@Profile(SEARCH_PROFILE)
+@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
 public class KafkaSearchIndexTopicListener {
   private final List<String> messages = new CopyOnWriteArrayList<>();
 

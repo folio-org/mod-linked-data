@@ -10,7 +10,6 @@ import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -32,7 +31,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE, SEARCH_PROFILE})
+@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class ReIndexControllerFolioIT {
 
   public static final String INDEX_URL = "/reindex";

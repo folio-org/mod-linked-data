@@ -22,17 +22,18 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Configuration
 @RequiredArgsConstructor
-@Profile(FOLIO_PROFILE)
+@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
 public class FolioKafkaConfig {
   private final KafkaProperties kafkaProperties;
 
   @Bean
-  @Profile(SEARCH_PROFILE)
+  @Profile({FOLIO_PROFILE, SEARCH_PROFILE})
   public ProducerFactory<String, ResourceEvent> searchIndexProducerFactory() {
     return new DefaultKafkaProducerFactory<>(getProducerFactoryProperties());
   }
 
   @Bean
+  @Profile(FOLIO_PROFILE)
   public ProducerFactory<String, InstanceIngressEvent> instanceIngressProducerFactory() {
     return new DefaultKafkaProducerFactory<>(getProducerFactoryProperties());
   }
@@ -45,12 +46,13 @@ public class FolioKafkaConfig {
   }
 
   @Bean
-  @Profile(SEARCH_PROFILE)
+  @Profile({FOLIO_PROFILE, SEARCH_PROFILE})
   public KafkaTemplate<String, ResourceEvent> searchTemplate(ProducerFactory<String, ResourceEvent> factory) {
     return new KafkaTemplate<>(factory);
   }
 
   @Bean
+  @Profile(FOLIO_PROFILE)
   public KafkaTemplate<String, InstanceIngressEvent> iiTemplate(ProducerFactory<String, InstanceIngressEvent> factory) {
     return new KafkaTemplate<>(factory);
   }
