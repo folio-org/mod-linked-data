@@ -6,6 +6,7 @@ import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -45,18 +46,50 @@ class KafkaMessageListenerIT {
     String tenantId = "tenant_01";
     String marc = "{}";
 
-    String emittedEvent = instanceCreatedEvent(eventId, tenantId, marc);
-    DataImportEvent expectedEvent = new DataImportEvent()
+    var emittedEvent = instanceCreatedEvent(eventId, tenantId, marc);
+    var expectedEvent = getDataImportEvent(eventId, tenantId, marc);
+    var producerRecord = getProducerRecord(eventId, emittedEvent);
+
+    // when
+    eventKafkaTemplate.send(producerRecord);
+
+    // then
+    awaitAndAssert(() -> verify(dataImportEventConsumer).handle(expectedEvent));
+  }
+
+  @Test
+  void shouldRetryIfErrorOccurs() {
+    // given
+    String eventId = "event_id_02";
+    String tenantId = "tenant_02";
+    String marc = "{}";
+
+    var emittedEvent = instanceCreatedEvent(eventId, tenantId, marc);
+    var expectedEvent = getDataImportEvent(eventId, tenantId, marc);
+    var producerRecord = getProducerRecord(eventId, emittedEvent);
+
+    doThrow(new RuntimeException("An error occurred"))
+      .doNothing()
+      .when(dataImportEventConsumer).handle(expectedEvent);
+
+    // when
+    eventKafkaTemplate.send(producerRecord);
+
+    // then
+    awaitAndAssert(() -> verify(dataImportEventConsumer, times(2)).handle(expectedEvent));
+  }
+
+  private ProducerRecord getProducerRecord(String eventId, String emittedEvent) {
+    return new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
+      eventId, emittedEvent, defaultKafkaHeaders());
+  }
+
+  private static DataImportEvent getDataImportEvent(String eventId, String tenantId, String marc) {
+    return new DataImportEvent()
       .id(eventId)
       .tenant(tenantId)
       .eventType("DI_COMPLETED")
       .marcBib(marc);
-
-    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
-      eventId, emittedEvent, defaultKafkaHeaders());
-
-    eventKafkaTemplate.send(producerRecord);
-    awaitAndAssert(() -> verify(dataImportEventConsumer, times(1)).handle(expectedEvent));
   }
 
   private String getTopicName(String tenantId, String topic) {

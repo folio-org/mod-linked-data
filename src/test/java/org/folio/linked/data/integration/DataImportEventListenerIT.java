@@ -90,7 +90,7 @@ class DataImportEventListenerIT {
     // then
     awaitAndAssert(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
 
-    var found = tenantScopedExecutionService.executeTenantScoped(
+    var found = tenantScopedExecutionService.execute(
       TENANT_ID,
       () -> resourceRepo.findAllByType(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
         .stream()
@@ -131,7 +131,7 @@ class DataImportEventListenerIT {
     // then
     awaitAndAssert(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
 
-    var found = tenantScopedExecutionService.executeTenantScoped(
+    var found = tenantScopedExecutionService.execute(
       TENANT_ID,
       () -> resourceRepo.findAllByType(Set.of(CONCEPT.getUri(), PERSON.getUri()), Pageable.ofSize(1))
         .stream()

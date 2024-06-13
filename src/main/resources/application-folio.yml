@@ -9,6 +9,8 @@ folio:
       enabled: true
     feign:
       enabled: true
+  retry:
+    enabled: true
   kafka:
     listener:
       data-import-instance-create:
