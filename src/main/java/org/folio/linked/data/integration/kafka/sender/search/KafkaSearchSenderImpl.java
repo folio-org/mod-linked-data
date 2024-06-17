@@ -8,21 +8,20 @@ import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
-import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.integration.kafka.message.SearchIndexEventMessage;
 import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
-import org.folio.search.domain.dto.ResourceEvent;
-import org.folio.spring.FolioExecutionContext;
-import org.springframework.beans.factory.annotation.Value;
+import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -31,12 +30,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
-  private final KafkaTemplate<String, ResourceEvent> kafkaTemplate;
-  private final FolioExecutionContext folioExecutionContext;
   private final ApplicationEventPublisher eventPublisher;
   private final KafkaSearchMessageMapper kafkaSearchMessageMapper;
-  @Value("${mod-linked-data.kafka.topic.search.bibframe-index}")
-  private String initialBibframeIndexTopicName;
+  private final FolioMessageProducer<SearchIndexEventMessage> searchIndexEventMessageProducer;
 
   @SneakyThrows
   @Override
@@ -56,20 +52,15 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   @SneakyThrows
   private void sendCreate(BibframeIndex bibframeIndex, boolean publishIndexEvent) {
-    var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(initialBibframeIndexTopicName, tenant);
-    var future = kafkaTemplate.send(tenantTopicName, bibframeIndex.getId(),
-      new ResourceEvent()
-        .id(bibframeIndex.getId())
-        .type(CREATE)
-        .tenant(tenant)
-        .resourceName(SEARCH_RESOURCE_NAME)
-        ._new(bibframeIndex)
-    );
+    var message = new SearchIndexEventMessage()
+      .withId(UUID.randomUUID().toString())
+      .withType(CREATE)
+      .withResourceName(SEARCH_RESOURCE_NAME)
+      .withNew(bibframeIndex);
+    searchIndexEventMessageProducer.sendMessages(List.of(message));
     if (publishIndexEvent) {
-      future.thenRun(() -> eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(bibframeIndex.getId()))));
+      eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(bibframeIndex.getId())));
     }
-    log.info("sendResourceCreated result to topic [{}]: [{}]", tenantTopicName, future.get().toString());
   }
 
   @Override
@@ -98,19 +89,14 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   @SneakyThrows
   private void sendUpdate(BibframeIndex newWorkIndex, BibframeIndex oldWorkIndex) {
-    var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(initialBibframeIndexTopicName, tenant);
-    var future = kafkaTemplate.send(tenantTopicName, newWorkIndex.getId(),
-      new ResourceEvent()
-        .id(newWorkIndex.getId())
-        .type(UPDATE)
-        .tenant(tenant)
-        .resourceName(SEARCH_RESOURCE_NAME)
-        ._new(newWorkIndex)
-        .old(oldWorkIndex)
-    );
-    future.thenRun(() -> eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(newWorkIndex.getId()))));
-    log.info("sendResourceUpdated result to topic [{}]: [{}]", tenantTopicName, future.get().toString());
+    var message = new SearchIndexEventMessage()
+      .withId(UUID.randomUUID().toString())
+      .withType(UPDATE)
+      .withResourceName(SEARCH_RESOURCE_NAME)
+      .withNew(newWorkIndex)
+      .withOld(oldWorkIndex);
+    searchIndexEventMessageProducer.sendMessages(List.of(message));
+    eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(newWorkIndex.getId())));
   }
 
   @Override
@@ -120,17 +106,12 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   @SneakyThrows
   private void sendDelete(Long id) {
-    var tenant = folioExecutionContext.getTenantId();
-    var tenantTopicName = getTenantTopicName(initialBibframeIndexTopicName, tenant);
-    var future = kafkaTemplate.send(tenantTopicName, id.toString(),
-      new ResourceEvent()
-        .id(id.toString())
-        .type(DELETE)
-        .tenant(tenant)
-        .resourceName(SEARCH_RESOURCE_NAME)
-        ._new(new BibframeIndex(id.toString()))
-    );
-    log.info("sendResourceDeleted result to topic [{}]: [{}]", tenantTopicName, future.get().toString());
+    var message = new SearchIndexEventMessage()
+      .withId(UUID.randomUUID().toString())
+      .withType(DELETE)
+      .withResourceName(SEARCH_RESOURCE_NAME)
+      .withNew(new BibframeIndex(id.toString()));
+    searchIndexEventMessageProducer.sendMessages(List.of(message));
   }
 
 }

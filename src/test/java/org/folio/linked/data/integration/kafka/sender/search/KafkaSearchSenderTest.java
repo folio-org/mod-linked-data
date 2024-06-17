@@ -1,4 +1,4 @@
-package org.folio.linked.data.integration.kafka;
+package org.folio.linked.data.integration.kafka.sender.search;
 
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,25 +8,21 @@ import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceEventType.DELETE;
 import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import lombok.SneakyThrows;
-import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSenderImpl;
+import org.folio.linked.data.integration.kafka.message.SearchIndexEventMessage;
 import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
-import org.folio.search.domain.dto.ResourceEvent;
-import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
-import org.junit.jupiter.api.BeforeEach;
+import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -34,33 +30,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
 class KafkaSearchSenderTest {
 
-  private static final String TOPIC = "topic";
-  private static final String TENANT = "tenant";
-  private static final String TOPIC_FULL = "folio." + TENANT + "." + TOPIC;
   @InjectMocks
   private KafkaSearchSenderImpl kafkaSearchSender;
   @Mock
-  private KafkaTemplate<String, ResourceEvent> kafkaTemplate;
-  @Mock
-  private FolioExecutionContext folioExecutionContext;
+  private FolioMessageProducer<SearchIndexEventMessage> searchIndexEventMessageProducer;
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Mock
   private KafkaSearchMessageMapper kafkaSearchMessageMapper;
-
-  @BeforeEach
-  public void setup() {
-    ReflectionTestUtils.setField(kafkaSearchSender, "initialBibframeIndexTopicName", TOPIC);
-    lenient().when(folioExecutionContext.getTenantId()).thenReturn(TENANT);
-  }
 
   @Test
   void sendSingleResourceCreated_shouldNotSendMessage_ifGivenResourceIsNotIndexable() {
@@ -72,7 +54,7 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendSingleResourceCreated(resource);
 
     // then
-    verify(kafkaTemplate, never()).send(any(), any(), any());
+    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -82,20 +64,20 @@ class KafkaSearchSenderTest {
     var resource = new Resource().setId(randomLong());
     var index = new BibframeIndex().id(String.valueOf(resource.getId()));
     when(kafkaSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
-    var expectedEvent = new ResourceEvent()
-      .id(String.valueOf(resource.getId()))
-      .type(CREATE)
-      .tenant(TENANT)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(index);
-    var futureMock = getFutureMock();
-    when(kafkaTemplate.send(TOPIC_FULL, index.getId(), expectedEvent)).thenReturn(futureMock);
 
     // when
     kafkaSearchSender.sendSingleResourceCreated(resource);
 
     // then
-    verify(kafkaTemplate).send(TOPIC_FULL, index.getId(), expectedEvent);
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    assertThat(messages).hasSize(1);
+    var message = messages.get(0);
+    assertThat(message.getId()).isNotNull();
+    assertThat(message.getType()).isEqualTo(CREATE);
+    assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
+    assertThat(message.getNew()).isEqualTo(index);
     verify(eventPublisher).publishEvent(new ResourceIndexedEvent(parseLong(index.getId())));
   }
 
@@ -110,7 +92,7 @@ class KafkaSearchSenderTest {
 
     // then
     assertThat(result).isFalse();
-    verify(kafkaTemplate, never()).send(any(), any(), any());
+    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -120,21 +102,21 @@ class KafkaSearchSenderTest {
     var resource = new Resource().setId(randomLong());
     var index = new BibframeIndex().id(String.valueOf(resource.getId()));
     when(kafkaSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
-    var expectedEvent = new ResourceEvent()
-      .id(String.valueOf(resource.getId()))
-      .type(CREATE)
-      .tenant(TENANT)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(index);
-    var futureMock = getFutureMock();
-    when(kafkaTemplate.send(TOPIC_FULL, index.getId(), expectedEvent)).thenReturn(futureMock);
 
     // when
     var result = kafkaSearchSender.sendMultipleResourceCreated(resource);
 
     // then
     assertThat(result).isTrue();
-    verify(kafkaTemplate).send(TOPIC_FULL, index.getId(), expectedEvent);
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    assertThat(messages).hasSize(1);
+    var message = messages.get(0);
+    assertThat(message.getId()).isNotNull();
+    assertThat(message.getType()).isEqualTo(CREATE);
+    assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
+    assertThat(message.getNew()).isEqualTo(index);
     verify(eventPublisher, never()).publishEvent(new ResourceIndexedEvent(parseLong(index.getId())));
   }
 
@@ -150,7 +132,7 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
-    verify(kafkaTemplate, never()).send(any(), any(), any());
+    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -165,21 +147,21 @@ class KafkaSearchSenderTest {
     when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE))
       .thenReturn(Optional.of(indexNew))
       .thenReturn(Optional.of(indexOld));
-    var expectedEvent = new ResourceEvent()
-      .id(String.valueOf(id))
-      .type(UPDATE)
-      .tenant(TENANT)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(indexNew)
-      .old(indexOld);
-    var futureMock = getFutureMock();
-    when(kafkaTemplate.send(TOPIC_FULL, String.valueOf(id), expectedEvent)).thenReturn(futureMock);
 
     // when
     kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
-    verify(kafkaTemplate).send(TOPIC_FULL, String.valueOf(id), expectedEvent);
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    assertThat(messages).hasSize(1);
+    var message = messages.get(0);
+    assertThat(message.getId()).isNotNull();
+    assertThat(message.getType()).isEqualTo(UPDATE);
+    assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
+    assertThat(message.getNew()).isEqualTo(indexNew);
+    assertThat(message.getOld()).isEqualTo(indexOld);
     verify(eventPublisher).publishEvent(new ResourceIndexedEvent(id));
   }
 
@@ -193,28 +175,27 @@ class KafkaSearchSenderTest {
     var indexNew = new BibframeIndex().id(newId.toString());
     when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.of(indexNew));
     when(kafkaSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
-    var expectedFuture = getFutureMock();
-    var expectedDeleteEvent = new ResourceEvent()
-      .id(oldId.toString())
-      .type(DELETE)
-      .tenant(TENANT)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(new BibframeIndex(oldId.toString()));
-    when(kafkaTemplate.send(TOPIC_FULL, oldId.toString(), expectedDeleteEvent)).thenReturn(expectedFuture);
-    var expectedCreateEvent = new ResourceEvent()
-      .id(newId.toString())
-      .type(CREATE)
-      .tenant(TENANT)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(indexNew);
-    when(kafkaTemplate.send(TOPIC_FULL, newId.toString(), expectedCreateEvent)).thenReturn(expectedFuture);
 
     // when
     kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
-    verify(kafkaTemplate).send(TOPIC_FULL, oldId.toString(), expectedDeleteEvent);
-    verify(kafkaTemplate).send(TOPIC_FULL, newId.toString(), expectedCreateEvent);
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(searchIndexEventMessageProducer, times(2)).sendMessages(messageCaptor.capture());
+    List<SearchIndexEventMessage> messages = messageCaptor.getAllValues().get(0);
+    assertThat(messages).hasSize(1);
+    var message = messages.get(0);
+    assertThat(message.getId()).isNotNull();
+    assertThat(message.getType()).isEqualTo(DELETE);
+    assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
+    assertThat(message.getNew()).isEqualTo(new BibframeIndex(oldId.toString()));
+    List<SearchIndexEventMessage> messages2 = messageCaptor.getAllValues().get(1);
+    assertThat(messages2).hasSize(1);
+    var message2 = messages2.get(0);
+    assertThat(message2.getId()).isNotNull();
+    assertThat(message2.getType()).isEqualTo(CREATE);
+    assertThat(message2.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
+    assertThat(message2.getNew()).isEqualTo(indexNew);
     verify(eventPublisher).publishEvent(new ResourceIndexedEvent(newId));
   }
 
@@ -227,20 +208,20 @@ class KafkaSearchSenderTest {
     var oldResource = new Resource().setId(oldId).setLabel("old");
     when(kafkaSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
     when(kafkaSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
-    var expectedFuture = getFutureMock();
-    var expectedDeleteEvent = new ResourceEvent()
-      .id(oldId.toString())
-      .type(DELETE)
-      .tenant(TENANT)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(new BibframeIndex(oldId.toString()));
-    when(kafkaTemplate.send(TOPIC_FULL, oldId.toString(), expectedDeleteEvent)).thenReturn(expectedFuture);
 
     // when
     kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
-    verify(kafkaTemplate).send(TOPIC_FULL, oldId.toString(), expectedDeleteEvent);
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    assertThat(messages).hasSize(1);
+    var message = messages.get(0);
+    assertThat(message.getId()).isNotNull();
+    assertThat(message.getType()).isEqualTo(DELETE);
+    assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
+    assertThat(message.getNew()).isEqualTo(new BibframeIndex(oldId.toString()));
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -258,7 +239,7 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
-    verify(kafkaTemplate, never()).send(any(), any(), any());
+    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -268,20 +249,20 @@ class KafkaSearchSenderTest {
     Long id = 1L;
     var resource = new Resource().setId(id);
     when(kafkaSearchMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.of(id));
-    var expectedFuture = getFutureMock();
-    var expectedDeleteEvent = new ResourceEvent()
-      .id(id.toString())
-      .type(DELETE)
-      .tenant(TENANT)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(new BibframeIndex(id.toString()));
-    when(kafkaTemplate.send(TOPIC_FULL, id.toString(), expectedDeleteEvent)).thenReturn(expectedFuture);
 
     // when
     kafkaSearchSender.sendResourceDeleted(resource);
 
     // then
-    verify(kafkaTemplate).send(TOPIC_FULL, id.toString(), expectedDeleteEvent);
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    assertThat(messages).hasSize(1);
+    var message = messages.get(0);
+    assertThat(message.getId()).isNotNull();
+    assertThat(message.getType()).isEqualTo(DELETE);
+    assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
+    assertThat(message.getNew()).isEqualTo(new BibframeIndex(id.toString()));
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -296,21 +277,8 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendResourceDeleted(resource);
 
     // then
-    verify(kafkaTemplate, never()).send(any(), any(), any());
+    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
-  }
-
-  @SneakyThrows
-  private CompletableFuture<SendResult<String, ResourceEvent>> getFutureMock() {
-    var future = mock(CompletableFuture.class);
-    var expectedSendResult = mock(SendResult.class);
-    when(future.get()).thenReturn(expectedSendResult);
-    var actionCaptor = ArgumentCaptor.forClass(Runnable.class);
-    lenient().when(future.thenRun(actionCaptor.capture())).thenAnswer(invocationOnMock -> {
-      actionCaptor.getValue().run();
-      return null;
-    });
-    return future;
   }
 
 }
