@@ -1,7 +1,6 @@
 package org.folio.linked.data.service.impl.tenant.workers;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.service.impl.tenant.TenantServiceWorker;
@@ -10,7 +9,7 @@ import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
+@Profile(FOLIO_PROFILE)
 @Service
 @RequiredArgsConstructor
 public class KafkaAdminWorker implements TenantServiceWorker {

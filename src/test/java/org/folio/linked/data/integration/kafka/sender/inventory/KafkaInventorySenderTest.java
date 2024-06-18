@@ -1,8 +1,6 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
-import static org.folio.search.domain.dto.ResourceEventType.CREATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -11,8 +9,6 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.folio.linked.data.integration.kafka.message.InstanceIngressEventMessage;
-import org.folio.linked.data.integration.kafka.message.SearchIndexEventMessage;
 import org.folio.linked.data.mapper.kafka.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -35,7 +31,7 @@ public class KafkaInventorySenderTest {
   @Mock
   private KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
   @Mock
-  private FolioMessageProducer<InstanceIngressEventMessage> instanceIngressMessageProducer;
+  private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
   @Test
   void sendInstanceCreated_shouldDoNothing_ifGivenResourceIsNotBeingMappedByMessageMapper() {
@@ -63,7 +59,7 @@ public class KafkaInventorySenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(instanceIngressMessageProducer).sendMessages(messageCaptor.capture());
-    List<InstanceIngressEventMessage> messages = messageCaptor.getValue();
+    List<InstanceIngressEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();

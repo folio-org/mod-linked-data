@@ -121,9 +121,9 @@ import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
 import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum;
 import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
-import static org.folio.search.domain.dto.ResourceEventType.CREATE;
-import static org.folio.search.domain.dto.ResourceEventType.DELETE;
-import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
+import static org.folio.search.domain.dto.SearchIndexEventType.CREATE;
+import static org.folio.search.domain.dto.SearchIndexEventType.DELETE;
+import static org.folio.search.domain.dto.SearchIndexEventType.UPDATE;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -161,7 +161,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.utils.ResourceTestService;
-import org.folio.search.domain.dto.ResourceEventType;
+import org.folio.search.domain.dto.SearchIndexEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -238,6 +238,7 @@ class ResourceControllerIT {
     validateInstance(instanceResource, true);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
     checkSearchIndexMessage(Long.valueOf(workId), CREATE);
+    checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
   }
 
@@ -267,6 +268,7 @@ class ResourceControllerIT {
     var workResource = resourceTestService.getResourceById(id, 4);
     validateWork(workResource, true);
     checkSearchIndexMessage(workResource.getId(), CREATE);
+    checkIndexDate(workResource.getId().toString());
   }
 
   @Test
@@ -308,6 +310,7 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
     checkSearchIndexMessage(work.getId(), UPDATE);
+    checkIndexDate(work.getId().toString());
   }
 
   @Test
@@ -349,6 +352,7 @@ class ResourceControllerIT {
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
     checkSearchIndexMessage(originalWork.getId(), DELETE);
     checkSearchIndexMessage(Long.valueOf(id), CREATE);
+    checkIndexDate(id);
   }
 
   @Test
@@ -468,6 +472,7 @@ class ResourceControllerIT {
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(37);
     checkSearchIndexMessage(work.getId(), UPDATE);
+    checkIndexDate(work.getId().toString());
   }
 
   @Test
@@ -535,11 +540,15 @@ class ResourceControllerIT {
       .andExpect(jsonPath("parsedRecord.content", notNullValue()));
   }
 
-  protected void checkSearchIndexMessage(Long id, ResourceEventType eventType) {
+  protected void checkSearchIndexMessage(Long id, SearchIndexEventType eventType) {
     // nothing to check without Folio profile
   }
 
   protected void checkInventoryMessage(Long id, EventTypeEnum eventType) {
+    // nothing to check without Folio profile
+  }
+
+  protected void checkIndexDate(String id) {
     // nothing to check without Folio profile
   }
 
@@ -617,28 +626,32 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("af")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PRODUCTION), equalTo("Afghanistan")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("http://id.loc.gov/vocabulary/countries/af")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("http://id.loc.gov/vocabulary/countries/af")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_PRODUCTION), equalTo("production provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_PRODUCTION), equalTo("production simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_PUBLICATION), equalTo("publication date")))
         .andExpect(jsonPath(toProviderEventName(PE_PUBLICATION), equalTo("publication name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_PUBLICATION), equalTo("al")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PUBLICATION), equalTo("Albania")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("http://id.loc.gov/vocabulary/countries/al")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("http://id.loc.gov/vocabulary/countries/al")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_PUBLICATION), equalTo("publication provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_PUBLICATION), equalTo("publication simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_DISTRIBUTION), equalTo("distribution date")))
         .andExpect(jsonPath(toProviderEventName(PE_DISTRIBUTION), equalTo("distribution name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_DISTRIBUTION), equalTo("dz")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_DISTRIBUTION), equalTo("Algeria")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("http://id.loc.gov/vocabulary/countries/dz")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("http://id.loc.gov/vocabulary/countries/dz")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_DISTRIBUTION), equalTo("distribution provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_DISTRIBUTION), equalTo("distribution simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_MANUFACTURE), equalTo("manufacture date")))
         .andExpect(jsonPath(toProviderEventName(PE_MANUFACTURE), equalTo("manufacture name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_MANUFACTURE), equalTo("as")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_MANUFACTURE), equalTo("American Samoa")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("http://id.loc.gov/vocabulary/countries/as")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("http://id.loc.gov/vocabulary/countries/as")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
         .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
@@ -865,7 +878,8 @@ class ResourceControllerIT {
     assertThat(place.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
     assertThat(place.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(expectedLabel);
     assertThat(place.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("http://id.loc.gov/vocabulary/countries/" + expectedCode);
+    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(
+      "http://id.loc.gov/vocabulary/countries/" + expectedCode);
     assertThat(place.getOutgoingEdges()).isEmpty();
   }
 

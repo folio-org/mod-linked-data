@@ -4,9 +4,9 @@ import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
-import static org.folio.search.domain.dto.ResourceEventType.CREATE;
-import static org.folio.search.domain.dto.ResourceEventType.DELETE;
-import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
+import static org.folio.search.domain.dto.SearchIndexEventType.CREATE;
+import static org.folio.search.domain.dto.SearchIndexEventType.DELETE;
+import static org.folio.search.domain.dto.SearchIndexEventType.UPDATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -15,12 +15,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import org.folio.linked.data.integration.kafka.message.SearchIndexEventMessage;
 import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
+import org.folio.search.domain.dto.SearchIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class KafkaSearchSenderTest {
   @InjectMocks
   private KafkaSearchSenderImpl kafkaSearchSender;
   @Mock
-  private FolioMessageProducer<SearchIndexEventMessage> searchIndexEventMessageProducer;
+  private FolioMessageProducer<SearchIndexEvent> searchIndexEventMessageProducer;
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Mock
@@ -71,7 +71,7 @@ class KafkaSearchSenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    List<SearchIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -110,7 +110,7 @@ class KafkaSearchSenderTest {
     assertThat(result).isTrue();
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    List<SearchIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -154,7 +154,7 @@ class KafkaSearchSenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    List<SearchIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -182,14 +182,14 @@ class KafkaSearchSenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(searchIndexEventMessageProducer, times(2)).sendMessages(messageCaptor.capture());
-    List<SearchIndexEventMessage> messages = messageCaptor.getAllValues().get(0);
+    List<SearchIndexEvent> messages = messageCaptor.getAllValues().get(0);
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
     assertThat(message.getType()).isEqualTo(DELETE);
     assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
     assertThat(message.getNew()).isEqualTo(new BibframeIndex(oldId.toString()));
-    List<SearchIndexEventMessage> messages2 = messageCaptor.getAllValues().get(1);
+    List<SearchIndexEvent> messages2 = messageCaptor.getAllValues().get(1);
     assertThat(messages2).hasSize(1);
     var message2 = messages2.get(0);
     assertThat(message2.getId()).isNotNull();
@@ -215,7 +215,7 @@ class KafkaSearchSenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    List<SearchIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -256,7 +256,7 @@ class KafkaSearchSenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEventMessage> messages = messageCaptor.getValue();
+    List<SearchIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();

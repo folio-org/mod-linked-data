@@ -3,7 +3,6 @@ package org.folio.linked.data.service.impl;
 import static java.lang.Boolean.TRUE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 @Transactional
-@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
+@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
 public class ReindexServiceImpl implements ReindexService {
 

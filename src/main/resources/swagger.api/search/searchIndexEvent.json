@@ -9,10 +9,14 @@
     },
     "type": {
       "description": "Resource event operation type",
-      "$ref": "resourceEventType.json"
+      "$ref": "searchIndexEventType.json"
     },
     "tenant": {
       "description": "Tenant id",
+      "type": "string"
+    },
+    "ts": {
+      "description": "Message timestamp",
       "type": "string"
     },
     "resourceName": {
@@ -27,5 +31,6 @@
       "description": "Instance record old fields",
       "type": "object"
     }
-  }
+  },
+  "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage"
 }

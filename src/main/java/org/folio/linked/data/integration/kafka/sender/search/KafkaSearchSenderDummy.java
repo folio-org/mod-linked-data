@@ -1,7 +1,6 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
-@Profile({"!" + FOLIO_PROFILE + "& !" + SEARCH_PROFILE})
+@Profile("!" + FOLIO_PROFILE)
 @RequiredArgsConstructor
 public class KafkaSearchSenderDummy implements KafkaSearchSender {
 

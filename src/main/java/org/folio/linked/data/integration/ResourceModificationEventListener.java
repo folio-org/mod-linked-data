@@ -21,6 +21,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -55,7 +56,7 @@ public class ResourceModificationEventListener {
   }
 
   @EventListener
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void afterIndex(ResourceIndexedEvent resourceIndexedEvent) {
     log.info("ResourceIndexedEvent received [{}]", resourceIndexedEvent);
     resourceRepository.updateIndexDate(resourceIndexedEvent.workId());

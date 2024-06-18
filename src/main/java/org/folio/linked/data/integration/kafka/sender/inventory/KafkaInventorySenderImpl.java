@@ -7,7 +7,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.integration.kafka.message.InstanceIngressEventMessage;
 import org.folio.linked.data.mapper.kafka.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -22,7 +21,7 @@ import org.springframework.stereotype.Service;
 public class KafkaInventorySenderImpl implements KafkaInventorySender {
 
   private final KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
-  private final FolioMessageProducer<InstanceIngressEventMessage> instanceIngressMessageProducer;
+  private final FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
   @Override
   @SneakyThrows
@@ -30,10 +29,10 @@ public class KafkaInventorySenderImpl implements KafkaInventorySender {
     kafkaInventoryMessageMapper.toInstanceIngressPayload(resource)
       .ifPresent(p -> {
           var id = UUID.randomUUID().toString();
-          var event = new InstanceIngressEventMessage()
-            .withId(id)
-            .withEventType(InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE)
-            .withEventPayload(p);
+          var event = new InstanceIngressEvent()
+            .id(id)
+            .eventType(InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE)
+            .eventPayload(p);
           instanceIngressMessageProducer.sendMessages(List.of(event));
         }
       );

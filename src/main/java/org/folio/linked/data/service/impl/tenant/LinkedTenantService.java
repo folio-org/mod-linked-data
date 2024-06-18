@@ -1,7 +1,6 @@
 package org.folio.linked.data.service.impl.tenant;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_PROFILE;
 
 import java.util.Collection;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @Primary
 @Service
-@Profile({FOLIO_PROFILE, SEARCH_PROFILE})
+@Profile(FOLIO_PROFILE)
 public class LinkedTenantService extends TenantService {
 
   private final Collection<TenantServiceWorker> workers;

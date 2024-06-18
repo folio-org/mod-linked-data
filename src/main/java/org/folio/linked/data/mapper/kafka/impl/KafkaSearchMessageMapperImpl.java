@@ -38,7 +38,7 @@ import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_PARALLEL;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_VARIANT;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
-import static org.folio.search.domain.dto.ResourceEventType.DELETE;
+import static org.folio.search.domain.dto.SearchIndexEventType.DELETE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ import org.folio.search.domain.dto.BibframeInstancesInnerPublicationsInner;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
 import org.folio.search.domain.dto.BibframeSubjectsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
-import org.folio.search.domain.dto.ResourceEventType;
+import org.folio.search.domain.dto.SearchIndexEventType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -91,7 +91,7 @@ public class KafkaSearchMessageMapperImpl implements KafkaSearchMessageMapper {
   private final SingleResourceMapper singleResourceMapper;
 
   @Override
-  public Optional<BibframeIndex> toIndex(Resource work, ResourceEventType eventType) {
+  public Optional<BibframeIndex> toIndex(Resource work, SearchIndexEventType eventType) {
     if (isNull(work)) {
       log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), "null");
       return empty();

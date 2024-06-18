@@ -12,10 +12,10 @@ components:
       $ref: search/createIndexRequest.json
     searchCreateIndexResponse:
       $ref: search/folioCreateIndexResponse.json
-    searchResourceEvent:
-      $ref: search/resourceEvent.json
-    searchResourceEventType:
-      $ref: search/resourceEventType.json
+    searchIndexEvent:
+      $ref: search/searchIndexEvent.json
+    searchIndexEventType:
+      $ref: search/searchIndexEventType.json
     bibframe:
       $ref: search/bibframeIndex.json
     dataImportEvent:
