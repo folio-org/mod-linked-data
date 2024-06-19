@@ -83,8 +83,10 @@ public class BibframeUtils {
   }
 
   public static Optional<Resource> extractWork(Resource resource) {
-    return isOfType(resource, WORK) ? Optional.of(resource)
-      : resource.getOutgoingEdges().stream()
+    if (isOfType(resource, WORK)) {
+      return Optional.of(resource);
+    }
+    return resource.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(resourceEdge -> {
         var work = resourceEdge.getTarget();

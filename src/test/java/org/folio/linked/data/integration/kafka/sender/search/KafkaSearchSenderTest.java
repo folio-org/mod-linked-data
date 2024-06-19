@@ -4,9 +4,9 @@ import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
-import static org.folio.search.domain.dto.SearchIndexEventType.CREATE;
-import static org.folio.search.domain.dto.SearchIndexEventType.DELETE;
-import static org.folio.search.domain.dto.SearchIndexEventType.UPDATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -20,7 +20,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
-import org.folio.search.domain.dto.SearchIndexEvent;
+import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class KafkaSearchSenderTest {
   @InjectMocks
   private KafkaSearchSenderImpl kafkaSearchSender;
   @Mock
-  private FolioMessageProducer<SearchIndexEvent> searchIndexEventMessageProducer;
+  private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Mock
@@ -54,7 +54,7 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendSingleResourceCreated(resource);
 
     // then
-    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
+    verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -70,8 +70,8 @@ class KafkaSearchSenderTest {
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEvent> messages = messageCaptor.getValue();
+    verify(resourceIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<ResourceIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -92,7 +92,7 @@ class KafkaSearchSenderTest {
 
     // then
     assertThat(result).isFalse();
-    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
+    verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -109,8 +109,8 @@ class KafkaSearchSenderTest {
     // then
     assertThat(result).isTrue();
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEvent> messages = messageCaptor.getValue();
+    verify(resourceIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<ResourceIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -132,7 +132,7 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
-    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
+    verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -153,8 +153,8 @@ class KafkaSearchSenderTest {
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEvent> messages = messageCaptor.getValue();
+    verify(resourceIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<ResourceIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -181,15 +181,15 @@ class KafkaSearchSenderTest {
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(searchIndexEventMessageProducer, times(2)).sendMessages(messageCaptor.capture());
-    List<SearchIndexEvent> messages = messageCaptor.getAllValues().get(0);
+    verify(resourceIndexEventMessageProducer, times(2)).sendMessages(messageCaptor.capture());
+    List<ResourceIndexEvent> messages = messageCaptor.getAllValues().get(0);
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
     assertThat(message.getType()).isEqualTo(DELETE);
     assertThat(message.getResourceName()).isEqualTo(SEARCH_RESOURCE_NAME);
     assertThat(message.getNew()).isEqualTo(new BibframeIndex(oldId.toString()));
-    List<SearchIndexEvent> messages2 = messageCaptor.getAllValues().get(1);
+    List<ResourceIndexEvent> messages2 = messageCaptor.getAllValues().get(1);
     assertThat(messages2).hasSize(1);
     var message2 = messages2.get(0);
     assertThat(message2.getId()).isNotNull();
@@ -214,8 +214,8 @@ class KafkaSearchSenderTest {
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEvent> messages = messageCaptor.getValue();
+    verify(resourceIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<ResourceIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -239,7 +239,7 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
 
     // then
-    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
+    verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 
@@ -255,8 +255,8 @@ class KafkaSearchSenderTest {
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(searchIndexEventMessageProducer).sendMessages(messageCaptor.capture());
-    List<SearchIndexEvent> messages = messageCaptor.getValue();
+    verify(resourceIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<ResourceIndexEvent> messages = messageCaptor.getValue();
     assertThat(messages).hasSize(1);
     var message = messages.get(0);
     assertThat(message.getId()).isNotNull();
@@ -277,7 +277,7 @@ class KafkaSearchSenderTest {
     kafkaSearchSender.sendResourceDeleted(resource);
 
     // then
-    verify(searchIndexEventMessageProducer, never()).sendMessages(any());
+    verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
     verify(eventPublisher, never()).publishEvent(any());
   }
 

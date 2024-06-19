@@ -9,7 +9,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.folio.search.domain.dto.InstanceIngressEvent;
-import org.folio.search.domain.dto.SearchIndexEvent;
+import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,11 +33,11 @@ public class KafkaProducerConfiguration {
   private String initialInventoryInstanceIngressTopic;
 
   @Bean
-  public FolioMessageProducer<SearchIndexEvent> searchIndexEventProducer(
-    KafkaTemplate<String, SearchIndexEvent> searchIndexEventMessageTemplate
+  public FolioMessageProducer<ResourceIndexEvent> resourceIndexEventProducer(
+    KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
   ) {
-    var producer = new FolioMessageProducer<>(searchIndexEventMessageTemplate, () -> initialBibframeIndexTopic);
-    producer.setKeyMapper(SearchIndexEvent::getId);
+    var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate, () -> initialBibframeIndexTopic);
+    producer.setKeyMapper(ResourceIndexEvent::getId);
     return producer;
   }
 
@@ -52,9 +52,9 @@ public class KafkaProducerConfiguration {
   }
 
   @Bean
-  public KafkaTemplate<String, SearchIndexEvent> searchIndexEventTemplate(
-    ProducerFactory<String, SearchIndexEvent> searchIndexEventMessageProducerFactory) {
-    return new KafkaTemplate<>(searchIndexEventMessageProducerFactory);
+  public KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventTemplate(
+    ProducerFactory<String, ResourceIndexEvent> resourceIndexEventMessageProducerFactory) {
+    return new KafkaTemplate<>(resourceIndexEventMessageProducerFactory);
   }
 
   @Bean
@@ -65,7 +65,7 @@ public class KafkaProducerConfiguration {
   }
 
   @Bean
-  public ProducerFactory<String, SearchIndexEvent> searchIndexEventProducerFactory() {
+  public ProducerFactory<String, ResourceIndexEvent> resourceIndexEventProducerFactory() {
     return new DefaultKafkaProducerFactory<>(getProducerProperties());
   }
 

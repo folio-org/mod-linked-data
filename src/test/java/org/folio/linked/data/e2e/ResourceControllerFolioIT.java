@@ -13,7 +13,7 @@ import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
 import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.InstanceIngressEvent;
-import org.folio.search.domain.dto.SearchIndexEventType;
+import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +46,7 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @SneakyThrows
   @Override
-  protected void checkSearchIndexMessage(Long id, SearchIndexEventType eventType) {
+  protected void checkSearchIndexMessage(Long id, ResourceIndexEventType eventType) {
     awaitAndAssert(() ->
       assertTrue(searchIndexTopicListener.getMessages().stream().anyMatch(m -> m.contains(id.toString())
         && m.contains(eventType.getValue())))

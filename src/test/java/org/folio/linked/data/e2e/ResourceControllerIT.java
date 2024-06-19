@@ -121,9 +121,9 @@ import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
 import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum;
 import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
-import static org.folio.search.domain.dto.SearchIndexEventType.CREATE;
-import static org.folio.search.domain.dto.SearchIndexEventType.DELETE;
-import static org.folio.search.domain.dto.SearchIndexEventType.UPDATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -161,7 +161,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.utils.ResourceTestService;
-import org.folio.search.domain.dto.SearchIndexEventType;
+import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -540,7 +540,7 @@ class ResourceControllerIT {
       .andExpect(jsonPath("parsedRecord.content", notNullValue()));
   }
 
-  protected void checkSearchIndexMessage(Long id, SearchIndexEventType eventType) {
+  protected void checkSearchIndexMessage(Long id, ResourceIndexEventType eventType) {
     // nothing to check without Folio profile
   }
 
