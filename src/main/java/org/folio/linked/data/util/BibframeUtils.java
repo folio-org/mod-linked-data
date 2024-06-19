@@ -97,8 +97,10 @@ public class BibframeUtils {
   }
 
   public static List<Resource> extractInstances(Resource resource) {
-    return isOfType(resource, INSTANCE) ? List.of(resource)
-      : resource.getIncomingEdges().stream()
+    if (isOfType(resource, INSTANCE)) {
+      return List.of(resource);
+    }
+    return resource.getIncomingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(resourceEdge -> {
         var instance = resourceEdge.getTarget();

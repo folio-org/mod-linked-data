@@ -12,7 +12,6 @@ import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,16 +26,14 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 @Profile(FOLIO_PROFILE)
 public class KafkaProducerConfiguration {
   private final KafkaProperties kafkaProperties;
-  @Value("${mod-linked-data.kafka.topic.search.bibframe-index}")
-  private String initialBibframeIndexTopic;
-  @Value("${mod-linked-data.kafka.topic.inventory.instance-ingress}")
-  private String initialInventoryInstanceIngressTopic;
+  private final LinkedDataTopicProperties linkedDataTopicProperties;
 
   @Bean
   public FolioMessageProducer<ResourceIndexEvent> resourceIndexEventProducer(
     KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
   ) {
-    var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate, () -> initialBibframeIndexTopic);
+    var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
+      linkedDataTopicProperties::getSearchBibframeIndex);
     producer.setKeyMapper(ResourceIndexEvent::getId);
     return producer;
   }
@@ -46,7 +43,7 @@ public class KafkaProducerConfiguration {
     KafkaTemplate<String, InstanceIngressEvent> instanceIngressMessageTemplate
   ) {
     var producer = new FolioMessageProducer<>(instanceIngressMessageTemplate,
-      () -> initialInventoryInstanceIngressTopic);
+      linkedDataTopicProperties::getInventoryInstanceIngress);
     producer.setKeyMapper(InstanceIngressEvent::getId);
     return producer;
   }
