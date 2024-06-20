@@ -20,6 +20,7 @@ import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -29,7 +30,12 @@ import org.folio.linked.data.service.HashService;
 @RequiredArgsConstructor
 public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {
 
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Instance.class, InstanceReference.class, Work.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
+    Instance.class,
+    InstanceReference.class,
+    Work.class,
+    WorkReference.class
+  );
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

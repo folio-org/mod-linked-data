@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Work Info",
+  "description": "Work Reference",
   "allOf": [
     {
       "$ref": "Topper.json"
@@ -14,8 +14,7 @@
             "type": "object",
             "$ref": "title/TitleField.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/title",
-          "x-field-extra-annotation": "@NotEmpty"
+          "x-json-property": "http://bibfra.me/vocab/marc/title"
         },
         "targetAudience": {
           "type": "array",
@@ -92,13 +91,6 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/content"
         },
-        "_instanceReference": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "InstanceReference.json"
-          }
-        },
         "_geographicCoverageReference": {
           "type": "array",
           "items": {
@@ -142,14 +134,6 @@
             "$ref": "Place.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
-        },
-        "dissertation": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "Dissertation.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
         }
       }
     }

@@ -165,7 +165,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.utils.ResourceTestService;
+import org.folio.linked.data.test.ResourceTestService;
 import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1803,18 +1803,6 @@ class ResourceControllerIT {
 
   private String toId(String base) {
     return join(".", base, path("id"));
-  }
-
-  private String toErrorType() {
-    return join(".", arrayPath("errors"), path("type"));
-  }
-
-  private String toErrorCode() {
-    return join(".", arrayPath("errors"), path("code"));
-  }
-
-  private String toErrorMessage() {
-    return join(".", arrayPath("errors"), path("message"));
   }
 
   private String path(String path) {

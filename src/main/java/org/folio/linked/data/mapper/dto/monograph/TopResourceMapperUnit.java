@@ -11,7 +11,7 @@ import java.util.Set;
 import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.ResourceDto;
-import org.folio.linked.data.domain.dto.TitleTitleInner;
+import org.folio.linked.data.domain.dto.TitleField;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 
@@ -24,7 +24,7 @@ public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit 
     return SUPPORTED_PARENTS;
   }
 
-  protected List<String> getPossibleLabels(List<TitleTitleInner> titles) {
+  protected List<String> getPossibleLabels(List<TitleField> titles) {
     if (isNull(titles)) {
       return new ArrayList<>();
     }
@@ -33,7 +33,7 @@ public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit 
       .map(TopResourceMapperUnit::getMainTitle).toList();
   }
 
-  private static String getMainTitle(TitleTitleInner t) {
+  private static String getMainTitle(TitleField t) {
     if (t instanceof BasicTitleField basicTitleField) {
       var basicTitle = basicTitleField.getBasicTitle();
       return getFirstValue(basicTitle::getMainTitle);

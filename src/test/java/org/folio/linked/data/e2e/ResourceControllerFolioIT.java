@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import lombok.SneakyThrows;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
-import org.folio.linked.data.utils.ResourceTestService;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;

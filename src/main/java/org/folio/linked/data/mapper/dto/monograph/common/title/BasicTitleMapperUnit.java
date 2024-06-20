@@ -19,6 +19,7 @@ import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -43,6 +44,8 @@ public class BasicTitleMapperUnit extends TitleMapperUnit {
       instanceReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     } else if (parentDto instanceof Work work) {
       work.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
+    } else if (parentDto instanceof WorkReference workReference) {
+      workReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     }
     return parentDto;
   }

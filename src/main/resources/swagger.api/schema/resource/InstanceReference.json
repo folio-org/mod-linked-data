@@ -6,11 +6,16 @@
       "$ref": "Topper.json"
     },
     {
-      "$ref": "title/Title.json"
-    },
-    {
       "type": "object",
       "properties": {
+        "title": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "title/TitleField.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/title"
+        },
         "carrier": {
           "type": "array",
           "items": {

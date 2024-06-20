@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -40,6 +41,8 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
     classification.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Work work) {
       work.addClassificationItem(classification);
+    } else if (parentDto instanceof WorkReference workReference) {
+      workReference.addClassificationItem(classification);
     }
     return parentDto;
   }
