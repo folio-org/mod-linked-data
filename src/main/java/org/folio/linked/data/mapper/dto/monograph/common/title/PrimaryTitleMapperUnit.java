@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.linked.data.domain.dto.BasicTitle;
+import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceReference;
-import org.folio.linked.data.domain.dto.PrimaryTitle;
-import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
@@ -28,40 +28,40 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = TITLE, predicate = PredicateDictionary.TITLE, dtoClass = PrimaryTitleField.class)
-public class PrimaryTitleMapperUnit extends TitleMapperUnit {
+@MapperUnit(type = TITLE, predicate = PredicateDictionary.TITLE, dtoClass = BasicTitleField.class)
+public class BasicTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitle.class, false);
-    primaryTitle.setId(String.valueOf(source.getId()));
+    var basicTitle = coreMapper.toDtoWithEdges(source, BasicTitle.class, false);
+    basicTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Instance instance) {
-      instance.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
+      instance.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     } else if (parentDto instanceof InstanceReference instanceReference) {
-      instanceReference.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
+      instanceReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     } else if (parentDto instanceof Work work) {
-      work.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
+      work.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
+      workReference.addTitleItem(new BasicTitleField().basicTitle(basicTitle));
     }
     return parentDto;
   }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var primaryTitle = ((PrimaryTitleField) dto).getPrimaryTitle();
+    var basicTitle = ((BasicTitleField) dto).getBasicTitle();
     var resource = new Resource();
-    resource.setLabel(getFirstValue(primaryTitle::getMainTitle));
+    resource.setLabel(getFirstValue(basicTitle::getMainTitle));
     resource.addTypes(TITLE);
-    resource.setDoc(getDoc(primaryTitle));
+    resource.setDoc(getDoc(basicTitle));
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(PrimaryTitle dto) {
+  private JsonNode getDoc(BasicTitle dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, PART_NAME, dto.getPartName());
     putProperty(map, PART_NUMBER, dto.getPartNumber());

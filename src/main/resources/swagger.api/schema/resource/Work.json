@@ -15,7 +15,7 @@
             "$ref": "title/TitleField.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/title",
-          "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
+          "x-field-extra-annotation": "@NotEmpty"
         },
         "targetAudience": {
           "type": "array",
@@ -151,8 +151,7 @@
           },
           "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
         }
-      },
-      "required": ["title"]
+      }
     }
   ]
 }

@@ -10,11 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
-import org.folio.linked.data.domain.dto.Parameter;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.model.ErrorCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +46,6 @@ class ResourceControllerValidationIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/empty_instance.json"));
-    var expectedError = getError("instance");
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -60,7 +57,14 @@ class ResourceControllerValidationIT {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors()).hasSize(1);
+    var error = errorResponse.getErrors().get(0);
+    assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
+    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
+    assertThat(error.getParameters()).hasSize(1);
+    assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.instance.title");
+    assertThat(error.getParameters().get(0).getValue()).isEqualTo("[]");
   }
 
   @Test
@@ -70,7 +74,6 @@ class ResourceControllerValidationIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/empty_work.json"));
-    var expectedError = getError("work");
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -82,17 +85,23 @@ class ResourceControllerValidationIT {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors()).hasSize(1);
+    var error = errorResponse.getErrors().get(0);
+    assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
+    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
+    assertThat(error.getParameters()).hasSize(1);
+    assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.work.title");
+    assertThat(error.getParameters().get(0).getValue()).isEqualTo("[]");
   }
 
   @Test
   void updateWithEmptyInstance_shouldReturnBadRequest() throws Exception {
     // given
-    var requestBuilder = put(RESOURCE_URL + "/123")
+    var requestBuilder = put(RESOURCE_URL  + "/123")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/empty_instance.json"));
-    var expectedError = getError("instance");
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -104,17 +113,23 @@ class ResourceControllerValidationIT {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors()).hasSize(1);
+    var error = errorResponse.getErrors().get(0);
+    assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
+    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
+    assertThat(error.getParameters()).hasSize(1);
+    assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.instance.title");
+    assertThat(error.getParameters().get(0).getValue()).isEqualTo("[]");
   }
 
   @Test
   void updateWithEmptyWork_shouldReturnBadRequest() throws Exception {
     // given
-    var requestBuilder = put(RESOURCE_URL + "/123")
+    var requestBuilder = put(RESOURCE_URL  + "/123")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/empty_work.json"));
-    var expectedError = getError("work");
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -126,53 +141,13 @@ class ResourceControllerValidationIT {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
-  }
-
-  @Test
-  void createInstanceWithTitleWithoutMainTitle_shouldReturnBadRequest() throws Exception {
-    // given
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(loadResourceAsString("samples/instance_with_no_main_primary_title.json"));
-    var expectedError = getError("instance", "[class PrimaryTitleField {\n"
-      + "    primaryTitle: class PrimaryTitle {\n"
-      + "        id: null\n"
-      + "        partName: [Primary: partName]\n"
-      + "        partNumber: [Primary: partNumber]\n"
-      + "        mainTitle: []\n"
-      + "        subTitle: [Primary: subTitle]\n"
-      + "        nonSortNum: [Primary: nonSortNum]\n"
-      + "    }\n"
-      + "}]");
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    var response = resultActions
-      .andExpect(status().isBadRequest())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andReturn().getResponse().getContentAsString();
-
-    var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
-  }
-
-  private Error getError(String resourceType) {
-    return getError(resourceType, "[]");
-  }
-
-  private Error getError(String resourceType, String value) {
-    return new Error()
-      .code("validation_error")
-      .message("Primary main title should be presented")
-      .type(MethodArgumentNotValidException.class.getSimpleName())
-      .parameters(List.of(
-        new Parameter()
-          .key("resource." + resourceType + ".title")
-          .value(value)
-      ));
+    assertThat(errorResponse.getErrors()).hasSize(1);
+    var error = errorResponse.getErrors().get(0);
+    assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
+    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
+    assertThat(error.getParameters()).hasSize(1);
+    assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.work.title");
+    assertThat(error.getParameters().get(0).getValue()).isEqualTo("[]");
   }
 }
