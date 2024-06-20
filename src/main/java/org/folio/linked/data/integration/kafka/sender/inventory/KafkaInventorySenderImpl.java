@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.mapper.kafka.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -14,7 +13,6 @@ import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-@Log4j2
 @Service
 @Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
