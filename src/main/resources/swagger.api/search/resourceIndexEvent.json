@@ -1,18 +1,22 @@
 {
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Resource event body",
+  "description": "Resource Index event body",
   "properties": {
     "id": {
       "description": "Resource id",
       "type": "string"
     },
     "type": {
-      "description": "Resource event operation type",
-      "$ref": "resourceEventType.json"
+      "description": "Resource Index event operation type",
+      "$ref": "resourceIndexEventType.json"
     },
     "tenant": {
       "description": "Tenant id",
+      "type": "string"
+    },
+    "ts": {
+      "description": "Message timestamp",
       "type": "string"
     },
     "resourceName": {
@@ -20,12 +24,13 @@
       "type": "string"
     },
     "new": {
-      "description": "Instance record new fields",
+      "description": "Resource record new fields",
       "type": "object"
     },
     "old": {
-      "description": "Instance record old fields",
+      "description": "Resource record old fields",
       "type": "object"
     }
-  }
+  },
+  "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage"
 }

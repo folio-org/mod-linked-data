@@ -8,11 +8,12 @@ import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.BibframeUtils.extractWork;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
+import static org.folio.linked.data.util.Constants.NOT_INDEXED;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,8 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-  private static final String NOT_INDEXED =
-    "Resource [%s] has been %s without indexing, because no Work was found in it's graph";
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
@@ -67,11 +66,7 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
     saveMergingGraph(mapped);
-    extractWork(mapped)
-      .map(ResourceCreatedEvent::new)
-      .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, mapped.getId(), "created"))
-      );
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(mapped.getId()));
     return resourceDtoMapper.toDto(mapped);
   }
 
@@ -80,11 +75,7 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    extractWork(persisted)
-      .map(ResourceCreatedEvent::new)
-      .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, persisted.getId(), "created"))
-      );
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
     return persisted.getId();
   }
 
@@ -241,18 +232,6 @@ public class ResourceServiceImpl implements ResourceService {
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, id, "deleted"))
       );
-  }
-
-  private Optional<Resource> extractWork(Resource resource) {
-    return isOfType(resource, WORK) ? Optional.of(resource)
-      : resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(resourceEdge -> {
-        var work = resourceEdge.getTarget();
-        work.addIncomingEdge(resourceEdge);
-        return work;
-      })
-      .findFirst();
   }
 
   private void breakCircularEdges(Resource resource) {

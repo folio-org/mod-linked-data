@@ -1,14 +1,16 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/okapi_modules
+    username: folio_admin
+    password: folio_admin
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:29092
   cloud:
     openfeign:
       client:
         config:
           search:
-            url: http://localhost:8085/search
+            url: http://localhost:9130/search
 
 management:
   endpoints:

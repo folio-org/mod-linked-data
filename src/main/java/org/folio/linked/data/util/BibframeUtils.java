@@ -4,12 +4,16 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
@@ -76,6 +80,34 @@ public class BibframeUtils {
     } else {
       return false;
     }
+  }
+
+  public static Optional<Resource> extractWork(Resource resource) {
+    if (isOfType(resource, WORK)) {
+      return Optional.of(resource);
+    }
+    return resource.getOutgoingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .map(resourceEdge -> {
+        var work = resourceEdge.getTarget();
+        work.addIncomingEdge(resourceEdge);
+        return work;
+      })
+      .findFirst();
+  }
+
+  public static List<Resource> extractInstances(Resource resource) {
+    if (isOfType(resource, INSTANCE)) {
+      return List.of(resource);
+    }
+    return resource.getIncomingEdges().stream()
+      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .map(resourceEdge -> {
+        var instance = resourceEdge.getTarget();
+        instance.addOutgoingEdge(resourceEdge);
+        return instance;
+      })
+      .toList();
   }
 
 }

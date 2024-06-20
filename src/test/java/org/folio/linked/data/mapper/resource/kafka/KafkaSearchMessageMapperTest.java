@@ -36,7 +36,7 @@ import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LCCN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LOCALID;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
-import static org.folio.search.domain.dto.ResourceEventType.CREATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -51,7 +51,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
-import org.folio.linked.data.mapper.kafka.KafkaMessageMapperImpl;
+import org.folio.linked.data.mapper.kafka.impl.KafkaSearchMessageMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
@@ -70,10 +70,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class KafkaMessageMapperTest {
+class KafkaSearchMessageMapperTest {
 
   @InjectMocks
-  private KafkaMessageMapperImpl kafkaMessageMapper;
+  private KafkaSearchMessageMapperImpl kafkaMessageMapper;
   @Mock
   private SingleResourceMapper singleResourceMapper;
 

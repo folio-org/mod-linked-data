@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka;
+package org.folio.linked.data.mapper.kafka.impl;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -38,7 +38,7 @@ import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_PARALLEL;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_VARIANT;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
-import static org.folio.search.domain.dto.ResourceEventType.DELETE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -58,6 +58,7 @@ import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
+import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -72,7 +73,7 @@ import org.folio.search.domain.dto.BibframeInstancesInnerPublicationsInner;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
 import org.folio.search.domain.dto.BibframeSubjectsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
-import org.folio.search.domain.dto.ResourceEventType;
+import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Component;
@@ -80,7 +81,7 @@ import org.springframework.stereotype.Component;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class KafkaMessageMapperImpl implements KafkaMessageMapper {
+public class KafkaSearchMessageMapperImpl implements KafkaSearchMessageMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [workId = {}] conversion to BibframeIndex message";
@@ -90,7 +91,7 @@ public class KafkaMessageMapperImpl implements KafkaMessageMapper {
   private final SingleResourceMapper singleResourceMapper;
 
   @Override
-  public Optional<BibframeIndex> toIndex(Resource work, ResourceEventType eventType) {
+  public Optional<BibframeIndex> toIndex(Resource work, ResourceIndexEventType eventType) {
     if (isNull(work)) {
       log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), "null");
       return empty();
