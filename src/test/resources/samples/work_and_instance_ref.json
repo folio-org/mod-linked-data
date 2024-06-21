@@ -296,6 +296,33 @@
           ]
         }
       ],
+      "http://bibfra.me/vocab/scholar/dissertation": [
+        {
+          "http://bibfra.me/vocab/lite/label": [
+            "label"
+          ],
+          "http://bibfra.me/vocab/marc/degree": [
+            "degree"
+          ],
+          "http://bibfra.me/vocab/marc/dissertationYear": [
+            "dissertation year"
+          ],
+          "http://bibfra.me/vocab/marc/dissertationNote": [
+            "dissertation note"
+          ],
+          "http://bibfra.me/vocab/marc/dissertationID": [
+            "dissertation id"
+          ],
+          "_grantingInstitutionReference": [
+            {
+              "id": "111"
+            },
+            {
+              "id": "222"
+            }
+          ]
+        }
+      ],
       "_instanceReference": [
         {
           "id": "%INSTANCE_ID%"
