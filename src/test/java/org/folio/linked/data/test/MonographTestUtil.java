@@ -13,9 +13,11 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -38,8 +40,12 @@ import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
+import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
@@ -505,6 +511,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(GENRE, List.of(genre1, genre2));
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
     pred2OutgoingResources.put(ORIGIN_PLACE, List.of(originPlace));
+    pred2OutgoingResources.put(DISSERTATION, List.of(createDissertation()));
     pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
 
     var work = createResource(
@@ -569,6 +576,36 @@ public class MonographTestUtil {
       Map.of(
         PredicateDictionary.ASSIGNING_SOURCE, List.of(assigningSource),
         STATUS, List.of(status("lc"))
+      )
+    );
+  }
+
+  private static Resource createDissertation() {
+    var grantingInstitution1 = createResource(
+      emptyMap(),
+      Set.of(ORGANIZATION),
+      emptyMap()
+    ).setLabel("granting institution 1")
+      .setId(111L);
+
+    var grantingInstitution2 = createResource(
+      emptyMap(),
+      Set.of(ORGANIZATION),
+      emptyMap()
+    ).setLabel("granting institution 2")
+      .setId(222L);
+
+    return createResource(
+      Map.of(
+        LABEL, List.of("label"),
+        DEGREE, List.of("degree"),
+        DISSERTATION_YEAR, List.of("dissertation year"),
+        DISSERTATION_NOTE, List.of("dissertation note"),
+        DISSERTATION_ID, List.of("dissertation id")
+      ),
+      Set.of(ResourceTypeDictionary.DISSERTATION),
+      Map.of(
+        GRANTING_INSTITUTION, List.of(grantingInstitution1, grantingInstitution2)
       )
     );
   }

@@ -15,6 +15,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
@@ -42,8 +43,12 @@ import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
+import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
@@ -191,6 +196,7 @@ class ResourceControllerIT {
   private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
   private static final String GENRE_REF = "_genreReference";
   private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
+  private static final String GRANTING_INSTITUTION_REF = "_grantingInstitutionReference";
   private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
   private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
   @Autowired
@@ -456,8 +462,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(55);
+    assertThat(resourceTestService.countResources()).isEqualTo(56);
+    assertThat(resourceTestService.countEdges()).isEqualTo(58);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -468,9 +474,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(55);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(37);
+    assertThat(resourceTestService.countEdges()).isEqualTo(40);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -480,8 +486,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(55);
+    assertThat(resourceTestService.countResources()).isEqualTo(56);
+    assertThat(resourceTestService.countEdges()).isEqualTo(58);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -492,9 +498,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(55);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(28);
+    assertThat(resourceTestService.countEdges()).isEqualTo(30);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -680,6 +686,14 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toClassificationAssigningSourceIds(workBase), containsInAnyOrder("11", "22")))
       .andExpect(jsonPath(toClassificationAssigningSourceLabels(workBase), containsInAnyOrder("assigning agency",
         "United States, Library of Congress")))
+      .andExpect(jsonPath(toDissertationLabel(workBase), equalTo("label")))
+      .andExpect(jsonPath(toDissertationDegree(workBase), equalTo("degree")))
+      .andExpect(jsonPath(toDissertationYear(workBase), equalTo("dissertation year")))
+      .andExpect(jsonPath(toDissertationNote(workBase), equalTo("dissertation note")))
+      .andExpect(jsonPath(toDissertationId(workBase), equalTo("dissertation id")))
+      .andExpect(jsonPath(toDissertationGrantingInstitutionIds(workBase), containsInAnyOrder("111", "222")))
+      .andExpect(jsonPath(toDissertationGrantingInstitutionLabels(workBase),
+        containsInAnyOrder("granting institution 1", "granting institution 2")))
       .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("1001", "1002", "1003", "1004")))
       .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-MEETING", "name-PERSON",
         "name-ORGANIZATION", "name-FAMILY")))
@@ -1076,6 +1090,7 @@ class ResourceControllerIT {
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
+    validateDissertation(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR.getUri());
@@ -1083,8 +1098,8 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
     if (!validateFullInstance) {
-      validateDdcClassification(outgoingEdgeIterator.next(), work);
       outgoingEdgeIterator.next();
+      validateDdcClassification(outgoingEdgeIterator.next(), work);
     } else {
       validateLcClassification(outgoingEdgeIterator.next(), work);
       validateDdcClassification(outgoingEdgeIterator.next(), work);
@@ -1222,6 +1237,25 @@ class ResourceControllerIT {
     validateLiterals(governmentPublication, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a"));
   }
 
+  private void validateDissertation(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(DISSERTATION.getUri());
+    var dissertation = edge.getTarget();
+    var types = dissertation.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(ResourceTypeDictionary.DISSERTATION.getUri());
+    assertThat(dissertation.getDoc().size()).isEqualTo(5);
+    validateLiteral(dissertation, LABEL.getValue(), "label");
+    validateLiteral(dissertation, DEGREE.getValue(), "degree");
+    validateLiteral(dissertation, DISSERTATION_YEAR.getValue(), "dissertation year");
+    validateLiteral(dissertation, DISSERTATION_NOTE.getValue(), "dissertation note");
+    validateLiteral(dissertation, DISSERTATION_ID.getValue(), "dissertation id");
+    var iterator = dissertation.getOutgoingEdges().iterator();
+    var grantingInstitutionEdge = iterator.next();
+    validateResourceEdge(grantingInstitutionEdge, dissertation, grantingInstitutionEdge.getTarget(),
+      PredicateDictionary.GRANTING_INSTITUTION.getUri());
+  }
+
   private void validateOriginPlace(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -1282,13 +1316,16 @@ class ResourceControllerIT {
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
     var assigningAgency = saveResource(11L, "assigning agency", ORGANIZATION, "{}");
     var libraryOfCongress = saveResource(22L, "United States, Library of Congress", ORGANIZATION, "{}");
+    var grantingInstitution1 = saveResource(111L, "granting institution 1", ORGANIZATION, "{}");
+    var grantingInstitution2 = saveResource(222L, "granting institution 2", ORGANIZATION, "{}");
     return new LookupResources(
       List.of(subject1, subject2),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
       List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily,
         contributorPerson, contributorMeeting, contributorOrganization, contributorFamily),
-      List.of(assigningAgency, libraryOfCongress)
+      List.of(assigningAgency, libraryOfCongress),
+      List.of(grantingInstitution1, grantingInstitution2)
     );
   }
 
@@ -1646,6 +1683,36 @@ class ResourceControllerIT {
       dynamicArrayPath(ASSIGNING_SOURCE_REF), path(LABEL_PROPERTY));
   }
 
+  private String toDissertationLabel(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(LABEL.getValue()));
+  }
+
+  private String toDissertationDegree(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DEGREE.getValue()));
+  }
+
+  private String toDissertationYear(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_YEAR.getValue()));
+  }
+
+  private String toDissertationNote(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_NOTE.getValue()));
+  }
+
+  private String toDissertationId(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_ID.getValue()));
+  }
+
+  private String toDissertationGrantingInstitutionIds(String workBase) {
+    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
+      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(ID_PROPERTY));
+  }
+
+  private String toDissertationGrantingInstitutionLabels(String workBase) {
+    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
+      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(LABEL_PROPERTY));
+  }
+
   private String toWorkCreatorId(String workBase) {
     return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ID_PROPERTY));
   }
@@ -1767,7 +1834,8 @@ class ResourceControllerIT {
     List<Resource> geographicCoverages,
     List<Resource> genres,
     List<Resource> creators,
-    List<Resource> assigningSources
+    List<Resource> assigningSources,
+    List<Resource> grantingInstitutions
   ) {
   }
 }

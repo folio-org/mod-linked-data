@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
@@ -81,6 +82,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getGenreReference(), GENRE);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getGovernmentPublication(), GOVERNMENT_PUBLICATION);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getOriginPlace(), ORIGIN_PLACE);
+    coreMapper.addOutgoingEdges(work, Work.class, workDto.getDissertation(), DISSERTATION);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getTargetAudience(), TARGET_AUDIENCE);
     coreMapper.addIncomingEdges(work, Work.class, workDto.getInstanceReference(), INSTANTIATES);
     work.setId(hashService.hash(work));
