@@ -3,7 +3,7 @@
   "description": "Dewey decimal classification object",
   "allOf": [
     {
-      "$ref": "Topper.json"
+      "$ref": "IdField.json"
     },
     {
       "type": "object",

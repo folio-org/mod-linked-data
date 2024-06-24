@@ -5,14 +5,14 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.folio.linked.data.configuration.json.deserialization.ResourceFieldDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.MapDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.InstanceRequestAllOfMapDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.title.TitleFieldDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
-import org.folio.linked.data.domain.dto.InstanceAllOfMap;
-import org.folio.linked.data.domain.dto.MarkRecord;
-import org.folio.linked.data.domain.dto.ResourceField;
+import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
+import org.folio.linked.data.domain.dto.MarcRecord;
+import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.TitleField;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
@@ -31,15 +31,15 @@ public class ObjectMapperConfig {
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
       .registerModule(monographModule(mapper))
-      .addMixIn(MarkRecord.class, MarcRecordSerializationConfig.class);
+      .addMixIn(MarcRecord.class, MarcRecordSerializationConfig.class);
     return mapper;
   }
 
   private Module monographModule(ObjectMapper mapper) {
     var module = new SimpleModule();
-    module.addDeserializer(ResourceField.class, new ResourceFieldDeserializer());
+    module.addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer());
     module.addDeserializer(TitleField.class, new TitleFieldDeserializer());
-    module.addDeserializer(InstanceAllOfMap.class, new MapDeserializer());
+    module.addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;
   }

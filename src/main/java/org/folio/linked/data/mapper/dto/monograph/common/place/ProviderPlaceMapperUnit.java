@@ -17,7 +17,7 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, dtoClass = Place.class)
+@MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, requestDto = Place.class)
 public class ProviderPlaceMapperUnit extends PlaceMapperUnit {
 
   public ProviderPlaceMapperUnit(CoreMapper coreMapper, HashService hashService) {

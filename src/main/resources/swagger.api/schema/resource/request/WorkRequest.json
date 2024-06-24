@@ -1,10 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Work Info",
+  "description": "Work request DTO",
   "allOf": [
-    {
-      "$ref": "Topper.json"
-    },
     {
       "type": "object",
       "properties": {
@@ -12,7 +9,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "title/TitleField.json"
+            "$ref": "../common/title/TitleField.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/title",
           "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
@@ -21,7 +18,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Category.json"
+            "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/targetAudience"
         },
@@ -50,7 +47,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../noteDto.json"
+            "$ref": "../common/noteDto.json"
           },
           "x-json-property": "_notes"
         },
@@ -58,7 +55,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Reference.json"
+            "$ref": "../common/Reference.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/subject"
         },
@@ -66,7 +63,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Classification.json"
+            "$ref": "../common/Classification.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/classification"
         },
@@ -74,21 +71,21 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Agent.json"
+            "$ref": "../common/Agent.json"
           }
         },
         "_contributorReference": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Agent.json"
+            "$ref": "../common/Agent.json"
           }
         },
         "content": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Category.json"
+            "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/content"
         },
@@ -96,21 +93,21 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "InstanceReference.json"
+            "$ref": "../common/IdField.json"
           }
         },
         "_geographicCoverageReference": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Reference.json"
+            "$ref": "../common/Reference.json"
           }
         },
         "_genreReference": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Reference.json"
+            "$ref": "../common/Reference.json"
           }
         },
         "dateStart": {
@@ -131,7 +128,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Category.json"
+            "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
         },
@@ -139,20 +136,11 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Place.json"
+            "$ref": "../common/Place.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
-        },
-        "dissertation": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "Dissertation.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
         }
-      },
-      "required": ["title"]
+      }
     }
   ]
 }

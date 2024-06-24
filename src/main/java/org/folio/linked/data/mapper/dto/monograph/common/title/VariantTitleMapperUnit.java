@@ -16,12 +16,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.InstanceReference;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -30,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = VARIANT_TITLE, predicate = TITLE, dtoClass = VariantTitleField.class)
+@MapperUnit(type = VARIANT_TITLE, predicate = TITLE, requestDto = VariantTitleField.class)
 public class VariantTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -40,14 +38,10 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitle.class, false);
     variantTitle.setId(String.valueOf(source.getId()));
-    if (parentDto instanceof Instance instance) {
+    if (parentDto instanceof InstanceResponse instance) {
       instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
-    } else if (parentDto instanceof InstanceReference instanceReference) {
-      instanceReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
-    } else if (parentDto instanceof Work work) {
+    } else if (parentDto instanceof WorkResponse work) {
       work.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
-    } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
     return parentDto;
   }

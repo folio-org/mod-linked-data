@@ -8,25 +8,25 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.InstanceField;
-import org.folio.linked.data.domain.dto.ResourceDto;
-import org.folio.linked.data.domain.dto.ResourceField;
-import org.folio.linked.data.domain.dto.WorkField;
+import org.folio.linked.data.domain.dto.InstanceRequestField;
+import org.folio.linked.data.domain.dto.ResourceRequestDto;
+import org.folio.linked.data.domain.dto.ResourceRequestField;
+import org.folio.linked.data.domain.dto.WorkRequestField;
 import org.folio.linked.data.exception.JsonException;
 
-public class ResourceFieldDeserializer extends JsonDeserializer<ResourceField> {
+public class ResourceRequestFieldDeserializer extends JsonDeserializer<ResourceRequestField> {
 
   @Override
-  public ResourceField deserialize(JsonParser jp, DeserializationContext deserializationContext)
+  public ResourceRequestField deserialize(JsonParser jp, DeserializationContext deserializationContext)
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     if (node.has(ResourceTypeDictionary.INSTANCE.getUri())) {
-      return jp.getCodec().treeToValue(node, InstanceField.class);
+      return jp.getCodec().treeToValue(node, InstanceRequestField.class);
     }
     if (node.has(ResourceTypeDictionary.WORK.getUri())) {
-      return jp.getCodec().treeToValue(node, WorkField.class);
+      return jp.getCodec().treeToValue(node, WorkRequestField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(ResourceDto.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(ResourceRequestDto.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

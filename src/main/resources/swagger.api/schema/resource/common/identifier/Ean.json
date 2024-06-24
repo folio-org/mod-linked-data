@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Base identifier fields",
+  "description": "EAN Info",
   "allOf": [
     {
-      "$ref": "../Topper.json"
+      "$ref": "../IdField.json"
     },
     {
       "type": "object",
@@ -13,15 +13,14 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/name"
+          "x-json-property": "http://bibfra.me/vocab/marc/ean"
         },
-        "status": {
+        "qualifier": {
           "type": "array",
           "items": {
-            "type": "object",
-            "$ref": "../Status.json"
+            "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/status"
+          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
         }
       }
     }

@@ -1,14 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Reference object",
+  "description": "Item Info",
   "allOf": [
     {
-      "$ref": "Topper.json"
+      "$ref": "IdField.json"
     },
     {
       "type": "object",
       "properties": {
-        "label": {
+        "placeholder": {
           "type": "string"
         }
       }

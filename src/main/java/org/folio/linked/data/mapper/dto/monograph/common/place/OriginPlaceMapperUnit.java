@@ -8,8 +8,7 @@ import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
 
 import org.folio.linked.data.domain.dto.Place;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -18,7 +17,7 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = PLACE, predicate = ORIGIN_PLACE, dtoClass = Place.class)
+@MapperUnit(type = PLACE, predicate = ORIGIN_PLACE, requestDto = Place.class)
 public class OriginPlaceMapperUnit extends PlaceMapperUnit {
 
   public OriginPlaceMapperUnit(CoreMapper coreMapper, HashService hashService) {
@@ -27,10 +26,8 @@ public class OriginPlaceMapperUnit extends PlaceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Work work) {
+    if (parentDto instanceof WorkResponse work) {
       work.addOriginPlaceItem(getPlace(source));
-    } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addOriginPlaceItem(getPlace(source));
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + ORIGIN_PLACE.getUri() + RIGHT_SQUARE_BRACKET);

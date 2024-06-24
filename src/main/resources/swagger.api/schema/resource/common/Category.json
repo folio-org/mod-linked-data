@@ -1,40 +1,40 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Base Title Fields",
+  "description": "Category object",
   "allOf": [
     {
-      "$ref": "../Topper.json"
+      "$ref": "IdField.json"
     },
     {
       "type": "object",
       "properties": {
-        "partName": {
+        "code": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/partName"
+          "x-json-property": "http://bibfra.me/vocab/marc/code"
         },
-        "partNumber": {
+        "term": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/partNumber"
+          "x-json-property": "http://bibfra.me/vocab/marc/term"
         },
-        "mainTitle": {
+        "link": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/mainTitle"
+          "x-json-property": "http://bibfra.me/vocab/lite/link"
         },
-        "subTitle": {
+        "source": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/subTitle"
+          "x-json-property": "http://bibfra.me/vocab/marc/source"
         }
       }
     }

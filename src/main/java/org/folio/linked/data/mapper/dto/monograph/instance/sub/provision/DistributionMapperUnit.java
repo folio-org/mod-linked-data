@@ -10,7 +10,7 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = PROVIDER_EVENT, predicate = PE_DISTRIBUTION, dtoClass = ProviderEvent.class)
+@MapperUnit(type = PROVIDER_EVENT, predicate = PE_DISTRIBUTION, requestDto = ProviderEvent.class)
 public class DistributionMapperUnit extends ProviderEventMapperUnit {
 
   public DistributionMapperUnit(CoreMapper coreMapper, HashService hashService) {

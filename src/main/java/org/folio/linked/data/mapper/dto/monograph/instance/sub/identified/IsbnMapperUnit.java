@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ID_ISBN, predicate = MAP, dtoClass = IsbnField.class)
+@MapperUnit(type = ID_ISBN, predicate = MAP, requestDto = IsbnField.class)
 public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -33,7 +33,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
+    if (parentDto instanceof InstanceResponse instance) {
       var isbn = coreMapper.toDtoWithEdges(source, Isbn.class, false);
       isbn.setId(String.valueOf(source.getId()));
       instance.addMapItem(new IsbnField().isbn(isbn));

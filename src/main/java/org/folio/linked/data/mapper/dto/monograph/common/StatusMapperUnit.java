@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, dtoClass = Status.class)
+@MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, requestDto = Status.class)
 public class StatusMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class, Classification.class);

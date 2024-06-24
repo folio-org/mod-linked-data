@@ -4,7 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 
 import org.folio.linked.data.domain.dto.Category;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
@@ -12,7 +12,7 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = CATEGORY, predicate = MEDIA, dtoClass = Category.class)
+@MapperUnit(type = CATEGORY, predicate = MEDIA, requestDto = Category.class)
 public class MediaMapperUnit extends CategoryMapperUnit {
 
   private static final String CATEGORY_SET_LABEL = "rdamedia";
@@ -35,7 +35,7 @@ public class MediaMapperUnit extends CategoryMapperUnit {
 
   @Override
   protected void addToParent(Category category, Object parentDto) {
-    if (parentDto instanceof Instance instance) {
+    if (parentDto instanceof InstanceResponse instance) {
       instance.addMediaItem(category);
     }
   }

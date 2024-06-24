@@ -1,4 +1,4 @@
-package org.folio.linked.data.configuration.json.deserialization.instance;
+package org.folio.linked.data.test.json;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -13,17 +13,18 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.folio.linked.data.domain.dto.EanField;
-import org.folio.linked.data.domain.dto.InstanceAllOfMap;
+import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
+import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.domain.dto.LocalIdField;
 import org.folio.linked.data.domain.dto.OtherIdField;
 import org.folio.linked.data.exception.JsonException;
 
-public class MapDeserializer extends JsonDeserializer<InstanceAllOfMap> {
+public class InstanceResponseAllOfMapDeserializer extends JsonDeserializer<InstanceResponseAllOfMap> {
 
   @Override
-  public InstanceAllOfMap deserialize(JsonParser jp, DeserializationContext deserializationContext)
+  public InstanceResponseAllOfMap deserialize(JsonParser jp, DeserializationContext deserializationContext)
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     if (node.has(ID_LCCN.getUri())) {
@@ -38,6 +39,6 @@ public class MapDeserializer extends JsonDeserializer<InstanceAllOfMap> {
       return jp.getCodec().treeToValue(node, OtherIdField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(InstanceAllOfMap.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(InstanceRequestAllOfMap.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

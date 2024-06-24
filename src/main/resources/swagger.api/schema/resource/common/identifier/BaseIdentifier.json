@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Other Identifier Info",
+  "description": "Base identifier fields",
   "allOf": [
     {
-      "$ref": "../Topper.json"
+      "$ref": "../IdField.json"
     },
     {
       "type": "object",
@@ -15,12 +15,13 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/name"
         },
-        "qualifier": {
+        "status": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "$ref": "../Status.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
+          "x-json-property": "http://bibfra.me/vocab/marc/status"
         }
       }
     }

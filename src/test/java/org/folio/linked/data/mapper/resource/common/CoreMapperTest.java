@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Predicate;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
@@ -52,13 +52,13 @@ class CoreMapperTest {
   }
 
   @Test
-  void toDtoWithEdges_shouldThrowNpe_ifGivenResourceIsNull(@Mock Consumer<Instance> consumer) {
+  void toDtoWithEdges_shouldThrowNpe_ifGivenResourceIsNull(@Mock Consumer<InstanceResponse> consumer) {
     // given
     Resource resource = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.toDtoWithEdges(resource, Instance.class, false));
+      () -> coreMapper.toDtoWithEdges(resource, InstanceResponse.class, false));
 
     // then
     assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
@@ -98,7 +98,7 @@ class CoreMapperTest {
     var dtoList = new ArrayList<>();
     Resource source = null;
     var predicate = PredicateDictionary.MAP;
-    var parent = Instance.class;
+    var parent = InstanceResponse.class;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -114,7 +114,7 @@ class CoreMapperTest {
     var dtoList = new ArrayList<>();
     var source = new Resource();
     Predicate predicate = null;
-    var parent = Instance.class;
+    var parent = InstanceResponse.class;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
@@ -146,7 +146,7 @@ class CoreMapperTest {
     List dtoList = null;
     var source = new Resource();
     var predicate = PredicateDictionary.MAP;
-    var parent = Instance.class;
+    var parent = InstanceResponse.class;
 
     // when
     coreMapper.addOutgoingEdges(source, parent, dtoList, predicate);
@@ -162,7 +162,7 @@ class CoreMapperTest {
     var dtoList = new ArrayList<>();
     var source = new Resource();
     var predicate = PredicateDictionary.MAP;
-    var parent = Instance.class;
+    var parent = InstanceResponse.class;
 
     // when
     coreMapper.addOutgoingEdges(source, parent, dtoList, predicate);
@@ -178,7 +178,7 @@ class CoreMapperTest {
     var dto1 = new Isbn().id(randomLong().toString());
     var dto2 = new Isbn().id(randomLong().toString());
     var predicate = PredicateDictionary.MAP;
-    var parent = Instance.class;
+    var parent = InstanceResponse.class;
     var source = new Resource();
     var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setId(111L);
     doReturn(expectedTarget1).when(singleResourceMapper).toEntity(dto1, parent, predicate, source);

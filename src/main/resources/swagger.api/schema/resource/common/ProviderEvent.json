@@ -3,7 +3,7 @@
   "description": "Provider Event",
   "allOf": [
     {
-      "$ref": "Topper.json"
+      "$ref": "IdField.json"
     },
     {
       "type": "object",

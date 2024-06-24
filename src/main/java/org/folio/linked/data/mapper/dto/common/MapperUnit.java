@@ -15,6 +15,6 @@ public @interface MapperUnit {
 
   PredicateDictionary predicate() default PredicateDictionary.NULL;
 
-  Class<?> dtoClass() default Object.class;
+  Class<?> requestDto() default Object.class;
 
 }

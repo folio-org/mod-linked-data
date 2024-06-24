@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "EAN Info",
+  "description": "Local Identifier Info",
   "allOf": [
     {
-      "$ref": "../Topper.json"
+      "$ref": "../IdField.json"
     },
     {
       "type": "object",
@@ -13,14 +13,14 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/ean"
+          "x-json-property": "http://bibfra.me/vocab/marc/localId"
         },
-        "qualifier": {
+        "assigner": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
+          "x-json-property": "http://bibfra.me/vocab/marc/localIdAssigningSource"
         }
       }
     }

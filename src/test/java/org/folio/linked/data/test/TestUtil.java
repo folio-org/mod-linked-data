@@ -14,6 +14,7 @@ import static org.testcontainers.shaded.org.awaitility.Durations.TWO_MINUTES;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +25,11 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
+import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
+import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.test.json.InstanceResponseAllOfMapDeserializer;
+import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
@@ -45,6 +50,10 @@ public class TestUtil {
   private static final String FOLIO_OKAPI_URL = "folio.okapi-url";
 
   static {
+    OBJECT_MAPPER.registerModule(new SimpleModule()
+      .addDeserializer(ResourceResponseField.class, new ResourceResponseFieldDeserializer())
+      .addDeserializer(InstanceResponseAllOfMap.class, new InstanceResponseAllOfMapDeserializer())
+    );
     PARAMETERS.excludeField(named("id"));
     PARAMETERS.randomize(Resource.class, MonographTestUtil::getSampleInstanceResource);
     PARAMETERS.randomizationDepth(3);

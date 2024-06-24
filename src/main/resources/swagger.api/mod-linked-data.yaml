@@ -30,14 +30,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: schema/resourceDto.json
+              $ref: schema/resourceRequestDto.json
       responses:
         '200':
           description: Created resource
           content:
             application/json:
               schema:
-                $ref: schema/resourceDto.json
+                $ref: schema/resourceResponseDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
@@ -74,7 +74,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: schema/resourceDto.json
+                $ref: schema/resourceResponseDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
@@ -92,14 +92,14 @@ paths:
           application/json:
             example: example/resourceRequest.sample
             schema:
-              $ref: schema/resourceDto.json
+              $ref: schema/resourceRequestDto.json
       responses:
         '200':
           description: Updated resource
           content:
             application/json:
               schema:
-                $ref: schema/resourceDto.json
+                $ref: schema/resourceResponseDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':

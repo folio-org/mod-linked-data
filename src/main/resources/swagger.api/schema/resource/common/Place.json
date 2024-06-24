@@ -3,7 +3,7 @@
   "description": "Place",
   "allOf": [
     {
-      "$ref": "Topper.json"
+      "$ref": "IdField.json"
     },
     {
       "type": "object",

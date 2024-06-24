@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
+import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
@@ -32,9 +33,12 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.linked.data.domain.dto.ResourceDto;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkField;
+import org.folio.linked.data.domain.dto.WorkRequest;
+import org.folio.linked.data.domain.dto.WorkRequestField;
+import org.folio.linked.data.domain.dto.WorkResponse;
+import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
@@ -45,7 +49,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = WORK, dtoClass = WorkField.class)
+@MapperUnit(type = WORK, requestDto = WorkRequestField.class)
 public class WorkMapperUnit extends TopResourceMapperUnit {
 
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
@@ -56,40 +60,40 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof ResourceDto resourceDto) {
-      var work = coreMapper.toDtoWithEdges(source, Work.class, true);
+    if (parentDto instanceof ResourceResponseDto resourceDto) {
+      var work = coreMapper.toDtoWithEdges(source, WorkResponse.class, true);
       work.setId(String.valueOf(source.getId()));
       ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
-      resourceDto.setResource(new WorkField().work(work));
+      resourceDto.setResource(new WorkResponseField().work(work));
     }
     return parentDto;
   }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var workDto = ((WorkField) dto).getWork();
+    var workDto = ((WorkRequestField) dto).getWork();
     var work = new Resource();
     work.addTypes(WORK);
     work.setDoc(getDoc(workDto));
     work.setLabel(getFirstValue(() -> getPrimaryMainTitles(workDto.getTitle())));
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getTitle(), TITLE);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContent(), CONTENT);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getSubjects(), SUBJECT);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getCreatorReference(), CREATOR);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getContributorReference(), CONTRIBUTOR);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getGeographicCoverageReference(), GEOGRAPHIC_COVERAGE);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getGenreReference(), GENRE);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getGovernmentPublication(), GOVERNMENT_PUBLICATION);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getOriginPlace(), ORIGIN_PLACE);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getDissertation(), DISSERTATION);
-    coreMapper.addOutgoingEdges(work, Work.class, workDto.getTargetAudience(), TARGET_AUDIENCE);
-    coreMapper.addIncomingEdges(work, Work.class, workDto.getInstanceReference(), INSTANTIATES);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTitle(), TITLE);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getClassification(), CLASSIFICATION);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getContent(), CONTENT);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getSubjects(), SUBJECT);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getCreatorReference(), CREATOR);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getContributorReference(), CONTRIBUTOR);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getGeographicCoverageReference(), GEOGRAPHIC_COVERAGE);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getGenreReference(), GENRE);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getGovernmentPublication(), GOVERNMENT_PUBLICATION);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getOriginPlace(), ORIGIN_PLACE);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getDissertation(), DISSERTATION);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTargetAudience(), TARGET_AUDIENCE);
+    coreMapper.addIncomingEdges(work, WorkRequest.class, workDto.getInstanceReference(), INSTANTIATES);
     work.setId(hashService.hash(work));
     return work;
   }
 
-  private JsonNode getDoc(Work dto) {
+  private JsonNode getDoc(WorkRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, LANGUAGE, dto.getLanguage());
     putProperty(map, SUMMARY, dto.getSummary());

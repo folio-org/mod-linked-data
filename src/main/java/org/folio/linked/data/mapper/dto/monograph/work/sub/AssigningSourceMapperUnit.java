@@ -11,7 +11,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = ORGANIZATION, predicate = ASSIGNING_SOURCE, dtoClass = Reference.class)
+@MapperUnit(type = ORGANIZATION, predicate = ASSIGNING_SOURCE, requestDto = Reference.class)
 public class AssigningSourceMapperUnit extends ReferenceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Classification.class);

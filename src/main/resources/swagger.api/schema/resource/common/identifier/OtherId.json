@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Local Identifier Info",
+  "description": "Other Identifier Info",
   "allOf": [
     {
-      "$ref": "../Topper.json"
+      "$ref": "../IdField.json"
     },
     {
       "type": "object",
@@ -13,14 +13,14 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/localId"
+          "x-json-property": "http://bibfra.me/vocab/lite/name"
         },
-        "assigner": {
+        "qualifier": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/localIdAssigningSource"
+          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
         }
       }
     }

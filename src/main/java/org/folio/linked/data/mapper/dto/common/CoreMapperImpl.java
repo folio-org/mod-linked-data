@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import org.folio.ld.dictionary.model.Predicate;
-import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.JsonException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -83,7 +83,7 @@ public class CoreMapperImpl implements CoreMapper {
   private <T> T readDoc(JsonNode node, Class<T> dtoClass) {
     try {
       if (nonNull(node)) {
-        if (dtoClass == Work.class) {
+        if (dtoClass == WorkResponse.class) {
           // Temp fix - targetAudience loaded through the Python ETL have targetAudience in text format
           // causing the deserialization to fail. Here remove the targetAudience from node
           ((ObjectNode) node).remove(TARGET_AUDIENCE.getValue());

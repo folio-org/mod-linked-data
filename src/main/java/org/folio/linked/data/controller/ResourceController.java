@@ -2,8 +2,9 @@ package org.folio.linked.data.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
+import org.folio.linked.data.domain.dto.ResourceRequestDto;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.rest.resource.ResourceApi;
 import org.folio.linked.data.service.ResourceService;
@@ -17,18 +18,18 @@ public class ResourceController implements ResourceApi {
   private final ResourceService resourceService;
 
   @Override
-  public ResponseEntity<ResourceDto> createResource(String okapiTenant, @Valid ResourceDto resourceDto) {
+  public ResponseEntity<ResourceResponseDto> createResource(String okapiTenant, @Valid ResourceRequestDto resourceDto) {
     return ResponseEntity.ok(resourceService.createResource(resourceDto));
   }
 
   @Override
-  public ResponseEntity<ResourceDto> getResourceById(Long id, String okapiTenant) {
+  public ResponseEntity<ResourceResponseDto> getResourceById(Long id, String okapiTenant) {
     return ResponseEntity.ok(resourceService.getResourceById(id));
   }
 
   @Override
-  public ResponseEntity<ResourceDto> updateResource(Long id, String okapiTenant,
-                                                    @Valid ResourceDto resourceDto) {
+  public ResponseEntity<ResourceResponseDto> updateResource(Long id, String okapiTenant,
+                                                    @Valid ResourceRequestDto resourceDto) {
     return ResponseEntity.ok(resourceService.updateResource(id, resourceDto));
   }
 

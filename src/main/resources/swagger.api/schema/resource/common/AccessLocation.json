@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "SupplementaryContent",
+  "description": "AccessLocation",
   "allOf": [
     {
-      "$ref": "Topper.json"
+      "$ref": "IdField.json"
     },
     {
       "type": "object",
@@ -15,12 +15,12 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/link"
         },
-        "name": {
+        "note": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/name"
+          "x-json-property": "http://bibfra.me/vocab/lite/note"
         }
       }
     }

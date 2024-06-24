@@ -1,19 +1,24 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Copyright event object",
+  "description": "Creator & Contributor info",
   "allOf": [
     {
-      "$ref": "Topper.json"
+      "$ref": "IdField.json"
     },
     {
       "type": "object",
       "properties": {
-        "date": {
+        "label": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "roles": {
           "type": "array",
           "items": {
             "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/lite/date"
+          }
         }
       }
     }
