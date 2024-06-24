@@ -60,7 +60,7 @@ class ResourceControllerValidationIT {
     assertThat(errorResponse.getErrors()).hasSize(1);
     var error = errorResponse.getErrors().get(0);
     assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
-    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getMessage()).isEqualTo("Primary main title should be presented");
     assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
     assertThat(error.getParameters()).hasSize(1);
     assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.instance.title");
@@ -88,7 +88,7 @@ class ResourceControllerValidationIT {
     assertThat(errorResponse.getErrors()).hasSize(1);
     var error = errorResponse.getErrors().get(0);
     assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
-    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getMessage()).isEqualTo("Primary main title should be presented");
     assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
     assertThat(error.getParameters()).hasSize(1);
     assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.work.title");
@@ -116,7 +116,7 @@ class ResourceControllerValidationIT {
     assertThat(errorResponse.getErrors()).hasSize(1);
     var error = errorResponse.getErrors().get(0);
     assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
-    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getMessage()).isEqualTo("Primary main title should be presented");
     assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
     assertThat(error.getParameters()).hasSize(1);
     assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.instance.title");
@@ -144,7 +144,7 @@ class ResourceControllerValidationIT {
     assertThat(errorResponse.getErrors()).hasSize(1);
     var error = errorResponse.getErrors().get(0);
     assertThat(error.getCode()).isEqualTo(ErrorCode.VALIDATION_ERROR.getValue());
-    assertThat(error.getMessage()).isEqualTo("must not be empty");
+    assertThat(error.getMessage()).isEqualTo("Primary main title should be presented");
     assertThat(error.getType()).isEqualTo(MethodArgumentNotValidException.class.getSimpleName());
     assertThat(error.getParameters()).hasSize(1);
     assertThat(error.getParameters().get(0).getKey()).isEqualTo("resource.work.title");

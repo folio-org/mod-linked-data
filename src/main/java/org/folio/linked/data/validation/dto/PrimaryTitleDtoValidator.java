@@ -1,6 +1,6 @@
 package org.folio.linked.data.validation.dto;
 
-import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import jakarta.validation.ConstraintValidator;
@@ -15,15 +15,14 @@ public class PrimaryTitleDtoValidator implements ConstraintValidator<PrimaryTitl
 
   @Override
   public boolean isValid(List<TitleField> titleFields, ConstraintValidatorContext context) {
-    if (isNull(titleFields)) {
-      return true;
-    }
-    return titleFields.stream()
-      .filter(PrimaryTitleField.class::isInstance)
-      .map(ptf -> ((PrimaryTitleField) ptf).getPrimaryTitle())
-      .filter(pt -> isNotEmpty(pt.getMainTitle()))
-      .flatMap(pt -> pt.getMainTitle().stream())
-      .anyMatch(StringUtils::isNotBlank);
+    return ofNullable(titleFields)
+      .map(tfs -> tfs.stream()
+        .filter(PrimaryTitleField.class::isInstance)
+        .map(ptf -> ((PrimaryTitleField) ptf).getPrimaryTitle())
+        .filter(pt -> isNotEmpty(pt.getMainTitle()))
+        .flatMap(pt -> pt.getMainTitle().stream())
+        .anyMatch(StringUtils::isNotBlank))
+      .orElse(false);
   }
 
 }

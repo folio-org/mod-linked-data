@@ -15,7 +15,7 @@
             "$ref": "title/TitleField.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/title",
-          "x-field-extra-annotation": "@NotEmpty"
+          "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
         },
         "targetAudience": {
           "type": "array",
