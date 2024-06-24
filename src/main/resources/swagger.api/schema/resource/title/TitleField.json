@@ -2,11 +2,11 @@
   "oneOf": [
     {
       "type": "object",
-      "title": "BasicTitleField",
+      "title": "PrimaryTitleField",
       "properties": {
-        "BasicTitle": {
+        "PrimaryTitle": {
           "type": "object",
-          "$ref": "schema/resource/title/BasicTitle.json",
+          "$ref": "schema/resource/title/PrimaryTitle.json",
           "x-json-property": "http://bibfra.me/vocab/marc/Title"
         }
       }

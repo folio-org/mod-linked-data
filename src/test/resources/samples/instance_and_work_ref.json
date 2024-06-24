@@ -5,19 +5,19 @@
         {
           "http://bibfra.me/vocab/marc/Title": {
             "http://bibfra.me/vocab/marc/partName": [
-              "Basic: partName"
+              "Primary: partName"
             ],
             "http://bibfra.me/vocab/marc/partNumber": [
-              "Basic: partNumber"
+              "Primary: partNumber"
             ],
             "http://bibfra.me/vocab/marc/mainTitle": [
-              "Basic: mainTitle"
+              "Primary: mainTitle"
             ],
             "http://bibfra.me/vocab/bflc/nonSortNum": [
-              "Basic: nonSortNum"
+              "Primary: nonSortNum"
             ],
             "http://bibfra.me/vocab/marc/subTitle": [
-              "Basic: subTitle"
+              "Primary: subTitle"
             ]
           }
         },

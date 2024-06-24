@@ -3,6 +3,7 @@ package org.folio.linked.data.model.entity;
 import static jakarta.persistence.CascadeType.DETACH;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.EAGER;
+import static java.util.Arrays.stream;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 
@@ -32,12 +33,15 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.validation.PrimaryTitleConstraint;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
 
 @Entity
 @Data
 @NoArgsConstructor
+@PrimaryTitleConstraint
 @Accessors(chain = true)
 @Table(name = "resources")
 @EqualsAndHashCode(of = "id")
@@ -143,6 +147,10 @@ public class Resource implements Persistable<Long> {
       .map(type -> new ResourceTypeEntity(type.getHash(), type.getUri(), null))
       .forEach(this::addType);
     return this;
+  }
+
+  public boolean isOfType(ResourceTypeDictionary... types) {
+    return getTypes().stream().anyMatch(at -> stream(types).anyMatch(gt -> at.getUri().equals(gt.getUri())));
   }
 
   public Set<ResourceEdge> getOutgoingEdges() {

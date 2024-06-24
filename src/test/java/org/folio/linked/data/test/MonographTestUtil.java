@@ -138,7 +138,7 @@ public class MonographTestUtil {
   }
 
   public static Resource getSampleInstanceResource(Long id, Resource linkedWork) {
-    var basicTitle = createBasicTitle(id);
+    var primaryTitle = createPrimaryTitle(id);
 
     var production = providerEvent("production", "af", "Afghanistan");
     var publication = providerEvent("publication", "al", "Albania");
@@ -236,7 +236,7 @@ public class MonographTestUtil {
     ).setLabel("copyright date value");
 
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
-    pred2OutgoingResources.put(TITLE, List.of(basicTitle, createParallelTitle(), createVariantTitle()));
+    pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(PE_PRODUCTION, List.of(production));
     pred2OutgoingResources.put(PE_PUBLICATION, List.of(publication));
     pred2OutgoingResources.put(PE_DISTRIBUTION, List.of(distribution));
@@ -279,7 +279,7 @@ public class MonographTestUtil {
     if (nonNull(id)) {
       instance.setId(id);
     }
-    instance.setLabel(basicTitle.getLabel());
+    instance.setLabel(primaryTitle.getLabel());
     if (nonNull(linkedWork)) {
       var edge = new ResourceEdge(instance, linkedWork, INSTANTIATES);
       instance.addOutgoingEdge(edge);
@@ -288,20 +288,20 @@ public class MonographTestUtil {
     return instance;
   }
 
-  private static Resource createBasicTitle(Long id) {
-    var basicTitleValue = "Basic: mainTitle" + (nonNull(id) ? id : "");
+  public static Resource createPrimaryTitle(Long id) {
+    var primaryTitleValue = "Primary: mainTitle" + (nonNull(id) ? id : "");
 
     return createResource(
       Map.of(
-        PART_NAME, List.of("Basic: partName"),
-        PART_NUMBER, List.of("Basic: partNumber"),
-        MAIN_TITLE, List.of(basicTitleValue),
-        NON_SORT_NUM, List.of("Basic: nonSortNum"),
-        SUBTITLE, List.of("Basic: subTitle")
+        PART_NAME, List.of("Primary: partName"),
+        PART_NUMBER, List.of("Primary: partNumber"),
+        MAIN_TITLE, List.of(primaryTitleValue),
+        NON_SORT_NUM, List.of("Primary: nonSortNum"),
+        SUBTITLE, List.of("Primary: subTitle")
       ),
       Set.of(ResourceTypeDictionary.TITLE),
       emptyMap()
-    ).setLabel(basicTitleValue);
+    ).setLabel(primaryTitleValue);
   }
 
   private static Resource createParallelTitle() {
@@ -336,7 +336,7 @@ public class MonographTestUtil {
   }
 
   public static Resource getSampleWork(Resource linkedInstance) {
-    var basicTitle = createBasicTitle(null);
+    var primaryTitle = createPrimaryTitle(null);
 
     var creatorMeeting = createResource(
       Map.of(
@@ -497,7 +497,7 @@ public class MonographTestUtil {
     ).setLabel("France");
 
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
-    pred2OutgoingResources.put(TITLE, List.of(basicTitle, createParallelTitle(), createVariantTitle()));
+    pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
     pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
     pred2OutgoingResources.put(AUTHOR, List.of(creatorPerson));
@@ -533,7 +533,7 @@ public class MonographTestUtil {
       linkedInstance.addOutgoingEdge(edge);
       work.addIncomingEdge(edge);
     }
-    work.setLabel(basicTitle.getLabel());
+    work.setLabel(primaryTitle.getLabel());
     return work;
   }
 

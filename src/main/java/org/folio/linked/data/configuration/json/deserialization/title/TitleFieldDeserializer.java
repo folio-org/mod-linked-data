@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
+import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.TitleField;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.exception.JsonException;
@@ -23,7 +23,7 @@ public class TitleFieldDeserializer extends JsonDeserializer<TitleField> {
     throws IOException {
     JsonNode node = jsonParser.getCodec().readTree(jsonParser);
     if (node.has(TITLE.getUri())) {
-      return jsonParser.getCodec().treeToValue(node, BasicTitleField.class);
+      return jsonParser.getCodec().treeToValue(node, PrimaryTitleField.class);
     } else if (node.has(PARALLEL_TITLE.getUri())) {
       return jsonParser.getCodec().treeToValue(node, ParallelTitleField.class);
     } else if (node.has(VARIANT_TITLE.getUri())) {
