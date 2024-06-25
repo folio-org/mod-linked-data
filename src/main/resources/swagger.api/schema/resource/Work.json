@@ -151,7 +151,8 @@
           },
           "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
         }
-      }
+      },
+      "required": ["title"]
     }
   ]
 }

@@ -27,7 +27,7 @@ public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit 
     }
     return titles.stream()
       .filter(PrimaryTitleField.class::isInstance)
-      .map(tf -> (PrimaryTitleField) tf)
+      .map(PrimaryTitleField.class::cast)
       .map(PrimaryTitleField::getPrimaryTitle)
       .filter(pt -> isNotEmpty(pt.getMainTitle()))
       .flatMap(pt -> pt.getMainTitle().stream())

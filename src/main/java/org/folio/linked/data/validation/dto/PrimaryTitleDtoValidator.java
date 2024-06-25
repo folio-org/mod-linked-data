@@ -22,7 +22,7 @@ public class PrimaryTitleDtoValidator implements ConstraintValidator<PrimaryTitl
         .filter(pt -> isNotEmpty(pt.getMainTitle()))
         .flatMap(pt -> pt.getMainTitle().stream())
         .anyMatch(StringUtils::isNotBlank))
-      .orElse(false);
+      .orElse(true);
   }
 
 }

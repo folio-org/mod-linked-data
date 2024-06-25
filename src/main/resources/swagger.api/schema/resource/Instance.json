@@ -218,7 +218,8 @@
           "type": "string",
           "format": "uuid"
         }
-      }
+      },
+      "required": ["title"]
     }
   ]
 }
