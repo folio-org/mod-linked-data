@@ -3,9 +3,6 @@
   "description": "Dissertation object",
   "allOf": [
     {
-      "$ref": "Topper.json"
-    },
-    {
       "type": "object",
       "properties": {
         "label": {
@@ -47,7 +44,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Reference.json"
+            "$ref": "../common/Reference.json"
           }
         }
       }
