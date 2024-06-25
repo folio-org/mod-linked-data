@@ -26,6 +26,7 @@ mod-linked-data:
   kafka:
     topic:
       bibframe-index: search.bibframe
+      bibframe-authority-index: search.bibframe-authorities
 
 folio:
   kafka:

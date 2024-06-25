@@ -35,4 +35,9 @@ public class KafkaSenderDummy implements KafkaSender {
   public void sendResourceDeleted(Resource resource) {
     log.debug("sendResourceDeleted is ignored by dummy kafka sender, because search feature is disabled");
   }
+
+  @Override
+  public void sendAuthorityCreated(Resource resource) {
+    log.debug("sendAuthorityCreated is ignored by dummy kafka sender, because search feature is disabled");
+  }
 }

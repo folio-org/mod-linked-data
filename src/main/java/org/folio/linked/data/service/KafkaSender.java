@@ -12,4 +12,6 @@ public interface KafkaSender {
 
   void sendResourceDeleted(Resource resource);
 
+  void sendAuthorityCreated(Resource resource);
+
 }

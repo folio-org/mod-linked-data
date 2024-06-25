@@ -6,7 +6,10 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -18,6 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
@@ -30,6 +34,7 @@ import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.model.entity.event.ResourceAuthorityCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
@@ -50,6 +55,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
+  private static final Set<ResourceTypeDictionary> AUTHORITY_TYPES = Set.of(CONCEPT, PERSON, FAMILY);
   private static final String NOT_INDEXED =
     "Resource [%s] has been %s without indexing, because no Work was found in it's graph";
   private static final int DEFAULT_PAGE_NUMBER = 0;
@@ -67,8 +73,8 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
     saveMergingGraph(mapped);
-    extractWork(mapped)
-      .map(ResourceCreatedEvent::new)
+    getWorkCreatedEvent(mapped)
+      .or(() -> getAuthorityEvent(mapped))
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, mapped.getId(), "created"))
       );
@@ -80,8 +86,8 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    extractWork(persisted)
-      .map(ResourceCreatedEvent::new)
+    getWorkCreatedEvent(persisted)
+      .or(() -> getAuthorityEvent(persisted))
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, persisted.getId(), "created"))
       );
@@ -241,6 +247,17 @@ public class ResourceServiceImpl implements ResourceService {
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, id, "deleted"))
       );
+  }
+
+  private Optional<Object> getWorkCreatedEvent(Resource resource) {
+    return extractWork(resource)
+      .map(ResourceCreatedEvent::new);
+  }
+
+  private Optional<Object> getAuthorityEvent(Resource resource) {
+    return Optional.of(resource)
+      .filter(r -> AUTHORITY_TYPES.stream().anyMatch(t -> isOfType(r, t)))
+      .map(ResourceAuthorityCreatedEvent::new);
   }
 
   private Optional<Resource> extractWork(Resource resource) {

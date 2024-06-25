@@ -17,7 +17,8 @@ import static org.mockito.Mockito.when;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.SneakyThrows;
-import org.folio.linked.data.mapper.kafka.KafkaMessageMapper;
+import org.folio.linked.data.mapper.kafka.KafkaMessageAuthorityMapper;
+import org.folio.linked.data.mapper.kafka.KafkaMessageBibframeMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
@@ -53,7 +54,9 @@ class KafkaSenderFolioTest {
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Mock
-  private KafkaMessageMapper kafkaMessageMapper;
+  private KafkaMessageBibframeMapper kafkaMessageMapper;
+  @Mock
+  private KafkaMessageAuthorityMapper kafkaMessageAuthorityMapper;
 
   @BeforeEach
   public void setup() {

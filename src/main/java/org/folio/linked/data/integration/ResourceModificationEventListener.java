@@ -4,6 +4,7 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.model.entity.event.ResourceAuthorityCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
@@ -30,6 +31,13 @@ public class ResourceModificationEventListener {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
     var work = resourceRepository.getReferenceById(resourceCreatedEvent.work().getId());
     kafkaSender.sendSingleResourceCreated(work);
+  }
+
+  @TransactionalEventListener
+  public void afterCreate(ResourceAuthorityCreatedEvent resourceCreatedEvent) {
+    log.info("ResourceAuthorityCreatedEvent received [{}]", resourceCreatedEvent);
+    var authority = resourceRepository.getReferenceById(resourceCreatedEvent.resource().getId());
+    kafkaSender.sendAuthorityCreated(authority);
   }
 
   @TransactionalEventListener
