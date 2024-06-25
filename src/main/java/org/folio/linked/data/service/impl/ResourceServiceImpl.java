@@ -11,11 +11,12 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.BibframeUtils.extractWork;
 import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
+import static org.folio.linked.data.util.Constants.NOT_INDEXED;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -78,6 +79,7 @@ public class ResourceServiceImpl implements ResourceService {
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, mapped.getId(), "created"))
       );
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(mapped.getId()));
     return resourceDtoMapper.toDto(mapped);
   }
 
@@ -91,6 +93,7 @@ public class ResourceServiceImpl implements ResourceService {
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, persisted.getId(), "created"))
       );
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
     return persisted.getId();
   }
 

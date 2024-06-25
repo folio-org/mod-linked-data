@@ -12,9 +12,12 @@ folio:
     topics:
       - name: search.bibframe
         numPartitions: 1
+      - name: inventory.instance_ingress
+        numPartitions: 1
       - name: DI_COMPLETED
         num-partitions: 1
 
 test:
   topic:
     search: folio.test_tenant.search.bibframe
+    inventory: folio.test_tenant.inventory.instance_ingress

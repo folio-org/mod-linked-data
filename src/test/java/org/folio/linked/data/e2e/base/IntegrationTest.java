@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.folio.linked.data.LinkedDataApplication;
+import org.folio.linked.data.configuration.kafka.LinkedDataTopicProperties;
 import org.folio.spring.testing.extension.EnableKafka;
 import org.folio.spring.testing.extension.EnableOkapi;
 import org.folio.spring.testing.extension.EnablePostgres;
@@ -28,6 +29,6 @@ import org.springframework.test.context.ActiveProfiles;
 @org.folio.spring.testing.type.IntegrationTest
 @ExtendWith(TenantInstallationExtension.class)
 @SpringBootTest(classes = {KafkaAdminService.class, KafkaAutoConfiguration.class,
-  FolioKafkaProperties.class, LinkedDataApplication.class})
+  FolioKafkaProperties.class, LinkedDataTopicProperties.class, LinkedDataApplication.class})
 public @interface IntegrationTest {
 }

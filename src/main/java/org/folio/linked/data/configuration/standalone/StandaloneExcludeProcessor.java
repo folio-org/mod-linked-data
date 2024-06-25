@@ -22,6 +22,7 @@ public class StandaloneExcludeProcessor implements BeanDefinitionRegistryPostPro
 
   private Collection<String> getExcludeBeans() {
     return List.of(
+      "TenantService",
       "defaultTenantController",
       "defaultTenantOkapiHeaderValidationFilter"
     );

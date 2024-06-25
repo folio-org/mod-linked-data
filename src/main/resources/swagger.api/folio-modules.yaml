@@ -12,13 +12,15 @@ components:
       $ref: search/createIndexRequest.json
     searchCreateIndexResponse:
       $ref: search/folioCreateIndexResponse.json
-    searchResourceEvent:
-      $ref: search/resourceEvent.json
-    searchResourceEventType:
-      $ref: search/resourceEventType.json
+    resourceIndexEvent:
+      $ref: search/resourceIndexEvent.json
+    resourceIndexEventType:
+      $ref: search/resourceIndexEventType.json
     bibframe:
       $ref: search/bibframeIndex.json
     bibframeAuthority:
       $ref: search/bibframeAuthorityIndex.json
     dataImportEvent:
       $ref: events/dataImportEvent.json
+    inventoryInstanceIngressEvent:
+      $ref: inventory/instanceIngressEvent.json

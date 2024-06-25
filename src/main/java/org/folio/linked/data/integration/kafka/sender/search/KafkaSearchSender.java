@@ -1,8 +1,8 @@
-package org.folio.linked.data.service;
+package org.folio.linked.data.integration.kafka.sender.search;
 
 import org.folio.linked.data.model.entity.Resource;
 
-public interface KafkaSender {
+public interface KafkaSearchSender {
 
   void sendSingleResourceCreated(Resource resource);
 

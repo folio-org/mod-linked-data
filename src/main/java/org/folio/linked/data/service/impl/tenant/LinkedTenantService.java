@@ -1,5 +1,7 @@
 package org.folio.linked.data.service.impl.tenant;
 
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+
 import java.util.Collection;
 import lombok.extern.log4j.Log4j2;
 import org.folio.spring.FolioExecutionContext;
@@ -8,12 +10,14 @@ import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Primary
 @Service
+@Profile(FOLIO_PROFILE)
 public class LinkedTenantService extends TenantService {
 
   private final Collection<TenantServiceWorker> workers;

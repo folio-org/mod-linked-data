@@ -15,6 +15,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
@@ -42,8 +43,12 @@ import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
+import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
@@ -119,9 +124,11 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.TYPE;
-import static org.folio.search.domain.dto.ResourceEventType.CREATE;
-import static org.folio.search.domain.dto.ResourceEventType.DELETE;
-import static org.folio.search.domain.dto.ResourceEventType.UPDATE;
+import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum;
+import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -153,13 +160,13 @@ import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.service.KafkaSender;
 import org.folio.linked.data.utils.ResourceTestService;
-import org.folio.search.domain.dto.ResourceEventType;
+import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -189,6 +196,7 @@ class ResourceControllerIT {
   private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
   private static final String GENRE_REF = "_genreReference";
   private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
+  private static final String GRANTING_INSTITUTION_REF = "_grantingInstitutionReference";
   private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
   private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
   @Autowired
@@ -198,7 +206,7 @@ class ResourceControllerIT {
   @Autowired
   private Environment env;
   @SpyBean
-  private KafkaSender kafkaSender;
+  private KafkaSearchSender kafkaSearchSender;
   @Autowired
   private JdbcTemplate jdbcTemplate;
   @Autowired
@@ -235,7 +243,9 @@ class ResourceControllerIT {
     var instanceResource = resourceTestService.getResourceById(id, 3);
     validateInstance(instanceResource, true);
     var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
-    checkKafkaMessage(Long.valueOf(workId), CREATE);
+    checkSearchIndexMessage(Long.valueOf(workId), CREATE);
+    checkIndexDate(workId);
+    checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
   }
 
   @Test
@@ -263,7 +273,8 @@ class ResourceControllerIT {
     var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
     validateWork(workResource, true);
-    checkKafkaMessage(workResource.getId(), CREATE);
+    checkSearchIndexMessage(workResource.getId(), CREATE);
+    checkIndexDate(workResource.getId().toString());
   }
 
   @Test
@@ -304,7 +315,8 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getSrsId()).isEqualTo(originalInstance.getSrsId());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
-    checkKafkaMessage(work.getId(), UPDATE);
+    checkSearchIndexMessage(work.getId(), UPDATE);
+    checkIndexDate(work.getId().toString());
   }
 
   @Test
@@ -344,8 +356,9 @@ class ResourceControllerIT {
     assertThat(updatedWork.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo(newlyAddedSummary);
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
-    checkKafkaMessage(originalWork.getId(), DELETE);
-    checkKafkaMessage(Long.valueOf(id), CREATE);
+    checkSearchIndexMessage(originalWork.getId(), DELETE);
+    checkSearchIndexMessage(Long.valueOf(id), CREATE);
+    checkIndexDate(id);
   }
 
   @Test
@@ -449,8 +462,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(55);
+    assertThat(resourceTestService.countResources()).isEqualTo(56);
+    assertThat(resourceTestService.countEdges()).isEqualTo(58);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -461,10 +474,11 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(55);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(37);
-    checkKafkaMessage(work.getId(), UPDATE);
+    assertThat(resourceTestService.countEdges()).isEqualTo(40);
+    checkSearchIndexMessage(work.getId(), UPDATE);
+    checkIndexDate(work.getId().toString());
   }
 
   @Test
@@ -472,8 +486,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(55);
+    assertThat(resourceTestService.countResources()).isEqualTo(56);
+    assertThat(resourceTestService.countEdges()).isEqualTo(58);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -484,10 +498,10 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(55);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(28);
-    checkKafkaMessage(existed.getId(), DELETE);
+    assertThat(resourceTestService.countEdges()).isEqualTo(30);
+    checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
   @Test
@@ -505,8 +519,8 @@ class ResourceControllerIT {
 
     //then
     assertTrue(resourceTestService.existsById(existedResource.getId()));
-    verify(kafkaSender, never()).sendResourceDeleted(existedResource);
-    verify(kafkaSender, never()).sendSingleResourceCreated(any());
+    verify(kafkaSearchSender, never()).sendResourceDeleted(existedResource);
+    verify(kafkaSearchSender, never()).sendSingleResourceCreated(any());
   }
 
   @Test
@@ -532,7 +546,15 @@ class ResourceControllerIT {
       .andExpect(jsonPath("parsedRecord.content", notNullValue()));
   }
 
-  protected void checkKafkaMessage(Long id, ResourceEventType eventType) {
+  protected void checkSearchIndexMessage(Long id, ResourceIndexEventType eventType) {
+    // nothing to check without Folio profile
+  }
+
+  protected void checkInventoryMessage(Long id, EventTypeEnum eventType) {
+    // nothing to check without Folio profile
+  }
+
+  protected void checkIndexDate(String id) {
     // nothing to check without Folio profile
   }
 
@@ -610,28 +632,32 @@ class ResourceControllerIT {
         .andExpect(jsonPath(toProviderEventName(PE_PRODUCTION), equalTo("production name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_PRODUCTION), equalTo("af")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PRODUCTION), equalTo("Afghanistan")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("http://id.loc.gov/vocabulary/countries/af")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_PRODUCTION), equalTo("http://id.loc.gov/vocabulary/countries/af")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_PRODUCTION), equalTo("production provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_PRODUCTION), equalTo("production simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_PUBLICATION), equalTo("publication date")))
         .andExpect(jsonPath(toProviderEventName(PE_PUBLICATION), equalTo("publication name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_PUBLICATION), equalTo("al")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_PUBLICATION), equalTo("Albania")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("http://id.loc.gov/vocabulary/countries/al")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_PUBLICATION), equalTo("http://id.loc.gov/vocabulary/countries/al")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_PUBLICATION), equalTo("publication provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_PUBLICATION), equalTo("publication simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_DISTRIBUTION), equalTo("distribution date")))
         .andExpect(jsonPath(toProviderEventName(PE_DISTRIBUTION), equalTo("distribution name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_DISTRIBUTION), equalTo("dz")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_DISTRIBUTION), equalTo("Algeria")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("http://id.loc.gov/vocabulary/countries/dz")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_DISTRIBUTION), equalTo("http://id.loc.gov/vocabulary/countries/dz")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_DISTRIBUTION), equalTo("distribution provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_DISTRIBUTION), equalTo("distribution simple place")))
         .andExpect(jsonPath(toProviderEventDate(PE_MANUFACTURE), equalTo("manufacture date")))
         .andExpect(jsonPath(toProviderEventName(PE_MANUFACTURE), equalTo("manufacture name")))
         .andExpect(jsonPath(toProviderEventPlaceCode(PE_MANUFACTURE), equalTo("as")))
         .andExpect(jsonPath(toProviderEventPlaceLabel(PE_MANUFACTURE), equalTo("American Samoa")))
-        .andExpect(jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("http://id.loc.gov/vocabulary/countries/as")))
+        .andExpect(
+          jsonPath(toProviderEventPlaceLink(PE_MANUFACTURE), equalTo("http://id.loc.gov/vocabulary/countries/as")))
         .andExpect(jsonPath(toProviderEventProviderDate(PE_MANUFACTURE), equalTo("manufacture provider date")))
         .andExpect(jsonPath(toProviderEventSimplePlace(PE_MANUFACTURE), equalTo("manufacture simple place")))
         .andExpect(jsonPath(toProjectedProvisionDate(), equalTo("projected provision date")))
@@ -660,6 +686,14 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toClassificationAssigningSourceIds(workBase), containsInAnyOrder("11", "22")))
       .andExpect(jsonPath(toClassificationAssigningSourceLabels(workBase), containsInAnyOrder("assigning agency",
         "United States, Library of Congress")))
+      .andExpect(jsonPath(toDissertationLabel(workBase), equalTo("label")))
+      .andExpect(jsonPath(toDissertationDegree(workBase), equalTo("degree")))
+      .andExpect(jsonPath(toDissertationYear(workBase), equalTo("dissertation year")))
+      .andExpect(jsonPath(toDissertationNote(workBase), equalTo("dissertation note")))
+      .andExpect(jsonPath(toDissertationId(workBase), equalTo("dissertation id")))
+      .andExpect(jsonPath(toDissertationGrantingInstitutionIds(workBase), containsInAnyOrder("111", "222")))
+      .andExpect(jsonPath(toDissertationGrantingInstitutionLabels(workBase),
+        containsInAnyOrder("granting institution 1", "granting institution 2")))
       .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("1001", "1002", "1003", "1004")))
       .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-MEETING", "name-PERSON",
         "name-ORGANIZATION", "name-FAMILY")))
@@ -858,7 +892,8 @@ class ResourceControllerIT {
     assertThat(place.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
     assertThat(place.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(expectedLabel);
     assertThat(place.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("http://id.loc.gov/vocabulary/countries/" + expectedCode);
+    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(
+      "http://id.loc.gov/vocabulary/countries/" + expectedCode);
     assertThat(place.getOutgoingEdges()).isEmpty();
   }
 
@@ -1055,6 +1090,7 @@ class ResourceControllerIT {
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
+    validateDissertation(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR.getUri());
@@ -1062,8 +1098,8 @@ class ResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
     if (!validateFullInstance) {
-      validateDdcClassification(outgoingEdgeIterator.next(), work);
       outgoingEdgeIterator.next();
+      validateDdcClassification(outgoingEdgeIterator.next(), work);
     } else {
       validateLcClassification(outgoingEdgeIterator.next(), work);
       validateDdcClassification(outgoingEdgeIterator.next(), work);
@@ -1201,6 +1237,25 @@ class ResourceControllerIT {
     validateLiterals(governmentPublication, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a"));
   }
 
+  private void validateDissertation(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(DISSERTATION.getUri());
+    var dissertation = edge.getTarget();
+    var types = dissertation.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(ResourceTypeDictionary.DISSERTATION.getUri());
+    assertThat(dissertation.getDoc().size()).isEqualTo(5);
+    validateLiteral(dissertation, LABEL.getValue(), "label");
+    validateLiteral(dissertation, DEGREE.getValue(), "degree");
+    validateLiteral(dissertation, DISSERTATION_YEAR.getValue(), "dissertation year");
+    validateLiteral(dissertation, DISSERTATION_NOTE.getValue(), "dissertation note");
+    validateLiteral(dissertation, DISSERTATION_ID.getValue(), "dissertation id");
+    var iterator = dissertation.getOutgoingEdges().iterator();
+    var grantingInstitutionEdge = iterator.next();
+    validateResourceEdge(grantingInstitutionEdge, dissertation, grantingInstitutionEdge.getTarget(),
+      PredicateDictionary.GRANTING_INSTITUTION.getUri());
+  }
+
   private void validateOriginPlace(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -1261,13 +1316,16 @@ class ResourceControllerIT {
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
     var assigningAgency = saveResource(11L, "assigning agency", ORGANIZATION, "{}");
     var libraryOfCongress = saveResource(22L, "United States, Library of Congress", ORGANIZATION, "{}");
+    var grantingInstitution1 = saveResource(111L, "granting institution 1", ORGANIZATION, "{}");
+    var grantingInstitution2 = saveResource(222L, "granting institution 2", ORGANIZATION, "{}");
     return new LookupResources(
       List.of(subject1, subject2),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
       List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily,
         contributorPerson, contributorMeeting, contributorOrganization, contributorFamily),
-      List.of(assigningAgency, libraryOfCongress)
+      List.of(assigningAgency, libraryOfCongress),
+      List.of(grantingInstitution1, grantingInstitution2)
     );
   }
 
@@ -1625,6 +1683,36 @@ class ResourceControllerIT {
       dynamicArrayPath(ASSIGNING_SOURCE_REF), path(LABEL_PROPERTY));
   }
 
+  private String toDissertationLabel(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(LABEL.getValue()));
+  }
+
+  private String toDissertationDegree(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DEGREE.getValue()));
+  }
+
+  private String toDissertationYear(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_YEAR.getValue()));
+  }
+
+  private String toDissertationNote(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_NOTE.getValue()));
+  }
+
+  private String toDissertationId(String workBase) {
+    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_ID.getValue()));
+  }
+
+  private String toDissertationGrantingInstitutionIds(String workBase) {
+    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
+      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(ID_PROPERTY));
+  }
+
+  private String toDissertationGrantingInstitutionLabels(String workBase) {
+    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
+      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(LABEL_PROPERTY));
+  }
+
   private String toWorkCreatorId(String workBase) {
     return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ID_PROPERTY));
   }
@@ -1746,7 +1834,8 @@ class ResourceControllerIT {
     List<Resource> geographicCoverages,
     List<Resource> genres,
     List<Resource> creators,
-    List<Resource> assigningSources
+    List<Resource> assigningSources,
+    List<Resource> grantingInstitutions
   ) {
   }
 }

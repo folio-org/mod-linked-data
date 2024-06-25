@@ -36,7 +36,7 @@ import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LCCN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LOCALID;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
-import static org.folio.search.domain.dto.ResourceEventType.CREATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -70,10 +70,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class KafkaMessageMapperTest {
+class KafkaSearchMessageMapperTest {
 
   @InjectMocks
-  private KafkaMessageBibframeMapper kafkaMessageMapper;
+  private KafkaSearchMessageBibframeMapper kafkaMessageMapper;
   @Mock
   private SingleResourceMapper singleResourceMapper;
 

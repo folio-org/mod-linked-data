@@ -1,4 +1,4 @@
-package org.folio.linked.data.integration.kafka;
+package org.folio.linked.data.integration.kafka.listener;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.logging.log4j.util.Strings.isNotBlank;
