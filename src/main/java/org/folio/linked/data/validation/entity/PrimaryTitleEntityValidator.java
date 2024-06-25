@@ -18,7 +18,7 @@ public class PrimaryTitleEntityValidator implements ConstraintValidator<PrimaryT
 
   @Override
   public boolean isValid(Resource resource, ConstraintValidatorContext context) {
-    if (!resource.isOfType(INSTANCE, WORK)) {
+    if (!resource.isOfType(INSTANCE) && !resource.isOfType(WORK)) {
       return true;
     }
     return ofNullable(resource.getOutgoingEdges())

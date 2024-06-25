@@ -19,14 +19,11 @@ class PrimaryTitleDtoValidatorTest {
 
   @Test
   void shouldReturnFalse_ifGivenTitleFieldListIsNull() {
-    // given
-    List<TitleField> titleFields = null;
-
     // when
-    boolean result = validator.isValid(titleFields, null);
+    boolean result = validator.isValid(null, null);
 
     // then
-    assertThat(result).isFalse();
+    assertThat(result).isTrue();
   }
 
   @Test

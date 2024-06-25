@@ -3,7 +3,6 @@ package org.folio.linked.data.model.entity;
 import static jakarta.persistence.CascadeType.DETACH;
 import static jakarta.persistence.CascadeType.REMOVE;
 import static jakarta.persistence.FetchType.EAGER;
-import static java.util.Arrays.stream;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 
@@ -149,8 +148,8 @@ public class Resource implements Persistable<Long> {
     return this;
   }
 
-  public boolean isOfType(ResourceTypeDictionary... types) {
-    return getTypes().stream().anyMatch(at -> stream(types).anyMatch(gt -> at.getUri().equals(gt.getUri())));
+  public boolean isOfType(ResourceTypeDictionary type) {
+    return getTypes().stream().anyMatch(at -> at.getUri().equals(type.getUri()));
   }
 
   public Set<ResourceEdge> getOutgoingEdges() {
