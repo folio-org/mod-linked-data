@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Base identifier fields",
+  "allOf": [
+    {
+      "$ref": "../../common/IdentifierName.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../Status.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/status"
+        }
+      }
+    }
+  ]
+}

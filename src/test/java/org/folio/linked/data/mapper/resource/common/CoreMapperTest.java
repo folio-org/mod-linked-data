@@ -175,8 +175,8 @@ class CoreMapperTest {
   @Test
   void addOutgoingEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmpty() {
     // given
-    var dto1 = new Isbn().id(randomLong().toString());
-    var dto2 = new Isbn().id(randomLong().toString());
+    var dto1 = new Isbn().value(List.of(randomLong().toString()));
+    var dto2 = new Isbn().value(List.of(randomLong().toString()));
     var predicate = PredicateDictionary.MAP;
     var parent = InstanceResponse.class;
     var source = new Resource();

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.folio.linked.data.domain.dto.NoteDto;
+import org.folio.linked.data.domain.dto.Note;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -50,7 +50,7 @@ class NoteMapperTest {
 
   @ParameterizedTest
   @MethodSource("provideDocAndExpectedNotes")
-  void toNotes_shouldReturnNoteDtosOfSpecifiedTypes(JsonNode doc, List<NoteDto> expectedNotes) {
+  void toNotes_shouldReturnNoteDtosOfSpecifiedTypes(JsonNode doc, List<Note> expectedNotes) {
     //given
     var noteTypes = Set.of(NOTE, ISSUANCE_NOTE);
 
@@ -91,7 +91,7 @@ class NoteMapperTest {
 
   @ParameterizedTest
   @MethodSource("provideNotesAndExpectedMap")
-  void putNotes_shouldAddNotesToMap(List<NoteDto> notes, Map<String, List<String>> expectedMap) {
+  void putNotes_shouldAddNotesToMap(List<Note> notes, Map<String, List<String>> expectedMap) {
     //given
     var map = new HashMap<String, List<String>>();
 
@@ -118,8 +118,8 @@ class NoteMapperTest {
     return OBJECT_MAPPER.convertValue(map, JsonNode.class);
   }
 
-  private static NoteDto createNote(List<String> types, String value) {
-    var note = new NoteDto();
+  private static Note createNote(List<String> types, String value) {
+    var note = new Note();
     note.setType(types);
     note.setValue(List.of(value));
     return note;

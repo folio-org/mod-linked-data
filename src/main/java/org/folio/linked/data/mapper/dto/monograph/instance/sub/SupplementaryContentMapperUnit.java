@@ -12,6 +12,7 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.SupplementaryContent;
+import org.folio.linked.data.domain.dto.SupplementaryContentResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -30,7 +31,7 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContent.class, false);
+      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContentResponse.class, false);
       supplementaryContent.setId(String.valueOf(source.getId()));
       instance.addSupplementaryContentItem(supplementaryContent);
     }

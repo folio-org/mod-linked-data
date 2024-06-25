@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.Lccn;
 import org.folio.linked.data.domain.dto.LccnField;
+import org.folio.linked.data.domain.dto.LccnFieldResponse;
+import org.folio.linked.data.domain.dto.LccnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -33,9 +35,9 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var lccn = coreMapper.toDtoWithEdges(source, Lccn.class, false);
+      var lccn = coreMapper.toDtoWithEdges(source, LccnResponse.class, false);
       lccn.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new LccnField().lccn(lccn));
+      instance.addMapItem(new LccnFieldResponse().lccn(lccn));
     }
     return parentDto;
   }

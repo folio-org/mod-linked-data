@@ -1,26 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Local Identifier Info",
+  "description": "Status Info",
   "allOf": [
-    {
-      "$ref": "../IdField.json"
-    },
     {
       "type": "object",
       "properties": {
+        "link": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/link"
+        },
         "value": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/localId"
-        },
-        "assigner": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/localIdAssigningSource"
+          "x-json-property": "http://bibfra.me/vocab/lite/label"
         }
       }
     }

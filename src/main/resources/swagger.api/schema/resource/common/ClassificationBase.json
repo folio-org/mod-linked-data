@@ -1,10 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Dewey decimal classification object",
+  "description": "Classification base object",
   "allOf": [
-    {
-      "$ref": "IdField.json"
-    },
     {
       "type": "object",
       "properties": {
@@ -42,21 +39,6 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/edition"
-        },
-        "status": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "Status.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/status"
-        },
-        "_assigningSourceReference": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "Reference.json"
-          }
         }
       }
     }

@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Classification object",
+  "allOf": [
+    {
+      "$ref": "../common/ClassificationBase.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Status.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/status"
+        },
+        "_assigningSourceReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Reference.json"
+          }
+        }
+      }
+    }
+  ]
+}

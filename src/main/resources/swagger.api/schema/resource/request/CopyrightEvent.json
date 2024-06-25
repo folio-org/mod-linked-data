@@ -1,19 +1,16 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "ISBN Info",
+  "description": "Copyright event object",
   "allOf": [
-    {
-      "$ref": "BaseIdentifier.json"
-    },
     {
       "type": "object",
       "properties": {
-        "qualifier": {
+        "date": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
+          "x-json-property": "http://bibfra.me/vocab/lite/date"
         }
       }
     }

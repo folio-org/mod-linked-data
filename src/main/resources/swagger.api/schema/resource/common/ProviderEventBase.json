@@ -3,9 +3,6 @@
   "description": "Provider Event",
   "allOf": [
     {
-      "$ref": "IdField.json"
-    },
-    {
       "type": "object",
       "properties": {
         "date": {
@@ -14,14 +11,6 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/date"
-        },
-        "providerPlace": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "Place.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/lite/providerPlace"
         },
         "name": {
           "type": "array",

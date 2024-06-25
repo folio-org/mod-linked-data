@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.linked.data.domain.dto.NoteDto;
+import org.folio.linked.data.domain.dto.Note;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NoteMapper {
 
-  public List<NoteDto> toNotes(JsonNode doc, Set<PropertyDictionary> noteProperties) {
+  public List<Note> toNotes(JsonNode doc, Set<PropertyDictionary> noteProperties) {
     return doc.properties().stream()
       .filter(entry -> {
         var property = fromValue(entry.getKey());
@@ -28,16 +28,16 @@ public class NoteMapper {
       .flatMap(entry ->
         stream(spliteratorUnknownSize(entry.getValue().iterator(), ORDERED), false)
           .map(value -> {
-            var noteDto = new NoteDto();
-            noteDto.setValue(List.of(value.textValue()));
-            noteDto.setType(List.of(entry.getKey()));
-            return noteDto;
+            var notes = new Note();
+            notes.setValue(List.of(value.textValue()));
+            notes.setType(List.of(entry.getKey()));
+            return notes;
           })
       )
       .toList();
   }
 
-  public void putNotes(List<NoteDto> noteDtos, Map<String, List<String>> map) {
+  public void putNotes(List<Note> noteDtos, Map<String, List<String>> map) {
     ofNullable(noteDtos)
       .ifPresent(notes -> notes
         .forEach(note -> note.getType()

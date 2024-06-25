@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 
 import org.folio.linked.data.domain.dto.Category;
+import org.folio.linked.data.domain.dto.CategoryResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -34,7 +35,7 @@ public class MediaMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected void addToParent(Category category, Object parentDto) {
+  protected void addToParent(CategoryResponse category, Object parentDto) {
     if (parentDto instanceof InstanceResponse instance) {
       instance.addMediaItem(category);
     }

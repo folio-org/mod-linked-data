@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Category;
-import org.folio.linked.data.domain.dto.InstanceRequest;
+import org.folio.linked.data.domain.dto.CategoryResponse;
+import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceResponse;
-import org.folio.linked.data.domain.dto.WorkRequest;
+import org.folio.linked.data.domain.dto.Work;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
@@ -31,20 +32,20 @@ import org.folio.linked.data.service.HashService;
 public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
-    InstanceRequest.class,
+    Instance.class,
     InstanceResponse.class,
-    WorkRequest.class,
+    Work.class,
     WorkResponse.class
   );
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
-  protected abstract void addToParent(Category category, Object parentDto);
+  protected abstract void addToParent(CategoryResponse category, Object parentDto);
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var category = coreMapper.toDtoWithEdges(source, Category.class, false);
+    var category = coreMapper.toDtoWithEdges(source, CategoryResponse.class, false);
     category.setId(String.valueOf(source.getId()));
     addToParent(category, parentDto);
     return parentDto;

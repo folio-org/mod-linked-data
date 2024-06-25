@@ -1,20 +1,13 @@
-{
+  {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "EAN Info",
+  "description": "ISBN Info",
   "allOf": [
     {
-      "$ref": "../IdField.json"
+      "$ref": "BaseIdentifier.json"
     },
     {
       "type": "object",
       "properties": {
-        "value": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/ean"
-        },
         "qualifier": {
           "type": "array",
           "items": {

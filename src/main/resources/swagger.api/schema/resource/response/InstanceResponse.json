@@ -12,7 +12,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/title/TitleField.json"
+            "$ref": "title/TitleFieldResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/title"
         },
@@ -20,7 +20,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/ProviderEvent.json"
+            "$ref": "ProviderEventResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/production"
         },
@@ -28,7 +28,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/ProviderEvent.json"
+            "$ref": "ProviderEventResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/publication"
         },
@@ -36,7 +36,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/ProviderEvent.json"
+            "$ref": "ProviderEventResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/distribution"
         },
@@ -44,7 +44,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/ProviderEvent.json"
+            "$ref": "ProviderEventResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/manufacture"
         },
@@ -54,55 +54,55 @@
             "oneOf": [
               {
                 "type": "object",
-                "title": "LccnField",
+                "title": "LccnFieldResponse",
                 "properties": {
                   "Lccn": {
                     "type": "object",
-                    "$ref": "../common/identifier/Lccn.json",
+                    "$ref": "identifier/LccnResponse.json",
                     "x-json-property": "http://library.link/identifier/LCCN"
                   }
                 }
               },
               {
                 "type": "object",
-                "title": "IsbnField",
+                "title": "IsbnFieldResponse",
                 "properties": {
                   "Isbn": {
                     "type": "object",
-                    "$ref": "../common/identifier/Isbn.json",
+                    "$ref": "identifier/IsbnResponse.json",
                     "x-json-property": "http://library.link/identifier/ISBN"
                   }
                 }
               },
               {
                 "type": "object",
-                "title": "LocalIdField",
+                "title": "LocalIdFieldResponse",
                 "properties": {
                   "LocalId": {
                     "type": "object",
-                    "$ref": "../common/identifier/LocalId.json",
+                    "$ref": "identifier/LocalIdResponse.json",
                     "x-json-property": "http://bibfra.me/vocab/lite/LocalId"
                   }
                 }
               },
               {
                 "type": "object",
-                "title": "EanField",
+                "title": "EanFieldResponse",
                 "properties": {
                   "Ean": {
                     "type": "object",
-                    "$ref": "../common/identifier/Ean.json",
+                    "$ref": "identifier/EanResponse.json",
                     "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
                   }
                 }
               },
               {
                 "type": "object",
-                "title": "OtherIdField",
+                "title": "OtherIdFieldResponse",
                 "properties": {
                   "Identifier": {
                     "type": "object",
-                    "$ref": "../common/identifier/OtherId.json",
+                    "$ref": "identifier/OtherIdResponse.json",
                     "x-json-property": "http://library.link/identifier/UNKNOWN"
                   }
                 }
@@ -115,7 +115,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/SupplementaryContent.json"
+            "$ref": "SupplementaryContentResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/supplementaryContent"
         },
@@ -123,7 +123,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/AccessLocation.json"
+            "$ref": "AccessLocationResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/accessLocation"
         },
@@ -131,7 +131,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Category.json"
+            "$ref": "CategoryResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/media"
         },
@@ -139,7 +139,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Category.json"
+            "$ref": "CategoryResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/carrier"
         },
@@ -154,7 +154,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/CopyrightEvent.json"
+            "$ref": "CopyrightEventResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/copyright"
         },
@@ -198,7 +198,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/noteDto.json"
+            "$ref": "../common/Note.json"
           },
           "x-json-property": "_notes"
         },

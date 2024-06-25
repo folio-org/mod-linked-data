@@ -8,6 +8,7 @@ import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
 
 import org.folio.linked.data.domain.dto.Place;
+import org.folio.linked.data.domain.dto.PlaceResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
@@ -40,8 +41,8 @@ public class OriginPlaceMapperUnit extends PlaceMapperUnit {
     return getFirstValue(place::getName);
   }
 
-  private Place getPlace(Resource source) {
-    var place = coreMapper.toDtoWithEdges(source, Place.class, false);
+  private PlaceResponse getPlace(Resource source) {
+    var place = coreMapper.toDtoWithEdges(source, PlaceResponse.class, false);
     place.setId(String.valueOf(source.getId()));
     return place;
   }

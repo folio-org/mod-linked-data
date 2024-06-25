@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
+import org.folio.linked.data.domain.dto.ParallelTitleFieldResponse;
+import org.folio.linked.data.domain.dto.ParallelTitleResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -35,12 +37,12 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitle.class, false);
+    var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitleResponse.class, false);
     parallelTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof InstanceResponse instance) {
-      instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+      instance.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));
     } else if (parentDto instanceof WorkResponse work) {
-      work.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+      work.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));
     }
     return parentDto;
   }

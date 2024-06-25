@@ -12,13 +12,12 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import org.folio.linked.data.domain.dto.EanField;
-import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
+import org.folio.linked.data.domain.dto.EanFieldResponse;
 import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
-import org.folio.linked.data.domain.dto.IsbnField;
-import org.folio.linked.data.domain.dto.LccnField;
-import org.folio.linked.data.domain.dto.LocalIdField;
-import org.folio.linked.data.domain.dto.OtherIdField;
+import org.folio.linked.data.domain.dto.IsbnFieldResponse;
+import org.folio.linked.data.domain.dto.LccnFieldResponse;
+import org.folio.linked.data.domain.dto.LocalIdFieldResponse;
+import org.folio.linked.data.domain.dto.OtherIdFieldResponse;
 import org.folio.linked.data.exception.JsonException;
 
 public class InstanceResponseAllOfMapDeserializer extends JsonDeserializer<InstanceResponseAllOfMap> {
@@ -28,17 +27,17 @@ public class InstanceResponseAllOfMapDeserializer extends JsonDeserializer<Insta
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     if (node.has(ID_LCCN.getUri())) {
-      return jp.getCodec().treeToValue(node, LccnField.class);
+      return jp.getCodec().treeToValue(node, LccnFieldResponse.class);
     } else if (node.has(ID_ISBN.getUri())) {
-      return jp.getCodec().treeToValue(node, IsbnField.class);
+      return jp.getCodec().treeToValue(node, IsbnFieldResponse.class);
     } else if (node.has(ID_EAN.getUri())) {
-      return jp.getCodec().treeToValue(node, EanField.class);
+      return jp.getCodec().treeToValue(node, EanFieldResponse.class);
     } else if (node.has(ID_LOCAL.getUri())) {
-      return jp.getCodec().treeToValue(node, LocalIdField.class);
+      return jp.getCodec().treeToValue(node, LocalIdFieldResponse.class);
     } else if (node.has(ID_UNKNOWN.getUri())) {
-      return jp.getCodec().treeToValue(node, OtherIdField.class);
+      return jp.getCodec().treeToValue(node, OtherIdFieldResponse.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(InstanceRequestAllOfMap.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(InstanceResponseAllOfMap.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

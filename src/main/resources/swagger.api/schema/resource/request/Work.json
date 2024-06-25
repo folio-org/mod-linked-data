@@ -9,7 +9,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/title/TitleField.json"
+            "$ref": "title/TitleField.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/title",
           "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
@@ -18,7 +18,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Category.json"
+            "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/targetAudience"
         },
@@ -47,7 +47,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/noteDto.json"
+            "$ref": "../common/Note.json"
           },
           "x-json-property": "_notes"
         },
@@ -63,7 +63,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Classification.json"
+            "$ref": "Classification.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/classification"
         },
@@ -85,7 +85,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Category.json"
+            "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/content"
         },
@@ -128,7 +128,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Category.json"
+            "$ref": "Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
         },
@@ -136,7 +136,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Place.json"
+            "$ref": "Place.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
         }

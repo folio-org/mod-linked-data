@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Dewey decimal classification object",
+  "allOf": [
+    {
+      "$ref": "../common/IdField.json"
+    },
+    {
+      "$ref": "../common/ClassificationBase.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "StatusResponse.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/status"
+        },
+        "_assigningSourceReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Reference.json"
+          }
+        }
+      }
+    }
+  ]
+}

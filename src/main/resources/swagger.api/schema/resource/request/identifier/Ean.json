@@ -1,10 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Other Identifier Info",
+  "description": "EAN Info",
   "allOf": [
-    {
-      "$ref": "../IdField.json"
-    },
     {
       "type": "object",
       "properties": {
@@ -13,7 +10,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/name"
+          "x-json-property": "http://bibfra.me/vocab/marc/ean"
         },
         "qualifier": {
           "type": "array",

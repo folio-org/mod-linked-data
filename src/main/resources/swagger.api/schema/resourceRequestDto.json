@@ -8,21 +8,21 @@
       "title": "resourceRequestField",
       "oneOf": [
         {
-          "title": "InstanceRequestField",
+          "title": "InstanceField",
           "properties": {
             "Instance": {
               "type": "object",
-              "$ref": "resource/request/InstanceRequest.json",
+              "$ref": "resource/request/Instance.json",
               "x-json-property": "http://bibfra.me/vocab/lite/Instance"
             }
           }
         },
         {
-          "title": "WorkRequestField",
+          "title": "WorkField",
           "properties": {
             "Work": {
               "type": "object",
-              "$ref": "resource/request/WorkRequest.json",
+              "$ref": "resource/request/Work.json",
               "x-json-property": "http://bibfra.me/vocab/lite/Work"
             }
           }

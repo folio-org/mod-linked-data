@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 
 import java.util.Set;
 import org.folio.linked.data.domain.dto.Classification;
+import org.folio.linked.data.domain.dto.ClassificationResponse;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -14,12 +15,15 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = ORGANIZATION, predicate = ASSIGNING_SOURCE, requestDto = Reference.class)
 public class AssigningSourceMapperUnit extends ReferenceMapperUnit {
 
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Classification.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
+    Classification.class,
+    ClassificationResponse.class
+  );
 
   public AssigningSourceMapperUnit(ResourceRepository resourceRepository) {
     super((assigningSource, destination) -> {
-      if (destination instanceof Classification deweyDecimalClassification) {
-        deweyDecimalClassification.addAssigningSourceReferenceItem(assigningSource);
+      if (destination instanceof ClassificationResponse classification) {
+        classification.addAssigningSourceReferenceItem(assigningSource);
       }
     }, resourceRepository);
   }

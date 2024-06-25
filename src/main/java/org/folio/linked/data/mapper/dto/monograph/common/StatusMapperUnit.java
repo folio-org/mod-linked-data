@@ -16,9 +16,13 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Classification;
+import org.folio.linked.data.domain.dto.ClassificationResponse;
 import org.folio.linked.data.domain.dto.Isbn;
+import org.folio.linked.data.domain.dto.IsbnResponse;
 import org.folio.linked.data.domain.dto.Lccn;
+import org.folio.linked.data.domain.dto.LccnResponse;
 import org.folio.linked.data.domain.dto.Status;
+import org.folio.linked.data.domain.dto.StatusResponse;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -32,19 +36,26 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = STATUS, predicate = PredicateDictionary.STATUS, requestDto = Status.class)
 public class StatusMapperUnit implements SingleResourceMapperUnit {
 
-  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(Lccn.class, Isbn.class, Classification.class);
+  private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
+    Lccn.class,
+    LccnResponse.class,
+    Isbn.class,
+    IsbnResponse.class,
+    Classification.class,
+    ClassificationResponse.class
+  );
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var status = coreMapper.toDtoWithEdges(source, Status.class, false);
+    var status = coreMapper.toDtoWithEdges(source, StatusResponse.class, false);
     status.setId(String.valueOf(source.getId()));
-    if (parentDto instanceof Lccn lccn) {
+    if (parentDto instanceof LccnResponse lccn) {
       lccn.addStatusItem(status);
-    } else if (parentDto instanceof Isbn isbn) {
+    } else if (parentDto instanceof IsbnResponse isbn) {
       isbn.addStatusItem(status);
-    } else if (parentDto instanceof Classification classification) {
+    } else if (parentDto instanceof ClassificationResponse classification) {
       classification.addStatusItem(status);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()

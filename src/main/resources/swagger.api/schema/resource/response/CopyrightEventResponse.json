@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Copyright event object",
+  "allOf": [
+    {
+      "$ref": "../common/IdField.json"
+    },
+    {
+      "$ref": "../request/CopyrightEvent.json"
+    }
+  ]
+}

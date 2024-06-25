@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.Isbn;
 import org.folio.linked.data.domain.dto.IsbnField;
+import org.folio.linked.data.domain.dto.IsbnFieldResponse;
+import org.folio.linked.data.domain.dto.IsbnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -34,9 +36,9 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var isbn = coreMapper.toDtoWithEdges(source, Isbn.class, false);
+      var isbn = coreMapper.toDtoWithEdges(source, IsbnResponse.class, false);
       isbn.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new IsbnField().isbn(isbn));
+      instance.addMapItem(new IsbnFieldResponse().isbn(isbn));
     }
     return parentDto;
   }

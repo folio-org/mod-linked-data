@@ -18,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.folio.linked.data.domain.dto.InstanceRequestField;
+import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
@@ -180,7 +180,7 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   private void addInternalFields(ResourceRequestDto resourceDto, Resource old) {
-    if (resourceDto.getResource() instanceof InstanceRequestField instanceField) {
+    if (resourceDto.getResource() instanceof InstanceField instanceField) {
       ofNullable(old.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
       ofNullable(old.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);
     }

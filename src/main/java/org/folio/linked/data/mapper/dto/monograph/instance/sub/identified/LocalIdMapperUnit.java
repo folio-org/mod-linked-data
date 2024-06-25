@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.LocalId;
 import org.folio.linked.data.domain.dto.LocalIdField;
+import org.folio.linked.data.domain.dto.LocalIdFieldResponse;
+import org.folio.linked.data.domain.dto.LocalIdResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -33,9 +35,9 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var localId = coreMapper.toDtoWithEdges(source, LocalId.class, false);
+      var localId = coreMapper.toDtoWithEdges(source, LocalIdResponse.class, false);
       localId.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new LocalIdField().localId(localId));
+      instance.addMapItem(new LocalIdFieldResponse().localId(localId));
     }
     return parentDto;
   }

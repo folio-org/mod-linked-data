@@ -17,6 +17,8 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.PrimaryTitle;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
+import org.folio.linked.data.domain.dto.PrimaryTitleFieldResponse;
+import org.folio.linked.data.domain.dto.PrimaryTitleResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -34,12 +36,12 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitle.class, false);
+    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitleResponse.class, false);
     primaryTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof InstanceResponse instance) {
-      instance.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
+      instance.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
     } else if (parentDto instanceof WorkResponse work) {
-      work.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
+      work.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
     }
     return parentDto;
   }

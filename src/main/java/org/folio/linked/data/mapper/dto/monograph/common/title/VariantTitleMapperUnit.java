@@ -19,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
+import org.folio.linked.data.domain.dto.VariantTitleFieldResponse;
+import org.folio.linked.data.domain.dto.VariantTitleResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -36,12 +38,12 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitle.class, false);
+    var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitleResponse.class, false);
     variantTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof InstanceResponse instance) {
-      instance.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+      instance.addTitleItem(new VariantTitleFieldResponse().variantTitle(variantTitle));
     } else if (parentDto instanceof WorkResponse work) {
-      work.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+      work.addTitleItem(new VariantTitleFieldResponse().variantTitle(variantTitle));
     }
     return parentDto;
   }

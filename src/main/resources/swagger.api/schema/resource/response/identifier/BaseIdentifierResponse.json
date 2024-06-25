@@ -3,23 +3,19 @@
   "description": "Base identifier fields",
   "allOf": [
     {
-      "$ref": "../IdField.json"
+      "$ref": "../../common/IdField.json"
+    },
+    {
+      "$ref": "../../common/IdentifierName.json"
     },
     {
       "type": "object",
       "properties": {
-        "value": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "http://bibfra.me/vocab/lite/name"
-        },
         "status": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../Status.json"
+            "$ref": "../StatusResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/status"
         }

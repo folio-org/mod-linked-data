@@ -2,33 +2,33 @@
   "oneOf": [
     {
       "type": "object",
-      "title": "PrimaryTitleField",
+      "title": "PrimaryTitleFieldResponse",
       "properties": {
         "PrimaryTitle": {
           "type": "object",
-          "$ref": "schema/resource/common/title/PrimaryTitle.json",
+          "$ref": "schema/resource/response/title/PrimaryTitleResponse.json",
           "x-json-property": "http://bibfra.me/vocab/marc/Title"
         }
       }
     },
     {
       "type": "object",
-      "title": "VariantTitleField",
+      "title": "VariantTitleFieldResponse",
       "properties": {
         "VariantTitle": {
           "type": "object",
-          "$ref": "schema/resource/common/title/VariantTitle.json",
+          "$ref": "schema/resource/response/title/VariantTitleResponse.json",
           "x-json-property": "http://bibfra.me/vocab/marc/VariantTitle"
         }
       }
     },
     {
       "type": "object",
-      "title": "ParallelTitleField",
+      "title": "ParallelTitleFieldResponse",
       "properties": {
         "ParallelTitle": {
           "type": "object",
-          "$ref": "schema/resource/common/title/ParallelTitle.json",
+          "$ref": "schema/resource/response/title/ParallelTitleResponse.json",
           "x-json-property": "http://bibfra.me/vocab/marc/ParallelTitle"
         }
       }

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
-import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.exception.JsonException;
@@ -27,6 +26,6 @@ public class ResourceResponseFieldDeserializer extends JsonDeserializer<Resource
       return jp.getCodec().treeToValue(node, WorkResponseField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(ResourceRequestDto.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(ResourceResponseField.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

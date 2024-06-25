@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.CopyrightEvent;
+import org.folio.linked.data.domain.dto.CopyrightEventResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -29,7 +30,7 @@ public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var copyrightEvent = coreMapper.toDtoWithEdges(source, CopyrightEvent.class, false);
+      var copyrightEvent = coreMapper.toDtoWithEdges(source, CopyrightEventResponse.class, false);
       copyrightEvent.setId(String.valueOf(source.getId()));
       instance.addCopyrightItem(copyrightEvent);
     }

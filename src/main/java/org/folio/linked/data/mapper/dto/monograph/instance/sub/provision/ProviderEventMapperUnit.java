@@ -19,6 +19,7 @@ import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.ProviderEvent;
+import org.folio.linked.data.domain.dto.ProviderEventResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -29,12 +30,12 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
-  private final BiFunction<ProviderEvent, InstanceResponse, InstanceResponse> providerEventConsumer;
+  private final BiFunction<ProviderEventResponse, InstanceResponse, InstanceResponse> providerEventConsumer;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var providerEvent = coreMapper.toDtoWithEdges(source, ProviderEvent.class, false);
+      var providerEvent = coreMapper.toDtoWithEdges(source, ProviderEventResponse.class, false);
       providerEventConsumer.apply(providerEvent, instance);
     }
     return parentDto;
