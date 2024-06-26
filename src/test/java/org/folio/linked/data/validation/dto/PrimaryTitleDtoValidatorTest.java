@@ -18,6 +18,15 @@ class PrimaryTitleDtoValidatorTest {
   private final PrimaryTitleDtoValidator validator = new PrimaryTitleDtoValidator();
 
   @Test
+  void shouldReturnTrue_ifGivenTitleFieldListIsNull() {
+    // when
+    boolean result = validator.isValid(null, null);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
   void shouldReturnFalse_ifGivenTitleFieldListIsEmpty() {
     // given
     var titleFields = new ArrayList<TitleField>();
