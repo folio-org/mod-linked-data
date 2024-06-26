@@ -12,7 +12,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.extractWork;
-import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.NOT_INDEXED;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
@@ -107,7 +106,7 @@ public class ResourceServiceImpl implements ResourceService {
     resourceRepo.delete(old);
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     var persisted = saveMergingGraph(mapped);
-    if (isOfType(persisted, WORK)) {
+    if (persisted.isOfType(WORK)) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(persisted, oldWork));
     } else {
       reindexParentWorkAfterInstanceUpdate(persisted, oldWork);
@@ -204,7 +203,7 @@ public class ResourceServiceImpl implements ResourceService {
       var oldWork = extractWork(resource).map(Resource::new).orElse(null);
       breakCircularEdges(resource);
       resourceRepo.delete(resource);
-      if (isOfType(resource, WORK)) {
+      if (resource.isOfType(WORK)) {
         applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
       } else {
         reindexParentWorkAfterInstanceDeletion(id, resource, oldWork);
@@ -223,7 +222,7 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   private void validateMarkViewSupportedType(Resource resource) {
-    if (isOfType(resource, INSTANCE)) {
+    if (resource.isOfType(INSTANCE)) {
       return;
     }
     throw new ValidationException(
@@ -247,7 +246,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private boolean isAuthority(Resource resource) {
     return AUTHORITY_TYPES.stream()
-      .anyMatch(t -> isOfType(resource, t));
+      .anyMatch(resource::isOfType);
   }
 
   private void breakCircularEdges(Resource resource) {

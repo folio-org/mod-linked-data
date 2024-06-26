@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,8 @@ public class GeographicCoverageMapperUnit extends ReferenceMapperUnit {
     super((geographicCoverage, destination) -> {
       if (destination instanceof Work work) {
         work.addGeographicCoverageReferenceItem(geographicCoverage);
+      } else if (destination instanceof WorkReference workReference) {
+        workReference.addGeographicCoverageReferenceItem(geographicCoverage);
       }
     }, resourceRepository);
   }

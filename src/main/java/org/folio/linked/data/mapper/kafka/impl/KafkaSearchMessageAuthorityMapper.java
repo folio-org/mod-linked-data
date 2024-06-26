@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
-import static org.folio.linked.data.util.BibframeUtils.isOfType;
 
 import java.util.Optional;
 import lombok.NonNull;
@@ -53,7 +52,7 @@ public class KafkaSearchMessageAuthorityMapper
 
   private String parseType(Resource resource) {
     var types = resource.getTypes();
-    if (isOfType(resource, CONCEPT)) {
+    if (resource.isOfType(CONCEPT)) {
       return CONCEPT.toString();
     }
     return types.stream()

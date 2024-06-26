@@ -1,4 +1,4 @@
-package org.folio.linked.data.utils;
+package org.folio.linked.data.test;
 
 import java.util.Optional;
 import java.util.stream.Stream;

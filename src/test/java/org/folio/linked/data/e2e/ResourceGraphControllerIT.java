@@ -22,7 +22,7 @@ import java.util.Map;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.test.MonographTestUtil;
-import org.folio.linked.data.utils.ResourceTestService;
+import org.folio.linked.data.test.ResourceTestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

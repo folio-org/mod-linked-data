@@ -13,7 +13,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = Work.class)
+@MapperUnit(type = WORK, predicate = INSTANTIATES, dtoClass = WorkReference.class)
 public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Collections.singleton(Instance.class);
@@ -39,22 +39,22 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof Instance instance) {
-      var work = coreMapper.toDtoWithEdges(source, Work.class, false);
-      work.setId(String.valueOf(source.getId()));
-      ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
-      instance.addWorkReferenceItem(work);
+      var workReference = coreMapper.toDtoWithEdges(source, WorkReference.class, false);
+      workReference.setId(String.valueOf(source.getId()));
+      ofNullable(source.getDoc()).ifPresent(doc -> workReference.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      instance.addWorkReferenceItem(workReference);
     }
     return parentDto;
   }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var work = (Work) dto;
+    var work = (WorkReference) dto;
     if (nonNull(work.getId())) {
       return resourceRepository.findById(Long.parseLong(work.getId()))
         .orElseThrow(() -> new NotFoundException("Work with id [" + work.getId() + "] is not found"));
     } else {
-      throw new ValidationException("Work id", "null");
+      throw new ValidationException("WorkReference id", "null");
     }
   }
 

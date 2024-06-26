@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Instance Title Info",
+  "description": "Primary Title Info",
   "allOf": [
     {
       "$ref": "BaseTitle.json"

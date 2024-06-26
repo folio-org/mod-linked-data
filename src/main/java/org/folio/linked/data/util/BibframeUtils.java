@@ -19,7 +19,6 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.ld.dictionary.model.ResourceType;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.BibframeIndex;
 
@@ -70,10 +69,6 @@ public class BibframeUtils {
       .orElse(null);
   }
 
-  public static boolean isOfType(Resource resource, ResourceType type) {
-    return resource.getTypes().stream().anyMatch(t -> t.getUri().equals(type.getUri()));
-  }
-
   public static boolean isSameResource(BibframeIndex index, Resource resource) {
     if (nonNull(index) && nonNull(resource) && nonNull(resource.getId())) {
       return String.valueOf(resource.getId()).equals(index.getId());
@@ -83,7 +78,7 @@ public class BibframeUtils {
   }
 
   public static Optional<Resource> extractWork(Resource resource) {
-    if (isOfType(resource, WORK)) {
+    if (resource.isOfType(WORK)) {
       return Optional.of(resource);
     }
     return resource.getOutgoingEdges().stream()
@@ -97,7 +92,7 @@ public class BibframeUtils {
   }
 
   public static List<Resource> extractInstances(Resource resource) {
-    if (isOfType(resource, INSTANCE)) {
+    if (resource.isOfType(INSTANCE)) {
       return List.of(resource);
     }
     return resource.getIncomingEdges().stream()

@@ -29,7 +29,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.cleanDate;
-import static org.folio.linked.data.util.BibframeUtils.isOfType;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_PARALLEL;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_VARIANT;
@@ -93,7 +92,7 @@ public class KafkaSearchMessageBibframeMapper
       log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), "null");
       return empty();
     }
-    if (!isOfType(work, WORK)) {
+    if (!work.isOfType(WORK)) {
       throw new LinkedDataServiceException(format(NOT_A_WORK, work, eventType.getValue()));
     }
     var workIndex = new BibframeIndex(String.valueOf(work.getId()));
@@ -113,7 +112,7 @@ public class KafkaSearchMessageBibframeMapper
 
   @Override
   public Optional<Long> toDeleteIndexId(@NonNull Resource work) {
-    if (!isOfType(work, WORK)) {
+    if (!work.isOfType(WORK)) {
       throw new LinkedDataServiceException(format(NOT_A_WORK, work, DELETE.getValue()));
     }
     return ofNullable(work.getId());
@@ -230,7 +229,7 @@ public class KafkaSearchMessageBibframeMapper
   }
 
   private List<BibframeInstancesInner> extractInstances(Resource resource) {
-    var workStream = isOfType(resource, INSTANCE) ? resource.getOutgoingEdges().stream()
+    var workStream = resource.isOfType(INSTANCE) ? resource.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget) : Stream.of(resource);
     return workStream

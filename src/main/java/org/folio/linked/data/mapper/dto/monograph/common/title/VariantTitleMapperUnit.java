@@ -21,6 +21,7 @@ import org.folio.linked.data.domain.dto.InstanceReference;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -45,6 +46,8 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
       instanceReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     } else if (parentDto instanceof Work work) {
       work.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
+    } else if (parentDto instanceof WorkReference workReference) {
+      workReference.addTitleItem(new VariantTitleField().variantTitle(variantTitle));
     }
     return parentDto;
   }

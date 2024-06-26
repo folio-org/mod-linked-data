@@ -1,4 +1,4 @@
-package org.folio.linked.data.test;
+package org.folio.linked.data.test.kafka;
 
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 
