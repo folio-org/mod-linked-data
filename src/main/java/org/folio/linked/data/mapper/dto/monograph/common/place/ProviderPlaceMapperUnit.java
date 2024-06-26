@@ -8,7 +8,8 @@ import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
 
 import org.folio.linked.data.domain.dto.Place;
-import org.folio.linked.data.domain.dto.ProviderEvent;
+import org.folio.linked.data.domain.dto.PlaceResponse;
+import org.folio.linked.data.domain.dto.ProviderEventResponse;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -17,7 +18,7 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, dtoClass = Place.class)
+@MapperUnit(type = PLACE, predicate = PROVIDER_PLACE, requestDto = Place.class)
 public class ProviderPlaceMapperUnit extends PlaceMapperUnit {
 
   public ProviderPlaceMapperUnit(CoreMapper coreMapper, HashService hashService) {
@@ -26,8 +27,8 @@ public class ProviderPlaceMapperUnit extends PlaceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof ProviderEvent providerEvent) {
-      var place = coreMapper.toDtoWithEdges(source, Place.class, false);
+    if (parentDto instanceof ProviderEventResponse providerEvent) {
+      var place = coreMapper.toDtoWithEdges(source, PlaceResponse.class, false);
       place.setId(String.valueOf(source.getId()));
       providerEvent.addProviderPlaceItem(place);
     } else {

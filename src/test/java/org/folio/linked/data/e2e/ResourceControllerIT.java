@@ -148,16 +148,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
 import java.util.List;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.InstanceField;
-import org.folio.linked.data.domain.dto.ResourceDto;
-import org.folio.linked.data.domain.dto.WorkField;
+import org.folio.linked.data.domain.dto.InstanceResponseField;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
@@ -202,8 +201,6 @@ class ResourceControllerIT {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
-  private ObjectMapper objectMapper;
-  @Autowired
   private Environment env;
   @SpyBean
   private KafkaSearchSender kafkaSearchSender;
@@ -238,11 +235,11 @@ class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
     validateInstanceResponse(resultActions, toInstance());
 
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
-    var instanceResource = resourceTestService.getResourceById(id, 3);
+    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
+    var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 3);
     validateInstance(instanceResource, true);
-    var workId = ((InstanceField) resourceResponse.getResource()).getInstance().getWorkReference().get(0).getId();
+    var workId = instanceResponse.getWorkReference().get(0).getId();
     checkSearchIndexMessage(Long.valueOf(workId), CREATE);
     checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
@@ -269,8 +266,8 @@ class ResourceControllerIT {
       .andReturn().getResponse().getContentAsString();
     validateWorkResponse(resultActions, toWork());
 
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
+    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
     validateWork(workResource, true);
     checkSearchIndexMessage(workResource.getId(), CREATE);
@@ -305,8 +302,8 @@ class ResourceControllerIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(toInstance(), notNullValue()))
       .andReturn().getResponse().getContentAsString();
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var instanceId = ((InstanceField) resourceResponse.getResource()).getInstance().getId();
+    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var instanceId = ((InstanceResponseField) resourceResponse.getResource()).getInstance().getId();
     var updatedInstance = resourceTestService.getResourceById(instanceId, 1);
     assertThat(updatedInstance.getId()).isNotNull();
     assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
@@ -346,8 +343,8 @@ class ResourceControllerIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(toWork(), notNullValue()))
       .andReturn().getResponse().getContentAsString();
-    var resourceResponse = objectMapper.readValue(response, ResourceDto.class);
-    var id = ((WorkField) resourceResponse.getResource()).getWork().getId();
+    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
 
     var updatedWork = resourceTestService.getResourceById(id, 1);
     assertThat(updatedWork.getId()).isNotNull();

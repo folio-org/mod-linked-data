@@ -53,8 +53,8 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Predicate;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.InstanceResponse;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
@@ -186,7 +186,7 @@ public class KafkaSearchMessageMapperImpl implements KafkaSearchMessageMapper {
       .map(re -> new BibframeContributorsInner()
         .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
         .type(toType(re.getTarget(), BibframeContributorsInner.TypeEnum::fromValue,
-          BibframeContributorsInner.TypeEnum.class, re.getPredicate(), Work.class))
+          BibframeContributorsInner.TypeEnum.class, re.getPredicate(), WorkResponse.class))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> nonNull(ic.getName()))
@@ -260,21 +260,21 @@ public class KafkaSearchMessageMapperImpl implements KafkaSearchMessageMapper {
       .map(ResourceEdge::getTarget)
       .map(ir -> new BibframeInstancesInnerIdentifiersInner()
         .value(getValue(ir.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue()))
-        .type(toType(ir, TypeEnum::fromValue, TypeEnum.class, MAP, Instance.class)))
+        .type(toType(ir, TypeEnum::fromValue, TypeEnum.class, MAP, InstanceResponse.class)))
       .filter(identifier -> nonNull(identifier.getValue()))
       .distinct()
       .toList();
   }
 
   private <E extends Enum<E>> E toType(Resource resource, Function<String, E> typeSupplier, Class<E> enumClass,
-                                       Predicate predicate, Class<?> parentDto) {
+                                       Predicate predicate, Class<?> parentResponseDto) {
     if (isNull(resource.getTypes())) {
       return null;
     }
     return resource.getTypes()
       .stream()
       .map(ResourceTypeEntity::getUri)
-      .filter(type -> singleResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
+      .filter(type -> singleResourceMapper.getMapperUnit(type, predicate, parentResponseDto, null).isPresent())
       .findFirst()
       .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
       .map(typeUri -> {

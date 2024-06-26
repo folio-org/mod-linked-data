@@ -18,8 +18,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Classification;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.domain.dto.ClassificationResponse;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -28,8 +28,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ResourceTypeDictionary.CLASSIFICATION, predicate = CLASSIFICATION,
-  dtoClass = Classification.class)
+@MapperUnit(type = ResourceTypeDictionary.CLASSIFICATION, predicate = CLASSIFICATION, requestDto = Classification.class)
 public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -37,12 +36,10 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var classification = coreMapper.toDtoWithEdges(source, Classification.class, false);
+    var classification = coreMapper.toDtoWithEdges(source, ClassificationResponse.class, false);
     classification.setId(String.valueOf(source.getId()));
-    if (parentDto instanceof Work work) {
+    if (parentDto instanceof WorkResponse work) {
       work.addClassificationItem(classification);
-    } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addClassificationItem(classification);
     }
     return parentDto;
   }

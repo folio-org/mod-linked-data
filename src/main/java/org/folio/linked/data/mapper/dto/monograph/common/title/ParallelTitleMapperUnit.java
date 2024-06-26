@@ -15,12 +15,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.InstanceReference;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.domain.dto.ParallelTitleFieldResponse;
+import org.folio.linked.data.domain.dto.ParallelTitleResponse;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = PARALLEL_TITLE, predicate = TITLE, dtoClass = ParallelTitleField.class)
+@MapperUnit(type = PARALLEL_TITLE, predicate = TITLE, requestDto = ParallelTitleField.class)
 public class ParallelTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -37,16 +37,12 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitle.class, false);
+    var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitleResponse.class, false);
     parallelTitle.setId(String.valueOf(source.getId()));
-    if (parentDto instanceof Instance instance) {
-      instance.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
-    } else if (parentDto instanceof InstanceReference instanceReference) {
-      instanceReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
-    } else if (parentDto instanceof Work work) {
-      work.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
-    } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addTitleItem(new ParallelTitleField().parallelTitle(parallelTitle));
+    if (parentDto instanceof InstanceResponse instance) {
+      instance.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));
+    } else if (parentDto instanceof WorkResponse work) {
+      work.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));
     }
     return parentDto;
   }

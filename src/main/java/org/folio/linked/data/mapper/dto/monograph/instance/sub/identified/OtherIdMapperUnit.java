@@ -12,9 +12,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.OtherId;
 import org.folio.linked.data.domain.dto.OtherIdField;
+import org.folio.linked.data.domain.dto.OtherIdFieldResponse;
+import org.folio.linked.data.domain.dto.OtherIdResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ID_UNKNOWN, predicate = MAP, dtoClass = OtherIdField.class)
+@MapperUnit(type = ID_UNKNOWN, predicate = MAP, requestDto = OtherIdField.class)
 public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -32,10 +34,10 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
-      var otherId = coreMapper.toDtoWithEdges(source, OtherId.class, false);
+    if (parentDto instanceof InstanceResponse instance) {
+      var otherId = coreMapper.toDtoWithEdges(source, OtherIdResponse.class, false);
       otherId.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new OtherIdField().identifier(otherId));
+      instance.addMapItem(new OtherIdFieldResponse().identifier(otherId));
     }
     return parentDto;
   }

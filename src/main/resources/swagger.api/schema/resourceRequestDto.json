@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource request DTO",
+  "type": "object",
+  "properties": {
+    "resource": {
+      "type": "object",
+      "title": "resourceRequestField",
+      "oneOf": [
+        {
+          "title": "InstanceField",
+          "properties": {
+            "Instance": {
+              "type": "object",
+              "$ref": "resource/request/InstanceRequest.json",
+              "x-json-property": "http://bibfra.me/vocab/lite/Instance"
+            }
+          }
+        },
+        {
+          "title": "WorkField",
+          "properties": {
+            "Work": {
+              "type": "object",
+              "$ref": "resource/request/WorkRequest.json",
+              "x-json-property": "http://bibfra.me/vocab/lite/Work"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

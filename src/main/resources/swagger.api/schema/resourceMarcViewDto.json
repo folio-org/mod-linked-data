@@ -12,7 +12,7 @@
     },
     "parsedRecord": {
       "type": "object",
-      "$ref": "resource/MarkRecord.json"
+      "$ref": "marcRecord.json"
     }
   }
 }

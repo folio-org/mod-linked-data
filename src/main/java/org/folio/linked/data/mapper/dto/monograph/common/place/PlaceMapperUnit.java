@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Place;
-import org.folio.linked.data.domain.dto.ProviderEvent;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.domain.dto.ProviderEventRequest;
+import org.folio.linked.data.domain.dto.ProviderEventResponse;
+import org.folio.linked.data.domain.dto.WorkRequest;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.MarcCodeProvider;
@@ -27,9 +28,10 @@ public abstract class PlaceMapperUnit implements SingleResourceMapperUnit, MarcC
 
   private static final String PLACE_LINK_PREFIX = "http://id.loc.gov/vocabulary/countries/";
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
-    ProviderEvent.class,
-    Work.class,
-    WorkReference.class
+    ProviderEventRequest.class,
+    ProviderEventResponse.class,
+    WorkRequest.class,
+    WorkResponse.class
   );
 
   protected final CoreMapper coreMapper;

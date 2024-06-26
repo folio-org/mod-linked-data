@@ -12,9 +12,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Lccn;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.LccnField;
+import org.folio.linked.data.domain.dto.LccnFieldResponse;
+import org.folio.linked.data.domain.dto.LccnRequest;
+import org.folio.linked.data.domain.dto.LccnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ID_LCCN, predicate = MAP, dtoClass = LccnField.class)
+@MapperUnit(type = ID_LCCN, predicate = MAP, requestDto = LccnField.class)
 public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -32,10 +34,10 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
-      var lccn = coreMapper.toDtoWithEdges(source, Lccn.class, false);
+    if (parentDto instanceof InstanceResponse instance) {
+      var lccn = coreMapper.toDtoWithEdges(source, LccnResponse.class, false);
       lccn.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new LccnField().lccn(lccn));
+      instance.addMapItem(new LccnFieldResponse().lccn(lccn));
     }
     return parentDto;
   }
@@ -47,12 +49,12 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(lccn::getValue));
     resource.addTypes(IDENTIFIER, ID_LCCN);
     resource.setDoc(getDoc(lccn));
-    coreMapper.addOutgoingEdges(resource, Lccn.class, lccn.getStatus(), STATUS);
+    coreMapper.addOutgoingEdges(resource, LccnRequest.class, lccn.getStatus(), STATUS);
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(Lccn dto) {
+  private JsonNode getDoc(LccnRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getValue());
     return map.isEmpty() ? null : coreMapper.toJson(map);

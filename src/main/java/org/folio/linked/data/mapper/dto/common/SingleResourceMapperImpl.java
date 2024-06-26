@@ -36,14 +36,14 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
 
   @SneakyThrows
   @Override
-  public <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentDtoClass, Predicate predicate,
+  public <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentRequestDto, Predicate predicate,
                                Resource parentEntity) {
     try {
-      return getMapperUnit(null, predicate, parentDtoClass, dto.getClass())
+      return getMapperUnit(null, predicate, parentRequestDto, dto.getClass())
         .map(mapper -> mapper.toEntity(dto, parentEntity))
         .orElseThrow(() -> new NotSupportedException("Dto [" + dto.getClass().getSimpleName() + IS_NOT_SUPPORTED_FOR
           + (nonNull(predicate) ? PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET + AND : EMPTY)
-          + "parentDto [" + parentDtoClass.getSimpleName() + RIGHT_SQUARE_BRACKET)
+          + "parentDto [" + parentRequestDto.getSimpleName() + RIGHT_SQUARE_BRACKET)
         );
     } catch (BaseLinkedDataException blde) {
       throw blde;
@@ -78,15 +78,15 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
 
 
   @Override
-  public Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
-                                                          Class<?> dtoClass) {
+  public Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentResponseDto,
+                                                          Class<?> requestDto) {
     return mapperUnits.stream()
-      .filter(m -> isNull(parentDto) || m.supportedParents().contains(parentDto))
+      .filter(m -> isNull(parentResponseDto) || m.supportedParents().contains(parentResponseDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
         return (isNull(typeUri) || typeUri.equals(annotation.type().getUri()))
           && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
-          && (isNull(dtoClass) || dtoClass.equals(annotation.dtoClass()));
+          && (isNull(requestDto) || requestDto.equals(annotation.requestDto()));
       })
       .min(comparing(o -> o.getClass().getSimpleName()));
   }

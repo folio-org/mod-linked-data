@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Provider Event",
+  "allOf": [
+    {
+      "$ref": "../common/ProviderEventBase.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "providerPlace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Place.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/providerPlace"
+        }
+      }
+    }
+  ]
+}

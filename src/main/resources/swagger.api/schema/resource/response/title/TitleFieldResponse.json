@@ -1,0 +1,37 @@
+{
+  "oneOf": [
+    {
+      "type": "object",
+      "title": "PrimaryTitleFieldResponse",
+      "properties": {
+        "PrimaryTitle": {
+          "type": "object",
+          "$ref": "schema/resource/response/title/PrimaryTitleResponse.json",
+          "x-json-property": "http://bibfra.me/vocab/marc/Title"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "title": "VariantTitleFieldResponse",
+      "properties": {
+        "VariantTitle": {
+          "type": "object",
+          "$ref": "schema/resource/response/title/VariantTitleResponse.json",
+          "x-json-property": "http://bibfra.me/vocab/marc/VariantTitle"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "title": "ParallelTitleFieldResponse",
+      "properties": {
+        "ParallelTitle": {
+          "type": "object",
+          "$ref": "schema/resource/response/title/ParallelTitleResponse.json",
+          "x-json-property": "http://bibfra.me/vocab/marc/ParallelTitle"
+        }
+      }
+    }
+  ]
+}

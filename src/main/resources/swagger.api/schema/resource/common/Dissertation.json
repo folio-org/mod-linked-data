@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Dissertation object",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/label"
+        },
+        "degree": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/degree"
+        },
+        "dissertationYear": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/dissertationYear"
+        },
+        "dissertationNote": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/dissertationNote"
+        },
+        "dissertationID": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/dissertationID"
+        },
+        "_grantingInstitutionReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Reference.json"
+          }
+        }
+      }
+    }
+  ]
+}

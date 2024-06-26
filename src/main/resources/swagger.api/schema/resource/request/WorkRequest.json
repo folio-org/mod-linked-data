@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Work request DTO",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "title/TitleFieldRequest.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/title",
+          "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
+        },
+        "targetAudience": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/targetAudience"
+        },
+        "tableOfContents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/tableOfContents"
+        },
+        "summary": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/summary"
+        },
+        "language": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/language"
+        },
+        "_notes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Note.json"
+          },
+          "x-json-property": "_notes"
+        },
+        "subjects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Reference.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/subject"
+        },
+        "classification": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Classification.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/classification"
+        },
+        "_creatorReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Agent.json"
+          }
+        },
+        "_contributorReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Agent.json"
+          }
+        },
+        "content": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/content"
+        },
+        "_instanceReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/IdField.json"
+          }
+        },
+        "_geographicCoverageReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Reference.json"
+          }
+        },
+        "_genreReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Reference.json"
+          }
+        },
+        "dateStart": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/dateStart"
+        },
+        "dateEnd": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/dateEnd"
+        },
+        "governmentPublication": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
+        },
+        "originPlace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Place.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
+        },
+        "dissertation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Dissertation.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
+        }
+      },
+      "required": ["title"]
+    }
+  ]
+}

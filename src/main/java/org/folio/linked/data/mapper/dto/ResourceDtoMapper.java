@@ -11,10 +11,11 @@ import java.util.function.ToLongFunction;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceEdgeDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
+import org.folio.linked.data.domain.dto.ResourceRequestDto;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.ResourceShort;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.BaseLinkedDataException;
@@ -42,9 +43,9 @@ public abstract class ResourceDtoMapper {
   public abstract ResourceShortInfoPage map(Page<ResourceShort> page);
 
   @SneakyThrows
-  public Resource toEntity(ResourceDto dto) {
+  public Resource toEntity(ResourceRequestDto dto) {
     try {
-      return singleResourceMapper.toEntity(dto.getResource(), ResourceDto.class, null, null);
+      return singleResourceMapper.toEntity(dto.getResource(), ResourceRequestDto.class, null, null);
     } catch (BaseLinkedDataException blde) {
       throw blde;
     } catch (Exception e) {
@@ -53,8 +54,8 @@ public abstract class ResourceDtoMapper {
     }
   }
 
-  public ResourceDto toDto(Resource resource) {
-    return singleResourceMapper.toDto(resource, new ResourceDto(), null, null);
+  public ResourceResponseDto toDto(Resource resource) {
+    return singleResourceMapper.toDto(resource, new ResourceResponseDto(), null, null);
   }
 
   @Mapping(target = "recordType", constant = "MARC_BIB")
