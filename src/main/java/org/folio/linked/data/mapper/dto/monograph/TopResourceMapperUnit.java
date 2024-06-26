@@ -1,7 +1,6 @@
 package org.folio.linked.data.mapper.dto.monograph;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +28,6 @@ public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit 
       .filter(PrimaryTitleField.class::isInstance)
       .map(PrimaryTitleField.class::cast)
       .map(PrimaryTitleField::getPrimaryTitle)
-      .filter(pt -> isNotEmpty(pt.getMainTitle()))
       .flatMap(pt -> pt.getMainTitle().stream())
       .toList();
   }
