@@ -112,6 +112,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 
@@ -119,11 +120,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import lombok.experimental.UtilityClass;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 
@@ -273,10 +274,14 @@ public class MonographTestUtil {
         entry(WITH_NOTE, List.of("with note"))
       ),
       Set.of(INSTANCE),
-      pred2OutgoingResources)
-      .setInventoryId(UUID.fromString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1"))
-      .setSrsId(UUID.fromString("43d58061-decf-4d74-9747-0e1c368e861b"));
-
+      pred2OutgoingResources
+    );
+    instance.setInstanceMetadata(
+      new InstanceMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")
+        .setSrsId("43d58061-decf-4d74-9747-0e1c368e861b")
+    );
     if (nonNull(id)) {
       instance.setId(id);
     }

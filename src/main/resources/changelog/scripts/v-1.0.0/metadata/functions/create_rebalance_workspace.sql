@@ -24,7 +24,8 @@ do $do$
                                                         ('resource_type_map'),
                                                         ('resource_context_map'),
                                                         ('generator_manifest'),
-                                                        ('resource_generator_map');
+                                                        ('resource_generator_map'),
+                                                        ('instance_metadata');
 
       create table %1$I.existing_partitions (
         id serial,
