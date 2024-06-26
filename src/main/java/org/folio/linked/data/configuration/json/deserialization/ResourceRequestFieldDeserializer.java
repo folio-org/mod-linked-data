@@ -16,10 +16,11 @@ public class ResourceRequestFieldDeserializer extends JsonDeserializer<ResourceR
     ResourceTypeDictionary.INSTANCE.getUri(), InstanceField.class,
     ResourceTypeDictionary.WORK.getUri(), WorkField.class
   );
-  private final DtoDeserializer<ResourceRequestField> dtoDeserializer = new DtoDeserializer<>();
+  private final DtoDeserializer<ResourceRequestField> dtoDeserializer =
+    new DtoDeserializer<>(IDENDTITY_MAP, ResourceRequestField.class);
 
   @Override
   public ResourceRequestField deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
-    return dtoDeserializer.deserialize(jp, IDENDTITY_MAP, ResourceRequestField.class);
+    return dtoDeserializer.deserialize(jp);
   }
 }

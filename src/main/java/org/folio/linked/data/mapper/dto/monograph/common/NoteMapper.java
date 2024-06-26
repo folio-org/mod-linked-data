@@ -27,12 +27,10 @@ public class NoteMapper {
       })
       .flatMap(entry ->
         stream(spliteratorUnknownSize(entry.getValue().iterator(), ORDERED), false)
-          .map(value -> {
-            var notes = new Note();
-            notes.setValue(List.of(value.textValue()));
-            notes.setType(List.of(entry.getKey()));
-            return notes;
-          })
+          .map(value -> new Note()
+            .value(List.of(value.textValue()))
+            .type(List.of(entry.getKey()))
+          )
       )
       .toList();
   }

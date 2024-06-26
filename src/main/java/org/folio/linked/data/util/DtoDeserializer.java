@@ -13,7 +13,10 @@ import org.folio.linked.data.exception.JsonException;
 @RequiredArgsConstructor
 public class DtoDeserializer<D> {
 
-  public D deserialize(JsonParser jp, Map<String, Class<? extends D>> identityMap, Class<D> dtoClass)
+  private final Map<String, Class<? extends D>> identityMap;
+  private final Class<D> dtoClass;
+
+  public D deserialize(JsonParser jp)
     throws IOException {
     JsonNode node = jp.getCodec().readTree(jp);
     return identityMap.entrySet()
@@ -22,7 +25,7 @@ public class DtoDeserializer<D> {
       .map(Map.Entry::getValue)
       .map(clazz -> deserialize(jp, node, clazz))
       .findFirst()
-      .orElseThrow(() -> createUnknownElementException(node, dtoClass.getSimpleName()));
+      .orElseThrow(() -> createUnknownElementException(node));
   }
 
 
@@ -34,8 +37,8 @@ public class DtoDeserializer<D> {
     }
   }
 
-  private JsonException createUnknownElementException(JsonNode node, String dtoClass) {
+  private JsonException createUnknownElementException(JsonNode node) {
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    return new JsonException(dtoClass + DTO_UNKNOWN_SUB_ELEMENT + field);
+    return new JsonException(dtoClass.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }

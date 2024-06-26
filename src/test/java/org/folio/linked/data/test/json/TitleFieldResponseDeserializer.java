@@ -21,10 +21,11 @@ public class TitleFieldResponseDeserializer extends JsonDeserializer<TitleFieldR
     PARALLEL_TITLE.getUri(), ParallelTitleFieldResponse.class,
     VARIANT_TITLE.getUri(), VariantTitleFieldResponse.class
   );
-  private final DtoDeserializer<TitleFieldResponse> dtoDeserializer = new DtoDeserializer<>();
+  private final DtoDeserializer<TitleFieldResponse> dtoDeserializer =
+    new DtoDeserializer<>(IDENDTITY_MAP, TitleFieldResponse.class);
 
   @Override
   public TitleFieldResponse deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
-    return dtoDeserializer.deserialize(jp, IDENDTITY_MAP, TitleFieldResponse.class);
+    return dtoDeserializer.deserialize(jp);
   }
 }

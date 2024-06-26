@@ -28,10 +28,11 @@ public class InstanceAllOfMapDeserializer extends JsonDeserializer<InstanceAllOf
     ID_LOCAL.getUri(), LocalIdField.class,
     ID_UNKNOWN.getUri(), OtherIdField.class
   );
-  private final DtoDeserializer<InstanceAllOfMap> dtoDeserializer = new DtoDeserializer<>();
+  private final DtoDeserializer<InstanceAllOfMap> dtoDeserializer =
+    new DtoDeserializer<>(IDENDTITY_MAP, InstanceAllOfMap.class);
 
   @Override
   public InstanceAllOfMap deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
-    return dtoDeserializer.deserialize(jp, IDENDTITY_MAP, InstanceAllOfMap.class);
+    return dtoDeserializer.deserialize(jp);
   }
 }
