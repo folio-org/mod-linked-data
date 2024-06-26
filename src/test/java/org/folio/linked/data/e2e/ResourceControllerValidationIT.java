@@ -138,7 +138,6 @@ class ResourceControllerValidationIT {
       .content(loadResourceAsString("samples/instance_with_no_main_primary_title.json"));
     var expectedError = getError("instance", "[class PrimaryTitleField {\n"
       + "    primaryTitle: class PrimaryTitle {\n"
-      + "        id: null\n"
       + "        partName: [Primary: partName]\n"
       + "        partNumber: [Primary: partNumber]\n"
       + "        mainTitle: []\n"
