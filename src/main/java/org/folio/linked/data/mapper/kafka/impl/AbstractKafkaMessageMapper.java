@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka;
+package org.folio.linked.data.mapper.kafka.impl;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
+import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 @RequiredArgsConstructor
-public abstract class AbstractKafkaMessageMapper<T, I> implements KafkaMessageMapper<T> {
+public abstract class AbstractKafkaMessageMapper<T, I> implements KafkaSearchMessageMapper<T> {
 
   private static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [workId = {}] conversion to BibframeIndex message";

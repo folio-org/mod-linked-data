@@ -47,8 +47,8 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterCreate(ResourceAuthorityCreatedEvent resourceCreatedEvent) {
     log.info("ResourceAuthorityCreatedEvent received [{}]", resourceCreatedEvent);
-    var authority = resourceRepository.getReferenceById(resourceCreatedEvent.resource().getId());
-    kafkaSender.sendAuthorityCreated(authority);
+    var authority = resourceRepository.getReferenceById(resourceCreatedEvent.id());
+    kafkaSearchSender.sendAuthorityCreated(authority);
   }
 
   @TransactionalEventListener

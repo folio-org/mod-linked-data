@@ -57,8 +57,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResourceServiceImpl implements ResourceService {
 
   private static final Set<ResourceTypeDictionary> AUTHORITY_TYPES = Set.of(CONCEPT, PERSON, FAMILY);
-  private static final String NOT_INDEXED =
-    "Resource [%s] has been %s without indexing, because no Work was found in it's graph";
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
@@ -74,11 +72,6 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
     saveMergingGraph(mapped);
-    getWorkCreatedEvent(mapped)
-      .or(() -> getAuthorityEvent(mapped))
-      .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, mapped.getId(), "created"))
-      );
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(mapped.getId()));
     return resourceDtoMapper.toDto(mapped);
   }
@@ -88,13 +81,13 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    getWorkCreatedEvent(persisted)
-      .or(() -> getAuthorityEvent(persisted))
-      .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, persisted.getId(), "created"))
-      );
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
-    return persisted.getId();
+    var persistedId = persisted.getId();
+    if (isAuthority(persisted)) {
+      applicationEventPublisher.publishEvent(new ResourceAuthorityCreatedEvent(persistedId));
+    } else {
+      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persistedId));
+    }
+    return persistedId;
   }
 
   @Override
@@ -252,27 +245,9 @@ public class ResourceServiceImpl implements ResourceService {
       );
   }
 
-  private Optional<Object> getWorkCreatedEvent(Resource resource) {
-    return extractWork(resource)
-      .map(ResourceCreatedEvent::new);
-  }
-
-  private Optional<Object> getAuthorityEvent(Resource resource) {
-    return Optional.of(resource)
-      .filter(r -> AUTHORITY_TYPES.stream().anyMatch(t -> isOfType(r, t)))
-      .map(ResourceAuthorityCreatedEvent::new);
-  }
-
-  private Optional<Resource> extractWork(Resource resource) {
-    return isOfType(resource, WORK) ? Optional.of(resource)
-      : resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(resourceEdge -> {
-        var work = resourceEdge.getTarget();
-        work.addIncomingEdge(resourceEdge);
-        return work;
-      })
-      .findFirst();
+  private boolean isAuthority(Resource resource) {
+    return AUTHORITY_TYPES.stream()
+      .anyMatch(t -> isOfType(resource, t));
   }
 
   private void breakCircularEdges(Resource resource) {

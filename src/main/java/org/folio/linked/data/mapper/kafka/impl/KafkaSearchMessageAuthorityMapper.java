@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka;
+package org.folio.linked.data.mapper.kafka.impl;
 
 import static java.util.Objects.nonNull;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -17,17 +17,17 @@ import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.BibframeAuthorityIdentifiersInner;
 import org.folio.search.domain.dto.BibframeAuthorityIndex;
-import org.folio.search.domain.dto.ResourceEventType;
+import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-public class KafkaMessageAuthorityMapper
+public class KafkaSearchMessageAuthorityMapper
   extends AbstractKafkaMessageMapper<BibframeAuthorityIndex, BibframeAuthorityIdentifiersInner> {
 
   @Autowired
-  public KafkaMessageAuthorityMapper(SingleResourceMapper singleResourceMapper) {
+  public KafkaSearchMessageAuthorityMapper(SingleResourceMapper singleResourceMapper) {
     super(singleResourceMapper);
   }
 
@@ -38,7 +38,7 @@ public class KafkaMessageAuthorityMapper
   }
 
   @Override
-  public Optional<BibframeAuthorityIndex> toIndex(Resource resource, ResourceEventType eventType) {
+  public Optional<BibframeAuthorityIndex> toIndex(Resource resource, ResourceIndexEventType eventType) {
     var indexDto = new BibframeAuthorityIndex()
       .id(parseId(resource))
       .label(resource.getLabel())

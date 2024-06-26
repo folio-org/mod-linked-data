@@ -51,7 +51,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
-import org.folio.linked.data.mapper.kafka.KafkaMessageBibframeMapper;
+import org.folio.linked.data.mapper.kafka.impl.KafkaSearchMessageBibframeMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
@@ -74,6 +74,7 @@ class KafkaSearchMessageMapperTest {
 
   @InjectMocks
   private KafkaSearchMessageBibframeMapper kafkaMessageMapper;
+
   @Mock
   private SingleResourceMapper singleResourceMapper;
 

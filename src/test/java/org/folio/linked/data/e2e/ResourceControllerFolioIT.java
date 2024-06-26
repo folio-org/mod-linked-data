@@ -56,7 +56,9 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   @Override
   protected void checkInventoryMessage(Long id, InstanceIngressEvent.EventTypeEnum eventType) {
     awaitAndAssert(() ->
-      assertTrue(inventoryTopicListener.getMessages().stream().anyMatch(m -> m.contains(id.toString())
+      assertTrue(inventoryTopicListener.getMessages()
+        .stream()
+        .anyMatch(m -> m.contains(id.toString())
         && m.contains(eventType.getValue())))
     );
   }

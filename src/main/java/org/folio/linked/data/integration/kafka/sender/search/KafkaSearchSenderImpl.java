@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
+import org.folio.search.domain.dto.BibframeAuthorityIndex;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -30,7 +31,8 @@ import org.springframework.stereotype.Service;
 public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   private final ApplicationEventPublisher eventPublisher;
-  private final KafkaSearchMessageMapper kafkaSearchMessageMapper;
+  private final KafkaSearchMessageMapper<BibframeIndex> kafkaSearchMessageMapper;
+  private final KafkaSearchMessageMapper<BibframeAuthorityIndex> kafkaSearchMessageMapperAuthority;
   private final FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
 
   @Override
@@ -65,6 +67,14 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
   @Override
   public void sendResourceDeleted(Resource resource) {
     kafkaSearchMessageMapper.toDeleteIndexId(resource).ifPresent(this::sendDelete);
+  }
+
+  @Override
+  public void sendAuthorityCreated(Resource resource) {
+    kafkaSearchMessageMapper.toIndex(resource, CREATE).ifPresent(bibframeIndex -> {
+      sendCreate(bibframeIndex);
+      publishIndexEvent(bibframeIndex.getId());
+    });
   }
 
   private void indexUpdatedWork(BibframeIndex newWorkIndex, Resource oldWork) {
