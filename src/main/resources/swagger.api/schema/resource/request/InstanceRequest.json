@@ -206,14 +206,6 @@
             "type": "object",
             "$ref": "../common/IdField.json"
           }
-        },
-        "inventoryId": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "srsId": {
-          "type": "string",
-          "format": "uuid"
         }
       },
       "required": ["title"]

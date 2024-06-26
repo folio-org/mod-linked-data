@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.search.domain.dto.BibframeIndex;
+import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -127,7 +127,7 @@ class BibframeUtilsTest {
   })
   void isSameResource_shouldReturnExpectedResult(String id1, Long id2, boolean expectedResult) {
     // given
-    var index = new BibframeIndex();
+    var index = new LinkedDataWork();
     index.setId(id1);
     var resource = new Resource().setId(id2);
 

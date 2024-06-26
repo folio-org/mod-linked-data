@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka.impl;
+package org.folio.linked.data.mapper.kafka.inventory;
 
 import static java.util.Objects.isNull;
 
@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.mapper.kafka.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.folio.search.domain.dto.InstanceIngressPayload;

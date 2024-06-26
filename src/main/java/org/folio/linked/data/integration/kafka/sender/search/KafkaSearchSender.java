@@ -4,12 +4,14 @@ import org.folio.linked.data.model.entity.Resource;
 
 public interface KafkaSearchSender {
 
-  void sendSingleResourceCreated(Resource resource);
+  void sendWorkCreated(Resource resource);
 
-  boolean sendMultipleResourceCreated(Resource resource);
+  boolean sendMultipleWorksCreated(Resource resource);
 
-  void sendResourceUpdated(Resource newResource, Resource oldResource);
+  void sendWorkUpdated(Resource newResource, Resource oldResource);
 
-  void sendResourceDeleted(Resource resource);
+  void sendWorkDeleted(Resource resource);
+
+  void sendAuthorityCreated(Resource resource);
 
 }

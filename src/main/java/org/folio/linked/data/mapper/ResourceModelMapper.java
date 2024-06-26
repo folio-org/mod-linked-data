@@ -17,6 +17,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -67,25 +68,32 @@ public abstract class ResourceModelMapper {
     private final Map<org.folio.ld.dictionary.model.Resource, Resource> convertedEntities = new HashMap<>();
 
     @BeforeMapping
-    public org.folio.ld.dictionary.model.Resource getMappedModel(
+    protected org.folio.ld.dictionary.model.Resource getMappedModel(
       Resource source, @TargetType Class<org.folio.ld.dictionary.model.Resource> target) {
       return convertedModels.get(source);
     }
 
     @BeforeMapping
-    public void storeMappedModel(Resource source, @MappingTarget org.folio.ld.dictionary.model.Resource target) {
+    protected void storeMappedModel(Resource source, @MappingTarget org.folio.ld.dictionary.model.Resource target) {
       convertedModels.put(source, target);
     }
 
     @BeforeMapping
-    public Resource getMappedEntity(org.folio.ld.dictionary.model.Resource source, @TargetType Class<Resource> target) {
+    protected Resource getMappedEntity(org.folio.ld.dictionary.model.Resource source,
+                                       @TargetType Class<Resource> target) {
       return convertedEntities.get(source);
     }
 
     @BeforeMapping
-    public void storeMappedEntity(org.folio.ld.dictionary.model.Resource source, @MappingTarget Resource target) {
+    protected void storeMappedEntity(org.folio.ld.dictionary.model.Resource source, @MappingTarget Resource target) {
       convertedEntities.put(source, target);
     }
 
+    @AfterMapping
+    protected void setResourceInInstanceMetadata(@MappingTarget org.folio.linked.data.model.entity.Resource resource) {
+      if (resource.getInstanceMetadata() != null) {
+        resource.getInstanceMetadata().setResource(resource);
+      }
+    }
   }
 }

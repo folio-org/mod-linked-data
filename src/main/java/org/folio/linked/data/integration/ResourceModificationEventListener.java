@@ -1,17 +1,13 @@
 package org.folio.linked.data.integration;
 
-import static java.lang.String.format;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.BibframeUtils.extractInstances;
-import static org.folio.linked.data.util.BibframeUtils.extractWork;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.NOT_INDEXED;
 
+import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.integration.kafka.sender.inventory.KafkaInventorySender;
-import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
-import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.integration.event.CreateResourceEventProducer;
+import org.folio.linked.data.integration.event.DeleteResourceEventProducer;
+import org.folio.linked.data.integration.event.UpdateResourceEventProducer;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
@@ -30,51 +26,40 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class ResourceModificationEventListener {
 
-  private final KafkaSearchSender kafkaSearchSender;
-  private final KafkaInventorySender kafkaInventorySender;
   private final ResourceRepository resourceRepository;
+  private final Collection<CreateResourceEventProducer> createResourceEventProducers;
+  private final Collection<UpdateResourceEventProducer> updateResourceEventProducers;
+  private final Collection<DeleteResourceEventProducer> deleteResourceEventProducers;
 
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
     var resource = resourceRepository.getReferenceById(resourceCreatedEvent.id());
-    sendToSearch(resource);
-    sendToInventory(resource);
+    createResourceEventProducers
+      .forEach(event -> event.produce(resource));
   }
 
   @TransactionalEventListener
   public void afterUpdate(ResourceUpdatedEvent resourceUpdatedEvent) {
     log.info("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
-    kafkaSearchSender.sendResourceUpdated(resourceUpdatedEvent.newWork(), resourceUpdatedEvent.oldWork());
+    var resource = resourceUpdatedEvent.oldWork();
+    var newResource = resourceUpdatedEvent.newWork();
+    updateResourceEventProducers
+      .forEach(event -> event.produce(resource, newResource));
   }
 
   @TransactionalEventListener
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
     log.info("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
-    kafkaSearchSender.sendResourceDeleted(resourceDeletedEvent.work());
+    var resource = resourceDeletedEvent.work();
+    deleteResourceEventProducers
+      .forEach(event -> event.produce(resource));
   }
 
   @EventListener
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void afterIndex(ResourceIndexedEvent resourceIndexedEvent) {
     log.info("ResourceIndexedEvent received [{}]", resourceIndexedEvent);
-    resourceRepository.updateIndexDate(resourceIndexedEvent.workId());
+    resourceRepository.updateIndexDate(resourceIndexedEvent.resourceId());
   }
-
-  private void sendToSearch(Resource resource) {
-    if (resource.isOfType(WORK)) {
-      kafkaSearchSender.sendSingleResourceCreated(resource);
-    } else {
-      extractWork(resource)
-        .map(Resource::getId)
-        .map(resourceRepository::getReferenceById)
-        .ifPresentOrElse(kafkaSearchSender::sendSingleResourceCreated,
-          () -> log.warn(format(NOT_INDEXED, resource.getId(), "created")));
-    }
-  }
-
-  private void sendToInventory(Resource resource) {
-    extractInstances(resource).forEach(kafkaInventorySender::sendInstanceCreated);
-  }
-
 }

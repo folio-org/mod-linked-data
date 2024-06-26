@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.search.domain.dto.BibframeIndex;
+import org.folio.search.domain.dto.LinkedDataWork;
 
 @Log4j2
 @UtilityClass
@@ -69,7 +69,7 @@ public class BibframeUtils {
       .orElse(null);
   }
 
-  public static boolean isSameResource(BibframeIndex index, Resource resource) {
+  public static boolean isSameResource(LinkedDataWork index, Resource resource) {
     if (nonNull(index) && nonNull(resource) && nonNull(resource.getId())) {
       return String.valueOf(resource.getId()).equals(index.getId());
     } else {

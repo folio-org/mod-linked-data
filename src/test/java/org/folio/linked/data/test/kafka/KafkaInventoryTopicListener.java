@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class KafkaInventoryTopicListener {
   private final List<String> messages = new CopyOnWriteArrayList<>();
 
-  @KafkaListener(topics = "${test.topic.inventory}")
+  @KafkaListener(topics = "${test.topic.inventory-instance-ingress}")
   public void receive(ConsumerRecord<?, ?> consumerRecord) {
     log.info("received consumerRecord = [{}]", consumerRecord.toString());
     messages.add(consumerRecord.value().toString());

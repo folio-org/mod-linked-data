@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.folio.linked.data.mapper.kafka.KafkaInventoryMessageMapper;
+import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;

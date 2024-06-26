@@ -26,7 +26,7 @@ class SearchWorkerTest {
   @Test
   void shouldInitSearchIndex() {
     //given
-    var expectedRequest = new CreateIndexRequest("bibframe");
+    var expectedRequest = new CreateIndexRequest("linked-data-work");
     var attributes = mock(TenantAttributes.class);
     var tenantId = "tenant-01";
 

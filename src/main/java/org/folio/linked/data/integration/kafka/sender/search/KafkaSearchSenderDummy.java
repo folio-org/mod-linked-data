@@ -15,23 +15,28 @@ import org.springframework.stereotype.Service;
 public class KafkaSearchSenderDummy implements KafkaSearchSender {
 
   @Override
-  public void sendSingleResourceCreated(Resource resource) {
+  public void sendWorkCreated(Resource resource) {
     log.debug("sendSingleResourceCreated is ignored by dummy kafka sender, because search feature is disabled");
   }
 
   @Override
-  public boolean sendMultipleResourceCreated(Resource resource) {
+  public boolean sendMultipleWorksCreated(Resource resource) {
     log.debug("sendMultipleResourceCreated is ignored by dummy kafka sender, because search feature is disabled");
     return false;
   }
 
   @Override
-  public void sendResourceUpdated(Resource newResource, Resource oldResource) {
+  public void sendWorkUpdated(Resource newResource, Resource oldResource) {
     log.debug("sendResourceUpdated is ignored by dummy kafka sender, because search feature is disabled");
   }
 
   @Override
-  public void sendResourceDeleted(Resource resource) {
+  public void sendWorkDeleted(Resource resource) {
     log.debug("sendResourceDeleted is ignored by dummy kafka sender, because search feature is disabled");
+  }
+
+  @Override
+  public void sendAuthorityCreated(Resource resource) {
+    log.debug("sendAuthorityCreated is ignored by dummy kafka sender, because search feature is disabled");
   }
 }
