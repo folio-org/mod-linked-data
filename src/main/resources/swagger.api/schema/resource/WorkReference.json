@@ -134,6 +134,14 @@
             "$ref": "Place.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
+        },
+        "dissertation": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Dissertation.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
         }
       }
     }

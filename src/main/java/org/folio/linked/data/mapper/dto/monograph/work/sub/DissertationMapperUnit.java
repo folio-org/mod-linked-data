@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.Dissertation;
 import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkReference;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -36,6 +37,8 @@ public class DissertationMapperUnit implements WorkSubResourceMapperUnit {
     dissertation.setId(String.valueOf(source.getId()));
     if (parentDto instanceof Work work) {
       work.addDissertationItem(dissertation);
+    } else if (parentDto  instanceof WorkReference workReference) {
+      workReference.addDissertationItem(dissertation);
     }
     return parentDto;
   }
