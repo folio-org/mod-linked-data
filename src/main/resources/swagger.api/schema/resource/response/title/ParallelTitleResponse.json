@@ -6,7 +6,7 @@
       "$ref": "BaseTitleResponse.json"
     },
     {
-      "$ref": "../../request/title/ParallelTitle.json"
+      "$ref": "../../common/title/ParallelTitle.json"
     }
   ]
 }

@@ -12,7 +12,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.IdField;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.NotFoundException;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
-    Instance.class,
+    InstanceRequest.class,
     InstanceResponse.class
   );
   private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);

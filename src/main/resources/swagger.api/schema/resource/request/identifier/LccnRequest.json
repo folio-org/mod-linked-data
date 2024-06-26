@@ -1,12 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Base identifier fields",
+  "description": "LCCN Info",
   "allOf": [
     {
-      "$ref": "../../common/IdField.json"
-    },
-    {
-      "$ref": "../../common/IdentifierName.json"
+      "$ref": "../../common/identifier/IdentifierName.json"
     },
     {
       "type": "object",
@@ -15,7 +12,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../StatusResponse.json"
+            "$ref": "../../common/Status.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/status"
         }

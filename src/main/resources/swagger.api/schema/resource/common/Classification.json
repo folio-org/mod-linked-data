@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Base identifier fields",
+  "description": "Classification object",
   "allOf": [
     {
-      "$ref": "../../common/IdentifierName.json"
+      "$ref": "ClassificationBase.json"
     },
     {
       "type": "object",
@@ -12,9 +12,16 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../Status.json"
+            "$ref": "Status.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/status"
+        },
+        "_assigningSourceReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Reference.json"
+          }
         }
       }
     }

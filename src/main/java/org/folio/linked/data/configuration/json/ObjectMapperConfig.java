@@ -7,13 +7,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.InstanceAllOfMapDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.title.TitleFieldDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.InstanceRequestAllOfMapDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.title.TitleFieldRequestDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
-import org.folio.linked.data.domain.dto.InstanceAllOfMap;
+import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
 import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
-import org.folio.linked.data.domain.dto.TitleField;
+import org.folio.linked.data.domain.dto.TitleFieldRequest;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,8 +38,8 @@ public class ObjectMapperConfig {
   private Module monographModule(ObjectMapper mapper) {
     var module = new SimpleModule();
     module.addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer());
-    module.addDeserializer(TitleField.class, new TitleFieldDeserializer());
-    module.addDeserializer(InstanceAllOfMap.class, new InstanceAllOfMapDeserializer());
+    module.addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer());
+    module.addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;
   }

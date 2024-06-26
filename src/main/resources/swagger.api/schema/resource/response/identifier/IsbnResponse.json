@@ -3,7 +3,23 @@
   "description": "ISBN Info",
   "allOf": [
     {
-      "$ref": "BaseIdentifierResponse.json"
+      "$ref": "../../common/IdField.json"
+    },
+    {
+      "$ref": "../../common/identifier/IdentifierName.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../StatusResponse.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/status"
+        }
+      }
     },
     {
       "type": "object",

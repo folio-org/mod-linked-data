@@ -17,9 +17,9 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.ClassificationResponse;
-import org.folio.linked.data.domain.dto.Isbn;
+import org.folio.linked.data.domain.dto.IsbnRequest;
 import org.folio.linked.data.domain.dto.IsbnResponse;
-import org.folio.linked.data.domain.dto.Lccn;
+import org.folio.linked.data.domain.dto.LccnRequest;
 import org.folio.linked.data.domain.dto.LccnResponse;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.domain.dto.StatusResponse;
@@ -37,9 +37,9 @@ import org.springframework.stereotype.Component;
 public class StatusMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
-    Lccn.class,
+    LccnRequest.class,
     LccnResponse.class,
-    Isbn.class,
+    IsbnRequest.class,
     IsbnResponse.class,
     Classification.class,
     ClassificationResponse.class

@@ -44,7 +44,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Reference.json"
+            "$ref": "Reference.json"
           }
         }
       }

@@ -6,7 +6,7 @@
       "$ref": "BaseTitleResponse.json"
     },
     {
-      "$ref": "../../request/title/VariantTitle.json"
+      "$ref": "../../common/title/VariantTitle.json"
     }
   ]
 }

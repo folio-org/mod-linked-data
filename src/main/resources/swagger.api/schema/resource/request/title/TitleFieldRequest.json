@@ -6,7 +6,7 @@
       "properties": {
         "PrimaryTitle": {
           "type": "object",
-          "$ref": "schema/resource/request/title/PrimaryTitle.json",
+          "$ref": "schema/resource/common/title/PrimaryTitle.json",
           "x-json-property": "http://bibfra.me/vocab/marc/Title"
         }
       }
@@ -17,7 +17,7 @@
       "properties": {
         "VariantTitle": {
           "type": "object",
-          "$ref": "schema/resource/request/title/VariantTitle.json",
+          "$ref": "schema/resource/common/title/VariantTitle.json",
           "x-json-property": "http://bibfra.me/vocab/marc/VariantTitle"
         }
       }
@@ -28,7 +28,7 @@
       "properties": {
         "ParallelTitle": {
           "type": "object",
-          "$ref": "schema/resource/request/title/ParallelTitle.json",
+          "$ref": "schema/resource/common/title/ParallelTitle.json",
           "x-json-property": "http://bibfra.me/vocab/marc/ParallelTitle"
         }
       }

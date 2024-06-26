@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
-import org.folio.linked.data.domain.dto.ProviderEvent;
+import org.folio.linked.data.domain.dto.ProviderEventRequest;
 import org.folio.linked.data.domain.dto.ProviderEventResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -43,17 +43,17 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var providerEvent = (ProviderEvent) dto;
+    var providerEvent = (ProviderEventRequest) dto;
     var resource = new Resource();
     resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addTypes(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));
-    coreMapper.addOutgoingEdges(resource, ProviderEvent.class, providerEvent.getProviderPlace(), PROVIDER_PLACE);
+    coreMapper.addOutgoingEdges(resource, ProviderEventRequest.class, providerEvent.getProviderPlace(), PROVIDER_PLACE);
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private List<String> getPossibleLabels(ProviderEvent providerEvent) {
+  private List<String> getPossibleLabels(ProviderEventRequest providerEvent) {
     var result = new ArrayList<String>();
     ofNullable(providerEvent.getName()).ifPresent(result::addAll);
     ofNullable(providerEvent.getSimplePlace()).ifPresent(result::addAll);
@@ -62,7 +62,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
     return result;
   }
 
-  private JsonNode getDoc(ProviderEvent dto) {
+  private JsonNode getDoc(ProviderEventRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, DATE, dto.getDate());
     putProperty(map, NAME, dto.getName());

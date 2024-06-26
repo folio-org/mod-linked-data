@@ -18,9 +18,9 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.CategoryResponse;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
-import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
@@ -32,9 +32,9 @@ import org.folio.linked.data.service.HashService;
 public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
-    Instance.class,
+    InstanceRequest.class,
     InstanceResponse.class,
-    Work.class,
+    WorkRequest.class,
     WorkResponse.class
   );
 

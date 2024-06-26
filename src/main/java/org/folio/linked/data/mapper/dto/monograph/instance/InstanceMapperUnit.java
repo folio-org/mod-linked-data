@@ -43,8 +43,8 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.linked.data.domain.dto.Instance;
 import org.folio.linked.data.domain.dto.InstanceField;
+import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -93,23 +93,24 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     instance.setLabel(getFirstValue(() -> getPrimaryMainTitles(instanceDto.getTitle())));
     instance.setInventoryId(instanceDto.getInventoryId());
     instance.setSrsId(instanceDto.getSrsId());
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getTitle(), TITLE);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getProduction(), PE_PRODUCTION);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getPublication(), PE_PUBLICATION);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getDistribution(), PE_DISTRIBUTION);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getManufacture(), PE_MANUFACTURE);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getAccessLocation(), ACCESS_LOCATION);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getMap(), MAP);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getMedia(), MEDIA);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCarrier(), CARRIER);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getCopyright(), COPYRIGHT);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getWorkReference(), INSTANTIATES);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getTitle(), TITLE);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getProduction(), PE_PRODUCTION);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getPublication(), PE_PUBLICATION);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getDistribution(), PE_DISTRIBUTION);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getManufacture(), PE_MANUFACTURE);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getSupplementaryContent(),
+      SUPPLEMENTARY_CONTENT);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getAccessLocation(), ACCESS_LOCATION);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getMap(), MAP);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getMedia(), MEDIA);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCarrier(), CARRIER);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCopyright(), COPYRIGHT);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
     instance.setId(hashService.hash(instance));
     return instance;
   }
 
-  private JsonNode getDoc(Instance dto) {
+  private JsonNode getDoc(InstanceRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, EXTENT, dto.getExtent());
     putProperty(map, DIMENSIONS, dto.getDimensions());

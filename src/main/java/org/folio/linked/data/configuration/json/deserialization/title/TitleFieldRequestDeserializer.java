@@ -11,22 +11,22 @@ import java.io.IOException;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
-import org.folio.linked.data.domain.dto.TitleField;
+import org.folio.linked.data.domain.dto.TitleFieldRequest;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.util.DtoDeserializer;
 
-public class TitleFieldDeserializer extends JsonDeserializer<TitleField> {
+public class TitleFieldRequestDeserializer extends JsonDeserializer<TitleFieldRequest> {
 
-  private static final Map<String, Class<? extends TitleField>> IDENDTITY_MAP = Map.of(
+  private static final Map<String, Class<? extends TitleFieldRequest>> IDENDTITY_MAP = Map.of(
     TITLE.getUri(), PrimaryTitleField.class,
     PARALLEL_TITLE.getUri(), ParallelTitleField.class,
     VARIANT_TITLE.getUri(), VariantTitleField.class
   );
-  private final DtoDeserializer<TitleField> dtoDeserializer =
-    new DtoDeserializer<>(IDENDTITY_MAP, TitleField.class);
+  private final DtoDeserializer<TitleFieldRequest> dtoDeserializer =
+    new DtoDeserializer<>(IDENDTITY_MAP, TitleFieldRequest.class);
 
   @Override
-  public TitleField deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
+  public TitleFieldRequest deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
     return dtoDeserializer.deserialize(jp);
   }
 

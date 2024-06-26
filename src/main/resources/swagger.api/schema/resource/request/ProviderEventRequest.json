@@ -12,7 +12,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Place.json"
+            "$ref": "../common/Place.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/providerPlace"
         }

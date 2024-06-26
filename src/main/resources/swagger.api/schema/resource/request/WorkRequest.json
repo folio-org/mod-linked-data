@@ -9,7 +9,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "title/TitleField.json"
+            "$ref": "title/TitleFieldRequest.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/title",
           "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
@@ -18,7 +18,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Category.json"
+            "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/targetAudience"
         },
@@ -63,7 +63,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Classification.json"
+            "$ref": "../common/Classification.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/classification"
         },
@@ -85,7 +85,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Category.json"
+            "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/content"
         },
@@ -128,7 +128,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Category.json"
+            "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
         },
@@ -136,7 +136,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Place.json"
+            "$ref": "../common/Place.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
         },
@@ -144,7 +144,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "Dissertation.json"
+            "$ref": "../common/Dissertation.json"
           },
           "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
         }
