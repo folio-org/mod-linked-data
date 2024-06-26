@@ -1,4 +1,4 @@
-package org.folio.linked.data.utils;
+package org.folio.linked.data.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.util.BibframeUtils;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;

@@ -32,12 +32,15 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.validation.PrimaryTitleConstraint;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
 
 @Entity
 @Data
 @NoArgsConstructor
+@PrimaryTitleConstraint
 @Accessors(chain = true)
 @Table(name = "resources")
 @EqualsAndHashCode(of = "id")
@@ -143,6 +146,10 @@ public class Resource implements Persistable<Long> {
       .map(type -> new ResourceTypeEntity(type.getHash(), type.getUri(), null))
       .forEach(this::addType);
     return this;
+  }
+
+  public boolean isOfType(ResourceTypeDictionary type) {
+    return getTypes().stream().anyMatch(at -> at.getUri().equals(type.getUri()));
   }
 
   public Set<ResourceEdge> getOutgoingEdges() {

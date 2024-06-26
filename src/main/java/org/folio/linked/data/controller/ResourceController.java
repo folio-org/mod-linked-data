@@ -1,5 +1,6 @@
 package org.folio.linked.data.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
@@ -7,10 +8,8 @@ import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.rest.resource.ResourceApi;
 import org.folio.linked.data.service.ResourceService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 public class ResourceController implements ResourceApi {
@@ -18,7 +17,7 @@ public class ResourceController implements ResourceApi {
   private final ResourceService resourceService;
 
   @Override
-  public ResponseEntity<ResourceDto> createResource(String okapiTenant, ResourceDto resourceDto) {
+  public ResponseEntity<ResourceDto> createResource(String okapiTenant, @Valid ResourceDto resourceDto) {
     return ResponseEntity.ok(resourceService.createResource(resourceDto));
   }
 
@@ -29,7 +28,7 @@ public class ResourceController implements ResourceApi {
 
   @Override
   public ResponseEntity<ResourceDto> updateResource(Long id, String okapiTenant,
-                                                    ResourceDto resourceDto) {
+                                                    @Valid ResourceDto resourceDto) {
     return ResponseEntity.ok(resourceService.updateResource(id, resourceDto));
   }
 

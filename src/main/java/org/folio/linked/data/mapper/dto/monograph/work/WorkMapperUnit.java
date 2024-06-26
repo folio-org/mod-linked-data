@@ -71,7 +71,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     var work = new Resource();
     work.addTypes(WORK);
     work.setDoc(getDoc(workDto));
-    work.setLabel(getFirstValue(() -> getPossibleLabels(workDto.getTitle())));
+    work.setLabel(getFirstValue(() -> getPrimaryMainTitles(workDto.getTitle())));
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getTitle(), TITLE);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getClassification(), CLASSIFICATION);
     coreMapper.addOutgoingEdges(work, Work.class, workDto.getContent(), CONTENT);

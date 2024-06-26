@@ -1,10 +1,10 @@
 package org.folio.linked.data.configuration.json.deserialization.event;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.KafkaEventsTestDataFixture.authorityEvent;
-import static org.folio.linked.data.test.KafkaEventsTestDataFixture.dataImportEvent;
-import static org.folio.linked.data.test.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.authorityEvent;
+import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.dataImportEvent;
+import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.instanceCreatedEvent;
 
 import java.io.IOException;
 import java.util.Map;

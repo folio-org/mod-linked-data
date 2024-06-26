@@ -1,9 +1,9 @@
 package org.folio.linked.data.integration;
 
-import static org.folio.linked.data.test.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
+import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.mockito.Mockito.doThrow;

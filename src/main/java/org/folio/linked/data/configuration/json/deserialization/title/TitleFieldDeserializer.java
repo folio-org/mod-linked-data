@@ -1,4 +1,4 @@
-package org.folio.linked.data.configuration.json.deserialization;
+package org.folio.linked.data.configuration.json.deserialization.title;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
@@ -10,26 +10,26 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
-import org.folio.linked.data.domain.dto.BasicTitleField;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
-import org.folio.linked.data.domain.dto.TitleTitleInner;
+import org.folio.linked.data.domain.dto.PrimaryTitleField;
+import org.folio.linked.data.domain.dto.TitleField;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.exception.JsonException;
 
-public class TitleDeserializer extends JsonDeserializer<TitleTitleInner> {
+public class TitleFieldDeserializer extends JsonDeserializer<TitleField> {
 
   @Override
-  public TitleTitleInner deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
+  public TitleField deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
     throws IOException {
     JsonNode node = jsonParser.getCodec().readTree(jsonParser);
     if (node.has(TITLE.getUri())) {
-      return jsonParser.getCodec().treeToValue(node, BasicTitleField.class);
+      return jsonParser.getCodec().treeToValue(node, PrimaryTitleField.class);
     } else if (node.has(PARALLEL_TITLE.getUri())) {
       return jsonParser.getCodec().treeToValue(node, ParallelTitleField.class);
     } else if (node.has(VARIANT_TITLE.getUri())) {
       return jsonParser.getCodec().treeToValue(node, VariantTitleField.class);
     }
     var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    throw new JsonException(TitleTitleInner.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
+    throw new JsonException(TitleField.class.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
   }
 }
