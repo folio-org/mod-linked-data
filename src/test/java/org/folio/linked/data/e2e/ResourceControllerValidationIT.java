@@ -129,7 +129,42 @@ class ResourceControllerValidationIT {
     assertThat(errorResponse.getErrors()).containsOnly(expectedError);
   }
 
+  @Test
+  void createInstanceWithTitleWithoutMainTitle_shouldReturnBadRequest() throws Exception {
+    // given
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(loadResourceAsString("samples/instance_with_no_main_primary_title.json"));
+    var expectedError = getError("instance", "[class PrimaryTitleField {\n"
+      + "    primaryTitle: class PrimaryTitle {\n"
+      + "        id: null\n"
+      + "        partName: [Primary: partName]\n"
+      + "        partNumber: [Primary: partNumber]\n"
+      + "        mainTitle: []\n"
+      + "        subTitle: [Primary: subTitle]\n"
+      + "        nonSortNum: [Primary: nonSortNum]\n"
+      + "    }\n"
+      + "}]");
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isBadRequest())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+
+    var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+  }
+
   private Error getError(String resourceType) {
+    return getError(resourceType, "[]");
+  }
+
+  private Error getError(String resourceType, String value) {
     return new Error()
       .code("validation_error")
       .message("Primary main title should be presented")
@@ -137,7 +172,7 @@ class ResourceControllerValidationIT {
       .parameters(List.of(
         new Parameter()
           .key("resource." + resourceType + ".title")
-          .value("[]")
+          .value(value)
       ));
   }
 }

@@ -1,7 +1,7 @@
 package org.folio.linked.data.validation.entity;
 
 import static java.util.Objects.nonNull;
-import static java.util.Optional.ofNullable;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
@@ -21,13 +21,14 @@ public class PrimaryTitleEntityValidator implements ConstraintValidator<PrimaryT
     if (!resource.isOfType(INSTANCE) && !resource.isOfType(WORK)) {
       return true;
     }
-    return ofNullable(resource.getOutgoingEdges())
-      .map(oe -> oe.stream()
-        .map(ResourceEdge::getTarget)
-        .filter(target -> target.isOfType(TITLE) && nonNull(target.getDoc()))
-        .map(Resource::getDoc)
-        .anyMatch(this::containsMainTitle))
-      .orElse(false);
+    if (isEmpty(resource.getOutgoingEdges())) {
+      return false;
+    }
+    return resource.getOutgoingEdges().stream()
+      .map(ResourceEdge::getTarget)
+      .filter(target -> target.isOfType(TITLE) && nonNull(target.getDoc()))
+      .map(Resource::getDoc)
+      .anyMatch(this::containsMainTitle);
   }
 
   private boolean containsMainTitle(JsonNode doc) {

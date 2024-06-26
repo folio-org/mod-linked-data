@@ -98,8 +98,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getPublication(), PE_PUBLICATION);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getDistribution(), PE_DISTRIBUTION);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getManufacture(), PE_MANUFACTURE);
-    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getSupplementaryContent(),
-      SUPPLEMENTARY_CONTENT);
+    coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getAccessLocation(), ACCESS_LOCATION);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getMap(), MAP);
     coreMapper.addOutgoingEdges(instance, Instance.class, instanceDto.getMedia(), MEDIA);

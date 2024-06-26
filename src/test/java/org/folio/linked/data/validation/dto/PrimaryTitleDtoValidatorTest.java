@@ -18,7 +18,7 @@ class PrimaryTitleDtoValidatorTest {
   private final PrimaryTitleDtoValidator validator = new PrimaryTitleDtoValidator();
 
   @Test
-  void shouldReturnFalse_ifGivenTitleFieldListIsNull() {
+  void shouldReturnTrue_ifGivenTitleFieldListIsNull() {
     // when
     boolean result = validator.isValid(null, null);
 
