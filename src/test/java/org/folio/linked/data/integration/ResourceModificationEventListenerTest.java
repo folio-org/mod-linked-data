@@ -80,7 +80,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterIndex(resourceIndexedEvent);
 
     //then
-    verify(resourceRepository).updateIndexDate(resourceIndexedEvent.workId());
+    verify(resourceRepository).updateIndexDate(resourceIndexedEvent.resourceId());
   }
 
 }

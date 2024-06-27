@@ -12,6 +12,8 @@ folio:
     topics:
       - name: search.bibframe
         numPartitions: 1
+      - name: search.bibframe-authorities
+        numPartitions: 1
       - name: inventory.instance_ingress
         numPartitions: 1
       - name: DI_COMPLETED
@@ -20,4 +22,5 @@ folio:
 test:
   topic:
     search: folio.test_tenant.search.bibframe
+    search-authorities: folio.test_tenant.search.bibframe-authorities
     inventory: folio.test_tenant.inventory.instance_ingress

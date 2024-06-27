@@ -16,6 +16,7 @@ public class Constants {
   public static final String RESOURCE_WITH_GIVEN_ID = "Resource with given id [";
   public static final String IS_NOT_FOUND = "] is not found";
   public static final String SEARCH_RESOURCE_NAME = "bibframe";
+  public static final String SEARCH_AUTHORITY_RESOURCE_NAME = "bibframe-authority";
   public static final String TYPE = "type";
   public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";
   public static final String PROFILE_NOT_FOUND = "Profile not found";

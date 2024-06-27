@@ -4,6 +4,7 @@ mod-linked-data:
   kafka:
     topic:
       search-bibframe-index: search.bibframe
+      search-bibframe-authorities-index: search.bibframe-authorities
       inventory-instance-ingress: inventory.instance_ingress
 
 folio:
@@ -29,6 +30,9 @@ folio:
     retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
     topics:
       - name: ${mod-linked-data.kafka.topic.search-bibframe-index:search.bibframe}
+        numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
+        replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
+      - name: ${mod-linked-data.kafka.topic.search-bibframe-authorities-index:search.bibframe-authorities}
         numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
       - name: ${mod-linked-data.kafka.topic.inventory-instance-ingress:inventory.instance_ingress}

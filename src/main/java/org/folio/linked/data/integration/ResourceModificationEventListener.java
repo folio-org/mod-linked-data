@@ -66,7 +66,7 @@ public class ResourceModificationEventListener {
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void afterIndex(ResourceIndexedEvent resourceIndexedEvent) {
     log.info("ResourceIndexedEvent received [{}]", resourceIndexedEvent);
-    resourceRepository.updateIndexDate(resourceIndexedEvent.workId());
+    resourceRepository.updateIndexDate(resourceIndexedEvent.resourceId());
   }
 
   private void sendToSearch(Resource resource) {

@@ -3,6 +3,7 @@ package org.folio.linked.data.integration.kafka.sender.search;
 import static java.lang.Long.parseLong;
 import static org.folio.linked.data.util.BibframeUtils.isSameResource;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.SEARCH_AUTHORITY_RESOURCE_NAME;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
@@ -20,6 +21,7 @@ import org.folio.search.domain.dto.BibframeAuthorityIndex;
 import org.folio.search.domain.dto.BibframeIndex;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -33,12 +35,15 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
   private final ApplicationEventPublisher eventPublisher;
   private final KafkaSearchMessageMapper<BibframeIndex> kafkaSearchMessageMapper;
   private final KafkaSearchMessageMapper<BibframeAuthorityIndex> kafkaSearchMessageMapperAuthority;
+  @Qualifier("resourceIndexEventProducer")
   private final FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
+  @Qualifier("resourceIndexAuthorityEventProducer")
+  private final FolioMessageProducer<ResourceIndexEvent> resourceIndexAuthorityEventProducer;
 
   @Override
   public void sendSingleResourceCreated(Resource resource) {
     kafkaSearchMessageMapper.toIndex(resource, CREATE).ifPresent(bibframeIndex -> {
-      sendCreate(bibframeIndex);
+      sendIndexCreate(bibframeIndex);
       publishIndexEvent(bibframeIndex.getId());
     });
   }
@@ -47,7 +52,7 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
   public boolean sendMultipleResourceCreated(Resource resource) {
     return kafkaSearchMessageMapper.toIndex(resource, CREATE)
       .map(bibframeIndex -> {
-        sendCreate(bibframeIndex);
+        sendIndexCreate(bibframeIndex);
         return true;
       })
       .isPresent();
@@ -71,9 +76,9 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   @Override
   public void sendAuthorityCreated(Resource resource) {
-    kafkaSearchMessageMapper.toIndex(resource, CREATE).ifPresent(bibframeIndex -> {
-      sendCreate(bibframeIndex);
-      publishIndexEvent(bibframeIndex.getId());
+    kafkaSearchMessageMapperAuthority.toIndex(resource, CREATE).ifPresent(authorityIndex -> {
+      sendAuthorityIndexCreate(authorityIndex);
+      publishIndexEvent(authorityIndex.getId());
     });
   }
 
@@ -86,18 +91,27 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
       log.info("Updated Work [{}] has another id than before update ({}), sending DELETE and CREATE events",
         newWorkIndex.getId(), oldWork.getId());
       sendResourceDeleted(oldWork);
-      sendCreate(newWorkIndex);
+      sendIndexCreate(newWorkIndex);
       publishIndexEvent(newWorkIndex.getId());
     }
   }
 
-  private void sendCreate(BibframeIndex bibframeIndex) {
+  private void sendIndexCreate(BibframeIndex index) {
     var message = new ResourceIndexEvent()
       .id(UUID.randomUUID().toString())
       .type(CREATE)
       .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(bibframeIndex);
+      ._new(index);
     resourceIndexEventMessageProducer.sendMessages(List.of(message));
+  }
+
+  private void sendAuthorityIndexCreate(BibframeAuthorityIndex index) {
+    var message = new ResourceIndexEvent()
+      .id(UUID.randomUUID().toString())
+      .type(CREATE)
+      .resourceName(SEARCH_AUTHORITY_RESOURCE_NAME)
+      ._new(index);
+    resourceIndexAuthorityEventProducer.sendMessages(List.of(message));
   }
 
   private void publishIndexEvent(@NotNull String id) {

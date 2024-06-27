@@ -39,6 +39,16 @@ public class KafkaProducerConfiguration {
   }
 
   @Bean
+  public FolioMessageProducer<ResourceIndexEvent> resourceIndexAuthorityEventProducer(
+    KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
+  ) {
+    var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
+      linkedDataTopicProperties::getSearchBibframeAuthoritiesIndex);
+    producer.setKeyMapper(ResourceIndexEvent::getId);
+    return producer;
+  }
+
+  @Bean
   public FolioMessageProducer<InstanceIngressEvent> instanceIngressEventProducer(
     KafkaTemplate<String, InstanceIngressEvent> instanceIngressMessageTemplate
   ) {

@@ -13,6 +13,7 @@ import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.author
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -25,6 +26,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.test.kafka.KafkaSearchIndexAuthorityTopicListener;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
@@ -54,6 +56,8 @@ class DataImportEventListenerIT {
   private DataImportEventHandler dataImportEventHandler;
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
+  @Autowired
+  private KafkaSearchIndexAuthorityTopicListener kafkaSearchIndexAuthorityTopicListener;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -117,6 +121,7 @@ class DataImportEventListenerIT {
     var eventId = "event_id_01";
     var marc = loadResourceAsString("samples/authority_100.jsonl");
     var emittedEvent = authorityEvent(eventId, TENANT_ID, marc);
+    var expectedLabel = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     var expectedEvent = new DataImportEvent()
       .id(eventId)
       .tenant(TENANT_ID)
@@ -141,8 +146,7 @@ class DataImportEventListenerIT {
     assertThat(found)
       .isPresent()
       .get()
-      .hasFieldOrPropertyWithValue("label",
-        "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue")
+      .hasFieldOrPropertyWithValue("label", expectedLabel)
       .satisfies(resource -> assertThat(resource.getDoc()).isNotEmpty())
       .satisfies(resource -> assertThat(resource.getOutgoingEdges()).isNotEmpty())
       .extracting(Resource::getOutgoingEdges)
@@ -152,5 +156,15 @@ class DataImportEventListenerIT {
         .allMatch(edge -> Objects.nonNull(edge.getTarget()))
         .allMatch(edge -> Objects.nonNull(edge.getPredicate()))
       );
+
+    awaitAndAssert(() ->
+        assertTrue(kafkaSearchIndexAuthorityTopicListener.getMessages()
+            .stream()
+            .filter(m -> m.contains("\"type\":\"CREATE\""))
+            .filter(m -> m.contains("\"tenant\":\"test_tenant\""))
+            .filter(m -> m.contains("\"resourceName\":\"bibframe-authority\""))
+            .anyMatch(m -> m.contains(expectedLabel))
+        )
+    );
   }
 }

@@ -10,5 +10,6 @@ import org.springframework.stereotype.Component;
 public class LinkedDataTopicProperties {
 
   private String searchBibframeIndex;
+  private String searchBibframeAuthoritiesIndex;
   private String inventoryInstanceIngress;
 }

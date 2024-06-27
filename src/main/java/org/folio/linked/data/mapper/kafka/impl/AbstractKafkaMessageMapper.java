@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractKafkaMessageMapper<T, I> implements KafkaSearchMessageMapper<T> {
 
   private static final String MSG_UNKNOWN_TYPES =
-    "Unknown type(s) [{}] of [{}] was ignored during Resource [workId = {}] conversion to BibframeIndex message";
+    "Unknown type(s) [{}] of [{}] was ignored during Resource [resourceId = {}] conversion to BibframeIndex message";
 
   private final SingleResourceMapper singleResourceMapper;
 
