@@ -12,9 +12,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.LocalId;
 import org.folio.linked.data.domain.dto.LocalIdField;
+import org.folio.linked.data.domain.dto.LocalIdFieldResponse;
+import org.folio.linked.data.domain.dto.LocalIdResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ID_LOCAL, predicate = MAP, dtoClass = LocalIdField.class)
+@MapperUnit(type = ID_LOCAL, predicate = MAP, requestDto = LocalIdField.class)
 public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -32,10 +34,10 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
-      var localId = coreMapper.toDtoWithEdges(source, LocalId.class, false);
+    if (parentDto instanceof InstanceResponse instance) {
+      var localId = coreMapper.toDtoWithEdges(source, LocalIdResponse.class, false);
       localId.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new LocalIdField().localId(localId));
+      instance.addMapItem(new LocalIdFieldResponse().localId(localId));
     }
     return parentDto;
   }

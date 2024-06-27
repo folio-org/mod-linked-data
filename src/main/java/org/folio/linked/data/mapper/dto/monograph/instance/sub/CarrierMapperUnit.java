@@ -4,8 +4,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 
 import org.folio.linked.data.domain.dto.Category;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.InstanceReference;
+import org.folio.linked.data.domain.dto.CategoryResponse;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
@@ -13,7 +13,7 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = CATEGORY, predicate = CARRIER, dtoClass = Category.class)
+@MapperUnit(type = CATEGORY, predicate = CARRIER, requestDto = Category.class)
 public class CarrierMapperUnit extends CategoryMapperUnit {
 
   private static final String CATEGORY_SET_LABEL = "rdacarrier";
@@ -35,12 +35,9 @@ public class CarrierMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected void addToParent(Category category, Object parentDto) {
-    if (parentDto instanceof Instance instance) {
+  protected void addToParent(CategoryResponse category, Object parentDto) {
+    if (parentDto instanceof InstanceResponse instance) {
       instance.addCarrierItem(category);
-    }
-    if (parentDto instanceof InstanceReference instanceReference) {
-      instanceReference.addCarrierItem(category);
     }
   }
 

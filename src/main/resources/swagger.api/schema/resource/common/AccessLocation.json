@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "AccessLocation",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "link": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/link"
+        },
+        "note": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/note"
+        }
+      }
+    }
+  ]
+}

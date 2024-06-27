@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "SupplementaryContent",
+  "allOf": [
+    {
+      "$ref": "../common/IdField.json"
+    },
+    {
+      "$ref": "../common/SupplementaryContent.json"
+    }
+  ]
+}

@@ -14,12 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.InstanceReference;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.PrimaryTitle;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.domain.dto.PrimaryTitleFieldResponse;
+import org.folio.linked.data.domain.dto.PrimaryTitleResponse;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = TITLE, predicate = PredicateDictionary.TITLE, dtoClass = PrimaryTitleField.class)
+@MapperUnit(type = TITLE, predicate = PredicateDictionary.TITLE, requestDto = PrimaryTitleField.class)
 public class PrimaryTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -36,16 +36,12 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitle.class, false);
+    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitleResponse.class, false);
     primaryTitle.setId(String.valueOf(source.getId()));
-    if (parentDto instanceof Instance instance) {
-      instance.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
-    } else if (parentDto instanceof InstanceReference instanceReference) {
-      instanceReference.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
-    } else if (parentDto instanceof Work work) {
-      work.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
-    } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addTitleItem(new PrimaryTitleField().primaryTitle(primaryTitle));
+    if (parentDto instanceof InstanceResponse instance) {
+      instance.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
+    } else if (parentDto instanceof WorkResponse work) {
+      work.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
     }
     return parentDto;
   }

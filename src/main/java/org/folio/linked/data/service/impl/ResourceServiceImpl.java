@@ -23,9 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
-import org.folio.linked.data.domain.dto.ResourceDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
+import org.folio.linked.data.domain.dto.ResourceRequestDto;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -67,7 +68,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final Bibframe2MarcMapper bibframe2MarcMapper;
 
   @Override
-  public ResourceDto createResource(ResourceDto resourceDto) {
+  public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     log.info("createResource\n[{}]\nfrom Marva DTO [{}]", mapped, resourceDto);
     saveMergingGraph(mapped);
@@ -91,13 +92,13 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   @Transactional(readOnly = true)
-  public ResourceDto getResourceById(Long id) {
+  public ResourceResponseDto getResourceById(Long id) {
     var resource = getResource(id);
     return resourceDtoMapper.toDto(resource);
   }
 
   @Override
-  public ResourceDto updateResource(Long id, ResourceDto resourceDto) {
+  public ResourceResponseDto updateResource(Long id, ResourceRequestDto resourceDto) {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
     var old = getResource(id);
     addInternalFields(resourceDto, old);
@@ -189,7 +190,7 @@ public class ResourceServiceImpl implements ResourceService {
     applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWork, null));
   }
 
-  private void addInternalFields(ResourceDto resourceDto, Resource old) {
+  private void addInternalFields(ResourceRequestDto resourceDto, Resource old) {
     if (resourceDto.getResource() instanceof InstanceField instanceField) {
       ofNullable(old.getInventoryId()).ifPresent(instanceField.getInstance()::setInventoryId);
       ofNullable(old.getSrsId()).ifPresent(instanceField.getInstance()::setSrsId);

@@ -10,8 +10,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.SupplementaryContent;
+import org.folio.linked.data.domain.dto.SupplementaryContentResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = SUPPLEMENTARY_CONTENT, predicate = PredicateDictionary.SUPPLEMENTARY_CONTENT,
-  dtoClass = SupplementaryContent.class)
+  requestDto = SupplementaryContent.class)
 public class SupplementaryContentMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -29,8 +30,8 @@ public class SupplementaryContentMapperUnit implements InstanceSubResourceMapper
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
-      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContent.class, false);
+    if (parentDto instanceof InstanceResponse instance) {
+      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContentResponse.class, false);
       supplementaryContent.setId(String.valueOf(source.getId()));
       instance.addSupplementaryContentItem(supplementaryContent);
     }

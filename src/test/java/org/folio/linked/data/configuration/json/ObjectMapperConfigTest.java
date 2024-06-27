@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
-import org.folio.linked.data.domain.dto.MarkRecord;
+import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ class ObjectMapperConfigTest {
     // given
     var jsonField = """
       {"raw": "some value"}""";
-    var markRecord = new MarkRecord();
+    var markRecord = new MarcRecord();
     markRecord.setContent(jsonField);
     var expectedJsonString = """
       {"content":{"raw": "some value"}}""";

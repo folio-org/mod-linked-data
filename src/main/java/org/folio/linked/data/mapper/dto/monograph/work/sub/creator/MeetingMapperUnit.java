@@ -10,7 +10,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.stereotype.Component;
 
 @Component("CreatorMeetingMapperUnit")
-@MapperUnit(type = MEETING, dtoClass = Agent.class, predicate = CREATOR)
+@MapperUnit(type = MEETING, requestDto = Agent.class, predicate = CREATOR)
 public class MeetingMapperUnit extends CreatorMapperUnit {
 
   public MeetingMapperUnit(AgentRoleAssigner agentRoleAssigner, ResourceRepository resourceRepository) {

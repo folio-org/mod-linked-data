@@ -13,9 +13,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Isbn;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.IsbnField;
+import org.folio.linked.data.domain.dto.IsbnFieldResponse;
+import org.folio.linked.data.domain.dto.IsbnRequest;
+import org.folio.linked.data.domain.dto.IsbnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -25,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ID_ISBN, predicate = MAP, dtoClass = IsbnField.class)
+@MapperUnit(type = ID_ISBN, predicate = MAP, requestDto = IsbnField.class)
 public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -33,10 +35,10 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
-      var isbn = coreMapper.toDtoWithEdges(source, Isbn.class, false);
+    if (parentDto instanceof InstanceResponse instance) {
+      var isbn = coreMapper.toDtoWithEdges(source, IsbnResponse.class, false);
       isbn.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new IsbnField().isbn(isbn));
+      instance.addMapItem(new IsbnFieldResponse().isbn(isbn));
     }
     return parentDto;
   }
@@ -48,12 +50,12 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(isbn::getValue));
     resource.addTypes(IDENTIFIER, ID_ISBN);
     resource.setDoc(getDoc(isbn));
-    coreMapper.addOutgoingEdges(resource, Isbn.class, isbn.getStatus(), STATUS);
+    coreMapper.addOutgoingEdges(resource, IsbnRequest.class, isbn.getStatus(), STATUS);
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(Isbn dto) {
+  private JsonNode getDoc(IsbnRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getValue());
     putProperty(map, QUALIFIER, dto.getQualifier());

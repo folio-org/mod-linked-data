@@ -14,7 +14,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Ean;
 import org.folio.linked.data.domain.dto.EanField;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.EanFieldResponse;
+import org.folio.linked.data.domain.dto.EanResponse;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ID_EAN, predicate = MAP, dtoClass = EanField.class)
+@MapperUnit(type = ID_EAN, predicate = MAP, requestDto = EanField.class)
 public class EanMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -32,10 +34,10 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
-      var ean = coreMapper.toDtoWithEdges(source, Ean.class, false);
+    if (parentDto instanceof InstanceResponse instance) {
+      var ean = coreMapper.toDtoWithEdges(source, EanResponse.class, false);
       ean.setId(String.valueOf(source.getId()));
-      instance.addMapItem(new EanField().ean(ean));
+      instance.addMapItem(new EanFieldResponse().ean(ean));
     }
     return parentDto;
   }

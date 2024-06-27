@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "ISBN Info",
+  "allOf": [
+    {
+      "$ref": "../../common/IdField.json"
+    },
+    {
+      "$ref": "../../common/identifier/IdentifierName.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../StatusResponse.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/status"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "qualifier": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
+        }
+      }
+    }
+  ]
+}

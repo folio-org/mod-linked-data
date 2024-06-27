@@ -10,7 +10,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.stereotype.Component;
 
 @Component("ContributorFamilyMapperUnit")
-@MapperUnit(type = FAMILY, dtoClass = Agent.class, predicate = CONTRIBUTOR)
+@MapperUnit(type = FAMILY, requestDto = Agent.class, predicate = CONTRIBUTOR)
 public class FamilyMapperUnit extends ContributorMapperUnit {
 
   public FamilyMapperUnit(AgentRoleAssigner agentRoleAssigner, ResourceRepository resourceRepository) {

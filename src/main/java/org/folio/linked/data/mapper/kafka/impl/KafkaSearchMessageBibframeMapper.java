@@ -49,8 +49,8 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.Instance;
-import org.folio.linked.data.domain.dto.Work;
+import org.folio.linked.data.domain.dto.InstanceResponse;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -183,7 +183,7 @@ public class KafkaSearchMessageBibframeMapper
       .map(re -> new BibframeContributorsInner()
         .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
         .type(toType(re.getTarget(), BibframeContributorsInner.TypeEnum::fromValue,
-          BibframeContributorsInner.TypeEnum.class, re.getPredicate(), Work.class))
+          BibframeContributorsInner.TypeEnum.class, re.getPredicate(), WorkResponse.class))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> nonNull(ic.getName()))
@@ -254,7 +254,7 @@ public class KafkaSearchMessageBibframeMapper
   @Override
   Optional<BibframeInstancesInnerIdentifiersInner> mapToIdentifier(Resource resource) {
     var value = getValue(resource.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue());
-    var type = toType(resource, TypeEnum::fromValue, TypeEnum.class, MAP, Instance.class);
+    var type = toType(resource, TypeEnum::fromValue, TypeEnum.class, MAP, InstanceResponse.class);
     return Optional.of(new BibframeInstancesInnerIdentifiersInner())
       .map(i -> i.value(value))
       .map(i -> i.type(type))

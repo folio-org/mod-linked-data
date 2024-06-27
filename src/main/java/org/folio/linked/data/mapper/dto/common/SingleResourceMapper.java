@@ -9,9 +9,9 @@ public interface SingleResourceMapper {
 
   <P> P toDto(@NonNull Resource source, @NonNull P parentDto, Resource parentResource, Predicate predicate);
 
-  <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentDtoClass, Predicate predicate,
+  <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentRequestDto, Predicate predicate,
                         Resource parentEntity);
 
-  Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentDto,
-                                                   Class<?> dto);
+  Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentResponseDto,
+                                                   Class<?> requestDto);
 }

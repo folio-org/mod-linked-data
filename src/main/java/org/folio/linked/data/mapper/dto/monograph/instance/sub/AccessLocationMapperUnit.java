@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.AccessLocation;
-import org.folio.linked.data.domain.dto.Instance;
+import org.folio.linked.data.domain.dto.AccessLocationResponse;
+import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = ANNOTATION, predicate = ACCESS_LOCATION, dtoClass = AccessLocation.class)
+@MapperUnit(type = ANNOTATION, predicate = ACCESS_LOCATION, requestDto = AccessLocation.class)
 public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
@@ -29,8 +30,8 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    if (parentDto instanceof Instance instance) {
-      var accessLocation = coreMapper.toDtoWithEdges(source, AccessLocation.class, false);
+    if (parentDto instanceof InstanceResponse instance) {
+      var accessLocation = coreMapper.toDtoWithEdges(source, AccessLocationResponse.class, false);
       accessLocation.setId(String.valueOf(source.getId()));
       instance.addAccessLocationItem(accessLocation);
     }

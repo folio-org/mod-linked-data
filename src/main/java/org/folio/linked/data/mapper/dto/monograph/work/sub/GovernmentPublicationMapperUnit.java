@@ -5,8 +5,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 
 import java.util.Optional;
 import org.folio.linked.data.domain.dto.Category;
-import org.folio.linked.data.domain.dto.Work;
-import org.folio.linked.data.domain.dto.WorkReference;
+import org.folio.linked.data.domain.dto.CategoryResponse;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
@@ -14,7 +14,7 @@ import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = CATEGORY, predicate = GOVERNMENT_PUBLICATION, dtoClass = Category.class)
+@MapperUnit(type = CATEGORY, predicate = GOVERNMENT_PUBLICATION, requestDto = Category.class)
 public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
 
   private static final String CATEGORY_SET_LABEL = "Government Publication Type";
@@ -28,11 +28,9 @@ public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
   }
 
   @Override
-  protected void addToParent(Category category, Object parentDto) {
-    if (parentDto instanceof Work work) {
+  protected void addToParent(CategoryResponse category, Object parentDto) {
+    if (parentDto instanceof WorkResponse work) {
       work.addGovernmentPublicationItem(category);
-    } else if (parentDto instanceof WorkReference workReference) {
-      workReference.addGovernmentPublicationItem(category);
     }
   }
 
