@@ -6,10 +6,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.extractWork;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -21,7 +18,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
@@ -35,7 +31,6 @@ import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.model.entity.event.ResourceAuthorityCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
@@ -56,7 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-  private static final Set<ResourceTypeDictionary> AUTHORITY_TYPES = Set.of(CONCEPT, PERSON, FAMILY);
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
@@ -81,13 +75,8 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    var persistedId = persisted.getId();
-    if (isAuthority(persisted)) {
-      applicationEventPublisher.publishEvent(new ResourceAuthorityCreatedEvent(persistedId));
-    } else {
-      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persistedId));
-    }
-    return persistedId;
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
+    return persisted.getId();
   }
 
   @Override
@@ -243,11 +232,6 @@ public class ResourceServiceImpl implements ResourceService {
       .ifPresentOrElse(applicationEventPublisher::publishEvent,
         () -> log.warn(format(NOT_INDEXED, id, "deleted"))
       );
-  }
-
-  private boolean isAuthority(Resource resource) {
-    return AUTHORITY_TYPES.stream()
-      .anyMatch(resource::isOfType);
   }
 
   private void breakCircularEdges(Resource resource) {

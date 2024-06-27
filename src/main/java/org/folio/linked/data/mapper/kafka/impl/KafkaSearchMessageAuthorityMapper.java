@@ -51,11 +51,11 @@ public class KafkaSearchMessageAuthorityMapper
   }
 
   private String parseType(Resource resource) {
-    var types = resource.getTypes();
     if (resource.isOfType(CONCEPT)) {
       return CONCEPT.toString();
     }
-    return types.stream()
+    return resource.getTypes()
+      .stream()
       .findFirst()
       .map(Object::toString)
       .orElse(StringUtils.EMPTY);

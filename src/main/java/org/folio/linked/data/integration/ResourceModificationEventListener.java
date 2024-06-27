@@ -1,18 +1,22 @@
 package org.folio.linked.data.integration;
 
 import static java.lang.String.format;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.extractInstances;
 import static org.folio.linked.data.util.BibframeUtils.extractWork;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.NOT_INDEXED;
 
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.integration.kafka.sender.inventory.KafkaInventorySender;
 import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.event.ResourceAuthorityCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
@@ -31,6 +35,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class ResourceModificationEventListener {
 
+  private static final Set<ResourceTypeDictionary> AUTHORITY_TYPES = Set.of(CONCEPT, PERSON, FAMILY);
+
   private final KafkaSearchSender kafkaSearchSender;
   private final KafkaInventorySender kafkaInventorySender;
   private final ResourceRepository resourceRepository;
@@ -39,15 +45,12 @@ public class ResourceModificationEventListener {
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
     var resource = resourceRepository.getReferenceById(resourceCreatedEvent.id());
-    sendToSearch(resource);
-    sendToInventory(resource);
-  }
-
-  @TransactionalEventListener
-  public void afterCreate(ResourceAuthorityCreatedEvent resourceCreatedEvent) {
-    log.info("ResourceAuthorityCreatedEvent received [{}]", resourceCreatedEvent);
-    var authority = resourceRepository.getReferenceById(resourceCreatedEvent.id());
-    kafkaSearchSender.sendAuthorityCreated(authority);
+    if (isAuthority(resource)) {
+      sendToAuthoritySearch(resource);
+    } else {
+      sendToSearch(resource);
+      sendToInventory(resource);
+    }
   }
 
   @TransactionalEventListener
@@ -81,8 +84,16 @@ public class ResourceModificationEventListener {
     }
   }
 
+  private void sendToAuthoritySearch(Resource resource) {
+    kafkaSearchSender.sendAuthorityCreated(resource);
+  }
+
   private void sendToInventory(Resource resource) {
     extractInstances(resource).forEach(kafkaInventorySender::sendInstanceCreated);
   }
 
+  private boolean isAuthority(Resource resource) {
+    return AUTHORITY_TYPES.stream()
+      .anyMatch(resource::isOfType);
+  }
 }
