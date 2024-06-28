@@ -51,7 +51,8 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
-import org.folio.linked.data.mapper.kafka.impl.KafkaSearchMessageBibframeMapper;
+import org.folio.linked.data.mapper.kafka.impl.BibframeInstancesInnerIdentifiersInnerMapper;
+import org.folio.linked.data.mapper.kafka.impl.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
@@ -64,16 +65,14 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class KafkaSearchMessageMapperTest {
+class BibliographicSearchMessageMapperTest {
 
-  @InjectMocks
-  private KafkaSearchMessageBibframeMapper kafkaMessageMapper;
+  private BibliographicSearchMessageMapper kafkaMessageMapper;
 
   @Mock
   private SingleResourceMapper singleResourceMapper;
@@ -93,6 +92,8 @@ class KafkaSearchMessageMapperTest {
     ).forEach(t ->
       lenient().when(singleResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
     );
+    kafkaMessageMapper = new BibliographicSearchMessageMapper(
+      new BibframeInstancesInnerIdentifiersInnerMapper(), singleResourceMapper);
   }
 
   @Test

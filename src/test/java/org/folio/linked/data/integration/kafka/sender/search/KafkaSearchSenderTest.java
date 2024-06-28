@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import org.folio.linked.data.mapper.kafka.impl.KafkaSearchMessageBibframeMapper;
+import org.folio.linked.data.mapper.kafka.impl.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeIndex;
@@ -42,16 +42,16 @@ class KafkaSearchSenderTest {
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Mock
-  private KafkaSearchMessageBibframeMapper kafkaSearchMessageBibframeMapper;
+  private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
 
   @Test
-  void sendSingleResourceCreated_shouldNotSendMessage_ifGivenResourceIsNotIndexable() {
+  void sendSingleWorkCreated_shouldNotSendMessage_ifGivenResourceIsNotIndexable() {
     // given
     var resource = new Resource();
-    when(kafkaSearchMessageBibframeMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
 
     // when
-    kafkaSearchSender.sendSingleResourceCreated(resource);
+    kafkaSearchSender.sendWorkCreated(resource);
 
     // then
     verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
@@ -59,14 +59,14 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendSingleResourceCreated_shouldSendMessageAndPublishEvent_ifGivenResourceIsIndexable() {
+  void sendSingleWorkCreated_shouldSendMessageAndPublishEvent_ifGivenResourceIsIndexable() {
     // given
     var resource = new Resource().setId(randomLong());
     var index = new BibframeIndex().id(String.valueOf(resource.getId()));
-    when(kafkaSearchMessageBibframeMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
+    when(bibliographicSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
 
     // when
-    kafkaSearchSender.sendSingleResourceCreated(resource);
+    kafkaSearchSender.sendWorkCreated(resource);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -82,13 +82,13 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendMultipleResourceCreated_shouldReturnFalseAndNotSendMessage_ifGivenResourceIsNotIndexable() {
+  void sendMultipleWorksCreated_shouldReturnFalseAndNotSendMessage_ifGivenWorksIsNotIndexable() {
     // given
     var resource = new Resource();
-    when(kafkaSearchMessageBibframeMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.empty());
 
     // when
-    var result = kafkaSearchSender.sendMultipleResourceCreated(resource);
+    var result = kafkaSearchSender.sendMultipleWorksCreated(resource);
 
     // then
     assertThat(result).isFalse();
@@ -97,14 +97,14 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendMultipleResourceCreated_shouldReturnTrueAndSendMessageButNotPublishEvent_ifGivenResourceIsIndexable() {
+  void sendMultipleWorksCreated_shouldReturnTrueAndSendMessageButNotPublishEvent_ifGivenWorksIsIndexable() {
     // given
     var resource = new Resource().setId(randomLong());
     var index = new BibframeIndex().id(String.valueOf(resource.getId()));
-    when(kafkaSearchMessageBibframeMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
+    when(bibliographicSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(Optional.of(index));
 
     // when
-    var result = kafkaSearchSender.sendMultipleResourceCreated(resource);
+    var result = kafkaSearchSender.sendMultipleWorksCreated(resource);
 
     // then
     assertThat(result).isTrue();
@@ -121,15 +121,15 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendResourceUpdated_shouldNotSendMessage_ifNewResourceIsNotIndexableAndOldResourceToo() {
+  void sendWorkUpdated_shouldNotSendMessage_ifNewResourceIsNotIndexableAndOldWorkToo() {
     // given
     var newResource = new Resource().setId(1L);
     var oldResource = new Resource().setId(2L);
-    when(kafkaSearchMessageBibframeMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
-    when(kafkaSearchMessageBibframeMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
 
     // when
-    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendWorkUpdated(newResource, oldResource);
 
     // then
     verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
@@ -137,19 +137,19 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendResourceUpdated_shouldSendUpdate_ifNewResourceIsIndexableAndKeepsSameId() {
+  void sendWorkUpdated_shouldSendUpdate_ifNewWorkIsIndexableAndKeepsSameId() {
     // given
     long id = 1L;
     var newResource = new Resource().setId(id).setLabel("new");
     var oldResource = new Resource().setId(id).setLabel("old");
     var indexNew = new BibframeIndex().id(String.valueOf(id));
     var indexOld = new BibframeIndex().id(String.valueOf(id)).addLanguagesItem(new BibframeLanguagesInner());
-    when(kafkaSearchMessageBibframeMapper.toIndex(newResource, UPDATE))
+    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE))
       .thenReturn(Optional.of(indexNew))
       .thenReturn(Optional.of(indexOld));
 
     // when
-    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendWorkUpdated(newResource, oldResource);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -166,18 +166,18 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendResourceUpdated_shouldSendDeleteAndCreate_ifNewResourceHasNewIdAndBothResourcesAreIndexable() {
+  void sendWorkUpdated_shouldSendDeleteAndCreate_ifNewWorkHasNewIdAndBothResourcesAreIndexable() {
     // given
     Long newId = 1L;
     Long oldId = 2L;
     var newResource = new Resource().setId(newId).setLabel("new");
     var oldResource = new Resource().setId(oldId).setLabel("old");
     var indexNew = new BibframeIndex().id(newId.toString());
-    when(kafkaSearchMessageBibframeMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.of(indexNew));
-    when(kafkaSearchMessageBibframeMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
+    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.of(indexNew));
+    when(bibliographicSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
 
     // when
-    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendWorkUpdated(newResource, oldResource);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -200,17 +200,17 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendResourceUpdated_shouldSendDelete_ifNewResourceIsNotIndexableButOldIs() {
+  void sendWorkUpdated_shouldSendDelete_ifNewWorkIsNotIndexableButOldIs() {
     // given
     Long newId = 1L;
     Long oldId = 2L;
     var newResource = new Resource().setId(newId).setLabel("new");
     var oldResource = new Resource().setId(oldId).setLabel("old");
-    when(kafkaSearchMessageBibframeMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
-    when(kafkaSearchMessageBibframeMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
+    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.of(oldId));
 
     // when
-    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendWorkUpdated(newResource, oldResource);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -226,17 +226,17 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendResourceUpdated_shouldSendNothing_ifBothResourcesAreNotIndexable() {
+  void sendWorkUpdated_shouldSendNothing_ifBothResourcesAreNotIndexable() {
     // given
     Long newId = 1L;
     Long oldId = 2L;
     var newResource = new Resource().setId(newId).setLabel("new");
     var oldResource = new Resource().setId(oldId).setLabel("old");
-    when(kafkaSearchMessageBibframeMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
-    when(kafkaSearchMessageBibframeMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toDeleteIndexId(oldResource)).thenReturn(Optional.empty());
 
     // when
-    kafkaSearchSender.sendResourceUpdated(newResource, oldResource);
+    kafkaSearchSender.sendWorkUpdated(newResource, oldResource);
 
     // then
     verify(resourceIndexEventMessageProducer, never()).sendMessages(any());
@@ -244,14 +244,14 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendResourceDeleted_shouldSendDelete_ifResourcesIsIndexable() {
+  void sendWorkDeleted_shouldSendDelete_ifResourcesIsIndexable() {
     // given
     Long id = 1L;
     var resource = new Resource().setId(id);
-    when(kafkaSearchMessageBibframeMapper.toDeleteIndexId(resource)).thenReturn(Optional.of(id));
+    when(bibliographicSearchMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.of(id));
 
     // when
-    kafkaSearchSender.sendResourceDeleted(resource);
+    kafkaSearchSender.sendWorkDeleted(resource);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -267,14 +267,14 @@ class KafkaSearchSenderTest {
   }
 
   @Test
-  void sendResourceDeleted_shouldSendNothing_ifResourcesIsNotIndexable() {
+  void sendWorkDeleted_shouldSendNothing_ifResourcesIsNotIndexable() {
     // given
     Long id = 1L;
     var resource = new Resource().setId(id);
-    when(kafkaSearchMessageBibframeMapper.toDeleteIndexId(resource)).thenReturn(Optional.empty());
+    when(bibliographicSearchMessageMapper.toDeleteIndexId(resource)).thenReturn(Optional.empty());
 
     // when
-    kafkaSearchSender.sendResourceDeleted(resource);
+    kafkaSearchSender.sendWorkDeleted(resource);
 
     // then
     verify(resourceIndexEventMessageProducer, never()).sendMessages(any());

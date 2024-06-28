@@ -39,7 +39,7 @@ public class BatchIndexServiceImpl implements BatchIndexService {
 
   private Optional<Long> handleResource(Resource resource, AtomicInteger recordsIndexed) {
     try {
-      boolean indexed = kafkaSearchSender.sendMultipleResourceCreated(resource);
+      boolean indexed = kafkaSearchSender.sendMultipleWorksCreated(resource);
       if (indexed) {
         recordsIndexed.getAndIncrement();
       } else {

@@ -33,24 +33,24 @@ import org.springframework.stereotype.Service;
 public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   private final ApplicationEventPublisher eventPublisher;
-  private final KafkaSearchMessageMapper<BibframeIndex> searchMessageMapper;
+  private final KafkaSearchMessageMapper<BibframeIndex> searchBibliographicMessageMapper;
   private final KafkaSearchMessageMapper<BibframeAuthorityIndex> searchAuthorityMessageMapper;
-  @Qualifier("indexEventProducer")
-  private final FolioMessageProducer<ResourceIndexEvent> indexEventProducer;
+  @Qualifier("bibliographicIndexEventProducer")
+  private final FolioMessageProducer<ResourceIndexEvent> bibliographicIndexEventProducer;
   @Qualifier("authorityIndexEventProducer")
   private final FolioMessageProducer<ResourceIndexEvent> authorityIndexEventProducer;
 
   @Override
-  public void sendSingleResourceCreated(Resource resource) {
-    searchMessageMapper.toIndex(resource, CREATE).ifPresent(bibframeIndex -> {
+  public void sendWorkCreated(Resource resource) {
+    searchBibliographicMessageMapper.toIndex(resource, CREATE).ifPresent(bibframeIndex -> {
       sendIndexCreate(bibframeIndex);
       publishIndexEvent(bibframeIndex.getId());
     });
   }
 
   @Override
-  public boolean sendMultipleResourceCreated(Resource resource) {
-    return searchMessageMapper.toIndex(resource, CREATE)
+  public boolean sendMultipleWorksCreated(Resource resource) {
+    return searchBibliographicMessageMapper.toIndex(resource, CREATE)
       .map(bibframeIndex -> {
         sendIndexCreate(bibframeIndex);
         return true;
@@ -59,19 +59,19 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
   }
 
   @Override
-  public void sendResourceUpdated(Resource newResource, Resource oldResource) {
-    searchMessageMapper.toIndex(newResource, UPDATE).ifPresentOrElse(
+  public void sendWorkUpdated(Resource newResource, Resource oldResource) {
+    searchBibliographicMessageMapper.toIndex(newResource, UPDATE).ifPresentOrElse(
       newWorkIndex -> indexUpdatedWork(newWorkIndex, oldResource),
       () -> {
-        sendResourceDeleted(oldResource);
+        sendWorkDeleted(oldResource);
         log.info("Updated Work [{}] is not indexable anymore, sending DELETE event", oldResource.getId());
       }
     );
   }
 
   @Override
-  public void sendResourceDeleted(Resource resource) {
-    searchMessageMapper.toDeleteIndexId(resource).ifPresent(this::sendDelete);
+  public void sendWorkDeleted(Resource resource) {
+    searchBibliographicMessageMapper.toDeleteIndexId(resource).ifPresent(this::sendDelete);
   }
 
   @Override
@@ -84,13 +84,13 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
 
   private void indexUpdatedWork(BibframeIndex newWorkIndex, Resource oldWork) {
     if (isSameResource(newWorkIndex, oldWork)) {
-      var oldWorkIndex = searchMessageMapper.toIndex(oldWork, UPDATE).orElse(null);
+      var oldWorkIndex = searchBibliographicMessageMapper.toIndex(oldWork, UPDATE).orElse(null);
       log.info("Updated Work [{}] has the same id as before update, sending UPDATE event", newWorkIndex.getId());
       sendUpdate(newWorkIndex, oldWorkIndex);
     } else {
       log.info("Updated Work [{}] has another id than before update ({}), sending DELETE and CREATE events",
         newWorkIndex.getId(), oldWork.getId());
-      sendResourceDeleted(oldWork);
+      sendWorkDeleted(oldWork);
       sendIndexCreate(newWorkIndex);
       publishIndexEvent(newWorkIndex.getId());
     }
@@ -102,7 +102,7 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
       .type(CREATE)
       .resourceName(SEARCH_RESOURCE_NAME)
       ._new(index);
-    indexEventProducer.sendMessages(List.of(message));
+    bibliographicIndexEventProducer.sendMessages(List.of(message));
   }
 
   private void sendAuthorityIndexCreate(BibframeAuthorityIndex index) {
@@ -125,7 +125,7 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
       .resourceName(SEARCH_RESOURCE_NAME)
       ._new(newWorkIndex)
       .old(oldWorkIndex);
-    indexEventProducer.sendMessages(List.of(message));
+    bibliographicIndexEventProducer.sendMessages(List.of(message));
     eventPublisher.publishEvent(new ResourceIndexedEvent(parseLong(newWorkIndex.getId())));
   }
 
@@ -135,7 +135,7 @@ public class KafkaSearchSenderImpl implements KafkaSearchSender {
       .type(DELETE)
       .resourceName(SEARCH_RESOURCE_NAME)
       ._new(new BibframeIndex(id.toString()));
-    indexEventProducer.sendMessages(List.of(message));
+    bibliographicIndexEventProducer.sendMessages(List.of(message));
   }
 
 }

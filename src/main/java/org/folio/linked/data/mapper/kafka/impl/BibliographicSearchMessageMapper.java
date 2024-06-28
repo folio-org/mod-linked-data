@@ -6,21 +6,19 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
@@ -29,13 +27,13 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.cleanDate;
+import static org.folio.linked.data.util.Constants.MSG_UNKNOWN_TYPES;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_PARALLEL;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_VARIANT;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_PARALLEL;
 import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_VARIANT;
-import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
 import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -43,16 +41,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.InstanceResponse;
+import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
+import org.folio.linked.data.mapper.kafka.IndexIdentifierMapper;
+import org.folio.linked.data.mapper.kafka.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -68,23 +70,21 @@ import org.folio.search.domain.dto.BibframeLanguagesInner;
 import org.folio.search.domain.dto.BibframeSubjectsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.folio.search.domain.dto.ResourceIndexEventType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-public class KafkaSearchMessageBibframeMapper
-  extends AbstractKafkaMessageMapper<BibframeIndex, BibframeInstancesInnerIdentifiersInner> {
+@RequiredArgsConstructor
+public class BibliographicSearchMessageMapper implements KafkaSearchMessageMapper<BibframeIndex> {
 
   private static final String NO_INDEXABLE_WORK_FOUND =
     "No index-able work found for [{}] operation of the resource [{}]";
   private static final String NOT_A_WORK = "Not a Work resource [%s] has been passed to indexation for [%s] operation";
 
-  @Autowired
-  public KafkaSearchMessageBibframeMapper(SingleResourceMapper singleResourceMapper) {
-    super(singleResourceMapper);
-  }
+  private final IndexIdentifierMapper<BibframeInstancesInnerIdentifiersInner> innerIndexIdentifierMapper;
+  private final SingleResourceMapper singleResourceMapper;
 
   @Override
   public Optional<BibframeIndex> toIndex(Resource work, ResourceIndexEventType eventType) {
@@ -239,7 +239,7 @@ public class KafkaSearchMessageBibframeMapper
       .map(ir -> new BibframeInstancesInner()
         .id(String.valueOf(ir.getId()))
         .titles(extractTitles(ir))
-        .identifiers(extractIdentifiers(ir))
+        .identifiers(innerIndexIdentifierMapper.extractIdentifiers(ir))
         .contributors(extractContributors(ir))
         .publications(extractPublications(ir))
         .editionStatements(getPropertyValues(ir.getDoc(), EDITION_STATEMENT.getValue())
@@ -249,16 +249,6 @@ public class KafkaSearchMessageBibframeMapper
         || isNotEmpty(bii.getEditionStatements()))
       .distinct()
       .toList();
-  }
-
-  @Override
-  Optional<BibframeInstancesInnerIdentifiersInner> mapToIdentifier(Resource resource) {
-    var value = getValue(resource.getDoc(), NAME.getValue(), EAN_VALUE.getValue(), LOCAL_ID_VALUE.getValue());
-    var type = toType(resource, TypeEnum::fromValue, TypeEnum.class, MAP, InstanceResponse.class);
-    return Optional.of(new BibframeInstancesInnerIdentifiersInner())
-      .map(i -> i.value(value))
-      .map(i -> i.type(type))
-      .filter(i -> nonNull(i.getValue()));
   }
 
   private List<BibframeInstancesInnerPublicationsInner> extractPublications(Resource resource) {
@@ -271,5 +261,51 @@ public class KafkaSearchMessageBibframeMapper
       .filter(ip -> nonNull(ip.getName()) || nonNull(ip.getDate()))
       .distinct()
       .toList();
+  }
+
+  private String getValue(JsonNode doc, String... values) {
+    if (nonNull(doc)) {
+      for (String value : values) {
+        if (doc.has(value) && !doc.get(value).isEmpty()) {
+          return doc.get(value).get(0).asText();
+        }
+      }
+    }
+    return null;
+  }
+
+  <E extends Enum<E>> E toType(Resource resource,
+                               Function<String, E> typeSupplier,
+                               Class<E> enumClass,
+                               Predicate predicate,
+                               Class<?> parentDto) {
+    if (isNull(resource.getTypes())) {
+      return null;
+    }
+    return resource.getTypes()
+      .stream()
+      .map(ResourceTypeEntity::getUri)
+      .filter(type -> singleResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
+      .findFirst()
+      .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
+      .map(typeUri -> {
+        try {
+          return typeSupplier.apply(typeUri);
+        } catch (IllegalArgumentException ignored) {
+          return null;
+        }
+      })
+      .orElseGet(() -> {
+        var enumNameWithParent = getTypeEnumNameWithParent(enumClass);
+        log.warn(MSG_UNKNOWN_TYPES,
+          resource.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", ")),
+          enumNameWithParent, resource.getId());
+        return null;
+      });
+  }
+
+  @NotNull
+  private <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
+    return enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
   }
 }

@@ -5,6 +5,8 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.folio.linked.data.integration.identifier.AuthorityTypeIdentifier;
+import org.folio.linked.data.integration.identifier.BibliographicTypeIdentifier;
 import org.folio.linked.data.integration.kafka.sender.inventory.KafkaInventorySender;
 import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.model.entity.Resource;
@@ -32,18 +34,23 @@ class ResourceModificationEventListenerTest {
   private KafkaInventorySender kafkaInventorySender;
   @Mock
   private ResourceRepository resourceRepository;
+  @Mock
+  private BibliographicTypeIdentifier bibliographicTypeIdentifier;
+  @Mock
+  private AuthorityTypeIdentifier authorityTypeIdentifier;
 
   @Test
   void afterCreate_shouldCall_sendSingleResourceCreated() {
     //given
     var resource = new Resource().setId(1L).addTypes(WORK);
     when(resourceRepository.getReferenceById(1L)).thenReturn(resource);
+    when(bibliographicTypeIdentifier.test(resource)).thenReturn(true);
 
     //when
     resourceModificationEventListener.afterCreate(new ResourceCreatedEvent(resource.getId()));
 
     //then
-    verify(kafkaSearchSender).sendSingleResourceCreated(resource);
+    verify(kafkaSearchSender).sendWorkCreated(resource);
   }
 
   @Test
@@ -56,7 +63,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterUpdate(new ResourceUpdatedEvent(resourceNew, resourceOld));
 
     //then
-    verify(kafkaSearchSender).sendResourceUpdated(resourceNew, resourceOld);
+    verify(kafkaSearchSender).sendWorkUpdated(resourceNew, resourceOld);
   }
 
   @Test
@@ -68,7 +75,7 @@ class ResourceModificationEventListenerTest {
     resourceModificationEventListener.afterDelete(new ResourceDeletedEvent(resource));
 
     //then
-    verify(kafkaSearchSender).sendResourceDeleted(resource);
+    verify(kafkaSearchSender).sendWorkDeleted(resource);
   }
 
   @Test

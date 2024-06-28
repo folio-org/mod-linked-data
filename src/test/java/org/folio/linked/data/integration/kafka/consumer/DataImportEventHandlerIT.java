@@ -58,7 +58,7 @@ class DataImportEventHandlerIT {
 
     //then
     var resourceCaptor = ArgumentCaptor.forClass(Resource.class);
-    verify(kafkaSearchSender).sendSingleResourceCreated(resourceCaptor.capture());
+    verify(kafkaSearchSender).sendWorkCreated(resourceCaptor.capture());
     assertThat(resourceCaptor.getValue().getIncomingEdges()).hasSize(2);
   }
 }
