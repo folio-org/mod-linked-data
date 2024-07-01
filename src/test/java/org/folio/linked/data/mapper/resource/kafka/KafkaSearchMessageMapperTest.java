@@ -7,7 +7,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
@@ -257,8 +256,7 @@ class KafkaSearchMessageMapperTest {
     assertContributor(result.getContributors().get(8), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
       null, false);
     assertThat(result.getLanguages()).hasSize(1);
-    assertThat(result.getLanguages().get(0).getValue())
-      .isEqualTo(work.getDoc().get(LANGUAGE.getValue()).get(0).asText());
+    assertThat(result.getLanguages().get(0).getValue()).isEqualTo("eng");
     assertThat(result.getClassifications()).hasSize(2);
     assertThat(result.getClassifications().get(0).getNumber()).isEqualTo("lc code");
     assertThat(result.getClassifications().get(0).getSource()).isEqualTo("lc");

@@ -22,7 +22,7 @@ public class TargetAudienceMapperUnit extends CategoryMapperUnit {
 
 
   public TargetAudienceMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService);
+    super(hashService, coreMapper);
   }
 
   @Override

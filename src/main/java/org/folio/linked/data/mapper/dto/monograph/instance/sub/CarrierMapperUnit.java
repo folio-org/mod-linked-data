@@ -21,7 +21,7 @@ public class CarrierMapperUnit extends CategoryMapperUnit {
   private static final String CARRIER_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/carriers/";
 
   public CarrierMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService);
+    super(hashService, coreMapper);
   }
 
   @Override

@@ -38,8 +38,8 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
     WorkResponse.class
   );
 
+  protected final HashService hashService;
   private final CoreMapper coreMapper;
-  private final HashService hashService;
 
   protected abstract void addToParent(CategoryResponse category, Object parentDto);
 
@@ -73,6 +73,15 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
 
   protected abstract String getCategorySetLink();
 
+  protected JsonNode getDoc(Category dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, CODE, getMarcCodes(dto.getLink()));
+    putProperty(map, TERM, dto.getTerm());
+    putProperty(map, LINK, dto.getLink());
+    putProperty(map, SOURCE, dto.getSource());
+    return map.isEmpty() ? null : coreMapper.toJson(map);
+  }
+
   private Resource getCategorySet() {
     var label  = getCategorySetLabel();
     var link  = getCategorySetLink();
@@ -85,14 +94,5 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
       .setLabel(label);
     categorySet.setId(hashService.hash(categorySet));
     return categorySet;
-  }
-
-  private JsonNode getDoc(Category dto) {
-    var map = new HashMap<String, List<String>>();
-    putProperty(map, CODE, getMarcCodes(dto.getLink()));
-    putProperty(map, TERM, dto.getTerm());
-    putProperty(map, LINK, dto.getLink());
-    putProperty(map, SOURCE, dto.getSource());
-    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 }

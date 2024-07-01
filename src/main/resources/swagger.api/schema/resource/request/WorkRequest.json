@@ -39,7 +39,8 @@
         "language": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/language"
         },

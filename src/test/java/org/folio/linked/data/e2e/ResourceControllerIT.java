@@ -22,6 +22,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
+import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
 import static org.folio.ld.dictionary.PredicateDictionary.ORIGIN_PLACE;
@@ -61,7 +62,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -103,6 +103,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
@@ -459,8 +460,8 @@ class ResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(56);
-    assertThat(resourceTestService.countEdges()).isEqualTo(58);
+    assertThat(resourceTestService.countResources()).isEqualTo(57);
+    assertThat(resourceTestService.countEdges()).isEqualTo(59);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -471,9 +472,9 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(55);
+    assertThat(resourceTestService.countResources()).isEqualTo(56);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(40);
+    assertThat(resourceTestService.countEdges()).isEqualTo(41);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -483,8 +484,8 @@ class ResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(56);
-    assertThat(resourceTestService.countEdges()).isEqualTo(58);
+    assertThat(resourceTestService.countResources()).isEqualTo(57);
+    assertThat(resourceTestService.countEdges()).isEqualTo(59);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -495,7 +496,7 @@ class ResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(55);
+    assertThat(resourceTestService.countResources()).isEqualTo(56);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(30);
     checkSearchIndexMessage(existed.getId(), DELETE);
@@ -671,7 +672,9 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toPrimaryTitleMain(workBase), equalTo(List.of("Primary: mainTitle"))))
       .andExpect(jsonPath(toPrimaryTitleNonSortNum(workBase), equalTo(List.of("Primary: nonSortNum"))))
       .andExpect(jsonPath(toPrimaryTitleSubtitle(workBase), equalTo(List.of("Primary: subTitle"))))
-      .andExpect(jsonPath(toWorkLanguage(workBase), equalTo("eng")))
+      .andExpect(jsonPath(toLanguageCode(workBase), equalTo("eng")))
+      .andExpect(jsonPath(toLanguageTerm(workBase), equalTo("English")))
+      .andExpect(jsonPath(toLanguageLink(workBase), equalTo("http://id.loc.gov/vocabulary/languages/eng")))
       .andExpect(jsonPath(toClassificationCodes(workBase), containsInAnyOrder("ddc code", "lc code")))
       .andExpect(jsonPath(toClassificationSources(workBase), containsInAnyOrder("ddc", "lc")))
       .andExpect(jsonPath(toClassificationItemNumbers(workBase), containsInAnyOrder("ddc item number",
@@ -1073,11 +1076,10 @@ class ResourceControllerIT {
     assertThat(work.getId()).isNotNull();
     assertThat(work.getLabel()).isEqualTo("Primary: mainTitle");
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
-    assertThat(work.getDoc().size()).isEqualTo(8);
+    assertThat(work.getDoc().size()).isEqualTo(7);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
     validateLiterals(work, DATE_END.getValue(), List.of("2025"));
     validateLiteral(work, SUMMARY.getValue(), "summary text");
-    validateLiteral(work, LANGUAGE.getValue(), "eng");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
     validateLiteral(work, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
     validateLiterals(work, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
@@ -1087,6 +1089,7 @@ class ResourceControllerIT {
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
+    validateLanguage(outgoingEdgeIterator.next(), work);
     validateDissertation(outgoingEdgeIterator.next(), work);
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
@@ -1251,6 +1254,19 @@ class ResourceControllerIT {
     var grantingInstitutionEdge = iterator.next();
     validateResourceEdge(grantingInstitutionEdge, dissertation, grantingInstitutionEdge.getTarget(),
       PredicateDictionary.GRANTING_INSTITUTION.getUri());
+  }
+
+  private void validateLanguage(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(LANGUAGE.getUri());
+    var language = edge.getTarget();
+    var types = language.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).contains(LANGUAGE_CATEGORY.getUri());
+    assertThat(language.getDoc().size()).isEqualTo(3);
+    validateLiteral(language, CODE.getValue(), "eng");
+    validateLiteral(language, LINK.getValue(), "http://id.loc.gov/vocabulary/languages/eng");
+    validateLiteral(language, TERM.getValue(), "English");
   }
 
   private void validateOriginPlace(ResourceEdge edge, Resource source) {
@@ -1636,8 +1652,16 @@ class ResourceControllerIT {
     return join(".", workBase, arrayPath(SUMMARY.getValue()));
   }
 
-  private String toWorkLanguage(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGE.getValue()));
+  private String toLanguageCode(String workBase) {
+    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(CODE.getValue()));
+  }
+
+  private String toLanguageTerm(String workBase) {
+    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(TERM.getValue()));
+  }
+
+  private String toLanguageLink(String workBase) {
+    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(LINK.getValue()));
   }
 
   private String toClassificationSources(String workBase) {

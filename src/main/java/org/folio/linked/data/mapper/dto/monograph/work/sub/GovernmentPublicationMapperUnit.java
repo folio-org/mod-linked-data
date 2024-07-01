@@ -24,7 +24,7 @@ public class GovernmentPublicationMapperUnit extends CategoryMapperUnit {
   private static final String MARC_CODE_O = "o";
 
   public GovernmentPublicationMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService);
+    super(hashService, coreMapper);
   }
 
   @Override

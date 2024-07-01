@@ -20,6 +20,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION
 import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
+import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
 import static org.folio.ld.dictionary.PredicateDictionary.ORIGIN_PLACE;
@@ -60,7 +61,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
@@ -102,6 +102,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
@@ -496,6 +497,16 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("France");
 
+    var language = createResource(
+      Map.of(
+        CODE, List.of("eng"),
+        TERM, List.of("English"),
+        LINK, List.of("http://id.loc.gov/vocabulary/languages/eng")
+      ),
+      Set.of(LANGUAGE_CATEGORY),
+      emptyMap()
+    ).setLabel("eng");
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
@@ -513,10 +524,10 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(ORIGIN_PLACE, List.of(originPlace));
     pred2OutgoingResources.put(DISSERTATION, List.of(createDissertation()));
     pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
+    pred2OutgoingResources.put(LANGUAGE, List.of(language));
 
     var work = createResource(
       Map.ofEntries(
-        entry(LANGUAGE, List.of("eng")),
         entry(SUMMARY, List.of("summary text")),
         entry(TABLE_OF_CONTENTS, List.of("table of contents")),
         entry(BIBLIOGRAPHY_NOTE, List.of("bibliography note")),

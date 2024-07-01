@@ -21,7 +21,7 @@ public class ContentMapperUnit extends CategoryMapperUnit {
   private static final String CONTENT_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/contentTypes/";
 
   public ContentMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService);
+    super(hashService, coreMapper);
   }
 
   @Override
