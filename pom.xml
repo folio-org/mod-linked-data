@@ -50,7 +50,7 @@
     <!-- Test dependencies versions -->
     <testcontainers.version>1.19.8</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
-    <jsonassert.version>1.5.2</jsonassert.version>
+    <jsonassert.version>1.5.3</jsonassert.version>
     <folio-service-tools.version>4.1.0-SNAPSHOT</folio-service-tools.version>
     <easy-random.version>5.0.0</easy-random.version>
 
