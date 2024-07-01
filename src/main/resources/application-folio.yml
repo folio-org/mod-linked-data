@@ -3,7 +3,8 @@ mod-linked-data:
     page-size: 1000
   kafka:
     topic:
-      search-bibframe-index: search.bibframe
+      work-search-index: linked-data.work
+      authority-search-index: linked-data.authority
       inventory-instance-ingress: inventory.instance_ingress
 
 folio:
@@ -28,7 +29,10 @@ folio:
     retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
     retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
     topics:
-      - name: ${mod-linked-data.kafka.topic.search-bibframe-index:search.bibframe}
+      - name: ${mod-linked-data.kafka.topic.linked-data-work-index:linked-data.work}
+        numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
+        replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
+      - name: ${mod-linked-data.kafka.topic.linked-data-authority-index:linked-data.authority}
         numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
       - name: ${mod-linked-data.kafka.topic.inventory-instance-ingress:inventory.instance_ingress}

@@ -11,7 +11,7 @@ import lombok.SneakyThrows;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
-import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
+import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -24,7 +24,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class ResourceControllerFolioIT extends ResourceControllerIT {
 
   @Autowired
-  private KafkaSearchIndexTopicListener searchIndexTopicListener;
+  private KafkaSearchWorkIndexTopicListener searchIndexTopicListener;
   @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired

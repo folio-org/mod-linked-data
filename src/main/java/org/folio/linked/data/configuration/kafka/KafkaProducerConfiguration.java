@@ -29,11 +29,21 @@ public class KafkaProducerConfiguration {
   private final LinkedDataTopicProperties linkedDataTopicProperties;
 
   @Bean
-  public FolioMessageProducer<ResourceIndexEvent> resourceIndexEventProducer(
+  public FolioMessageProducer<ResourceIndexEvent> bibliographicIndexEventProducer(
     KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
   ) {
     var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
-      linkedDataTopicProperties::getSearchBibframeIndex);
+      linkedDataTopicProperties::getWorkSearchIndex);
+    producer.setKeyMapper(ResourceIndexEvent::getId);
+    return producer;
+  }
+
+  @Bean
+  public FolioMessageProducer<ResourceIndexEvent> authorityIndexEventProducer(
+    KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
+  ) {
+    var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
+      linkedDataTopicProperties::getAuthoritySearchIndex);
     producer.setKeyMapper(ResourceIndexEvent::getId);
     return producer;
   }

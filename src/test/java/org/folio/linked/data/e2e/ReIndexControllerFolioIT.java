@@ -22,7 +22,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
+import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -46,7 +46,7 @@ class ReIndexControllerFolioIT {
   @Autowired
   private Environment env;
   @Autowired
-  private KafkaSearchIndexTopicListener consumer;
+  private KafkaSearchWorkIndexTopicListener consumer;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {

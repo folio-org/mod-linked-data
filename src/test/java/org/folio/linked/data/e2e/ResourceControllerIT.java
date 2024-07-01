@@ -517,8 +517,8 @@ class ResourceControllerIT {
 
     //then
     assertTrue(resourceTestService.existsById(existedResource.getId()));
-    verify(kafkaSearchSender, never()).sendResourceDeleted(existedResource);
-    verify(kafkaSearchSender, never()).sendSingleResourceCreated(any());
+    verify(kafkaSearchSender, never()).sendWorkDeleted(existedResource);
+    verify(kafkaSearchSender, never()).sendWorkCreated(any());
   }
 
   @Test

@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Profile(FOLIO_PROFILE)
-public class KafkaInventoryTopicListener {
+public class KafkaSearchWorkIndexTopicListener {
   private final List<String> messages = new CopyOnWriteArrayList<>();
 
-  @KafkaListener(topics = "${test.topic.inventory-instance-ingress}")
+  @KafkaListener(topics = "${test.topic.search-work}")
   public void receive(ConsumerRecord<?, ?> consumerRecord) {
     log.info("received consumerRecord = [{}]", consumerRecord.toString());
     messages.add(consumerRecord.value().toString());

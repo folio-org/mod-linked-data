@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Profile(FOLIO_PROFILE)
-public class KafkaSearchIndexTopicListener {
+public class KafkaSearchAuthorityAuthorityTopicListener {
+
   private final List<String> messages = new CopyOnWriteArrayList<>();
 
-  @KafkaListener(topics = "${test.topic.search}")
+  @KafkaListener(topics = "${test.topic.search-authority}")
   public void receive(ConsumerRecord<?, ?> consumerRecord) {
     log.info("received consumerRecord = [{}]", consumerRecord.toString());
     messages.add(consumerRecord.value().toString());
   }
-
 }
