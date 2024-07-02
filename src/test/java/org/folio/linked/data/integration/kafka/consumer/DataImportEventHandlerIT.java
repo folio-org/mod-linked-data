@@ -41,7 +41,7 @@ class DataImportEventHandlerIT {
   @Test
   void shouldSendWorkForIndexingWithExistingInstanceAlongsideWithNewlyCreatedOne() {
     //given
-    var workResource = getSampleWork(null).setId(8728158894022469403L);
+    var workResource = getSampleWork(null).setId(9046598627024476842L);
     resourceRepository.save(getSampleInstanceResource(null, workResource));
     resourceRepository.save(workResource);
     var resourceEdge = workResource.getIncomingEdges().iterator().next();

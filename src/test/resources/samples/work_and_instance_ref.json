@@ -73,7 +73,14 @@
         "summary text"
       ],
       "http://bibfra.me/vocab/lite/language": [
-        "eng"
+        {
+          "http://bibfra.me/vocab/marc/term": [
+            "English"
+          ],
+          "http://bibfra.me/vocab/lite/link": [
+            "http://id.loc.gov/vocabulary/languages/eng"
+          ]
+        }
       ],
       "_notes": [
         {

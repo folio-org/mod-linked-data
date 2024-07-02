@@ -21,7 +21,7 @@ public class MediaMapperUnit extends CategoryMapperUnit {
   private static final String MEDIA_TYPE_LINK_PREFIX = "http://id.loc.gov/vocabulary/mediaTypes/";
 
   public MediaMapperUnit(CoreMapper coreMapper, HashService hashService) {
-    super(coreMapper, hashService);
+    super(hashService, coreMapper);
   }
 
   @Override

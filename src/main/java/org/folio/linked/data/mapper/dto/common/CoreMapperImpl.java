@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.dto.common;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.TARGET_AUDIENCE;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,9 +85,10 @@ public class CoreMapperImpl implements CoreMapper {
     try {
       if (nonNull(node)) {
         if (dtoClass == WorkResponse.class) {
-          // Temp fix - targetAudience loaded through the Python ETL have targetAudience in text format
-          // causing the deserialization to fail. Here remove the targetAudience from node
+          // Temp fix - below properties loaded through the Python ETL have values in text format
+          // causing the deserialization to fail. Here remove such properties from node
           ((ObjectNode) node).remove(TARGET_AUDIENCE.getValue());
+          ((ObjectNode) node).remove(LANGUAGE.getValue());
         }
         return jsonMapper.treeToValue(node, dtoClass);
       } else {

@@ -12,6 +12,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
@@ -20,7 +21,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
@@ -195,8 +195,13 @@ public class KafkaSearchMessageMapperImpl implements KafkaSearchMessageMapper {
   }
 
   private List<BibframeLanguagesInner> extractLanguages(Resource work) {
-    return getPropertyValues(work.getDoc(), LANGUAGE.getValue())
-      .map(p -> new BibframeLanguagesInner().value(p))
+    return work.getOutgoingEdges()
+      .stream()
+      .filter(re -> LANGUAGE.getUri().equals(re.getPredicate().getUri()))
+      .map(ResourceEdge::getTarget)
+      .map(Resource::getDoc)
+      .flatMap(d -> getPropertyValues(d, CODE.getValue()))
+      .map(pv -> new BibframeLanguagesInner().value(pv))
       .toList();
   }
 

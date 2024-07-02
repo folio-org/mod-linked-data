@@ -20,6 +20,7 @@ import java.util.Date;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -41,6 +42,8 @@ class ReIndexControllerFolioIT {
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
+  private ResourceEdgeRepository resourceEdgeRepository;
+  @Autowired
   private Environment env;
   @Autowired
   private KafkaSearchIndexTopicListener consumer;
@@ -58,6 +61,9 @@ class ReIndexControllerFolioIT {
     var anotherWork = getSampleWork(instance);
     anotherWork.setId(randomLong());
     resourceRepo.save(anotherWork);
+    var resourceEdge = work.getIncomingEdges().iterator().next();
+    resourceEdge.computeId();
+    resourceEdgeRepository.save(resourceEdge);
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)
@@ -94,6 +100,9 @@ class ReIndexControllerFolioIT {
     // given
     var work = resourceRepo.save(getSampleWork(null));
     resourceRepo.save(getSampleInstanceResource(null, work));
+    var resourceEdge = work.getIncomingEdges().iterator().next();
+    resourceEdge.computeId();
+    resourceEdgeRepository.save(resourceEdge);
 
     var requestBuilder = put(INDEX_URL)
       .param("full", "true")
@@ -113,6 +122,9 @@ class ReIndexControllerFolioIT {
     // given
     var work = resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));
     resourceRepo.save(getSampleInstanceResource(null, work));
+    var resourceEdge = work.getIncomingEdges().iterator().next();
+    resourceEdge.computeId();
+    resourceEdgeRepository.save(resourceEdge);
 
     var requestBuilder = put(INDEX_URL)
       .param("full", "true")
