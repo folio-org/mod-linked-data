@@ -199,9 +199,9 @@ public class KafkaSearchMessageMapperImpl implements KafkaSearchMessageMapper {
       .stream()
       .filter(re -> LANGUAGE.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
-      .flatMap(r -> getPropertyValues(r.getDoc(), CODE.getValue())
-        .map(p -> new BibframeLanguagesInner().value(p))
-      )
+      .map(Resource::getDoc)
+      .flatMap(d -> getPropertyValues(d, CODE.getValue()))
+      .map(pv -> new BibframeLanguagesInner().value(pv))
       .toList();
   }
 
