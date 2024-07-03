@@ -5,9 +5,9 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.integration.event.CreateResourceEventProducer;
-import org.folio.linked.data.integration.event.DeleteResourceEventProducer;
-import org.folio.linked.data.integration.event.UpdateResourceEventProducer;
+import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
+import org.folio.linked.data.integration.kafka.sender.DeleteMessageSender;
+import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
@@ -27,15 +27,15 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class ResourceModificationEventListener {
 
   private final ResourceRepository resourceRepository;
-  private final Collection<CreateResourceEventProducer> createResourceEventProducers;
-  private final Collection<UpdateResourceEventProducer> updateResourceEventProducers;
-  private final Collection<DeleteResourceEventProducer> deleteResourceEventProducers;
+  private final Collection<CreateMessageSender> createMessageSenders;
+  private final Collection<UpdateMessageSender> updateMessageSenders;
+  private final Collection<DeleteMessageSender> deleteMessageSenders;
 
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
     var resource = resourceRepository.getReferenceById(resourceCreatedEvent.id());
-    createResourceEventProducers
+    createMessageSenders
       .forEach(event -> event.produce(resource));
   }
 
@@ -44,7 +44,7 @@ public class ResourceModificationEventListener {
     log.info("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
     var resource = resourceUpdatedEvent.oldWork();
     var newResource = resourceUpdatedEvent.newWork();
-    updateResourceEventProducers
+    updateMessageSenders
       .forEach(event -> event.produce(resource, newResource));
   }
 
@@ -52,7 +52,7 @@ public class ResourceModificationEventListener {
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
     log.info("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
     var resource = resourceDeletedEvent.work();
-    deleteResourceEventProducers
+    deleteMessageSenders
       .forEach(event -> event.produce(resource));
   }
 

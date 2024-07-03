@@ -6,8 +6,14 @@ import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import lombok.SneakyThrows;
+import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
+import org.folio.linked.data.integration.kafka.sender.search.WorkDeleteMessageSender;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
@@ -18,6 +24,7 @@ import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
@@ -31,6 +38,10 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
   private ResourceTestService resourceTestService;
+  @SpyBean
+  private WorkCreateMessageSender createEventProducer;
+  @SpyBean
+  private WorkDeleteMessageSender deleteEventProducer;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -64,5 +75,11 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   @Override
   protected void checkIndexDate(String id) {
     assertNotNull(resourceTestService.getResourceById(id, 0).getIndexDate());
+  }
+
+  @Override
+  protected void checkRelevantIndexMessagesDuringUpdate(Resource existedResource) {
+    verify(deleteEventProducer, never()).accept(existedResource);
+    verify(createEventProducer, never()).accept(any());
   }
 }

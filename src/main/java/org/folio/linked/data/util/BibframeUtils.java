@@ -1,7 +1,6 @@
 package org.folio.linked.data.util;
 
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -20,7 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.search.domain.dto.LinkedDataWork;
 
 @Log4j2
 @UtilityClass
@@ -67,14 +65,6 @@ public class BibframeUtils {
         }
       })
       .orElse(null);
-  }
-
-  public static boolean isSameResource(LinkedDataWork index, Resource resource) {
-    if (nonNull(index) && nonNull(resource) && nonNull(resource.getId())) {
-      return String.valueOf(resource.getId()).equals(index.getId());
-    } else {
-      return false;
-    }
   }
 
   public static Optional<Resource> extractWork(Resource resource) {

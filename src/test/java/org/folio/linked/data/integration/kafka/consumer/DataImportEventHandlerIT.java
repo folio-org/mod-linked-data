@@ -10,7 +10,7 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.mockito.Mockito.verify;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
+import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 
+//TODO: fix the test
 @Disabled("no tenant id in context must be rewrited")
 @IntegrationTest
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
@@ -35,7 +36,7 @@ class DataImportEventHandlerIT {
 
   @SpyBean
   @Autowired
-  private KafkaSearchSender kafkaSearchSender;
+  private WorkCreateMessageSender producer;
 
   @Autowired
   private DataImportEventHandler dataImportEventHandler;
@@ -60,7 +61,7 @@ class DataImportEventHandlerIT {
 
     //then
     var resourceCaptor = ArgumentCaptor.forClass(Resource.class);
-    verify(kafkaSearchSender).sendWorkCreated(resourceCaptor.capture());
+    verify(producer).produce(resourceCaptor.capture());
     assertThat(resourceCaptor.getValue().getIncomingEdges()).hasSize(2);
   }
 }
