@@ -34,6 +34,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBI
 import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
@@ -48,10 +49,12 @@ import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.mapper.InstanceMetadataMapper;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
+import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.HashService;
 import org.springframework.stereotype.Component;
@@ -68,6 +71,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
+  private final InstanceMetadataMapper instanceMetadataMapper;
   private final HashService hashService;
 
   @Override
@@ -75,8 +79,9 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
       var instance = coreMapper.toDtoWithEdges(source, InstanceResponse.class, false);
       instance.setId(String.valueOf(source.getId()));
-      instance.setInventoryId(source.getInventoryId());
-      instance.setSrsId(source.getSrsId());
+      ofNullable(source.getInstanceMetadata())
+        .map(instanceMetadataMapper::toDto)
+        .ifPresent(instance::setInstanceMetadata);
       ofNullable(source.getDoc())
         .ifPresent(doc -> instance.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.resource(new InstanceResponseField().instance(instance));
@@ -91,8 +96,6 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     instance.addTypes(INSTANCE);
     instance.setDoc(getDoc(instanceDto));
     instance.setLabel(getFirstValue(() -> getPrimaryMainTitles(instanceDto.getTitle())));
-    instance.setInventoryId(instanceDto.getInventoryId());
-    instance.setSrsId(instanceDto.getSrsId());
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getTitle(), TITLE);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getProduction(), PE_PRODUCTION);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getPublication(), PE_PUBLICATION);
@@ -106,6 +109,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCarrier(), CARRIER);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
+    instance.setInstanceMetadata(new InstanceMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));
     return instance;
   }

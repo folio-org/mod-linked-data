@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Metadata of the instance resource",
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": ["MARC", "LINKED_DATA"]
+    },
+    "inventoryId": {
+      "type": "string"
+    },
+    "srsId": {
+      "type": "string"
+    }
+  }
+}
