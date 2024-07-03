@@ -35,9 +35,9 @@ class BatchIndexServiceImplTest {
     var notIndexedResource = new Resource().setId(2L);
     var resourceWithException = new Resource().setId(3L);
     var resources = Stream.of(indexedResource, notIndexedResource, resourceWithException);
-    when(kafkaSearchSender.sendMultipleResourceCreated(indexedResource)).thenReturn(true);
-    when(kafkaSearchSender.sendMultipleResourceCreated(notIndexedResource)).thenReturn(false);
-    when(kafkaSearchSender.sendMultipleResourceCreated(resourceWithException)).thenThrow(new RuntimeException());
+    when(kafkaSearchSender.sendMultipleWorksCreated(indexedResource)).thenReturn(true);
+    when(kafkaSearchSender.sendMultipleWorksCreated(notIndexedResource)).thenReturn(false);
+    when(kafkaSearchSender.sendMultipleWorksCreated(resourceWithException)).thenThrow(new RuntimeException());
 
     //when
     var result = batchIndexService.index(resources);

@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka;
+package org.folio.linked.data.mapper.kafka.inventory;
 
 import java.util.Optional;
 import org.folio.linked.data.model.entity.Resource;

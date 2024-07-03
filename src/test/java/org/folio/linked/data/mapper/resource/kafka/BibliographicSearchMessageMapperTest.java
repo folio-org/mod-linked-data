@@ -23,18 +23,18 @@ import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.FAM
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.MEETING;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.ORGANIZATION;
 import static org.folio.search.domain.dto.BibframeContributorsInner.TypeEnum.PERSON;
-import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN;
-import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_PARALLEL;
-import static org.folio.search.domain.dto.BibframeIndexTitleType.MAIN_VARIANT;
-import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB;
-import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_PARALLEL;
-import static org.folio.search.domain.dto.BibframeIndexTitleType.SUB_VARIANT;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.EAN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.ISBN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LCCN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LOCALID;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
+import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN;
+import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_PARALLEL;
+import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_VARIANT;
+import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB;
+import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_PARALLEL;
+import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_VARIANT;
 import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,29 +50,29 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
-import org.folio.linked.data.mapper.kafka.impl.KafkaSearchMessageMapperImpl;
+import org.folio.linked.data.mapper.kafka.identifier.BibframeInstancesInnerIdentifiersInnerMapperAbstract;
+import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
-import org.folio.search.domain.dto.BibframeIndex;
-import org.folio.search.domain.dto.BibframeIndexTitleType;
 import org.folio.search.domain.dto.BibframeInstancesInner;
 import org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
+import org.folio.search.domain.dto.LinkedDataWork;
+import org.folio.search.domain.dto.LinkedDataWorkIndexTitleType;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class KafkaSearchMessageMapperTest {
+class BibliographicSearchMessageMapperTest {
 
-  @InjectMocks
-  private KafkaSearchMessageMapperImpl kafkaMessageMapper;
+  private BibliographicSearchMessageMapper kafkaMessageMapper;
+
   @Mock
   private SingleResourceMapper singleResourceMapper;
 
@@ -91,6 +91,8 @@ class KafkaSearchMessageMapperTest {
     ).forEach(t ->
       lenient().when(singleResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
     );
+    kafkaMessageMapper = new BibliographicSearchMessageMapper(
+      new BibframeInstancesInnerIdentifiersInnerMapperAbstract(), singleResourceMapper);
   }
 
   @Test
@@ -236,7 +238,7 @@ class KafkaSearchMessageMapperTest {
     return contributor;
   }
 
-  private void validateWork(BibframeIndex result, Resource work, Resource wrongContributor, int instancesExpected) {
+  private void validateWork(LinkedDataWork result, Resource work, Resource wrongContributor, int instancesExpected) {
     assertThat(result.getId()).isEqualTo(work.getId().toString());
     assertTitle(result.getTitles().get(0), "Primary: mainTitle", MAIN);
     assertTitle(result.getTitles().get(1), "Primary: subTitle", SUB);
@@ -292,7 +294,7 @@ class KafkaSearchMessageMapperTest {
       .isEqualTo(instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).asText());
   }
 
-  private void assertTitle(BibframeTitlesInner titleInner, String value, BibframeIndexTitleType type) {
+  private void assertTitle(BibframeTitlesInner titleInner, String value, LinkedDataWorkIndexTitleType type) {
     assertThat(titleInner.getValue()).isEqualTo(value);
     assertThat(titleInner.getType()).isEqualTo(type);
   }

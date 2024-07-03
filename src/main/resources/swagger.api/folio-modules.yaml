@@ -17,7 +17,9 @@ components:
     resourceIndexEventType:
       $ref: search/resourceIndexEventType.json
     bibframe:
-      $ref: search/bibframeIndex.json
+      $ref: search/linkedDataWork.json
+    bibframeAuthority:
+      $ref: search/linkedDataAuthority.json
     dataImportEvent:
       $ref: events/dataImportEvent.json
     inventoryInstanceIngressEvent:
