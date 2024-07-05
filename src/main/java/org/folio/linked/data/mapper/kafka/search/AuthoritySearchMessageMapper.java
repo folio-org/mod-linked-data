@@ -7,8 +7,10 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.kafka.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeAuthorityIdentifiersInner;
 import org.folio.search.domain.dto.LinkedDataAuthority;
 import org.folio.search.domain.dto.ResourceIndexEventType;
@@ -43,12 +45,14 @@ public class AuthoritySearchMessageMapper implements KafkaSearchMessageMapper<Li
 
   private String parseType(Resource resource) {
     if (resource.isOfType(CONCEPT)) {
-      return CONCEPT.toString();
+      return CONCEPT.name();
     }
     return resource.getTypes()
       .stream()
       .findFirst()
-      .map(Object::toString)
+      .map(ResourceTypeEntity::getUri)
+      .flatMap(ResourceTypeDictionary::fromUri)
+      .map(Enum::name)
       .orElse(StringUtils.EMPTY);
   }
 }
