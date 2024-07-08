@@ -3,7 +3,7 @@ create table if not exists instance_metadata (
      inventory_id text null,
      srs_id text null,
      source resource_source null
-  );
+  ) partition by hash(resource_hash);
 
 comment on table instance_metadata is 'Metadata for an instance resource';
 comment on column instance_metadata.resource_hash is 'The unique hash identifier for the resource';
