@@ -29,7 +29,7 @@ public class KafkaProducerConfiguration {
   private final LinkedDataTopicProperties linkedDataTopicProperties;
 
   @Bean
-  public FolioMessageProducer<ResourceIndexEvent> bibliographicIndexEventProducer(
+  public FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer(
     KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
   ) {
     var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
@@ -39,7 +39,7 @@ public class KafkaProducerConfiguration {
   }
 
   @Bean
-  public FolioMessageProducer<ResourceIndexEvent> authorityIndexEventProducer(
+  public FolioMessageProducer<ResourceIndexEvent> authorityMessageProducer(
     KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
   ) {
     var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
@@ -87,5 +87,4 @@ public class KafkaProducerConfiguration {
     configProps.put(VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
     return configProps;
   }
-
 }

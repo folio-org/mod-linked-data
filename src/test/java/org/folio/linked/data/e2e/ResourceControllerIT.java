@@ -137,9 +137,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -161,7 +158,6 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -173,7 +169,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -204,8 +199,6 @@ class ResourceControllerIT {
   private MockMvc mockMvc;
   @Autowired
   private Environment env;
-  @SpyBean
-  private KafkaSearchSender kafkaSearchSender;
   @Autowired
   private JdbcTemplate jdbcTemplate;
   @Autowired
@@ -532,8 +525,7 @@ class ResourceControllerIT {
 
     //then
     assertTrue(resourceTestService.existsById(existedResource.getId()));
-    verify(kafkaSearchSender, never()).sendWorkDeleted(existedResource);
-    verify(kafkaSearchSender, never()).sendWorkCreated(any());
+    checkRelevantIndexMessagesDuringUpdate(existedResource);
   }
 
   @Test
@@ -568,6 +560,10 @@ class ResourceControllerIT {
   }
 
   protected void checkIndexDate(String id) {
+    // nothing to check without Folio profile
+  }
+
+  protected void checkRelevantIndexMessagesDuringUpdate(Resource existedResource) {
     // nothing to check without Folio profile
   }
 

@@ -5,11 +5,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import jakarta.persistence.EntityManager;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Stream;
-import org.folio.linked.data.integration.kafka.sender.search.KafkaSearchSender;
+import org.assertj.core.api.InstanceOfAssertFactories;
+import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.BatchIndexService;
+import org.folio.search.domain.dto.LinkedDataWork;
+import org.folio.search.domain.dto.ResourceIndexEvent;
+import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.folio.spring.testing.type.UnitTest;
+import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,9 +27,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class BatchIndexServiceImplTest {
 
   @Mock
-  private KafkaSearchSender kafkaSearchSender;
-  @Mock
   private EntityManager entityManager;
+  @Mock
+  private KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
+  @Mock
+  private FolioMessageProducer<ResourceIndexEvent> bibliographicIndexEventProducer;
 
   @InjectMocks
   private BatchIndexServiceImpl batchIndexService;
@@ -34,18 +42,28 @@ class BatchIndexServiceImplTest {
     var indexedResource = new Resource().setId(1L);
     var notIndexedResource = new Resource().setId(2L);
     var resourceWithException = new Resource().setId(3L);
+    var index = new LinkedDataWork().id(String.valueOf(indexedResource.getId()));
     var resources = Stream.of(indexedResource, notIndexedResource, resourceWithException);
-    when(kafkaSearchSender.sendMultipleWorksCreated(indexedResource)).thenReturn(true);
-    when(kafkaSearchSender.sendMultipleWorksCreated(notIndexedResource)).thenReturn(false);
-    when(kafkaSearchSender.sendMultipleWorksCreated(resourceWithException)).thenThrow(new RuntimeException());
+    when(searchBibliographicMessageMapper.toIndex(indexedResource, ResourceIndexEventType.CREATE))
+      .thenReturn(Optional.of(index));
+    when(searchBibliographicMessageMapper.toIndex(notIndexedResource, ResourceIndexEventType.CREATE))
+      .thenReturn(Optional.empty());
+    when(searchBibliographicMessageMapper.toIndex(resourceWithException, ResourceIndexEventType.CREATE))
+      .thenThrow(new RuntimeException());
 
     //when
     var result = batchIndexService.index(resources);
 
     //then
-    assertThat(result.recordsIndexed()).isEqualTo(1);
-    assertThat(result.indexedIds()).isEqualTo(Set.of(1L, 2L));
-    verify(entityManager).detach(indexedResource);
-    verify(entityManager).detach(notIndexedResource);
+    assertThat(result)
+      .hasFieldOrPropertyWithValue("recordsIndexed", 1)
+      .extracting(BatchIndexService.BatchIndexResult::indexedIds)
+      .asInstanceOf(InstanceOfAssertFactories.COLLECTION)
+      .hasSize(2)
+      .contains(1L, 2L);
+    verify(entityManager)
+      .detach(indexedResource);
+    verify(entityManager)
+      .detach(notIndexedResource);
   }
 }

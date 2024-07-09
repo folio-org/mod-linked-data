@@ -7,12 +7,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import org.folio.linked.data.model.entity.Resource;
-import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 @UnitTest
 class BibframeUtilsTest {
@@ -116,26 +112,4 @@ class BibframeUtilsTest {
       null
     );
   }
-
-  @ParameterizedTest
-  @CsvSource(value = {
-    " ,  , false",
-    " , 1, false",
-    "2,  , false",
-    "3, 4, false",
-    "5, 5, true"
-  })
-  void isSameResource_shouldReturnExpectedResult(String id1, Long id2, boolean expectedResult) {
-    // given
-    var index = new LinkedDataWork();
-    index.setId(id1);
-    var resource = new Resource().setId(id2);
-
-    // when
-    var result = BibframeUtils.isSameResource(index, resource);
-
-    // then
-    assertThat(result).isEqualTo(expectedResult);
-  }
-
 }
