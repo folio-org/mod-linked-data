@@ -3,43 +3,43 @@
   "name": "Linked Data Module",
   "provides": [
     {
-      "id": "bibframe",
-      "version": "0.1",
+      "id": "resource",
+      "version": "1.0",
       "handlers": [
         {
           "methods": [ "POST" ],
           "pathPattern": "/resource",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "permissionsRequired": [ "linked-data.resources.bib.post" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
           "pathPattern": "/resource",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "permissionsRequired": [ "linked-data.resources.bib.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
           "pathPattern": "/resource/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "permissionsRequired": [ "linked-data.resources.bib.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
           "pathPattern": "/resource/{id}/marc",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "permissionsRequired": [ "linked-data.resources.bib.marc.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "PUT" ],
           "pathPattern": "/resource/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "permissionsRequired": [ "linked-data.resources.bib.put" ],
           "modulePermissions": []
         },
         {
           "methods": [ "DELETE" ],
           "pathPattern": "/resource/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "permissionsRequired": [ "linked-data.resources.bib.delete" ],
           "modulePermissions": []
         }
       ]
@@ -67,7 +67,7 @@
         {
           "methods": [ "PUT" ],
           "pathPattern": "/reindex",
-          "permissionsRequired": [ "linked.data.bibframe.post" ],
+          "permissionsRequired": [ "linked-data.resources.reindex.post" ],
           "modulePermissions": []
         }
       ]
@@ -79,7 +79,7 @@
         {
           "methods": [ "GET" ],
           "pathPattern": "/profile",
-          "permissionsRequired": [ "linked.data.bibframe.get" ]
+          "permissionsRequired": [ "linked-data.profiles.get" ]
         }
       ]
     },
@@ -90,7 +90,7 @@
         {
           "methods": [ "GET" ],
           "pathPattern": "/graph/resource/{id}",
-          "permissionsRequired": [ "linked.data.bibframe.get" ],
+          "permissionsRequired": [ "linked-data.resources.graph.get" ],
           "modulePermissions": []
         }
       ]
@@ -99,14 +99,44 @@
   "requires": [],
   "permissionSets": [
     {
-      "permissionName": "linked.data.bibframe.post",
-      "displayName": "LinkedData - write",
-      "description": "LinkedData - write"
+      "permissionName": "linked-data.resources.bib.get",
+      "displayName": "Linked Data: Get a bibliographic (Work or Instance) resource",
+      "description": "Get a bibliographic (Work or Instance) linked-data resource"
     },
     {
-      "permissionName": "linked.data.bibframe.get",
-      "displayName": "LinkedData - read",
-      "description": "LinkedData - read"
+      "permissionName": "linked-data.resources.bib.post",
+      "displayName": "Linked Data: Create a bibliographic (Work or Instance) resource",
+      "description": "Create a bibliographic (Work or Instance) linked-data resource"
+    },
+    {
+      "permissionName": "linked-data.resources.bib.put",
+      "displayName": "Linked Data: Update a bibliographic (Work or Instance) resource",
+      "description": "Update a bibliographic (Work or Instance) linked-data resource"
+    },
+    {
+      "permissionName": "linked-data.resources.bib.delete",
+      "displayName": "Linked Data: Delete a bibliographic (Work or Instance) resource",
+      "description": "Delete a bibliographic (Work or Instance) linked-data resource"
+    },
+    {
+      "permissionName": "linked-data.resources.reindex.post",
+      "displayName": "Linked Data: Reindex resources in mod-search index",
+      "description": "Reindex linked-data resources in mod-search index"
+    },
+    {
+      "permissionName": "linked-data.resources.graph.get",
+      "displayName": "Linked Data: Get the graph view of a resource",
+      "description": "Get the graph view of a linked-data resource"
+    },
+    {
+      "permissionName": "linked-data.resources.bib.marc.get",
+      "displayName": "Linked Data: Get the derived MARC record of an Instance resource",
+      "description": "Get the derived MARC record of a linked-data Instance resource"
+    },
+    {
+      "permissionName": "linked-data.profiles.get",
+      "displayName": "Linked Data: Get the profiles for performing CRUD operations on resources",
+      "description": "Get the profiles for performing CRUD operations on linked-data resources"
     }
   ],
   "launchDescriptor": {
