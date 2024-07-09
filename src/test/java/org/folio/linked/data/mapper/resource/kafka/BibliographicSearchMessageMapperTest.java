@@ -27,7 +27,7 @@ import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.EAN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.ISBN;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LCCN;
-import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LOCALID;
+import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.LOCAL_ID;
 import static org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_PARALLEL;
@@ -282,7 +282,7 @@ class BibliographicSearchMessageMapperTest {
     assertId(instanceIndex.getIdentifiers().get(0), "lccn value", LCCN);
     assertId(instanceIndex.getIdentifiers().get(1), "isbn value", ISBN);
     assertId(instanceIndex.getIdentifiers().get(2), "ean value", EAN);
-    assertId(instanceIndex.getIdentifiers().get(3), "localId value", LOCALID);
+    assertId(instanceIndex.getIdentifiers().get(3), "localId value", LOCAL_ID);
     assertId(instanceIndex.getIdentifiers().get(4), "otherId value", UNKNOWN);
     assertId(instanceIndex.getIdentifiers().get(5), "wrongId", null);
     assertThat(instanceIndex.getContributors()).isEmpty();
