@@ -4,10 +4,12 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -36,8 +38,17 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
   private final WorkDeleteMessageSender deleteEventProducer;
   private final ApplicationEventPublisher eventPublisher;
 
+
   @Override
-  public boolean test(Resource resource) {
+  public Collection<ResourcePair> apply(Resource oldResource, Resource newResource) {
+    return Stream.of(new ResourcePair(oldResource, newResource))
+      .filter(resourcePair -> test(resourcePair.newResource()))
+      .filter(resourcePair -> test(resourcePair.oldResource()))
+      .toList();
+  }
+
+  //TODO refactoring to extract resources
+  private boolean test(Resource resource) {
     return resource.isOfType(ResourceTypeDictionary.WORK);
   }
 

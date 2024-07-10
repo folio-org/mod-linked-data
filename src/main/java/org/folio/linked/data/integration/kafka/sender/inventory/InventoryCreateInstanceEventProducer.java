@@ -5,8 +5,10 @@ import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.BibframeUtils.extractInstances;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
@@ -28,8 +30,16 @@ public class InventoryCreateInstanceEventProducer implements CreateMessageSender
   private final KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
   private final FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
+
   @Override
-  public boolean test(Resource resource) {
+  public Collection<Resource> apply(Resource resource) {
+    return Stream.of(resource)
+      .filter(this::test)
+      .toList();
+  }
+
+  //TODO refactoring to extract resources
+  private boolean test(Resource resource) {
     return ResourceKind.BIBLIOGRAPHIC
       .stream()
       .anyMatch(resource::isOfType);

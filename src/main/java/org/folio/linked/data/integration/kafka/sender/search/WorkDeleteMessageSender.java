@@ -4,8 +4,10 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.integration.kafka.sender.DeleteMessageSender;
@@ -30,7 +32,14 @@ public class WorkDeleteMessageSender implements DeleteMessageSender {
   private final KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
 
   @Override
-  public boolean test(Resource resource) {
+  public Collection<Resource> apply(Resource resource) {
+    return Stream.of(resource)
+      .filter(this::test)
+      .toList();
+  }
+
+  //TODO refactoring to extract resources
+  private boolean test(Resource resource) {
     return ResourceKind.BIBLIOGRAPHIC
       .stream()
       .anyMatch(resource::isOfType);

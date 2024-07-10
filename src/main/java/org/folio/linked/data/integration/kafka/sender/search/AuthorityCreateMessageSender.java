@@ -4,9 +4,11 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_AUTHORITY_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
@@ -32,7 +34,14 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
   private final ApplicationEventPublisher eventPublisher;
 
   @Override
-  public boolean test(Resource resource) {
+  public Collection<Resource> apply(Resource resource) {
+    return Stream.of(resource)
+      .filter(this::test)
+      .toList();
+  }
+
+  //TODO refactoring to extract resources
+  private boolean test(Resource resource) {
     return ResourceKind.AUTHORITY
       .stream()
       .anyMatch(resource::isOfType);
