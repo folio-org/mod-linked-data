@@ -2,6 +2,9 @@ package org.folio.linked.data.integration.kafka.sender.search;
 
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
@@ -13,7 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
+import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
@@ -40,7 +45,19 @@ class WorkCreateMessageSenderTest {
   private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
 
   @Test
-  void sendSingleWorkCreated_shouldNotSendMessage_ifGivenResourceIsNotIndexable() {
+  void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsNotWorkOrInstance() {
+    // given
+    var resource = new Resource().addTypes(FAMILY);
+
+    // when
+    producer.produce(resource);
+
+    // then
+    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+  }
+
+  @Test
+  void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsWorkButNotIndexable() {
     // given
     var resource = new Resource().addTypes(WORK);
     when(bibliographicSearchMessageMapper.toIndex(resource, CREATE))
@@ -54,7 +71,7 @@ class WorkCreateMessageSenderTest {
   }
 
   @Test
-  void sendSingleWorkCreated_shouldSendMessageAndPublishEvent_ifGivenResourceIsIndexable() {
+  void produce_shouldSendMessageAndPublishIndexEvent_ifGivenResourceIsWorkAndIndexable() {
     // given
     var resource = new Resource().addTypes(WORK).setId(randomLong());
     var index = new LinkedDataWork().id(String.valueOf(resource.getId()));
@@ -79,5 +96,24 @@ class WorkCreateMessageSenderTest {
       .hasFieldOrPropertyWithValue("_new", index);
     verify(eventPublisher)
       .publishEvent(expectedIndexEvent);
+  }
+
+  @Test
+  void produce_shouldPublishWorkUpdateEvent_ifGivenResourceIsInstanceWithWorkReference() {
+    // given
+    var instance = new Resource().addTypes(INSTANCE).setId(randomLong());
+    var work = new Resource().addTypes(WORK).setId(randomLong());
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+
+    // when
+    producer.produce(instance);
+
+    // then
+    verifyNoInteractions(resourceIndexEventMessageProducer);
+    var resourceUpdatedEventCaptor = ArgumentCaptor.forClass(ResourceUpdatedEvent.class);
+    verify(eventPublisher).publishEvent(resourceUpdatedEventCaptor.capture());
+    var resourceUpdatedEvent = resourceUpdatedEventCaptor.getValue();
+    assertThat(resourceUpdatedEvent.newResource()).isEqualTo(work);
+    assertThat(resourceUpdatedEvent.oldResource()).isNull();
   }
 }

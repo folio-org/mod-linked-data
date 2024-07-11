@@ -3,7 +3,6 @@ package org.folio.linked.data.mapper.kafka.search;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 
 import java.util.Optional;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -22,12 +21,6 @@ import org.springframework.stereotype.Component;
 public class AuthoritySearchMessageMapper implements KafkaSearchMessageMapper<LinkedDataAuthority> {
 
   private final IndexIdentifierMapper<BibframeAuthorityIdentifiersInner> innerIndexIdentifierMapper;
-
-  @Override
-  public Optional<Long> toDeleteIndexId(@NonNull Resource resource) {
-    log.debug("Delete index for authority isn't supported");
-    return Optional.empty();
-  }
 
   @Override
   public Optional<LinkedDataAuthority> toIndex(Resource resource, ResourceIndexEventType eventType) {

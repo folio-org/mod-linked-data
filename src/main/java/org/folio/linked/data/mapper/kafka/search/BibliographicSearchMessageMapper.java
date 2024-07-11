@@ -34,7 +34,6 @@ import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_VARI
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_PARALLEL;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_VARIANT;
-import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -44,7 +43,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -107,14 +105,6 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), work);
       return empty();
     }
-  }
-
-  @Override
-  public Optional<Long> toDeleteIndexId(@NonNull Resource work) {
-    if (!work.isOfType(WORK)) {
-      throw new LinkedDataServiceException(format(NOT_A_WORK, work, DELETE.getValue()));
-    }
-    return ofNullable(work.getId());
   }
 
   private boolean shouldBeIndexed(LinkedDataWork bi) {

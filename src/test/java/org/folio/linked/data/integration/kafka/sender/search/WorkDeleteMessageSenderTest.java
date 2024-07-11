@@ -1,16 +1,19 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
@@ -22,6 +25,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -32,18 +36,28 @@ class WorkDeleteMessageSenderTest {
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
   @Mock
-  private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
+  private ApplicationEventPublisher eventPublisher;
 
   @Test
-  void afterDelete_shouldCall_sendResourceDeleted() {
+  void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsNotWorkOrInstance() {
     // given
-    var id = 1L;
-    var resource = new Resource().setId(id).addTypes(ResourceTypeDictionary.WORK);
-    when(bibliographicSearchMessageMapper.toDeleteIndexId(resource))
-      .thenReturn(Optional.of(id));
+    var resource = new Resource().addTypes(FAMILY);
 
     // when
     producer.produce(resource);
+
+    // then
+    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+  }
+
+  @Test
+  void produce_shouldSendWorkDeletedMessage_forWork() {
+    // given
+    var id = 1L;
+    var work = new Resource().setId(id).addTypes(ResourceTypeDictionary.WORK);
+
+    // when
+    producer.produce(work);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -61,18 +75,25 @@ class WorkDeleteMessageSenderTest {
   }
 
   @Test
-  void sendWorkDeleted_shouldSendNothing_ifResourcesIsNotIndexable() {
+  void produce_shouldSendWorkUpdateEvent_forInstanceWithWork() {
     // given
-    var id = 1L;
-    var resource = new Resource().setId(id).addTypes(ResourceTypeDictionary.WORK);
-    when(bibliographicSearchMessageMapper.toDeleteIndexId(resource))
-      .thenReturn(Optional.empty());
+    var instance = new Resource().setId(1L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var work = new Resource().setId(2L).addTypes(ResourceTypeDictionary.WORK);
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.getOutgoingEdges().add(edge);
+    work.getIncomingEdges().add(edge);
+    var expectedNewWork = new Resource(work);
+    expectedNewWork.setIncomingEdges(new HashSet<>());
 
     // when
-    producer.produce(resource);
+    producer.produce(instance);
 
     // then
-    verify(resourceIndexEventMessageProducer, never())
-      .sendMessages(ArgumentMatchers.any());
+    verify(resourceIndexEventMessageProducer, never()).sendMessages(ArgumentMatchers.any());
+    var eventCaptor = ArgumentCaptor.forClass(ResourceUpdatedEvent.class);
+    verify(eventPublisher).publishEvent(eventCaptor.capture());
+    var expectedEvent = eventCaptor.getValue();
+    assertThat(expectedEvent.oldResource()).isEqualTo(work);
+    assertThat(expectedEvent.newResource()).isEqualTo(expectedNewWork);
   }
 }

@@ -1,17 +1,9 @@
 package org.folio.linked.data.service.impl;
 
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
-import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.util.BibframeUtils.extractWork;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.NOT_INDEXED;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
 import java.util.Set;
@@ -28,7 +20,6 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
-import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -38,6 +29,7 @@ import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceService;
+import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -61,11 +53,13 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceModelMapper resourceModelMapper;
   private final ApplicationEventPublisher applicationEventPublisher;
   private final Bibframe2MarcMapper bibframe2MarcMapper;
+  private final MetadataService metadataService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     log.info("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
+    metadataService.ensureMetadata(mapped);
     saveMergingGraph(mapped);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(mapped.getId()));
     return resourceDtoMapper.toDto(mapped);
@@ -91,14 +85,9 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto updateResource(Long id, ResourceRequestDto resourceDto) {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
     var oldResource = getResource(id);
-    var oldWork = extractWork(oldResource).map(Resource::new).orElse(null);
     breakEdgesAndDelete(oldResource);
     var newResource = saveNewResource(resourceDto, oldResource);
-    if (newResource.isOfType(WORK)) {
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource, oldWork));
-    } else {
-      reindexParentWorkAfterInstanceUpdate(newResource, oldWork);
-    }
+    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource, oldResource));
     return resourceDtoMapper.toDto(newResource);
   }
 
@@ -143,52 +132,13 @@ public class ResourceServiceImpl implements ResourceService {
     return isNull(edge) || isNull(edge.getId()) || !edgeRepo.existsById(edge.getId());
   }
 
-  private void reindexParentWorkAfterInstanceUpdate(Resource instance, Resource oldWork) {
-    extractWork(instance).ifPresentOrElse(newWork -> {
-        if (nonNull(oldWork) && newWork.getId().equals(oldWork.getId())) {
-          log.info("Instance [{}] update under the same Work [{}] triggered it's reindexing",
-            instance.getId(), newWork.getId());
-          applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, oldWork));
-        } else {
-          if (nonNull(oldWork)) {
-            indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, newWork);
-          }
-          log.info("Instance [{}] update under newly linked Work [{}] triggered it's reindexing",
-            instance.getId(), newWork.getId());
-          applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newWork, null));
-        }
-      },
-      () -> {
-        if (nonNull(oldWork)) {
-          indexOldWorkDisconnectedFromUpdatedInstance(instance, oldWork, null);
-        } else {
-          log.info("Instance [{}] not linked to Work update under no Work has not triggered any Work reindexing",
-            instance.getId());
-        }
-      }
-    );
-  }
-
-  private void indexOldWorkDisconnectedFromUpdatedInstance(Resource instance, Resource oldWork, Resource newWork) {
-    oldWork.getIncomingEdges().remove(new ResourceEdge(instance, oldWork, INSTANTIATES));
-    log.info("Instance [{}] update under {} triggered old Work [{}] reindexing",
-      instance.getId(), isNull(newWork) ? "no Work" : "different Work [" + newWork.getId() + "]",
-      oldWork.getId());
-    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldWork, null));
-  }
-
 
   @Override
   public void deleteResource(Long id) {
     log.info("deleteResource [{}]", id);
     resourceRepo.findById(id).ifPresent(resource -> {
-      var oldWork = extractWork(resource).map(Resource::new).orElse(null);
       breakEdgesAndDelete(resource);
-      if (resource.isOfType(WORK)) {
-        applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
-      } else {
-        reindexParentWorkAfterInstanceDeletion(id, resource, oldWork);
-      }
+      applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
     });
   }
 
@@ -212,17 +162,6 @@ public class ResourceServiceImpl implements ResourceService {
       .map(ResourceTypeEntity::getUri)
       .collect(Collectors.joining(", ", "[", "]"))
     );
-  }
-
-  private void reindexParentWorkAfterInstanceDeletion(Long id, Resource resource, Resource oldWork) {
-    extractWork(resource)
-      .map(work -> {
-        work.getIncomingEdges().remove(new ResourceEdge(resource, work, INSTANTIATES));
-        return new ResourceUpdatedEvent(work, oldWork);
-      })
-      .ifPresentOrElse(applicationEventPublisher::publishEvent,
-        () -> log.warn(format(NOT_INDEXED, id, "deleted"))
-      );
   }
 
   private void breakCircularEdges(Resource resource) {
@@ -282,20 +221,8 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    addInternalFields(old, mapped);
+    metadataService.ensureMetadata(mapped, old.getInstanceMetadata());
     return saveMergingGraph(mapped);
-  }
-
-  private void addInternalFields(Resource oldResource, Resource newResource) {
-    if (newResource.isOfType(INSTANCE)) {
-      var oldResourceInstanceMetadata = ofNullable(oldResource.getInstanceMetadata())
-        .orElse(new InstanceMetadata(oldResource));
-      var instanceMetadata = new InstanceMetadata(newResource)
-        .setSource(LINKED_DATA)
-        .setInventoryId(oldResourceInstanceMetadata.getInventoryId())
-        .setSrsId(oldResourceInstanceMetadata.getSrsId());
-      newResource.setInstanceMetadata(instanceMetadata);
-    }
   }
 
   private void breakEdgesAndDelete(Resource resource) {

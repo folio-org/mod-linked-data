@@ -1,6 +1,9 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.mockito.Mockito.verify;
@@ -11,6 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
+import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.BibframeLanguagesInner;
 import org.folio.search.domain.dto.LinkedDataWork;
@@ -37,13 +43,21 @@ class WorkUpdateMessageSenderTest {
   private ApplicationEventPublisher eventPublisher;
   @Mock
   private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
-  @Mock
-  private WorkCreateMessageSender createEventProducer;
-  @Mock
-  private WorkDeleteMessageSender deleteEventProducer;
 
   @Test
-  void sendWorkUpdated_shouldSendUpdate_ifNewWorkIsIndexableAndKeepsSameId() {
+  void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsNotWorkOrInstance() {
+    // given
+    var resource = new Resource().addTypes(FAMILY);
+
+    // when
+    producer.produce(null, resource);
+
+    // then
+    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+  }
+
+  @Test
+  void produce_shouldSendUpdateMessageAndIndexEvent_ifNewWorkIsIndexableAndKeepsSameId() {
     // given
     long id = 1L;
     var newResource = new Resource().setId(id).setLabel("new").addTypes(WORK);
@@ -75,7 +89,7 @@ class WorkUpdateMessageSenderTest {
   }
 
   @Test
-  void sendWorkUpdated_shouldSendDeleteAndCreate_ifNewWorkHasNewIdAndBothResourcesAreIndexable() {
+  void produce_shouldSendDeleteAndCreate_ifNewWorkHasNewIdAndBothResourcesAreIndexable() {
     // given
     Long newId = 1L;
     Long oldId = 2L;
@@ -86,15 +100,13 @@ class WorkUpdateMessageSenderTest {
     producer.produce(oldResource, newResource);
 
     // then
-    verify(createEventProducer)
-      .accept(newResource);
-    verify(deleteEventProducer)
-      .accept(oldResource);
+    verify(eventPublisher).publishEvent(new ResourceDeletedEvent(oldResource));
+    verify(eventPublisher).publishEvent(new ResourceCreatedEvent(newResource.getId()));
     verifyNoInteractions(resourceIndexEventMessageProducer);
   }
 
   @Test
-  void sendWorkUpdated_shouldSendDelete_ifNewWorkIsNotIndexableButOldIs() {
+  void produce_shouldSendDeleteAndIndexEvent_ifNewWorkIsNotIndexableButOldIs() {
     // given
     Long newId = 1L;
     Long oldId = 1L;
@@ -107,8 +119,36 @@ class WorkUpdateMessageSenderTest {
     producer.produce(oldResource, newResource);
 
     // then
-    verify(deleteEventProducer)
-      .accept(oldResource);
-    verifyNoInteractions(resourceIndexEventMessageProducer, createEventProducer);
+    verify(eventPublisher).publishEvent(new ResourceDeletedEvent(oldResource));
+    verifyNoInteractions(resourceIndexEventMessageProducer);
+  }
+
+  @Test
+  void produce_shouldSendUpdateParentWorkAndIndexEvent_ifResourceIsInstance() {
+    // given
+    var newInstance = new Resource().setId(1L).setLabel("newInstance").addTypes(INSTANCE);
+    var oldInstance = new Resource().setId(2L).setLabel("oldInstance").addTypes(INSTANCE);
+    var work = new Resource().setId(3L).setLabel("work").addTypes(WORK);
+    newInstance.addOutgoingEdge(new ResourceEdge(newInstance, work, INSTANTIATES));
+    oldInstance.addOutgoingEdge(new ResourceEdge(oldInstance, work, INSTANTIATES));
+    var workIndex = new LinkedDataWork().id(String.valueOf(work.getId()));
+    when(bibliographicSearchMessageMapper.toIndex(work, UPDATE)).thenReturn(Optional.of(workIndex));
+
+    // when
+    producer.produce(oldInstance, newInstance);
+
+    // then
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(resourceIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    List<ResourceIndexEvent> messages = messageCaptor.getValue();
+
+    assertThat(messages)
+      .singleElement()
+      .hasFieldOrProperty("id")
+      .hasFieldOrPropertyWithValue("type", UPDATE)
+      .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
+      .hasFieldOrPropertyWithValue("_new", workIndex)
+      .hasFieldOrPropertyWithValue("old", workIndex);
+    verify(eventPublisher).publishEvent(new ResourceIndexedEvent(work.getId()));
   }
 }

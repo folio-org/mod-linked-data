@@ -35,25 +35,22 @@ public class ResourceModificationEventListener {
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
     var resource = resourceRepository.getReferenceById(resourceCreatedEvent.id());
-    createMessageSenders
-      .forEach(event -> event.produce(resource));
+    createMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
   @TransactionalEventListener
   public void afterUpdate(ResourceUpdatedEvent resourceUpdatedEvent) {
     log.info("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
-    var resource = resourceUpdatedEvent.oldWork();
-    var newResource = resourceUpdatedEvent.newWork();
-    updateMessageSenders
-      .forEach(event -> event.produce(resource, newResource));
+    updateMessageSenders.forEach(
+      sender -> sender.produce(resourceUpdatedEvent.oldResource(), resourceUpdatedEvent.newResource())
+    );
   }
 
   @TransactionalEventListener
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
     log.info("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
-    var resource = resourceDeletedEvent.work();
-    deleteMessageSenders
-      .forEach(event -> event.produce(resource));
+    var resource = resourceDeletedEvent.resource();
+    deleteMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
   @EventListener

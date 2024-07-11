@@ -37,54 +37,60 @@ class InventoryCreateInstanceEventProducerTest {
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
   @Test
-  void sendInstanceCreated_shouldDoNothing_ifGivenResourceIsMarc() {
+  void produce_shouldDoNothing_ifGivenResourceIsNotInstance() {
+    // given
+    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.FAMILY);
+
+    // when
+    producer.produce(resource);
+
+    // then
+    verifyNoInteractions(instanceIngressMessageProducer);
+  }
+
+  @Test
+  void produce_shouldDoNothing_ifGivenResourceIsInstanceMarcSourced() {
     // given
     var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(MARC));
 
     // when
-    producer.accept(resource);
+    producer.produce(resource);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
   }
 
   @Test
-  void sendInstanceCreated_shouldDoNothing_ifGivenResourceIsNotBeingMappedByMessageMapper() {
+  void produce_shouldDoNothing_ifGivenResourceIsNotBeingMappedByMessageMapper() {
     // given
     var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(LINKED_DATA));
-    when(kafkaInventoryMessageMapper.toInstanceIngressPayload(resource))
-      .thenReturn(Optional.empty());
+    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(resource)).thenReturn(Optional.empty());
 
     // when
-    producer.accept(resource);
+    producer.produce(resource);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
   }
 
   @Test
-  void sendInstanceCreated_shouldSendExpectedMessage_ifGivenResourceIsBeingMappedByMessageMapper() {
+  void produce_shouldSendExpectedMessage_ifGivenResourceIsBeingMappedByMessageMapper() {
     // given
-    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(LINKED_DATA));
-
-    var payload = new InstanceIngressPayload().sourceRecordIdentifier(UUID.randomUUID().toString());
-    when(kafkaInventoryMessageMapper.toInstanceIngressPayload(resource)).thenReturn(Optional.of(payload));
+    var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var metadata = new InstanceMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
+    instance.setInstanceMetadata(metadata);
+    var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
+      .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
+    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(Optional.of(instanceIngressEvent));
 
     // when
-    producer.accept(resource);
+    producer.produce(instance);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(instanceIngressMessageProducer).sendMessages(messageCaptor.capture());
-    List<InstanceIngressEvent> messages = messageCaptor.getValue();
-
-    assertThat(messages)
-      .singleElement()
-      .hasFieldOrProperty("id")
-      .hasFieldOrPropertyWithValue("eventType", InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE)
-      .hasFieldOrPropertyWithValue("eventPayload", payload);
+    assertThat(messageCaptor.getValue()).singleElement().isEqualTo(instanceIngressEvent);
   }
 }
