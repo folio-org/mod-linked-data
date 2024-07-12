@@ -12,8 +12,8 @@ import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -23,20 +23,27 @@ import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
 @Profile(FOLIO_PROFILE)
-@RequiredArgsConstructor
 public class WorkCreateMessageSender implements CreateMessageSender {
 
   @Qualifier("bibliographicMessageProducer")
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
   private final KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
-  private final ApplicationEventPublisher eventPublisher;
+  private final ResourceModificationEventListener eventListener;
+
+  public WorkCreateMessageSender(FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer,
+                                 KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper,
+                                 @Lazy ResourceModificationEventListener eventListener) {
+    this.bibliographicMessageProducer = bibliographicMessageProducer;
+    this.searchBibliographicMessageMapper = searchBibliographicMessageMapper;
+    this.eventListener = eventListener;
+  }
 
   @Override
   public Collection<Resource> apply(Resource resource) {
@@ -53,7 +60,7 @@ public class WorkCreateMessageSender implements CreateMessageSender {
     extractWork(instance)
       .ifPresent(work -> {
         log.info("Instance [id {}] creation triggered parent Work [id {}] update", instance.getId(), work.getId());
-        eventPublisher.publishEvent(new ResourceUpdatedEvent(work, null));
+        eventListener.afterUpdate(new ResourceUpdatedEvent(null, work));
       });
   }
 
@@ -80,6 +87,6 @@ public class WorkCreateMessageSender implements CreateMessageSender {
     Optional.of(resource)
       .map(Resource::getId)
       .map(ResourceIndexedEvent::new)
-      .ifPresent(eventPublisher::publishEvent);
+      .ifPresent(eventListener::afterIndex);
   }
 }

@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -27,14 +27,13 @@ import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
 @Profile(FOLIO_PROFILE)
-@RequiredArgsConstructor
 public class WorkUpdateMessageSender implements UpdateMessageSender {
 
   private static final String WRONG_UPDATE = "Invalid update operation for instance [id {}]: either new [{}] or old "
@@ -43,7 +42,15 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
   @Qualifier("bibliographicMessageProducer")
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
   private final KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
-  private final ApplicationEventPublisher eventPublisher;
+  private final ResourceModificationEventListener eventListener;
+
+  public WorkUpdateMessageSender(FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer,
+                                 KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper,
+                                 @Lazy ResourceModificationEventListener eventListener) {
+    this.bibliographicMessageProducer = bibliographicMessageProducer;
+    this.searchBibliographicMessageMapper = searchBibliographicMessageMapper;
+    this.eventListener = eventListener;
+  }
 
   @Override
   public Collection<ResourcePair> apply(Resource oldResource, Resource newResource) {
@@ -58,7 +65,7 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public void accept(Resource oldWork, Resource newWork) {
-    if (isSameNotNullResource(newWork, oldWork)) {
+    if (isSameNotNullResource(newWork, oldWork) || isNull(oldWork)) {
       indexUpdatedWork(oldWork, newWork);
     } else {
       reCreate(oldWork, newWork);
@@ -113,13 +120,16 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
   private void reCreate(Resource oldResource, Resource newResource) {
     log.info("Updated Work [{}] has another id than before update ({}), sending DELETE and CREATE events",
       oldResource.getId(), newResource.getId());
-    eventPublisher.publishEvent(new ResourceDeletedEvent(oldResource));
-    eventPublisher.publishEvent(new ResourceCreatedEvent(newResource.getId()));
+    eventListener.afterDelete(new ResourceDeletedEvent(oldResource));
+    eventListener.afterCreate(new ResourceCreatedEvent(newResource.getId()));
   }
 
   private void deleteOld(Resource oldResource) {
-    log.info("Updated Work [{}] is not indexable anymore, sending DELETE event", oldResource.getId());
-    eventPublisher.publishEvent(new ResourceDeletedEvent(oldResource));
+    ofNullable(oldResource)
+      .ifPresent(r -> {
+        log.info("Updated Work [{}] is not indexable anymore, sending DELETE event", r.getId());
+        eventListener.afterDelete(new ResourceDeletedEvent(r));
+      });
   }
 
   private boolean isSameNotNullResource(Resource newResource, Resource oldResource) {
@@ -134,7 +144,7 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
     Optional.of(resource)
       .map(Resource::getId)
       .map(ResourceIndexedEvent::new)
-      .ifPresent(eventPublisher::publishEvent);
+      .ifPresent(eventListener::afterIndex);
   }
 
 }

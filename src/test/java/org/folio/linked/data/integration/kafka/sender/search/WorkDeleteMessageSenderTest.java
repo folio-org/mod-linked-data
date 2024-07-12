@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import java.util.HashSet;
 import java.util.List;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
@@ -25,7 +26,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -36,7 +36,7 @@ class WorkDeleteMessageSenderTest {
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
   @Mock
-  private ApplicationEventPublisher eventPublisher;
+  private ResourceModificationEventListener eventListener;
 
   @Test
   void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsNotWorkOrInstance() {
@@ -47,7 +47,7 @@ class WorkDeleteMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
   }
 
   @Test
@@ -91,7 +91,7 @@ class WorkDeleteMessageSenderTest {
     // then
     verify(resourceIndexEventMessageProducer, never()).sendMessages(ArgumentMatchers.any());
     var eventCaptor = ArgumentCaptor.forClass(ResourceUpdatedEvent.class);
-    verify(eventPublisher).publishEvent(eventCaptor.capture());
+    verify(eventListener).afterUpdate(eventCaptor.capture());
     var expectedEvent = eventCaptor.getValue();
     assertThat(expectedEvent.oldResource()).isEqualTo(work);
     assertThat(expectedEvent.newResource()).isEqualTo(expectedNewWork);

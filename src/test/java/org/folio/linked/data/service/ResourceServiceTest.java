@@ -245,7 +245,7 @@ class ResourceServiceTest {
     assertEquals(expectedDto, result);
     verify(resourceRepo).delete(oldWork);
     verify(resourceRepo).save(work);
-    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work, oldWork));
+    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(oldWork, work));
   }
 
   @Test
@@ -277,7 +277,7 @@ class ResourceServiceTest {
     assertThat(oldWork.getIncomingEdges()).doesNotContain(edge);
     verify(resourceRepo).delete(oldWork);
     verify(resourceRepo).save(mapped);
-    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(mapped, oldInstance));
+    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(oldInstance, mapped));
   }
 
   @Test

@@ -60,9 +60,9 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     log.info("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensureMetadata(mapped);
-    saveMergingGraph(mapped);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(mapped.getId()));
-    return resourceDtoMapper.toDto(mapped);
+    var persisted = saveMergingGraph(mapped);
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
+    return resourceDtoMapper.toDto(persisted);
   }
 
   @Override
@@ -84,10 +84,11 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceResponseDto updateResource(Long id, ResourceRequestDto resourceDto) {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
-    var oldResource = getResource(id);
-    breakEdgesAndDelete(oldResource);
-    var newResource = saveNewResource(resourceDto, oldResource);
-    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource, oldResource));
+    var resourceToUpdate = getResource(id);
+    var oldResource = new Resource(resourceToUpdate);
+    breakEdgesAndDelete(resourceToUpdate);
+    var newResource = saveNewResource(resourceDto, resourceToUpdate);
+    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldResource, newResource));
     return resourceDtoMapper.toDto(newResource);
   }
 

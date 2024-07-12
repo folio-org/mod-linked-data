@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -29,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +40,7 @@ class WorkUpdateMessageSenderTest {
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
   @Mock
-  private ApplicationEventPublisher eventPublisher;
+  private ResourceModificationEventListener eventListener;
   @Mock
   private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
 
@@ -53,7 +53,7 @@ class WorkUpdateMessageSenderTest {
     producer.produce(null, resource);
 
     // then
-    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
   }
 
   @Test
@@ -84,8 +84,8 @@ class WorkUpdateMessageSenderTest {
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
       .hasFieldOrPropertyWithValue("_new", indexNew)
       .hasFieldOrPropertyWithValue("old", indexOld);
-    verify(eventPublisher)
-      .publishEvent(new ResourceIndexedEvent(id));
+    verify(eventListener)
+      .afterIndex(new ResourceIndexedEvent(id));
   }
 
   @Test
@@ -100,8 +100,8 @@ class WorkUpdateMessageSenderTest {
     producer.produce(oldResource, newResource);
 
     // then
-    verify(eventPublisher).publishEvent(new ResourceDeletedEvent(oldResource));
-    verify(eventPublisher).publishEvent(new ResourceCreatedEvent(newResource.getId()));
+    verify(eventListener).afterDelete(new ResourceDeletedEvent(oldResource));
+    verify(eventListener).afterCreate(new ResourceCreatedEvent(newResource.getId()));
     verifyNoInteractions(resourceIndexEventMessageProducer);
   }
 
@@ -119,7 +119,7 @@ class WorkUpdateMessageSenderTest {
     producer.produce(oldResource, newResource);
 
     // then
-    verify(eventPublisher).publishEvent(new ResourceDeletedEvent(oldResource));
+    verify(eventListener).afterDelete(new ResourceDeletedEvent(oldResource));
     verifyNoInteractions(resourceIndexEventMessageProducer);
   }
 
@@ -149,6 +149,6 @@ class WorkUpdateMessageSenderTest {
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
       .hasFieldOrPropertyWithValue("_new", workIndex)
       .hasFieldOrPropertyWithValue("old", workIndex);
-    verify(eventPublisher).publishEvent(new ResourceIndexedEvent(work.getId()));
+    verify(eventListener).afterIndex(new ResourceIndexedEvent(work.getId()));
   }
 }

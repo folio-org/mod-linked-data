@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -29,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -38,7 +38,7 @@ class WorkCreateMessageSenderTest {
   @InjectMocks
   private WorkCreateMessageSender producer;
   @Mock
-  private ApplicationEventPublisher eventPublisher;
+  private ResourceModificationEventListener eventListener;
   @Mock
   private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
   @Mock
@@ -53,7 +53,7 @@ class WorkCreateMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
   }
 
   @Test
@@ -67,7 +67,7 @@ class WorkCreateMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
   }
 
   @Test
@@ -94,8 +94,8 @@ class WorkCreateMessageSenderTest {
       .hasFieldOrPropertyWithValue("type", CREATE)
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
       .hasFieldOrPropertyWithValue("_new", index);
-    verify(eventPublisher)
-      .publishEvent(expectedIndexEvent);
+    verify(eventListener)
+      .afterIndex(expectedIndexEvent);
   }
 
   @Test
@@ -111,7 +111,7 @@ class WorkCreateMessageSenderTest {
     // then
     verifyNoInteractions(resourceIndexEventMessageProducer);
     var resourceUpdatedEventCaptor = ArgumentCaptor.forClass(ResourceUpdatedEvent.class);
-    verify(eventPublisher).publishEvent(resourceUpdatedEventCaptor.capture());
+    verify(eventListener).afterUpdate(resourceUpdatedEventCaptor.capture());
     var resourceUpdatedEvent = resourceUpdatedEventCaptor.getValue();
     assertThat(resourceUpdatedEvent.newResource()).isEqualTo(work);
     assertThat(resourceUpdatedEvent.oldResource()).isNull();
