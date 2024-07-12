@@ -106,7 +106,7 @@ class WorkUpdateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldSendDeleteAndIndexEvent_ifNewWorkIsNotIndexableButOldIs() {
+  void produce_shouldSendDelete_ifNewWorkIsNotIndexableButOldIs() {
     // given
     Long newId = 1L;
     Long oldId = 1L;

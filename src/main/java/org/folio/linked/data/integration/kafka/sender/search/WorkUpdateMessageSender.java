@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.extractWork;
@@ -133,11 +134,7 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
   }
 
   private boolean isSameNotNullResource(Resource newResource, Resource oldResource) {
-    if (isNull(newResource)) {
-      return false;
-    }
-    var oldResourceId = ofNullable(oldResource).map(Resource::getId).orElse(null);
-    return Objects.equals(newResource.getId(), oldResourceId);
+    return allNotNull(oldResource, newResource) && Objects.equals(newResource.getId(), oldResource.getId());
   }
 
   private void publishIndexEvent(Resource resource) {

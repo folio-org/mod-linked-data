@@ -27,7 +27,7 @@ public class InventoryUpdateInstanceEventProducer implements UpdateMessageSender
   public Collection<ResourcePair> apply(Resource oldResource, Resource newResource) {
     return extractInstances(newResource)
       .stream()
-      .map(i -> new ResourcePair(null, i))
+      .map(i -> new ResourcePair(oldResource, i))
       .toList();
   }
 

@@ -143,6 +143,10 @@ public class Resource implements Persistable<Long> {
     return this;
   }
 
+  public boolean isNotOfType(ResourceTypeDictionary type) {
+    return !isOfType(type);
+  }
+
   public boolean isOfType(ResourceTypeDictionary type) {
     return getTypes().stream().anyMatch(at -> at.getUri().equals(type.getUri()));
   }

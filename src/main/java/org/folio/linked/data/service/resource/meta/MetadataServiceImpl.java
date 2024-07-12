@@ -19,17 +19,18 @@ public class MetadataServiceImpl implements MetadataService {
 
   @Override
   public void ensureMetadata(Resource resource, InstanceMetadata oldResourceMeta) {
-    if (resource.isOfType(INSTANCE)) {
-      var metadata = new InstanceMetadata(resource)
-        .setResource(resource)
-        .setSource(LINKED_DATA);
-      if (nonNull(oldResourceMeta)) {
-        metadata.setInventoryId(oldResourceMeta.getInventoryId());
-        metadata.setSrsId(oldResourceMeta.getSrsId());
-      } else {
-        metadata.setInventoryId(UUID.randomUUID().toString());
-      }
-      resource.setInstanceMetadata(metadata);
+    if (resource.isNotOfType(INSTANCE)) {
+      return;
     }
+    var metadata = new InstanceMetadata(resource)
+      .setResource(resource)
+      .setSource(LINKED_DATA);
+    if (nonNull(oldResourceMeta)) {
+      metadata.setInventoryId(oldResourceMeta.getInventoryId());
+      metadata.setSrsId(oldResourceMeta.getSrsId());
+    } else {
+      metadata.setInventoryId(UUID.randomUUID().toString());
+    }
+    resource.setInstanceMetadata(metadata);
   }
 }
