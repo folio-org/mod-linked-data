@@ -5,14 +5,17 @@ import static org.folio.linked.data.util.Constants.SEARCH_AUTHORITY_RESOURCE_NAM
 import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.marc4ld.util.ResourceKind;
 import org.folio.search.domain.dto.LinkedDataAuthority;
@@ -35,13 +38,36 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
 
   @Override
   public Collection<Resource> apply(Resource resource) {
-    return Stream.of(resource)
-      .filter(this::test)
-      .toList();
+    return findAuthorities(resource, new HashSet<>());
   }
 
-  //TODO refactoring to extract resources
-  private boolean test(Resource resource) {
+  private Set<Resource> findAuthorities(Resource resource, Set<Resource> visitedResources) {
+    if (visitedResources.contains(resource)) {
+      return Collections.emptySet();
+    }
+    var authorities = new HashSet<Resource>();
+    if (isNewAuthority(resource)) {
+      authorities.add(resource);
+    }
+    visitedResources.add(resource);
+    resource.getOutgoingEdges().stream()
+      .map(ResourceEdge::getTarget)
+      .filter(target -> isNewAndNotVisited(target, visitedResources))
+      .flatMap(target -> findAuthorities(target, visitedResources).stream())
+      .filter(this::isNewAuthority)
+      .forEach(authorities::add);
+    return authorities;
+  }
+
+  private boolean isNewAndNotVisited(Resource resource, Set<Resource> visited) {
+    return resource.isNew() && !visited.contains(resource);
+  }
+
+  private boolean isNewAuthority(Resource resource) {
+    return resource.isNew() && isAuthority(resource);
+  }
+
+  private boolean isAuthority(Resource resource) {
     return ResourceKind.AUTHORITY
       .stream()
       .anyMatch(resource::isOfType);
