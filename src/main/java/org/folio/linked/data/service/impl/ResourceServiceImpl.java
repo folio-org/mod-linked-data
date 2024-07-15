@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
+import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -84,11 +86,15 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public ResourceResponseDto updateResource(Long id, ResourceRequestDto resourceDto) {
     log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
-    var resourceToUpdate = getResource(id);
-    var oldResource = new Resource(resourceToUpdate);
-    breakEdgesAndDelete(resourceToUpdate);
-    var newResource = saveNewResource(resourceDto, resourceToUpdate);
-    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(oldResource, newResource));
+    var existed = getResource(id);
+    var oldResource = new Resource(existed);
+    breakEdgesAndDelete(existed);
+    var newResource = saveNewResource(resourceDto, existed);
+    if (Objects.equals(oldResource.getId(), newResource.getId())) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
+    } else {
+      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(oldResource, newResource));
+    }
     return resourceDtoMapper.toDto(newResource);
   }
 

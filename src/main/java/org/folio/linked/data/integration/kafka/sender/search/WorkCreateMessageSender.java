@@ -18,7 +18,6 @@ import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -36,13 +35,16 @@ public class WorkCreateMessageSender implements CreateMessageSender {
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
   private final KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
   private final ResourceModificationEventListener eventListener;
+  private final WorkUpdateMessageSender workUpdateMessageSender;
 
   public WorkCreateMessageSender(FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer,
                                  KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper,
-                                 @Lazy ResourceModificationEventListener eventListener) {
+                                 @Lazy ResourceModificationEventListener eventListener,
+                                 WorkUpdateMessageSender workUpdateMessageSender) {
     this.bibliographicMessageProducer = bibliographicMessageProducer;
     this.searchBibliographicMessageMapper = searchBibliographicMessageMapper;
     this.eventListener = eventListener;
+    this.workUpdateMessageSender = workUpdateMessageSender;
   }
 
   @Override
@@ -58,10 +60,11 @@ public class WorkCreateMessageSender implements CreateMessageSender {
 
   private void triggerParentWorkUpdate(Resource instance) {
     extractWork(instance)
-      .ifPresent(work -> {
-        log.info("Instance [id {}] creation triggered parent Work [id {}] update", instance.getId(), work.getId());
-        eventListener.afterUpdate(new ResourceUpdatedEvent(null, work));
-      });
+      .ifPresentOrElse(work -> {
+        log.info("Instance [id {}] creation triggered parent Work [id {}] index update",
+          instance.getId(), work.getId());
+        workUpdateMessageSender.produce(work);
+      }, () -> log.error("Instance [id {}] created, but parent work wasn't found!", instance.getId()));
   }
 
 

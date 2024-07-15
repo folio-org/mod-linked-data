@@ -16,10 +16,7 @@ import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
-import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.search.domain.dto.BibframeLanguagesInner;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
@@ -38,7 +35,7 @@ class WorkUpdateMessageSenderTest {
   @InjectMocks
   private WorkUpdateMessageSender producer;
   @Mock
-  private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
+  private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
   @Mock
   private ResourceModificationEventListener eventListener;
   @Mock
@@ -50,31 +47,26 @@ class WorkUpdateMessageSenderTest {
     var resource = new Resource().addTypes(FAMILY);
 
     // when
-    producer.produce(null, resource);
+    producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceMessageProducer);
   }
 
   @Test
-  void produce_shouldSendUpdateMessageAndIndexEvent_ifNewWorkIsIndexableAndKeepsSameId() {
+  void produce_shouldSendUpdateMessageAndIndexEvent_ifNewWorkIsIndexable() {
     // given
     long id = 1L;
     var newResource = new Resource().setId(id).setLabel("new").addTypes(WORK);
-    var oldResource = new Resource().setId(id).setLabel("old").addTypes(WORK);
-    var indexNew = new LinkedDataWork().id(String.valueOf(id));
-    var indexOld = new LinkedDataWork().id(String.valueOf(id)).addLanguagesItem(new BibframeLanguagesInner());
-    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE))
-      .thenReturn(Optional.of(indexNew))
-      .thenReturn(Optional.of(indexOld));
+    var index = new LinkedDataWork().id(String.valueOf(id));
+    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.of(index));
 
     // when
-    producer.produce(oldResource, newResource);
+    producer.produce(newResource);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceIndexEventMessageProducer)
-      .sendMessages(messageCaptor.capture());
+    verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
     List<ResourceIndexEvent> messages = messageCaptor.getValue();
 
     assertThat(messages)
@@ -82,64 +74,25 @@ class WorkUpdateMessageSenderTest {
       .hasFieldOrProperty("id")
       .hasFieldOrPropertyWithValue("type", UPDATE)
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
-      .hasFieldOrPropertyWithValue("_new", indexNew)
-      .hasFieldOrPropertyWithValue("old", indexOld);
-    verify(eventListener)
-      .afterIndex(new ResourceIndexedEvent(id));
-  }
-
-  @Test
-  void produce_shouldSendDeleteAndCreate_ifNewWorkHasNewIdAndBothResourcesAreIndexable() {
-    // given
-    Long newId = 1L;
-    Long oldId = 2L;
-    var newResource = new Resource().setId(newId).setLabel("new").addTypes(WORK);
-    var oldResource = new Resource().setId(oldId).setLabel("old").addTypes(WORK);
-
-    // when
-    producer.produce(oldResource, newResource);
-
-    // then
-    verify(eventListener).afterDelete(new ResourceDeletedEvent(oldResource));
-    verify(eventListener).afterCreate(new ResourceCreatedEvent(newResource.getId()));
-    verifyNoInteractions(resourceIndexEventMessageProducer);
-  }
-
-  @Test
-  void produce_shouldSendDelete_ifNewWorkIsNotIndexableButOldIs() {
-    // given
-    Long newId = 1L;
-    Long oldId = 1L;
-    var newResource = new Resource().setId(newId).setLabel("new").addTypes(WORK);
-    var oldResource = new Resource().setId(oldId).setLabel("old").addTypes(WORK);
-    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE))
-      .thenReturn(Optional.empty());
-
-    // when
-    producer.produce(oldResource, newResource);
-
-    // then
-    verify(eventListener).afterDelete(new ResourceDeletedEvent(oldResource));
-    verifyNoInteractions(resourceIndexEventMessageProducer);
+      .hasFieldOrPropertyWithValue("_new", index);
+    verify(eventListener).afterIndex(new ResourceIndexedEvent(id));
   }
 
   @Test
   void produce_shouldSendUpdateParentWorkAndIndexEvent_ifResourceIsInstance() {
     // given
     var newInstance = new Resource().setId(1L).setLabel("newInstance").addTypes(INSTANCE);
-    var oldInstance = new Resource().setId(2L).setLabel("oldInstance").addTypes(INSTANCE);
     var work = new Resource().setId(3L).setLabel("work").addTypes(WORK);
     newInstance.addOutgoingEdge(new ResourceEdge(newInstance, work, INSTANTIATES));
-    oldInstance.addOutgoingEdge(new ResourceEdge(oldInstance, work, INSTANTIATES));
     var workIndex = new LinkedDataWork().id(String.valueOf(work.getId()));
     when(bibliographicSearchMessageMapper.toIndex(work, UPDATE)).thenReturn(Optional.of(workIndex));
 
     // when
-    producer.produce(oldInstance, newInstance);
+    producer.produce(newInstance);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceIndexEventMessageProducer).sendMessages(messageCaptor.capture());
+    verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
     List<ResourceIndexEvent> messages = messageCaptor.getValue();
 
     assertThat(messages)
@@ -147,8 +100,7 @@ class WorkUpdateMessageSenderTest {
       .hasFieldOrProperty("id")
       .hasFieldOrPropertyWithValue("type", UPDATE)
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
-      .hasFieldOrPropertyWithValue("_new", workIndex)
-      .hasFieldOrPropertyWithValue("old", workIndex);
+      .hasFieldOrPropertyWithValue("_new", workIndex);
     verify(eventListener).afterIndex(new ResourceIndexedEvent(work.getId()));
   }
 }

@@ -7,7 +7,6 @@ import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -70,7 +69,7 @@ public class BatchIndexServiceImpl implements BatchIndexService {
 
   private ResourceIndexEvent createIndexEvent(LinkedDataWork index) {
     return new ResourceIndexEvent()
-      .id(UUID.randomUUID().toString())
+      .id(index.getId())
       .type(CREATE)
       .resourceName(SEARCH_RESOURCE_NAME)
       ._new(index);

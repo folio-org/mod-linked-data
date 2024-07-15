@@ -19,7 +19,6 @@ import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMappe
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
@@ -42,7 +41,9 @@ class WorkCreateMessageSenderTest {
   @Mock
   private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
   @Mock
-  private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
+  private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
+  @Mock
+  private WorkUpdateMessageSender workUpdateMessageSender;
 
   @Test
   void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsNotWorkOrInstance() {
@@ -53,7 +54,7 @@ class WorkCreateMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceMessageProducer, workUpdateMessageSender);
   }
 
   @Test
@@ -67,7 +68,7 @@ class WorkCreateMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceMessageProducer, workUpdateMessageSender);
   }
 
   @Test
@@ -83,7 +84,7 @@ class WorkCreateMessageSenderTest {
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceIndexEventMessageProducer)
+    verify(resourceMessageProducer)
       .sendMessages(messageCaptor.capture());
     List<ResourceIndexEvent> messages = messageCaptor.getValue();
     var expectedIndexEvent = new ResourceIndexedEvent(parseLong(index.getId()));
@@ -94,12 +95,12 @@ class WorkCreateMessageSenderTest {
       .hasFieldOrPropertyWithValue("type", CREATE)
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
       .hasFieldOrPropertyWithValue("_new", index);
-    verify(eventListener)
-      .afterIndex(expectedIndexEvent);
+    verify(eventListener).afterIndex(expectedIndexEvent);
+    verifyNoInteractions(workUpdateMessageSender);
   }
 
   @Test
-  void produce_shouldPublishWorkUpdateEvent_ifGivenResourceIsInstanceWithWorkReference() {
+  void produce_shouldTriggerWorkUpdate_ifGivenResourceIsInstanceWithWorkReference() {
     // given
     var instance = new Resource().addTypes(INSTANCE).setId(randomLong());
     var work = new Resource().addTypes(WORK).setId(randomLong());
@@ -109,11 +110,7 @@ class WorkCreateMessageSenderTest {
     producer.produce(instance);
 
     // then
-    verifyNoInteractions(resourceIndexEventMessageProducer);
-    var resourceUpdatedEventCaptor = ArgumentCaptor.forClass(ResourceUpdatedEvent.class);
-    verify(eventListener).afterUpdate(resourceUpdatedEventCaptor.capture());
-    var resourceUpdatedEvent = resourceUpdatedEventCaptor.getValue();
-    assertThat(resourceUpdatedEvent.newResource()).isEqualTo(work);
-    assertThat(resourceUpdatedEvent.oldResource()).isNull();
+    verifyNoInteractions(resourceMessageProducer, eventListener);
+    verify(workUpdateMessageSender).produce(work);
   }
 }

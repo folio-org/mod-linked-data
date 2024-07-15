@@ -12,34 +12,27 @@ import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
 
 import java.util.Collection;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.integration.kafka.sender.DeleteMessageSender;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
 @Profile(FOLIO_PROFILE)
+@RequiredArgsConstructor
 public class WorkDeleteMessageSender implements DeleteMessageSender {
 
   @Qualifier("bibliographicMessageProducer")
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
-  private final ResourceModificationEventListener eventListener;
-
-  public WorkDeleteMessageSender(FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer,
-                                 @Lazy ResourceModificationEventListener eventListener) {
-    this.bibliographicMessageProducer = bibliographicMessageProducer;
-    this.eventListener = eventListener;
-  }
+  private final WorkUpdateMessageSender workUpdateMessageSender;
 
   @Override
   public Collection<Resource> apply(Resource resource) {
@@ -63,12 +56,13 @@ public class WorkDeleteMessageSender implements DeleteMessageSender {
 
   private void triggerParentWorkUpdate(Resource instance) {
     extractWork(instance)
-      .ifPresent(work -> {
-        log.info("Instance [id {}] deletion triggered parent Work [id {}] update", instance.getId(), work.getId());
+      .ifPresentOrElse(work -> {
+        log.info("Instance [id {}] deletion triggered parent Work [id {}] index update", instance.getId(),
+          work.getId());
         var newWork = new Resource(work);
         newWork.getIncomingEdges().remove(new ResourceEdge(instance, work, INSTANTIATES));
-        eventListener.afterUpdate(new ResourceUpdatedEvent(work, newWork));
-      });
+        workUpdateMessageSender.produce(newWork);
+      }, () -> log.error("Instance [id {}] deleted, but parent work wasn't found!", instance.getId()));
   }
 
   private ResourceIndexEvent getDeleteIndexEvent(String id) {

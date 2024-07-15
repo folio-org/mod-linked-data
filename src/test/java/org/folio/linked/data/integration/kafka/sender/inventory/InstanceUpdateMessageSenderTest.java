@@ -30,10 +30,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class InventoryUpdateInstanceEventProducerTest {
+class InstanceUpdateMessageSenderTest {
 
   @InjectMocks
-  private InventoryUpdateInstanceEventProducer producer;
+  private InstanceUpdateMessageSender producer;
   @Mock
   private KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
   @Mock
@@ -42,10 +42,10 @@ class InventoryUpdateInstanceEventProducerTest {
   @Test
   void produce_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
-    var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.FAMILY);
+    var notInstance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.FAMILY);
 
     // when
-    producer.produce(null, instance);
+    producer.produce(notInstance);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
@@ -58,7 +58,7 @@ class InventoryUpdateInstanceEventProducerTest {
     instance.setInstanceMetadata(new InstanceMetadata(instance).setSource(MARC));
 
     // when
-    producer.produce(null, instance);
+    producer.produce(instance);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
@@ -72,7 +72,7 @@ class InventoryUpdateInstanceEventProducerTest {
     when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(Optional.empty());
 
     // when
-    producer.produce(null, instance);
+    producer.produce(instance);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
@@ -90,7 +90,7 @@ class InventoryUpdateInstanceEventProducerTest {
     when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(Optional.of(instanceIngressEvent));
 
     // when
-    producer.produce(null, instance);
+    producer.produce(instance);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -122,7 +122,7 @@ class InventoryUpdateInstanceEventProducerTest {
     when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance2)).thenReturn(Optional.of(ingressEvent2));
 
     // when
-    producer.produce(null, work);
+    producer.produce(work);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);

@@ -46,6 +46,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
+import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -224,7 +225,7 @@ class ResourceServiceTest {
   }
 
   @Test
-  void update_shouldSaveUpdatedResourceAndSendResourceUpdatedEvent_forWork() {
+  void update_shouldSaveUpdatedResourceAndSendResourceUpdatedEvent_forResourceWithSameId() {
     // given
     var id = randomLong();
     var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest()));
@@ -245,39 +246,35 @@ class ResourceServiceTest {
     assertEquals(expectedDto, result);
     verify(resourceRepo).delete(oldWork);
     verify(resourceRepo).save(work);
-    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(oldWork, work));
+    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work));
   }
 
   @Test
-  void update_shouldSaveUpdatedResourceAndSendUpdateEvent_forInstance() {
+  void update_shouldSaveUpdatedResourceAndSendReplaceEvent_forResourceWithDifferentId() {
     // given
-    var id = randomLong();
-    var oldWork = new Resource().setId(id).addTypes(WORK).setLabel("oldWork");
-    var oldInstance = new Resource().setId(id).addTypes(INSTANCE).setLabel("oldInstance");
-    var edge = new ResourceEdge(oldInstance, oldWork, INSTANTIATES);
-    oldInstance.addOutgoingEdge(edge);
-    oldWork.addOutgoingEdge(edge);
-    when(resourceRepo.findById(id)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().setId(id).setLabel("mapped");
+    var oldId = randomLong();
+    var newId = randomLong();
+    var oldInstance = new Resource().setId(oldId).addTypes(INSTANCE).setLabel("oldInstance");
+    when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
+    var mapped = new Resource().setId(newId).setLabel("mapped");
     var instanceDto =
       new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest()));
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    var persisted = new Resource().setId(id).setLabel("saved");
+    var persisted = new Resource().setId(oldId).setLabel("saved");
     when(resourceRepo.save(mapped)).thenReturn(persisted);
     var expectedDto = new ResourceResponseDto().resource(
-      new InstanceResponseField().instance(new InstanceResponse().id(id.toString()))
+      new InstanceResponseField().instance(new InstanceResponse().id(oldId.toString()))
     );
     when(resourceDtoMapper.toDto(mapped)).thenReturn(expectedDto);
 
     // when
-    var result = resourceService.updateResource(id, instanceDto);
+    var result = resourceService.updateResource(oldId, instanceDto);
 
     // then
     assertEquals(expectedDto, result);
-    assertThat(oldWork.getIncomingEdges()).doesNotContain(edge);
-    verify(resourceRepo).delete(oldWork);
+    verify(resourceRepo).delete(oldInstance);
     verify(resourceRepo).save(mapped);
-    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(oldInstance, mapped));
+    verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped));
   }
 
   @Test

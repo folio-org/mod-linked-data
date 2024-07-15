@@ -2,9 +2,6 @@ package org.folio.linked.data.integration.kafka.sender.search;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.allNotNull;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.extractWork;
@@ -13,16 +10,14 @@ import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
-import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
@@ -37,9 +32,6 @@ import org.springframework.stereotype.Service;
 @Profile(FOLIO_PROFILE)
 public class WorkUpdateMessageSender implements UpdateMessageSender {
 
-  private static final String WRONG_UPDATE = "Invalid update operation for instance [id {}]: either new [{}] or old "
-    + "work Id [{}] is missing. Such a situation is not expected to occur and should be investigated and fixed if it "
-    + "does!";
   @Qualifier("bibliographicMessageProducer")
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
   private final KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
@@ -54,54 +46,38 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
   }
 
   @Override
-  public Collection<ResourcePair> apply(Resource oldResource, Resource newResource) {
-    if (newResource.isOfType(WORK)) {
-      return List.of(new ResourcePair(oldResource, newResource));
+  public Collection<Resource> apply(Resource resource) {
+    if (resource.isOfType(WORK)) {
+      return singletonList(resource);
     }
-    if (newResource.isOfType(INSTANCE)) {
-      return triggerParentWorkUpdate(oldResource, newResource);
+    if (resource.isOfType(INSTANCE)) {
+      return selectParentWorkForUpdate(resource);
     }
     return emptyList();
   }
 
   @Override
-  public void accept(Resource oldWork, Resource newWork) {
-    if (isSameNotNullResource(newWork, oldWork) || isNull(oldWork)) {
-      indexUpdatedWork(oldWork, newWork);
-    } else {
-      reCreate(oldWork, newWork);
-    }
-  }
-
-  private void indexUpdatedWork(Resource oldWork, Resource newWork) {
-    searchBibliographicMessageMapper.toIndex(newWork, UPDATE)
+  public void accept(Resource resource) {
+    searchBibliographicMessageMapper.toIndex(resource, UPDATE)
       .map(this::getUpdateIndexEvent)
-      .map(indexEvent -> addOldWork(oldWork, indexEvent))
-      .ifPresentOrElse(
+      .ifPresent(
         indexEvent -> {
           bibliographicMessageProducer.sendMessages(List.of(indexEvent));
-          publishIndexEvent(newWork);
-        },
-        () -> deleteOld(oldWork)
+          publishIndexEvent(resource);
+        }
       );
   }
 
-  private List<ResourcePair> triggerParentWorkUpdate(Resource oldInstance, Resource newInstance) {
-    var previousWork = extractWork(oldInstance).orElse(null);
-    var currentWork = extractWork(newInstance).orElse(null);
-    if (isSameNotNullResource(currentWork, previousWork)) {
-      log.info("Instance [{}] update triggered parent Work [{}] update",
-        newInstance.getId(), currentWork.getId());
-      return singletonList(new ResourcePair(previousWork, currentWork));
-    }
-    logUnexpectedEvent(newInstance, previousWork, currentWork);
-    return emptyList();
-  }
-
-  private void logUnexpectedEvent(Resource newInstance, Resource previousWork, Resource currentWork) {
-    var currentWorkId = ofNullable(currentWork).map(Resource::getId).orElse(null);
-    var previousWorkId = ofNullable(previousWork).map(Resource::getId).orElse(null);
-    log.error(WRONG_UPDATE, newInstance.getId(), currentWorkId, previousWorkId);
+  private List<Resource> selectParentWorkForUpdate(Resource instance) {
+    return extractWork(instance)
+      .map(work -> {
+        log.info("Instance [{}] update triggered parent Work [{}] index update", instance.getId(), work.getId());
+        return Collections.singletonList(work);
+      })
+      .orElseGet(() -> {
+        log.error("Instance [id {}] updated, but parent work wasn't found!", instance.getId());
+        return emptyList();
+      });
   }
 
   private ResourceIndexEvent getUpdateIndexEvent(LinkedDataWork linkedDataWork) {
@@ -110,31 +86,6 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
       .type(UPDATE)
       .resourceName(SEARCH_RESOURCE_NAME)
       ._new(linkedDataWork);
-  }
-
-  private ResourceIndexEvent addOldWork(Resource oldWork, ResourceIndexEvent indexEvent) {
-    return searchBibliographicMessageMapper.toIndex(oldWork, UPDATE)
-      .map(indexEvent::old)
-      .orElse(indexEvent);
-  }
-
-  private void reCreate(Resource oldResource, Resource newResource) {
-    log.info("Updated Work [{}] has another id than before update ({}), sending DELETE and CREATE events",
-      oldResource.getId(), newResource.getId());
-    eventListener.afterDelete(new ResourceDeletedEvent(oldResource));
-    eventListener.afterCreate(new ResourceCreatedEvent(newResource.getId()));
-  }
-
-  private void deleteOld(Resource oldResource) {
-    ofNullable(oldResource)
-      .ifPresent(r -> {
-        log.info("Updated Work [{}] is not indexable anymore, sending DELETE event", r.getId());
-        eventListener.afterDelete(new ResourceDeletedEvent(r));
-      });
-  }
-
-  private boolean isSameNotNullResource(Resource newResource, Resource oldResource) {
-    return allNotNull(oldResource, newResource) && Objects.equals(newResource.getId(), oldResource.getId());
   }
 
   private void publishIndexEvent(Resource resource) {

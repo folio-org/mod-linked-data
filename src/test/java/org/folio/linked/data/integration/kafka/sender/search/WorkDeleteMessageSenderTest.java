@@ -7,6 +7,7 @@ import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
@@ -34,9 +34,11 @@ class WorkDeleteMessageSenderTest {
   @InjectMocks
   private WorkDeleteMessageSender producer;
   @Mock
-  private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
+  private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
   @Mock
   private ResourceModificationEventListener eventListener;
+  @Mock
+  private WorkUpdateMessageSender workUpdateMessageSender;
 
   @Test
   void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsNotWorkOrInstance() {
@@ -47,7 +49,7 @@ class WorkDeleteMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventListener, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventListener, resourceMessageProducer, workUpdateMessageSender);
   }
 
   @Test
@@ -61,7 +63,7 @@ class WorkDeleteMessageSenderTest {
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceIndexEventMessageProducer)
+    verify(resourceMessageProducer)
       .sendMessages(messageCaptor.capture());
     List<ResourceIndexEvent> messages = messageCaptor.getValue();
     var expectedIndex = new LinkedDataWork().id(String.valueOf(id));
@@ -72,10 +74,11 @@ class WorkDeleteMessageSenderTest {
       .hasFieldOrPropertyWithValue("type", DELETE)
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
       .hasFieldOrPropertyWithValue("_new", expectedIndex);
+    verifyNoMoreInteractions(workUpdateMessageSender);
   }
 
   @Test
-  void produce_shouldSendWorkUpdateEvent_forInstanceWithWork() {
+  void produce_shouldTriggerWorkUpdate_forInstanceWithWork() {
     // given
     var instance = new Resource().setId(1L).addTypes(ResourceTypeDictionary.INSTANCE);
     var work = new Resource().setId(2L).addTypes(ResourceTypeDictionary.WORK);
@@ -89,11 +92,8 @@ class WorkDeleteMessageSenderTest {
     producer.produce(instance);
 
     // then
-    verify(resourceIndexEventMessageProducer, never()).sendMessages(ArgumentMatchers.any());
-    var eventCaptor = ArgumentCaptor.forClass(ResourceUpdatedEvent.class);
-    verify(eventListener).afterUpdate(eventCaptor.capture());
-    var expectedEvent = eventCaptor.getValue();
-    assertThat(expectedEvent.oldResource()).isEqualTo(work);
-    assertThat(expectedEvent.newResource()).isEqualTo(expectedNewWork);
+    verify(resourceMessageProducer, never()).sendMessages(ArgumentMatchers.any());
+    verifyNoInteractions(eventListener);
+    verify(workUpdateMessageSender).produce(work);
   }
 }

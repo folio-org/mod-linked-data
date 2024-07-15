@@ -27,10 +27,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class InventoryCreateInstanceEventProducerTest {
+class InstanceCreateMessageSenderTest {
 
   @InjectMocks
-  private InventoryCreateInstanceEventProducer producer;
+  private InstanceCreateMessageSender producer;
   @Mock
   private KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
   @Mock

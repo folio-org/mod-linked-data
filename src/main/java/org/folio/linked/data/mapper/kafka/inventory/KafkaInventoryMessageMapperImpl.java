@@ -1,13 +1,11 @@
 package org.folio.linked.data.mapper.kafka.inventory;
 
 import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -24,7 +22,7 @@ public class KafkaInventoryMessageMapperImpl implements KafkaInventoryMessageMap
 
   @Override
   public Optional<InstanceIngressEvent> toInstanceIngressEvent(Resource instance) {
-    if (isNull(instance) || isNull(instance.getId())) {
+    if (isNull(instance) || isNull(instance.getId()) || instance.isNotOfType(INSTANCE)) {
       return Optional.empty();
     }
     var resourceModel = resourceModelMapper.toModel(instance);
@@ -33,7 +31,7 @@ public class KafkaInventoryMessageMapperImpl implements KafkaInventoryMessageMap
       return Optional.empty();
     }
     var payload = new InstanceIngressPayload()
-      .sourceRecordIdentifier(ensureInventoryId(instance))
+      .sourceRecordIdentifier(instance.getInstanceMetadata().getInventoryId())
       .sourceType(InstanceIngressPayload.SourceTypeEnum.LINKED_DATA)
       .sourceRecordObject(marcJson)
       .putAdditionalProperty(LINKED_DATA_ID, instance.getId());
@@ -41,12 +39,6 @@ public class KafkaInventoryMessageMapperImpl implements KafkaInventoryMessageMap
       .id(String.valueOf(instance.getId()))
       .eventPayload(payload);
     return Optional.of(event);
-  }
-
-  private String ensureInventoryId(Resource instance) {
-    return ofNullable(instance.getInstanceMetadata())
-      .map(InstanceMetadata::getInventoryId)
-      .orElseGet(() -> UUID.randomUUID().toString());
   }
 
 }

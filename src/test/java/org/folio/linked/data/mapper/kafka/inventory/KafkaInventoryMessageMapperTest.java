@@ -1,0 +1,114 @@
+package org.folio.linked.data.mapper.kafka.inventory;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.mockito.Mockito.doReturn;
+
+import java.util.Map;
+import java.util.UUID;
+import org.folio.linked.data.mapper.ResourceModelMapper;
+import org.folio.linked.data.model.entity.InstanceMetadata;
+import org.folio.linked.data.model.entity.Resource;
+import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.search.domain.dto.InstanceIngressPayload;
+import org.folio.spring.testing.type.UnitTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@UnitTest
+@ExtendWith(MockitoExtension.class)
+class KafkaInventoryMessageMapperTest {
+
+  @InjectMocks
+  private KafkaInventoryMessageMapperImpl kafkaInventoryMessageMapper;
+  @Mock
+  private Bibframe2MarcMapper bibframe2MarcMapper;
+  @Mock
+  private ResourceModelMapper resourceModelMapper;
+
+  @Test
+  void shouldReturnEmptyOptional_ifGivenResourceIsNull() {
+    // given
+
+    // when
+    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(null);
+
+    // when
+    assertThat(result).isNotPresent();
+  }
+
+  @Test
+  void shouldReturnEmptyOptional_ifGivenResourceIdIsNull() {
+    // given
+    var resource = new Resource();
+
+    // when
+    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource);
+
+    // when
+    assertThat(result).isNotPresent();
+  }
+
+  @Test
+  void shouldReturnEmptyOptional_ifGivenResourceIsNotInstance() {
+    // given
+    var resource = new Resource().setId(randomLong());
+
+    // when
+    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource);
+
+    // when
+    assertThat(result).isNotPresent();
+  }
+
+  @Test
+  void shouldReturnMappedEvent_ifResultedMarcIsNull() {
+    // given
+    var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
+    instance.setInstanceMetadata(new InstanceMetadata(instance).setInventoryId(UUID.randomUUID().toString()));
+    org.folio.ld.dictionary.model.Resource resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(instance.getId())
+      .addType(INSTANCE);
+    doReturn(resourceModel).when(resourceModelMapper).toModel(instance);
+    doReturn(null).when(bibframe2MarcMapper).toMarcJson(resourceModel);
+
+    // when
+    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(instance);
+
+    // when
+    assertThat(result).isNotPresent();
+  }
+
+  @Test
+  void shouldReturnMappedEvent_ifGivenResourceIsInstanceWithId() {
+    // given
+    var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
+    var inventoryId = UUID.randomUUID().toString();
+    instance.setInstanceMetadata(new InstanceMetadata(instance).setInventoryId(inventoryId));
+    org.folio.ld.dictionary.model.Resource resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(instance.getId())
+      .addType(INSTANCE);
+    doReturn(resourceModel).when(resourceModelMapper).toModel(instance);
+    var marcString = "{}";
+    doReturn(marcString).when(bibframe2MarcMapper).toMarcJson(resourceModel);
+
+    // when
+    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(instance);
+
+    // when
+    assertThat(result)
+      .isPresent()
+      .get()
+      .hasFieldOrPropertyWithValue("id", String.valueOf(instance.getId()))
+      .extracting("eventPayload")
+      .hasFieldOrPropertyWithValue("sourceRecordIdentifier", inventoryId)
+      .hasFieldOrPropertyWithValue("sourceType", InstanceIngressPayload.SourceTypeEnum.LINKED_DATA)
+      .hasFieldOrPropertyWithValue("sourceRecordObject", marcString)
+      .hasFieldOrPropertyWithValue("additionalProperties", Map.of("linkedDataId", instance.getId()));
+  }
+
+}
