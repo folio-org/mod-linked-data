@@ -8,7 +8,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
@@ -62,28 +61,14 @@ class InstanceCreateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldDoNothing_ifGivenResourceIsNotBeingMappedByMessageMapper() {
-    // given
-    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(LINKED_DATA));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(resource)).thenReturn(Optional.empty());
-
-    // when
-    producer.produce(resource);
-
-    // then
-    verifyNoInteractions(instanceIngressMessageProducer);
-  }
-
-  @Test
-  void produce_shouldSendExpectedMessage_ifGivenResourceIsBeingMappedByMessageMapper() {
+  void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
     var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata = new InstanceMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance.setInstanceMetadata(metadata);
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(Optional.of(instanceIngressEvent));
+    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when
     producer.produce(instance);

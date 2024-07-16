@@ -1,10 +1,38 @@
 package org.folio.linked.data.mapper.kafka.inventory;
 
-import java.util.Optional;
+import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
+
+import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.folio.search.domain.dto.InstanceIngressEvent;
+import org.folio.search.domain.dto.InstanceIngressPayload;
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public interface KafkaInventoryMessageMapper {
+@Mapper(componentModel = SPRING)
+public abstract class KafkaInventoryMessageMapper {
 
-  Optional<InstanceIngressEvent> toInstanceIngressEvent(Resource instance);
+  private static final String LINKED_DATA_ID = "linkedDataId";
+  @Autowired
+  protected Bibframe2MarcMapper bibframe2MarcMapper;
+  @Autowired
+  protected ResourceModelMapper resourceModelMapper;
+
+  @Mapping(target = "eventPayload", expression = "java(toInstanceIngressPayload(resource))")
+  public abstract InstanceIngressEvent toInstanceIngressEvent(Resource resource);
+
+  @Mapping(target = "sourceRecordIdentifier", source = "instanceMetadata.inventoryId")
+  @Mapping(target = "sourceType", constant = "LINKED_DATA")
+  @Mapping(target = "sourceRecordObject",
+    expression = "java(bibframe2MarcMapper.toMarcJson(resourceModelMapper.toModel(resource)))")
+  protected abstract InstanceIngressPayload toInstanceIngressPayload(Resource resource);
+
+  @AfterMapping
+  protected void afterMappingPayload(@MappingTarget InstanceIngressPayload payload, Resource resource) {
+    payload.putAdditionalProperty(LINKED_DATA_ID, resource.getId());
+  }
 }

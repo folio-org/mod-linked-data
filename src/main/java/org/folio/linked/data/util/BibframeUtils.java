@@ -1,6 +1,8 @@
 package org.folio.linked.data.util;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -71,6 +73,9 @@ public class BibframeUtils {
     if (resource.isOfType(WORK)) {
       return Optional.of(resource);
     }
+    if (resource.isNotOfType(INSTANCE)) {
+      return empty();
+    }
     return resource.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(resourceEdge -> {
@@ -84,6 +89,9 @@ public class BibframeUtils {
   public static List<Resource> extractInstances(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
       return List.of(resource);
+    }
+    if (resource.isNotOfType(WORK)) {
+      return emptyList();
     }
     return resource.getIncomingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))

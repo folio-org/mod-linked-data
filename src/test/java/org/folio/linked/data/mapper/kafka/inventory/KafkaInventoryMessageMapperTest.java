@@ -31,60 +31,7 @@ class KafkaInventoryMessageMapperTest {
   private ResourceModelMapper resourceModelMapper;
 
   @Test
-  void shouldReturnEmptyOptional_ifGivenResourceIsNull() {
-    // given
-
-    // when
-    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(null);
-
-    // when
-    assertThat(result).isNotPresent();
-  }
-
-  @Test
-  void shouldReturnEmptyOptional_ifGivenResourceIdIsNull() {
-    // given
-    var resource = new Resource();
-
-    // when
-    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource);
-
-    // when
-    assertThat(result).isNotPresent();
-  }
-
-  @Test
-  void shouldReturnEmptyOptional_ifGivenResourceIsNotInstance() {
-    // given
-    var resource = new Resource().setId(randomLong());
-
-    // when
-    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource);
-
-    // when
-    assertThat(result).isNotPresent();
-  }
-
-  @Test
-  void shouldReturnMappedEvent_ifResultedMarcIsNull() {
-    // given
-    var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
-    instance.setInstanceMetadata(new InstanceMetadata(instance).setInventoryId(UUID.randomUUID().toString()));
-    org.folio.ld.dictionary.model.Resource resourceModel = new org.folio.ld.dictionary.model.Resource()
-      .setId(instance.getId())
-      .addType(INSTANCE);
-    doReturn(resourceModel).when(resourceModelMapper).toModel(instance);
-    doReturn(null).when(bibframe2MarcMapper).toMarcJson(resourceModel);
-
-    // when
-    var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(instance);
-
-    // when
-    assertThat(result).isNotPresent();
-  }
-
-  @Test
-  void shouldReturnMappedEvent_ifGivenResourceIsInstanceWithId() {
+  void testMapping() {
     // given
     var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
     var inventoryId = UUID.randomUUID().toString();
@@ -101,8 +48,6 @@ class KafkaInventoryMessageMapperTest {
 
     // when
     assertThat(result)
-      .isPresent()
-      .get()
       .hasFieldOrPropertyWithValue("id", String.valueOf(instance.getId()))
       .extracting("eventPayload")
       .hasFieldOrPropertyWithValue("sourceRecordIdentifier", inventoryId)

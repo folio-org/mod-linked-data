@@ -12,7 +12,6 @@ import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -126,7 +125,7 @@ class ResourceServiceTest {
     assertThat(response).isEqualTo(expectedResponse);
     var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertEquals(work.getId(), resourceCreateEventCaptor.getValue().id());
+    assertThat(work.getId()).isEqualTo(resourceCreateEventCaptor.getValue().id());
   }
 
   @Test
@@ -147,7 +146,7 @@ class ResourceServiceTest {
     assertThat(response).isEqualTo(expectedResponse);
     var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertEquals(work.getId(), resourceCreateEventCaptor.getValue().id());
+    assertThat(work.getId()).isEqualTo(resourceCreateEventCaptor.getValue().id());
   }
 
   @Test
@@ -243,7 +242,7 @@ class ResourceServiceTest {
     var result = resourceService.updateResource(id, workDto);
 
     // then
-    assertEquals(expectedDto, result);
+    assertThat(expectedDto).isEqualTo(result);
     verify(resourceRepo).delete(oldWork);
     verify(resourceRepo).save(work);
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work));
@@ -271,7 +270,7 @@ class ResourceServiceTest {
     var result = resourceService.updateResource(oldId, instanceDto);
 
     // then
-    assertEquals(expectedDto, result);
+    assertThat(expectedDto).isEqualTo(result);
     verify(resourceRepo).delete(oldInstance);
     verify(resourceRepo).save(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped));
@@ -290,7 +289,7 @@ class ResourceServiceTest {
     verify(resourceRepo).delete(work);
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
-    assertEquals(work, resourceDeletedEventCaptor.getValue().resource());
+    assertThat(work).isEqualTo(resourceDeletedEventCaptor.getValue().resource());
   }
 
   @Test
@@ -314,7 +313,7 @@ class ResourceServiceTest {
     verify(resourceRepo).delete(instance);
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
-    assertEquals(instance, resourceDeletedEventCaptor.getValue().resource());
+    assertThat(instance).isEqualTo(resourceDeletedEventCaptor.getValue().resource());
   }
 
 
@@ -384,7 +383,7 @@ class ResourceServiceTest {
     var resourceGraphDto = resourceService.getResourceGraphById(id);
 
     //then
-    assertEquals(expectedResourceGraphDto, resourceGraphDto);
+    assertThat(expectedResourceGraphDto).isEqualTo(resourceGraphDto);
   }
 
   @Test

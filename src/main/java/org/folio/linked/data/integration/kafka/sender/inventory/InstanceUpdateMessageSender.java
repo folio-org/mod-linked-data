@@ -10,7 +10,6 @@ import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
 import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
-import org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -25,17 +24,13 @@ public class InstanceUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public Collection<Resource> apply(Resource resource) {
-    return extractInstances(resource)
-      .stream()
-      .toList();
+    return extractInstances(resource);
   }
 
   @Override
   public void accept(Resource resource) {
-    kafkaInventoryMessageMapper.toInstanceIngressEvent(resource)
-      .map(e -> e.eventType(EventTypeEnum.UPDATE_INSTANCE))
-      .map(List::of)
-      .ifPresent(instanceIngressMessageProducer::sendMessages);
+    var message = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource);
+    instanceIngressMessageProducer.sendMessages(List.of(message));
   }
 
 }

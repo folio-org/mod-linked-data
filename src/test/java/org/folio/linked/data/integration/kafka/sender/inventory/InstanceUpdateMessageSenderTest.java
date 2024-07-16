@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
@@ -65,21 +64,7 @@ class InstanceUpdateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldDoNothing_ifGivenResourceIsNotBeingMappedByMessageMapper() {
-    // given
-    var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    instance.setInstanceMetadata(new InstanceMetadata(instance).setSource(LINKED_DATA));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(Optional.empty());
-
-    // when
-    producer.produce(instance);
-
-    // then
-    verifyNoInteractions(instanceIngressMessageProducer);
-  }
-
-  @Test
-  void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourcedAndMappedCorrectly() {
+  void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
     var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata = new InstanceMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
@@ -87,7 +72,7 @@ class InstanceUpdateMessageSenderTest {
 
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(Optional.of(instanceIngressEvent));
+    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when
     producer.produce(instance);
@@ -116,10 +101,10 @@ class InstanceUpdateMessageSenderTest {
 
     var ingressEvent1 = new InstanceIngressEvent().id(String.valueOf(instance1.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata1.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance1)).thenReturn(Optional.of(ingressEvent1));
+    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance1)).thenReturn(ingressEvent1);
     var ingressEvent2 = new InstanceIngressEvent().id(String.valueOf(instance2.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata2.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance2)).thenReturn(Optional.of(ingressEvent2));
+    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance2)).thenReturn(ingressEvent2);
 
     // when
     producer.produce(work);
