@@ -54,7 +54,6 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
       .map(ResourceEdge::getTarget)
       .filter(target -> isNewAndNotVisited(target, visitedResources))
       .flatMap(target -> findAuthorities(target, visitedResources).stream())
-      .filter(this::isNewAuthority)
       .forEach(authorities::add);
     return authorities;
   }
