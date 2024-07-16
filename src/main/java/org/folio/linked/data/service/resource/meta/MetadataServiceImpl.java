@@ -13,14 +13,14 @@ import org.springframework.stereotype.Service;
 public class MetadataServiceImpl implements MetadataService {
 
   @Override
-  public void ensureMetadata(Resource resource) {
+  public void ensure(Resource resource) {
     ensure(resource, metadata ->
       metadata.setInventoryId(UUID.randomUUID().toString())
     );
   }
 
   @Override
-  public void ensureMetadata(Resource resource, InstanceMetadata oldResourceMeta) {
+  public void ensure(Resource resource, InstanceMetadata oldResourceMeta) {
     ensure(resource, metadata -> {
       metadata.setInventoryId(oldResourceMeta.getInventoryId());
       metadata.setSrsId(oldResourceMeta.getSrsId());

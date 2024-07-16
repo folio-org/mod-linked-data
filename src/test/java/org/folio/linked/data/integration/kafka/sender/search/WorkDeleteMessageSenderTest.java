@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.util.HashSet;
 import java.util.List;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.LinkedDataWork;
@@ -36,8 +35,6 @@ class WorkDeleteMessageSenderTest {
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
   @Mock
-  private ResourceModificationEventListener eventListener;
-  @Mock
   private WorkUpdateMessageSender workUpdateMessageSender;
 
   @Test
@@ -49,7 +46,7 @@ class WorkDeleteMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventListener, resourceMessageProducer, workUpdateMessageSender);
+    verifyNoInteractions(resourceMessageProducer, workUpdateMessageSender);
   }
 
   @Test
@@ -93,7 +90,6 @@ class WorkDeleteMessageSenderTest {
 
     // then
     verify(resourceMessageProducer, never()).sendMessages(ArgumentMatchers.any());
-    verifyNoInteractions(eventListener);
     verify(workUpdateMessageSender).produce(work);
   }
 }

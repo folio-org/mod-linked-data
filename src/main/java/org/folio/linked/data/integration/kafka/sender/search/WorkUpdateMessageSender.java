@@ -4,7 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.BibframeUtils.extractWork;
+import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
@@ -13,8 +13,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -23,27 +23,20 @@ import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
 @Profile(FOLIO_PROFILE)
+@RequiredArgsConstructor
 public class WorkUpdateMessageSender implements UpdateMessageSender {
 
   @Qualifier("bibliographicMessageProducer")
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
   private final KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
-  private final ResourceModificationEventListener eventListener;
-
-  public WorkUpdateMessageSender(FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer,
-                                 KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper,
-                                 @Lazy ResourceModificationEventListener eventListener) {
-    this.bibliographicMessageProducer = bibliographicMessageProducer;
-    this.searchBibliographicMessageMapper = searchBibliographicMessageMapper;
-    this.eventListener = eventListener;
-  }
+  private final ApplicationEventPublisher eventPublisher;
 
   @Override
   public Collection<Resource> apply(Resource resource) {
@@ -69,7 +62,7 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
   }
 
   private List<Resource> selectParentWorkForUpdate(Resource instance) {
-    return extractWork(instance)
+    return extractWorkFromInstance(instance)
       .map(work -> {
         log.info("Instance [{}] update triggered parent Work [{}] index update", instance.getId(), work.getId());
         return Collections.singletonList(work);
@@ -92,7 +85,7 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
     Optional.of(resource)
       .map(Resource::getId)
       .map(ResourceIndexedEvent::new)
-      .ifPresent(eventListener::afterIndex);
+      .ifPresent(eventPublisher::publishEvent);
   }
 
 }

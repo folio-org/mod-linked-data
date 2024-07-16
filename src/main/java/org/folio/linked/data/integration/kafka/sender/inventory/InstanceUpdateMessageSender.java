@@ -1,7 +1,8 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
-import static org.folio.linked.data.util.BibframeUtils.extractInstances;
+import static org.folio.linked.data.util.BibframeUtils.extractInstancesFromWork;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,12 +25,13 @@ public class InstanceUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public Collection<Resource> apply(Resource resource) {
-    return extractInstances(resource);
+    return extractInstancesFromWork(resource);
   }
 
   @Override
   public void accept(Resource resource) {
-    var message = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource);
+    var message = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource)
+      .eventType(UPDATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));
   }
 

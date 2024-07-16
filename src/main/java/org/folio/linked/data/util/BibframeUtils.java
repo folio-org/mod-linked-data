@@ -69,7 +69,7 @@ public class BibframeUtils {
       .orElse(null);
   }
 
-  public static Optional<Resource> extractWork(Resource resource) {
+  public static Optional<Resource> extractWorkFromInstance(Resource resource) {
     if (resource.isOfType(WORK)) {
       return Optional.of(resource);
     }
@@ -86,7 +86,7 @@ public class BibframeUtils {
       .findFirst();
   }
 
-  public static List<Resource> extractInstances(Resource resource) {
+  public static List<Resource> extractInstancesFromWork(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
       return List.of(resource);
     }

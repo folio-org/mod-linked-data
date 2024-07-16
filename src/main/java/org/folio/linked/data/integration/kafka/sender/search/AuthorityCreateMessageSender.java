@@ -95,4 +95,5 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
       .map(ResourceIndexedEvent::new)
       .ifPresent(eventPublisher::publishEvent);
   }
+
 }

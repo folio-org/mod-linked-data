@@ -5,7 +5,7 @@ import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.BibframeUtils.extractWork;
+import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
@@ -55,7 +55,7 @@ public class WorkDeleteMessageSender implements DeleteMessageSender {
   }
 
   private void triggerParentWorkUpdate(Resource instance) {
-    extractWork(instance)
+    extractWorkFromInstance(instance)
       .ifPresentOrElse(work -> {
         log.info("Instance [id {}] deletion triggered parent Work [id {}] index update", instance.getId(),
           work.getId());

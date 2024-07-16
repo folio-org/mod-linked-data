@@ -3,7 +3,6 @@ package org.folio.linked.data.integration.kafka.sender.inventory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.model.entity.ResourceSource.MARC;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -51,19 +50,6 @@ class InstanceUpdateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldDoNothing_ifGivenResourceIsInstanceMarcSourced() {
-    // given
-    var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    instance.setInstanceMetadata(new InstanceMetadata(instance).setSource(MARC));
-
-    // when
-    producer.produce(instance);
-
-    // then
-    verifyNoInteractions(instanceIngressMessageProducer);
-  }
-
-  @Test
   void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
     var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
@@ -84,7 +70,7 @@ class InstanceUpdateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldSendExpectedMessages_ifGivenResourceIsWorkWithInstancesLinkedDataSourcedAndMappedCorrectly() {
+  void produce_shouldSendExpectedMessages_ifGivenResourceIsWorkWithInstances() {
     // given
     var work = new Resource().setId(1L).addTypes(ResourceTypeDictionary.WORK);
     var instance1 = new Resource().setId(2L).addTypes(ResourceTypeDictionary.INSTANCE);
@@ -94,10 +80,8 @@ class InstanceUpdateMessageSenderTest {
       .setInstanceMetadata(new InstanceMetadata(work).setSource(LINKED_DATA));
     var metadata2 = new InstanceMetadata(instance2).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance2.setInstanceMetadata(metadata2);
-    var instance3 = new Resource().setId(4L).addTypes(ResourceTypeDictionary.INSTANCE);
     work.addIncomingEdge(new ResourceEdge(work, instance1, INSTANTIATES));
     work.addIncomingEdge(new ResourceEdge(work, instance2, INSTANTIATES));
-    work.addIncomingEdge(new ResourceEdge(work, instance3, INSTANTIATES));
 
     var ingressEvent1 = new InstanceIngressEvent().id(String.valueOf(instance1.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata1.getInventoryId()));

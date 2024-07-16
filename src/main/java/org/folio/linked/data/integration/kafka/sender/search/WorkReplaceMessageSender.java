@@ -4,7 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.BibframeUtils.extractWork;
+import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
 import java.util.Collection;
@@ -46,7 +46,7 @@ public class WorkReplaceMessageSender implements ReplaceMessageSender {
   }
 
   private void triggerParentWorkUpdate(Resource instance) {
-    extractWork(instance)
+    extractWorkFromInstance(instance)
       .ifPresentOrElse(work -> {
           log.info("Instance [id {}] replace triggered parent Work [{}] index update", instance.getId(), work.getId());
           workUpdateMessageSender.produce(work);

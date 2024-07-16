@@ -61,7 +61,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     log.info("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
-    metadataService.ensureMetadata(mapped);
+    metadataService.ensure(mapped);
     var persisted = saveMergingGraph(mapped);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
     return resourceDtoMapper.toDto(persisted);
@@ -228,7 +228,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    metadataService.ensureMetadata(mapped, old.getInstanceMetadata());
+    metadataService.ensure(mapped, old.getInstanceMetadata());
     return saveMergingGraph(mapped);
   }
 

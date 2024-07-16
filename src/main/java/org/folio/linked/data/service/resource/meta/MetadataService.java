@@ -5,7 +5,7 @@ import org.folio.linked.data.model.entity.Resource;
 
 public interface MetadataService {
 
-  void ensureMetadata(Resource resource);
+  void ensure(Resource resource);
 
-  void ensureMetadata(Resource newResource, InstanceMetadata oldResourceMeta);
+  void ensure(Resource newResource, InstanceMetadata oldResourceMeta);
 }

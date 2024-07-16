@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -27,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -37,7 +37,7 @@ class WorkUpdateMessageSenderTest {
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
   @Mock
-  private ResourceModificationEventListener eventListener;
+  private ApplicationEventPublisher eventPublisher;
   @Mock
   private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
 
@@ -50,7 +50,7 @@ class WorkUpdateMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventListener, resourceMessageProducer);
+    verifyNoInteractions(eventPublisher, resourceMessageProducer);
   }
 
   @Test
@@ -75,7 +75,7 @@ class WorkUpdateMessageSenderTest {
       .hasFieldOrPropertyWithValue("type", UPDATE)
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
       .hasFieldOrPropertyWithValue("_new", index);
-    verify(eventListener).afterIndex(new ResourceIndexedEvent(id));
+    verify(eventPublisher).publishEvent(new ResourceIndexedEvent(id));
   }
 
   @Test
@@ -101,6 +101,6 @@ class WorkUpdateMessageSenderTest {
       .hasFieldOrPropertyWithValue("type", UPDATE)
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
       .hasFieldOrPropertyWithValue("_new", workIndex);
-    verify(eventListener).afterIndex(new ResourceIndexedEvent(work.getId()));
+    verify(eventPublisher).publishEvent(new ResourceIndexedEvent(work.getId()));
   }
 }

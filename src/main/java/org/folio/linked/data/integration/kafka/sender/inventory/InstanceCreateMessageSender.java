@@ -6,6 +6,7 @@ import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.search.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,7 +40,8 @@ public class InstanceCreateMessageSender implements CreateMessageSender {
   @Override
   @SneakyThrows
   public void accept(Resource resource) {
-    var message = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource);
+    var message = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource)
+      .eventType(CREATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));
   }
 

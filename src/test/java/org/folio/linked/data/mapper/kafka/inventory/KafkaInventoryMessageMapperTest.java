@@ -36,7 +36,7 @@ class KafkaInventoryMessageMapperTest {
     var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
     var inventoryId = UUID.randomUUID().toString();
     instance.setInstanceMetadata(new InstanceMetadata(instance).setInventoryId(inventoryId));
-    org.folio.ld.dictionary.model.Resource resourceModel = new org.folio.ld.dictionary.model.Resource()
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(instance.getId())
       .addType(INSTANCE);
     doReturn(resourceModel).when(resourceModelMapper).toModel(instance);

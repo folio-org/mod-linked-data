@@ -22,14 +22,18 @@ public abstract class KafkaInventoryMessageMapper {
   @Autowired
   protected ResourceModelMapper resourceModelMapper;
 
-  @Mapping(target = "eventPayload", expression = "java(toInstanceIngressPayload(resource))")
+  @Mapping(target = "eventPayload", source = "resource")
   public abstract InstanceIngressEvent toInstanceIngressEvent(Resource resource);
 
   @Mapping(target = "sourceRecordIdentifier", source = "instanceMetadata.inventoryId")
   @Mapping(target = "sourceType", constant = "LINKED_DATA")
-  @Mapping(target = "sourceRecordObject",
-    expression = "java(bibframe2MarcMapper.toMarcJson(resourceModelMapper.toModel(resource)))")
+  @Mapping(target = "sourceRecordObject", source = "resource")
   protected abstract InstanceIngressPayload toInstanceIngressPayload(Resource resource);
+
+  protected String toMarcJson(Resource resource) {
+    var resourceModel = resourceModelMapper.toModel(resource);
+    return bibframe2MarcMapper.toMarcJson(resourceModel);
+  }
 
   @AfterMapping
   protected void afterMappingPayload(@MappingTarget InstanceIngressPayload payload, Resource resource) {
