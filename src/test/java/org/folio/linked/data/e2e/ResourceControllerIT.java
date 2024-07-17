@@ -162,6 +162,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.service.HashService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.junit.jupiter.api.BeforeEach;
@@ -204,6 +205,8 @@ class ResourceControllerIT {
   @Autowired
   private ResourceTestService resourceTestService;
   private LookupResources lookupResources;
+  @Autowired
+  private HashService hashService;
 
   @BeforeEach
   public void beforeEach() {
@@ -233,7 +236,7 @@ class ResourceControllerIT {
 
     var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
     var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
-    var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 3);
+    var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
     assertThat(instanceResource.getInstanceMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().get(0).getId();
@@ -744,7 +747,7 @@ class ResourceControllerIT {
   }
 
   private void validateInstance(Resource instance, boolean validateFullWork) {
-    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getDoc().size()).isEqualTo(20);
