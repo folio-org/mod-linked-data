@@ -572,7 +572,7 @@ class ResourceControllerIT {
     // nothing to check without Folio profile
   }
 
-  protected void checkIndexDate(List<Resource> resources) {
+  private void checkIndexDate(List<Resource> resources) {
     resources.forEach(r -> checkIndexDate(r.getId().toString()));
   }
 
