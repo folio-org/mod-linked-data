@@ -148,67 +148,6 @@ class BibliographicSearchMessageMapperTest {
     assertThat(thrown.getMessage()).contains("CREATE");
   }
 
-  @Test
-  void toDeleteIndex_shouldThrowNullPointerException_ifGivenResourceIsNull() {
-    // given
-    Resource resource = null;
-
-    // when
-    var thrown = assertThrows(NullPointerException.class, () -> kafkaMessageMapper.toDeleteIndexId(resource));
-
-    // then
-    assertThat(thrown.getMessage()).isEqualTo("work is marked non-null but is null");
-  }
-
-  @Test
-  void toDeleteIndex_shouldReturnEmptyOptional_ifGivenWorkIdIsNull() {
-    // given
-    var work = new Resource().addTypes(WORK);
-
-    // when
-    var result = kafkaMessageMapper.toDeleteIndexId(work);
-
-    // then
-    assertThat(result).isEmpty();
-  }
-
-  @Test
-  void toDeleteIndex_shouldReturnCorrectlyMappedId_fromWork() {
-    // given
-    var work = getSampleWork(null);
-    var wrongContributor = getContributor(ANNOTATION);
-    var emptyContributor = new Resource();
-    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
-    getInstance(1L, work);
-    getInstance(2L, work);
-
-    // when
-    var resultOpt = kafkaMessageMapper.toDeleteIndexId(work);
-
-    // then
-    assertThat(resultOpt).isPresent().contains(work.getId());
-  }
-
-  @Test
-  void toDeleteIndex_shouldThrowException_fromInstance() {
-    // given
-    var work = getSampleWork(null);
-    var wrongContributor = getContributor(ANNOTATION);
-    var emptyContributor = new Resource();
-    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
-    final var instance1 = getInstance(1L, work);
-    getInstance(2L, work);
-
-    // when
-    var thrown = assertThrows(LinkedDataServiceException.class, () -> kafkaMessageMapper.toDeleteIndexId(instance1));
-
-    // then
-    assertThat(thrown.getMessage()).contains(instance1.toString());
-    assertThat(thrown.getMessage()).contains("DELETE");
-  }
-
   private Resource getInstance(Long id, Resource work) {
     var instance = getSampleInstanceResource(id, work);
     var emptyTitle = new Resource();

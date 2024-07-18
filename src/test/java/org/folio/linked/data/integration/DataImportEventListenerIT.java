@@ -13,7 +13,7 @@ import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.authorityEvent;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.instanceCreatedEvent;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
+import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
@@ -199,7 +199,7 @@ class DataImportEventListenerIT {
       assertTrue(
         kafkaSearchWorkIndexTopicListener.getMessages()
           .stream()
-          .anyMatch(m -> m.contains(workIdOptional.get().toString()) && m.contains(CREATE.getValue()))
+          .anyMatch(m -> m.contains(workIdOptional.get().toString()) && m.contains(UPDATE.getValue()))
       )
     );
   }

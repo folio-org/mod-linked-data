@@ -1,18 +1,15 @@
 package org.folio.linked.data.integration.kafka.sender;
 
 import java.util.Collection;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import org.folio.linked.data.model.entity.Resource;
 
-public interface UpdateMessageSender extends BiConsumer<Resource, Resource>,
-  BiFunction<Resource, Resource, Collection<UpdateMessageSender.ResourcePair>> {
+public interface UpdateMessageSender extends Consumer<Resource>, Function<Resource, Collection<Resource>> {
 
-  default void produce(Resource oldResource, Resource newResource) {
-    apply(oldResource, newResource)
-      .forEach(pair -> this.accept(pair.oldResource, pair.newResource));
+  default void produce(Resource resource) {
+    apply(resource)
+      .forEach(this);
   }
 
-  record ResourcePair(Resource oldResource, Resource newResource) {
-  }
 }

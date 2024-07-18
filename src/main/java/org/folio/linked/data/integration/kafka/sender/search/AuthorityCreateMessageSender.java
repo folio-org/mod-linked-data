@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
@@ -84,7 +83,7 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
 
   private ResourceIndexEvent createIndexEvent(LinkedDataAuthority linkedDataAuthority) {
     return new ResourceIndexEvent()
-      .id(UUID.randomUUID().toString())
+      .id(linkedDataAuthority.getId())
       .type(CREATE)
       .resourceName(SEARCH_AUTHORITY_RESOURCE_NAME)
       ._new(linkedDataAuthority);
@@ -96,4 +95,5 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
       .map(ResourceIndexedEvent::new)
       .ifPresent(eventPublisher::publishEvent);
   }
+
 }

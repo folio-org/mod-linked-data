@@ -238,7 +238,7 @@ class ResourceControllerIT {
     assertThat(instanceResource.getInstanceMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().get(0).getId();
-    checkSearchIndexMessage(Long.valueOf(workId), CREATE);
+    checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
     checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
   }

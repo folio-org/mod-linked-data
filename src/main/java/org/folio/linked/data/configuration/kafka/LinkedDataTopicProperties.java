@@ -11,5 +11,5 @@ public class LinkedDataTopicProperties {
 
   private String workSearchIndex;
   private String authoritySearchIndex;
-  private String inventoryInstanceIngress;
+  private String instanceIngress;
 }

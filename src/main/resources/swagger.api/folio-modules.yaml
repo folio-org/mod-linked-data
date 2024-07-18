@@ -22,5 +22,5 @@ components:
       $ref: search/linkedDataAuthority.json
     dataImportEvent:
       $ref: events/dataImportEvent.json
-    inventoryInstanceIngressEvent:
+    instanceIngressEvent:
       $ref: inventory/instanceIngressEvent.json

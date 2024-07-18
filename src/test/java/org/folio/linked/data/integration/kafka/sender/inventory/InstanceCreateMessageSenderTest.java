@@ -8,10 +8,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
+import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
 import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -27,64 +26,56 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class InventoryCreateInstanceEventProducerTest {
+class InstanceCreateMessageSenderTest {
 
   @InjectMocks
-  private InventoryCreateInstanceEventProducer producer;
+  private InstanceCreateMessageSender producer;
   @Mock
-  private KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
+  private InstanceIngressMessageMapper instanceIngressMessageMapper;
   @Mock
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
   @Test
-  void sendInstanceCreated_shouldDoNothing_ifGivenResourceIsMarc() {
+  void produce_shouldDoNothing_ifGivenResourceIsNotInstance() {
+    // given
+    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.FAMILY);
+
+    // when
+    producer.produce(resource);
+
+    // then
+    verifyNoInteractions(instanceIngressMessageProducer);
+  }
+
+  @Test
+  void produce_shouldDoNothing_ifGivenResourceIsInstanceMarcSourced() {
     // given
     var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(MARC));
 
     // when
-    producer.accept(resource);
+    producer.produce(resource);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
   }
 
   @Test
-  void sendInstanceCreated_shouldDoNothing_ifGivenResourceIsNotBeingMappedByMessageMapper() {
+  void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
-    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(LINKED_DATA));
-    when(kafkaInventoryMessageMapper.toInstanceIngressPayload(resource))
-      .thenReturn(Optional.empty());
+    var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var metadata = new InstanceMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
+    instance.setInstanceMetadata(metadata);
+    var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
+      .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
+    when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when
-    producer.accept(resource);
-
-    // then
-    verifyNoInteractions(instanceIngressMessageProducer);
-  }
-
-  @Test
-  void sendInstanceCreated_shouldSendExpectedMessage_ifGivenResourceIsBeingMappedByMessageMapper() {
-    // given
-    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(LINKED_DATA));
-
-    var payload = new InstanceIngressPayload().sourceRecordIdentifier(UUID.randomUUID().toString());
-    when(kafkaInventoryMessageMapper.toInstanceIngressPayload(resource)).thenReturn(Optional.of(payload));
-
-    // when
-    producer.accept(resource);
+    producer.produce(instance);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(instanceIngressMessageProducer).sendMessages(messageCaptor.capture());
-    List<InstanceIngressEvent> messages = messageCaptor.getValue();
-
-    assertThat(messages)
-      .singleElement()
-      .hasFieldOrProperty("id")
-      .hasFieldOrPropertyWithValue("eventType", InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE)
-      .hasFieldOrPropertyWithValue("eventPayload", payload);
+    assertThat(messageCaptor.getValue()).singleElement().isEqualTo(instanceIngressEvent);
   }
 }
