@@ -2,6 +2,8 @@ package org.folio.linked.data.integration.kafka.sender.search;
 
 import static java.lang.Long.parseLong;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -91,12 +93,22 @@ public class AuthorityCreateMessageSenderTest {
   public void sendAuthorityCreated_shouldSendMessageAndPublishEvent_ifAuthorityLinkedToWork() {
     // given
     var work = new Resource().addTypes(WORK).setId(randomLong());
-    var authority = new Resource().addTypes(PERSON).setId(randomLong());
-    work.addOutgoingEdge(new ResourceEdge(work, authority, PredicateDictionary.NULL));
+    var person = new Resource().addTypes(PERSON)
+      .setId(randomLong())
+      .setManaged(true);
+    var concept = new Resource().addTypes(CONCEPT)
+      .setId(randomLong())
+      .setIndexDate(new Date());
+    var family = new Resource().addTypes(FAMILY)
+      .setId(randomLong())
+      .setManaged(true)
+      .setIndexDate(new Date());
+    work.addOutgoingEdge(new ResourceEdge(work, person, PredicateDictionary.NULL));
+    work.addOutgoingEdge(new ResourceEdge(work, concept, PredicateDictionary.NULL));
+    work.addOutgoingEdge(new ResourceEdge(work, family, PredicateDictionary.NULL));
 
-    var index = new LinkedDataAuthority().id(String.valueOf(authority.getId()));
-    when(authoritySearchMessageMapper.toIndex(authority, CREATE))
-      .thenReturn(Optional.of(index));
+    var index = new LinkedDataAuthority().id(String.valueOf(person.getId()));
+    when(authoritySearchMessageMapper.toIndex(person, CREATE)).thenReturn(Optional.of(index));
 
     // when
     producer.produce(work);

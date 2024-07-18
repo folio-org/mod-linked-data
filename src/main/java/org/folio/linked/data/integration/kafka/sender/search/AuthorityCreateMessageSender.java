@@ -59,11 +59,11 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
   }
 
   private boolean isNewAndNotVisited(Resource resource, Set<Resource> visited) {
-    return resource.isNew() && !visited.contains(resource);
+    return resource.getIndexDate() == null && !visited.contains(resource);
   }
 
   private boolean isNewAuthority(Resource resource) {
-    return resource.isNew() && isAuthority(resource);
+    return resource.getIndexDate() == null && isAuthority(resource);
   }
 
   private boolean isAuthority(Resource resource) {
