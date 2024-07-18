@@ -13,7 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
-import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
+import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
 import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InstanceCreateMessageSender implements CreateMessageSender {
 
-  private final KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
+  private final InstanceIngressMessageMapper instanceIngressMessageMapper;
   private final FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
   @Override
@@ -40,7 +40,7 @@ public class InstanceCreateMessageSender implements CreateMessageSender {
   @Override
   @SneakyThrows
   public void accept(Resource resource) {
-    var message = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource)
+    var message = instanceIngressMessageMapper.toInstanceIngressEvent(resource)
       .eventType(CREATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));
   }

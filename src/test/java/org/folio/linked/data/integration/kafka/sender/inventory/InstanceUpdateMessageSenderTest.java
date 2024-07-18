@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
+import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
 import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -33,7 +33,7 @@ class InstanceUpdateMessageSenderTest {
   @InjectMocks
   private InstanceUpdateMessageSender producer;
   @Mock
-  private KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
+  private InstanceIngressMessageMapper instanceIngressMessageMapper;
   @Mock
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
@@ -58,7 +58,7 @@ class InstanceUpdateMessageSenderTest {
 
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
+    when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when
     producer.produce(instance);
@@ -85,10 +85,10 @@ class InstanceUpdateMessageSenderTest {
 
     var ingressEvent1 = new InstanceIngressEvent().id(String.valueOf(instance1.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata1.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance1)).thenReturn(ingressEvent1);
+    when(instanceIngressMessageMapper.toInstanceIngressEvent(instance1)).thenReturn(ingressEvent1);
     var ingressEvent2 = new InstanceIngressEvent().id(String.valueOf(instance2.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata2.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance2)).thenReturn(ingressEvent2);
+    when(instanceIngressMessageMapper.toInstanceIngressEvent(instance2)).thenReturn(ingressEvent2);
 
     // when
     producer.produce(work);

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
+import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
 import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -31,7 +31,7 @@ class InstanceCreateMessageSenderTest {
   @InjectMocks
   private InstanceCreateMessageSender producer;
   @Mock
-  private KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
+  private InstanceIngressMessageMapper instanceIngressMessageMapper;
   @Mock
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
@@ -68,7 +68,7 @@ class InstanceCreateMessageSenderTest {
     instance.setInstanceMetadata(metadata);
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
-    when(kafkaInventoryMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
+    when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when
     producer.produce(instance);

@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
-import org.folio.linked.data.mapper.kafka.inventory.KafkaInventoryMessageMapper;
+import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class InstanceUpdateMessageSender implements UpdateMessageSender {
 
-  private final KafkaInventoryMessageMapper kafkaInventoryMessageMapper;
+  private final InstanceIngressMessageMapper instanceIngressMessageMapper;
   private final FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
   @Override
@@ -30,7 +30,7 @@ public class InstanceUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public void accept(Resource resource) {
-    var message = kafkaInventoryMessageMapper.toInstanceIngressEvent(resource)
+    var message = instanceIngressMessageMapper.toInstanceIngressEvent(resource)
       .eventType(UPDATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));
   }

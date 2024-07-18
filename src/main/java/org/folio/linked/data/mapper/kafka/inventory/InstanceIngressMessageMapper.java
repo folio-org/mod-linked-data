@@ -14,7 +14,7 @@ import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = SPRING)
-public abstract class KafkaInventoryMessageMapper {
+public abstract class InstanceIngressMessageMapper {
 
   private static final String LINKED_DATA_ID = "linkedDataId";
   @Autowired

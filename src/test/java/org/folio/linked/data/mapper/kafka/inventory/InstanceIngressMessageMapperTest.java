@@ -21,10 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class KafkaInventoryMessageMapperTest {
+class InstanceIngressMessageMapperTest {
 
   @InjectMocks
-  private KafkaInventoryMessageMapperImpl kafkaInventoryMessageMapper;
+  private InstanceIngressMessageMapperImpl kafkaInventoryMessageMapper;
   @Mock
   private Bibframe2MarcMapper bibframe2MarcMapper;
   @Mock
