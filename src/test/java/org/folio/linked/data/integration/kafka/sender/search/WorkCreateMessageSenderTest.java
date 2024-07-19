@@ -13,12 +13,10 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -51,21 +49,7 @@ class WorkCreateMessageSenderTest {
     var resource = new Resource().addTypes(FAMILY);
 
     // when
-    producer.produce(resource);
-
-    // then
-    verifyNoInteractions(eventPublisher, resourceMessageProducer, workUpdateMessageSender);
-  }
-
-  @Test
-  void produce_shouldNotSendMessageAndIndexEvent_ifGivenResourceIsWorkButNotIndexable() {
-    // given
-    var resource = new Resource().addTypes(WORK);
-    when(bibliographicSearchMessageMapper.toIndex(resource, CREATE))
-      .thenReturn(Optional.empty());
-
-    // when
-    producer.produce(resource);
+    producer.produce(resource, true);
 
     // then
     verifyNoInteractions(eventPublisher, resourceMessageProducer, workUpdateMessageSender);
@@ -75,28 +59,40 @@ class WorkCreateMessageSenderTest {
   void produce_shouldSendMessageAndPublishIndexEvent_ifGivenResourceIsWorkAndIndexable() {
     // given
     var resource = new Resource().addTypes(WORK).setId(randomLong());
-    var index = new LinkedDataWork().id(String.valueOf(resource.getId()));
-    when(bibliographicSearchMessageMapper.toIndex(resource, CREATE))
-      .thenReturn(Optional.of(index));
+    var expectedMessage = new ResourceIndexEvent()
+      .id(String.valueOf(resource.getId()));
+    when(bibliographicSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
 
     // when
-    producer.produce(resource);
+    producer.produce(resource, true);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceMessageProducer)
-      .sendMessages(messageCaptor.capture());
-    List<ResourceIndexEvent> messages = messageCaptor.getValue();
-    var expectedIndexEvent = new ResourceIndexedEvent(parseLong(index.getId()));
-
-    assertThat(messages)
-      .singleElement()
-      .hasFieldOrProperty("id")
-      .hasFieldOrPropertyWithValue("type", CREATE)
-      .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
-      .hasFieldOrPropertyWithValue("_new", index);
+    verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
+    assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
+    assertThat(expectedMessage.getType()).isEqualTo(CREATE);
+    var expectedIndexEvent = new ResourceIndexedEvent(parseLong(expectedMessage.getId()));
     verify(eventPublisher).publishEvent(expectedIndexEvent);
     verifyNoInteractions(workUpdateMessageSender);
+  }
+
+  @Test
+  void produce_shouldSendMessageButNotPublishIndexEvent_ifGivenResourceIsWorkButPutIndexDateIsFalse() {
+    // given
+    var resource = new Resource().addTypes(WORK).setId(randomLong());
+    var expectedMessage = new ResourceIndexEvent()
+      .id(String.valueOf(resource.getId()));
+    when(bibliographicSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
+
+    // when
+    producer.produce(resource, false);
+
+    // then
+    var messageCaptor = ArgumentCaptor.forClass(List.class);
+    verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
+    assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
+    assertThat(expectedMessage.getType()).isEqualTo(CREATE);
+    verifyNoInteractions(eventPublisher, workUpdateMessageSender);
   }
 
   @Test
@@ -107,7 +103,7 @@ class WorkCreateMessageSenderTest {
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
 
     // when
-    producer.produce(instance);
+    producer.produce(instance, true);
 
     // then
     verifyNoInteractions(resourceMessageProducer, eventPublisher);

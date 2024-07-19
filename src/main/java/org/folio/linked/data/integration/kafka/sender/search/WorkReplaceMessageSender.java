@@ -42,7 +42,7 @@ public class WorkReplaceMessageSender implements ReplaceMessageSender {
     log.info("Work replace with different Id triggered old Work [id {}] index deletion and new Work [id [{}]] "
       + "index creation", pair.getFirst().getId(), pair.getSecond().getId());
     workDeleteMessageSender.produce(pair.getFirst());
-    workCreateMessageSender.produce(pair.getSecond());
+    workCreateMessageSender.produce(pair.getSecond(), true);
   }
 
   private void triggerParentWorkUpdate(Resource instance) {

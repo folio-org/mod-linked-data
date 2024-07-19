@@ -1,5 +1,6 @@
-package org.folio.linked.data.mapper.resource.kafka;
+package org.folio.linked.data.mapper.kafka.search;
 
+import static java.util.Collections.emptyList;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
@@ -14,7 +15,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
@@ -35,23 +35,19 @@ import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_VARI
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_PARALLEL;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_VARIANT;
-import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
-import org.folio.linked.data.mapper.kafka.identifier.BibframeInstancesInnerIdentifiersInnerMapperAbstract;
-import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
+import org.folio.linked.data.mapper.kafka.search.identifier.BibframeInstancesInnerIdentifiersInnerMapperAbstract;
+import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeContributorsInner;
@@ -64,17 +60,23 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
 class BibliographicSearchMessageMapperTest {
 
-  private BibliographicSearchMessageMapper kafkaMessageMapper;
+  @InjectMocks
+  private BibliographicSearchMessageMapperImpl kafkaMessageMapper;
 
   @Mock
   private SingleResourceMapper singleResourceMapper;
+  @Spy
+  private IndexIdentifierMapper<BibframeInstancesInnerIdentifiersInner> innerIndexIdentifierMapper
+    = new BibframeInstancesInnerIdentifiersInnerMapperAbstract();
 
   @BeforeEach
   public void setupMocks() {
@@ -91,8 +93,32 @@ class BibliographicSearchMessageMapperTest {
     ).forEach(t ->
       lenient().when(singleResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
     );
-    kafkaMessageMapper = new BibliographicSearchMessageMapper(
-      new BibframeInstancesInnerIdentifiersInnerMapperAbstract(), singleResourceMapper);
+  }
+
+  @Test
+  void toIndex_shouldReturnCorrectlyMappedIndex_fromResourceWithIdOnly() {
+    // given
+    var resource = new Resource().setId(randomLong());
+
+    // when
+    var result = kafkaMessageMapper.toIndex(resource);
+
+    // then
+    assertThat(result)
+      .hasAllNullFieldsOrPropertiesExcept("id", "resourceName", "_new")
+      .hasFieldOrPropertyWithValue("id", String.valueOf(resource.getId()))
+      .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
+      .extracting("_new")
+      .isInstanceOf(LinkedDataWork.class);
+    var linkedDataWork = (LinkedDataWork) result.getNew();
+    assertThat(linkedDataWork)
+      .hasFieldOrPropertyWithValue("id", String.valueOf(resource.getId()))
+      .hasFieldOrPropertyWithValue("titles", emptyList())
+      .hasFieldOrPropertyWithValue("contributors", emptyList())
+      .hasFieldOrPropertyWithValue("languages", emptyList())
+      .hasFieldOrPropertyWithValue("classifications", emptyList())
+      .hasFieldOrPropertyWithValue("subjects", emptyList())
+      .hasFieldOrPropertyWithValue("instances", emptyList());
   }
 
   @Test
@@ -107,45 +133,18 @@ class BibliographicSearchMessageMapperTest {
     final var instance2 = getInstance(2L, work);
 
     // when
-    var resultOpt = kafkaMessageMapper.toIndex(work, CREATE);
+    var result = kafkaMessageMapper.toIndex(work);
 
     // then
-    assertThat(resultOpt).isPresent();
-    var result = resultOpt.get();
-    validateWork(result, work, wrongContributor, 2);
-    validateInstance(result.getInstances().get(0), instance1);
-    validateInstance(result.getInstances().get(1), instance2);
-  }
-
-  @Test
-  void toIndex_shouldReturnEmptyResult_fromWorkWithNoIndexableInfo() {
-    // given
-    var work = new Resource().addTypes(WORK);
-    // when
-    var resultOpt = kafkaMessageMapper.toIndex(work, CREATE);
-
-    // then
-    assertThat(resultOpt).isEmpty();
-  }
-
-  @Test
-  void toIndex_shouldThrowException_fromInstance() {
-    // given
-    var work = getSampleWork(null);
-    var wrongContributor = getContributor(ANNOTATION);
-    var emptyContributor = new Resource();
-    work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
-    work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
-    final var instance1 = getInstance(1L, work);
-    getInstance(2L, work);
-    work.setIncomingEdges(new LinkedHashSet<>());
-
-    // when
-    var thrown = assertThrows(LinkedDataServiceException.class, () -> kafkaMessageMapper.toIndex(instance1, CREATE));
-
-    // then
-    assertThat(thrown.getMessage()).contains(instance1.toString());
-    assertThat(thrown.getMessage()).contains("CREATE");
+    assertThat(result)
+      .hasFieldOrPropertyWithValue("id", String.valueOf(work.getId()))
+      .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
+      .extracting("_new")
+      .isInstanceOf(LinkedDataWork.class);
+    var linkedDataWork = (LinkedDataWork) result.getNew();
+    validateWork(linkedDataWork, work, wrongContributor, 2);
+    validateInstance(linkedDataWork.getInstances().get(0), instance1);
+    validateInstance(linkedDataWork.getInstances().get(1), instance2);
   }
 
   private Resource getInstance(Long id, Resource work) {

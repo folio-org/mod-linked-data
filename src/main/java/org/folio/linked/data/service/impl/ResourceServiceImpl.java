@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.impl;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -132,11 +133,17 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   private boolean doesNotExists(Resource resource) {
-    return isNull(resource) || isNull(resource.getId()) || !resourceRepo.existsById(resource.getId());
+    return ofNullable(resource)
+      .map(Resource::getId)
+      .map(id -> !resourceRepo.existsById(id))
+      .orElse(false);
   }
 
   private boolean doesNotExists(ResourceEdge edge) {
-    return isNull(edge) || isNull(edge.getId()) || !edgeRepo.existsById(edge.getId());
+    return ofNullable(edge)
+      .map(ResourceEdge::getId)
+      .map(id -> !edgeRepo.existsById(id))
+      .orElse(false);
   }
 
 

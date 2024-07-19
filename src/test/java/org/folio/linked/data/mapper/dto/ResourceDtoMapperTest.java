@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper;
+package org.folio.linked.data.mapper.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.folio.linked.data.mapper.dto.ResourceDtoMapperImpl;
-import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
+import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -30,9 +29,8 @@ class ResourceDtoMapperTest {
 
   @InjectMocks
   private ResourceDtoMapperImpl resourceMapper;
-
   @Mock
-  private KafkaSearchMessageMapper kafkaSearchMessageMapper;
+  private SingleResourceMapper singleResourceMapper;
 
   @Test
   void toResourceGraphDto_shouldReturnResourceGraphDto() {

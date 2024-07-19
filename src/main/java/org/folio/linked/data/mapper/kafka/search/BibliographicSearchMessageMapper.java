@@ -1,10 +1,7 @@
 package org.folio.linked.data.mapper.kafka.search;
 
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
@@ -25,33 +22,31 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.cleanDate;
 import static org.folio.linked.data.util.Constants.MSG_UNKNOWN_TYPES;
+import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_PARALLEL;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_VARIANT;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_PARALLEL;
 import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_VARIANT;
+import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.WorkResponse;
-import org.folio.linked.data.exception.LinkedDataServiceException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
-import org.folio.linked.data.mapper.kafka.identifier.IndexIdentifierMapper;
+import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -66,57 +61,35 @@ import org.folio.search.domain.dto.BibframeSubjectsInner;
 import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.LinkedDataWorkIndexTitleType;
-import org.folio.search.domain.dto.ResourceIndexEventType;
+import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Log4j2
-@Component
-@RequiredArgsConstructor
-public class BibliographicSearchMessageMapper implements KafkaSearchMessageMapper<LinkedDataWork> {
+@Mapper(componentModel = SPRING)
+public abstract class BibliographicSearchMessageMapper {
 
-  private static final String NO_INDEXABLE_WORK_FOUND =
-    "No index-able work found for [{}] operation of the resource [{}]";
-  private static final String NOT_A_WORK = "Not a Work resource [%s] has been passed to indexation for [%s] operation";
+  @Autowired
+  private IndexIdentifierMapper<BibframeInstancesInnerIdentifiersInner> innerIndexIdentifierMapper;
+  @Autowired
+  private SingleResourceMapper singleResourceMapper;
 
-  private final IndexIdentifierMapper<BibframeInstancesInnerIdentifiersInner> innerIndexIdentifierMapper;
-  private final SingleResourceMapper singleResourceMapper;
+  @Mapping(target = "resourceName", constant = SEARCH_RESOURCE_NAME)
+  @Mapping(target = "_new", expression = "java(toLinkedDataWork(resource))")
+  public abstract ResourceIndexEvent toIndex(Resource resource);
 
-  @Override
-  public Optional<LinkedDataWork> toIndex(Resource work, ResourceIndexEventType eventType) {
-    if (isNull(work)) {
-      log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), "null");
-      return empty();
-    }
-    if (!work.isOfType(WORK)) {
-      throw new LinkedDataServiceException(format(NOT_A_WORK, work, eventType.getValue()));
-    }
-    var workIndex = new LinkedDataWork(String.valueOf(work.getId()));
-    workIndex.setTitles(extractTitles(work));
-    workIndex.setContributors(extractContributors(work));
-    workIndex.setLanguages(extractLanguages(work));
-    workIndex.setClassifications(extractClassifications(work));
-    workIndex.setSubjects(extractSubjects(work));
-    workIndex.setInstances(extractInstances(work));
-    if (shouldBeIndexed(workIndex)) {
-      return of(workIndex);
-    } else {
-      log.warn(NO_INDEXABLE_WORK_FOUND, eventType.getValue(), work);
-      return empty();
-    }
-  }
+  @Mapping(target = "titles", source = "resource")
+  @Mapping(target = "contributors", source = "resource")
+  @Mapping(target = "languages", source = "resource")
+  @Mapping(target = "classifications", source = "resource")
+  @Mapping(target = "subjects", source = "resource")
+  @Mapping(target = "instances", source = "resource")
+  protected abstract LinkedDataWork toLinkedDataWork(Resource resource);
 
-  private boolean shouldBeIndexed(LinkedDataWork bi) {
-    return isNotEmpty(bi.getTitles())
-      || isNotEmpty(bi.getContributors())
-      || isNotEmpty(bi.getLanguages())
-      || isNotEmpty(bi.getClassifications())
-      || isNotEmpty(bi.getSubjects())
-      || isNotEmpty(bi.getInstances());
-  }
-
-  private List<BibframeTitlesInner> extractTitles(Resource resource) {
+  protected List<BibframeTitlesInner> extractTitles(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> TITLE.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
@@ -130,7 +103,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       .toList();
   }
 
-  private void addTitle(Resource t, PropertyDictionary field, List<BibframeTitlesInner> titles) {
+  protected void addTitle(Resource t, PropertyDictionary field, List<BibframeTitlesInner> titles) {
     var titleText = getValue(t.getDoc(), field.getValue());
     if (nonNull(titleText)) {
       var titleType = getTitleType(t);
@@ -142,7 +115,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
   }
 
   @Nullable
-  private ResourceTypeDictionary getTitleType(Resource title) {
+  protected ResourceTypeDictionary getTitleType(Resource title) {
     var typeUris = title.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.TITLE.getUri().equals(uri))) {
       return ResourceTypeDictionary.TITLE;
@@ -155,7 +128,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
   }
 
   @Nullable
-  private LinkedDataWorkIndexTitleType getIndexTitleType(ResourceTypeDictionary type, PropertyDictionary property) {
+  protected LinkedDataWorkIndexTitleType getIndexTitleType(ResourceTypeDictionary type, PropertyDictionary property) {
     var isMain = property.equals(MAIN_TITLE);
     return switch (type) {
       case TITLE -> isMain ? MAIN : SUB;
@@ -165,7 +138,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
     };
   }
 
-  private List<BibframeContributorsInner> extractContributors(Resource resource) {
+  protected List<BibframeContributorsInner> extractContributors(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> CREATOR.getUri().equals(re.getPredicate().getUri())
         || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
@@ -180,7 +153,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       .toList();
   }
 
-  private List<BibframeLanguagesInner> extractLanguages(Resource work) {
+  protected List<BibframeLanguagesInner> extractLanguages(Resource work) {
     return work.getOutgoingEdges()
       .stream()
       .filter(re -> LANGUAGE.getUri().equals(re.getPredicate().getUri()))
@@ -191,7 +164,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       .toList();
   }
 
-  private Stream<String> getPropertyValues(JsonNode doc, String... properties) {
+  protected Stream<String> getPropertyValues(JsonNode doc, String... properties) {
     return ofNullable(doc)
       .stream()
       .flatMap(d -> Arrays.stream(properties)
@@ -199,7 +172,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
         .flatMap(p -> StreamSupport.stream(doc.get(p).spliterator(), true).map(JsonNode::asText)));
   }
 
-  private List<BibframeClassificationsInner> extractClassifications(Resource resource) {
+  protected List<BibframeClassificationsInner> extractClassifications(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> CLASSIFICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
@@ -211,7 +184,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       .toList();
   }
 
-  private List<BibframeSubjectsInner> extractSubjects(Resource resource) {
+  protected List<BibframeSubjectsInner> extractSubjects(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> SUBJECT.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
@@ -222,7 +195,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       .toList();
   }
 
-  private List<BibframeInstancesInner> extractInstances(Resource resource) {
+  protected List<BibframeInstancesInner> extractInstances(Resource resource) {
     var workStream = resource.isOfType(INSTANCE) ? resource.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget) : Stream.of(resource);
@@ -245,7 +218,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       .toList();
   }
 
-  private List<BibframeInstancesInnerPublicationsInner> extractPublications(Resource resource) {
+  protected List<BibframeInstancesInnerPublicationsInner> extractPublications(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> PE_PUBLICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
@@ -257,7 +230,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
       .toList();
   }
 
-  private String getValue(JsonNode doc, String... values) {
+  protected String getValue(JsonNode doc, String... values) {
     if (nonNull(doc)) {
       for (String value : values) {
         if (doc.has(value) && !doc.get(value).isEmpty()) {
@@ -268,11 +241,11 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
     return null;
   }
 
-  <E extends Enum<E>> E toType(Resource resource,
-                               Function<String, E> typeSupplier,
-                               Class<E> enumClass,
-                               Predicate predicate,
-                               Class<?> parentDto) {
+  protected <E extends Enum<E>> E toType(Resource resource,
+                                         Function<String, E> typeSupplier,
+                                         Class<E> enumClass,
+                                         Predicate predicate,
+                                         Class<?> parentDto) {
     if (isNull(resource.getTypes())) {
       return null;
     }
@@ -299,7 +272,7 @@ public class BibliographicSearchMessageMapper implements KafkaSearchMessageMappe
   }
 
   @NotNull
-  private <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
+  protected <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
     return enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
   }
 }

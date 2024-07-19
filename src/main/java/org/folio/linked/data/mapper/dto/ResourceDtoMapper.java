@@ -62,14 +62,14 @@ public abstract class ResourceDtoMapper {
   @Mapping(target = "parsedRecord.content", source = "marc")
   public abstract ResourceMarcViewDto toMarcViewDto(Resource resource, String marc);
 
-  @Mapping(target = "types", expression = """
-    java(resource.getTypes().stream()
-      .map(ResourceTypeEntity::getUri)
-      .toList())""")
   @Mapping(target = "outgoingEdges", expression = "java(getOutgoingEdges(resource))")
   @Mapping(target = "incomingEdges", expression = "java(getIncomingEdges(resource))")
   @Mapping(target = "indexDate", source = "indexDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
   public abstract ResourceGraphDto toResourceGraphDto(Resource resource);
+
+  protected String mapType(ResourceTypeEntity type) {
+    return type.getUri();
+  }
 
   protected ResourceEdgeDto getIncomingEdges(Resource resource) {
     return getEdges(resource.getIncomingEdges(), edge -> edge.getSource().getId());

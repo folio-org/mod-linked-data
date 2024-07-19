@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka.identifier;
+package org.folio.linked.data.mapper.kafka.search.identifier;
 
 import java.util.List;
 import org.folio.linked.data.model.entity.Resource;

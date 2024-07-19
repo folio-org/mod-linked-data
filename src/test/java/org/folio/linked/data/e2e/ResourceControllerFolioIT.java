@@ -80,6 +80,6 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   @Override
   protected void checkRelevantIndexMessagesDuringUpdate(Resource existedResource) {
     verify(deleteEventProducer, never()).accept(existedResource);
-    verify(createEventProducer, never()).accept(any());
+    verify(createEventProducer, never()).accept(any(), any());
   }
 }

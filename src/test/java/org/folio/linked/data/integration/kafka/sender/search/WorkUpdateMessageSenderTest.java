@@ -5,18 +5,17 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -56,10 +55,9 @@ class WorkUpdateMessageSenderTest {
   @Test
   void produce_shouldSendUpdateMessageAndIndexEvent_ifNewWorkIsIndexable() {
     // given
-    long id = 1L;
-    var newResource = new Resource().setId(id).setLabel("new").addTypes(WORK);
-    var index = new LinkedDataWork().id(String.valueOf(id));
-    when(bibliographicSearchMessageMapper.toIndex(newResource, UPDATE)).thenReturn(Optional.of(index));
+    var newResource = new Resource().setId(randomLong()).setLabel("new").addTypes(WORK);
+    var expectedMessage = new ResourceIndexEvent().id(String.valueOf(newResource.getId()));
+    when(bibliographicSearchMessageMapper.toIndex(newResource)).thenReturn(expectedMessage);
 
     // when
     producer.produce(newResource);
@@ -67,15 +65,9 @@ class WorkUpdateMessageSenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
-    List<ResourceIndexEvent> messages = messageCaptor.getValue();
-
-    assertThat(messages)
-      .singleElement()
-      .hasFieldOrProperty("id")
-      .hasFieldOrPropertyWithValue("type", UPDATE)
-      .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
-      .hasFieldOrPropertyWithValue("_new", index);
-    verify(eventPublisher).publishEvent(new ResourceIndexedEvent(id));
+    assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
+    assertThat(expectedMessage.getType()).isEqualTo(UPDATE);
+    verify(eventPublisher).publishEvent(new ResourceIndexedEvent(newResource.getId()));
   }
 
   @Test
@@ -84,8 +76,8 @@ class WorkUpdateMessageSenderTest {
     var newInstance = new Resource().setId(1L).setLabel("newInstance").addTypes(INSTANCE);
     var work = new Resource().setId(3L).setLabel("work").addTypes(WORK);
     newInstance.addOutgoingEdge(new ResourceEdge(newInstance, work, INSTANTIATES));
-    var workIndex = new LinkedDataWork().id(String.valueOf(work.getId()));
-    when(bibliographicSearchMessageMapper.toIndex(work, UPDATE)).thenReturn(Optional.of(workIndex));
+    var expectedMessage = new ResourceIndexEvent().id(String.valueOf(work.getId()));
+    when(bibliographicSearchMessageMapper.toIndex(work)).thenReturn(expectedMessage);
 
     // when
     producer.produce(newInstance);
@@ -93,14 +85,8 @@ class WorkUpdateMessageSenderTest {
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
-    List<ResourceIndexEvent> messages = messageCaptor.getValue();
-
-    assertThat(messages)
-      .singleElement()
-      .hasFieldOrProperty("id")
-      .hasFieldOrPropertyWithValue("type", UPDATE)
-      .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
-      .hasFieldOrPropertyWithValue("_new", workIndex);
+    assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
+    assertThat(expectedMessage.getType()).isEqualTo(UPDATE);
     verify(eventPublisher).publishEvent(new ResourceIndexedEvent(work.getId()));
   }
 }
