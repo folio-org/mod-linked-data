@@ -1,12 +1,18 @@
 package org.folio.linked.data.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -111,5 +117,50 @@ class BibframeUtilsTest {
       null,
       null
     );
+  }
+
+  @Test
+  void extractInstancesFromWork_shouldReturnInstance_ifGivenResourceIsinstance() {
+    // given
+    var instance = new Resource().setId(1L).addTypes(INSTANCE);
+
+    // when
+    var result = BibframeUtils.extractInstancesFromWork(instance);
+
+    // then
+    assertThat(result).containsOnly(instance);
+  }
+
+  @Test
+  void extractInstancesFromWork_shouldReturnEmptyList_ifGivenResourceIsNotInstanceOrWork() {
+    // given
+    var resource = new Resource().setId(1L).addTypes(JURISDICTION);
+    var instance = new Resource().setId(2L).addTypes(INSTANCE);
+    resource.addOutgoingEdge(new ResourceEdge(resource, instance, INSTANTIATES));
+    resource.addIncomingEdge(new ResourceEdge(instance, resource, INSTANTIATES));
+
+    // when
+    var result = BibframeUtils.extractInstancesFromWork(resource);
+
+    // then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void extractInstancesFromWork_shouldReturnInstancesListWithEdgesToWork_ifGivenResourceIsWork() {
+    // given
+    var work = new Resource().setId(0L).addTypes(WORK);
+    var instance1 = new Resource().setId(1L).addTypes(INSTANCE);
+    work.addIncomingEdge(new ResourceEdge(instance1, work, INSTANTIATES));
+    var instance2 = new Resource().setId(2L).addTypes(INSTANCE);
+    work.addIncomingEdge(new ResourceEdge(instance2, work, INSTANTIATES));
+
+    // when
+    var result = BibframeUtils.extractInstancesFromWork(work);
+
+    // then
+    assertThat(result).containsOnly(instance1, instance2);
+    assertThat(instance1.getOutgoingEdges()).containsOnly(new ResourceEdge(instance1, work, INSTANTIATES));
+    assertThat(instance2.getOutgoingEdges()).containsOnly(new ResourceEdge(instance2, work, INSTANTIATES));
   }
 }
