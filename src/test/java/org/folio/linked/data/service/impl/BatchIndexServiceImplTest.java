@@ -36,8 +36,8 @@ class BatchIndexServiceImplTest {
     var indexedResource = new Resource().setId(1L);
     var resourceWithException = new Resource().setId(2L);
     var resources = Stream.of(indexedResource, resourceWithException);
-    doNothing().when(workCreateMessageSender).accept(indexedResource, false);
-    doThrow(new RuntimeException()).when(workCreateMessageSender).accept(resourceWithException, false);
+    doNothing().when(workCreateMessageSender).acceptWithoutIndexDateUpdate(indexedResource);
+    doThrow(new RuntimeException()).when(workCreateMessageSender).acceptWithoutIndexDateUpdate(resourceWithException);
 
     //when
     var result = batchIndexService.indexWorks(resources);

@@ -39,7 +39,7 @@ public class InstanceCreateMessageSender implements CreateMessageSender {
 
   @Override
   @SneakyThrows
-  public void accept(Resource resource, Boolean putIndexDate) {
+  public void accept(Resource resource) {
     var message = instanceIngressMessageMapper.toInstanceIngressEvent(resource)
       .eventType(CREATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));

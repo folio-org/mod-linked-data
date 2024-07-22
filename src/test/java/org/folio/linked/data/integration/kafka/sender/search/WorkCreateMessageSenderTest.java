@@ -49,7 +49,7 @@ class WorkCreateMessageSenderTest {
     var resource = new Resource().addTypes(FAMILY);
 
     // when
-    producer.produce(resource, true);
+    producer.produce(resource);
 
     // then
     verifyNoInteractions(eventPublisher, resourceMessageProducer, workUpdateMessageSender);
@@ -64,7 +64,7 @@ class WorkCreateMessageSenderTest {
     when(bibliographicSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
 
     // when
-    producer.produce(resource, true);
+    producer.produce(resource);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
@@ -77,25 +77,6 @@ class WorkCreateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldSendMessageButNotPublishIndexEvent_ifGivenResourceIsWorkButPutIndexDateIsFalse() {
-    // given
-    var resource = new Resource().addTypes(WORK).setId(randomLong());
-    var expectedMessage = new ResourceIndexEvent()
-      .id(String.valueOf(resource.getId()));
-    when(bibliographicSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
-
-    // when
-    producer.produce(resource, false);
-
-    // then
-    var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
-    assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
-    assertThat(expectedMessage.getType()).isEqualTo(CREATE);
-    verifyNoInteractions(eventPublisher, workUpdateMessageSender);
-  }
-
-  @Test
   void produce_shouldTriggerWorkUpdate_ifGivenResourceIsInstanceWithWorkReference() {
     // given
     var instance = new Resource().addTypes(INSTANCE).setId(randomLong());
@@ -103,7 +84,7 @@ class WorkCreateMessageSenderTest {
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
 
     // when
-    producer.produce(instance, true);
+    producer.produce(instance);
 
     // then
     verifyNoInteractions(resourceMessageProducer, eventPublisher);

@@ -51,7 +51,7 @@ class AuthorityCreateMessageSenderTest {
     resource.setIndexDate(new Date());
 
     // when
-    producer.produce(resource, true);
+    producer.produce(resource);
 
     // then
     verifyNoInteractions(eventPublisher, authorityMessageProducer);
@@ -64,29 +64,12 @@ class AuthorityCreateMessageSenderTest {
     var expectedMessage = new ResourceIndexEvent()
       .id(String.valueOf(resource.getId()));
     when(authoritySearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
-    var putIndexDate = true;
 
     // when
-    producer.produce(resource, putIndexDate);
+    producer.produce(resource);
 
     // then
-    verifyMessageAndEvent(expectedMessage, putIndexDate);
-  }
-
-  @Test
-  void sendAuthorityCreated_shouldSendMessageButNotPublishEvent_ifAuthorityNotIndexed() {
-    // given
-    var resource = new Resource().addTypes(PERSON).setId(randomLong());
-    var expectedMessage = new ResourceIndexEvent()
-      .id(String.valueOf(resource.getId()));
-    when(authoritySearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
-    var putIndexDate = false;
-
-    // when
-    producer.produce(resource, putIndexDate);
-
-    // then
-    verifyMessageAndEvent(expectedMessage, putIndexDate);
+    verifyMessageAndEvent(expectedMessage);
   }
 
   @Test
@@ -98,7 +81,7 @@ class AuthorityCreateMessageSenderTest {
     work.getOutgoingEdges().add(new ResourceEdge(work, authority, PredicateDictionary.NULL));
 
     // when
-    producer.produce(work, true);
+    producer.produce(work);
 
     // then
     verifyNoInteractions(eventPublisher, authorityMessageProducer);
@@ -126,56 +109,20 @@ class AuthorityCreateMessageSenderTest {
       .id(String.valueOf(person.getId()))
       ._new(new LinkedDataAuthority().id(String.valueOf(person.getId())));
     when(authoritySearchMessageMapper.toIndex(person)).thenReturn(index);
-    var putIndexDate = true;
 
     // when
-    producer.produce(work, putIndexDate);
+    producer.produce(work);
 
     // then
-    verifyMessageAndEvent(index, putIndexDate);
+    verifyMessageAndEvent(index);
   }
 
-  @Test
-  void sendAuthorityCreated_shouldSendMessageButNotPublishEvent_ifAuthorityLinkedToWork() {
-    // given
-    var work = new Resource().addTypes(WORK).setId(randomLong());
-    var person = new Resource().addTypes(PERSON)
-      .setId(randomLong())
-      .setManaged(true);
-    var concept = new Resource().addTypes(CONCEPT)
-      .setId(randomLong())
-      .setIndexDate(new Date());
-    var family = new Resource().addTypes(FAMILY)
-      .setId(randomLong())
-      .setManaged(true)
-      .setIndexDate(new Date());
-    work.addOutgoingEdge(new ResourceEdge(work, person, PredicateDictionary.NULL));
-    work.addOutgoingEdge(new ResourceEdge(work, concept, PredicateDictionary.NULL));
-    work.addOutgoingEdge(new ResourceEdge(work, family, PredicateDictionary.NULL));
-
-    var index = new ResourceIndexEvent()
-      .id(String.valueOf(person.getId()))
-      ._new(new LinkedDataAuthority().id(String.valueOf(person.getId())));
-    when(authoritySearchMessageMapper.toIndex(person)).thenReturn(index);
-    var putIndexDate = false;
-
-    // when
-    producer.produce(work, putIndexDate);
-
-    // then
-    verifyMessageAndEvent(index, putIndexDate);
-  }
-
-  private void verifyMessageAndEvent(ResourceIndexEvent expectedMessage, boolean putIndexDate) {
+  private void verifyMessageAndEvent(ResourceIndexEvent expectedMessage) {
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(authorityMessageProducer).sendMessages(messageCaptor.capture());
     assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
     assertThat(expectedMessage.getType()).isEqualTo(CREATE);
-    if (putIndexDate) {
-      var expectedIndexEvent = new ResourceIndexedEvent(parseLong(expectedMessage.getId()));
-      verify(eventPublisher).publishEvent(expectedIndexEvent);
-    } else {
-      verifyNoInteractions(eventPublisher);
-    }
+    var expectedIndexEvent = new ResourceIndexedEvent(parseLong(expectedMessage.getId()));
+    verify(eventPublisher).publishEvent(expectedIndexEvent);
   }
 }

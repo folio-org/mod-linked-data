@@ -1,6 +1,5 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
-import static java.lang.Boolean.TRUE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 
@@ -71,13 +70,11 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
   }
 
   @Override
-  public void accept(Resource resource, Boolean putIndexDate) {
+  public void accept(Resource resource) {
     var message = authoritySearchMessageMapper.toIndex(resource)
       .type(CREATE);
     authorityMessageProducer.sendMessages(List.of(message));
-    if (TRUE.equals(putIndexDate)) {
-      publishIndexEvent(resource);
-    }
+    publishIndexEvent(resource);
   }
 
   private void publishIndexEvent(Resource resource) {

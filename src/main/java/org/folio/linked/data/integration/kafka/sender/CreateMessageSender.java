@@ -1,15 +1,14 @@
 package org.folio.linked.data.integration.kafka.sender;
 
 import java.util.Collection;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import org.folio.linked.data.model.entity.Resource;
 
-public interface CreateMessageSender
-  extends Function<Resource, Collection<Resource>>, BiConsumer<Resource, Boolean> {
+public interface CreateMessageSender extends Function<Resource, Collection<Resource>>, Consumer<Resource> {
 
-  default void produce(Resource resource, Boolean putIndexDate) {
+  default void produce(Resource resource) {
     apply(resource)
-      .forEach(r -> accept(r, putIndexDate));
+      .forEach(this);
   }
 }

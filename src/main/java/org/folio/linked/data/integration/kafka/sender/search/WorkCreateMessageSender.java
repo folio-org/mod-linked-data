@@ -1,5 +1,6 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -57,9 +58,16 @@ public class WorkCreateMessageSender implements CreateMessageSender {
       }, () -> log.error("Instance [id {}] created, but parent work wasn't found!", instance.getId()));
   }
 
+  public void acceptWithoutIndexDateUpdate(Resource resource) {
+    this.accept(resource, FALSE);
+  }
 
   @Override
-  public void accept(Resource resource, Boolean putIndexDate) {
+  public void accept(Resource resource) {
+    this.accept(resource, TRUE);
+  }
+
+  private void accept(Resource resource, Boolean putIndexDate) {
     var message = bibliographicSearchMessageMapper.toIndex(resource)
       .type(CREATE);
     bibliographicMessageProducer.sendMessages(List.of(message));

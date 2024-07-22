@@ -55,7 +55,7 @@ class WorkReplaceMessageSenderTest {
     // then
     verifyNoInteractions(workUpdateMessageSender);
     verify(workDeleteMessageSender).produce(old);
-    verify(workCreateMessageSender).produce(newResource, true);
+    verify(workCreateMessageSender).produce(newResource);
   }
 
   @Test

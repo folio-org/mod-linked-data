@@ -38,7 +38,7 @@ public class BatchIndexServiceImpl implements BatchIndexService {
 
   private Optional<Long> handleResource(Resource work, AtomicInteger recordsIndexed) {
     try {
-      workCreateMessageSender.accept(work, false);
+      workCreateMessageSender.acceptWithoutIndexDateUpdate(work);
       recordsIndexed.getAndIncrement();
       return Optional.ofNullable(work.getId());
     } catch (Exception ex) {

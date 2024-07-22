@@ -41,7 +41,7 @@ class InstanceCreateMessageSenderTest {
     var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.FAMILY);
 
     // when
-    producer.produce(resource, null);
+    producer.produce(resource);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
@@ -54,7 +54,7 @@ class InstanceCreateMessageSenderTest {
     resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(MARC));
 
     // when
-    producer.produce(resource, null);
+    producer.produce(resource);
 
     // then
     verifyNoInteractions(instanceIngressMessageProducer);
@@ -71,7 +71,7 @@ class InstanceCreateMessageSenderTest {
     when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when
-    producer.produce(instance, null);
+    producer.produce(instance);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
