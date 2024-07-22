@@ -346,83 +346,83 @@ public class MonographTestUtil {
 
     var creatorMeeting = createResource(
       Map.of(
-        NAME, List.of("name-MEETING"),
+        NAME, List.of("name-CREATOR-MEETING"),
         LCNAF_ID, List.of("2002801801-MEETING")
       ),
       Set.of(MEETING),
       emptyMap()
-    ).setLabel("name-MEETING")
-      .setId(1001L);
+    ).setLabel("name-CREATOR-MEETING")
+      .setId(-603031702996824854L);
 
     var creatorPerson = createResource(
       Map.of(
-        NAME, List.of("name-PERSON"),
+        NAME, List.of("name-CREATOR-PERSON"),
         LCNAF_ID, List.of("2002801801-PERSON")
       ),
       Set.of(PERSON),
       emptyMap()
-    ).setLabel("name-PERSON")
-      .setId(1002L);
+    ).setLabel("name-CREATOR-PERSON")
+      .setId(4359679744172518150L);
 
     var creatorOrganization = createResource(
       Map.of(
-        NAME, List.of("name-ORGANIZATION"),
+        NAME, List.of("name-CREATOR-ORGANIZATION"),
         LCNAF_ID, List.of("2002801801-ORGANIZATION")
       ),
       Set.of(ORGANIZATION),
       emptyMap()
-    ).setLabel("name-ORGANIZATION")
-      .setId(1003L);
+    ).setLabel("name-CREATOR-ORGANIZATION")
+      .setId(-466724080127664871L);
 
     var creatorFamily = createResource(
       Map.of(
-        NAME, List.of("name-FAMILY"),
+        NAME, List.of("name-CREATOR-FAMILY"),
         LCNAF_ID, List.of("2002801801-FAMILY")
       ),
       Set.of(FAMILY),
       emptyMap()
-    ).setLabel("name-FAMILY")
-      .setId(1004L);
+    ).setLabel("name-CREATOR-FAMILY")
+      .setId(8296435493593701280L);
 
     var contributorPerson = createResource(
       Map.of(
-        NAME, List.of("name-PERSON"),
+        NAME, List.of("name-CONTRIBUTOR-PERSON"),
         LCNAF_ID, List.of("2002801801-PERSON")
       ),
       Set.of(PERSON),
       emptyMap()
-    ).setLabel("name-PERSON")
-      .setId(1007L);
+    ).setLabel("name-CONTRIBUTOR-PERSON")
+      .setId(-6054989039809126250L);
 
     var contributorMeeting = createResource(
       Map.of(
-        NAME, List.of("name-MEETING"),
+        NAME, List.of("name-CONTRIBUTOR-MEETING"),
         LCNAF_ID, List.of("2002801801-MEETING")
       ),
       Set.of(MEETING),
       emptyMap()
-    ).setLabel("name-MEETING")
-      .setId(1008L);
+    ).setLabel("name-CONTRIBUTOR-MEETING")
+      .setId(-7286109411186266518L);
 
     var contributorOrganization = createResource(
       Map.of(
-        NAME, List.of("name-ORGANIZATION"),
+        NAME, List.of("name-CONTRIBUTOR-ORGANIZATION"),
         LCNAF_ID, List.of("2002801801-ORGANIZATION")
       ),
       Set.of(ORGANIZATION),
       emptyMap()
-    ).setLabel("name-ORGANIZATION")
-      .setId(1005L);
+    ).setLabel("name-CONTRIBUTOR-ORGANIZATION")
+      .setId(-4246830624125472784L);
 
     var contributorFamily = createResource(
       Map.of(
-        NAME, List.of("name-FAMILY"),
+        NAME, List.of("name-CONTRIBUTOR-FAMILY"),
         LCNAF_ID, List.of("2002801801-FAMILY")
       ),
       Set.of(FAMILY),
       emptyMap()
-    ).setLabel("name-FAMILY")
-      .setId(1006L);
+    ).setLabel("name-CONTRIBUTOR-FAMILY")
+      .setId(3094995075578514480L);
 
     var subject1 = createResource(
       Map.of(
@@ -431,7 +431,7 @@ public class MonographTestUtil {
       Set.of(CONCEPT),
       emptyMap()
     ).setLabel("subject 1")
-      .setId(1L);
+      .setId(-2609581195837993519L);
 
     var subject2 = createResource(
       Map.of(
@@ -440,7 +440,7 @@ public class MonographTestUtil {
       Set.of(CONCEPT),
       emptyMap()
     ).setLabel("subject 2")
-      .setId(2L);
+      .setId(-643516859818423084L);
 
     var unitedStates = createResource(
       Map.of(
@@ -451,7 +451,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("United States")
-      .setId(101L);
+      .setId(7109832602847218134L);
 
     var europe = createResource(
       Map.of(
@@ -462,7 +462,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("Europe")
-      .setId(102L);
+      .setId(-4654600487710655316L);
 
     var genre1 = createResource(
       Map.of(
@@ -471,7 +471,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 1")
-      .setId(201L);
+      .setId(-9064822434663187463L);
 
     var genre2 = createResource(
       Map.of(
@@ -480,7 +480,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 2")
-      .setId(202L);
+      .setId(-4816872480602594231L);
 
     var governmentPublication = createResource(
       Map.of(
@@ -555,11 +555,13 @@ public class MonographTestUtil {
 
   private static Resource createDeweyClassification() {
     var assigningSource = createResource(
-      emptyMap(),
+      Map.of(
+        NAME, List.of("assigning agency")
+      ),
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("assigning agency")
-      .setId(11L);
+      .setId(4932783899755316479L);
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(PredicateDictionary.ASSIGNING_SOURCE, List.of(assigningSource));
     return createResource(
@@ -577,11 +579,13 @@ public class MonographTestUtil {
 
   private static Resource createLcClassification() {
     var assigningSource = createResource(
-      emptyMap(),
+      Map.of(
+        NAME, List.of("United States, Library of Congress")
+      ),
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("United States, Library of Congress")
-      .setId(22L);
+      .setId(8752404686183471966L);
     return createResource(
       Map.of(
         CODE, List.of("lc code"),
@@ -598,18 +602,22 @@ public class MonographTestUtil {
 
   private static Resource createDissertation() {
     var grantingInstitution1 = createResource(
-      emptyMap(),
+      Map.of(
+        NAME, List.of("granting institution 1")
+      ),
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("granting institution 1")
-      .setId(111L);
+      .setId(5481852630377445080L);
 
     var grantingInstitution2 = createResource(
-      emptyMap(),
+      Map.of(
+        NAME, List.of("granting institution 2")
+      ),
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("granting institution 2")
-      .setId(222L);
+      .setId(-6468470931408362304L);
 
     return createResource(
       Map.of(

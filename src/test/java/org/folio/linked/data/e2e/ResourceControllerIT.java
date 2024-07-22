@@ -150,9 +150,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -163,6 +165,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.service.HashService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.marc4ld.util.ResourceKind;
 import org.folio.search.domain.dto.ResourceIndexEventType;
@@ -206,6 +209,8 @@ class ResourceControllerIT {
   @Autowired
   private ResourceTestService resourceTestService;
   private LookupResources lookupResources;
+  @Autowired
+  private HashService hashService;
 
   @BeforeEach
   public void beforeEach() {
@@ -217,7 +222,9 @@ class ResourceControllerIT {
   @Test
   void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var work = resourceTestService.saveGraph(getSampleWork(null));
+    var work = getSampleWork(null);
+    setExistingResourcesIds(work);
+    resourceTestService.saveGraph(work);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -235,7 +242,7 @@ class ResourceControllerIT {
 
     var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
     var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
-    var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 3);
+    var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
     assertThat(instanceResource.getInstanceMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().get(0).getId();
@@ -247,7 +254,9 @@ class ResourceControllerIT {
   @Test
   void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var instanceForReference = resourceTestService.saveGraph(getSampleInstanceResource(null, null));
+    var instanceForReference = getSampleInstanceResource(null, null);
+    setExistingResourcesIds(instanceForReference);
+    resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
@@ -339,11 +348,16 @@ class ResourceControllerIT {
   void update_shouldReturnCorrectlyUpdatedWorkWithInstanceRef_deleteOldOne_sendMessages() throws Exception {
     // given
     var instance = getSampleInstanceResource(null, null);
-    var originalWork = resourceTestService.saveGraph(getSampleWork(instance));
+    var originalWork = getSampleWork(instance);
+    setExistingResourcesIds(instance);
+    resourceTestService.saveGraph(originalWork);
     var updateDto = getSampleWorkDtoMap();
     var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
-    var newlyAddedSummary = "newly added summary";
-    workMap.put(SUMMARY.getValue(), List.of(newlyAddedSummary));
+    workMap.put(PropertyDictionary.LANGUAGE.getValue(),
+      Map.of(
+        LINK.getValue(), List.of("http://id.loc.gov/vocabulary/languages/rus"),
+        TERM.getValue(), List.of("Russian")
+      ));
 
     var updateRequest = put(RESOURCE_URL + "/" + originalWork.getId())
       .contentType(APPLICATION_JSON)
@@ -369,7 +383,17 @@ class ResourceControllerIT {
     assertThat(updatedWork.getId()).isNotNull();
     assertThat(updatedWork.getLabel()).isEqualTo(originalWork.getLabel());
     assertThat(updatedWork.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
-    assertThat(updatedWork.getDoc().get(SUMMARY.getValue()).get(0).asText()).isEqualTo(newlyAddedSummary);
+    assertThat(
+      updatedWork.getOutgoingEdges()
+        .stream()
+        .filter(resourceEdge -> LANGUAGE.getUri().equals(resourceEdge.getPredicate().getUri()))
+        .map(ResourceEdge::getTarget)
+        .findFirst()
+        .map(Resource::getDoc)
+        .map(jsonNode -> jsonNode.get(TERM.getValue()))
+        .map(jsonNode -> jsonNode.get(0))
+        .map(JsonNode::asText)
+    ).contains("Russian");
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
     checkSearchIndexMessage(originalWork.getId(), DELETE);
@@ -621,6 +645,14 @@ class ResourceControllerIT {
     // nothing to check without Folio profile
   }
 
+  private void setExistingResourcesIds(Resource resource) {
+    resource.setId(hashService.hash(resource));
+    resource.getOutgoingEdges()
+      .stream()
+      .map(ResourceEdge::getTarget)
+      .forEach(this::setExistingResourcesIds);
+  }
+
   private void validateInstanceResponse(ResultActions resultActions, String instanceBase) throws Exception {
     resultActions
       .andExpect(content().contentType(APPLICATION_JSON))
@@ -746,7 +778,8 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkDeweyEdition(workBase), equalTo(List.of("edition"))))
       .andExpect(jsonPath(toLcStatusValue(workBase), equalTo(List.of("lc status value"))))
       .andExpect(jsonPath(toLcStatusLink(workBase), equalTo(List.of("lc status link"))))
-      .andExpect(jsonPath(toClassificationAssigningSourceIds(workBase), containsInAnyOrder("11", "22")))
+      .andExpect(jsonPath(toClassificationAssigningSourceIds(workBase), containsInAnyOrder("4932783899755316479",
+        "8752404686183471966")))
       .andExpect(jsonPath(toClassificationAssigningSourceLabels(workBase), containsInAnyOrder("assigning agency",
         "United States, Library of Congress")))
       .andExpect(jsonPath(toDissertationLabel(workBase), equalTo("label")))
@@ -754,18 +787,21 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toDissertationYear(workBase), equalTo("dissertation year")))
       .andExpect(jsonPath(toDissertationNote(workBase), equalTo("dissertation note")))
       .andExpect(jsonPath(toDissertationId(workBase), equalTo("dissertation id")))
-      .andExpect(jsonPath(toDissertationGrantingInstitutionIds(workBase), containsInAnyOrder("111", "222")))
+      .andExpect(jsonPath(toDissertationGrantingInstitutionIds(workBase), containsInAnyOrder("5481852630377445080",
+        "-6468470931408362304")))
       .andExpect(jsonPath(toDissertationGrantingInstitutionLabels(workBase),
         containsInAnyOrder("granting institution 1", "granting institution 2")))
-      .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("1001", "1002", "1003", "1004")))
-      .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-MEETING", "name-PERSON",
-        "name-ORGANIZATION", "name-FAMILY")))
+      .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("-603031702996824854", "4359679744172518150",
+        "-466724080127664871", "8296435493593701280")))
+      .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-CREATOR-MEETING",
+        "name-CREATOR-PERSON", "name-CREATOR-ORGANIZATION", "name-CREATOR-FAMILY")))
       .andExpect(jsonPath(toWorkCreatorType(workBase), containsInAnyOrder(MEETING.getUri(), PERSON.getUri(),
         ORGANIZATION.getUri(), FAMILY.getUri())))
       .andExpect(jsonPath(toWorkCreatorRoles(workBase), equalTo(List.of(List.of(AUTHOR.getUri())))))
-      .andExpect(jsonPath(toWorkContributorId(workBase), containsInAnyOrder("1005", "1006", "1007", "1008")))
-      .andExpect(jsonPath(toWorkContributorLabel(workBase), containsInAnyOrder("name-ORGANIZATION",
-        "name-FAMILY", "name-PERSON", "name-MEETING")))
+      .andExpect(jsonPath(toWorkContributorId(workBase), containsInAnyOrder("-6054989039809126250",
+        "-7286109411186266518", "-4246830624125472784", "3094995075578514480")))
+      .andExpect(jsonPath(toWorkContributorLabel(workBase), containsInAnyOrder("name-CONTRIBUTOR-ORGANIZATION",
+        "name-CONTRIBUTOR-FAMILY", "name-CONTRIBUTOR-PERSON", "name-CONTRIBUTOR-MEETING")))
       .andExpect(jsonPath(toWorkContributorType(workBase), containsInAnyOrder(ORGANIZATION.getUri(), FAMILY.getUri(),
         PERSON.getUri(), MEETING.getUri())))
       .andExpect(jsonPath(toWorkContributorRoles(workBase), equalTo(List.of(List.of(EDITOR.getUri(),
@@ -781,7 +817,7 @@ class ResourceControllerIT {
       .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
         "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
         "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
-      .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), equalTo(List.of("United States", "Europe"))))
+      .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), containsInAnyOrder("United States", "Europe")))
       .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
       .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
       .andExpect(jsonPath(toWorkDateEnd(workBase), equalTo("2025")))
@@ -798,7 +834,7 @@ class ResourceControllerIT {
   }
 
   private void validateInstance(Resource instance, boolean validateFullWork) {
-    assertThat(instance.getId()).isNotNull();
+    assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getDoc().size()).isEqualTo(20);
@@ -867,6 +903,7 @@ class ResourceControllerIT {
   private void validatePrimaryTitle(ResourceEdge edge, Resource source) {
     validateSampleTitleBase(edge, source, ResourceTypeDictionary.TITLE, "Primary: ");
     var title = edge.getTarget();
+    assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).size()).isEqualTo(1);
     assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).get(0).asText()).isEqualTo("Primary: nonSortNum");
@@ -876,6 +913,7 @@ class ResourceControllerIT {
   private void validateParallelTitle(ResourceEdge edge, Resource source) {
     validateSampleTitleBase(edge, source, PARALLEL_TITLE, "Parallel: ");
     var title = edge.getTarget();
+    assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().size()).isEqualTo(6);
     assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(title.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("Parallel: date");
@@ -887,6 +925,7 @@ class ResourceControllerIT {
   private void validateVariantTitle(ResourceEdge edge, Resource source) {
     validateSampleTitleBase(edge, source, VARIANT_TITLE, "Variant: ");
     var title = edge.getTarget();
+    assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().size()).isEqualTo(7);
     assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(title.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("Variant: date");
@@ -904,7 +943,7 @@ class ResourceControllerIT {
     var title = edge.getTarget();
     assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle");
     assertThat(title.getTypes().iterator().next().getUri()).isEqualTo(type.getUri());
-    assertThat(title.getId()).isNotNull();
+    assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
     assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asText()).isEqualTo(prefix + "partName");
     assertThat(title.getDoc().get(PART_NUMBER.getValue()).size()).isEqualTo(1);
@@ -924,7 +963,7 @@ class ResourceControllerIT {
     var providerEvent = edge.getTarget();
     assertThat(providerEvent.getLabel()).isEqualTo(type + " name");
     assertThat(providerEvent.getTypes().iterator().next().getUri()).isEqualTo(PROVIDER_EVENT.getUri());
-    assertThat(providerEvent.getId()).isNotNull();
+    assertThat(providerEvent.getId()).isEqualTo(hashService.hash(providerEvent));
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo(type + " date");
@@ -946,7 +985,7 @@ class ResourceControllerIT {
     var place = edge.getTarget();
     assertThat(place.getLabel()).isEqualTo(expectedLabel);
     assertThat(place.getTypes().iterator().next().getUri()).isEqualTo(PLACE.getUri());
-    assertThat(place.getId()).isNotNull();
+    assertThat(place.getId()).isEqualTo(hashService.hash(place));
     assertThat(place.getDoc().size()).isEqualTo(3);
     assertThat(place.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
     assertThat(place.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo(expectedCode);
@@ -967,7 +1006,7 @@ class ResourceControllerIT {
     var typesIterator = lccn.getTypes().iterator();
     assertThat(typesIterator.next().getUri()).isEqualTo(ID_LCCN.getUri());
     assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
-    assertThat(lccn.getId()).isNotNull();
+    assertThat(lccn.getId()).isEqualTo(hashService.hash(lccn));
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("lccn value");
@@ -985,7 +1024,7 @@ class ResourceControllerIT {
     assertThat(typesIterator.next().getUri()).isEqualTo(ID_ISBN.getUri());
     assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
     assertThat(typesIterator.hasNext()).isFalse();
-    assertThat(isbn.getId()).isNotNull();
+    assertThat(isbn.getId()).isEqualTo(hashService.hash(isbn));
     assertThat(isbn.getDoc().size()).isEqualTo(2);
     assertThat(isbn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(isbn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("isbn value");
@@ -1005,7 +1044,7 @@ class ResourceControllerIT {
     assertThat(typesIterator.next().getUri()).isEqualTo(ID_EAN.getUri());
     assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
     assertThat(typesIterator.hasNext()).isFalse();
-    assertThat(ean.getId()).isNotNull();
+    assertThat(ean.getId()).isEqualTo(hashService.hash(ean));
     assertThat(ean.getDoc().size()).isEqualTo(2);
     assertThat(ean.getDoc().get(EAN_VALUE.getValue()).size()).isEqualTo(1);
     assertThat(ean.getDoc().get(EAN_VALUE.getValue()).get(0).asText()).isEqualTo("ean value");
@@ -1024,7 +1063,7 @@ class ResourceControllerIT {
     assertThat(typesIterator.next().getUri()).isEqualTo(ID_LOCAL.getUri());
     assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
     assertThat(typesIterator.hasNext()).isFalse();
-    assertThat(localId.getId()).isNotNull();
+    assertThat(localId.getId()).isEqualTo(hashService.hash(localId));
     assertThat(localId.getDoc().size()).isEqualTo(2);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).size()).isEqualTo(1);
     assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).get(0).asText()).isEqualTo("localId value");
@@ -1043,7 +1082,7 @@ class ResourceControllerIT {
     assertThat(typesIterator.next().getUri()).isEqualTo(ID_UNKNOWN.getUri());
     assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
     assertThat(typesIterator.hasNext()).isFalse();
-    assertThat(otherId.getId()).isNotNull();
+    assertThat(otherId.getId()).isEqualTo(hashService.hash(otherId));
     assertThat(otherId.getDoc().size()).isEqualTo(2);
     assertThat(otherId.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(otherId.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("otherId value");
@@ -1059,7 +1098,7 @@ class ResourceControllerIT {
     var status = edge.getTarget();
     assertThat(status.getLabel()).isEqualTo(prefix + " status value");
     assertThat(status.getTypes().iterator().next().getUri()).isEqualTo(ResourceTypeDictionary.STATUS.getUri());
-    assertThat(status.getId()).isNotNull();
+    assertThat(status.getId()).isEqualTo(hashService.hash(status));
     assertThat(status.getDoc().size()).isEqualTo(2);
     assertThat(status.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(status.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " status link");
@@ -1078,7 +1117,7 @@ class ResourceControllerIT {
     assertThat(supplementaryContent.getLabel()).isEqualTo("supplementaryContent name");
     assertThat(supplementaryContent.getTypes().iterator().next().getUri())
       .isEqualTo(ResourceTypeDictionary.SUPPLEMENTARY_CONTENT.getUri());
-    assertThat(supplementaryContent.getId()).isNotNull();
+    assertThat(supplementaryContent.getId()).isEqualTo(hashService.hash(supplementaryContent));
 
     var doc = supplementaryContent.getDoc();
 
@@ -1095,7 +1134,7 @@ class ResourceControllerIT {
     var locator = edge.getTarget();
     assertThat(locator.getLabel()).isEqualTo("accessLocation value");
     assertThat(locator.getTypes().iterator().next().getUri()).isEqualTo(ANNOTATION.getUri());
-    assertThat(locator.getId()).isNotNull();
+    assertThat(locator.getId()).isEqualTo(hashService.hash(locator));
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
     assertThat(locator.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("accessLocation value");
@@ -1113,7 +1152,7 @@ class ResourceControllerIT {
     var category = edge.getTarget();
     assertThat(category.getLabel()).isEqualTo(prefix + " term");
     assertThat(category.getTypes().iterator().next().getUri()).isEqualTo(CATEGORY.getUri());
-    assertThat(category.getId()).isNotNull();
+    assertThat(category.getId()).isEqualTo(hashService.hash(category));
     assertThat(category.getDoc().size()).isEqualTo(4);
     validateLiteral(category, CODE.getValue(), expectedCode);
     validateLiteral(category, TERM.getValue(), prefix + " term");
@@ -1134,7 +1173,7 @@ class ResourceControllerIT {
   }
 
   private void validateWork(Resource work, boolean validateFullInstance) {
-    assertThat(work.getId()).isNotNull();
+    assertThat(work.getId()).isEqualTo(hashService.hash(work));
     assertThat(work.getLabel()).isEqualTo("Primary: mainTitle");
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
     assertThat(work.getDoc().size()).isEqualTo(7);
@@ -1152,12 +1191,14 @@ class ResourceControllerIT {
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
     validateLanguage(outgoingEdgeIterator.next(), work);
     validateDissertation(outgoingEdgeIterator.next(), work);
-    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, EDITOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, ASSIGNEE.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR);
+    var editorEdge = outgoingEdgeIterator.next();
+    validateResourceEdge(editorEdge, work, editorEdge.getTarget(), EDITOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR);
+    var assigneeEdge = outgoingEdgeIterator.next();
+    validateResourceEdge(assigneeEdge, work, assigneeEdge.getTarget(), ASSIGNEE.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR);
+    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR);
     if (!validateFullInstance) {
       outgoingEdgeIterator.next();
       validateDdcClassification(outgoingEdgeIterator.next(), work);
@@ -1166,21 +1207,22 @@ class ResourceControllerIT {
       validateDdcClassification(outgoingEdgeIterator.next(), work);
     }
     validatePrimaryTitle(outgoingEdgeIterator.next(), work);
-    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, AUTHOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR.getUri());
+    var authorEdge = outgoingEdgeIterator.next();
+    validateResourceEdge(authorEdge, work, authorEdge.getTarget(), AUTHOR.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR);
+    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR);
     validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(0), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
     validateOriginPlace(outgoingEdgeIterator.next(), work);
-    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
-      GEOGRAPHIC_COVERAGE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(1),
       GEOGRAPHIC_COVERAGE.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
+      GEOGRAPHIC_COVERAGE.getUri());
+    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR);
+    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR);
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
     if (validateFullInstance) {
       var incomingEdgeIterator = work.getIncomingEdges().iterator();
@@ -1198,6 +1240,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(CLASSIFICATION.getUri());
     var classification = edge.getTarget();
+    assertThat(classification.getId()).isEqualTo(hashService.hash(classification));
     var types = classification.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(ResourceTypeDictionary.CLASSIFICATION.getUri());
     assertThat(classification.getDoc().size()).isEqualTo(5);
@@ -1209,7 +1252,7 @@ class ResourceControllerIT {
     var resourceEdge = classification.getOutgoingEdges().iterator().next();
     var assigningSource = resourceEdge.getTarget();
     validateResourceEdge(resourceEdge, classification, assigningSource, PredicateDictionary.ASSIGNING_SOURCE.getUri());
-    assertThat(assigningSource.getDoc().size()).isZero();
+    validateLiteral(assigningSource, NAME.getValue(), "assigning agency");
     assertThat(assigningSource.getLabel()).isEqualTo("assigning agency");
   }
 
@@ -1218,6 +1261,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(CLASSIFICATION.getUri());
     var classification = edge.getTarget();
+    assertThat(classification.getId()).isEqualTo(hashService.hash(classification));
     var types = classification.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(ResourceTypeDictionary.CLASSIFICATION.getUri());
     assertThat(classification.getDoc().size()).isEqualTo(3);
@@ -1236,6 +1280,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(CONTENT.getUri());
     var contentType = edge.getTarget();
+    assertThat(contentType.getId()).isEqualTo(hashService.hash(contentType));
     assertThat(contentType.getDoc().size()).isEqualTo(4);
     validateLiteral(contentType, CODE.getValue(), "txt");
     validateLiteral(contentType, LINK.getValue(), "http://id.loc.gov/vocabulary/contentTypes/txt");
@@ -1255,6 +1300,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(TARGET_AUDIENCE.getUri());
     var contentType = edge.getTarget();
+    assertThat(contentType.getId()).isEqualTo(hashService.hash(contentType));
     assertThat(contentType.getDoc().size()).isEqualTo(3);
     validateLiteral(contentType, CODE.getValue(), "b");
     validateLiteral(contentType, LINK.getValue(), "http://id.loc.gov/vocabulary/maudience/pri");
@@ -1269,19 +1315,20 @@ class ResourceControllerIT {
   }
 
   private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
-                                       String predicateUri) {
+                                       PredicateDictionary predicate) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(predicateUri);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(predicate.getUri());
     var creator = edge.getTarget();
+    assertThat(creator.getId()).isEqualTo(hashService.hash(creator));
     var types = creator.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(type.getUri());
     assertThat(creator.getDoc().size()).isEqualTo(2);
     assertThat(creator.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(creator.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("name-" + type);
+    assertThat(creator.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("name-" + predicate + "-" + type);
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).size()).isEqualTo(1);
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).get(0).asText()).isEqualTo("2002801801-" + type);
-    assertThat(creator.getLabel()).isEqualTo("name-" + type);
+    assertThat(creator.getLabel()).isEqualTo("name-" + predicate + "-" + type);
   }
 
   private void validateWorkGovernmentPublication(ResourceEdge edge, Resource source) {
@@ -1289,6 +1336,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(GOVERNMENT_PUBLICATION.getUri());
     var governmentPublication = edge.getTarget();
+    assertThat(governmentPublication.getId()).isEqualTo(hashService.hash(governmentPublication));
     var types = governmentPublication.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(CATEGORY.getUri());
     assertThat(governmentPublication.getLabel()).isEqualTo("Autonomous");
@@ -1303,6 +1351,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(DISSERTATION.getUri());
     var dissertation = edge.getTarget();
+    assertThat(dissertation.getId()).isEqualTo(hashService.hash(dissertation));
     var types = dissertation.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(ResourceTypeDictionary.DISSERTATION.getUri());
     assertThat(dissertation.getDoc().size()).isEqualTo(5);
@@ -1322,6 +1371,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(LANGUAGE.getUri());
     var language = edge.getTarget();
+    assertThat(language.getId()).isEqualTo(hashService.hash(language));
     var types = language.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(LANGUAGE_CATEGORY.getUri());
     assertThat(language.getDoc().size()).isEqualTo(3);
@@ -1335,6 +1385,7 @@ class ResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(ORIGIN_PLACE.getUri());
     var originPlace = edge.getTarget();
+    assertThat(originPlace.getId()).isEqualTo(hashService.hash(originPlace));
     var types = originPlace.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(PLACE.getUri());
     assertThat(originPlace.getLabel()).isEqualTo("France");
@@ -1358,7 +1409,7 @@ class ResourceControllerIT {
     var copyrightEvent = edge.getTarget();
     assertThat(copyrightEvent.getLabel()).isEqualTo("copyright date value");
     assertThat(copyrightEvent.getTypes().iterator().next().getUri()).isEqualTo(COPYRIGHT_EVENT.getUri());
-    assertThat(copyrightEvent.getId()).isNotNull();
+    assertThat(copyrightEvent.getId()).isEqualTo(hashService.hash(copyrightEvent));
     assertThat(copyrightEvent.getDoc().size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("copyright date value");
@@ -1366,32 +1417,54 @@ class ResourceControllerIT {
   }
 
   private LookupResources saveLookupResources() {
-    var subject1 = saveResource(1L, "subject 1", CONCEPT, "{}");
-    var subject2 = saveResource(2L, "subject 2", CONCEPT, "{}");
-    var unitedStates = saveResource(101L, "United States", PLACE, "{}");
-    var europe = saveResource(102L, "Europe", PLACE, "{}");
-    var genre1 = saveResource(201L, "genre 1", FORM, "{}");
-    var genre2 = saveResource(202L, "genre 2", FORM, "{}");
-    var creatorMeeting = saveResource(1001L, "name-MEETING", MEETING,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-MEETING\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
-    var creatorPerson = saveResource(1002L, "name-PERSON", PERSON,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
-    var creatorOrganization = saveResource(1003L, "name-ORGANIZATION", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-ORGANIZATION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
-    var creatorFamily = saveResource(1004L, "name-FAMILY", FAMILY,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
-    var contributorMeeting = saveResource(1008L, "name-MEETING", MEETING,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-MEETING\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
-    var contributorPerson = saveResource(1007L, "name-PERSON", PERSON,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
-    var contributorOrganization = saveResource(1005L, "name-ORGANIZATION", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-ORGANIZATION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
-    var contributorFamily = saveResource(1006L, "name-FAMILY", FAMILY,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
-    var assigningAgency = saveResource(11L, "assigning agency", ORGANIZATION, "{}");
-    var libraryOfCongress = saveResource(22L, "United States, Library of Congress", ORGANIZATION, "{}");
-    var grantingInstitution1 = saveResource(111L, "granting institution 1", ORGANIZATION, "{}");
-    var grantingInstitution2 = saveResource(222L, "granting institution 2", ORGANIZATION, "{}");
+    var subject1 = saveResource(-2609581195837993519L, "subject 1", CONCEPT,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"Subject 1\"]}");
+    var subject2 = saveResource(-643516859818423084L, "subject 2", CONCEPT,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"Subject 2\"]}");
+    var unitedStates = saveResource(7109832602847218134L, "United States", PLACE,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"United States\"], "
+        + "\"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"n-us\"], "
+        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"https://id.loc.gov/vocabulary/geographicAreas/n-us\"]}");
+    var europe = saveResource(-4654600487710655316L, "Europe", PLACE,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"Europe\"], "
+        + "\"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"e\"], "
+        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"https://id.loc.gov/vocabulary/geographicAreas/e\"]}");
+    var genre1 = saveResource(-9064822434663187463L, "genre 1", FORM,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}");
+    var genre2 = saveResource(-4816872480602594231L, "genre 2", FORM,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}");
+    var creatorMeeting = saveResource(-603031702996824854L, "name-CREATOR-MEETING", MEETING,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-MEETING\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
+    var creatorPerson = saveResource(4359679744172518150L, "name-CREATOR-PERSON", PERSON,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-PERSON\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
+    var creatorOrganization = saveResource(-466724080127664871L, "name-CREATOR-ORGANIZATION", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-ORGANIZATION\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
+    var creatorFamily = saveResource(8296435493593701280L, "name-CREATOR-FAMILY", FAMILY,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-FAMILY\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
+    var contributorMeeting = saveResource(-7286109411186266518L, "name-CONTRIBUTOR-MEETING", MEETING,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-MEETING\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
+    var contributorPerson = saveResource(-6054989039809126250L, "name-CONTRIBUTOR-PERSON", PERSON,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-PERSON\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
+    var contributorOrganization = saveResource(-4246830624125472784L, "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-ORGANIZATION\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
+    var contributorFamily = saveResource(3094995075578514480L, "name-CONTRIBUTOR-FAMILY", FAMILY,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-FAMILY\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
+    var assigningAgency = saveResource(4932783899755316479L, "assigning agency", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}");
+    var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"United States, Library of Congress\"]}");
+    var grantingInstitution1 = saveResource(5481852630377445080L, "granting institution 1", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 1\"]}");
+    var grantingInstitution2 = saveResource(-6468470931408362304L, "granting institution 2", ORGANIZATION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 2\"]}");
     return new LookupResources(
       List.of(subject1, subject2),
       List.of(unitedStates, europe),
@@ -1427,14 +1500,6 @@ class ResourceControllerIT {
 
   private String toWorkReference() {
     return join(".", toInstance(), arrayPath(WORK_REF));
-  }
-
-  private String toInventoryId() {
-    return join(".", toInstance(), path("inventoryId"));
-  }
-
-  private String toSrsId() {
-    return join(".", toInstance(), path("srsId"));
   }
 
   private String toExtent() {

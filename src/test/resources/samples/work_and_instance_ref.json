@@ -119,26 +119,26 @@
       ],
       "http://bibfra.me/vocab/lite/subject": [
         {
-          "id": "1"
+          "id": "-2609581195837993519"
         },
         {
-          "id": "2"
+          "id": "-643516859818423084"
         }
       ],
       "_geographicCoverageReference": [
         {
-          "id": "101"
+          "id": "7109832602847218134"
         },
         {
-          "id": "102"
+          "id": "-4654600487710655316"
         }
       ],
       "_genreReference": [
         {
-          "id": "201"
+          "id": "-9064822434663187463"
         },
         {
-          "id": "202"
+          "id": "-4816872480602594231"
         }
       ],
       "http://bibfra.me/vocab/marc/targetAudience": [
@@ -180,7 +180,7 @@
           ],
           "_assigningSourceReference": [
             {
-              "id": "22"
+              "id": "8752404686183471966"
             }
           ]
         },
@@ -202,7 +202,7 @@
           ],
           "_assigningSourceReference": [
             {
-              "id": "11"
+              "id": "4932783899755316479"
             }
           ]
         }
@@ -225,33 +225,33 @@
       ],
       "_creatorReference": [
         {
-          "id": "1001",
-          "label": "name-MEETING",
+          "id": "-603031702996824854",
+          "label": "name-CREATOR-MEETING",
           "type": "http://bibfra.me/vocab/lite/Meeting"
         },
         {
-          "id": "1002",
-          "label": "name-PERSON",
+          "id": "4359679744172518150",
+          "label": "name-CREATOR-PERSON",
           "type": "http://bibfra.me/vocab/lite/Person",
           "roles": [
             "http://bibfra.me/vocab/relation/author"
           ]
         },
         {
-          "id": "1003",
-          "label": "name-ORGANIZATION",
+          "id": "-466724080127664871",
+          "label": "name-CREATOR-ORGANIZATION",
           "type": "http://bibfra.me/vocab/lite/Organization"
         },
         {
-          "id": "1004",
-          "label": "name-FAMILY",
+          "id": "8296435493593701280",
+          "label": "name-CREATOR-FAMILY",
           "type": "http://bibfra.me/vocab/lite/Family"
         }
       ],
       "_contributorReference": [
         {
-          "id": "1005",
-          "label": "name-ORGANIZATION",
+          "id": "-4246830624125472784",
+          "label": "name-CONTRIBUTOR-ORGANIZATION",
           "type": "http://bibfra.me/vocab/lite/Organization",
           "roles": [
             "http://bibfra.me/vocab/relation/editor",
@@ -259,18 +259,18 @@
           ]
         },
         {
-          "id": "1006",
-          "label": "name-FAMILY",
+          "id": "3094995075578514480",
+          "label": "name-CONTRIBUTOR-FAMILY",
           "type": "http://bibfra.me/vocab/lite/Family"
         },
         {
-          "id": "1007",
-          "label": "name-PERSON",
+          "id": "-6054989039809126250",
+          "label": "name-CONTRIBUTOR-PERSON",
           "type": "http://bibfra.me/vocab/lite/Person"
         },
         {
-          "id": "1008",
-          "label": "name-MEETING",
+          "id": "-7286109411186266518",
+          "label": "name-CONTRIBUTOR-MEETING",
           "type": "http://bibfra.me/vocab/lite/Meeting"
         }
       ],
@@ -322,10 +322,10 @@
           ],
           "_grantingInstitutionReference": [
             {
-              "id": "111"
+              "id": "5481852630377445080"
             },
             {
-              "id": "222"
+              "id": "-6468470931408362304"
             }
           ]
         }
