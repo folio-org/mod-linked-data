@@ -96,7 +96,7 @@ public class BibframeUtils {
     return resource.getIncomingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(resourceEdge -> {
-        var instance = resourceEdge.getTarget();
+        var instance = resourceEdge.getSource();
         instance.addOutgoingEdge(resourceEdge);
         return instance;
       })
