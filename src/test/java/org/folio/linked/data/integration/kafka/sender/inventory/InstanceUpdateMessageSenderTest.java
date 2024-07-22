@@ -76,12 +76,11 @@ class InstanceUpdateMessageSenderTest {
     var instance1 = new Resource().setId(2L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata1 = new InstanceMetadata(instance1).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance1.setInstanceMetadata(metadata1);
-    var instance2 = new Resource().setId(3L).addTypes(ResourceTypeDictionary.INSTANCE)
-      .setInstanceMetadata(new InstanceMetadata(work).setSource(LINKED_DATA));
+    var instance2 = new Resource().setId(3L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata2 = new InstanceMetadata(instance2).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance2.setInstanceMetadata(metadata2);
-    work.addIncomingEdge(new ResourceEdge(work, instance1, INSTANTIATES));
-    work.addIncomingEdge(new ResourceEdge(work, instance2, INSTANTIATES));
+    work.addIncomingEdge(new ResourceEdge(instance1, work, INSTANTIATES));
+    work.addIncomingEdge(new ResourceEdge(instance2, work, INSTANTIATES));
 
     var ingressEvent1 = new InstanceIngressEvent().id(String.valueOf(instance1.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata1.getInventoryId()));
