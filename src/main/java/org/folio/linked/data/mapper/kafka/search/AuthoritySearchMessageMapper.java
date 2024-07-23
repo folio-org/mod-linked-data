@@ -1,42 +1,41 @@
 package org.folio.linked.data.mapper.kafka.search;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.linked.data.util.Constants.SEARCH_AUTHORITY_RESOURCE_NAME;
+import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import java.util.Optional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.kafka.identifier.IndexIdentifierMapper;
+import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.search.domain.dto.BibframeAuthorityIdentifiersInner;
 import org.folio.search.domain.dto.LinkedDataAuthority;
-import org.folio.search.domain.dto.ResourceIndexEventType;
-import org.springframework.stereotype.Component;
+import org.folio.search.domain.dto.ResourceIndexEvent;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Log4j2
-@Component
-@RequiredArgsConstructor
-public class AuthoritySearchMessageMapper implements KafkaSearchMessageMapper<LinkedDataAuthority> {
+@Mapper(componentModel = SPRING)
+public abstract class AuthoritySearchMessageMapper {
 
-  private final IndexIdentifierMapper<BibframeAuthorityIdentifiersInner> innerIndexIdentifierMapper;
+  @Autowired
+  protected IndexIdentifierMapper<BibframeAuthorityIdentifiersInner> innerIndexIdentifierMapper;
 
-  @Override
-  public Optional<LinkedDataAuthority> toIndex(Resource resource, ResourceIndexEventType eventType) {
-    var indexDto = new LinkedDataAuthority()
-      .id(parseId(resource))
-      .label(resource.getLabel())
-      .type(parseType(resource))
-      .identifiers(innerIndexIdentifierMapper.extractIdentifiers(resource));
-    return Optional.of(indexDto);
+  @Mapping(target = "resourceName", constant = SEARCH_AUTHORITY_RESOURCE_NAME)
+  @Mapping(target = "_new", expression = "java(toLinkedDataAuthority(resource))")
+  public abstract ResourceIndexEvent toIndex(Resource resource);
+
+  @Mapping(target = "type", source = "resource")
+  @Mapping(target = "identifiers", source = "resource")
+  protected abstract LinkedDataAuthority toLinkedDataAuthority(Resource resource);
+
+  protected List<BibframeAuthorityIdentifiersInner> extractIdentifiers(Resource resource) {
+    return innerIndexIdentifierMapper.extractIdentifiers(resource);
   }
 
-  private String parseId(Resource resource) {
-    return String.valueOf(resource.getId());
-  }
-
-  private String parseType(Resource resource) {
+  protected String parseType(Resource resource) {
     if (resource.isOfType(CONCEPT)) {
       return CONCEPT.name();
     }

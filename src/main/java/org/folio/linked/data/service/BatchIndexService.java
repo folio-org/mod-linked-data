@@ -6,7 +6,7 @@ import org.folio.linked.data.model.entity.Resource;
 
 public interface BatchIndexService {
 
-  BatchIndexResult index(Stream<Resource> resources);
+  BatchIndexResult indexWorks(Stream<Resource> works);
 
   record BatchIndexResult(int recordsIndexed, Set<Long> indexedIds) {}
 }

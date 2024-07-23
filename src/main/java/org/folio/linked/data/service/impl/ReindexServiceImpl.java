@@ -37,14 +37,14 @@ public class ReindexServiceImpl implements ReindexService {
   @Async
   @Override
   @Transactional(propagation = Propagation.NOT_SUPPORTED)
-  public void reindex(Boolean full) {
+  public void reindexWorks(Boolean full) {
     Pageable pageable = PageRequest.of(0, reindexPageSize, Sort.by("id"));
     var recordsIndexed = 0L;
     while (pageable.isPaged()) {
       var page = TRUE.equals(full)
         ? resourceRepository.findAllByType(Set.of(WORK.getUri()), pageable)
         : resourceRepository.findNotIndexedByType(Set.of(WORK.getUri()), pageable);
-      var batchReindexResult = batchIndexService.index(page.get());
+      var batchReindexResult = batchIndexService.indexWorks(page.get());
       recordsIndexed += batchReindexResult.recordsIndexed();
       resourceService.updateIndexDateBatch(batchReindexResult.indexedIds());
       pageable = page.nextPageable();

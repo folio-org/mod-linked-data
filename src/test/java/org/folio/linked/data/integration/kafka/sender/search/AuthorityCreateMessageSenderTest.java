@@ -14,13 +14,11 @@ import static org.mockito.Mockito.when;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.mapper.kafka.search.AuthoritySearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.linked.data.util.Constants;
 import org.folio.search.domain.dto.LinkedDataAuthority;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
@@ -35,7 +33,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class AuthorityCreateMessageSenderTest {
+class AuthorityCreateMessageSenderTest {
 
   @InjectMocks
   private AuthorityCreateMessageSender producer;
@@ -44,10 +42,10 @@ public class AuthorityCreateMessageSenderTest {
   @Mock
   private AuthoritySearchMessageMapper authoritySearchMessageMapper;
   @Mock
-  private FolioMessageProducer<ResourceIndexEvent> resourceIndexEventMessageProducer;
+  private FolioMessageProducer<ResourceIndexEvent> authorityMessageProducer;
 
   @Test
-  public void sendAuthorityCreated_shouldNotSendMessageAndPublishEvent_ifAuthorityAlreadyIndexed() {
+  void sendAuthorityCreated_shouldNotSendMessageAndPublishEvent_ifAuthorityAlreadyIndexed() {
     // given
     var resource = new Resource().addTypes(PERSON).setId(randomLong());
     resource.setIndexDate(new Date());
@@ -56,26 +54,26 @@ public class AuthorityCreateMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventPublisher, authorityMessageProducer);
   }
 
   @Test
-  public void sendAuthorityCreated_shouldSendMessageAndPublishEvent_ifAuthorityNotIndexed() {
+  void sendAuthorityCreated_shouldSendMessageAndPublishEvent_ifAuthorityNotIndexed() {
     // given
     var resource = new Resource().addTypes(PERSON).setId(randomLong());
-    var index = new LinkedDataAuthority().id(String.valueOf(resource.getId()));
-    when(authoritySearchMessageMapper.toIndex(resource, CREATE))
-      .thenReturn(Optional.of(index));
+    var expectedMessage = new ResourceIndexEvent()
+      .id(String.valueOf(resource.getId()));
+    when(authoritySearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
 
     // when
     producer.produce(resource);
 
     // then
-    verifyMessageAndEvent(index);
+    verifyMessageAndEvent(expectedMessage);
   }
 
   @Test
-  public void sendAuthorityCreated_shouldNotSendMessageAndPublishEvent_ifAuthorityAlreadyIndexedAndLinkedToWork() {
+  void sendAuthorityCreated_shouldNotSendMessageAndPublishEvent_ifAuthorityAlreadyIndexedAndLinkedToWork() {
     // given
     var work = new Resource().addTypes(WORK).setId(randomLong());
     var authority = new Resource().addTypes(PERSON).setId(randomLong());
@@ -86,11 +84,11 @@ public class AuthorityCreateMessageSenderTest {
     producer.produce(work);
 
     // then
-    verifyNoInteractions(eventPublisher, resourceIndexEventMessageProducer);
+    verifyNoInteractions(eventPublisher, authorityMessageProducer);
   }
 
   @Test
-  public void sendAuthorityCreated_shouldSendMessageAndPublishEvent_ifAuthorityLinkedToWork() {
+  void sendAuthorityCreated_shouldSendMessageAndPublishEvent_ifAuthorityLinkedToWork() {
     // given
     var work = new Resource().addTypes(WORK).setId(randomLong());
     var person = new Resource().addTypes(PERSON)
@@ -107,8 +105,10 @@ public class AuthorityCreateMessageSenderTest {
     work.addOutgoingEdge(new ResourceEdge(work, concept, PredicateDictionary.NULL));
     work.addOutgoingEdge(new ResourceEdge(work, family, PredicateDictionary.NULL));
 
-    var index = new LinkedDataAuthority().id(String.valueOf(person.getId()));
-    when(authoritySearchMessageMapper.toIndex(person, CREATE)).thenReturn(Optional.of(index));
+    var index = new ResourceIndexEvent()
+      .id(String.valueOf(person.getId()))
+      ._new(new LinkedDataAuthority().id(String.valueOf(person.getId())));
+    when(authoritySearchMessageMapper.toIndex(person)).thenReturn(index);
 
     // when
     producer.produce(work);
@@ -117,19 +117,12 @@ public class AuthorityCreateMessageSenderTest {
     verifyMessageAndEvent(index);
   }
 
-  private void verifyMessageAndEvent(LinkedDataAuthority index) {
+  private void verifyMessageAndEvent(ResourceIndexEvent expectedMessage) {
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceIndexEventMessageProducer)
-      .sendMessages(messageCaptor.capture());
-    List<ResourceIndexEvent> messages = messageCaptor.getValue();
-    var expectedIndexEvent = new ResourceIndexedEvent(parseLong(index.getId()));
-    assertThat(messages)
-      .singleElement()
-      .hasFieldOrProperty("id")
-      .hasFieldOrPropertyWithValue("type", CREATE)
-      .hasFieldOrPropertyWithValue("resourceName", Constants.SEARCH_AUTHORITY_RESOURCE_NAME)
-      .hasFieldOrPropertyWithValue("_new", index);
-    verify(eventPublisher)
-      .publishEvent(expectedIndexEvent);
+    verify(authorityMessageProducer).sendMessages(messageCaptor.capture());
+    assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
+    assertThat(expectedMessage.getType()).isEqualTo(CREATE);
+    var expectedIndexEvent = new ResourceIndexedEvent(parseLong(expectedMessage.getId()));
+    verify(eventPublisher).publishEvent(expectedIndexEvent);
   }
 }

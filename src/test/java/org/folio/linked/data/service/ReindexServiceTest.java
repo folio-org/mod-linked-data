@@ -43,7 +43,7 @@ class ReindexServiceTest {
   }
 
   @Test
-  void reindexFull_shouldReindexAllWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
+  void reindexWorksFull_shouldReindexWorksAllWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
     // given
     var notIndexedWorkPage = mock(Page.class);
     var workStream = Stream.of(new Resource());
@@ -51,18 +51,18 @@ class ReindexServiceTest {
       .thenReturn(notIndexedWorkPage);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
     when(notIndexedWorkPage.get()).thenReturn(workStream);
-    when(batchIndexService.index(workStream))
+    when(batchIndexService.indexWorks(workStream))
       .thenReturn(new BatchIndexResult(1, Set.of(1L, 2L)));
 
     // when
-    reindexService.reindex(true);
+    reindexService.reindexWorks(true);
 
     // then
     verify(resourceService).updateIndexDateBatch(Set.of(1L, 2L));
   }
 
   @Test
-  void reindexNotFull_shouldReindexNotIndexedWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
+  void reindexWorksNotFull_shouldReindexWorksNotIndexedWorks_UpdateIndexDateOfWorksThatWereSuccessfullyProcessed() {
     // given
     var notIndexedWorkPage = mock(Page.class);
     var workStream = Stream.of(new Resource());
@@ -70,11 +70,11 @@ class ReindexServiceTest {
       .thenReturn(notIndexedWorkPage);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
     when(notIndexedWorkPage.get()).thenReturn(workStream);
-    when(batchIndexService.index(workStream))
+    when(batchIndexService.indexWorks(workStream))
       .thenReturn(new BatchIndexResult(1, Set.of(1L, 2L)));
 
     // when
-    reindexService.reindex(false);
+    reindexService.reindexWorks(false);
 
     // then
     verify(resourceService).updateIndexDateBatch(Set.of(1L, 2L));

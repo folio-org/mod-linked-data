@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 
 import java.util.Collection;
@@ -16,10 +15,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
-import org.folio.linked.data.mapper.kafka.search.KafkaSearchMessageMapper;
+import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,7 +33,7 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
 
   @Qualifier("bibliographicMessageProducer")
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
-  private final KafkaSearchMessageMapper<LinkedDataWork> searchBibliographicMessageMapper;
+  private final BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
   private final ApplicationEventPublisher eventPublisher;
 
   @Override
@@ -51,14 +49,10 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public void accept(Resource resource) {
-    searchBibliographicMessageMapper.toIndex(resource, UPDATE)
-      .map(this::getUpdateIndexEvent)
-      .ifPresent(
-        indexEvent -> {
-          bibliographicMessageProducer.sendMessages(List.of(indexEvent));
-          publishIndexEvent(resource);
-        }
-      );
+    var message = bibliographicSearchMessageMapper.toIndex(resource)
+      .type(UPDATE);
+    bibliographicMessageProducer.sendMessages(List.of(message));
+    publishIndexEvent(resource);
   }
 
   private List<Resource> selectParentWorkForUpdate(Resource instance) {
@@ -71,14 +65,6 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
         log.error("Instance [id {}] updated, but parent work wasn't found!", instance.getId());
         return emptyList();
       });
-  }
-
-  private ResourceIndexEvent getUpdateIndexEvent(LinkedDataWork linkedDataWork) {
-    return new ResourceIndexEvent()
-      .id(linkedDataWork.getId())
-      .type(UPDATE)
-      .resourceName(SEARCH_RESOURCE_NAME)
-      ._new(linkedDataWork);
   }
 
   private void publishIndexEvent(Resource resource) {

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -12,9 +13,9 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.util.HashSet;
 import java.util.List;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -35,6 +36,8 @@ class WorkDeleteMessageSenderTest {
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
   @Mock
+  private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
+  @Mock
   private WorkUpdateMessageSender workUpdateMessageSender;
 
   @Test
@@ -46,7 +49,7 @@ class WorkDeleteMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(resourceMessageProducer, workUpdateMessageSender);
+    verifyNoInteractions(resourceMessageProducer, bibliographicSearchMessageMapper, workUpdateMessageSender);
   }
 
   @Test
@@ -54,23 +57,17 @@ class WorkDeleteMessageSenderTest {
     // given
     var id = 1L;
     var work = new Resource().setId(id).addTypes(ResourceTypeDictionary.WORK);
+    var expectedMessage = new ResourceIndexEvent().id(String.valueOf(id));
+    doReturn(expectedMessage).when(bibliographicSearchMessageMapper).toIndex(work);
 
     // when
     producer.produce(work);
 
     // then
     var messageCaptor = ArgumentCaptor.forClass(List.class);
-    verify(resourceMessageProducer)
-      .sendMessages(messageCaptor.capture());
-    List<ResourceIndexEvent> messages = messageCaptor.getValue();
-    var expectedIndex = new LinkedDataWork().id(String.valueOf(id));
-
-    assertThat(messages)
-      .singleElement()
-      .hasFieldOrProperty("id")
-      .hasFieldOrPropertyWithValue("type", DELETE)
-      .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
-      .hasFieldOrPropertyWithValue("_new", expectedIndex);
+    verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
+    assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
+    assertThat(expectedMessage.getType()).isEqualTo(DELETE);
     verifyNoMoreInteractions(workUpdateMessageSender);
   }
 

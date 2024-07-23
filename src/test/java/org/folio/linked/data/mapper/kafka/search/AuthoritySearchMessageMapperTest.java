@@ -1,17 +1,20 @@
 package org.folio.linked.data.mapper.kafka.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.mockito.Mockito.doReturn;
 
-import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.kafka.identifier.IndexIdentifierMapper;
+import java.util.List;
+import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.BibframeAuthorityIdentifiersInner;
-import org.folio.search.domain.dto.LinkedDataAuthority;
-import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.folio.spring.testing.type.UnitTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,25 +24,40 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class AuthoritySearchMessageMapperTest {
 
   @InjectMocks
-  private AuthoritySearchMessageMapper mapper;
+  private AuthoritySearchMessageMapperImpl mapper;
 
   @Mock
   private IndexIdentifierMapper<BibframeAuthorityIdentifiersInner> innerIndexIdentifierMapper;
 
-  @ParameterizedTest
-  @EnumSource(ResourceTypeDictionary.class)
-  void whenContainsTypeAndConvertedByBibliographicName(ResourceTypeDictionary type) {
+  @Test
+  void toIndex_shouldMapResourceCorrectly() {
     //given
-    var resource = new Resource().addTypes(type);
-    var expectedType = type + "";
+    var resource = new Resource()
+      .setId(randomLong())
+      .addTypes(CONCEPT)
+      .setLabel("label");
+    var id = new Resource()
+      .setId(randomLong())
+      .addTypes(ID_LCCN);
+    resource
+      .addOutgoingEdge(new ResourceEdge(resource, id, MAP));
+    var expectedIdentifiers = List.of(new BibframeAuthorityIdentifiersInner()
+      .type(BibframeAuthorityIdentifiersInner.TypeEnum.LCCN)
+      .value(randomLong().toString())
+    );
+    doReturn(expectedIdentifiers).when(innerIndexIdentifierMapper).extractIdentifiers(resource);
 
     //when
-    var result = mapper.toIndex(resource, ResourceIndexEventType.CREATE);
+    var result = mapper.toIndex(resource);
 
     //then
     assertThat(result)
-      .isPresent()
-      .map(LinkedDataAuthority::getType)
-      .contains(expectedType);
+      .hasFieldOrPropertyWithValue("id", String.valueOf(resource.getId()))
+      .hasFieldOrPropertyWithValue("resourceName", "linked-data-authority")
+      .extracting("_new")
+      .hasFieldOrPropertyWithValue("id", String.valueOf(resource.getId()))
+      .hasFieldOrPropertyWithValue("label", resource.getLabel())
+      .hasFieldOrPropertyWithValue("type", "CONCEPT")
+      .hasFieldOrPropertyWithValue("identifiers", expectedIdentifiers);
   }
 }

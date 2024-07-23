@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.kafka.identifier;
+package org.folio.linked.data.mapper.kafka.search.identifier;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
