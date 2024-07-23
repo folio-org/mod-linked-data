@@ -2,6 +2,7 @@ package org.folio.linked.data.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -25,6 +26,11 @@ public class ResourceController implements ResourceApi {
   @Override
   public ResponseEntity<ResourceResponseDto> getResourceById(Long id, String okapiTenant) {
     return ResponseEntity.ok(resourceService.getResourceById(id));
+  }
+
+  @Override
+  public ResponseEntity<ResourceIdDto> getResourceIdByResourceInventoryId(String inventoryId, String okapiTenant) {
+    return ResponseEntity.ok(resourceService.getResourceIdByInventoryId(inventoryId));
   }
 
   @Override

@@ -150,6 +150,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -436,6 +437,46 @@ class ResourceControllerIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("errors[0].message", equalTo(RESOURCE_WITH_GIVEN_ID
         + notExistedId + IS_NOT_FOUND)))
+      .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
+      .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
+      .andExpect(jsonPath("total_records", equalTo(1)));
+  }
+
+  @Test
+  void getResourceIdByResourceInventoryId_shouldReturnResourceId() throws Exception {
+    //given
+    var resource = resourceTestService.saveGraph(getSampleInstanceResource(null, null));
+    var requestBuilder = get(RESOURCE_URL + "/metadata/" + resource.getInstanceMetadata().getInventoryId() + "/id")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    //when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    //then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("id", equalTo(String.valueOf(resource.getId()))));
+  }
+
+  @Test
+  void getResourceIdByResourceInventoryId_shouldReturn404_ifNoEntityExistsWithGivenInventoryId() throws Exception {
+    //given
+    var inventoryId = UUID.randomUUID();
+    var requestBuilder = get(RESOURCE_URL + "/metadata/" + inventoryId + "/id")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    //when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    //then
+    resultActions
+      .andExpect(status().isNotFound())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors[0].message",
+        equalTo("Resource with given inventory id [" + inventoryId + "] is not found")))
       .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
       .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
       .andExpect(jsonPath("total_records", equalTo(1)));

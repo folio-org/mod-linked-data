@@ -41,6 +41,12 @@
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.delete" ],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/resource/metadata/{inventoryId}/id",
+          "permissionsRequired": [ "linked-data.resources.bib.get" ],
+          "modulePermissions": []
         }
       ]
     },
