@@ -31,6 +31,7 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
+import org.folio.linked.data.repo.InstanceMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceService;
@@ -52,6 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
+  private final InstanceMetadataRepository instanceMetadataRepo;
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceDtoMapper resourceDtoMapper;
@@ -88,8 +90,8 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public ResourceIdDto getResourceIdByInventoryId(String inventoryId) {
-    return resourceRepo.findByInstanceMetadataInventoryId(inventoryId)
-      .map(resource -> new ResourceIdDto().id(String.valueOf(resource.getId())))
+    return instanceMetadataRepo.findByInventoryId(inventoryId)
+      .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_INVENTORY_ID + inventoryId + IS_NOT_FOUND));
   }
 

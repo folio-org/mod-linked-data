@@ -47,6 +47,7 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
+import org.folio.linked.data.repo.InstanceMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.ResourceServiceImpl;
@@ -72,6 +73,8 @@ class ResourceServiceTest {
   @InjectMocks
   private ResourceServiceImpl resourceService;
 
+  @Mock
+  private InstanceMetadataRepository instanceMetadataRepo;
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
@@ -186,7 +189,7 @@ class ResourceServiceTest {
     // given
     var inventoryId = UUID.randomUUID().toString();
     var existedResource = getSampleInstanceResource();
-    when(resourceRepo.findByInstanceMetadataInventoryId(inventoryId)).thenReturn(Optional.of(existedResource));
+    when(instanceMetadataRepo.findByInventoryId(inventoryId)).thenReturn(Optional.of(existedResource::getId));
 
     // when
     var result = resourceService.getResourceIdByInventoryId(inventoryId);
@@ -199,7 +202,7 @@ class ResourceServiceTest {
   void getResourceIdByInventoryId_shouldThrowNotFoundException_ifNoEntityExistsWithGivenInventoryId() {
     // given
     var inventoryId = UUID.randomUUID().toString();
-    when(resourceRepo.findByInstanceMetadataInventoryId(inventoryId)).thenReturn(Optional.empty());
+    when(instanceMetadataRepo.findByInventoryId(inventoryId)).thenReturn(Optional.empty());
 
     // when
     var thrown = assertThrows(
