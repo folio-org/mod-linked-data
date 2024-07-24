@@ -1,6 +1,5 @@
 package org.folio.linked.data.service;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -21,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.collect.Sets;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
@@ -47,6 +47,7 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
+import org.folio.linked.data.repo.InstanceMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.impl.ResourceServiceImpl;
@@ -72,6 +73,8 @@ class ResourceServiceTest {
   @InjectMocks
   private ResourceServiceImpl resourceService;
 
+  @Mock
+  private InstanceMetadataRepository instanceMetadataRepo;
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
@@ -179,6 +182,37 @@ class ResourceServiceTest {
 
     // then
     assertThat(thrown.getMessage()).isEqualTo(RESOURCE_WITH_GIVEN_ID + notExistedId + IS_NOT_FOUND);
+  }
+
+  @Test
+  void getResourceIdByInventoryId_shouldReturnIdOfExistedEntity() {
+    // given
+    var inventoryId = UUID.randomUUID().toString();
+    var existedResource = getSampleInstanceResource();
+    when(instanceMetadataRepo.findByInventoryId(inventoryId)).thenReturn(Optional.of(existedResource::getId));
+
+    // when
+    var result = resourceService.getResourceIdByInventoryId(inventoryId);
+
+    // then
+    assertThat(result.getId()).isEqualTo(String.valueOf(existedResource.getId()));
+  }
+
+  @Test
+  void getResourceIdByInventoryId_shouldThrowNotFoundException_ifNoEntityExistsWithGivenInventoryId() {
+    // given
+    var inventoryId = UUID.randomUUID().toString();
+    when(instanceMetadataRepo.findByInventoryId(inventoryId)).thenReturn(Optional.empty());
+
+    // when
+    var thrown = assertThrows(
+      NotFoundException.class,
+      () -> resourceService.getResourceIdByInventoryId(inventoryId)
+    );
+
+    // then
+    assertThat(thrown.getMessage())
+      .isEqualTo("Resource with given inventory id [" + inventoryId + "] is not found");
   }
 
   @Test

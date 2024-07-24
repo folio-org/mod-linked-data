@@ -5,6 +5,8 @@ create table if not exists instance_metadata (
      source resource_source null
   );
 
+create index if not exists instance_metadata_inventory_id_idx on instance_metadata(inventory_id);
+
 comment on table instance_metadata is 'Metadata for an instance resource';
 comment on column instance_metadata.resource_hash is 'The unique hash identifier for the resource';
 comment on column instance_metadata.inventory_id is 'ID of the instance in FOLIO inventory application';

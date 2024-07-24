@@ -141,6 +141,23 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /resource/metadata/{inventoryId}/id:
+    get:
+      operationId: getResourceIdByResourceInventoryId
+      description: Get id of a resource by its inventory id
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+        - $ref: '#/components/parameters/inventoryId'
+      responses:
+        '200':
+          description: Json object with id of a resource
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceIdDto.json
+        '404':
+          description: No resource id is found by its inventory id
+
   /profile:
     get:
       operationId: getProfile
@@ -189,6 +206,13 @@ components:
       schema:
         type: integer
         format: int64
+    inventoryId:
+      name: inventoryId
+      in: path
+      required: true
+      description: Bibframe resource inventory id
+      schema:
+        type: string
     x-okapi-tenant-header:
       name: x-okapi-tenant
       in: header

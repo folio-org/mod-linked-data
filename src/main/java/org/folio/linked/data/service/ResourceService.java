@@ -2,6 +2,7 @@ package org.folio.linked.data.service;
 
 import java.util.Set;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -16,6 +17,8 @@ public interface ResourceService {
 
   ResourceResponseDto getResourceById(Long id);
 
+  ResourceIdDto getResourceIdByInventoryId(String inventoryId);
+
   ResourceResponseDto updateResource(Long id, ResourceRequestDto bibframeRequest);
 
   void deleteResource(Long id);
@@ -29,5 +32,4 @@ public interface ResourceService {
   ResourceGraphDto getResourceGraphById(Long id);
 
   Resource saveMergingGraph(Resource resource);
-
 }

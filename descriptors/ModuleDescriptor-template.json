@@ -41,6 +41,12 @@
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.delete" ],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/resource/metadata/{inventoryId}/id",
+          "permissionsRequired": [ "linked-data.resources.bib.id.get" ],
+          "modulePermissions": []
         }
       ]
     },
@@ -132,6 +138,11 @@
       "permissionName": "linked-data.resources.bib.marc.get",
       "displayName": "Linked Data: Get the derived MARC record of an Instance resource",
       "description": "Get the derived MARC record of a linked-data Instance resource"
+    },
+    {
+      "permissionName": "linked-data.resources.bib.id.get",
+      "displayName": "Linked Data: Get the ID of an instance resource using the inventory instance ID",
+      "description": "Get the ID of a linked-data instance resource using the inventory instance ID"
     },
     {
       "permissionName": "linked-data.profiles.get",

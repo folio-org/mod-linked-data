@@ -6,6 +6,7 @@ import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_INVENTORY_ID;
 
 import java.util.Objects;
 import java.util.Set;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -29,6 +31,7 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
+import org.folio.linked.data.repo.InstanceMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceService;
@@ -50,6 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
+  private final InstanceMetadataRepository instanceMetadataRepo;
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceDtoMapper resourceDtoMapper;
@@ -82,6 +86,13 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto getResourceById(Long id) {
     var resource = getResource(id);
     return resourceDtoMapper.toDto(resource);
+  }
+
+  @Override
+  public ResourceIdDto getResourceIdByInventoryId(String inventoryId) {
+    return instanceMetadataRepo.findByInventoryId(inventoryId)
+      .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
+      .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_INVENTORY_ID + inventoryId + IS_NOT_FOUND));
   }
 
   @Override
