@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.folio.ld.fingerprint.config.FingerprintEntrySerializer;
+import org.folio.ld.fingerprint.service.FingerprintServiceImpl.FingerprintEntry;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceRequestAllOfMapDeserializer;
@@ -41,6 +43,7 @@ public class ObjectMapperConfig {
     module.addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer());
     module.addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer());
     module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
+    module.addSerializer(FingerprintEntry.class, new FingerprintEntrySerializer());
     return module;
   }
 }
