@@ -16,6 +16,7 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -29,6 +30,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.ResourceService;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.kafka.KafkaSearchAuthorityAuthorityTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
@@ -39,6 +41,8 @@ import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -53,6 +57,8 @@ import org.springframework.transaction.annotation.Transactional;
 class DataImportEventListenerIT {
 
   private static final String DI_COMPLETED_TOPIC = "DI_COMPLETED";
+  private static final String EVENT_ID_01 = "event_id_01";
+
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
@@ -68,6 +74,9 @@ class DataImportEventListenerIT {
   private KafkaSearchAuthorityAuthorityTopicListener kafkaSearchAuthorityAuthorityTopicListener;
   @Autowired
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
+  @SpyBean
+  @Autowired
+  private ResourceService resourceService;
   @MockBean
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
 
@@ -88,25 +97,37 @@ class DataImportEventListenerIT {
     kafkaSearchWorkIndexTopicListener.getMessages().clear();
   }
 
+  @ParameterizedTest
+  @CsvSource({
+    "samples/marc_non_monograph_leader.jsonl, 0",
+    "samples/marc_monograph_leader.jsonl, 1"
+  })
+  public void shouldNotProcessEventForNullableResource(String resource, int interactions) {
+    // given
+    var marc = loadResourceAsString(resource);
+    var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, marc);
+    var expectedEvent = newMarcBibDataImportEvent(marc);
+
+    // when
+    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
+
+    // then
+    awaitAndAssert(() -> verify(dataImportEventHandler).handle(expectedEvent));
+    verify(resourceService, times(interactions)).createResource(any(org.folio.ld.dictionary.model.Resource.class));
+  }
+
   @Test
   void shouldProcessInstanceCreatedEventFromDataImport() {
     // given
-    var eventId = "event_id_01";
     var marc = loadResourceAsString("samples/full_marc_sample.jsonl");
-    var emittedEvent = instanceCreatedEvent(eventId, TENANT_ID, marc);
-    var expectedEvent = new DataImportEvent()
-      .id(eventId)
-      .tenant(TENANT_ID)
-      .eventType("DI_COMPLETED")
-      .marcBib(marc);
-    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
-      eventId, emittedEvent, defaultKafkaHeaders());
+    var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, marc);
+    var expectedEvent = newMarcBibDataImportEvent(marc);
 
     // when
-    eventKafkaTemplate.send(producerRecord);
+    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
 
     // then
-    awaitAndAssert(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
+    awaitAndAssert(() -> verify(dataImportEventHandler).handle(expectedEvent));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
@@ -137,23 +158,16 @@ class DataImportEventListenerIT {
   @Test
   void shouldConsumeAuthorityEventFromDataImport() {
     // given
-    var eventId = "event_id_01";
     var marc = loadResourceAsString("samples/authority_100.jsonl");
-    var emittedEvent = authorityEvent(eventId, TENANT_ID, marc);
+    var emittedEvent = authorityEvent(EVENT_ID_01, TENANT_ID, marc);
     var expectedLabel = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
-    var expectedEvent = new DataImportEvent()
-      .id(eventId)
-      .tenant(TENANT_ID)
-      .eventType("DI_COMPLETED")
-      .marcAuthority(marc);
-    var producerRecord = new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
-      eventId, emittedEvent, defaultKafkaHeaders());
+    var expectedEvent = newAuthorutyDataImportEvent(marc);
 
     // when
-    eventKafkaTemplate.send(producerRecord);
+    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
 
     // then
-    awaitAndAssert(() -> verify(dataImportEventHandler, times(1)).handle(expectedEvent));
+    awaitAndAssert(() -> verify(dataImportEventHandler).handle(expectedEvent));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
@@ -202,5 +216,25 @@ class DataImportEventListenerIT {
           .anyMatch(m -> m.contains(workIdOptional.get().toString()) && m.contains(UPDATE.getValue()))
       )
     );
+  }
+
+  private DataImportEvent newMarcBibDataImportEvent(String marc) {
+    return newDataImportEvent().marcBib(marc);
+  }
+
+  private DataImportEvent newAuthorutyDataImportEvent(String marc) {
+    return newDataImportEvent().marcAuthority(marc);
+  }
+
+  private DataImportEvent newDataImportEvent() {
+    return new DataImportEvent()
+      .id(EVENT_ID_01)
+      .tenant(TENANT_ID)
+      .eventType(DI_COMPLETED_TOPIC);
+  }
+
+  private ProducerRecord<String, String> newProducerRecord(String emittedEvent) {
+    return new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
+      EVENT_ID_01, emittedEvent, defaultKafkaHeaders());
   }
 }
