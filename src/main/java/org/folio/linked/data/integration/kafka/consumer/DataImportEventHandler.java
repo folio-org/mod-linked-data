@@ -24,19 +24,31 @@ public class DataImportEventHandler {
 
   public void handle(DataImportEvent event) {
     if (isNotEmpty(event.getMarcBib())) {
-      var marc4ldResource = marcBib2ldMapper.fromMarcJson(event.getMarcBib());
-      var id = resourceService.createResource(marc4ldResource);
-      log.info("DataImportEvent with id [{}] was saved as LD resource with id [{}]", event.getId(), id);
+      createBibResource(event);
     } else if (isNotEmpty(event.getMarcAuthority())) {
-      var authorityResources = marcAuthority2ldMapper.fromMarcJson(event.getMarcAuthority());
-      var ids = authorityResources.stream()
-        .map(resourceService::createResource)
-        .toList();
-      log.info("Processing MARC Authority record with event ID [{}], saved records: {}",
-        event.getId(), ids.size());
+      createAuthorities(event);
     } else {
       log.error("DataImportEvent with id [{}], tenant [{}], eventType [{}] has no Marc record inside",
         event.getId(), event.getTenant(), event.getEventType());
     }
+  }
+
+  private void createBibResource(DataImportEvent event) {
+    marcBib2ldMapper.fromMarcJson(event.getMarcBib())
+      .ifPresentOrElse(resource -> {
+          var id = resourceService.createResource(resource);
+          log.info("DataImportEvent with id [{}] was saved as LD resource with id [{}]", event.getId(), id);
+        },
+        () -> log.warn("Empty resource from MARC for event ID [{}]", event.getId())
+      );
+  }
+
+  private void createAuthorities(DataImportEvent event) {
+    var authorityResources = marcAuthority2ldMapper.fromMarcJson(event.getMarcAuthority());
+    var ids = authorityResources.stream()
+      .map(resourceService::createResource)
+      .toList();
+    log.info("Processing MARC Authority record with event ID [{}], saved records: {}",
+      event.getId(), ids.size());
   }
 }
