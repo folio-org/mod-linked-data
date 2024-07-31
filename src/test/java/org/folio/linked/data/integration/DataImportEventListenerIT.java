@@ -1,11 +1,13 @@
 package org.folio.linked.data.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.model.entity.ResourceSource.MARC;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
+import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
@@ -21,11 +23,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Objects;
 import java.util.Set;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.kafka.consumer.DataImportEventHandler;
+import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
@@ -34,6 +39,7 @@ import org.folio.linked.data.service.ResourceService;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.kafka.KafkaSearchAuthorityAuthorityTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
+import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -51,7 +57,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 @IntegrationTest
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class DataImportEventListenerIT {
@@ -79,6 +84,10 @@ class DataImportEventListenerIT {
   private ResourceService resourceService;
   @MockBean
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
+  @Autowired
+  private MarcBib2ldMapper marc2BibframeMapper;
+  @Autowired
+  private ResourceModelMapper resourceModelMapper;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -102,7 +111,7 @@ class DataImportEventListenerIT {
     "samples/marc_non_monograph_leader.jsonl, 0",
     "samples/marc_monograph_leader.jsonl, 1"
   })
-  public void shouldNotProcessEventForNullableResource(String resource, int interactions) {
+  void shouldNotProcessEventForNullableResource(String resource, int interactions) {
     // given
     var marc = loadResourceAsString(resource);
     var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, marc);
@@ -116,6 +125,7 @@ class DataImportEventListenerIT {
     verify(resourceService, times(interactions)).createResource(any(org.folio.ld.dictionary.model.Resource.class));
   }
 
+  @Transactional
   @Test
   void shouldProcessInstanceCreatedEventFromDataImport() {
     // given
@@ -155,6 +165,7 @@ class DataImportEventListenerIT {
     verifyNoInteractions(instanceIngressMessageProducer);
   }
 
+  @Transactional
   @Test
   void shouldConsumeAuthorityEventFromDataImport() {
     // given
@@ -201,6 +212,33 @@ class DataImportEventListenerIT {
     );
   }
 
+  @Test
+  void shouldSendToIndexWorkWithTwoInstances() {
+    //given
+    var firstInstanceMarc = loadResourceAsString("samples/full_marc_sample.jsonl");
+    mapAndSave(firstInstanceMarc);
+    var secondInstanceMarc = firstInstanceMarc.replace("  2019493854", "  2019493855");
+    var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, secondInstanceMarc);
+
+    //when
+    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
+
+    //then
+    awaitAndAssert(() ->
+      assertTrue(
+        kafkaSearchWorkIndexTopicListener.getMessages()
+          .stream()
+          .anyMatch(message -> {
+            try {
+              return OBJECT_MAPPER.readValue(message, JsonNode.class).get("new").get("instances").size() == 2;
+            } catch (JsonProcessingException e) {
+              throw new RuntimeException(e);
+            }
+          })
+      )
+    );
+  }
+
   private void assertWorkIsIndexed(Resource instance) {
     var workIdOptional = instance.getOutgoingEdges()
       .stream()
@@ -236,5 +274,20 @@ class DataImportEventListenerIT {
   private ProducerRecord<String, String> newProducerRecord(String emittedEvent) {
     return new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
       EVENT_ID_01, emittedEvent, defaultKafkaHeaders());
+  }
+
+  private void mapAndSave(String marc) {
+    marc2BibframeMapper.fromMarcJson(marc)
+      .map(resourceModelMapper::toEntity)
+      .map(resourceRepo::save)
+      .map(Resource::getOutgoingEdges)
+      .stream()
+      .flatMap(Set::stream)
+      .filter(resourceEdge -> INSTANTIATES.getUri().equals(resourceEdge.getPredicate().getUri()))
+      .forEach(resourceEdge -> {
+        resourceEdge.computeId();
+        resourceRepo.save(resourceEdge.getTarget());
+        resourceEdgeRepository.save(resourceEdge);
+      });
   }
 }
