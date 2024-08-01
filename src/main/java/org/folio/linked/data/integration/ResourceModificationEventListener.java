@@ -2,7 +2,6 @@ package org.folio.linked.data.integration;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
-import jakarta.persistence.EntityManager;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,7 +28,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class ResourceModificationEventListener {
 
-  private final EntityManager entityManager;
   private final ResourceRepository resourceRepository;
   private final Collection<CreateMessageSender> createMessageSenders;
   private final Collection<UpdateMessageSender> updateMessageSenders;
@@ -39,9 +37,7 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
-    entityManager.detach(resourceRepository.getReferenceById(resourceCreatedEvent.id()));
-    var resource = resourceRepository.getReferenceById(resourceCreatedEvent.id());
-    createMessageSenders.forEach(sender -> sender.produce(resource));
+    createMessageSenders.forEach(sender -> sender.produce(resourceCreatedEvent.resource()));
   }
 
   @TransactionalEventListener

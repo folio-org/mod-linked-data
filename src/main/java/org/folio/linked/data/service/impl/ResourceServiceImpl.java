@@ -3,6 +3,7 @@ package org.folio.linked.data.service.impl;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
@@ -69,7 +70,8 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = saveMergingGraph(mapped);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
+    addExistingEdges(persisted);
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return resourceDtoMapper.toDto(persisted);
   }
 
@@ -77,8 +79,9 @@ public class ResourceServiceImpl implements ResourceService {
   public Long createResource(org.folio.ld.dictionary.model.Resource modelResource) {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
+    addExistingEdges(persisted);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return persisted.getId();
   }
 
@@ -256,5 +259,18 @@ public class ResourceServiceImpl implements ResourceService {
   private void breakEdgesAndDelete(Resource resource) {
     breakCircularEdges(resource);
     resourceRepo.delete(resource);
+  }
+
+  private void addExistingEdges(Resource resource) {
+    if (resource.isOfType(INSTANCE)) {
+      resource.getOutgoingEdges()
+        .stream()
+        .filter(resourceEdge -> INSTANTIATES.getUri().equals(resourceEdge.getPredicate().getUri()))
+        .map(ResourceEdge::getTarget)
+        .findFirst()
+        .ifPresent(work -> edgeRepo.findByIdTargetHash(work.getId())
+          .forEach(sourceOnly -> work.addIncomingEdge(new ResourceEdge(sourceOnly.getSource(), work, INSTANTIATES)))
+        );
+    }
   }
 }
