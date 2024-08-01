@@ -1,0 +1,88 @@
+{
+  "resource": {
+    "instance": {
+      "title": [
+        {
+          "Title": {
+            "partName": [
+              "Primary: partName"
+            ],
+            "mainTitle": [
+              "Primary: mainTitle"
+            ],
+            "partNumber": [
+              "Primary: partNumber",
+              "Primary: partNumber#2"
+            ]
+          }
+        },
+        {
+          "ParallelTitle": {
+            "partName": [
+              "Parallel: partName#2"
+            ],
+            "partNumber": {
+              "Parallel": "partNumber"
+            },
+            "mainTitle": [
+              "Parallel: mainTitle2"
+            ]
+          }
+        },
+        {
+          "SomeKey": {
+            "array": [
+              "someString",
+              {
+                "field1": 1,
+                "field2": 2,
+                "newArray": [
+                  "element1",
+                  "element2"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "person": [
+        {
+          "name": "name"
+        }
+      ],
+      "family": [
+        {
+          "alternative": "alternative"
+        }
+      ]
+    },
+    "organization": {
+      "language": "en",
+      "profile": {
+        "additionalField": "additional",
+        "preferences": [
+          "profile2"
+        ]
+      }
+    },
+    "http://library.link/vocab/map": [
+      {
+        "http://library.link/identifier/LCCN": {
+          "http://bibfra.me/vocab/lite/name": [
+            "name2"
+          ],
+          "http://bibfra.me/vocab/marc/status": [
+            {
+              "http://bibfra.me/vocab/lite/label": [
+                "label2"
+              ],
+              "http://bibfra.me/vocab/lite/link": [
+                "link2"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

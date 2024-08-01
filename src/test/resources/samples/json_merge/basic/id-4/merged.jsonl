@@ -1,0 +1,24 @@
+{
+  "http://bibfra.me/vocab/lite/name": [
+    "Jane Doe",
+    "Jane Doe 2"
+  ],
+  "http://bibfra.me/vocab/lite/alternative": [
+    "Alternative 1",
+    "Alternative 3",
+    "Alternative 2"
+  ],
+  "http://bibfra.me/vocab/lite/title": [
+    {
+      "main": "main"
+    },
+    {
+      "second": "second"
+    }
+  ],
+  "http://bibfra.me/vocab/lite/person": {
+    "age": "age",
+    "categories": [2,4,1,3],
+    "name": "name"
+  }
+}

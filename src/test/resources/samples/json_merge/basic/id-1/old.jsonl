@@ -1,0 +1,23 @@
+{
+  "http://bibfra.me/vocab/lite/name": [
+    "John Doe"
+  ],
+  "http://bibfra.me/vocab/lite/title": [
+    {
+      "main": "main"
+    }
+  ],
+  "http://bibfra.me/vocab/lite/person": {
+    "age": "age"
+  },
+  "http://bibfra.me/vocab/lite/alternative": [
+    "Alternative"
+  ],
+  "a": [
+    {
+      "b": [
+        1234
+      ]
+    }
+  ]
+}
