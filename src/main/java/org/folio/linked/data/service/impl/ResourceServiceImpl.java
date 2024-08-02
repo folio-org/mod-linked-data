@@ -70,7 +70,7 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = saveMergingGraph(mapped);
-    addExistingEdges(persisted);
+    addIncomingEdgesForWork(persisted);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return resourceDtoMapper.toDto(persisted);
   }
@@ -79,7 +79,7 @@ public class ResourceServiceImpl implements ResourceService {
   public Long createResource(org.folio.ld.dictionary.model.Resource modelResource) {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
-    addExistingEdges(persisted);
+    addIncomingEdgesForWork(persisted);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return persisted.getId();
@@ -261,7 +261,7 @@ public class ResourceServiceImpl implements ResourceService {
     resourceRepo.delete(resource);
   }
 
-  private void addExistingEdges(Resource resource) {
+  private void addIncomingEdgesForWork(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
       resource.getOutgoingEdges()
         .stream()
