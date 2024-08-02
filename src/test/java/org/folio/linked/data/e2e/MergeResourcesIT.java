@@ -177,8 +177,8 @@ class MergeResourcesIT {
     var fpEdge3to4 = fp3EdgeIterator.next();
     assertEdge(fpEdge3to4, 3L, 4L, fp3Resource);
     var fp4Resource = resourceTestService.getResourceById("4", 4);
-    assertThat(fp1Resource.getDoc().equals(getInitialDoc(1L))).isTrue();
-    assertThat(fp4Resource.getDoc().equals(getInitialDoc(4L))).isTrue();
+    assertThat(fp1Resource.getDoc().equals(getInitialDoc())).isTrue();
+    assertThat(fp4Resource.getDoc().equals(getInitialDoc())).isTrue();
 
     // when
     var graph3 = createGraph6toto1toto4to5();
@@ -217,42 +217,42 @@ class MergeResourcesIT {
     var fp6to4Edge = fp6EdgeIterator.next();
     assertEdge(fp6to4Edge, 6L, 4L, fp6Resource);
     assertThat(fp6to4Edge.getTarget()).isEqualTo(fp4Resource);
-    assertThat(fp1Resource.getDoc().equals(getMergedDoc(1L))).isTrue();
-    assertThat(fp4Resource.getDoc().equals(getMergedDoc(4L))).isTrue();
+    assertThat(fp1Resource.getDoc().equals(getMergedDoc())).isTrue();
+    assertThat(fp4Resource.getDoc().equals(getMergedDoc())).isTrue();
   }
 
   @SneakyThrows
-  private JsonNode getInitialDoc(Long id) {
-    return getDoc("samples/json_merge/basic/id-%s/old.jsonl", id);
+  private JsonNode getInitialDoc() {
+    return getDoc("samples/json_merge/existing.jsonl");
   }
 
   @SneakyThrows
-  private JsonNode getNewDoc(Long id) {
-    return getDoc("samples/json_merge/basic/id-%s/new.jsonl", id);
+  private JsonNode getNewDoc() {
+    return getDoc("samples/json_merge/incoming.jsonl");
   }
 
   @SneakyThrows
-  private JsonNode getMergedDoc(Long id) {
-    return getDoc("samples/json_merge/basic/id-%s/merged.jsonl", id);
+  private JsonNode getMergedDoc() {
+    return getDoc("samples/json_merge/merged.jsonl");
   }
 
   @SneakyThrows
-  private JsonNode getDoc(String template, Long id) {
-    return objectMapper.readTree(loadResourceAsString(String.format(template, id)));
+  private JsonNode getDoc(String doc) {
+    return objectMapper.readTree(loadResourceAsString(doc));
   }
 
   private Resource createGraph1toto2() {
     // 1 -> [2]
     var fp2Resource = createResource(2L, Map.of());
-    return createResource(1L, Map.of(PredicateDictionary.ABRIDGER, List.of(fp2Resource)));
+    return createResource(1L, Map.of(PredicateDictionary.ABRIDGER, List.of(fp2Resource))).setDoc(getInitialDoc());
   }
 
   private Resource createGraph3toto1to5toto4() {
     // 3 -> [(1 -> 5), 4]
     var fp5Resource = createResource(5L, Map.of());
     var fp1Resource = createResource(1L, Map.of(PredicateDictionary.BINDER, List.of(fp5Resource)))
-      .setDoc(getInitialDoc(1L));
-    var fp4Resource = createResource(4L, Map.of()).setDoc(getInitialDoc(4L));
+      .setDoc(getInitialDoc());
+    var fp4Resource = createResource(4L, Map.of()).setDoc(getInitialDoc()).setDoc(getInitialDoc());
     return createResource(3L, Map.of(PredicateDictionary.CREATOR, List.of(fp1Resource, fp4Resource)));
   }
 
@@ -268,10 +268,10 @@ class MergeResourcesIT {
   @SneakyThrows
   private Resource createGraph6toto1toto4to5() {
     // 6 -> [1, (4 -> 5)]
-    var fp1Resource = createResource(1L, Map.of()).setDoc(getNewDoc(1L));
+    var fp1Resource = createResource(1L, Map.of()).setDoc(getNewDoc());
     var fp5Resource = createResource(5L, Map.of());
     var fp4Resource = createResource(4L, Map.of(PredicateDictionary.FACSIMILIST, List.of(fp5Resource)))
-      .setDoc(getNewDoc(4L));
+      .setDoc(getNewDoc());
     return createResource(6L, Map.of(PredicateDictionary.GENRE, List.of(fp1Resource, fp4Resource)));
   }
 
