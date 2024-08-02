@@ -19,6 +19,6 @@ class JsonUtilsTest {
     var incoming = loadResourceAsString("samples/json_merge/incoming.jsonl");
     var merged = loadResourceAsString("samples/json_merge/merged.jsonl");
     var result = JsonUtils.merge(MAPPER.readTree(existing), MAPPER.readTree(incoming));
-    assertThat(result.equals(MAPPER.readTree(merged))).isTrue();
+    assertThat(result).isEqualTo(MAPPER.readTree(merged));
   }
 }
