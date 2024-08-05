@@ -1,10 +1,14 @@
 package org.folio.linked.data.e2e;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -29,6 +33,8 @@ class MergeResourcesIT {
   private ResourceTestService resourceTestService;
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @BeforeEach
   public void beforeEach() {
@@ -170,6 +176,9 @@ class MergeResourcesIT {
     assertThat(fpEdge3to1.getTarget()).isEqualTo(fp1Resource);
     var fpEdge3to4 = fp3EdgeIterator.next();
     assertEdge(fpEdge3to4, 3L, 4L, fp3Resource);
+    var fp4Resource = resourceTestService.getResourceById("4", 4);
+    assertThat(fp1Resource.getDoc().equals(getInitialDoc())).isTrue();
+    assertThat(fp4Resource.getDoc().equals(getInitialDoc())).isTrue();
 
     // when
     var graph3 = createGraph6toto1toto4to5();
@@ -193,7 +202,7 @@ class MergeResourcesIT {
     fpEdge1to5 = fp1Edgeiterator.next();
     assertEdge(fpEdge1to5, 1L, 5L, fp1Resource);
     // fp4Resource should be: 3 -> 4 -> 5
-    var fp4Resource = fpEdge3to4.getTarget();
+    fp4Resource = fpEdge3to4.getTarget();
     assertThat(fp4Resource.getOutgoingEdges()).hasSize(1);
     var fpEdge4to5 = fp4Resource.getOutgoingEdges().iterator().next();
     assertEdge(fpEdge4to5, 4L, 5L, fp4Resource);
@@ -208,19 +217,42 @@ class MergeResourcesIT {
     var fp6to4Edge = fp6EdgeIterator.next();
     assertEdge(fp6to4Edge, 6L, 4L, fp6Resource);
     assertThat(fp6to4Edge.getTarget()).isEqualTo(fp4Resource);
+    assertThat(fp1Resource.getDoc().equals(getMergedDoc())).isTrue();
+    assertThat(fp4Resource.getDoc().equals(getMergedDoc())).isTrue();
+  }
+
+  @SneakyThrows
+  private JsonNode getInitialDoc() {
+    return getDoc("samples/json_merge/existing.jsonl");
+  }
+
+  @SneakyThrows
+  private JsonNode getNewDoc() {
+    return getDoc("samples/json_merge/incoming.jsonl");
+  }
+
+  @SneakyThrows
+  private JsonNode getMergedDoc() {
+    return getDoc("samples/json_merge/merged.jsonl");
+  }
+
+  @SneakyThrows
+  private JsonNode getDoc(String doc) {
+    return objectMapper.readTree(loadResourceAsString(doc));
   }
 
   private Resource createGraph1toto2() {
     // 1 -> [2]
     var fp2Resource = createResource(2L, Map.of());
-    return createResource(1L, Map.of(PredicateDictionary.ABRIDGER, List.of(fp2Resource)));
+    return createResource(1L, Map.of(PredicateDictionary.ABRIDGER, List.of(fp2Resource))).setDoc(getInitialDoc());
   }
 
   private Resource createGraph3toto1to5toto4() {
     // 3 -> [(1 -> 5), 4]
     var fp5Resource = createResource(5L, Map.of());
-    var fp1Resource = createResource(1L, Map.of(PredicateDictionary.BINDER, List.of(fp5Resource)));
-    var fp4Resource = createResource(4L, Map.of());
+    var fp1Resource = createResource(1L, Map.of(PredicateDictionary.BINDER, List.of(fp5Resource)))
+      .setDoc(getInitialDoc());
+    var fp4Resource = createResource(4L, Map.of()).setDoc(getInitialDoc()).setDoc(getInitialDoc());
     return createResource(3L, Map.of(PredicateDictionary.CREATOR, List.of(fp1Resource, fp4Resource)));
   }
 
@@ -233,11 +265,13 @@ class MergeResourcesIT {
     return createResource(3L, Map.of(PredicateDictionary.EDITOR, List.of(fp1Resource, fp4Resource)));
   }
 
+  @SneakyThrows
   private Resource createGraph6toto1toto4to5() {
     // 6 -> [1, (4 -> 5)]
-    var fp1Resource = createResource(1L, Map.of());
+    var fp1Resource = createResource(1L, Map.of()).setDoc(getNewDoc());
     var fp5Resource = createResource(5L, Map.of());
-    var fp4Resource = createResource(4L, Map.of(PredicateDictionary.FACSIMILIST, List.of(fp5Resource)));
+    var fp4Resource = createResource(4L, Map.of(PredicateDictionary.FACSIMILIST, List.of(fp5Resource)))
+      .setDoc(getNewDoc());
     return createResource(6L, Map.of(PredicateDictionary.GENRE, List.of(fp1Resource, fp4Resource)));
   }
 

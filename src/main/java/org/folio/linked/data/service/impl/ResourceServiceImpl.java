@@ -36,6 +36,7 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.linked.data.util.JsonUtils;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -117,13 +118,22 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
     if (resource.isNew()) {
-      if (doesNotExists(resource)) {
-        resourceRepo.save(resource);
-      }
+      saveOrUpdate(resource);
       saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
       saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     }
     return resource;
+  }
+
+  private void saveOrUpdate(Resource resource) {
+    resourceRepo.findById(resource.getId())
+      .ifPresentOrElse(existing -> updateResourceDoc(existing, resource),
+        () -> resourceRepo.save(resource)
+      );
+  }
+
+  private void updateResourceDoc(Resource existing, Resource incoming) {
+    resourceRepo.save(existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc())));
   }
 
   private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
@@ -141,13 +151,6 @@ public class ResourceServiceImpl implements ResourceService {
         edgeRepo.save(edge);
       }
     }
-  }
-
-  private boolean doesNotExists(Resource resource) {
-    return ofNullable(resource)
-      .map(Resource::getId)
-      .map(id -> !resourceRepo.existsById(id))
-      .orElse(false);
   }
 
   private boolean doesNotExists(ResourceEdge edge) {
