@@ -1,0 +1,270 @@
+{
+  "id": "-178336766880924275",
+  "type": "UPDATE",
+  "tenant": "test_tenant",
+  "ts": "some timestamp",
+  "resourceName": "linked-data-work",
+  "old": null,
+  "new": {
+    "id": "-178336766880924275",
+    "titles": [
+      {
+        "value": "Instance MainTitle",
+        "type": "Main"
+      },
+      {
+        "value": "Instance SubTitle",
+        "type": "Sub"
+      },
+      {
+        "value": "Instance Title empty",
+        "type": "Main"
+      },
+      {
+        "value": "Instance Title empty label",
+        "type": "Sub"
+      },
+      {
+        "value": "Variant-MainTitle",
+        "type": "Main Variant"
+      },
+      {
+        "value": "Variant-SubTitle",
+        "type": "Sub Variant"
+      },
+      {
+        "value": "Parallel-MainTitle",
+        "type": "Main Parallel"
+      },
+      {
+        "value": "Parallel-SubTitle",
+        "type": "Sub Parallel"
+      }
+    ],
+    "contributors": [
+      {
+        "name": "Creator PERSON name",
+        "type": "Person",
+        "isCreator": true
+      },
+      {
+        "name": "Creator ORGANIZATION name",
+        "type": "Organization",
+        "isCreator": true
+      },
+      {
+        "name": "Creator MEETING name",
+        "type": "Meeting",
+        "isCreator": true
+      }
+    ],
+    "languages": [
+      {
+        "value": "1 e"
+      }
+    ],
+    "classifications": [
+      {
+        "number": "code",
+        "source": "lc"
+      }
+    ],
+    "subjects": [
+      {
+        "value": "family numeration, family name, family titles, family name alternative, family date -- family form subdivision -- family general subdivision -- family chronological subdivision -- family geographic subdivision"
+      }
+    ],
+    "instances": [
+      {
+        "id": "-144481682629570440",
+        "titles": [
+          {
+            "value": "Instance MainTitle",
+            "type": "Main"
+          },
+          {
+            "value": "Instance SubTitle",
+            "type": "Sub"
+          },
+          {
+            "value": "Instance Title empty",
+            "type": "Main"
+          },
+          {
+            "value": "Instance Title empty label",
+            "type": "Sub"
+          },
+          {
+            "value": "Variant-MainTitle",
+            "type": "Main Variant"
+          },
+          {
+            "value": "Variant-SubTitle",
+            "type": "Sub Variant"
+          },
+          {
+            "value": "Parallel-MainTitle",
+            "type": "Main Parallel"
+          },
+          {
+            "value": "Parallel-SubTitle",
+            "type": "Sub Parallel"
+          }
+        ],
+        "identifiers": [
+          {
+            "value": "2019493855",
+            "type": "LCCN"
+          },
+          {
+            "value": "88888888",
+            "type": "LCCN"
+          },
+          {
+            "value": "19861509",
+            "type": "LocalId"
+          },
+          {
+            "value": "09151986",
+            "type": "LocalId"
+          },
+          {
+            "value": "9780143789963",
+            "type": "ISBN"
+          },
+          {
+            "value": "9999999",
+            "type": "ISBN"
+          },
+          {
+            "value": "111222",
+            "type": "Ean"
+          },
+          {
+            "value": "333",
+            "type": "Ean"
+          },
+          {
+            "value": "202320239999",
+            "type": "UNKNOWN"
+          },
+          {
+            "value": "231123",
+            "type": "UNKNOWN"
+          }
+        ],
+        "contributors": [],
+        "publications": [
+          {
+            "name": "Publication262 Name",
+            "date": "2022"
+          },
+          {
+            "name": "Publication Name",
+            "date": "2024"
+          }
+        ],
+        "editionStatements": [
+          {
+            "value": "Edition Statement Edition statement2"
+          }
+        ]
+      },
+      {
+        "id": "-2695695440830650306",
+        "titles": [
+          {
+            "value": "Parallel-MainTitle",
+            "type": "Main Parallel"
+          },
+          {
+            "value": "Parallel-SubTitle",
+            "type": "Sub Parallel"
+          },
+          {
+            "value": "Instance Title empty",
+            "type": "Main"
+          },
+          {
+            "value": "Instance Title empty label",
+            "type": "Sub"
+          },
+          {
+            "value": "Instance MainTitle",
+            "type": "Main"
+          },
+          {
+            "value": "Instance SubTitle",
+            "type": "Sub"
+          },
+          {
+            "value": "Variant-MainTitle",
+            "type": "Main Variant"
+          },
+          {
+            "value": "Variant-SubTitle",
+            "type": "Sub Variant"
+          }
+        ],
+        "identifiers": [
+          {
+            "value": "88888888",
+            "type": "LCCN"
+          },
+          {
+            "value": "2019493854",
+            "type": "LCCN"
+          },
+          {
+            "value": "231123",
+            "type": "UNKNOWN"
+          },
+          {
+            "value": "202320239999",
+            "type": "UNKNOWN"
+          },
+          {
+            "value": "333",
+            "type": "Ean"
+          },
+          {
+            "value": "111222",
+            "type": "Ean"
+          },
+          {
+            "value": "9780143789963",
+            "type": "ISBN"
+          },
+          {
+            "value": "9999999",
+            "type": "ISBN"
+          },
+          {
+            "value": "19861509",
+            "type": "LocalId"
+          },
+          {
+            "value": "09151986",
+            "type": "LocalId"
+          }
+        ],
+        "contributors": [],
+        "publications": [
+          {
+            "name": "Publication262 Name",
+            "date": "2022"
+          },
+          {
+            "name": "Publication Name",
+            "date": "2024"
+          }
+        ],
+        "editionStatements": [
+          {
+            "value": "Edition Statement Edition statement2"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,7 +1,7 @@
 package org.folio.linked.data.integration;
 
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -24,7 +24,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Objects;
 import java.util.Set;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -217,26 +216,32 @@ class DataImportEventListenerIT {
     //given
     var firstInstanceMarc = loadResourceAsString("samples/full_marc_sample.jsonl");
     mapAndSave(firstInstanceMarc);
-    var secondInstanceMarc = firstInstanceMarc.replace("  2019493854", "  2019493855");
+    var secondInstanceMarc = firstInstanceMarc.replace("  2019493854", "  2019493855")
+      .replace("code", "another code")
+      .replace("item number", "another item number");
     var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, secondInstanceMarc);
+    var expectedMessage = loadResourceAsString("integration/kafka/search/expected_message.json");
 
     //when
     eventKafkaTemplate.send(newProducerRecord(emittedEvent));
 
     //then
-    awaitAndAssert(() ->
-      assertTrue(
-        kafkaSearchWorkIndexTopicListener.getMessages()
-          .stream()
-          .anyMatch(message -> {
-            try {
-              return OBJECT_MAPPER.readValue(message, JsonNode.class).get("new").get("instances").size() == 2;
-            } catch (JsonProcessingException e) {
-              throw new RuntimeException(e);
-            }
-          })
-      )
-    );
+    awaitAndAssert(() -> {
+      assertTrue(isNotEmpty(kafkaSearchWorkIndexTopicListener.getMessages()));
+      kafkaSearchWorkIndexTopicListener.getMessages()
+        .stream()
+        .findFirst()
+        .ifPresent(message -> {
+          try {
+            assertThat(OBJECT_MAPPER.readValue(message, Object.class))
+              .usingRecursiveComparison()
+              .ignoringFields("ts")
+              .isEqualTo(OBJECT_MAPPER.readValue(expectedMessage, Object.class));
+          } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+          }
+        });
+    });
   }
 
   private void assertWorkIsIndexed(Resource instance) {
@@ -283,11 +288,15 @@ class DataImportEventListenerIT {
       .map(Resource::getOutgoingEdges)
       .stream()
       .flatMap(Set::stream)
-      .filter(resourceEdge -> INSTANTIATES.getUri().equals(resourceEdge.getPredicate().getUri()))
-      .forEach(resourceEdge -> {
-        resourceEdge.computeId();
-        resourceRepo.save(resourceEdge.getTarget());
-        resourceEdgeRepository.save(resourceEdge);
-      });
+      .forEach(this::saveEdge);
+  }
+
+  private void saveEdge(ResourceEdge resourceEdge) {
+    resourceEdge.computeId();
+    var target = resourceEdge.getTarget();
+    resourceRepo.save(target);
+    resourceEdgeRepository.save(resourceEdge);
+    target.getOutgoingEdges()
+      .forEach(this::saveEdge);
   }
 }

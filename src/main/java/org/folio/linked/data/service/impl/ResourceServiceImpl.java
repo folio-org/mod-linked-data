@@ -5,6 +5,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_INVENTORY_ID;
@@ -263,11 +264,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private void addIncomingEdgesForWork(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
-      resource.getOutgoingEdges()
-        .stream()
-        .filter(resourceEdge -> INSTANTIATES.getUri().equals(resourceEdge.getPredicate().getUri()))
-        .map(ResourceEdge::getTarget)
-        .findFirst()
+      extractWorkFromInstance(resource)
         .ifPresent(work -> edgeRepo.findByIdTargetHash(work.getId())
           .forEach(sourceOnly -> work.addIncomingEdge(new ResourceEdge(sourceOnly.getSource(), work, INSTANTIATES)))
         );
