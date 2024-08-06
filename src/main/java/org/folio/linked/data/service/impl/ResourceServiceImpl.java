@@ -266,19 +266,13 @@ public class ResourceServiceImpl implements ResourceService {
         .ifPresent(work -> {
           edgeRepo.findByIdTargetHash(work.getId())
             .forEach(work::addIncomingEdge);
-          addOutgoingEdges(work, 1);
+          addOutgoingEdges(work);
         });
     }
   }
 
-  private void addOutgoingEdges(Resource resource, int edgesDepth) {
-    if (edgesDepth <= 0) {
-      return;
-    }
+  private void addOutgoingEdges(Resource resource) {
     edgeRepo.findByIdSourceHash(resource.getId())
-      .forEach(resourceEdge -> {
-        resource.addOutgoingEdge(resourceEdge);
-        addOutgoingEdges(resourceEdge.getTarget(), edgesDepth - 1);
-      });
+      .forEach(resource::addOutgoingEdge);
   }
 }
