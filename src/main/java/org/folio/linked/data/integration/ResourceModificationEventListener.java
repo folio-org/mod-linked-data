@@ -37,8 +37,7 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
-    var resource = resourceRepository.getReferenceById(resourceCreatedEvent.id());
-    createMessageSenders.forEach(sender -> sender.produce(resource));
+    createMessageSenders.forEach(sender -> sender.produce(resourceCreatedEvent.resource()));
   }
 
   @TransactionalEventListener

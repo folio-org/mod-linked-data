@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_INVENTORY_ID;
@@ -69,7 +70,7 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = saveMergingGraph(mapped);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return resourceDtoMapper.toDto(persisted);
   }
 
@@ -77,8 +78,9 @@ public class ResourceServiceImpl implements ResourceService {
   public Long createResource(org.folio.ld.dictionary.model.Resource modelResource) {
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
+    refreshWork(persisted);
     log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted.getId()));
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return persisted.getId();
   }
 
@@ -256,5 +258,21 @@ public class ResourceServiceImpl implements ResourceService {
   private void breakEdgesAndDelete(Resource resource) {
     breakCircularEdges(resource);
     resourceRepo.delete(resource);
+  }
+
+  private void refreshWork(Resource resource) {
+    if (resource.isOfType(INSTANCE)) {
+      extractWorkFromInstance(resource)
+        .ifPresent(work -> {
+          edgeRepo.findByIdTargetHash(work.getId())
+            .forEach(work::addIncomingEdge);
+          addOutgoingEdges(work);
+        });
+    }
+  }
+
+  private void addOutgoingEdges(Resource resource) {
+    edgeRepo.findByIdSourceHash(resource.getId())
+      .forEach(resource::addOutgoingEdge);
   }
 }

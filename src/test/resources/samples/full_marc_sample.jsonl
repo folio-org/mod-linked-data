@@ -85,6 +85,20 @@
       }
     },
     {
+      "050": {
+        "subfields": [
+          {
+            "a": "code"
+          },
+          {
+            "b": "item number"
+          }
+        ],
+        "ind1": "0",
+        "ind2": "0"
+      }
+    },
+    {
       "100": {
         "subfields": [
           {
@@ -254,7 +268,7 @@
             "b": "Publication262 Name"
           },
           {
-            "c": "Publication262 Date"
+            "c": "2022"
           }
         ],
         "ind1": " ",
@@ -297,7 +311,7 @@
             "b": "Publication Name"
           },
           {
-            "c": "Publication Date"
+            "c": "2024"
           }
         ],
         "ind1": " ",
@@ -402,6 +416,73 @@
           }
         ],
         "ind1": "#"
+      }
+    },
+    {
+      "600": {
+        "subfields": [
+          {
+            "a": "family name"
+          },
+          {
+            "b": "family numeration"
+          },
+          {
+            "c": "family titles"
+          },
+          {
+            "d": "family date"
+          },
+          {
+            "j": "family attribution"
+          },
+          {
+            "q": "family name alternative"
+          },
+          {
+            "u": "family affiliation"
+          },
+          {
+            "v": "family form subdivision"
+          },
+          {
+            "x": "family general subdivision"
+          },
+          {
+            "y": "family chronological subdivision"
+          },
+          {
+            "z": "family geographic subdivision"
+          },
+          {
+            "2": "family source"
+          },
+          {
+            "3": "family materials specified"
+          },
+          {
+            "e": "family relator term"
+          },
+          {
+            "4": "family relator code"
+          },
+          {
+            "0": "family authority link"
+          },
+          {
+            "1": "family equivalent"
+          },
+          {
+            "6": "family linkage"
+          },
+          {
+            "7": "family control field"
+          },
+          {
+            "8": "family field link"
+          }
+        ],
+        "ind1": "3"
       }
     },
     {
