@@ -1,5 +1,6 @@
-package org.folio.linked.data.integration;
+package org.folio.linked.data.integration.kafka.listener.handler;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
@@ -10,12 +11,13 @@ import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
-import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
-import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.authorityEvent;
-import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.instanceCreatedEvent;
+import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
+import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
+import static org.folio.search.domain.dto.SourceRecordType.MARC_AUTHORITY;
+import static org.folio.search.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,9 +28,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Objects;
 import java.util.Set;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.integration.kafka.consumer.DataImportEventHandler;
+import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -36,10 +37,10 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceService;
 import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.test.ResourceTestRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchAuthorityAuthorityTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
-import org.folio.search.domain.dto.DataImportEvent;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -58,10 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
-class DataImportEventListenerIT {
-
-  private static final String DI_COMPLETED_TOPIC = "DI_COMPLETED";
-  private static final String EVENT_ID_01 = "event_id_01";
+class SourceRecordDomainEventHandlerIT {
 
   @Autowired
   private ResourceRepository resourceRepo;
@@ -69,24 +67,26 @@ class DataImportEventListenerIT {
   private ResourceEdgeRepository resourceEdgeRepository;
   @Autowired
   private KafkaTemplate<String, String> eventKafkaTemplate;
-  @SpyBean
-  @Autowired
-  private DataImportEventHandler dataImportEventHandler;
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
   private KafkaSearchAuthorityAuthorityTopicListener kafkaSearchAuthorityAuthorityTopicListener;
   @Autowired
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
-  @SpyBean
-  @Autowired
-  private ResourceService resourceService;
   @MockBean
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
   @Autowired
   private MarcBib2ldMapper marc2BibframeMapper;
   @Autowired
   private ResourceModelMapper resourceModelMapper;
+  @Autowired
+  private ResourceTestRepository resourceTestRepository;
+  @SpyBean
+  @Autowired
+  private ResourceService resourceService;
+  @SpyBean
+  @Autowired
+  private ResourceModificationEventListener eventListener;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -99,48 +99,49 @@ class DataImportEventListenerIT {
 
   @BeforeEach
   public void clean() {
-    resourceEdgeRepository.deleteAll();
-    resourceRepo.deleteAll();
-    kafkaSearchAuthorityAuthorityTopicListener.getMessages().clear();
-    kafkaSearchWorkIndexTopicListener.getMessages().clear();
+    tenantScopedExecutionService.execute(TENANT_ID,
+      () -> {
+        resourceEdgeRepository.deleteAll();
+        resourceRepo.deleteAll();
+        kafkaSearchAuthorityAuthorityTopicListener.getMessages().clear();
+        kafkaSearchWorkIndexTopicListener.getMessages().clear();
+      }
+    );
   }
 
   @ParameterizedTest
   @CsvSource({
-    "samples/marc_non_monograph_leader.jsonl, 0",
-    "samples/marc_monograph_leader.jsonl, 1"
+    "samples/marc2ld/marc_non_monograph_leader.jsonl, 0",
+    "samples/marc2ld/marc_monograph_leader.jsonl, 1"
   })
   void shouldNotProcessEventForNullableResource(String resource, int interactions) {
     // given
     var marc = loadResourceAsString(resource);
-    var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, marc);
-    var expectedEvent = newMarcBibDataImportEvent(marc);
+    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_BIB);
 
     // when
-    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
+    eventKafkaTemplate.send(eventProducerRecord);
 
     // then
-    awaitAndAssert(() -> verify(dataImportEventHandler).handle(expectedEvent));
-    verify(resourceService, times(interactions)).createResource(any(org.folio.ld.dictionary.model.Resource.class));
+    awaitAndAssert(() -> verify(resourceService, times(interactions))
+      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
   }
 
-  @Transactional
   @Test
-  void shouldProcessInstanceCreatedEventFromDataImport() {
+  void shouldProcessMarcBibSourceRecordDomainEvent() {
     // given
-    var marc = loadResourceAsString("samples/full_marc_sample.jsonl");
-    var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, marc);
-    var expectedEvent = newMarcBibDataImportEvent(marc);
+    var marc = loadResourceAsString("samples/marc2ld/full_marc_sample.jsonl");
+    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_BIB);
 
     // when
-    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
+    eventKafkaTemplate.send(eventProducerRecord);
 
     // then
-    awaitAndAssert(() -> verify(dataImportEventHandler).handle(expectedEvent));
+    awaitAndAssert(() -> verify(resourceService).saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
-      () -> resourceRepo.findAllByType(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
         .stream()
         .findFirst()
     );
@@ -166,18 +167,17 @@ class DataImportEventListenerIT {
 
   @Transactional
   @Test
-  void shouldConsumeAuthorityEventFromDataImport() {
+  void shouldProcessAuthoritySourceRecordDomainEvent() {
     // given
-    var marc = loadResourceAsString("samples/authority_100.jsonl");
-    var emittedEvent = authorityEvent(EVENT_ID_01, TENANT_ID, marc);
+    var marc = loadResourceAsString("samples/marc2ld/authority_100.jsonl");
     var expectedLabel = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
-    var expectedEvent = newAuthorutyDataImportEvent(marc);
+    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_AUTHORITY);
 
     // when
-    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
+    eventKafkaTemplate.send(eventProducerRecord);
 
     // then
-    awaitAndAssert(() -> verify(dataImportEventHandler).handle(expectedEvent));
+    awaitAndAssert(() -> verify(resourceService).saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
@@ -212,18 +212,19 @@ class DataImportEventListenerIT {
   }
 
   @Test
-  void shouldSendToIndexWorkWithTwoInstances() {
-    //given
-    var firstInstanceMarc = loadResourceAsString("samples/full_marc_sample.jsonl");
+  void marcBibSourceRecordDomainEvent_shouldSendToIndexWorkWithTwoInstances() {
+    // given
+    var firstInstanceMarc = loadResourceAsString("samples/marc2ld/full_marc_sample.jsonl");
     mapAndSave(firstInstanceMarc);
     var secondInstanceMarc = firstInstanceMarc.replace("  2019493854", "  2019493855")
       .replace("code", "another code")
       .replace("item number", "another item number");
-    var emittedEvent = instanceCreatedEvent(EVENT_ID_01, TENANT_ID, secondInstanceMarc);
-    var expectedMessage = loadResourceAsString("integration/kafka/search/expected_message.json");
+    var expectedMessage = loadResourceAsString("samples/marc2ld/expected_message.json");
+    var id = randomUUID().toString();
+    var eventProducerRecord = getSrsDomainEventProducerRecord(id, secondInstanceMarc, CREATED, MARC_BIB);
 
-    //when
-    eventKafkaTemplate.send(newProducerRecord(emittedEvent));
+    // when
+    eventKafkaTemplate.send(eventProducerRecord);
 
     //then
     awaitAndAssert(() -> {
@@ -235,13 +236,44 @@ class DataImportEventListenerIT {
           try {
             assertThat(OBJECT_MAPPER.readValue(message, Object.class))
               .usingRecursiveComparison()
-              .ignoringFields("ts")
+              .ignoringFields("id", "ts")
               .isEqualTo(OBJECT_MAPPER.readValue(expectedMessage, Object.class));
           } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
           }
         });
     });
+  }
+
+  @Test
+  void marcBibSourceRecordDomainEvent_shouldKeepExistedEdgesAndPropertiesAndInstanceMetadata_inCaseOfUpdate() {
+    // given
+    var firstInstanceMarc = loadResourceAsString("samples/marc2ld/small_instance.jsonl");
+    mapAndSave(firstInstanceMarc);
+    var secondInstanceMarc = loadResourceAsString("samples/marc2ld/small_instance_upd.jsonl");
+    var eventId = randomUUID().toString();
+    var eventProducerRecord = getSrsDomainEventProducerRecord(eventId, secondInstanceMarc, CREATED, MARC_BIB);
+
+    // when
+    eventKafkaTemplate.send(eventProducerRecord);
+
+    // then
+    awaitAndAssert(() -> verify(resourceService).saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+    verify(eventListener).afterUpdate(any());
+    var allInstances = tenantScopedExecutionService.execute(TENANT_ID,
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
+        .stream()
+        .toList()
+    );
+    assertThat(allInstances).hasSize(1);
+    var instance = allInstances.get(0);
+    assertThat(instance.getDoc().toString()).isEqualTo("{\"http://bibfra.me/vocab/marc/statementOfResponsibility\":["
+      + "\"Statement Of Responsibility\",\"Statement Of Responsibility UPDATED\"]}");
+    assertThat(instance.getOutgoingEdges()).hasSize(5);
+    assertThat(instance.getInstanceMetadata())
+      .hasFieldOrPropertyWithValue("inventoryId", "2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")
+      .hasFieldOrPropertyWithValue("srsId", "43d58061-decf-4d74-9747-0e1c368e861b")
+      .hasFieldOrPropertyWithValue("source", MARC);
   }
 
   private void assertWorkIsIndexed(Resource instance) {
@@ -261,34 +293,16 @@ class DataImportEventListenerIT {
     );
   }
 
-  private DataImportEvent newMarcBibDataImportEvent(String marc) {
-    return newDataImportEvent().marcBib(marc);
-  }
-
-  private DataImportEvent newAuthorutyDataImportEvent(String marc) {
-    return newDataImportEvent().marcAuthority(marc);
-  }
-
-  private DataImportEvent newDataImportEvent() {
-    return new DataImportEvent()
-      .id(EVENT_ID_01)
-      .tenant(TENANT_ID)
-      .eventType(DI_COMPLETED_TOPIC);
-  }
-
-  private ProducerRecord<String, String> newProducerRecord(String emittedEvent) {
-    return new ProducerRecord(getTopicName(TENANT_ID, DI_COMPLETED_TOPIC), 0,
-      EVENT_ID_01, emittedEvent, defaultKafkaHeaders());
-  }
-
   private void mapAndSave(String marc) {
-    marc2BibframeMapper.fromMarcJson(marc)
-      .map(resourceModelMapper::toEntity)
-      .map(resourceRepo::save)
-      .map(Resource::getOutgoingEdges)
-      .stream()
-      .flatMap(Set::stream)
-      .forEach(this::saveEdge);
+    tenantScopedExecutionService.execute(TENANT_ID,
+      () -> marc2BibframeMapper.fromMarcJson(marc)
+        .map(resourceModelMapper::toEntity)
+        .map(resourceRepo::save)
+        .map(Resource::getOutgoingEdges)
+        .stream()
+        .flatMap(Set::stream)
+        .forEach(this::saveEdge)
+    );
   }
 
   private void saveEdge(ResourceEdge resourceEdge) {

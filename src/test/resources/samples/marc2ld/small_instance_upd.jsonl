@@ -1,0 +1,39 @@
+{
+  "leader": "01767cam a22003977i 4500",
+  "fields": [
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "Instance MainTitle"
+          },
+          {
+            "b": "Instance SubTitle UPDATED"
+          },
+          {
+            "c": "Statement Of Responsibility UPDATED"
+          }
+        ],
+        "ind1": "1",
+        "ind2": "7"
+      }
+    },
+    {
+      "264": {
+        "subfields": [
+          {
+            "a": "Publication Place NEW"
+          },
+          {
+            "b": "Publication Name NEW"
+          },
+          {
+            "c": "2000"
+          }
+        ],
+        "ind1": " ",
+        "ind2": "1"
+      }
+    }
+  ]
+}

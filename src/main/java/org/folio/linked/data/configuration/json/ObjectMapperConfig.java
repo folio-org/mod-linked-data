@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.event.DataImportEventDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.InstanceRequestAllOfMapDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.title.TitleFieldRequestDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
@@ -14,7 +13,6 @@ import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
 import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.TitleFieldRequest;
-import org.folio.search.domain.dto.DataImportEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -40,7 +38,6 @@ public class ObjectMapperConfig {
     module.addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer());
     module.addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer());
     module.addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer());
-    module.addDeserializer(DataImportEvent.class, new DataImportEventDeserializer(mapper));
     return module;
   }
 }

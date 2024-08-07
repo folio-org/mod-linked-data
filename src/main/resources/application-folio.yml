@@ -22,10 +22,10 @@ folio:
     enabled: true
   kafka:
     listener:
-      data-import-instance-create:
-        concurrency: ${KAFKA_DATA_IMPORT_INSTANCE_CREATE_CONCURRENCY:1}
-        topic-pattern: ${KAFKA_DI_INSTANCE_CREATED_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)DI_COMPLETED}
-        group-id: ${folio.environment}-linked-data-data-import-instances-created-group
+      source-record-domain-event:
+        concurrency: ${KAFKA_SOURCE_RECORD_DOMAIN_EVENT_CONCURRENCY:1}
+        topic-pattern: ${KAFKA_SOURCE_RECORD_DOMAIN_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)srs.source_records}
+        group-id: ${folio.environment}-linked-data-source-record-domain-event-group
     retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
     retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
     topics:

@@ -5,24 +5,26 @@ import static org.folio.linked.data.util.Constants.SEARCH_AUTHORITY_RESOURCE_NAM
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.List;
+import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.search.domain.dto.BibframeAuthorityIdentifiersInner;
 import org.folio.search.domain.dto.LinkedDataAuthority;
+import org.folio.search.domain.dto.LinkedDataAuthorityIdentifiersInner;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = SPRING)
+@Mapper(componentModel = SPRING, imports = UUID.class)
 public abstract class AuthoritySearchMessageMapper {
 
   @Autowired
-  protected IndexIdentifierMapper<BibframeAuthorityIdentifiersInner> innerIndexIdentifierMapper;
+  protected IndexIdentifierMapper<LinkedDataAuthorityIdentifiersInner> innerIndexIdentifierMapper;
 
+  @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "resourceName", constant = SEARCH_AUTHORITY_RESOURCE_NAME)
   @Mapping(target = "_new", expression = "java(toLinkedDataAuthority(resource))")
   public abstract ResourceIndexEvent toIndex(Resource resource);
@@ -31,7 +33,7 @@ public abstract class AuthoritySearchMessageMapper {
   @Mapping(target = "identifiers", source = "resource")
   protected abstract LinkedDataAuthority toLinkedDataAuthority(Resource resource);
 
-  protected List<BibframeAuthorityIdentifiersInner> extractIdentifiers(Resource resource) {
+  protected List<LinkedDataAuthorityIdentifiersInner> extractIdentifiers(Resource resource) {
     return innerIndexIdentifierMapper.extractIdentifiers(resource);
   }
 

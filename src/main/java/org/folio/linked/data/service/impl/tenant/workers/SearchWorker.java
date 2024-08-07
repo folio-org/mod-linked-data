@@ -8,7 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.service.impl.tenant.TenantServiceWorker;
 import org.folio.search.domain.dto.CreateIndexRequest;
-import org.folio.search.domain.dto.FolioCreateIndexResponse;
+import org.folio.search.domain.dto.CreateIndexResponse;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ public class SearchWorker implements TenantServiceWorker {
   public void afterTenantUpdate(String tenantId, TenantAttributes tenantAttributes) {
     try {
       var request = new CreateIndexRequest(SEARCH_RESOURCE_NAME);
-      ResponseEntity<FolioCreateIndexResponse> response = searchClient.createIndex(request);
+      ResponseEntity<CreateIndexResponse> response = searchClient.createIndex(request);
       log.info("Index [{}] creation has been completed with a response [{}]", SEARCH_RESOURCE_NAME, response);
     } catch (Exception e) {
       if (e.getMessage().contains("Index already exists")) {

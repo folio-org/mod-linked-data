@@ -8,19 +8,21 @@ paths: {}
 
 components:
   schemas:
-    searchCreateIndexRequest:
-      $ref: search/createIndexRequest.json
-    searchCreateIndexResponse:
-      $ref: search/folioCreateIndexResponse.json
+    createIndexRequest:
+      $ref: folio-modules/search/createIndexRequest.json
+    createIndexResponse:
+      $ref: folio-modules/search/createIndexResponse.json
     resourceIndexEvent:
-      $ref: search/resourceIndexEvent.json
+      $ref: folio-modules/search/resourceIndexEvent.json
     resourceIndexEventType:
-      $ref: search/resourceIndexEventType.json
-    bibframe:
-      $ref: search/linkedDataWork.json
-    bibframeAuthority:
-      $ref: search/linkedDataAuthority.json
-    dataImportEvent:
-      $ref: events/dataImportEvent.json
+      $ref: folio-modules/search/resourceIndexEventType.json
+    linkedDataWork:
+      $ref: folio-modules/search/linkedDataWork.json
+    linkedDataAuthority:
+      $ref: folio-modules/search/linkedDataAuthority.json
     instanceIngressEvent:
-      $ref: inventory/instanceIngressEvent.json
+      $ref: folio-modules/inventory/instanceIngressEvent.json
+    sourceRecordDomainEvent:
+      $ref: folio-modules/srs/sourceRecordDomainEvent.json
+    sourceRecordType:
+      $ref: folio-modules/srs/sourceRecordType.json

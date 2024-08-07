@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -50,17 +51,17 @@ import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMappe
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.search.domain.dto.BibframeClassificationsInner;
-import org.folio.search.domain.dto.BibframeContributorsInner;
-import org.folio.search.domain.dto.BibframeInstancesInner;
-import org.folio.search.domain.dto.BibframeInstancesInnerEditionStatementsInner;
-import org.folio.search.domain.dto.BibframeInstancesInnerIdentifiersInner;
-import org.folio.search.domain.dto.BibframeInstancesInnerPublicationsInner;
-import org.folio.search.domain.dto.BibframeLanguagesInner;
-import org.folio.search.domain.dto.BibframeSubjectsInner;
-import org.folio.search.domain.dto.BibframeTitlesInner;
 import org.folio.search.domain.dto.LinkedDataWork;
+import org.folio.search.domain.dto.LinkedDataWorkClassificationsInner;
+import org.folio.search.domain.dto.LinkedDataWorkContributorsInner;
 import org.folio.search.domain.dto.LinkedDataWorkIndexTitleType;
+import org.folio.search.domain.dto.LinkedDataWorkInstancesInner;
+import org.folio.search.domain.dto.LinkedDataWorkInstancesInnerEditionStatementsInner;
+import org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner;
+import org.folio.search.domain.dto.LinkedDataWorkInstancesInnerPublicationsInner;
+import org.folio.search.domain.dto.LinkedDataWorkLanguagesInner;
+import org.folio.search.domain.dto.LinkedDataWorkSubjectsInner;
+import org.folio.search.domain.dto.LinkedDataWorkTitlesInner;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,14 +70,15 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Log4j2
-@Mapper(componentModel = SPRING)
+@Mapper(componentModel = SPRING, imports = UUID.class)
 public abstract class BibliographicSearchMessageMapper {
 
   @Autowired
-  private IndexIdentifierMapper<BibframeInstancesInnerIdentifiersInner> innerIndexIdentifierMapper;
+  private IndexIdentifierMapper<LinkedDataWorkInstancesInnerIdentifiersInner> innerIndexIdentifierMapper;
   @Autowired
   private SingleResourceMapper singleResourceMapper;
 
+  @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "resourceName", constant = SEARCH_RESOURCE_NAME)
   @Mapping(target = "_new", expression = "java(toLinkedDataWork(resource))")
   public abstract ResourceIndexEvent toIndex(Resource resource);
@@ -89,12 +91,12 @@ public abstract class BibliographicSearchMessageMapper {
   @Mapping(target = "instances", source = "resource")
   protected abstract LinkedDataWork toLinkedDataWork(Resource resource);
 
-  protected List<BibframeTitlesInner> extractTitles(Resource resource) {
+  protected List<LinkedDataWorkTitlesInner> extractTitles(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> TITLE.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .flatMap(t -> {
-        var titles = new ArrayList<BibframeTitlesInner>();
+        var titles = new ArrayList<LinkedDataWorkTitlesInner>();
         addTitle(t, MAIN_TITLE, titles);
         addTitle(t, SUBTITLE, titles);
         return titles.stream();
@@ -103,13 +105,13 @@ public abstract class BibliographicSearchMessageMapper {
       .toList();
   }
 
-  protected void addTitle(Resource t, PropertyDictionary field, List<BibframeTitlesInner> titles) {
+  protected void addTitle(Resource t, PropertyDictionary field, List<LinkedDataWorkTitlesInner> titles) {
     var titleText = getValue(t.getDoc(), field.getValue());
     if (nonNull(titleText)) {
       var titleType = getTitleType(t);
       ofNullable(titleType)
         .map(type -> getIndexTitleType(type, field))
-        .map(indexTitleType -> new BibframeTitlesInner().value(titleText).type(indexTitleType))
+        .map(indexTitleType -> new LinkedDataWorkTitlesInner().value(titleText).type(indexTitleType))
         .ifPresent(titles::add);
     }
   }
@@ -138,14 +140,14 @@ public abstract class BibliographicSearchMessageMapper {
     };
   }
 
-  protected List<BibframeContributorsInner> extractContributors(Resource resource) {
+  protected List<LinkedDataWorkContributorsInner> extractContributors(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> CREATOR.getUri().equals(re.getPredicate().getUri())
         || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
-      .map(re -> new BibframeContributorsInner()
+      .map(re -> new LinkedDataWorkContributorsInner()
         .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
-        .type(toType(re.getTarget(), BibframeContributorsInner.TypeEnum::fromValue,
-          BibframeContributorsInner.TypeEnum.class, re.getPredicate(), WorkResponse.class))
+        .type(toType(re.getTarget(), LinkedDataWorkContributorsInner.TypeEnum::fromValue,
+          LinkedDataWorkContributorsInner.TypeEnum.class, re.getPredicate(), WorkResponse.class))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> nonNull(ic.getName()))
@@ -153,14 +155,14 @@ public abstract class BibliographicSearchMessageMapper {
       .toList();
   }
 
-  protected List<BibframeLanguagesInner> extractLanguages(Resource work) {
+  protected List<LinkedDataWorkLanguagesInner> extractLanguages(Resource work) {
     return work.getOutgoingEdges()
       .stream()
       .filter(re -> LANGUAGE.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(Resource::getDoc)
       .flatMap(d -> getPropertyValues(d, CODE.getValue()))
-      .map(pv -> new BibframeLanguagesInner().value(pv))
+      .map(pv -> new LinkedDataWorkLanguagesInner().value(pv))
       .toList();
   }
 
@@ -172,11 +174,11 @@ public abstract class BibliographicSearchMessageMapper {
         .flatMap(p -> StreamSupport.stream(doc.get(p).spliterator(), true).map(JsonNode::asText)));
   }
 
-  protected List<BibframeClassificationsInner> extractClassifications(Resource resource) {
+  protected List<LinkedDataWorkClassificationsInner> extractClassifications(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> CLASSIFICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
-      .map(tr -> new BibframeClassificationsInner()
+      .map(tr -> new LinkedDataWorkClassificationsInner()
         .number(getValue(tr.getDoc(), CODE.getValue()))
         .source(getValue(tr.getDoc(), SOURCE.getValue())))
       .filter(bci -> nonNull(bci.getNumber()))
@@ -184,18 +186,18 @@ public abstract class BibliographicSearchMessageMapper {
       .toList();
   }
 
-  protected List<BibframeSubjectsInner> extractSubjects(Resource resource) {
+  protected List<LinkedDataWorkSubjectsInner> extractSubjects(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> SUBJECT.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
-      .map(tr -> new BibframeSubjectsInner()
+      .map(tr -> new LinkedDataWorkSubjectsInner()
         .value(tr.getLabel()))
       .filter(bci -> nonNull(bci.getValue()))
       .distinct()
       .toList();
   }
 
-  protected List<BibframeInstancesInner> extractInstances(Resource resource) {
+  protected List<LinkedDataWorkInstancesInner> extractInstances(Resource resource) {
     var workStream = resource.isOfType(INSTANCE) ? resource.getOutgoingEdges().stream()
       .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget) : Stream.of(resource);
@@ -203,14 +205,14 @@ public abstract class BibliographicSearchMessageMapper {
       .flatMap(work -> work.getIncomingEdges().stream()
         .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
         .map(ResourceEdge::getSource))
-      .map(ir -> new BibframeInstancesInner()
+      .map(ir -> new LinkedDataWorkInstancesInner()
         .id(String.valueOf(ir.getId()))
         .titles(extractTitles(ir))
         .identifiers(innerIndexIdentifierMapper.extractIdentifiers(ir))
         .contributors(extractContributors(ir))
         .publications(extractPublications(ir))
         .editionStatements(getPropertyValues(ir.getDoc(), EDITION_STATEMENT.getValue())
-          .map(es -> new BibframeInstancesInnerEditionStatementsInner().value(es)).toList()))
+          .map(es -> new LinkedDataWorkInstancesInnerEditionStatementsInner().value(es)).toList()))
       .filter(bii -> isNotEmpty(bii.getTitles()) || isNotEmpty(bii.getIdentifiers())
         || isNotEmpty(bii.getContributors()) || isNotEmpty(bii.getPublications())
         || isNotEmpty(bii.getEditionStatements()))
@@ -218,11 +220,11 @@ public abstract class BibliographicSearchMessageMapper {
       .toList();
   }
 
-  protected List<BibframeInstancesInnerPublicationsInner> extractPublications(Resource resource) {
+  protected List<LinkedDataWorkInstancesInnerPublicationsInner> extractPublications(Resource resource) {
     return resource.getOutgoingEdges().stream()
       .filter(re -> PE_PUBLICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
-      .map(ir -> new BibframeInstancesInnerPublicationsInner()
+      .map(ir -> new LinkedDataWorkInstancesInnerPublicationsInner()
         .name(getValue(ir.getDoc(), NAME.getValue()))
         .date(cleanDate(getValue(ir.getDoc(), DATE.getValue(), PROVIDER_DATE.getValue()))))
       .filter(ip -> nonNull(ip.getName()) || nonNull(ip.getDate()))

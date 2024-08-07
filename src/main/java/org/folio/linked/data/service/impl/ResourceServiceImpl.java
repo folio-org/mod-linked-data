@@ -75,12 +75,18 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
-  public Long createResource(org.folio.ld.dictionary.model.Resource modelResource) {
+  public Long saveMarcResource(org.folio.ld.dictionary.model.Resource modelResource) {
+    var exists = resourceRepo.existsById(modelResource.getId());
     var mapped = resourceModelMapper.toEntity(modelResource);
     var persisted = saveMergingGraph(mapped);
     refreshWork(persisted);
-    log.info("createResource [{}]\nfrom modelResource [{}]", persisted, modelResource);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    if (exists) {
+      log.info("Updating resource [id {}] from marc model [{}]", persisted.getId(), modelResource);
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(persisted));
+    } else {
+      log.info("Creating resource [id {}] from marc model [{}]", persisted.getId(), modelResource);
+      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    }
     return persisted.getId();
   }
 

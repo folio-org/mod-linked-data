@@ -13,7 +13,7 @@ public interface ResourceService {
 
   ResourceResponseDto createResource(ResourceRequestDto resourceRequest);
 
-  Long createResource(org.folio.ld.dictionary.model.Resource resource);
+  Long saveMarcResource(org.folio.ld.dictionary.model.Resource resource);
 
   ResourceResponseDto getResourceById(Long id);
 
