@@ -189,7 +189,7 @@ class ResourceServiceTest {
     // given
     var inventoryId = UUID.randomUUID().toString();
     var existedResource = getSampleInstanceResource();
-    when(instanceMetadataRepo.findByInventoryId(inventoryId)).thenReturn(Optional.of(existedResource::getId));
+    when(instanceMetadataRepo.findIdByInventoryId(inventoryId)).thenReturn(Optional.of(existedResource::getId));
 
     // when
     var result = resourceService.getResourceIdByInventoryId(inventoryId);
@@ -202,7 +202,7 @@ class ResourceServiceTest {
   void getResourceIdByInventoryId_shouldThrowNotFoundException_ifNoEntityExistsWithGivenInventoryId() {
     // given
     var inventoryId = UUID.randomUUID().toString();
-    when(instanceMetadataRepo.findByInventoryId(inventoryId)).thenReturn(Optional.empty());
+    when(instanceMetadataRepo.findIdByInventoryId(inventoryId)).thenReturn(Optional.empty());
 
     // when
     var thrown = assertThrows(

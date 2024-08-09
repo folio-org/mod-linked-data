@@ -13,6 +13,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import org.folio.ld.dictionary.model.InstanceMetadata;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.repo.InstanceMetadataRepository;
 import org.folio.linked.data.service.ResourceService;
@@ -43,7 +45,7 @@ public class SourceRecordDomainEventHandlerTest {
   private InstanceMetadataRepository instanceMetadataRepository;
 
   @Test
-  void shouldNotTriggerAnything_ifIncomingEventHasNoMarcInside() {
+  void shouldNotTriggerSaving_ifIncomingEventHasNoMarcInside() {
     // given
     var event = new SourceRecordDomainEvent().id("1");
 
@@ -55,7 +57,7 @@ public class SourceRecordDomainEventHandlerTest {
   }
 
   @Test
-  void shouldNotTriggerAnything_ifIncomingEventContainsNotSupportedRecordType() {
+  void shouldNotTriggerSaving_ifIncomingEventContainsNotSupportedRecordType() {
     // given
     var event = new SourceRecordDomainEvent().id("2")
       .eventPayload("{}");
@@ -68,7 +70,7 @@ public class SourceRecordDomainEventHandlerTest {
   }
 
   @Test
-  void shouldNotTriggerAnything_ifIncomingEventContainsNotSupportedEventType() {
+  void shouldNotTriggerSaving_ifIncomingEventContainsNotSupportedEventType() {
     // given
     var event = new SourceRecordDomainEvent().id("3")
       .eventPayload("{}");
@@ -81,7 +83,7 @@ public class SourceRecordDomainEventHandlerTest {
   }
 
   @Test
-  void shouldNotTriggerAnything_ifResourceMappedOutOfIncomingEventIsEmpty() {
+  void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsEmpty() {
     // given
     var event = new SourceRecordDomainEvent().id("4")
       .eventType(CREATED)
@@ -95,7 +97,7 @@ public class SourceRecordDomainEventHandlerTest {
   }
 
   @Test
-  void shouldNotTriggerAnything_ifResourceMappedOutOfIncomingEventIsExistedInstanceWithLinkedDataSource() {
+  void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsExistedByIdInstanceWithLinkedDataSource() {
     // given
     var event = new SourceRecordDomainEvent().id("5")
       .eventType(CREATED)
@@ -115,12 +117,34 @@ public class SourceRecordDomainEventHandlerTest {
   }
 
   @Test
-  void shouldTriggerResourceSaving_forCorrectMarcBibEvent() {
+  void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsExistedByInventoryIdInstanceWithLinkedDataSource() {
     // given
     var event = new SourceRecordDomainEvent().id("6")
       .eventType(CREATED)
       .eventPayload("{ \"key\": \"value\"}");
-    var mapped = new Resource().setId(6L).addType(INSTANCE);
+    var mapped = new Resource().setId(4L).addType(INSTANCE)
+      .setInstanceMetadata(new InstanceMetadata().setInventoryId(UUID.randomUUID().toString()));
+    doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
+    var existedMetaData =
+      new org.folio.linked.data.model.entity.InstanceMetadata(new org.folio.linked.data.model.entity.Resource())
+        .setSource(LINKED_DATA);
+    doReturn(Optional.of(existedMetaData))
+      .when(instanceMetadataRepository).findByInventoryId(mapped.getInstanceMetadata().getInventoryId());
+
+    // when
+    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
+
+    // then
+    verifyNoInteractions(resourceService);
+  }
+
+  @Test
+  void shouldTriggerResourceSaving_forCorrectMarcBibEvent() {
+    // given
+    var event = new SourceRecordDomainEvent().id("7")
+      .eventType(CREATED)
+      .eventPayload("{ \"key\": \"value\"}");
+    var mapped = new Resource().setId(7L).addType(INSTANCE);
     doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
 
     // when
@@ -133,11 +157,11 @@ public class SourceRecordDomainEventHandlerTest {
   @Test
   void shouldTriggerResourceSaving_forCorrectMarcAuthorityEvent() {
     // given
-    var event = new SourceRecordDomainEvent().id("7")
+    var event = new SourceRecordDomainEvent().id("8")
       .eventType(CREATED)
       .eventPayload("{ \"key\": \"value\"}");
-    var mapped1 = new Resource().setId(7L).addType(PERSON);
-    var mapped2 = new Resource().setId(8L).addType(CONCEPT);
+    var mapped1 = new Resource().setId(9L).addType(PERSON);
+    var mapped2 = new Resource().setId(10L).addType(CONCEPT);
     doReturn(List.of(mapped1, mapped2)).when(marcAuthority2ldMapper).fromMarcJson(event.getEventPayload());
 
     // when

@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InstanceMetadataRepository extends JpaRepository<InstanceMetadata, Long> {
 
-  Optional<IdOnly> findByInventoryId(String inventoryId);
+  Optional<IdOnly> findIdByInventoryId(String inventoryId);
+
+  Optional<InstanceMetadata> findByInventoryId(String inventoryId);
 
   interface IdOnly {
     Long getId();

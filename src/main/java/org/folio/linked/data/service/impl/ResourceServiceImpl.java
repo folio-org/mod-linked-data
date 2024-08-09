@@ -99,7 +99,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public ResourceIdDto getResourceIdByInventoryId(String inventoryId) {
-    return instanceMetadataRepo.findByInventoryId(inventoryId)
+    return instanceMetadataRepo.findIdByInventoryId(inventoryId)
       .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_INVENTORY_ID + inventoryId + IS_NOT_FOUND));
   }

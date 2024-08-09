@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
@@ -44,7 +45,7 @@ public class SourceRecordDomainEventHandler {
   private final InstanceMetadataRepository instanceMetadataRepository;
 
   public void handle(SourceRecordDomainEvent event, SourceRecordType recordType) {
-    if (notValidEventData(event, recordType)) {
+    if (notProcessableEvent(event, recordType)) {
       return;
     }
     if (recordType == MARC_BIB) {
@@ -54,7 +55,7 @@ public class SourceRecordDomainEventHandler {
     }
   }
 
-  private boolean notValidEventData(SourceRecordDomainEvent event, SourceRecordType recordType) {
+  private boolean notProcessableEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
     if (isEmpty(event.getEventPayload())) {
       log.warn(NO_MARC_EVENT, event.getId());
       return true;
@@ -85,7 +86,10 @@ public class SourceRecordDomainEventHandler {
 
   private boolean isInstanceWithLinkedDataSource(Resource resource) {
     return resource.getTypes().equals(Set.of(INSTANCE))
-      && instanceMetadataRepository.findById(resource.getId())
+      && ofNullable(resource.getInstanceMetadata())
+      .map(org.folio.ld.dictionary.model.InstanceMetadata::getInventoryId)
+      .flatMap(instanceMetadataRepository::findByInventoryId)
+      .or(() -> instanceMetadataRepository.findById(resource.getId()))
       .map(InstanceMetadata::getSource)
       .map(LINKED_DATA::equals)
       .orElse(false);
@@ -108,11 +112,11 @@ public class SourceRecordDomainEventHandler {
   }
 
   private void logUnsupportedType(SourceRecordDomainEvent event, String typeKind, Enum<?> type) {
-    log.warn(UNSUPPORTED_TYPE, typeKind, isNull(type) ? "null" : type.name(), event.getId());
+    log.info(UNSUPPORTED_TYPE, typeKind, isNull(type) ? "null" : type.name(), event.getId());
   }
 
   private void logEmptyResource(String eventId) {
-    log.warn(EMPTY_RESOURCE_MAPPED, eventId);
+    log.info(EMPTY_RESOURCE_MAPPED, eventId);
   }
 
 }
