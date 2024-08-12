@@ -10,7 +10,9 @@
           "methods": [ "POST" ],
           "pathPattern": "/resource",
           "permissionsRequired": [ "linked-data.resources.bib.post" ],
-          "modulePermissions": []
+          "modulePermissions": [
+            "mapping-metadata.get"
+          ]
         },
         {
           "methods": [ "GET" ],
@@ -34,7 +36,9 @@
           "methods": [ "PUT" ],
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.put" ],
-          "modulePermissions": []
+          "modulePermissions": [
+            "mapping-metadata.get"
+          ]
         },
         {
           "methods": [ "DELETE" ],
