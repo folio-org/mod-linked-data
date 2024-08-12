@@ -37,10 +37,12 @@ public class KafkaListenerConfiguration {
   }
 
   @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent> srsEventListenerContainerFactory() {
+  public ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent> srsEventListenerContainerFactory(
+    ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory
+  ) {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent>();
     factory.setBatchListener(true);
-    factory.setConsumerFactory(sourceRecordDomainEventConsumerFactory());
+    factory.setConsumerFactory(sourceRecordDomainEventConsumerFactory);
     return factory;
   }
 

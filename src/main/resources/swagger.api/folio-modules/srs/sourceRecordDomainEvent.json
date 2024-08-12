@@ -80,9 +80,7 @@
     }
   },
   "excludedFromEqualsAndHashCode": [
-    "eventMetadata",
-    "tenant",
-    "ts"
+    "eventMetadata"
   ],
   "required": [
     "id",

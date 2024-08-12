@@ -70,7 +70,7 @@ public class SourceRecordDomainEventListener {
   }
 
   private void logFailedEvent(SourceRecordDomainEvent event, SourceRecordType type, Throwable ex, boolean isRetrying) {
-    String marcRecord = event.getEventPayload();
+    var marcRecord = event.getEventPayload();
     var logLevel = isRetrying ? Level.INFO : Level.ERROR;
     log.log(logLevel, "Failed to process MARC {} record {}. Retrying: {}", type.name(), marcRecord, isRetrying, ex);
   }
