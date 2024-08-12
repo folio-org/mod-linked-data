@@ -1,4 +1,4 @@
 package org.folio.linked.data.model.entity.event;
 
-public record ResourceIndexedEvent(Long resourceId) {
+public record ResourceIndexedEvent(Long resourceId) implements ResourceEvent {
 }

@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import org.folio.ld.dictionary.model.InstanceMetadata;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
@@ -89,6 +90,8 @@ class ResourceServiceTest {
   private ApplicationEventPublisher applicationEventPublisher;
   @Mock
   private MetadataService metadataService;
+  @Mock
+  private InstanceMetadataRepository instanceMetadataRepository;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
@@ -202,7 +205,6 @@ class ResourceServiceTest {
   void getResourceIdByInventoryId_shouldThrowNotFoundException_ifNoEntityExistsWithGivenInventoryId() {
     // given
     var inventoryId = UUID.randomUUID().toString();
-    when(instanceMetadataRepo.findIdByInventoryId(inventoryId)).thenReturn(Optional.empty());
 
     // when
     var thrown = assertThrows(
@@ -434,4 +436,66 @@ class ResourceServiceTest {
     assertThat(thrown.getMessage()).isEqualTo(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
   }
 
+  @Test
+  void saveMarcResource_shouldCreateNewResource_ifGivenModelDoesNotExistsByIdAndInventoryId() {
+    // given
+    var id = randomLong();
+    var model = new org.folio.ld.dictionary.model.Resource().setId(id);
+    var mapped = new Resource().setId(id);
+    doReturn(mapped).when(resourceModelMapper).toEntity(model);
+    doReturn(false).when(resourceRepo).existsById(id);
+    doReturn(mapped).when(resourceRepo).save(mapped);
+
+    // when
+    Long result = resourceService.saveMarcResource(model);
+
+    // then
+    assertThat(result).isEqualTo(id);
+    verify(resourceRepo).save(mapped);
+    verify(applicationEventPublisher).publishEvent(new ResourceCreatedEvent(mapped));
+  }
+
+  @Test
+  void saveMarcResource_shouldUpdateResource_ifGivenModelExistsById() {
+    // given
+    var id = randomLong();
+    var model = new org.folio.ld.dictionary.model.Resource().setId(id);
+    var mapped = new Resource().setId(id);
+    doReturn(mapped).when(resourceModelMapper).toEntity(model);
+    doReturn(true).when(resourceRepo).existsById(id);
+    doReturn(mapped).when(resourceRepo).save(mapped);
+
+    // when
+    Long result = resourceService.saveMarcResource(model);
+
+    // then
+    assertThat(result).isEqualTo(id);
+    verify(resourceRepo).save(mapped);
+    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(mapped));
+  }
+
+  @Test
+  void saveMarcResource_shouldReplaceResource_ifGivenModelExistsByInventoryIdButNotById() {
+    // given
+    var id = randomLong();
+    var invId = UUID.randomUUID().toString();
+    var model = new org.folio.ld.dictionary.model.Resource()
+      .setId(id)
+      .setInstanceMetadata(new InstanceMetadata().setInventoryId(invId));
+    var mapped = new Resource().setId(id);
+    doReturn(mapped).when(resourceModelMapper).toEntity(model);
+    doReturn(false).when(resourceRepo).existsById(id);
+    var existed = new Resource().setId(id).setManaged(true);
+    doReturn(Optional.of(existed)).when(resourceRepo).findByInstanceMetadataInventoryId(invId);
+    doReturn(mapped).when(resourceRepo).save(mapped);
+
+    // when
+    Long result = resourceService.saveMarcResource(model);
+
+    // then
+    assertThat(result).isEqualTo(id);
+    resourceRepo.delete(existed);
+    verify(resourceRepo).save(mapped);
+    verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped));
+  }
 }

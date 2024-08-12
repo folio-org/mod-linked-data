@@ -2,5 +2,5 @@ package org.folio.linked.data.model.entity.event;
 
 import org.folio.linked.data.model.entity.Resource;
 
-public record ResourceCreatedEvent(Resource resource) {
+public record ResourceCreatedEvent(Resource resource) implements ResourceEvent {
 }

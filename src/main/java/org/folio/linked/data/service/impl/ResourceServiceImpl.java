@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.folio.ld.dictionary.model.InstanceMetadata;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
@@ -30,6 +31,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
+import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.InstanceMetadataRepository;
@@ -76,18 +78,33 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public Long saveMarcResource(org.folio.ld.dictionary.model.Resource modelResource) {
-    var exists = resourceRepo.existsById(modelResource.getId());
     var mapped = resourceModelMapper.toEntity(modelResource);
-    var persisted = saveMergingGraph(mapped);
-    refreshWork(persisted);
-    if (exists) {
-      log.info("Updating resource [id {}] from marc model [{}]", persisted.getId(), modelResource);
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(persisted));
-    } else {
-      log.info("Creating resource [id {}] from marc model [{}]", persisted.getId(), modelResource);
-      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    if (resourceRepo.existsById(modelResource.getId())) {
+      return saveRefreshAndPublishMarcResource(modelResource, mapped, ResourceUpdatedEvent::new);
     }
-    return persisted.getId();
+    var existedByInventoryId = ofNullable(modelResource.getInstanceMetadata())
+      .map(InstanceMetadata::getInventoryId)
+      .flatMap(resourceRepo::findByInstanceMetadataInventoryId);
+    if (existedByInventoryId.isPresent()) {
+      var existed = new Resource(existedByInventoryId.get());
+      return saveRefreshAndPublishMarcResource(modelResource, mapped,
+        saved -> new ResourceReplacedEvent(existed, saved));
+    }
+    return saveRefreshAndPublishMarcResource(modelResource, mapped, ResourceCreatedEvent::new);
+  }
+
+  private Long saveRefreshAndPublishMarcResource(org.folio.ld.dictionary.model.Resource modelResource, Resource mapped,
+                                                 Function<Resource, ResourceEvent> resourceEventSupplier) {
+    var newResource = saveMergingGraph(mapped);
+    refreshWork(newResource);
+    var event = resourceEventSupplier.apply(newResource);
+    if (event instanceof ResourceReplacedEvent rre) {
+      breakEdgesAndDelete(rre.previous());
+    }
+    log.info("{} [id {}] from marc model [{}]", event.getClass().getSimpleName().replace("Event", ""),
+      newResource.getId(), modelResource);
+    applicationEventPublisher.publishEvent(event);
+    return newResource.getId();
   }
 
   @Override
