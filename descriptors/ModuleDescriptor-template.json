@@ -11,7 +11,19 @@
           "pathPattern": "/resource",
           "permissionsRequired": [ "linked-data.resources.bib.post" ],
           "modulePermissions": [
-            "mapping-metadata.get"
+            "mapping-metadata.get",
+            "inventory-storage.instances.item.post",
+            "inventory-storage.instances.item.put",
+            "inventory-storage.instances.item.delete",
+            "inventory-storage.instance-types.item.post",
+            "inventory-storage.preceding-succeeding-titles.collection.get",
+            "inventory-storage.preceding-succeeding-titles.item.get",
+            "inventory-storage.preceding-succeeding-titles.item.post",
+            "inventory-storage.preceding-succeeding-titles.item.put",
+            "inventory-storage.preceding-succeeding-titles.item.delete",
+            "source-storage.snapshots.post",
+            "source-storage.records.post",
+            "source-storage.records.put"
           ]
         },
         {
@@ -37,7 +49,19 @@
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.put" ],
           "modulePermissions": [
-            "mapping-metadata.get"
+            "mapping-metadata.get",
+            "inventory-storage.instances.item.post",
+            "inventory-storage.instances.item.put",
+            "inventory-storage.instances.item.delete",
+            "inventory-storage.instance-types.item.post",
+            "inventory-storage.preceding-succeeding-titles.collection.get",
+            "inventory-storage.preceding-succeeding-titles.item.get",
+            "inventory-storage.preceding-succeeding-titles.item.post",
+            "inventory-storage.preceding-succeeding-titles.item.put",
+            "inventory-storage.preceding-succeeding-titles.item.delete",
+            "source-storage.snapshots.post",
+            "source-storage.records.post",
+            "source-storage.records.put"
           ]
         },
         {
