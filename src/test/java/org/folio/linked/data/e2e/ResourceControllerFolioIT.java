@@ -14,7 +14,7 @@ import lombok.SneakyThrows;
 import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
 import org.folio.linked.data.integration.kafka.sender.search.WorkDeleteMessageSender;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;

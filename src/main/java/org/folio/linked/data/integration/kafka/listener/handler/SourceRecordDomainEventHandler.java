@@ -17,7 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.model.entity.InstanceMetadata;
 import org.folio.linked.data.repo.InstanceMetadataRepository;
-import org.folio.linked.data.service.ResourceService;
+import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.search.domain.dto.SourceRecordDomainEvent;
@@ -41,7 +41,7 @@ public class SourceRecordDomainEventHandler {
   private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES = Set.of(CREATED, UPDATED);
   private final MarcBib2ldMapper marcBib2ldMapper;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
-  private final ResourceService resourceService;
+  private final ResourceMarcService resourceMarcService;
   private final InstanceMetadataRepository instanceMetadataRepository;
 
   public void handle(SourceRecordDomainEvent event, SourceRecordType recordType) {
@@ -106,7 +106,7 @@ public class SourceRecordDomainEventHandler {
 
   private void saveResource(Resource resource, SourceRecordDomainEvent event) {
     if (CREATED == event.getEventType() || UPDATED == event.getEventType()) {
-      var id = resourceService.saveMarcResource(resource);
+      var id = resourceMarcService.saveMarcResource(resource);
       log.info(EVENT_SAVED, event.getId(), id);
     }
   }

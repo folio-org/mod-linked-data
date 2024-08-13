@@ -35,8 +35,8 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.ResourceService;
-import org.folio.linked.data.service.impl.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchAuthorityAuthorityTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
@@ -83,7 +83,7 @@ class SourceRecordDomainEventHandlerIT {
   private ResourceTestRepository resourceTestRepository;
   @SpyBean
   @Autowired
-  private ResourceService resourceService;
+  private ResourceMarcService resourceMarcService;
   @SpyBean
   @Autowired
   private ResourceModificationEventListener eventListener;
@@ -123,7 +123,7 @@ class SourceRecordDomainEventHandlerIT {
     eventKafkaTemplate.send(eventProducerRecord);
 
     // then
-    awaitAndAssert(() -> verify(resourceService, times(interactions))
+    awaitAndAssert(() -> verify(resourceMarcService, times(interactions))
       .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
   }
 
@@ -137,7 +137,8 @@ class SourceRecordDomainEventHandlerIT {
     eventKafkaTemplate.send(eventProducerRecord);
 
     // then
-    awaitAndAssert(() -> verify(resourceService).saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+    awaitAndAssert(() -> verify(resourceMarcService)
+      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
@@ -177,7 +178,8 @@ class SourceRecordDomainEventHandlerIT {
     eventKafkaTemplate.send(eventProducerRecord);
 
     // then
-    awaitAndAssert(() -> verify(resourceService).saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+    awaitAndAssert(() -> verify(resourceMarcService)
+      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
@@ -258,7 +260,8 @@ class SourceRecordDomainEventHandlerIT {
     eventKafkaTemplate.send(eventProducerRecord);
 
     // then
-    awaitAndAssert(() -> verify(resourceService).saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+    awaitAndAssert(() -> verify(resourceMarcService)
+      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
     verify(eventListener).afterUpdate(any());
     var allInstances = tenantScopedExecutionService.execute(TENANT_ID,
       () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))

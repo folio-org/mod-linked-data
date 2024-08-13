@@ -17,7 +17,7 @@ import java.util.UUID;
 import org.folio.ld.dictionary.model.InstanceMetadata;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.repo.InstanceMetadataRepository;
-import org.folio.linked.data.service.ResourceService;
+import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.search.domain.dto.SourceRecordDomainEvent;
@@ -40,7 +40,7 @@ public class SourceRecordDomainEventHandlerTest {
   @Mock
   private MarcAuthority2ldMapper marcAuthority2ldMapper;
   @Mock
-  private ResourceService resourceService;
+  private ResourceMarcService resourceMarcService;
   @Mock
   private InstanceMetadataRepository instanceMetadataRepository;
 
@@ -53,7 +53,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceService);
+    verifyNoInteractions(resourceMarcService);
   }
 
   @Test
@@ -66,7 +66,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, null);
 
     // then
-    verifyNoInteractions(resourceService);
+    verifyNoInteractions(resourceMarcService);
   }
 
   @Test
@@ -79,7 +79,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceService);
+    verifyNoInteractions(resourceMarcService);
   }
 
   @Test
@@ -93,7 +93,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceService);
+    verifyNoInteractions(resourceMarcService);
   }
 
   @Test
@@ -113,7 +113,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceService);
+    verifyNoInteractions(resourceMarcService);
   }
 
   @Test
@@ -135,7 +135,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceService);
+    verifyNoInteractions(resourceMarcService);
   }
 
   @Test
@@ -151,7 +151,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verify(resourceService).saveMarcResource(mapped);
+    verify(resourceMarcService).saveMarcResource(mapped);
   }
 
   @Test
@@ -168,7 +168,7 @@ public class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_AUTHORITY);
 
     // then
-    verify(resourceService).saveMarcResource(mapped1);
-    verify(resourceService).saveMarcResource(mapped2);
+    verify(resourceMarcService).saveMarcResource(mapped1);
+    verify(resourceMarcService).saveMarcResource(mapped2);
   }
 }

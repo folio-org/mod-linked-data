@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.rest.resource.ReindexApi;
-import org.folio.linked.data.service.ReindexService;
+import org.folio.linked.data.service.index.ReindexService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

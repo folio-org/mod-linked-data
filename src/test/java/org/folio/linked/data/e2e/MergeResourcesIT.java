@@ -15,7 +15,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.service.ResourceService;
+import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestService;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 class MergeResourcesIT {
 
   @Autowired
-  private ResourceService resourceService;
+  private ResourceGraphService resourceGraphService;
   @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
@@ -45,7 +45,7 @@ class MergeResourcesIT {
   void testResourcesMerging_1() {
     // given
     var graph1 = createGraph1toto2();
-    resourceService.saveMergingGraph(graph1);
+    resourceGraphService.saveMergingGraph(graph1);
     var fp1Resource = resourceTestService.getResourceById("1", 4);
     // Should be: 1 -> [2]
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(1);
@@ -54,7 +54,7 @@ class MergeResourcesIT {
     var graph2 = createGraph3toto1to5toto4();
 
     // when
-    resourceService.saveMergingGraph(graph2);
+    resourceGraphService.saveMergingGraph(graph2);
 
     // then
     // whole graph should be: 3 -> [(1 -> [2, 5]), 4]
@@ -81,7 +81,7 @@ class MergeResourcesIT {
   void testResourcesMerging_2() {
     // given
     var graph1 = createGraph3toto1to2to5toto4();
-    resourceService.saveMergingGraph(graph1);
+    resourceGraphService.saveMergingGraph(graph1);
     // fp3Resource should be: 3 -> [1, 4]
     var fp3Resource = resourceTestService.getResourceById("3", 4);
     assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
@@ -102,7 +102,7 @@ class MergeResourcesIT {
     var graph2 = createGraph6toto1toto4to5();
 
     // when
-    resourceService.saveMergingGraph(graph2);
+    resourceGraphService.saveMergingGraph(graph2);
 
     // then
     // whole graph should be: 3 -> [(1 -> [2, 5]), 4 -> 5]
@@ -147,7 +147,7 @@ class MergeResourcesIT {
   void testResourcesMerging1_and_2() {
     // given
     var graph1 = createGraph1toto2();
-    resourceService.saveMergingGraph(graph1);
+    resourceGraphService.saveMergingGraph(graph1);
     var fp1Resource = resourceTestService.getResourceById("1", 4);
     // Should be: 1 -> [2]
     assertThat(fp1Resource.getOutgoingEdges()).hasSize(1);
@@ -156,7 +156,7 @@ class MergeResourcesIT {
     var graph2 = createGraph3toto1to5toto4();
 
     // when
-    resourceService.saveMergingGraph(graph2);
+    resourceGraphService.saveMergingGraph(graph2);
 
     // then
     fp1Resource = resourceTestService.getResourceById("1", 4);
@@ -182,7 +182,7 @@ class MergeResourcesIT {
 
     // when
     var graph3 = createGraph6toto1toto4to5();
-    resourceService.saveMergingGraph(graph3);
+    resourceGraphService.saveMergingGraph(graph3);
 
     // then
     // fp3Resource should be: 3 -> [1, 4]

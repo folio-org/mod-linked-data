@@ -8,7 +8,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.ResourceService;
+import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class ResourceTestService {
   @Autowired
   private ResourceEdgeRepository edgeRepository;
   @Autowired
-  private ResourceService resourceService;
+  private ResourceGraphService resourceGraphService;
 
   /**
    * Retrieves a resource by its unique identifier along with its associated edges up to a specified depth.
@@ -50,7 +50,7 @@ public class ResourceTestService {
   }
 
   public Resource saveGraph(Resource resource) {
-    return resourceService.saveMergingGraph(resource);
+    return resourceGraphService.saveMergingGraph(resource);
   }
 
   public Optional<Resource> findById(long id) {
