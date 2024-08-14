@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.tenant;
+package org.folio.linked.data.service.tenant.worker;
 
 import org.folio.tenant.domain.dto.TenantAttributes;
 

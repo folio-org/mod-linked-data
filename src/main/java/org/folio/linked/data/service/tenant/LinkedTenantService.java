@@ -4,6 +4,7 @@ import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
 import java.util.Collection;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.spring.service.TenantService;

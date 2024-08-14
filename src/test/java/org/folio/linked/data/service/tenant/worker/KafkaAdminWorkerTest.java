@@ -1,11 +1,10 @@
-package org.folio.linked.data.service.tenant.workers;
+package org.folio.linked.data.service.tenant.worker;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import org.folio.linked.data.client.SearchClient;
-import org.folio.search.domain.dto.CreateIndexRequest;
 import org.folio.spring.testing.type.UnitTest;
+import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,26 +14,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class SearchWorkerTest {
-
+class KafkaAdminWorkerTest {
   @Mock
-  private SearchClient searchClient;
+  private KafkaAdminService kafkaAdminService;
 
   @InjectMocks
-  private SearchWorker searchWorker;
+  private KafkaAdminWorker kafkaAdminWorker;
 
   @Test
-  void shouldInitSearchIndex() {
-    //given
-    var expectedRequest = new CreateIndexRequest("linked-data-work");
+  void shouldCreateTopics() {
+    // given
     var attributes = mock(TenantAttributes.class);
     var tenantId = "tenant-01";
 
-    //when
-    searchWorker.afterTenantUpdate(tenantId, attributes);
+    // when
+    kafkaAdminWorker.afterTenantUpdate(tenantId, attributes);
 
-    //then
-    verify(searchClient).createIndex(expectedRequest);
+    // then
+    verify(kafkaAdminService).createTopics(tenantId);
+    verify(kafkaAdminService).restartEventListeners();
   }
-
 }

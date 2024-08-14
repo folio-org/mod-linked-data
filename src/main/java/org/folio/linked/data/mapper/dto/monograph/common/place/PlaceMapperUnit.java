@@ -21,7 +21,7 @@ import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.MarcCodeProvider;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.HashService;
+import org.folio.linked.data.service.resource.hash.HashService;
 
 @RequiredArgsConstructor
 public abstract class PlaceMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {

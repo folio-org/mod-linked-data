@@ -1,11 +1,10 @@
-package org.folio.linked.data.service.tenant.workers;
+package org.folio.linked.data.service.tenant.worker;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.service.DictionaryService;
-import org.folio.linked.data.service.tenant.TenantServiceWorker;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;

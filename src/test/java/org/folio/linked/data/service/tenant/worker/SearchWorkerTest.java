@@ -1,9 +1,10 @@
-package org.folio.linked.data.service.tenant.workers;
+package org.folio.linked.data.service.tenant.worker;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import org.folio.linked.data.service.DictionaryService;
+import org.folio.linked.data.client.SearchClient;
+import org.folio.search.domain.dto.CreateIndexRequest;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.Test;
@@ -14,25 +15,26 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class DictionaryWorkerTest {
+class SearchWorkerTest {
 
   @Mock
-  private DictionaryService dictionaryService;
+  private SearchClient searchClient;
 
   @InjectMocks
-  private DictionaryWorker dictionaryWorker;
+  private SearchWorker searchWorker;
 
   @Test
-  void shouldInitDictionaries() {
+  void shouldInitSearchIndex() {
     //given
+    var expectedRequest = new CreateIndexRequest("linked-data-work");
     var attributes = mock(TenantAttributes.class);
     var tenantId = "tenant-01";
 
     //when
-    dictionaryWorker.afterTenantUpdate(tenantId, attributes);
+    searchWorker.afterTenantUpdate(tenantId, attributes);
 
     //then
-    verify(dictionaryService)
-      .init();
+    verify(searchClient).createIndex(expectedRequest);
   }
+
 }

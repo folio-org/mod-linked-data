@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.tenant.workers;
+package org.folio.linked.data.service.tenant.worker;
 
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
@@ -6,7 +6,6 @@ import static org.folio.linked.data.util.Constants.SEARCH_RESOURCE_NAME;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SearchClient;
-import org.folio.linked.data.service.tenant.TenantServiceWorker;
 import org.folio.search.domain.dto.CreateIndexRequest;
 import org.folio.search.domain.dto.CreateIndexResponse;
 import org.folio.tenant.domain.dto.TenantAttributes;
