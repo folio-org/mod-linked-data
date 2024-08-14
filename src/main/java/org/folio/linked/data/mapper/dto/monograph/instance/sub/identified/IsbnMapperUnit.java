@@ -22,7 +22,7 @@ import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.HashService;
+import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
 @Component

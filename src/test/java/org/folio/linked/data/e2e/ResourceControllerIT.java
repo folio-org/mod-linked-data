@@ -165,7 +165,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.service.HashService;
+import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.marc4ld.util.ResourceKind;
 import org.folio.search.domain.dto.ResourceIndexEventType;

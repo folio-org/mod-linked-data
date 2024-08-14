@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.kafka.inventory;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
+import java.util.UUID;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
@@ -13,7 +14,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Mapper(componentModel = SPRING)
+@Mapper(componentModel = SPRING, imports = UUID.class)
 public abstract class InstanceIngressMessageMapper {
 
   private static final String LINKED_DATA_ID = "linkedDataId";
@@ -22,6 +23,7 @@ public abstract class InstanceIngressMessageMapper {
   @Autowired
   protected ResourceModelMapper resourceModelMapper;
 
+  @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "eventPayload", source = "resource")
   public abstract InstanceIngressEvent toInstanceIngressEvent(Resource resource);
 

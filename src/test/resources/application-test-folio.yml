@@ -16,7 +16,7 @@ folio:
         numPartitions: 1
       - name: linked-data.instance-ingress
         numPartitions: 1
-      - name: DI_COMPLETED
+      - name: srs.source_records
         num-partitions: 1
 
 test:

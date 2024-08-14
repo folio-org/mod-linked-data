@@ -12,7 +12,7 @@ import java.util.Map;
 import org.folio.linked.data.domain.dto.Place;
 import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.HashService;
+import org.folio.linked.data.service.resource.hash.HashService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

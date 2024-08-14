@@ -9,6 +9,8 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.folio.search.domain.dto.InstanceIngressEvent;
+import org.folio.search.domain.dto.LinkedDataAuthority;
+import org.folio.search.domain.dto.LinkedDataWork;
 import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +36,7 @@ public class KafkaProducerConfiguration {
   ) {
     var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
       linkedDataTopicProperties::getWorkSearchIndex);
-    producer.setKeyMapper(ResourceIndexEvent::getId);
+    producer.setKeyMapper(rie -> ((LinkedDataWork) rie.getNew()).getId());
     return producer;
   }
 
@@ -44,7 +46,7 @@ public class KafkaProducerConfiguration {
   ) {
     var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
       linkedDataTopicProperties::getAuthoritySearchIndex);
-    producer.setKeyMapper(ResourceIndexEvent::getId);
+    producer.setKeyMapper(rie -> ((LinkedDataAuthority) rie.getNew()).getId());
     return producer;
   }
 
@@ -54,7 +56,7 @@ public class KafkaProducerConfiguration {
   ) {
     var producer = new FolioMessageProducer<>(instanceIngressMessageTemplate,
       linkedDataTopicProperties::getInstanceIngress);
-    producer.setKeyMapper(InstanceIngressEvent::getId);
+    producer.setKeyMapper(iie -> iie.getEventPayload().getSourceRecordIdentifier());
     return producer;
   }
 

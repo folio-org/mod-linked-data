@@ -1,0 +1,59 @@
+{
+  "leader": "01767cam a22003977i 4500",
+  "fields": [
+    {
+      "245": {
+        "subfields": [
+          {
+            "a": "Instance MainTitle"
+          },
+          {
+            "n": "8"
+          },
+          {
+            "p": "Instance PartName"
+          },
+          {
+            "b": "Instance SubTitle"
+          },
+          {
+            "c": "Statement Of Responsibility"
+          }
+        ],
+        "ind1": "1",
+        "ind2": "7"
+      }
+    },
+    {
+      "264": {
+        "subfields": [
+          {
+            "a": "Publication Place"
+          },
+          {
+            "b": "Publication Name"
+          },
+          {
+            "c": "2024"
+          }
+        ],
+        "ind1": " ",
+        "ind2": "1"
+      }
+    },
+    {
+      "999": {
+        "subfields": [
+          {
+            "i": "2165ef4b-001f-46b3-a60e-52bcdeb3d5a1"
+          },
+          {
+            "s": "43d58061-decf-4d74-9747-0e1c368e861b"
+          }
+        ],
+        "ind1": "f",
+        "ind2": "f"
+      }
+    }
+  ]
+}

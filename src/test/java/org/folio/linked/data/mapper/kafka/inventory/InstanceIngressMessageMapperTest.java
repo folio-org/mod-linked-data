@@ -48,7 +48,8 @@ class InstanceIngressMessageMapperTest {
 
     // when
     assertThat(result)
-      .hasFieldOrPropertyWithValue("id", String.valueOf(instance.getId()))
+      .hasAllNullFieldsOrPropertiesExcept("id", "eventPayload")
+      .hasFieldOrProperty("id")
       .extracting("eventPayload")
       .hasFieldOrPropertyWithValue("sourceRecordIdentifier", inventoryId)
       .hasFieldOrPropertyWithValue("sourceType", InstanceIngressPayload.SourceTypeEnum.LINKED_DATA)

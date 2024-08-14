@@ -4,7 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
-import org.folio.linked.data.service.ResourceService;
+import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.resource.ResourceService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,8 @@ class ResourceControllerTest {
   ResourceController resourceController;
   @Mock
   ResourceService resourceService;
+  @Mock
+  ResourceMarcService resourceMarcService;
 
   @Test
   void getResourceMarcViewById_shouldReturnOkResponse() {
@@ -30,7 +33,7 @@ class ResourceControllerTest {
     var expectedDto = new ResourceMarcViewDto();
     expectedDto.setId(String.valueOf(id));
 
-    when(resourceService.getResourceMarcViewById(id))
+    when(resourceMarcService.getResourceMarcView(id))
       .thenReturn(expectedDto);
 
     //when

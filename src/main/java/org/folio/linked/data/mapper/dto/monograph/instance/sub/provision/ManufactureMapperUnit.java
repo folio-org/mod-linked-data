@@ -6,7 +6,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import org.folio.linked.data.domain.dto.ProviderEventRequest;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.service.HashService;
+import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
 @Component

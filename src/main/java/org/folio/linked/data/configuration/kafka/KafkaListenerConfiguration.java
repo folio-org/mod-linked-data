@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.folio.search.domain.dto.DataImportEvent;
+import org.folio.search.domain.dto.SourceRecordDomainEvent;
 import org.folio.spring.tools.kafka.FolioKafkaProperties;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -28,7 +28,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 public class KafkaListenerConfiguration {
 
   private final KafkaProperties kafkaProperties;
-  private final ObjectMapper objectMapper;
+  private final ObjectMapper mapper;
 
   @Bean
   @ConfigurationProperties("folio.kafka")
@@ -37,16 +37,18 @@ public class KafkaListenerConfiguration {
   }
 
   @Bean
-  public ConcurrentKafkaListenerContainerFactory<String, DataImportEvent> dataImportListenerContainerFactory() {
-    var factory = new ConcurrentKafkaListenerContainerFactory<String, DataImportEvent>();
+  public ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent> srsEventListenerContainerFactory(
+    ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory
+  ) {
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent>();
     factory.setBatchListener(true);
-    factory.setConsumerFactory(dataImportEventConsumerFactory());
+    factory.setConsumerFactory(sourceRecordDomainEventConsumerFactory);
     return factory;
   }
 
   @Bean
-  public ConsumerFactory<String, DataImportEvent> dataImportEventConsumerFactory() {
-    var deserializer = new ErrorHandlingDeserializer<>(new JsonDeserializer<>(DataImportEvent.class, objectMapper));
+  public ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory() {
+    var deserializer = new ErrorHandlingDeserializer<>(new JsonDeserializer<>(SourceRecordDomainEvent.class, mapper));
     Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties(null));
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
