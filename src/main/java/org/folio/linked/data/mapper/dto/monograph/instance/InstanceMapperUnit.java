@@ -49,12 +49,12 @@ import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.mapper.dto.InstanceMetadataMapper;
+import org.folio.linked.data.mapper.dto.FolioMetadataMapper;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
-import org.folio.linked.data.model.entity.InstanceMetadata;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -71,7 +71,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
-  private final InstanceMetadataMapper instanceMetadataMapper;
+  private final FolioMetadataMapper folioMetadataMapper;
   private final HashService hashService;
 
   @Override
@@ -79,9 +79,9 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
       var instance = coreMapper.toDtoWithEdges(source, InstanceResponse.class, false);
       instance.setId(String.valueOf(source.getId()));
-      ofNullable(source.getInstanceMetadata())
-        .map(instanceMetadataMapper::toDto)
-        .ifPresent(instance::setInstanceMetadata);
+      ofNullable(source.getFolioMetadata())
+        .map(folioMetadataMapper::toDto)
+        .ifPresent(instance::setFolioMetadata);
       ofNullable(source.getDoc())
         .ifPresent(doc -> instance.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.resource(new InstanceResponseField().instance(instance));
@@ -109,7 +109,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCarrier(), CARRIER);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
-    instance.setInstanceMetadata(new InstanceMetadata(instance).setSource(LINKED_DATA));
+    instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));
     return instance;
   }

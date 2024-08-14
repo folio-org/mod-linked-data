@@ -11,7 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.model.InstanceMetadata;
+import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -23,7 +23,7 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
-import org.folio.linked.data.repo.InstanceMetadataRepository;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
@@ -43,16 +43,16 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
   private final ResourceModelMapper resourceModelMapper;
   private final Bibframe2MarcMapper bibframe2MarcMapper;
   private final ResourceGraphService resourceGraphService;
-  private final InstanceMetadataRepository instanceMetadataRepo;
+  private final FolioMetadataRepository folioMetadataRepository;
   private final ApplicationEventPublisher applicationEventPublisher;
 
 
   public Long saveMarcResource(org.folio.ld.dictionary.model.Resource modelResource) {
-    var incomingInvId = ofNullable(modelResource.getInstanceMetadata())
-      .map(InstanceMetadata::getInventoryId)
+    var incomingInvId = ofNullable(modelResource.getFolioMetadata())
+      .map(FolioMetadata::getInventoryId)
       .orElse(null);
-    var existedInvId = instanceMetadataRepo.findById(modelResource.getId())
-      .map(org.folio.linked.data.model.entity.InstanceMetadata::getInventoryId)
+    var existedInvId = folioMetadataRepository.findById(modelResource.getId())
+      .map(org.folio.linked.data.model.entity.FolioMetadata::getInventoryId)
       .orElse(null);
     var mapped = resourceModelMapper.toEntity(modelResource);
 

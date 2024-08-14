@@ -214,7 +214,7 @@ class ResourceControllerIT {
 
   @BeforeEach
   public void beforeEach() {
-    JdbcTestUtils.deleteFromTables(jdbcTemplate, "instance_metadata", "resource_edges",
+    JdbcTestUtils.deleteFromTables(jdbcTemplate, "folio_metadata", "resource_edges",
       "resource_type_map", "resources");
     lookupResources = saveLookupResources();
   }
@@ -243,7 +243,7 @@ class ResourceControllerIT {
     var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
     var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
-    assertThat(instanceResource.getInstanceMetadata().getSource()).isEqualTo(LINKED_DATA);
+    assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().get(0).getId();
     checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
@@ -327,17 +327,17 @@ class ResourceControllerIT {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
 
-    var updatedInstanceMetadata = updatedInstance.getInstanceMetadata();
-    var originalInstanceMetadata = originalInstance.getInstanceMetadata();
-    var instanceMetadataDto = instanceDto.getInstanceMetadata();
-    assertThat(updatedInstanceMetadata.getInventoryId())
-      .isEqualTo(instanceMetadataDto.getInventoryId())
-      .isEqualTo(originalInstanceMetadata.getInventoryId());
-    assertThat(updatedInstanceMetadata.getSrsId())
-      .isEqualTo(instanceMetadataDto.getSrsId())
-      .isEqualTo(originalInstanceMetadata.getSrsId());
-    assertThat(updatedInstanceMetadata.getSource().name())
-      .isEqualTo(instanceMetadataDto.getSource().name())
+    var updatedFolioMetadata = updatedInstance.getFolioMetadata();
+    var originalFolioMetadata = originalInstance.getFolioMetadata();
+    var folioMetadataDto = instanceDto.getFolioMetadata();
+    assertThat(updatedFolioMetadata.getInventoryId())
+      .isEqualTo(folioMetadataDto.getInventoryId())
+      .isEqualTo(originalFolioMetadata.getInventoryId());
+    assertThat(updatedFolioMetadata.getSrsId())
+      .isEqualTo(folioMetadataDto.getSrsId())
+      .isEqualTo(originalFolioMetadata.getSrsId());
+    assertThat(updatedFolioMetadata.getSource().name())
+      .isEqualTo(folioMetadataDto.getSource().name())
       .isEqualTo(LINKED_DATA.name());
 
     checkSearchIndexMessage(work.getId(), UPDATE);
@@ -470,7 +470,7 @@ class ResourceControllerIT {
   void getResourceIdByResourceInventoryId_shouldReturnResourceId() throws Exception {
     //given
     var resource = resourceTestService.saveGraph(getSampleInstanceResource(null, null));
-    var requestBuilder = get(RESOURCE_URL + "/metadata/" + resource.getInstanceMetadata().getInventoryId() + "/id")
+    var requestBuilder = get(RESOURCE_URL + "/metadata/" + resource.getFolioMetadata().getInventoryId() + "/id")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 

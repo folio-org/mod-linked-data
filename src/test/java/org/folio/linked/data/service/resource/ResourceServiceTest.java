@@ -41,7 +41,7 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
-import org.folio.linked.data.repo.InstanceMetadataRepository;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -66,7 +66,7 @@ class ResourceServiceTest {
   private ResourceServiceImpl resourceService;
 
   @Mock
-  private InstanceMetadataRepository instanceMetadataRepo;
+  private FolioMetadataRepository folioMetadataRepo;
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
@@ -179,7 +179,7 @@ class ResourceServiceTest {
     // given
     var inventoryId = UUID.randomUUID().toString();
     var existedResource = getSampleInstanceResource();
-    when(instanceMetadataRepo.findIdByInventoryId(inventoryId)).thenReturn(Optional.of(existedResource::getId));
+    when(folioMetadataRepo.findIdByInventoryId(inventoryId)).thenReturn(Optional.of(existedResource::getId));
 
     // when
     var result = resourceService.getResourceIdByInventoryId(inventoryId);

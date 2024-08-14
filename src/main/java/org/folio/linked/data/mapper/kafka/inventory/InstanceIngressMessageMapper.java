@@ -27,7 +27,7 @@ public abstract class InstanceIngressMessageMapper {
   @Mapping(target = "eventPayload", source = "resource")
   public abstract InstanceIngressEvent toInstanceIngressEvent(Resource resource);
 
-  @Mapping(target = "sourceRecordIdentifier", source = "instanceMetadata.inventoryId")
+  @Mapping(target = "sourceRecordIdentifier", source = "folioMetadata.inventoryId")
   @Mapping(target = "sourceType", constant = "LINKED_DATA")
   @Mapping(target = "sourceRecordObject", source = "resource")
   protected abstract InstanceIngressPayload toInstanceIngressPayload(Resource resource);

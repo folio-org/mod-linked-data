@@ -157,10 +157,10 @@ class SourceRecordDomainEventHandlerIT {
       assertThat(edge.getTarget()).isNotNull();
       assertThat(edge.getPredicate()).isNotNull();
     });
-    var instanceMetadata = result.getInstanceMetadata();
-    assertThat(instanceMetadata.getSource()).isEqualTo(MARC);
-    assertThat(instanceMetadata.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
-    assertThat(instanceMetadata.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
+    var folioMetadata = result.getFolioMetadata();
+    assertThat(folioMetadata.getSource()).isEqualTo(MARC);
+    assertThat(folioMetadata.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
+    assertThat(folioMetadata.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
 
     assertWorkIsIndexed(result);
     verifyNoInteractions(instanceIngressMessageProducer);

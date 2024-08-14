@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
 import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
-import org.folio.linked.data.model.entity.InstanceMetadata;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -46,8 +46,8 @@ public class InstanceCreateMessageSender implements CreateMessageSender {
   }
 
   private boolean isSourcedFromLinkedData(Resource resource) {
-    return ofNullable(resource.getInstanceMetadata())
-      .map(InstanceMetadata::getSource)
+    return ofNullable(resource.getFolioMetadata())
+      .map(FolioMetadata::getSource)
       .map(source -> source == LINKED_DATA)
       .orElse(false);
   }

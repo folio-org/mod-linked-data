@@ -38,6 +38,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
+import org.folio.marc4ld.util.ResourceKind;
 import org.hibernate.annotations.Type;
 import org.springframework.data.domain.Persistable;
 
@@ -85,7 +86,7 @@ public class Resource implements Persistable<Long> {
 
   @OneToOne(cascade = ALL, mappedBy = "resource")
   @PrimaryKeyJoinColumn
-  private InstanceMetadata instanceMetadata;
+  private FolioMetadata folioMetadata;
 
   @Transient
   private boolean managed;
@@ -94,7 +95,7 @@ public class Resource implements Persistable<Long> {
     this.id = that.id;
     this.label = that.label;
     this.doc = (JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
-    this.instanceMetadata = that.instanceMetadata;
+    this.folioMetadata = that.folioMetadata;
     this.indexDate = that.indexDate;
     this.types = new LinkedHashSet<>(that.getTypes());
     this.outgoingEdges = ofNullable(that.getOutgoingEdges())
@@ -183,9 +184,15 @@ public class Resource implements Persistable<Long> {
   @PrePersist
   void prePersist() {
     this.managed = true;
-    if (nonNull(instanceMetadata) && !isOfType(INSTANCE)) {
+    if (nonNull(folioMetadata) && !isOfType(INSTANCE) && isNotAuthority()) {
       throw new IllegalStateException("Cannot save resource [" + id + "] with types " + types + ". "
-        + "Instance metadata can be set only for instance resource");
+        + "Folio metadata can be set only for instance and authority resources");
     }
+  }
+
+  private boolean isNotAuthority() {
+    return ResourceKind.AUTHORITY
+      .stream()
+      .noneMatch(this::isOfType);
   }
 }

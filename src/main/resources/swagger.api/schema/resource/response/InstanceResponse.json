@@ -209,8 +209,8 @@
             "$ref": "WorkResponse.json"
           }
         },
-        "instanceMetadata": {
-          "$ref": "InstanceMetadata.json"
+        "folioMetadata": {
+          "$ref": "FolioMetadata.json"
         }
       }
     }

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
-import org.folio.linked.data.model.entity.InstanceMetadata;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.search.domain.dto.InstanceIngressEvent;
 import org.folio.search.domain.dto.InstanceIngressPayload;
@@ -51,7 +51,7 @@ class InstanceCreateMessageSenderTest {
   void produce_shouldDoNothing_ifGivenResourceIsInstanceMarcSourced() {
     // given
     var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    resource.setInstanceMetadata(new InstanceMetadata(resource).setSource(MARC));
+    resource.setFolioMetadata(new FolioMetadata(resource).setSource(MARC));
 
     // when
     producer.produce(resource);
@@ -64,8 +64,8 @@ class InstanceCreateMessageSenderTest {
   void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
     var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata = new InstanceMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance.setInstanceMetadata(metadata);
+    var metadata = new FolioMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
+    instance.setFolioMetadata(metadata);
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
     when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);

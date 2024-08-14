@@ -21,9 +21,9 @@ import org.hibernate.type.SqlTypes;
 @Data
 @NoArgsConstructor(access = PROTECTED)
 @Accessors(chain = true)
-@Table(name = "instance_metadata")
+@Table(name = "folio_metadata")
 @EqualsAndHashCode(of = "id")
-public class InstanceMetadata {
+public class FolioMetadata {
 
   @Id
   @Column(name = "resource_hash")
@@ -45,7 +45,7 @@ public class InstanceMetadata {
   @ToString.Exclude
   private Resource resource;
 
-  public InstanceMetadata(Resource resource) {
+  public FolioMetadata(Resource resource) {
     this.resource = resource;
   }
 }

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.doReturn;
 import java.util.Map;
 import java.util.UUID;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.model.entity.InstanceMetadata;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.folio.search.domain.dto.InstanceIngressPayload;
@@ -35,7 +35,7 @@ class InstanceIngressMessageMapperTest {
     // given
     var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
     var inventoryId = UUID.randomUUID().toString();
-    instance.setInstanceMetadata(new InstanceMetadata(instance).setInventoryId(inventoryId));
+    instance.setFolioMetadata(new FolioMetadata(instance).setInventoryId(inventoryId));
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(instance.getId())
       .addType(INSTANCE);

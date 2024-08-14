@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
-import org.folio.linked.data.model.entity.InstanceMetadata;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -53,8 +53,8 @@ class InstanceUpdateMessageSenderTest {
   void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
     var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata = new InstanceMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance.setInstanceMetadata(metadata);
+    var metadata = new FolioMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
+    instance.setFolioMetadata(metadata);
 
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
       .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
@@ -74,11 +74,11 @@ class InstanceUpdateMessageSenderTest {
     // given
     var work = new Resource().setId(1L).addTypes(ResourceTypeDictionary.WORK);
     var instance1 = new Resource().setId(2L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata1 = new InstanceMetadata(instance1).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance1.setInstanceMetadata(metadata1);
+    var metadata1 = new FolioMetadata(instance1).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
+    instance1.setFolioMetadata(metadata1);
     var instance2 = new Resource().setId(3L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata2 = new InstanceMetadata(instance2).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance2.setInstanceMetadata(metadata2);
+    var metadata2 = new FolioMetadata(instance2).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
+    instance2.setFolioMetadata(metadata2);
     work.addIncomingEdge(new ResourceEdge(instance1, work, INSTANTIATES));
     work.addIncomingEdge(new ResourceEdge(instance2, work, INSTANTIATES));
 

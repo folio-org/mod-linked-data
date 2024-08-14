@@ -5,7 +5,7 @@ import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 
 import java.util.UUID;
 import java.util.function.Consumer;
-import org.folio.linked.data.model.entity.InstanceMetadata;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Service;
 
@@ -20,21 +20,21 @@ public class MetadataServiceImpl implements MetadataService {
   }
 
   @Override
-  public void ensure(Resource resource, InstanceMetadata oldResourceMeta) {
+  public void ensure(Resource resource, FolioMetadata oldResourceMeta) {
     ensure(resource, metadata -> {
       metadata.setInventoryId(oldResourceMeta.getInventoryId());
       metadata.setSrsId(oldResourceMeta.getSrsId());
     });
   }
 
-  private void ensure(Resource resource, Consumer<InstanceMetadata> metadataConsumer) {
+  private void ensure(Resource resource, Consumer<FolioMetadata> metadataConsumer) {
     if (resource.isNotOfType(INSTANCE)) {
       return;
     }
-    var metadata = new InstanceMetadata(resource)
+    var metadata = new FolioMetadata(resource)
       .setResource(resource)
       .setSource(LINKED_DATA);
     metadataConsumer.accept(metadata);
-    resource.setInstanceMetadata(metadata);
+    resource.setFolioMetadata(metadata);
   }
 }

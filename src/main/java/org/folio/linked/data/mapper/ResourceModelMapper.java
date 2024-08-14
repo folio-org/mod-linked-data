@@ -90,9 +90,9 @@ public abstract class ResourceModelMapper {
     }
 
     @AfterMapping
-    protected void setResourceInInstanceMetadata(@MappingTarget org.folio.linked.data.model.entity.Resource resource) {
-      if (resource.getInstanceMetadata() != null) {
-        resource.getInstanceMetadata().setResource(resource);
+    protected void setResourceInFolioMetadata(@MappingTarget org.folio.linked.data.model.entity.Resource resource) {
+      if (resource.getFolioMetadata() != null) {
+        resource.getFolioMetadata().setResource(resource);
       }
     }
   }
