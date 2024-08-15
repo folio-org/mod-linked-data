@@ -20,7 +20,7 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
-import org.folio.linked.data.repo.InstanceMetadataRepository;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.springframework.context.ApplicationEventPublisher;
@@ -39,7 +39,7 @@ public class ResourceServiceImpl implements ResourceService {
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 100;
   private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
-  private final InstanceMetadataRepository instanceMetadataRepo;
+  private final FolioMetadataRepository folioMetadataRepo;
   private final ResourceRepository resourceRepo;
   private final ResourceDtoMapper resourceDtoMapper;
   private final ApplicationEventPublisher applicationEventPublisher;
@@ -65,7 +65,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public ResourceIdDto getResourceIdByInventoryId(String inventoryId) {
-    return instanceMetadataRepo.findIdByInventoryId(inventoryId)
+    return folioMetadataRepo.findIdByInventoryId(inventoryId)
       .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_INVENTORY_ID + inventoryId + IS_NOT_FOUND));
   }
@@ -123,7 +123,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    metadataService.ensure(mapped, old.getInstanceMetadata());
+    metadataService.ensure(mapped, old.getFolioMetadata());
     return resourceGraphService.saveMergingGraph(mapped);
   }
 

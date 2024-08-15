@@ -94,7 +94,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
   }
 
   private Long replaceResource(Long incomingId, String incomingInvId, String existedInvId, Resource mapped) {
-    return resourceRepo.findByInstanceMetadataInventoryId(existedInvId)
+    return resourceRepo.findByFolioMetadataInventoryId(existedInvId)
       .map(Resource::new)
       .map(existedByInventoryId -> {
         logMarcAction(incomingId, incomingInvId,

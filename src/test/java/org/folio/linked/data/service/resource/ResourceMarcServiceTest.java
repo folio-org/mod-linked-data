@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.folio.ld.dictionary.model.InstanceMetadata;
+import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -22,7 +22,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
-import org.folio.linked.data.repo.InstanceMetadataRepository;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
@@ -42,7 +42,7 @@ class ResourceMarcServiceTest {
   private ResourceMarcServiceImpl resourceMarcService;
 
   @Mock
-  private InstanceMetadataRepository instanceMetadataRepo;
+  private FolioMetadataRepository folioMetadataRepo;
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
@@ -154,12 +154,12 @@ class ResourceMarcServiceTest {
     var id = randomLong();
     var invId = UUID.randomUUID().toString();
     var existed = new Resource().setId(id).setManaged(true);
-    doReturn(Optional.of(existed)).when(resourceRepo).findByInstanceMetadataInventoryId(invId);
-    var existedMetadata = new org.folio.linked.data.model.entity.InstanceMetadata(existed).setInventoryId(invId);
-    doReturn(Optional.of(existedMetadata)).when(instanceMetadataRepo).findById(id);
+    doReturn(Optional.of(existed)).when(resourceRepo).findByFolioMetadataInventoryId(invId);
+    var existedMetadata = new org.folio.linked.data.model.entity.FolioMetadata(existed).setInventoryId(invId);
+    doReturn(Optional.of(existedMetadata)).when(folioMetadataRepo).findById(id);
     var model = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
-      .setInstanceMetadata(new InstanceMetadata().setInventoryId(invId));
+      .setFolioMetadata(new FolioMetadata().setInventoryId(invId));
     var mapped = new Resource().setId(id);
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(false).when(resourceRepo).existsById(id);

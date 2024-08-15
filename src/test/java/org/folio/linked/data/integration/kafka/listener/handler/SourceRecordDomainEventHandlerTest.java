@@ -14,9 +14,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.folio.ld.dictionary.model.InstanceMetadata;
+import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.linked.data.repo.InstanceMetadataRepository;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
@@ -42,7 +42,7 @@ public class SourceRecordDomainEventHandlerTest {
   @Mock
   private ResourceMarcService resourceMarcService;
   @Mock
-  private InstanceMetadataRepository instanceMetadataRepository;
+  private FolioMetadataRepository folioMetadataRepository;
 
   @Test
   void shouldNotTriggerSaving_ifIncomingEventHasNoMarcInside() {
@@ -105,9 +105,9 @@ public class SourceRecordDomainEventHandlerTest {
     var mapped = new Resource().setId(4L).addType(INSTANCE);
     doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
     var existedMetaData =
-      new org.folio.linked.data.model.entity.InstanceMetadata(new org.folio.linked.data.model.entity.Resource())
+      new org.folio.linked.data.model.entity.FolioMetadata(new org.folio.linked.data.model.entity.Resource())
         .setSource(LINKED_DATA);
-    doReturn(Optional.of(existedMetaData)).when(instanceMetadataRepository).findById(mapped.getId());
+    doReturn(Optional.of(existedMetaData)).when(folioMetadataRepository).findById(mapped.getId());
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
@@ -123,13 +123,13 @@ public class SourceRecordDomainEventHandlerTest {
       .eventType(CREATED)
       .eventPayload("{ \"key\": \"value\"}");
     var mapped = new Resource().setId(4L).addType(INSTANCE)
-      .setInstanceMetadata(new InstanceMetadata().setInventoryId(UUID.randomUUID().toString()));
+      .setFolioMetadata(new FolioMetadata().setInventoryId(UUID.randomUUID().toString()));
     doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
     var existedMetaData =
-      new org.folio.linked.data.model.entity.InstanceMetadata(new org.folio.linked.data.model.entity.Resource())
+      new org.folio.linked.data.model.entity.FolioMetadata(new org.folio.linked.data.model.entity.Resource())
         .setSource(LINKED_DATA);
     doReturn(Optional.of(existedMetaData))
-      .when(instanceMetadataRepository).findByInventoryId(mapped.getInstanceMetadata().getInventoryId());
+      .when(folioMetadataRepository).findByInventoryId(mapped.getFolioMetadata().getInventoryId());
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
