@@ -51,6 +51,7 @@ import org.springframework.data.domain.Persistable;
 public class Resource implements Persistable<Long> {
 
   @Id
+  @NonNull
   @Column(name = "resource_hash")
   private Long id;
 

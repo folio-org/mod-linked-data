@@ -46,11 +46,7 @@ class MergeResourcesIT {
     // given
     var graph1 = createGraph1toto2();
     resourceGraphService.saveMergingGraph(graph1);
-    var fp1Resource = resourceTestService.getResourceById("1", 4);
-    // Should be: 1 -> [2]
-    assertThat(fp1Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge1to2 = fp1Resource.getOutgoingEdges().iterator().next();
-    assertEdge(fpEdge1to2, 1L, 2L, fp1Resource);
+    assertResourceConnectedToAnother(1L, 2L);
     var graph2 = createGraph3toto1to5toto4();
 
     // when
@@ -58,23 +54,8 @@ class MergeResourcesIT {
 
     // then
     // whole graph should be: 3 -> [(1 -> [2, 5]), 4]
-    // fp1Resource should be: 1 -> [2, 5]
-    fp1Resource = resourceTestService.getResourceById("1", 4);
-    assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
-    var fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1to2 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to2, 1L, 2L, fp1Resource);
-    var fpEdge1to5 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to5, 1L, 5L, fp1Resource);
-    // fp3Resource should be: 3 -> [1, 4]
-    var fp3Resource = resourceTestService.getResourceById("3", 4);
-    assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
-    var fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    var fpEdge3to1 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to1, 3L, 1L, fp3Resource);
-    assertThat(fpEdge3to1.getTarget()).isEqualTo(fp1Resource);
-    var fpEdge3to4 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to4, 3L, 4L, fp3Resource);
+    assertResourceConnectedToAnotherTwo(3L, 1L, 4L);
+    assertResourceConnectedToAnotherTwo(1L, 2L, 5L);
   }
 
   @Test
@@ -82,65 +63,20 @@ class MergeResourcesIT {
     // given
     var graph1 = createGraph3toto1to2to5toto4();
     resourceGraphService.saveMergingGraph(graph1);
-    // fp3Resource should be: 3 -> [1, 4]
-    var fp3Resource = resourceTestService.getResourceById("3", 4);
-    assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
-    var fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    var fpEdge3to1 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to1, 3L, 1L, fp3Resource);
-    var fpEdge3to4 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to4, 3L, 4L, fp3Resource);
-    assertThat(fpEdge3to4.getTarget().getOutgoingEdges()).isEmpty();
-    // fp1Resource should be: 3 -> 1 -> [2, 5]
-    var fp1Resource = fpEdge3to1.getTarget();
-    assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
-    var fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    var fpEdge1to2 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to2, 1L, 2L, fp1Resource);
-    var fpEdge1to5 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to5, 1L, 5L, fp1Resource);
+    // whole graph should be: 3 -> [(1 -> [2, 5]), 4]
+    assertResourceConnectedToAnotherTwo(3L, 1L, 4L);
+    assertResourceConnectedToAnotherTwo(1L, 2L, 5L);
     var graph2 = createGraph6toto1toto4to5();
 
     // when
     resourceGraphService.saveMergingGraph(graph2);
 
     // then
-    // whole graph should be: 3 -> [(1 -> [2, 5]), 4 -> 5]
-    // fp3Resource should be: 3 -> [1, 4]
-    fp3Resource = resourceTestService.getResourceById("3", 10);
-    assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
-    fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    fpEdge3to1 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to1, 3L, 1L, fp3Resource);
-    fpEdge3to4 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to4, 3L, 4L, fp3Resource);
-    // fp1Resource should be: 3 -> 1 -> [2, 5]
-    fp1Resource = fpEdge3to1.getTarget();
-    assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
-    fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1to2 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to2, 1L, 2L, fp1Resource);
-    fpEdge1to5 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to5, 1L, 5L, fp1Resource);
-    // fp4Resource should be: 3 -> 4 -> 5
-    var fp4Resource = fpEdge3to4.getTarget();
-    assertThat(fp4Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge4to5 = fp4Resource.getOutgoingEdges().iterator().next();
-    assertEdge(fpEdge4to5, 4L, 5L, fp4Resource);
-
-    // whole graph should be: 6 -> [(1 -> [2, 5]), 4 -> 5]
-    // fp6Resource should be: 6 -> [1, 4]
-    var fp6Resource = resourceTestService.getResourceById("6", 4);
-    assertThat(fp6Resource.getOutgoingEdges()).hasSize(2);
-    var fp6EdgeIterator = fp6Resource.getOutgoingEdges().iterator();
-    var fp6to1Edge = fp6EdgeIterator.next();
-    assertEdge(fp6to1Edge, 6L, 1L, fp6Resource);
-    // fp1Resource is already asserted
-    assertThat(fp6to1Edge.getTarget()).isEqualTo(fp1Resource);
-    var fp6to4Edge = fp6EdgeIterator.next();
-    assertEdge(fp6to4Edge, 6L, 4L, fp6Resource);
-    // fp4Resource is already asserted
-    assertThat(fp6to4Edge.getTarget()).isEqualTo(fp4Resource);
+    // whole graph should be: [3, 6] -> [(1 -> [2, 5]), (4 -> 5)]
+    assertResourceConnectedToAnotherTwo(3L, 1L, 4L);
+    assertResourceConnectedToAnotherTwo(1L, 2L, 5L);
+    assertResourceConnectedToAnother(4L, 5L);
+    assertResourceConnectedToAnotherTwo(6L, 1L, 4L);
   }
 
   @Test
@@ -148,77 +84,53 @@ class MergeResourcesIT {
     // given
     var graph1 = createGraph1toto2();
     resourceGraphService.saveMergingGraph(graph1);
-    var fp1Resource = resourceTestService.getResourceById("1", 4);
-    // Should be: 1 -> [2]
-    assertThat(fp1Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge1to2 = fp1Resource.getOutgoingEdges().iterator().next();
-    assertEdge(fpEdge1to2, 1L, 2L, fp1Resource);
+    assertResourceConnectedToAnother(1L, 2L);
     var graph2 = createGraph3toto1to5toto4();
 
     // when
     resourceGraphService.saveMergingGraph(graph2);
 
     // then
-    fp1Resource = resourceTestService.getResourceById("1", 4);
-    // fp1Resource should be: 1 -> [2, 5]
-    assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
-    var fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1to2 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to2, 1L, 2L, fp1Resource);
-    var fpEdge1to5 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to5, 1L, 5L, fp1Resource);
-    // fp3Resource should be: 3 -> [(1 -> [2, 5]), 4]
-    var fp3Resource = resourceTestService.getResourceById("3", 4);
-    assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
-    var fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    var fpEdge3to1 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to1, 3L, 1L, fp3Resource);
-    assertThat(fpEdge3to1.getTarget()).isEqualTo(fp1Resource);
-    var fpEdge3to4 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to4, 3L, 4L, fp3Resource);
-    var fp4Resource = resourceTestService.getResourceById("4", 4);
-    assertThat(fp1Resource.getDoc().equals(getInitialDoc())).isTrue();
-    assertThat(fp4Resource.getDoc().equals(getInitialDoc())).isTrue();
+    // whole graph should be: 3 -> [(1 -> [2, 5]), 4]
+    assertResourceConnectedToAnotherTwo(3L, 1L, 4L);
+    assertResourceConnectedToAnotherTwo(1L, 2L, 5L);
+    assertResourceDoc("1", getInitialDoc());
+    assertResourceDoc("4", getInitialDoc());
 
     // when
     var graph3 = createGraph6toto1toto4to5();
     resourceGraphService.saveMergingGraph(graph3);
 
     // then
-    // fp3Resource should be: 3 -> [1, 4]
-    fp3Resource = resourceTestService.getResourceById("3", 10);
-    assertThat(fp3Resource.getOutgoingEdges()).hasSize(2);
-    fp3EdgeIterator = fp3Resource.getOutgoingEdges().iterator();
-    fpEdge3to1 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to1, 3L, 1L, fp3Resource);
-    fpEdge3to4 = fp3EdgeIterator.next();
-    assertEdge(fpEdge3to4, 3L, 4L, fp3Resource);
-    // fp1Resource should be: 3 -> 1 -> [2, 5]
-    fp1Resource = fpEdge3to1.getTarget();
-    assertThat(fp1Resource.getOutgoingEdges()).hasSize(2);
-    fp1Edgeiterator = fp1Resource.getOutgoingEdges().iterator();
-    fpEdge1to2 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to2, 1L, 2L, fp1Resource);
-    fpEdge1to5 = fp1Edgeiterator.next();
-    assertEdge(fpEdge1to5, 1L, 5L, fp1Resource);
-    // fp4Resource should be: 3 -> 4 -> 5
-    fp4Resource = fpEdge3to4.getTarget();
-    assertThat(fp4Resource.getOutgoingEdges()).hasSize(1);
-    var fpEdge4to5 = fp4Resource.getOutgoingEdges().iterator().next();
-    assertEdge(fpEdge4to5, 4L, 5L, fp4Resource);
+    // whole graph should be: [3, 6] -> [(1 -> [2, 5]), (4 -> 5)]
+    assertResourceConnectedToAnotherTwo(3L, 1L, 4L);
+    assertResourceConnectedToAnotherTwo(1L, 2L, 5L);
+    assertResourceConnectedToAnother(4L, 5L);
+    assertResourceConnectedToAnotherTwo(6L, 1L, 4L);
+    assertResourceDoc("1", getMergedDoc());
+    assertResourceDoc("4", getMergedDoc());
+  }
 
-    // fp6Resource should be: 6 -> [1, 4]
-    var fp6Resource = resourceTestService.getResourceById("6", 4);
-    assertThat(fp6Resource.getOutgoingEdges()).hasSize(2);
-    var fp6EdgeIterator = fp6Resource.getOutgoingEdges().iterator();
-    var fp6to1Edge = fp6EdgeIterator.next();
-    assertEdge(fp6to1Edge, 6L, 1L, fp6Resource);
-    assertThat(fp6to1Edge.getTarget()).isEqualTo(fp1Resource);
-    var fp6to4Edge = fp6EdgeIterator.next();
-    assertEdge(fp6to4Edge, 6L, 4L, fp6Resource);
-    assertThat(fp6to4Edge.getTarget()).isEqualTo(fp4Resource);
-    assertThat(fp1Resource.getDoc().equals(getMergedDoc())).isTrue();
-    assertThat(fp4Resource.getDoc().equals(getMergedDoc())).isTrue();
+  private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {
+    var mainResource = resourceTestService.getResourceById(mainId.toString(), 4);
+    assertThat(mainResource.getOutgoingEdges()).hasSize(1);
+    var edgeToAnother = mainResource.getOutgoingEdges().iterator().next();
+    assertEdge(edgeToAnother, mainId, anotherId, mainResource);
+  }
+
+  private void assertResourceConnectedToAnotherTwo(Long mainId, Long firstConnectedId, Long secondConnectedId) {
+    var mainResource = resourceTestService.getResourceById(mainId.toString(), 4);
+    assertThat(mainResource.getOutgoingEdges()).hasSize(2);
+    var mainEdgeIterator = mainResource.getOutgoingEdges().iterator();
+    var firstEdge = mainEdgeIterator.next();
+    assertEdge(firstEdge, mainId, firstConnectedId, mainResource);
+    var secondEdge = mainEdgeIterator.next();
+    assertEdge(secondEdge, mainId, secondConnectedId, mainResource);
+  }
+
+  private void assertResourceDoc(String id, JsonNode expected) {
+    var resource = resourceTestService.getResourceById(id, 4);
+    assertThat(resource.getDoc()).isEqualTo(expected);
   }
 
   @SneakyThrows
