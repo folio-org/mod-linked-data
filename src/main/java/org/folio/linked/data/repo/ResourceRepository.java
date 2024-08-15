@@ -33,5 +33,5 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   @Query("update Resource r set r.indexDate = current_timestamp() where r.id in (:ids)")
   void updateIndexDateBatch(@Param("ids") Set<Long> ids);
 
-  Optional<Resource> findByInstanceMetadataInventoryId(String inventoryId);
+  Optional<Resource> findByFolioMetadataInventoryId(String inventoryId);
 }

@@ -157,10 +157,10 @@ class SourceRecordDomainEventHandlerIT {
       assertThat(edge.getTarget()).isNotNull();
       assertThat(edge.getPredicate()).isNotNull();
     });
-    var instanceMetadata = result.getInstanceMetadata();
-    assertThat(instanceMetadata.getSource()).isEqualTo(MARC);
-    assertThat(instanceMetadata.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
-    assertThat(instanceMetadata.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
+    var folioMetadata = result.getFolioMetadata();
+    assertThat(folioMetadata.getSource()).isEqualTo(MARC);
+    assertThat(folioMetadata.getInventoryId()).hasToString("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
+    assertThat(folioMetadata.getSrsId()).hasToString("43d58061-decf-4d74-9747-0e1c368e861b");
 
     assertWorkIsIndexed(result);
     verifyNoInteractions(instanceIngressMessageProducer);
@@ -248,7 +248,7 @@ class SourceRecordDomainEventHandlerIT {
   }
 
   @Test
-  void marcBibSourceRecordDomainEvent_shouldKeepExistedEdgesAndPropertiesAndInstanceMetadata_inCaseOfUpdate() {
+  void marcBibSourceRecordDomainEvent_shouldKeepExistedEdgesAndPropertiesAndFolioMetadata_inCaseOfUpdate() {
     // given
     var firstInstanceMarc = loadResourceAsString("samples/marc2ld/small_instance.jsonl");
     mapAndSave(firstInstanceMarc);
@@ -273,7 +273,7 @@ class SourceRecordDomainEventHandlerIT {
     assertThat(instance.getDoc().toString()).isEqualTo("{\"http://bibfra.me/vocab/marc/statementOfResponsibility\":["
       + "\"Statement Of Responsibility\",\"Statement Of Responsibility UPDATED\"]}");
     assertThat(instance.getOutgoingEdges()).hasSize(5);
-    assertThat(instance.getInstanceMetadata())
+    assertThat(instance.getFolioMetadata())
       .hasFieldOrPropertyWithValue("inventoryId", "2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")
       .hasFieldOrPropertyWithValue("srsId", "43d58061-decf-4d74-9747-0e1c368e861b")
       .hasFieldOrPropertyWithValue("source", MARC);

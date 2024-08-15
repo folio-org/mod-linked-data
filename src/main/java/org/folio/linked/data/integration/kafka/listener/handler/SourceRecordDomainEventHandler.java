@@ -15,8 +15,8 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.linked.data.model.entity.InstanceMetadata;
-import org.folio.linked.data.repo.InstanceMetadataRepository;
+import org.folio.linked.data.model.entity.FolioMetadata;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
@@ -42,7 +42,7 @@ public class SourceRecordDomainEventHandler {
   private final MarcBib2ldMapper marcBib2ldMapper;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
   private final ResourceMarcService resourceMarcService;
-  private final InstanceMetadataRepository instanceMetadataRepository;
+  private final FolioMetadataRepository folioMetadataRepository;
 
   public void handle(SourceRecordDomainEvent event, SourceRecordType recordType) {
     if (notProcessableEvent(event, recordType)) {
@@ -86,11 +86,11 @@ public class SourceRecordDomainEventHandler {
 
   private boolean isInstanceWithLinkedDataSource(Resource resource) {
     return resource.getTypes().equals(Set.of(INSTANCE))
-      && ofNullable(resource.getInstanceMetadata())
-      .map(org.folio.ld.dictionary.model.InstanceMetadata::getInventoryId)
-      .flatMap(instanceMetadataRepository::findByInventoryId)
-      .or(() -> instanceMetadataRepository.findById(resource.getId()))
-      .map(InstanceMetadata::getSource)
+      && ofNullable(resource.getFolioMetadata())
+      .map(org.folio.ld.dictionary.model.FolioMetadata::getInventoryId)
+      .flatMap(folioMetadataRepository::findByInventoryId)
+      .or(() -> folioMetadataRepository.findById(resource.getId()))
+      .map(FolioMetadata::getSource)
       .map(LINKED_DATA::equals)
       .orElse(false);
   }
