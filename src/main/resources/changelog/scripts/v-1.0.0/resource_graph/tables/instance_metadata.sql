@@ -3,7 +3,7 @@ create table if not exists instance_metadata (
      inventory_id text null,
      srs_id text null,
      source resource_source null
-  );
+  ) partition by hash(resource_hash);
 
 create index if not exists instance_metadata_inventory_id_idx on instance_metadata(inventory_id);
 
