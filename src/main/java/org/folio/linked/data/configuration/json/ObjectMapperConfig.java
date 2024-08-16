@@ -23,21 +23,19 @@ public class ObjectMapperConfig {
 
   @Bean
   public ObjectMapper objectMapper() {
-    var mapper = new ObjectMapper();
-    mapper
+    return new ObjectMapper()
       .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
-      .registerModule(monographModule(mapper))
+      .registerModule(monographModule())
       .addMixIn(MarcRecord.class, MarcRecordSerializationConfig.class);
-    return mapper;
   }
 
-  private Module monographModule(ObjectMapper mapper) {
-    var module = new SimpleModule();
-    module.addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer());
-    module.addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer());
-    module.addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer());
-    return module;
+  private Module monographModule() {
+    return new SimpleModule()
+      .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer())
+      .addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer())
+      .addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer());
   }
+
 }

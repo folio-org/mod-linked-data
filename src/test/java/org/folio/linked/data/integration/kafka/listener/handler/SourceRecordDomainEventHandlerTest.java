@@ -30,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class SourceRecordDomainEventHandlerTest {
+class SourceRecordDomainEventHandlerTest {
 
   @InjectMocks
   private SourceRecordDomainEventHandler sourceRecordDomainEventHandler;

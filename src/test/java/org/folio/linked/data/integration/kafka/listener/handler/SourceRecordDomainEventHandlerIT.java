@@ -270,7 +270,7 @@ class SourceRecordDomainEventHandlerIT {
     );
     assertThat(allInstances).hasSize(1);
     var instance = allInstances.get(0);
-    assertThat(instance.getDoc().toString()).isEqualTo("{\"http://bibfra.me/vocab/marc/statementOfResponsibility\":["
+    assertThat(instance.getDoc()).hasToString("{\"http://bibfra.me/vocab/marc/statementOfResponsibility\":["
       + "\"Statement Of Responsibility\",\"Statement Of Responsibility UPDATED\"]}");
     assertThat(instance.getOutgoingEdges()).hasSize(5);
     assertThat(instance.getFolioMetadata())
