@@ -5,7 +5,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.DISABLED_FOR_BETA;
 import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
 import static org.folio.search.domain.dto.SourceRecordType.MARC_AUTHORITY;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@Profile(FOLIO_PROFILE)
+@Profile(DISABLED_FOR_BETA)
 @RequiredArgsConstructor
 public class SourceRecordDomainEventHandler {
 

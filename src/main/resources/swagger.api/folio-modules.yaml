@@ -26,3 +26,5 @@ components:
       $ref: folio-modules/srs/sourceRecordDomainEvent.json
     sourceRecordType:
       $ref: folio-modules/srs/sourceRecordType.json
+    dataImportEvent:
+      $ref: folio-modules/dataImportEvent.json

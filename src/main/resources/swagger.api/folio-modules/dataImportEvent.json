@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Event from Data Import module",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Event ID",
+      "type": "string"
+    },
+    "tenant": {
+      "description": "Tenant id",
+      "type": "string"
+    },
+    "eventType": {
+      "description": "Unique Event type, human-readable String, not UUID",
+      "type": "string"
+    },
+    "marcBib": {
+      "description": "Marc Bib record",
+      "type": "string"
+    },
+    "marcAuthority": {
+      "description": "Marc Authority record",
+      "type": "string"
+    }
+  }
+}
