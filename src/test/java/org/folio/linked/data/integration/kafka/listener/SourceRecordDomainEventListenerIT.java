@@ -5,6 +5,7 @@ import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEvent;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
+import static org.folio.linked.data.util.Constants.DISABLED_FOR_BETA;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.search.domain.dto.SourceRecordType.MARC_BIB;
@@ -23,8 +24,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 @IntegrationTest
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
-class KafkaMessageListenerIT {
+@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE, DISABLED_FOR_BETA})
+class SourceRecordDomainEventListenerIT {
 
   @Autowired
   private KafkaTemplate<String, String> eventKafkaTemplate;

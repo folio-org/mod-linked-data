@@ -23,5 +23,6 @@ public class Constants {
   public static final String PROFILE_NOT_FOUND = "Profile not found";
   public static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [resourceId = {}] conversion to Index message";
+  public static final String DISABLED_FOR_BETA = "disabled_for_beta";
 
 }
