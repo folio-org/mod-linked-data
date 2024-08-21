@@ -35,7 +35,12 @@ class InstanceIngressMessageMapperTest {
     // given
     var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
     var inventoryId = UUID.randomUUID().toString();
-    instance.setFolioMetadata(new FolioMetadata(instance).setInventoryId(inventoryId));
+    var srsId = UUID.randomUUID().toString();
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setInventoryId(inventoryId)
+        .setSrsId(srsId)
+    );
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(instance.getId())
       .addType(INSTANCE);
@@ -51,10 +56,12 @@ class InstanceIngressMessageMapperTest {
       .hasAllNullFieldsOrPropertiesExcept("id", "eventPayload")
       .hasFieldOrProperty("id")
       .extracting("eventPayload")
-      .hasFieldOrPropertyWithValue("sourceRecordIdentifier", inventoryId)
+      .hasFieldOrPropertyWithValue("sourceRecordIdentifier", srsId)
       .hasFieldOrPropertyWithValue("sourceType", InstanceIngressPayload.SourceTypeEnum.LINKED_DATA)
       .hasFieldOrPropertyWithValue("sourceRecordObject", marcString)
-      .hasFieldOrPropertyWithValue("additionalProperties", Map.of("linkedDataId", instance.getId()));
+      .hasFieldOrPropertyWithValue("additionalProperties",
+        Map.of("linkedDataId", instance.getId(), "instanceId", inventoryId)
+      );
   }
 
 }
