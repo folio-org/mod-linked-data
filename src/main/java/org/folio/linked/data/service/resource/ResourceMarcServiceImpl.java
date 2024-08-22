@@ -48,21 +48,21 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
 
   public Long saveMarcResource(org.folio.ld.dictionary.model.Resource modelResource) {
-    var incomingInvId = ofNullable(modelResource.getFolioMetadata())
-      .map(FolioMetadata::getInventoryId)
+    var incomingSrsId = ofNullable(modelResource.getFolioMetadata())
+      .map(FolioMetadata::getSrsId)
       .orElse(null);
-    var existedInvId = folioMetadataRepository.findById(modelResource.getId())
-      .map(org.folio.linked.data.model.entity.FolioMetadata::getInventoryId)
+    var existedSrsId = folioMetadataRepository.findById(modelResource.getId())
+      .map(org.folio.linked.data.model.entity.FolioMetadata::getSrsId)
       .orElse(null);
     var mapped = resourceModelMapper.toEntity(modelResource);
 
     if (resourceRepo.existsById(modelResource.getId())) {
-      return updateResource(modelResource.getId(), incomingInvId, existedInvId, mapped);
+      return updateResource(modelResource.getId(), incomingSrsId, existedSrsId, mapped);
     }
-    if (nonNull(existedInvId)) {
-      return replaceResource(modelResource.getId(), incomingInvId, existedInvId, mapped);
+    if (nonNull(existedSrsId)) {
+      return replaceResource(modelResource.getId(), incomingSrsId, existedSrsId, mapped);
     }
-    return createResource(modelResource.getId(), incomingInvId, mapped);
+    return createResource(modelResource.getId(), incomingSrsId, mapped);
   }
 
   @Override
@@ -88,32 +88,32 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     );
   }
 
-  private Long createResource(Long incomingId, String incomingInvId, Resource mapped) {
-    logMarcAction(incomingId, incomingInvId, "not found by id and invId", "created");
+  private Long createResource(Long incomingId, String incomingSrsId, Resource mapped) {
+    logMarcAction(incomingId, incomingSrsId, "not found by id and srsId", "created");
     return saveAndPublishEvent(mapped, ResourceCreatedEvent::new);
   }
 
-  private Long replaceResource(Long incomingId, String incomingInvId, String existedInvId, Resource mapped) {
-    return resourceRepo.findByFolioMetadataInventoryId(existedInvId)
+  private Long replaceResource(Long incomingId, String incomingSrsId, String existedSrsId, Resource mapped) {
+    return resourceRepo.findByFolioMetadataSrsId(existedSrsId)
       .map(Resource::new)
-      .map(existedByInventoryId -> {
-        logMarcAction(incomingId, incomingInvId,
-          "not found by id, but found by invId [" + existedInvId + "]", "replaced");
+      .map(existedBySrsId -> {
+        logMarcAction(incomingId, incomingSrsId,
+          "not found by id, but found by srsId [" + existedSrsId + "]", "replaced");
         return saveAndPublishEvent(mapped,
-          saved -> new ResourceReplacedEvent(existedByInventoryId, saved));
+          saved -> new ResourceReplacedEvent(existedBySrsId, saved));
       })
-      .orElseThrow(() -> new NotFoundException("Resource not found by existed inventory id: " + existedInvId));
+      .orElseThrow(() -> new NotFoundException("Resource not found by existed srsId: " + existedSrsId));
   }
 
-  private Long updateResource(Long incomingId, String incomingInvId, String existedInvId, Resource mapped) {
-    logMarcAction(incomingId, incomingInvId,
-      "found by id [" + incomingId + "] with invId [" + existedInvId + "]", "updated");
+  private Long updateResource(Long incomingId, String incomingSrsId, String existedSrsId, Resource mapped) {
+    logMarcAction(incomingId, incomingSrsId,
+      "found by id [" + incomingId + "] with srsId [" + existedSrsId + "]", "updated");
     return saveAndPublishEvent(mapped, ResourceUpdatedEvent::new);
   }
 
-  private void logMarcAction(Long incomingId, String incomingInvId, String existence, String action) {
-    log.info("Incoming marc resource [id {}, inventoryId {}] is {} and will be {}",
-      incomingId, incomingInvId, existence, action);
+  private void logMarcAction(Long incomingId, String incomingSrsId, String existence, String action) {
+    log.info("Incoming marc resource [id {}, srsId {}] is {} and will be {}",
+      incomingId, incomingSrsId, existence, action);
   }
 
   private Long saveAndPublishEvent(Resource mapped, Function<Resource, ResourceEvent> resourceEventSupplier) {

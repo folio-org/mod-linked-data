@@ -87,8 +87,8 @@ public class SourceRecordDomainEventHandler {
   private boolean isInstanceWithLinkedDataSource(Resource resource) {
     return resource.getTypes().equals(Set.of(INSTANCE))
       && ofNullable(resource.getFolioMetadata())
-      .map(org.folio.ld.dictionary.model.FolioMetadata::getInventoryId)
-      .flatMap(folioMetadataRepository::findByInventoryId)
+      .map(org.folio.ld.dictionary.model.FolioMetadata::getSrsId)
+      .flatMap(folioMetadataRepository::findBySrsId)
       .or(() -> folioMetadataRepository.findById(resource.getId()))
       .map(FolioMetadata::getSource)
       .map(LINKED_DATA::equals)

@@ -47,5 +47,6 @@ public class FolioMetadata {
 
   public FolioMetadata(Resource resource) {
     this.resource = resource;
+    this.id = resource.getId();
   }
 }
