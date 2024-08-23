@@ -111,7 +111,7 @@ class ResourceMarcServiceTest {
   }
 
   @Test
-  void saveMarcResource_shouldCreateNewResource_ifGivenModelDoesNotExistsByIdAndInventoryId() {
+  void saveMarcResource_shouldCreateNewResource_ifGivenModelDoesNotExistsByIdAndSrsId() {
     // given
     var id = randomLong();
     var model = new org.folio.ld.dictionary.model.Resource().setId(id);
@@ -149,17 +149,17 @@ class ResourceMarcServiceTest {
   }
 
   @Test
-  void saveMarcResource_shouldReplaceResource_ifGivenModelExistsByInventoryIdButNotById() {
+  void saveMarcResource_shouldReplaceResource_ifGivenModelExistsBySrsIdButNotById() {
     // given
     var id = randomLong();
-    var invId = UUID.randomUUID().toString();
+    var srsId = UUID.randomUUID().toString();
     var existed = new Resource().setId(id).setManaged(true);
-    doReturn(Optional.of(existed)).when(resourceRepo).findByFolioMetadataInventoryId(invId);
-    var existedMetadata = new org.folio.linked.data.model.entity.FolioMetadata(existed).setInventoryId(invId);
+    doReturn(Optional.of(existed)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
+    var existedMetadata = new org.folio.linked.data.model.entity.FolioMetadata(existed).setSrsId(srsId);
     doReturn(Optional.of(existedMetadata)).when(folioMetadataRepo).findById(id);
     var model = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
-      .setFolioMetadata(new FolioMetadata().setInventoryId(invId));
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
     var mapped = new Resource().setId(id);
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(false).when(resourceRepo).existsById(id);

@@ -14,8 +14,10 @@ public class MetadataServiceImpl implements MetadataService {
 
   @Override
   public void ensure(Resource resource) {
-    ensure(resource, metadata ->
-      metadata.setInventoryId(UUID.randomUUID().toString())
+    ensure(resource, metadata -> {
+        metadata.setInventoryId(UUID.randomUUID().toString());
+        metadata.setSrsId(UUID.randomUUID().toString());
+      }
     );
   }
 
