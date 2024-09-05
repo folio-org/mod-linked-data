@@ -10,6 +10,7 @@ import org.springframework.integration.jdbc.metadata.JdbcMetadataStore;
 import org.springframework.integration.metadata.MetadataStore;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import javax.sql.DataSource;
 import java.net.MalformedURLException;
@@ -41,15 +42,15 @@ public class AtomFeedConfiguration {
         c -> c.poller(Pollers.fixedDelay(POLL_PERIOD_DAILY))
       )
       .channel(c -> c.queue("entries"))
-      .handle(atomFeedHandler::handleMessage)
-      .get();
+      .handleReactive(atomFeedHandler::handleMessageReactive);
   }
 
   @Component
   public class AtomFeedHandler {
-    public void handleMessage(Message<?> msg) {
-      // handle message from the queue
-      System.out.println();
+    public Mono<Void> handleMessageReactive(Message<?> msg) {
+      return Mono.fromRunnable(() -> {
+        System.out.println();
+      });
     }
   }
 }
