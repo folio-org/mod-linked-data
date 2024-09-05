@@ -14,10 +14,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -34,6 +34,8 @@ public abstract class ResourceModelMapper {
     return toEntity(model, new CyclicGraphContext());
   }
 
+  @Mapping(target = "folioMetadata",
+    expression = "java(model.getFolioMetadata() != null ? mapFolioMetadata(model.getFolioMetadata(), resource) : null)")
   protected abstract Resource toEntity(org.folio.ld.dictionary.model.Resource model,
                                        @Context CyclicGraphContext cycleContext);
 
@@ -46,24 +48,28 @@ public abstract class ResourceModelMapper {
   protected abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity,
                                                                     @Context CyclicGraphContext cycleContext);
 
-  public Set<ResourceTypeDictionary> map(Set<ResourceTypeEntity> typeEntities) {
+  protected Set<ResourceTypeDictionary> map(Set<ResourceTypeEntity> typeEntities) {
     return typeEntities.stream()
       .map(typeEntity -> ResourceTypeDictionary.fromUri(typeEntity.getUri()).orElse(null))
       .filter(Objects::nonNull)
       .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
-  public PredicateDictionary map(PredicateEntity predicateEntity) {
+  protected PredicateDictionary map(PredicateEntity predicateEntity) {
     return PredicateDictionary.fromUri(predicateEntity.getUri()).orElse(null);
   }
+
+  @Mapping(source = "resource", target = "resource")
+  protected abstract FolioMetadata mapFolioMetadata(org.folio.ld.dictionary.model.FolioMetadata folioMetadata,
+                                                    Resource resource);
 
   @Qualifier
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.CLASS)
-  public @interface NotForGeneration {
+  protected @interface NotForGeneration {
   }
 
-  public static class CyclicGraphContext {
+  protected static class CyclicGraphContext {
     private final Map<Resource, org.folio.ld.dictionary.model.Resource> convertedModels = new HashMap<>();
     private final Map<org.folio.ld.dictionary.model.Resource, Resource> convertedEntities = new HashMap<>();
 
@@ -88,12 +94,6 @@ public abstract class ResourceModelMapper {
     protected void storeMappedEntity(org.folio.ld.dictionary.model.Resource source, @MappingTarget Resource target) {
       convertedEntities.put(source, target);
     }
-
-    @AfterMapping
-    protected void setResourceInFolioMetadata(@MappingTarget org.folio.linked.data.model.entity.Resource resource) {
-      if (resource.getFolioMetadata() != null) {
-        resource.getFolioMetadata().setResource(resource);
-      }
-    }
   }
+
 }

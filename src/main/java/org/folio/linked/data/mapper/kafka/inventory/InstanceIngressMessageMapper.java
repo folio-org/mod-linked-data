@@ -1,9 +1,11 @@
 package org.folio.linked.data.mapper.kafka.inventory;
 
+import static java.util.Optional.ofNullable;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.UUID;
 import org.folio.linked.data.mapper.ResourceModelMapper;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
 import org.folio.search.domain.dto.InstanceIngressEvent;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class InstanceIngressMessageMapper {
 
   private static final String LINKED_DATA_ID = "linkedDataId";
+  private static final String INSTANCE_ID = "instanceId";
   @Autowired
   protected Bibframe2MarcMapper bibframe2MarcMapper;
   @Autowired
@@ -27,7 +30,7 @@ public abstract class InstanceIngressMessageMapper {
   @Mapping(target = "eventPayload", source = "resource")
   public abstract InstanceIngressEvent toInstanceIngressEvent(Resource resource);
 
-  @Mapping(target = "sourceRecordIdentifier", source = "folioMetadata.inventoryId")
+  @Mapping(target = "sourceRecordIdentifier", source = "folioMetadata.srsId")
   @Mapping(target = "sourceType", constant = "LINKED_DATA")
   @Mapping(target = "sourceRecordObject", source = "resource")
   protected abstract InstanceIngressPayload toInstanceIngressPayload(Resource resource);
@@ -40,5 +43,8 @@ public abstract class InstanceIngressMessageMapper {
   @AfterMapping
   protected void afterMappingPayload(@MappingTarget InstanceIngressPayload payload, Resource resource) {
     payload.putAdditionalProperty(LINKED_DATA_ID, resource.getId());
+    ofNullable(resource.getFolioMetadata())
+      .map(FolioMetadata::getInventoryId)
+      .ifPresent(invId -> payload.putAdditionalProperty(INSTANCE_ID, invId));
   }
 }

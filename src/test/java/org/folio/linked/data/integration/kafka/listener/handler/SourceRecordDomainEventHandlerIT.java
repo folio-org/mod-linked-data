@@ -13,7 +13,6 @@ import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
-import static org.folio.linked.data.util.Constants.DISABLED_FOR_BETA;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.search.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
@@ -59,7 +58,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE, DISABLED_FOR_BETA})
+@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class SourceRecordDomainEventHandlerIT {
 
   @Autowired

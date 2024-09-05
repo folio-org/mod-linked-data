@@ -5,7 +5,7 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.util.Constants.DISABLED_FOR_BETA;
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
 import static org.folio.search.domain.dto.SourceRecordType.MARC_AUTHORITY;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@Profile(DISABLED_FOR_BETA)
+@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
 public class SourceRecordDomainEventHandler {
 
@@ -87,8 +87,8 @@ public class SourceRecordDomainEventHandler {
   private boolean isInstanceWithLinkedDataSource(Resource resource) {
     return resource.getTypes().equals(Set.of(INSTANCE))
       && ofNullable(resource.getFolioMetadata())
-      .map(org.folio.ld.dictionary.model.FolioMetadata::getInventoryId)
-      .flatMap(folioMetadataRepository::findByInventoryId)
+      .map(org.folio.ld.dictionary.model.FolioMetadata::getSrsId)
+      .flatMap(folioMetadataRepository::findBySrsId)
       .or(() -> folioMetadataRepository.findById(resource.getId()))
       .map(FolioMetadata::getSource)
       .map(LINKED_DATA::equals)

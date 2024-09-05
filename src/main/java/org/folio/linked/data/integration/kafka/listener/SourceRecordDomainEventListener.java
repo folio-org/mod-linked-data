@@ -1,7 +1,7 @@
 package org.folio.linked.data.integration.kafka.listener;
 
 import static java.util.Optional.ofNullable;
-import static org.folio.linked.data.util.Constants.DISABLED_FOR_BETA;
+import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
-@Profile(DISABLED_FOR_BETA)
+@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
 public class SourceRecordDomainEventListener {
 

@@ -117,19 +117,19 @@ class SourceRecordDomainEventHandlerTest {
   }
 
   @Test
-  void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsExistedByInventoryIdInstanceWithLinkedDataSource() {
+  void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsExistedBySrsIdInstanceWithLinkedDataSource() {
     // given
     var event = new SourceRecordDomainEvent().id("6")
       .eventType(CREATED)
       .eventPayload("{ \"key\": \"value\"}");
     var mapped = new Resource().setId(4L).addType(INSTANCE)
-      .setFolioMetadata(new FolioMetadata().setInventoryId(UUID.randomUUID().toString()));
+      .setFolioMetadata(new FolioMetadata().setSrsId(UUID.randomUUID().toString()));
     doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
     var existedMetaData =
       new org.folio.linked.data.model.entity.FolioMetadata(new org.folio.linked.data.model.entity.Resource())
         .setSource(LINKED_DATA);
     doReturn(Optional.of(existedMetaData))
-      .when(folioMetadataRepository).findByInventoryId(mapped.getFolioMetadata().getInventoryId());
+      .when(folioMetadataRepository).findBySrsId(mapped.getFolioMetadata().getSrsId());
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
