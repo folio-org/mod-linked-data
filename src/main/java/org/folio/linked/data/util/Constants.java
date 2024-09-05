@@ -10,6 +10,7 @@ public class Constants {
   public static final String RIGHT_SQUARE_BRACKET = "]";
   public static final String IS_NOT_SUPPORTED_FOR = "] is not supported for ";
   public static final String IS_NOT_SUPPORTED_FOR_PREDICATE = IS_NOT_SUPPORTED_FOR + PREDICATE;
+  public static final String FEED_PROFILE = "feed";
   public static final String FOLIO_PROFILE = "folio";
   public static final String DTO_UNKNOWN_SUB_ELEMENT = " dto class deserialization error: Unknown sub-element ";
   public static final String AND = " and ";
