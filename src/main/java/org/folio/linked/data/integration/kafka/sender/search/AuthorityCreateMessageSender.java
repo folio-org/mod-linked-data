@@ -1,7 +1,7 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -10,13 +10,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.AuthoritySearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
 import org.folio.marc4ld.util.ResourceKind;
-import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;

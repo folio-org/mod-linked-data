@@ -4,12 +4,12 @@ import static java.util.Optional.ofNullable;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.util.UUID;
+import org.folio.linked.data.domain.dto.InstanceIngressEvent;
+import org.folio.linked.data.domain.dto.InstanceIngressPayload;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
-import org.folio.search.domain.dto.InstanceIngressEvent;
-import org.folio.search.domain.dto.InstanceIngressPayload;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

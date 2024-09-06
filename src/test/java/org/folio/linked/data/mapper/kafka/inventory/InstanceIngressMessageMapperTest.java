@@ -7,11 +7,11 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.Map;
 import java.util.UUID;
+import org.folio.linked.data.domain.dto.InstanceIngressPayload;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
-import org.folio.search.domain.dto.InstanceIngressPayload;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

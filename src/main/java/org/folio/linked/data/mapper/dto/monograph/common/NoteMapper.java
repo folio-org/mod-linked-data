@@ -9,6 +9,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.fromValue;
 import static org.folio.linked.data.util.BibframeUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,10 @@ import org.springframework.stereotype.Component;
 public class NoteMapper {
 
   public List<Note> toNotes(JsonNode doc, Set<PropertyDictionary> noteProperties) {
-    return doc.properties().stream()
+    return ofNullable(doc)
+      .stream()
+      .map(JsonNode::properties)
+      .flatMap(Collection::stream)
       .filter(entry -> {
         var property = fromValue(entry.getKey());
         return property.isPresent() && noteProperties.contains(property.get());

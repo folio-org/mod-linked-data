@@ -8,14 +8,12 @@ paths: {}
 
 components:
   schemas:
-    createIndexRequest:
-      $ref: folio-modules/search/createIndexRequest.json
-    createIndexResponse:
-      $ref: folio-modules/search/createIndexResponse.json
     resourceIndexEvent:
       $ref: folio-modules/search/resourceIndexEvent.json
     resourceIndexEventType:
       $ref: folio-modules/search/resourceIndexEventType.json
+    linkedDataInstance:
+      $ref: folio-modules/search/linkedDataInstance.json
     linkedDataWork:
       $ref: folio-modules/search/linkedDataWork.json
     linkedDataAuthority:

@@ -50,7 +50,7 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = WORK, requestDto = WorkField.class)
 public class WorkMapperUnit extends TopResourceMapperUnit {
 
-  private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
+  public static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;

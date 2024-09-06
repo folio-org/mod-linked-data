@@ -3,7 +3,7 @@ package org.folio.linked.data.integration.kafka.sender.search;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
-import static org.folio.search.domain.dto.ResourceIndexEventType.DELETE;
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -13,10 +13,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import java.util.HashSet;
 import java.util.List;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
+import org.folio.linked.data.domain.dto.ResourceIndexEvent;
+import org.folio.linked.data.mapper.kafka.search.WorkSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class WorkDeleteMessageSenderTest {
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
   @Mock
-  private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
+  private WorkSearchMessageMapper workSearchMessageMapper;
   @Mock
   private WorkUpdateMessageSender workUpdateMessageSender;
 
@@ -49,7 +49,7 @@ class WorkDeleteMessageSenderTest {
     producer.produce(resource);
 
     // then
-    verifyNoInteractions(resourceMessageProducer, bibliographicSearchMessageMapper, workUpdateMessageSender);
+    verifyNoInteractions(resourceMessageProducer, workSearchMessageMapper, workUpdateMessageSender);
   }
 
   @Test
@@ -58,7 +58,7 @@ class WorkDeleteMessageSenderTest {
     var id = 1L;
     var work = new Resource().setId(id).addTypes(ResourceTypeDictionary.WORK);
     var expectedMessage = new ResourceIndexEvent().id(String.valueOf(id));
-    doReturn(expectedMessage).when(bibliographicSearchMessageMapper).toIndex(work);
+    doReturn(expectedMessage).when(workSearchMessageMapper).toIndex(work);
 
     // when
     producer.produce(work);

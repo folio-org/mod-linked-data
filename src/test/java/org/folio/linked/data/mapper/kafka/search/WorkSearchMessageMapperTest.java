@@ -15,26 +15,26 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
+import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.FAMILY;
+import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.MEETING;
+import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.ORGANIZATION;
+import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.PERSON;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.EAN;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.ISBN;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.LCCN;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.LOCAL_ID;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.UNKNOWN;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_PARALLEL;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VARIANT;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_PARALLEL;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_VARIANT;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.search.domain.dto.LinkedDataWorkContributorsInner.TypeEnum.FAMILY;
-import static org.folio.search.domain.dto.LinkedDataWorkContributorsInner.TypeEnum.MEETING;
-import static org.folio.search.domain.dto.LinkedDataWorkContributorsInner.TypeEnum.ORGANIZATION;
-import static org.folio.search.domain.dto.LinkedDataWorkContributorsInner.TypeEnum.PERSON;
-import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN;
-import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_PARALLEL;
-import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.MAIN_VARIANT;
-import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB;
-import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_PARALLEL;
-import static org.folio.search.domain.dto.LinkedDataWorkIndexTitleType.SUB_VARIANT;
-import static org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner.TypeEnum;
-import static org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner.TypeEnum.EAN;
-import static org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner.TypeEnum.ISBN;
-import static org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner.TypeEnum.LCCN;
-import static org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner.TypeEnum.LOCAL_ID;
-import static org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner.TypeEnum.UNKNOWN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
@@ -44,18 +44,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.LinkedDataContributor;
+import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
+import org.folio.linked.data.domain.dto.LinkedDataInstanceOnly;
+import org.folio.linked.data.domain.dto.LinkedDataTitle;
+import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
-import org.folio.linked.data.mapper.kafka.search.identifier.LinkedDataWorkInstancesInnerIdentifiersInnerMapperAbstract;
+import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.search.domain.dto.LinkedDataWork;
-import org.folio.search.domain.dto.LinkedDataWorkContributorsInner;
-import org.folio.search.domain.dto.LinkedDataWorkIndexTitleType;
-import org.folio.search.domain.dto.LinkedDataWorkInstancesInner;
-import org.folio.search.domain.dto.LinkedDataWorkInstancesInnerIdentifiersInner;
-import org.folio.search.domain.dto.LinkedDataWorkTitlesInner;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -67,16 +67,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class BibliographicSearchMessageMapperTest {
+class WorkSearchMessageMapperTest {
 
   @InjectMocks
-  private BibliographicSearchMessageMapperImpl kafkaMessageMapper;
+  private WorkSearchMessageMapperImpl workSearchMessageMapper;
 
+  @Mock
+  private NoteMapper noteMapper;
   @Mock
   private SingleResourceMapper singleResourceMapper;
   @Spy
-  private IndexIdentifierMapper<LinkedDataWorkInstancesInnerIdentifiersInner> innerIndexIdentifierMapper
-    = new LinkedDataWorkInstancesInnerIdentifiersInnerMapperAbstract();
+  private IndexIdentifierMapper innerIndexIdentifierMapper = new IndexIdentifierMapperImpl();
 
   @BeforeEach
   public void setupMocks() {
@@ -101,7 +102,7 @@ class BibliographicSearchMessageMapperTest {
     var resource = new Resource().setId(randomLong());
 
     // when
-    var result = kafkaMessageMapper.toIndex(resource);
+    var result = workSearchMessageMapper.toIndex(resource);
 
     // then
     assertThat(result)
@@ -115,7 +116,9 @@ class BibliographicSearchMessageMapperTest {
       .hasFieldOrPropertyWithValue("id", String.valueOf(resource.getId()))
       .hasFieldOrPropertyWithValue("titles", emptyList())
       .hasFieldOrPropertyWithValue("contributors", emptyList())
+      .hasFieldOrPropertyWithValue("hubAAPs", emptyList())
       .hasFieldOrPropertyWithValue("languages", emptyList())
+      .hasFieldOrPropertyWithValue("notes", emptyList())
       .hasFieldOrPropertyWithValue("classifications", emptyList())
       .hasFieldOrPropertyWithValue("subjects", emptyList())
       .hasFieldOrPropertyWithValue("instances", emptyList());
@@ -133,7 +136,7 @@ class BibliographicSearchMessageMapperTest {
     final var instance2 = getInstance(2L, work);
 
     // when
-    var result = kafkaMessageMapper.toIndex(work);
+    var result = workSearchMessageMapper.toIndex(work);
 
     // then
     assertThat(result)
@@ -196,19 +199,19 @@ class BibliographicSearchMessageMapperTest {
     assertContributor(result.getContributors().get(8), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
       null, false);
     assertThat(result.getLanguages()).hasSize(1);
-    assertThat(result.getLanguages().get(0).getValue()).isEqualTo("eng");
+    assertThat(result.getLanguages().get(0)).isEqualTo("eng");
     assertThat(result.getClassifications()).hasSize(2);
     assertThat(result.getClassifications().get(0).getNumber()).isEqualTo("lc code");
     assertThat(result.getClassifications().get(0).getSource()).isEqualTo("lc");
     assertThat(result.getClassifications().get(1).getNumber()).isEqualTo("ddc code");
     assertThat(result.getClassifications().get(1).getSource()).isEqualTo("ddc");
     assertThat(result.getSubjects()).hasSize(2);
-    assertThat(result.getSubjects().get(0).getValue()).isEqualTo("subject 1");
-    assertThat(result.getSubjects().get(1).getValue()).isEqualTo("subject 2");
+    assertThat(result.getSubjects().get(0)).isEqualTo("subject 1");
+    assertThat(result.getSubjects().get(1)).isEqualTo("subject 2");
     assertThat(result.getInstances()).hasSize(instancesExpected);
   }
 
-  private void validateInstance(LinkedDataWorkInstancesInner instanceIndex, Resource instance) {
+  private void validateInstance(LinkedDataInstanceOnly instanceIndex, Resource instance) {
     assertThat(instanceIndex.getId()).isEqualTo(instance.getId().toString());
     assertTitle(instanceIndex.getTitles().get(0), "Primary: mainTitle" + instance.getId(), MAIN);
     assertTitle(instanceIndex.getTitles().get(1), "Primary: subTitle", SUB);
@@ -228,22 +231,22 @@ class BibliographicSearchMessageMapperTest {
     assertThat(instanceIndex.getPublications().get(0).getDate()).isNull();
     assertThat(instanceIndex.getPublications().get(0).getName()).isEqualTo("publication name");
     assertThat(instanceIndex.getEditionStatements()).hasSize(1);
-    assertThat(instanceIndex.getEditionStatements().get(0).getValue())
+    assertThat(instanceIndex.getEditionStatements().get(0))
       .isEqualTo(instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).asText());
   }
 
-  private void assertTitle(LinkedDataWorkTitlesInner titleInner, String value, LinkedDataWorkIndexTitleType type) {
+  private void assertTitle(LinkedDataTitle titleInner, String value, LinkedDataTitle.TypeEnum type) {
     assertThat(titleInner.getValue()).isEqualTo(value);
     assertThat(titleInner.getType()).isEqualTo(type);
   }
 
-  private void assertId(LinkedDataWorkInstancesInnerIdentifiersInner idInner, String value, TypeEnum type) {
+  private void assertId(LinkedDataIdentifier idInner, String value, TypeEnum type) {
     assertThat(idInner.getValue()).isEqualTo(value);
     assertThat(idInner.getType()).isEqualTo(type);
   }
 
-  private void assertContributor(LinkedDataWorkContributorsInner contributorInner, String value,
-                                 LinkedDataWorkContributorsInner.TypeEnum type, boolean isCreator) {
+  private void assertContributor(LinkedDataContributor contributorInner, String value,
+                                 LinkedDataContributor.TypeEnum type, boolean isCreator) {
     assertThat(contributorInner.getName()).isEqualTo(value);
     assertThat(contributorInner.getType()).isEqualTo(type);
     assertThat(contributorInner.getIsCreator()).isEqualTo(isCreator);

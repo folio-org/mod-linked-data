@@ -434,7 +434,7 @@
               <inputSpec>${folio-modules.swagger}</inputSpec>
               <output>${project.build.directory}/generated-sources</output>
               <generatorName>spring</generatorName>
-              <modelPackage>${project.groupId}.search.domain.dto</modelPackage>
+              <modelPackage>${project.groupId}.linked.data.domain.dto</modelPackage>
               <apiPackage>${project.groupId}.search.rest.resource</apiPackage>
               <generateApis>false</generateApis>
               <generateApiTests>false</generateApiTests>

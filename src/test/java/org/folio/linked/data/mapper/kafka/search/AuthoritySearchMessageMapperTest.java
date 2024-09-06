@@ -8,10 +8,10 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
+import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.search.domain.dto.LinkedDataAuthorityIdentifiersInner;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ class AuthoritySearchMessageMapperTest {
   private AuthoritySearchMessageMapperImpl mapper;
 
   @Mock
-  private IndexIdentifierMapper<LinkedDataAuthorityIdentifiersInner> innerIndexIdentifierMapper;
+  private IndexIdentifierMapper indexIdentifierMapper;
 
   @Test
   void toIndex_shouldMapResourceCorrectly() {
@@ -41,11 +41,11 @@ class AuthoritySearchMessageMapperTest {
       .addTypes(ID_LCCN);
     resource
       .addOutgoingEdge(new ResourceEdge(resource, id, MAP));
-    var expectedIdentifiers = List.of(new LinkedDataAuthorityIdentifiersInner()
-      .type(LinkedDataAuthorityIdentifiersInner.TypeEnum.LCCN)
+    var expectedIdentifiers = List.of(new LinkedDataIdentifier()
+      .type(LinkedDataIdentifier.TypeEnum.LCCN)
       .value(randomLong().toString())
     );
-    doReturn(expectedIdentifiers).when(innerIndexIdentifierMapper).extractIdentifiers(resource);
+    doReturn(expectedIdentifiers).when(indexIdentifierMapper).extractIdentifiers(resource);
 
     //when
     var result = mapper.toIndex(resource);

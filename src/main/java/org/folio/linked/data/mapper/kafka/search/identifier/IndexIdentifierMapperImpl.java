@@ -6,27 +6,29 @@ import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ObjectUtils;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.springframework.stereotype.Service;
 
 @Log4j2
+@Service
 @RequiredArgsConstructor
-public abstract class AbstractIndexIdentifierMapper<T, E extends Enum<E>> implements IndexIdentifierMapper<T> {
+public class IndexIdentifierMapperImpl implements IndexIdentifierMapper {
 
   private static final String MSG_UNKNOWN_TYPES =
-    "Unknown type(s) [{}] was ignored during Resource [resourceId = {}] conversion to BibframeIndex message";
+    "Unknown type(s) [{}] was ignored during Resource [resourceId = {}] conversion to ResourceIndex message";
 
   private static final Collection<String> IDENTIFIER_PROPERTY_VALUES = List.of(
     NAME.getValue(),
@@ -34,14 +36,8 @@ public abstract class AbstractIndexIdentifierMapper<T, E extends Enum<E>> implem
     LOCAL_ID_VALUE.getValue()
   );
 
-  protected abstract Function<String, E> getTypeSupplier();
-
-  protected abstract Function<String, T> getIndexCreateByValueFunction();
-
-  protected abstract BiFunction<T, E, T> getIndexUpdateTypeFunction();
-
   @Override
-  public List<T> extractIdentifiers(Resource resource) {
+  public List<LinkedDataIdentifier> extractIdentifiers(Resource resource) {
     return resource.getOutgoingEdges()
       .stream()
       .filter(re -> MAP.getUri().equals(re.getPredicate().getUri()))
@@ -52,12 +48,11 @@ public abstract class AbstractIndexIdentifierMapper<T, E extends Enum<E>> implem
       .toList();
   }
 
-  private Optional<T> mapToIdentifier(Resource resource) {
-    var indexCreateFunction = getIndexCreateByValueFunction();
+  private Optional<LinkedDataIdentifier> mapToIdentifier(Resource resource) {
     return Optional.of(resource)
       .map(Resource::getDoc)
       .flatMap(this::getValue)
-      .map(indexCreateFunction)
+      .map(s -> new LinkedDataIdentifier().value(s))
       .map(t -> appendType(resource, t));
   }
 
@@ -71,13 +66,13 @@ public abstract class AbstractIndexIdentifierMapper<T, E extends Enum<E>> implem
       .findFirst();
   }
 
-  private T appendType(Resource resource, T t) {
-    return toType(resource)
-      .map(type -> getIndexUpdateTypeFunction().apply(t, type))
-      .orElse(t);
+  private LinkedDataIdentifier appendType(Resource resource, LinkedDataIdentifier linkedDataIdentifier) {
+    toType(resource)
+      .ifPresent(linkedDataIdentifier::type);
+    return linkedDataIdentifier;
   }
 
-  private Optional<E> toType(Resource resource) {
+  private Optional<TypeEnum> toType(Resource resource) {
     if (isNull(resource.getTypes())) {
       return Optional.empty();
     }
@@ -87,7 +82,7 @@ public abstract class AbstractIndexIdentifierMapper<T, E extends Enum<E>> implem
       .filter(uri -> ObjectUtils.notEqual(uri, ResourceTypeDictionary.IDENTIFIER.getUri()))
       .findFirst()
       .map(this::normalizeUri)
-      .flatMap(this::getE);
+      .flatMap(this::getType);
 
     if (type.isEmpty()) {
       logError(resource);
@@ -95,11 +90,9 @@ public abstract class AbstractIndexIdentifierMapper<T, E extends Enum<E>> implem
     return type;
   }
 
-  private Optional<E> getE(String typeUri) {
+  private Optional<TypeEnum> getType(String typeUri) {
     try {
-      var typeSupplier = getTypeSupplier();
-      return Optional.of(typeUri)
-        .map(typeSupplier);
+      return Optional.of(TypeEnum.fromValue(typeUri));
     } catch (IllegalArgumentException ignored) {
       return Optional.empty();
     }

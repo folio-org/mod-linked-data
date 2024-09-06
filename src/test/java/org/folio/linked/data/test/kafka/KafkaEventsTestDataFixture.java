@@ -1,10 +1,10 @@
 package org.folio.linked.data.test.kafka;
 
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.RECORD_DOMAIN_EVENT_TOPIC;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
-import static org.folio.search.domain.dto.SourceRecordDomainEvent.EventTypeEnum;
 import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ import java.util.Map;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
-import org.folio.search.domain.dto.SourceRecordDomainEvent;
-import org.folio.search.domain.dto.SourceRecordType;
+import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
+import org.folio.linked.data.domain.dto.SourceRecordType;
 
 public class KafkaEventsTestDataFixture {
 

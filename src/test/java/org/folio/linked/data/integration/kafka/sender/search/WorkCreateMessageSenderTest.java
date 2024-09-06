@@ -6,18 +6,18 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
+import org.folio.linked.data.domain.dto.ResourceIndexEvent;
+import org.folio.linked.data.mapper.kafka.search.WorkSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class WorkCreateMessageSenderTest {
   @Mock
   private ApplicationEventPublisher eventPublisher;
   @Mock
-  private BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
+  private WorkSearchMessageMapper workSearchMessageMapper;
   @Mock
   private FolioMessageProducer<ResourceIndexEvent> resourceMessageProducer;
   @Mock
@@ -61,7 +61,7 @@ class WorkCreateMessageSenderTest {
     var resource = new Resource().addTypes(WORK).setId(randomLong());
     var expectedMessage = new ResourceIndexEvent()
       .id(String.valueOf(resource.getId()));
-    when(bibliographicSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
+    when(workSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
 
     // when
     producer.produce(resource);
