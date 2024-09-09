@@ -271,7 +271,7 @@ class SourceRecordDomainEventHandlerIT {
     assertThat(allInstances).hasSize(1);
     var instance = allInstances.get(0);
     assertThat(instance.getDoc()).hasToString("{\"http://bibfra.me/vocab/marc/statementOfResponsibility\":["
-      + "\"Statement Of Responsibility\",\"Statement Of Responsibility UPDATED\"]}");
+      + "\"Statement Of Responsibility\"]}");
     assertThat(instance.getOutgoingEdges()).hasSize(5);
     assertThat(instance.getFolioMetadata())
       .hasFieldOrPropertyWithValue("inventoryId", "2165ef4b-001f-46b3-a60e-52bcdeb3d5a1")
