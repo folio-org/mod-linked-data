@@ -11,6 +11,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import lombok.SneakyThrows;
+import org.folio.linked.data.domain.dto.InstanceIngressEvent;
+import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
 import org.folio.linked.data.integration.kafka.sender.search.WorkDeleteMessageSender;
 import org.folio.linked.data.model.entity.Resource;
@@ -18,8 +20,6 @@ import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
-import org.folio.search.domain.dto.InstanceIngressEvent;
-import org.folio.search.domain.dto.ResourceIndexEventType;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

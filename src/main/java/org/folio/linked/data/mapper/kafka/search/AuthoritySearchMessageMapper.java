@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.LinkedDataAuthority;
+import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
+import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.search.domain.dto.LinkedDataAuthority;
-import org.folio.search.domain.dto.LinkedDataAuthorityIdentifiersInner;
-import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class AuthoritySearchMessageMapper {
 
   @Autowired
-  protected IndexIdentifierMapper<LinkedDataAuthorityIdentifiersInner> innerIndexIdentifierMapper;
+  protected IndexIdentifierMapper indexIdentifierMapper;
 
   @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "resourceName", constant = SEARCH_AUTHORITY_RESOURCE_NAME)
@@ -33,8 +33,8 @@ public abstract class AuthoritySearchMessageMapper {
   @Mapping(target = "identifiers", source = "resource")
   protected abstract LinkedDataAuthority toLinkedDataAuthority(Resource resource);
 
-  protected List<LinkedDataAuthorityIdentifiersInner> extractIdentifiers(Resource resource) {
-    return innerIndexIdentifierMapper.extractIdentifiers(resource);
+  protected List<LinkedDataIdentifier> extractIdentifiers(Resource resource) {
+    return indexIdentifierMapper.extractIdentifiers(resource);
   }
 
   protected String parseType(Resource resource) {

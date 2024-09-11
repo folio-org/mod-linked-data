@@ -1,36 +1,24 @@
 {
+  "description": "Linked Data Authority search dto, contains Authority and Identifiers",
   "type": "object",
-  "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Linked data authority search dto",
   "properties": {
     "id": {
-      "description": "The Linked Data ID of a Authority",
+      "description": "The Linked Data ID of an Authority",
       "type": "string"
     },
     "label": {
-      "type": "string",
-      "description": "Value of Label"
+      "description": "Value of Label",
+      "type": "string"
     },
     "type": {
-      "type": "string",
-      "description": "Type of authority"
+      "description": "Type of authority",
+      "type": "string"
     },
     "identifiers": {
+      "description": "Linked data authority identifier array",
       "type": "array",
-      "description": "Resource identifier array",
       "items": {
-        "properties": {
-          "value": {
-            "type": "string",
-            "description": "Value of Identifier"
-          },
-          "type": {
-            "type": "string",
-            "enum": [
-              "LCCN"
-            ]
-          }
-        }
+        "$ref": "common/linkedDataIdentifier.json"
       }
     }
   },

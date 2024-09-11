@@ -58,11 +58,11 @@
         "isCreator": true
       }
     ],
+    "hubAAPs": [],
     "languages": [
-      {
-        "value": "1 e"
-      }
+      "1 e"
     ],
+    "notes": [],
     "classifications": [
       {
         "number": "another code",
@@ -74,9 +74,7 @@
       }
     ],
     "subjects": [
-      {
-        "value": "family numeration, family name, family titles, family name alternative, family date -- family form subdivision -- family general subdivision -- family chronological subdivision -- family geographic subdivision"
-      }
+      "family numeration, family name, family titles, family name alternative, family date -- family form subdivision -- family general subdivision -- family chronological subdivision -- family geographic subdivision"
     ],
     "instances": [
       {
@@ -157,6 +155,7 @@
             "type": "UNKNOWN"
           }
         ],
+        "notes": [],
         "contributors": [],
         "publications": [
           {
@@ -169,10 +168,10 @@
           }
         ],
         "editionStatements": [
-          {
-            "value": "Edition Statement Edition statement2"
-          }
-        ]
+          "Edition Statement Edition statement2"
+        ],
+        "format": null,
+        "suppress": null
       },
       {
         "id": "6331008328653046125",
@@ -252,6 +251,7 @@
             "type": "LocalId"
           }
         ],
+        "notes": [],
         "contributors": [],
         "publications": [
           {
@@ -264,10 +264,10 @@
           }
         ],
         "editionStatements": [
-          {
-            "value": "Edition Statement Edition statement2"
-          }
-        ]
+          "Edition Statement Edition statement2"
+        ],
+        "format": null,
+        "suppress": null
       }
     ]
   }

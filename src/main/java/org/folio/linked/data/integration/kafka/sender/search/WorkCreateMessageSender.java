@@ -6,20 +6,20 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.search.domain.dto.ResourceIndexEventType.CREATE;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
-import org.folio.linked.data.mapper.kafka.search.BibliographicSearchMessageMapper;
+import org.folio.linked.data.mapper.kafka.search.WorkSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.search.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,7 +34,7 @@ public class WorkCreateMessageSender implements CreateMessageSender {
 
   @Qualifier("bibliographicMessageProducer")
   private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
-  private final BibliographicSearchMessageMapper bibliographicSearchMessageMapper;
+  private final WorkSearchMessageMapper workSearchMessageMapper;
   private final ApplicationEventPublisher eventPublisher;
   private final WorkUpdateMessageSender workUpdateMessageSender;
 
@@ -68,7 +68,7 @@ public class WorkCreateMessageSender implements CreateMessageSender {
   }
 
   private void accept(Resource resource, Boolean putIndexDate) {
-    var message = bibliographicSearchMessageMapper.toIndex(resource)
+    var message = workSearchMessageMapper.toIndex(resource)
       .type(CREATE);
     bibliographicMessageProducer.sendMessages(List.of(message));
     if (TRUE.equals(putIndexDate)) {
