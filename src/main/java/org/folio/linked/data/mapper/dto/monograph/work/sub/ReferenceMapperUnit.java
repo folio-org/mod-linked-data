@@ -1,16 +1,13 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static org.folio.linked.data.util.BibframeUtils.ensureActive;
-import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.BibframeUtils.fetchResource;
 
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Reference;
-import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.util.BibframeUtils;
 
 @RequiredArgsConstructor
 public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
@@ -31,11 +28,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var reference = (Reference) dto;
-    return resourceRepository
-      .findById(Long.parseLong(reference.getId()))
-      .map(BibframeUtils::ensureActive)
-      .map(Resource::copyWithNoEdges)
-      .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + reference.getId() + IS_NOT_FOUND));
+    return fetchResource(reference, resourceRepository);
   }
 
 }

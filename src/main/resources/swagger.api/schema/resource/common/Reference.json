@@ -10,8 +10,13 @@
       "properties": {
         "label": {
           "type": "string"
+        },
+        "srsId": {
+          "type": "string",
+          "description": "SRS ID of the resource"
         }
       }
     }
-  ]
+  ],
+  "x-implements": "org.folio.linked.data.domain.dto.Identifiable"
 }

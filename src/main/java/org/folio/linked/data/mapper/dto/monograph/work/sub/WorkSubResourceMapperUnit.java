@@ -11,5 +11,4 @@ public interface WorkSubResourceMapperUnit extends SingleResourceMapperUnit {
   default Set<Class<?>> supportedParents() {
     return Set.of(WorkRequest.class, WorkResponse.class);
   }
-
 }

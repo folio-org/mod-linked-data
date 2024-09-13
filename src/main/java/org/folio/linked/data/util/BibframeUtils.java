@@ -9,6 +9,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
+import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID_AND_SRS_ID;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -16,13 +18,17 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.domain.dto.Identifiable;
+import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.repo.ResourceRepository;
 
 @Log4j2
 @UtilityClass
@@ -116,6 +122,19 @@ public class BibframeUtils {
       .map(BibframeUtils::ensureActive)
       .findFirst()
       .orElse(resource);
+  }
+
+  public static Resource fetchResource(Identifiable identifiable, ResourceRepository resourceRepository) {
+    Function<String, Optional<Resource>> fetchByIdFunction = id -> resourceRepository.findById(Long.parseLong(id));
+    Function<String, Optional<Resource>> fetchBySrsIdFunction = resourceRepository::findByFolioMetadataSrsId;
+    return Optional.ofNullable(identifiable.getId())
+      .flatMap(fetchByIdFunction)
+      .or(() -> Optional.ofNullable(identifiable.getSrsId())
+        .flatMap(fetchBySrsIdFunction))
+      .map(BibframeUtils::ensureActive)
+      .map(Resource::copyWithNoEdges)
+      .orElseThrow(() -> new NotFoundException(String.format("%s%s, %s%s",
+        RESOURCE_WITH_GIVEN_ID_AND_SRS_ID, identifiable.getId(), identifiable.getSrsId(), IS_NOT_FOUND)));
   }
 
 }

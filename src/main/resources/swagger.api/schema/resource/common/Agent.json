@@ -3,14 +3,11 @@
   "description": "Creator & Contributor info",
   "allOf": [
     {
-      "$ref": "IdField.json"
+      "$ref": "Reference.json"
     },
     {
       "type": "object",
       "properties": {
-        "label": {
-          "type": "string"
-        },
         "type": {
           "type": "string"
         },
@@ -22,5 +19,6 @@
         }
       }
     }
-  ]
+  ],
+  "x-implements": "org.folio.linked.data.domain.dto.Identifiable"
 }
