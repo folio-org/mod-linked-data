@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -48,6 +49,7 @@ import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.LinkedDataContributor;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnly;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnlyPublicationsInner;
+import org.folio.linked.data.domain.dto.LinkedDataNote;
 import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.LinkedDataWorkOnlyClassificationsInner;
@@ -86,7 +88,7 @@ public abstract class WorkSearchMessageMapper {
   @Mapping(target = "classifications", source = "resource")
   @Mapping(target = "contributors", source = "resource")
   @Mapping(target = "languages", expression = "java(extractLanguages(resource))")
-  @Mapping(target = "notes", expression = "java(noteMapper.toNotes(resource.getDoc(), WorkMapperUnit.SUPPORTED_NOTES))")
+  @Mapping(target = "notes", expression = "java(mapNotes(resource.getDoc(), WorkMapperUnit.SUPPORTED_NOTES))")
   @Mapping(target = "subjects", expression = "java(extractSubjects(resource))")
   @Mapping(target = "titles", source = "resource")
   @Mapping(target = "instances", source = "resource")
@@ -166,6 +168,14 @@ public abstract class WorkSearchMessageMapper {
       .toList();
   }
 
+  protected List<LinkedDataNote> mapNotes(JsonNode doc, Set<PropertyDictionary> supportedNotes) {
+    return noteMapper.toNotes(doc, supportedNotes)
+      .stream()
+      .filter(note -> isNotEmpty(note.getValue()) && isNotEmpty(note.getType()))
+      .map(note -> new LinkedDataNote(note.getValue().get(0), note.getType().get(0)))
+      .toList();
+  }
+
   protected Stream<String> getPropertyValues(JsonNode doc, String... properties) {
     return ofNullable(doc)
       .stream()
@@ -207,7 +217,7 @@ public abstract class WorkSearchMessageMapper {
         .id(String.valueOf(ir.getId()))
         .titles(extractTitles(ir))
         .identifiers(indexIdentifierMapper.extractIdentifiers(ir))
-        .notes(noteMapper.toNotes(ir.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
+        .notes(mapNotes(ir.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
         .contributors(extractContributors(ir))
         .publications(extractPublications(ir))
         .editionStatements(getPropertyValues(ir.getDoc(), EDITION_STATEMENT.getValue()).toList()))
