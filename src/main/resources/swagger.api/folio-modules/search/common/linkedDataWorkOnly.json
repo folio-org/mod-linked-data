@@ -48,7 +48,7 @@
       "type": "array",
       "description": "Notes array",
       "items": {
-        "$ref": "../../../schema/resource/common/Note.json"
+        "$ref": "linkedDataNote.json"
       }
     },
     "subjects": {
