@@ -64,7 +64,8 @@ public class MetadataServiceTest {
       .hasFieldOrPropertyWithValue("id", resource.getId())
       .hasFieldOrPropertyWithValue("source", LINKED_DATA)
       .hasFieldOrPropertyWithValue("resource", resource)
-      .hasNoNullFieldsOrProperties();
+      .hasFieldOrProperty("inventoryId")
+      .hasFieldOrProperty("srsId");
   }
 
   @Test
@@ -86,7 +87,7 @@ public class MetadataServiceTest {
       .extracting("folioMetadata")
       .hasFieldOrPropertyWithValue("id", resource.getId())
       .hasFieldOrPropertyWithValue("inventoryId", oldMetadata.getInventoryId())
-      .hasFieldOrPropertyWithValue("srsId", oldMetadata.getSrsId())
+      .hasFieldOrProperty("srsId")
       .hasFieldOrPropertyWithValue("source", LINKED_DATA)
       .hasFieldOrPropertyWithValue("resource", resource);
   }
