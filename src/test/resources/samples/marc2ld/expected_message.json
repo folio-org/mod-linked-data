@@ -1,5 +1,5 @@
 {
-  "id": "-178336766880924275",
+  "id": "f70a2e71-f6d9-4efe-a000-598c8d446af2",
   "type": "UPDATE",
   "tenant": "test_tenant",
   "ts": "some timestamp",
@@ -78,7 +78,7 @@
     ],
     "instances": [
       {
-        "id": "-1019041017841075086",
+        "id": "-144481682629570440",
         "titles": [
           {
             "value": "Instance MainTitle",
@@ -174,7 +174,7 @@
         "suppress": null
       },
       {
-        "id": "6331008328653046125",
+        "id": "-2695695440830650306",
         "titles": [
           {
             "value": "Parallel-MainTitle",
