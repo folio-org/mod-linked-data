@@ -56,7 +56,9 @@ public class SourceRecordDomainEventHandler {
   }
 
   private boolean notProcessableEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
-    if (isEmpty(event.getEventPayload())) {
+    if (isEmpty(event.getEventPayload())
+      || isEmpty(event.getEventPayload().getParsedRecord())
+      || isEmpty(event.getEventPayload().getParsedRecord().getContent())) {
       log.warn(NO_MARC_EVENT, event.getId());
       return true;
     }
@@ -72,7 +74,7 @@ public class SourceRecordDomainEventHandler {
   }
 
   private void saveBib(SourceRecordDomainEvent event) {
-    marcBib2ldMapper.fromMarcJson(event.getEventPayload())
+    marcBib2ldMapper.fromMarcJson(event.getEventPayload().getParsedRecord().getContent())
       .ifPresentOrElse(resource -> {
           if (isInstanceWithLinkedDataSource(resource)) {
             log.info(IGNORED_LINKED_DATA_SOURCE, resource.getId(), event.getId());
@@ -96,7 +98,7 @@ public class SourceRecordDomainEventHandler {
   }
 
   private void saveAuthorities(SourceRecordDomainEvent event) {
-    var mapped = marcAuthority2ldMapper.fromMarcJson(event.getEventPayload());
+    var mapped = marcAuthority2ldMapper.fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
     if (mapped.isEmpty()) {
       logEmptyResource(event.getId());
     } else {

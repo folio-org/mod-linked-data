@@ -16,6 +16,8 @@ import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ParsedRecord;
+import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.service.resource.ResourceMarcService;
@@ -60,7 +62,7 @@ class SourceRecordDomainEventHandlerTest {
   void shouldNotTriggerSaving_ifIncomingEventContainsNotSupportedRecordType() {
     // given
     var event = new SourceRecordDomainEvent().id("2")
-      .eventPayload("{}");
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{}")));
 
     // when
     sourceRecordDomainEventHandler.handle(event, null);
@@ -73,7 +75,7 @@ class SourceRecordDomainEventHandlerTest {
   void shouldNotTriggerSaving_ifIncomingEventContainsNotSupportedEventType() {
     // given
     var event = new SourceRecordDomainEvent().id("3")
-      .eventPayload("{}");
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{}")));
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
@@ -87,7 +89,7 @@ class SourceRecordDomainEventHandlerTest {
     // given
     var event = new SourceRecordDomainEvent().id("4")
       .eventType(CREATED)
-      .eventPayload("{ \"key\": \"value\"}");
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
@@ -101,9 +103,10 @@ class SourceRecordDomainEventHandlerTest {
     // given
     var event = new SourceRecordDomainEvent().id("5")
       .eventType(CREATED)
-      .eventPayload("{ \"key\": \"value\"}");
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
     var mapped = new Resource().setId(4L).addType(INSTANCE);
-    doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
+    doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
+      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
     var existedMetaData =
       new org.folio.linked.data.model.entity.FolioMetadata(new org.folio.linked.data.model.entity.Resource())
         .setSource(LINKED_DATA);
@@ -121,10 +124,11 @@ class SourceRecordDomainEventHandlerTest {
     // given
     var event = new SourceRecordDomainEvent().id("6")
       .eventType(CREATED)
-      .eventPayload("{ \"key\": \"value\"}");
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
     var mapped = new Resource().setId(4L).addType(INSTANCE)
       .setFolioMetadata(new FolioMetadata().setSrsId(UUID.randomUUID().toString()));
-    doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
+    doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
+      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
     var existedMetaData =
       new org.folio.linked.data.model.entity.FolioMetadata(new org.folio.linked.data.model.entity.Resource())
         .setSource(LINKED_DATA);
@@ -143,9 +147,10 @@ class SourceRecordDomainEventHandlerTest {
     // given
     var event = new SourceRecordDomainEvent().id("7")
       .eventType(CREATED)
-      .eventPayload("{ \"key\": \"value\"}");
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
     var mapped = new Resource().setId(7L).addType(INSTANCE);
-    doReturn(Optional.of(mapped)).when(marcBib2ldMapper).fromMarcJson(event.getEventPayload());
+    doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
+      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
@@ -159,10 +164,11 @@ class SourceRecordDomainEventHandlerTest {
     // given
     var event = new SourceRecordDomainEvent().id("8")
       .eventType(CREATED)
-      .eventPayload("{ \"key\": \"value\"}");
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
     var mapped1 = new Resource().setId(9L).addType(PERSON);
     var mapped2 = new Resource().setId(10L).addType(CONCEPT);
-    doReturn(List.of(mapped1, mapped2)).when(marcAuthority2ldMapper).fromMarcJson(event.getEventPayload());
+    doReturn(List.of(mapped1, mapped2)).when(marcAuthority2ldMapper)
+      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_AUTHORITY);
