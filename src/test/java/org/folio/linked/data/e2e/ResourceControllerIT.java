@@ -335,8 +335,7 @@ class ResourceControllerIT {
       .isEqualTo(originalFolioMetadata.getInventoryId());
     assertThat(updatedFolioMetadata.getSrsId())
       .isEqualTo(folioMetadataDto.getSrsId())
-      .isNotEqualTo(originalFolioMetadata.getSrsId())
-      .isNotNull();
+      .isEqualTo(originalFolioMetadata.getSrsId());
     assertThat(updatedFolioMetadata.getSource().name())
       .isEqualTo(folioMetadataDto.getSource().name())
       .isEqualTo(LINKED_DATA.name());
