@@ -25,7 +25,7 @@ public class MetadataServiceImpl implements MetadataService {
   public void ensure(Resource resource, FolioMetadata oldResourceMeta) {
     ensure(resource, metadata -> {
       metadata.setInventoryId(oldResourceMeta.getInventoryId());
-      metadata.setSrsId(UUID.randomUUID().toString());
+      metadata.setSrsId(oldResourceMeta.getSrsId());
     });
   }
 
