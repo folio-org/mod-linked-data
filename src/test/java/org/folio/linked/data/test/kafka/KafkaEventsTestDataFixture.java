@@ -12,6 +12,8 @@ import java.util.Map;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.folio.linked.data.domain.dto.ParsedRecord;
+import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
 
@@ -26,7 +28,7 @@ public class KafkaEventsTestDataFixture {
     var value = OBJECT_MAPPER.writeValueAsString(Map.of(
         "id", id,
         "eventType", type,
-        "eventPayload", marc
+        "eventPayload", new SourceRecord().parsedRecord(new ParsedRecord(marc))
       )
     );
     var headers = new ArrayList<>(defaultKafkaHeaders());
@@ -40,7 +42,7 @@ public class KafkaEventsTestDataFixture {
     return new SourceRecordDomainEvent()
       .id(id)
       .eventType(type)
-      .eventPayload(marc);
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marc)));
   }
 
 }

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Record DTO Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "UUID",
+      "$ref": "../../common/uuid.json"
+    },
+    "matchedId": {
+      "description": "Represents relations with another matched records, necessary for saving the history of applying changes for inventory/holding/etc records",
+      "$ref": "../../common/uuid.json"
+    },
+    "recordType": {
+      "description": "Type of record, e.g. MARC_BIB",
+      "type": "string",
+      "$ref": "sourceRecordType.json"
+    },
+    "parsedRecord": {
+      "description": "Parsed record",
+      "type": "object",
+      "$ref": "parsedRecord.json"
+    },
+    "deleted": {
+      "description": "Flag indicates that the record marked as deleted",
+      "type": "boolean",
+      "default": false
+    },
+    "additionalInfo": {
+      "description": "Auxiliary data which is not related to MARC type record",
+      "type": "object",
+      "$ref": "additionalInfo.json"
+    },
+    "state": {
+      "description": "This field represents the actual state of a particular SRS record. Can be: ACTUAL, OLD, DRAFT, DELETED. ",
+      "type": "string",
+      "enum": [
+        "ACTUAL",
+        "OLD",
+        "DRAFT",
+        "DELETED"
+      ],
+      "default": "ACTUAL"
+    },
+    "metadata": {
+      "description": "Metadata provided by the server",
+      "type": "object",
+      "$ref": "sourceRecordMetadata.json",
+      "readonly": true
+    }
+  },
+  "required": [
+    "matchedId"
+  ]
+}
