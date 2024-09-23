@@ -1,0 +1,6 @@
+# http://editorconfig.org/
+
+root = true
+
+[*]
+ij_formatter_enabled = false
