@@ -42,8 +42,7 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
       event.setEventType(getEventType(node));
     }
     if (node.has(EVENT_PAYLOAD)) {
-      var sourceRecord = getSourceRecord(node.get(EVENT_PAYLOAD).textValue());
-      event.setEventPayload(sourceRecord);
+      event.setEventPayload(getSourceRecord(node.get(EVENT_PAYLOAD)));
     }
     return event;
   }
@@ -58,8 +57,10 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
     return null;
   }
 
-  private SourceRecord getSourceRecord(String json) throws JsonProcessingException {
-    JsonNode node = objectMapper.readTree(json);
+  private SourceRecord getSourceRecord(JsonNode node) throws JsonProcessingException {
+    if (node.isTextual()) {
+      node = objectMapper.readTree(node.textValue());
+    }
     var sourceRecord = new SourceRecord();
     if (node.has(ID)) {
       sourceRecord.setId(node.get(ID).textValue());
@@ -68,13 +69,24 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
       sourceRecord.setDeleted(node.get(DELETED).asBoolean());
     }
     if (node.has(PARSED_RECORD)) {
-      var pr = new ParsedRecord();
-      if (node.get(PARSED_RECORD).has(CONTENT)) {
-        pr.setContent(node.get(PARSED_RECORD).get(CONTENT).toString());
-      }
-      sourceRecord.setParsedRecord(pr);
+      sourceRecord.setParsedRecord(getParsedRecord(node.get(PARSED_RECORD)));
     }
     return sourceRecord;
+  }
+
+  private ParsedRecord getParsedRecord(JsonNode node) {
+    var pr = new ParsedRecord();
+    if (node.has(CONTENT)) {
+      pr.setContent(getContent(node.get(CONTENT)));
+    }
+    return pr;
+  }
+
+  private String getContent(JsonNode node) {
+    if (node.isTextual()) {
+      return node.textValue();
+    }
+    return String.valueOf(node);
   }
 
 }
