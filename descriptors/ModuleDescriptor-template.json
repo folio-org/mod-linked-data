@@ -28,7 +28,7 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource",
+          "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.get" ],
           "modulePermissions": []
         },
