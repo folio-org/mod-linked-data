@@ -34,12 +34,6 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource/{id}",
-          "permissionsRequired": [ "linked-data.resources.bib.item.get" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "GET" ],
           "pathPattern": "/resource/{id}/marc",
           "permissionsRequired": [ "linked-data.resources.bib.marc.get" ],
           "modulePermissions": []
@@ -136,11 +130,6 @@
       "permissionName": "linked-data.resources.bib.get",
       "displayName": "Linked Data: Get a bibliographic (Work or Instance) resources",
       "description": "Get a bibliographic (Work or Instance) linked-data resources"
-    },
-    {
-      "permissionName": "linked-data.resources.bib.item.get",
-      "displayName": "Linked Data: Get a bibliographic (Work or Instance) resource",
-      "description": "Get a bibliographic (Work or Instance) linked-data resource"
     },
     {
       "permissionName": "linked-data.resources.bib.post",
