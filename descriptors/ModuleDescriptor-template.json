@@ -128,8 +128,8 @@
   "permissionSets": [
     {
       "permissionName": "linked-data.resources.bib.get",
-      "displayName": "Linked Data: Get a bibliographic (Work or Instance) resources",
-      "description": "Get a bibliographic (Work or Instance) linked-data resources"
+      "displayName": "Linked Data: Get a bibliographic (Work or Instance) resource",
+      "description": "Get a bibliographic (Work or Instance) linked-data resource"
     },
     {
       "permissionName": "linked-data.resources.bib.post",
