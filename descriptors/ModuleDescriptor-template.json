@@ -28,12 +28,6 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource",
-          "permissionsRequired": [ "linked-data.resources.bib.get" ],
-          "modulePermissions": []
-        },
-        {
-          "methods": [ "GET" ],
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.get" ],
           "modulePermissions": []
