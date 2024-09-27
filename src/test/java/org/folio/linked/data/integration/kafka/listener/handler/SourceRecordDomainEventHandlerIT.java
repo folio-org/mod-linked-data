@@ -28,6 +28,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
@@ -220,7 +221,8 @@ class SourceRecordDomainEventHandlerIT {
     mapAndSave(firstInstanceMarc);
     var secondInstanceMarc = firstInstanceMarc.replace("  2019493854", "  2019493855")
       .replace("code", "another code")
-      .replace("item number", "another item number");
+      .replace("item number", "another item number")
+      .replace("43d58061-decf-4d74-9747-0e1c368e861b", UUID.randomUUID().toString());
     var expectedMessage = loadResourceAsString("samples/marc2ld/expected_message.json");
     var id = randomUUID().toString();
     var eventProducerRecord = getSrsDomainEventProducerRecord(id, secondInstanceMarc, CREATED, MARC_BIB);

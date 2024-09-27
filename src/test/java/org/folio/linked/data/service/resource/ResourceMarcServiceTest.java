@@ -111,11 +111,14 @@ class ResourceMarcServiceTest {
   }
 
   @Test
-  void saveMarcResource_shouldCreateNewResource_ifGivenModelDoesNotExistsByIdAndSrsId() {
+  void saveMarcResource_shouldCreateNewBib_ifGivenModelDoesNotExistsByIdAndSrsId() {
     // given
     var id = randomLong();
-    var model = new org.folio.ld.dictionary.model.Resource().setId(id);
+    var srsId = UUID.randomUUID().toString();
+    var model = new org.folio.ld.dictionary.model.Resource().setId(id)
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
     var mapped = new Resource().setId(id);
+    mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(false).when(resourceRepo).existsById(id);
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
@@ -130,11 +133,14 @@ class ResourceMarcServiceTest {
   }
 
   @Test
-  void saveMarcResource_shouldUpdateResource_ifGivenModelExistsById() {
+  void saveMarcResource_shouldUpdateBib_ifGivenModelExistsById() {
     // given
     var id = randomLong();
-    var model = new org.folio.ld.dictionary.model.Resource().setId(id);
+    var srsId = UUID.randomUUID().toString();
+    var model = new org.folio.ld.dictionary.model.Resource().setId(id)
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
     var mapped = new Resource().setId(id);
+    mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(true).when(resourceRepo).existsById(id);
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
@@ -149,18 +155,18 @@ class ResourceMarcServiceTest {
   }
 
   @Test
-  void saveMarcResource_shouldReplaceResource_ifGivenModelExistsBySrsIdButNotById() {
+  void saveMarcResource_shouldReplaceBib_ifGivenModelExistsBySrsIdButNotById() {
     // given
     var id = randomLong();
     var srsId = UUID.randomUUID().toString();
     var existed = new Resource().setId(id).setManaged(true);
-    doReturn(Optional.of(existed)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
-    var existedMetadata = new org.folio.linked.data.model.entity.FolioMetadata(existed).setSrsId(srsId);
-    doReturn(Optional.of(existedMetadata)).when(folioMetadataRepo).findById(id);
+    doReturn(Optional.of(existed)).when(resourceRepo).findByActiveTrueAndFolioMetadataSrsId(srsId);
+    doReturn(true).when(folioMetadataRepo).existsBySrsId(srsId);
     var model = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
     var mapped = new Resource().setId(id);
+    mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(false).when(resourceRepo).existsById(id);
 

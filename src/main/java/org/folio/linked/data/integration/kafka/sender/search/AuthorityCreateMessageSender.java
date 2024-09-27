@@ -16,7 +16,6 @@ import org.folio.linked.data.mapper.kafka.search.AuthoritySearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceIndexedEvent;
-import org.folio.marc4ld.util.ResourceKind;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
@@ -60,13 +59,7 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
   }
 
   private boolean isNewAuthority(Resource resource) {
-    return resource.getIndexDate() == null && isAuthority(resource);
-  }
-
-  private boolean isAuthority(Resource resource) {
-    return ResourceKind.AUTHORITY
-      .stream()
-      .anyMatch(resource::isOfType);
+    return resource.getIndexDate() == null && resource.isAuthority();
   }
 
   @Override

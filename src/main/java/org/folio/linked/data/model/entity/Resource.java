@@ -21,6 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostRemove;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -65,6 +66,8 @@ public class Resource implements Persistable<Long> {
   private JsonNode doc;
 
   private Date indexDate;
+
+  private boolean active = true;
 
   @OrderBy
   @ManyToMany(fetch = EAGER)
@@ -191,9 +194,22 @@ public class Resource implements Persistable<Long> {
     }
   }
 
+  @PostRemove
+  void postRemove() {
+    this.managed = false;
+  }
+
   private boolean isNotAuthority() {
+    return !isAuthority();
+  }
+
+  public boolean isAuthority() {
     return ResourceKind.AUTHORITY
       .stream()
-      .noneMatch(this::isOfType);
+      .anyMatch(this::isOfType);
+  }
+
+  public boolean isNotActive() {
+    return !isActive();
   }
 }
