@@ -130,10 +130,8 @@ import static org.folio.linked.data.test.TestUtil.getSampleWorkDtoMap;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
-import static org.folio.linked.data.util.Constants.TYPE;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -147,7 +145,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Lists;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -504,36 +501,6 @@ class ResourceControllerIT {
       .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
       .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
       .andExpect(jsonPath("total_records", equalTo(1)));
-  }
-
-  @Test
-  void getBibframeShortInfoPage_shouldReturnPageWithExistedEntities() throws Exception {
-    // given
-    var existed = Lists.newArrayList(
-        resourceTestService.saveGraph(getSampleInstanceResource(100L)),
-        resourceTestService.saveGraph(getSampleInstanceResource(200L)),
-        resourceTestService.saveGraph(getSampleInstanceResource(300L))
-      ).stream()
-      .map(Resource::getId)
-      .map(Object::toString)
-      .toList();
-    var requestBuilder = get(RESOURCE_URL)
-      .param(TYPE, INSTANCE.getUri())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("number", equalTo(0)))
-      .andExpect(jsonPath("total_pages", equalTo(1)))
-      .andExpect(jsonPath("total_elements", equalTo(3)))
-      .andExpect(jsonPath("content", hasSize(3)))
-      .andExpect(jsonPath("content[*].id", containsInAnyOrder(existed.toArray())));
   }
 
   @Test

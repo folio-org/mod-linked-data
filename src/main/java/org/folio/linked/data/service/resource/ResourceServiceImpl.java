@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.resource;
 
-import static java.util.Objects.isNull;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_INVENTORY_ID;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -24,8 +22,6 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-  private static final int DEFAULT_PAGE_NUMBER = 0;
-  private static final int DEFAULT_PAGE_SIZE = 100;
-  private static final Sort DEFAULT_SORT = Sort.by(Sort.Direction.ASC, "label");
   private final FolioMetadataRepository folioMetadataRepo;
   private final ResourceRepository resourceRepo;
   private final ResourceDtoMapper resourceDtoMapper;
@@ -93,21 +86,6 @@ public class ResourceServiceImpl implements ResourceService {
       resourceGraphService.breakEdgesAndDelete(resource);
       applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
     });
-  }
-
-  @Override
-  public ResourceShortInfoPage getResourceShortInfoPage(String type, Integer pageNumber, Integer pageSize) {
-    if (isNull(pageNumber)) {
-      pageNumber = DEFAULT_PAGE_NUMBER;
-    }
-    if (isNull(pageSize)) {
-      pageSize = DEFAULT_PAGE_SIZE;
-    }
-    var pageRequest = PageRequest.of(pageNumber, pageSize, DEFAULT_SORT);
-    var page = isNull(type) ? resourceRepo.findAllShort(pageRequest)
-      : resourceRepo.findAllShortByType(Set.of(type), pageRequest);
-    var pageOfDto = page.map(resourceDtoMapper::map);
-    return resourceDtoMapper.map(pageOfDto);
   }
 
   @Async

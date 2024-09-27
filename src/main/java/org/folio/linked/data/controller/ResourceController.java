@@ -6,7 +6,6 @@ import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.rest.resource.ResourceApi;
 import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.linked.data.service.resource.ResourceService;
@@ -50,11 +49,5 @@ public class ResourceController implements ResourceApi {
   @Override
   public ResponseEntity<ResourceMarcViewDto> getResourceMarcViewById(Long id, String okapiTenant) {
     return ResponseEntity.ok(resourceMarcService.getResourceMarcView(id));
-  }
-
-  @Override
-  public ResponseEntity<ResourceShortInfoPage> getResourceShortInfoPage(String type, String okapiTenant,
-                                                                        Integer pageNumber, Integer pageSize) {
-    return ResponseEntity.ok(resourceService.getResourceShortInfoPage(type, pageNumber, pageSize));
   }
 }

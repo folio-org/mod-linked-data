@@ -16,19 +16,15 @@ import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.ResourceShort;
-import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
-import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 
 @Log4j2
 @Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class, ResourceTypeEntity.class})
@@ -36,11 +32,6 @@ public abstract class ResourceDtoMapper {
 
   @Autowired
   private SingleResourceMapper singleResourceMapper;
-
-  @Mapping(target = "type", expression = "java(resourceShortInfo.getFirstType().getUri())")
-  public abstract ResourceShort map(ResourceShortInfo resourceShortInfo);
-
-  public abstract ResourceShortInfoPage map(Page<ResourceShort> page);
 
   @SneakyThrows
   public Resource toEntity(ResourceRequestDto dto) {

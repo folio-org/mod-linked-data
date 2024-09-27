@@ -11,30 +11,24 @@ import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Sets;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.ResourceShort;
-import org.folio.linked.data.domain.dto.ResourceShortInfoPage;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
-import org.folio.linked.data.model.ResourceShortInfo;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -49,14 +43,10 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -202,48 +192,6 @@ class ResourceServiceTest {
     // then
     assertThat(thrown.getMessage())
       .isEqualTo("Resource with given inventory id [" + inventoryId + "] is not found");
-  }
-
-  @Test
-  void getResourceShortInfoPageWithParams_shouldReturnExistedEntitiesShortInfoMapped(
-    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<ResourceShort> pageOfDto) {
-    // given
-    var pageNumber = 0;
-    var pageSize = 10;
-    var sort = Sort.by(Sort.Direction.ASC, "label");
-    var types = Sets.newHashSet(INSTANCE.getUri());
-    doReturn(pageOfShortEntities).when(resourceRepo).findAllShortByType(types,
-      PageRequest.of(pageNumber, pageSize, sort));
-    doReturn(pageOfDto).when(pageOfShortEntities)
-      .map(ArgumentMatchers.<Function<ResourceShortInfo, ResourceShort>>any());
-    var expectedResult = random(ResourceShortInfoPage.class);
-    doReturn(expectedResult).when(resourceDtoMapper).map(pageOfDto);
-
-    // when
-    var result = resourceService.getResourceShortInfoPage(types.iterator().next(), pageNumber, pageSize);
-
-    // then
-    assertThat(result).isEqualTo(expectedResult);
-  }
-
-  @Test
-  void getResourceShortInfoPageWithNoParams_shouldReturnExistedEntitiesShortInfoMapped(
-    @Mock Page<ResourceShortInfo> pageOfShortEntities, @Mock Page<ResourceShort> pageOfDto) {
-    // given
-    var types = Sets.newHashSet(INSTANCE.getUri());
-    var sort = Sort.by(Sort.Direction.ASC, "label");
-    doReturn(pageOfShortEntities).when(resourceRepo).findAllShortByType(types,
-      PageRequest.of(0, 100, sort));
-    doReturn(pageOfDto).when(pageOfShortEntities)
-      .map(ArgumentMatchers.<Function<ResourceShortInfo, ResourceShort>>any());
-    var expectedResult = random(ResourceShortInfoPage.class);
-    doReturn(expectedResult).when(resourceDtoMapper).map(pageOfDto);
-
-    // when
-    var result = resourceService.getResourceShortInfoPage(types.iterator().next(), null, null);
-
-    // then
-    assertThat(result).isEqualTo(expectedResult);
   }
 
   @Test
