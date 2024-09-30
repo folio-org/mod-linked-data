@@ -10,8 +10,10 @@ CREATE TABLE if not exists resources (
   updated_event_id bigint null,
   active_event_id bigint null,
   index_date timestamp,
-  active boolean DEFAULT true NOT NULL
+  active boolean default true not null
 ) partition by hash(resource_hash);
+
+create index if not exists resources_active_idx on resources(active);
 
 comment on table resources is 'All resources in a graph and their non-link data';
 comment on column resources.resource_hash is 'The unique hash identifier for the resource';

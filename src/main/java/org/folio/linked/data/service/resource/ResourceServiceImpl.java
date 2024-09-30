@@ -69,7 +69,7 @@ public class ResourceServiceImpl implements ResourceService {
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
-    var newResource = saveNewResource(resourceDto, existed);
+    var newResource = saveNewResource(resourceDto, oldResource);
     if (Objects.equals(oldResource.getId(), newResource.getId())) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
     } else {

@@ -102,6 +102,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     return resourceRepo.findByActiveTrueAndFolioMetadataSrsId(srsId)
       .map(previous -> {
         var previousObsolete = markObsolete(previous);
+        setPreferred(resource, true);
         resource.addIncomingEdge(new ResourceEdge(previousObsolete, resource, PredicateDictionary.REDIRECT));
         logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",
           "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
@@ -112,11 +113,19 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
   private Resource markObsolete(Resource resource) {
     resource.setActive(false);
+    setPreferred(resource, false);
+    return resourceRepo.save(resource);
+  }
+
+  private void setPreferred(Resource resource, boolean preferred) {
     if (isNull(resource.getDoc())) {
       resource.setDoc(objectMapper.createObjectNode());
     }
-    ((ObjectNode) resource.getDoc()).put(RESOURCE_PREFERRED.getValue(), false);
-    return resourceRepo.save(resource);
+    var arrayNode = objectMapper.createArrayNode().add(preferred);
+    if (resource.getDoc().has(RESOURCE_PREFERRED.getValue())) {
+      ((ObjectNode) resource.getDoc()).replace(RESOURCE_PREFERRED.getValue(), arrayNode);
+    }
+    ((ObjectNode) resource.getDoc()).set(RESOURCE_PREFERRED.getValue(), arrayNode);
   }
 
   private Long replaceBibliographic(Resource resource) {

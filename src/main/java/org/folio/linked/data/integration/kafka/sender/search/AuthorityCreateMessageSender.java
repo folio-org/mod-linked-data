@@ -1,5 +1,6 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
+import static java.util.Objects.isNull;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
@@ -59,7 +60,7 @@ public class AuthorityCreateMessageSender implements CreateMessageSender {
   }
 
   private boolean isNewAuthority(Resource resource) {
-    return resource.getIndexDate() == null && resource.isAuthority();
+    return isNull(resource.getIndexDate()) && resource.isAuthority();
   }
 
   @Override

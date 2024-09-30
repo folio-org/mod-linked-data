@@ -53,7 +53,7 @@ class DatabaseIT {
       () -> jdbcTemplate.execute(format(INSERT_METADATA, schema, 2, srsId)));
 
     // then
-    assertThat(thrown.getMessage()).contains("There should be only one active resource per unique srs_id");
+    assertThat(thrown.getMessage()).contains("There should be only one active resource per unique srs_id [" + srsId);
   }
 
 }
