@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
+import static org.folio.linked.data.util.BibframeUtils.ensureActive;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
@@ -18,6 +19,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+    source = ensureActive(source, resourceRepository);
     var reference = new Reference()
       .id(String.valueOf(source.getId()))
       .label(source.getLabel());
@@ -30,6 +32,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
     var reference = (Reference) dto;
     return resourceRepository
       .findById(Long.parseLong(reference.getId()))
+      .map(r -> ensureActive(r, resourceRepository))
       .map(Resource::copyWithNoEdges)
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + reference.getId() + IS_NOT_FOUND));
   }

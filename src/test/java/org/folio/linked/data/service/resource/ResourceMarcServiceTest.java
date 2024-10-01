@@ -240,6 +240,7 @@ class ResourceMarcServiceTest {
     var id = randomLong();
     var srsId = UUID.randomUUID().toString();
     var existed = new Resource().setId(id).setManaged(true);
+    existed.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(existed));
     doReturn(Optional.of(existed)).when(resourceRepo).findByActiveTrueAndFolioMetadataSrsId(srsId);
     doReturn(true).when(folioMetadataRepo).existsBySrsId(srsId);
     var model = new org.folio.ld.dictionary.model.Resource()
@@ -260,6 +261,7 @@ class ResourceMarcServiceTest {
     assertThat(result).isEqualTo(id);
     assertThat(existed.isNotActive()).isTrue();
     assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(false);
+    assertThat(existed.getFolioMetadata()).isNull();
     verify(resourceRepo).save(existed);
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped));

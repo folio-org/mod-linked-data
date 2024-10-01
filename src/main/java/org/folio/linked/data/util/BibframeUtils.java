@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Function.identity;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -20,7 +21,9 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.repo.ResourceRepository;
 
 @Log4j2
 @UtilityClass
@@ -101,6 +104,17 @@ public class BibframeUtils {
         return instance;
       })
       .toList();
+  }
+
+  public static Resource ensureActive(Resource resource, ResourceRepository repository) {
+    if (resource.isActive()) {
+      return resource;
+    }
+    return ofNullable(resource.getFolioMetadata())
+      .map(FolioMetadata::getSrsId)
+      .map(repository::findByActiveTrueAndFolioMetadataSrsId)
+      .flatMap(identity())
+      .orElse(resource);
   }
 
 }

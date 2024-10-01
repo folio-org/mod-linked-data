@@ -1,10 +1,11 @@
 create table if not exists folio_metadata (
      resource_hash bigint primary key references resources(resource_hash),
-     inventory_id text null,
-     srs_id text null,
+     inventory_id text null unique,
+     srs_id text null unique,
      source resource_source null
   );
 
+create index if not exists folio_metadata_inventory_id_idx on folio_metadata(inventory_id);
 create index if not exists folio_metadata_srs_id_idx on folio_metadata(srs_id);
 
 comment on table folio_metadata is 'Stores FOLIO metadata of LD resources';
@@ -12,7 +13,3 @@ comment on column folio_metadata.resource_hash is 'The unique hash identifier fo
 comment on column folio_metadata.inventory_id is 'ID of the inventory in FOLIO Inventory application';
 comment on column folio_metadata.srs_id is 'ID of the source record in FOLIO SRS application';
 comment on column folio_metadata.source is 'Source of the instance resource (ex. LINKED_DATA, MARC)';
-
-CREATE TRIGGER check_unique_active_srs_id_trigger
-BEFORE INSERT ON folio_metadata
-FOR EACH ROW EXECUTE FUNCTION check_unique_active_srs_id();

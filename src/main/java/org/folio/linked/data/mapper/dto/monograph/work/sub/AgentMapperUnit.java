@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static java.util.Optional.ofNullable;
-import static java.util.function.Function.identity;
+import static org.folio.linked.data.util.BibframeUtils.ensureActive;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -24,7 +23,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    source = ensureActive(source);
+    source = ensureActive(source, resourceRepository);
     var agent = new Agent()
       .id(String.valueOf(source.getId()))
       .label(source.getLabel())
@@ -38,7 +37,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var agent = (Agent) dto;
     var resource = resourceRepository.findById(Long.parseLong(agent.getId()))
-      .map(this::ensureActive)
+      .map(r -> ensureActive(r, resourceRepository))
       .map(Resource::copyWithNoEdges)
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + agent.getId() + IS_NOT_FOUND));
     ofNullable(agent.getRoles())
@@ -47,14 +46,4 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
     return resource;
   }
 
-  private Resource ensureActive(Resource resource) {
-    if (resource.isActive()) {
-      return resource;
-    }
-    return ofNullable(resource.getFolioMetadata())
-      .map(FolioMetadata::getSrsId)
-      .map(resourceRepository::findByActiveTrueAndFolioMetadataSrsId)
-      .flatMap(identity())
-      .orElse(resource);
-  }
 }

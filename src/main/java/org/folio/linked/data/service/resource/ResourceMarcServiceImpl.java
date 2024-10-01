@@ -114,6 +114,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
   private Resource markObsolete(Resource resource) {
     resource.setActive(false);
     setPreferred(resource, false);
+    resource.setFolioMetadata(null);
     return resourceRepo.save(resource);
   }
 
@@ -122,9 +123,6 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
       resource.setDoc(objectMapper.createObjectNode());
     }
     var arrayNode = objectMapper.createArrayNode().add(preferred);
-    if (resource.getDoc().has(RESOURCE_PREFERRED.getValue())) {
-      ((ObjectNode) resource.getDoc()).replace(RESOURCE_PREFERRED.getValue(), arrayNode);
-    }
     ((ObjectNode) resource.getDoc()).set(RESOURCE_PREFERRED.getValue(), arrayNode);
   }
 

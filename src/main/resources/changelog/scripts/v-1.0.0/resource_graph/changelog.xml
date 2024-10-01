@@ -3,8 +3,6 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
-  <include file="functions/check_unique_active_srs_id.sql" relativeToChangelogFile="true"/>
-
   <include file="types/resource_source.sql" relativeToChangelogFile="true"/>
   <include file="tables/predicate_lookup.sql" relativeToChangelogFile="true"/>
   <include file="tables/context_lookup.sql" relativeToChangelogFile="true"/>

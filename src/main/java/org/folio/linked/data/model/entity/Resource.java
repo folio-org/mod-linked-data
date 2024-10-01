@@ -88,7 +88,7 @@ public class Resource implements Persistable<Long> {
   @OneToMany(mappedBy = "source", cascade = {DETACH, REMOVE}, orphanRemoval = true)
   private Set<ResourceEdge> outgoingEdges;
 
-  @OneToOne(cascade = ALL, mappedBy = "resource")
+  @OneToOne(cascade = ALL, mappedBy = "resource", orphanRemoval = true)
   @PrimaryKeyJoinColumn
   private FolioMetadata folioMetadata;
 
