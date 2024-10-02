@@ -188,7 +188,7 @@ public class Resource implements Persistable<Long> {
   @PrePersist
   void prePersist() {
     this.managed = true;
-    if (nonNull(folioMetadata) && !isOfType(INSTANCE) && isNotAuthority()) {
+    if (nonNull(folioMetadata) && !isOfType(INSTANCE) && !isAuthority()) {
       throw new IllegalStateException("Cannot save resource [" + id + "] with types " + types + ". "
         + "Folio metadata can be set only for instance and authority resources");
     }
@@ -199,17 +199,10 @@ public class Resource implements Persistable<Long> {
     this.managed = false;
   }
 
-  private boolean isNotAuthority() {
-    return !isAuthority();
-  }
-
   public boolean isAuthority() {
     return ResourceKind.AUTHORITY
       .stream()
       .anyMatch(this::isOfType);
   }
 
-  public boolean isNotActive() {
-    return !isActive();
-  }
 }

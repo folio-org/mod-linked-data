@@ -2,7 +2,7 @@ package org.folio.linked.data.service.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.folio.ld.dictionary.PredicateDictionary.REDIRECT;
+import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
@@ -169,7 +169,7 @@ class ResourceMarcServiceTest {
     var id = randomLong();
     var srsId = UUID.randomUUID().toString();
     var existed = new Resource().setId(id).setManaged(true);
-    doReturn(Optional.of(existed)).when(resourceRepo).findByActiveTrueAndFolioMetadataSrsId(srsId);
+    doReturn(Optional.of(existed)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
     doReturn(true).when(folioMetadataRepo).existsBySrsId(srsId);
     var model = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
@@ -241,7 +241,7 @@ class ResourceMarcServiceTest {
     var srsId = UUID.randomUUID().toString();
     var existed = new Resource().setId(id).setManaged(true);
     existed.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(existed));
-    doReturn(Optional.of(existed)).when(resourceRepo).findByActiveTrueAndFolioMetadataSrsId(srsId);
+    doReturn(Optional.of(existed)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
     doReturn(true).when(folioMetadataRepo).existsBySrsId(srsId);
     var model = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
@@ -259,14 +259,14 @@ class ResourceMarcServiceTest {
 
     // then
     assertThat(result).isEqualTo(id);
-    assertThat(existed.isNotActive()).isTrue();
+    assertThat(existed.isActive()).isFalse();
     assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(false);
     assertThat(existed.getFolioMetadata()).isNull();
     verify(resourceRepo).save(existed);
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped));
     assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(true);
-    assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REDIRECT));
+    assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REPLACED_BY));
   }
 
 }

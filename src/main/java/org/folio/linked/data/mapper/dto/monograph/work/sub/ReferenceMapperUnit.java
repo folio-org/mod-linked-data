@@ -10,6 +10,7 @@ import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.util.BibframeUtils;
 
 @RequiredArgsConstructor
 public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
@@ -19,7 +20,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    source = ensureActive(source, resourceRepository);
+    source = ensureActive(source);
     var reference = new Reference()
       .id(String.valueOf(source.getId()))
       .label(source.getLabel());
@@ -32,7 +33,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
     var reference = (Reference) dto;
     return resourceRepository
       .findById(Long.parseLong(reference.getId()))
-      .map(r -> ensureActive(r, resourceRepository))
+      .map(BibframeUtils::ensureActive)
       .map(Resource::copyWithNoEdges)
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + reference.getId() + IS_NOT_FOUND));
   }

@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.resource;
 
 import static java.util.Objects.isNull;
+import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
@@ -13,7 +14,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -99,11 +99,11 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
   private Long replaceAuthority(Resource resource) {
     var srsId = resource.getFolioMetadata().getSrsId();
-    return resourceRepo.findByActiveTrueAndFolioMetadataSrsId(srsId)
+    return resourceRepo.findByFolioMetadataSrsId(srsId)
       .map(previous -> {
         var previousObsolete = markObsolete(previous);
         setPreferred(resource, true);
-        resource.addIncomingEdge(new ResourceEdge(previousObsolete, resource, PredicateDictionary.REDIRECT));
+        resource.addIncomingEdge(new ResourceEdge(previousObsolete, resource, REPLACED_BY));
         logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",
           "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
         return saveAndPublishEvent(resource, saved -> new ResourceReplacedEvent(previousObsolete, saved));
@@ -128,7 +128,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
   private Long replaceBibliographic(Resource resource) {
     var srsId = resource.getFolioMetadata().getSrsId();
-    return resourceRepo.findByActiveTrueAndFolioMetadataSrsId(srsId)
+    return resourceRepo.findByFolioMetadataSrsId(srsId)
       .map(Resource::new)
       .map(existedBySrsId -> {
         logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",

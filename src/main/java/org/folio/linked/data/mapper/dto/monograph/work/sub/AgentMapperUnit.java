@@ -13,6 +13,7 @@ import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.util.BibframeUtils;
 
 @RequiredArgsConstructor
 public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
@@ -23,7 +24,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    source = ensureActive(source, resourceRepository);
+    source = ensureActive(source);
     var agent = new Agent()
       .id(String.valueOf(source.getId()))
       .label(source.getLabel())
@@ -37,7 +38,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var agent = (Agent) dto;
     var resource = resourceRepository.findById(Long.parseLong(agent.getId()))
-      .map(r -> ensureActive(r, resourceRepository))
+      .map(BibframeUtils::ensureActive)
       .map(Resource::copyWithNoEdges)
       .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + agent.getId() + IS_NOT_FOUND));
     ofNullable(agent.getRoles())
