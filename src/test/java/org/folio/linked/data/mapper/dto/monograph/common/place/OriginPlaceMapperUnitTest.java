@@ -13,6 +13,7 @@ import org.folio.linked.data.domain.dto.Place;
 import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest(classes = OriginPlaceMapperUnit.class)
 @Import({CoreMapperImpl.class, ObjectMapper.class})
+@UnitTest
 class OriginPlaceMapperUnitTest {
 
   @Autowired

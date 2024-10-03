@@ -13,6 +13,7 @@ import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest(classes = GovernmentPublicationMapperUnit.class)
 @Import({CoreMapperImpl.class, ObjectMapper.class})
+@UnitTest
 class GovernmentPublicationMapperUnitTest {
   @Autowired
   private GovernmentPublicationMapperUnit governmentPublicationMapperUnit;

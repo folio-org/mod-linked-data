@@ -1,23 +1,26 @@
 package org.folio.linked.data.service.resource;
 
-import static java.util.Objects.nonNull;
-import static java.util.Optional.ofNullable;
+import static java.util.Objects.isNull;
+import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
@@ -37,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceMarcServiceImpl implements ResourceMarcService {
 
+  private final ObjectMapper objectMapper;
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceDtoMapper resourceDtoMapper;
@@ -48,21 +52,14 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
 
   public Long saveMarcResource(org.folio.ld.dictionary.model.Resource modelResource) {
-    var incomingSrsId = ofNullable(modelResource.getFolioMetadata())
-      .map(FolioMetadata::getSrsId)
-      .orElse(null);
-    var existedSrsId = folioMetadataRepository.findById(modelResource.getId())
-      .map(org.folio.linked.data.model.entity.FolioMetadata::getSrsId)
-      .orElse(null);
     var mapped = resourceModelMapper.toEntity(modelResource);
-
     if (resourceRepo.existsById(modelResource.getId())) {
-      return updateResource(modelResource.getId(), incomingSrsId, existedSrsId, mapped);
+      return updateResource(mapped);
     }
-    if (nonNull(existedSrsId)) {
-      return replaceResource(modelResource.getId(), incomingSrsId, existedSrsId, mapped);
+    if (folioMetadataRepository.existsBySrsId(modelResource.getFolioMetadata().getSrsId())) {
+      return replaceResource(mapped);
     }
-    return createResource(modelResource.getId(), incomingSrsId, mapped);
+    return createResource(mapped);
   }
 
   @Override
@@ -81,43 +78,87 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
       return;
     }
     throw new ValidationException(
-      "Resource is not supported for MARC view",
-      "type", resource.getTypes().stream()
-      .map(ResourceTypeEntity::getUri)
-      .collect(Collectors.joining(", ", "[", "]"))
+      "Resource is not supported for MARC view", "type",
+      resource.getTypes().stream()
+        .map(ResourceTypeEntity::getUri)
+        .collect(Collectors.joining(", ", "[", "]"))
     );
   }
 
-  private Long createResource(Long incomingId, String incomingSrsId, Resource mapped) {
-    logMarcAction(incomingId, incomingSrsId, "not found by id and srsId", "created");
-    return saveAndPublishEvent(mapped, ResourceCreatedEvent::new);
+  private Long createResource(Resource resource) {
+    logMarcAction(resource, "not found by id and srsId", "be created");
+    return saveAndPublishEvent(resource, ResourceCreatedEvent::new);
   }
 
-  private Long replaceResource(Long incomingId, String incomingSrsId, String existedSrsId, Resource mapped) {
-    return resourceRepo.findByFolioMetadataSrsId(existedSrsId)
+  private Long replaceResource(Resource resource) {
+    if (resource.isAuthority()) {
+      return replaceAuthority(resource);
+    }
+    return replaceBibliographic(resource);
+  }
+
+  private Long replaceAuthority(Resource resource) {
+    var srsId = resource.getFolioMetadata().getSrsId();
+    return resourceRepo.findByFolioMetadataSrsId(srsId)
+      .map(previous -> {
+        var previousObsolete = markObsolete(previous);
+        setPreferred(resource, true);
+        resource.addIncomingEdge(new ResourceEdge(previousObsolete, resource, REPLACED_BY));
+        logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",
+          "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
+        return saveAndPublishEvent(resource, saved -> new ResourceReplacedEvent(previousObsolete, saved));
+      })
+      .orElseThrow(() -> new NotFoundException("Resource not found by srsId: " + srsId));
+  }
+
+  private Resource markObsolete(Resource resource) {
+    resource.setActive(false);
+    setPreferred(resource, false);
+    resource.setFolioMetadata(null);
+    return resourceRepo.save(resource);
+  }
+
+  private void setPreferred(Resource resource, boolean preferred) {
+    if (isNull(resource.getDoc())) {
+      resource.setDoc(objectMapper.createObjectNode());
+    }
+    var arrayNode = objectMapper.createArrayNode().add(preferred);
+    ((ObjectNode) resource.getDoc()).set(RESOURCE_PREFERRED.getValue(), arrayNode);
+  }
+
+  private Long replaceBibliographic(Resource resource) {
+    var srsId = resource.getFolioMetadata().getSrsId();
+    return resourceRepo.findByFolioMetadataSrsId(srsId)
       .map(Resource::new)
       .map(existedBySrsId -> {
-        logMarcAction(incomingId, incomingSrsId,
-          "not found by id, but found by srsId [" + existedSrsId + "]", "replaced");
-        return saveAndPublishEvent(mapped,
-          saved -> new ResourceReplacedEvent(existedBySrsId, saved));
+        logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",
+          "replace previously existed [id " + existedBySrsId.getId() + "]");
+        return saveAndPublishEvent(resource, saved -> new ResourceReplacedEvent(existedBySrsId, saved));
       })
-      .orElseThrow(() -> new NotFoundException("Resource not found by existed srsId: " + existedSrsId));
+      .orElseThrow(() -> new NotFoundException("Resource not found by srsId: " + srsId));
   }
 
-  private Long updateResource(Long incomingId, String incomingSrsId, String existedSrsId, Resource mapped) {
-    logMarcAction(incomingId, incomingSrsId,
-      "found by id [" + incomingId + "] with srsId [" + existedSrsId + "]", "updated");
-    return saveAndPublishEvent(mapped, ResourceUpdatedEvent::new);
+  private Long updateResource(Resource resource) {
+    var id = resource.getId();
+    var srsId = resource.getFolioMetadata().getSrsId();
+    logMarcAction(resource, "found by id [" + id + "] with srsId [" + srsId + "]", "be updated");
+    return saveAndPublishEvent(resource, ResourceUpdatedEvent::new);
   }
 
-  private void logMarcAction(Long incomingId, String incomingSrsId, String existence, String action) {
-    log.info("Incoming marc resource [id {}, srsId {}] is {} and will be {}",
-      incomingId, incomingSrsId, existence, action);
+  private void logMarcAction(Resource resource, String existence, String action) {
+    log.info("Incoming {} resource [id {}, srsId {}] is {} and will {}",
+      getResourceKind(resource), resource.getId(), resource.getFolioMetadata().getSrsId(), existence, action);
   }
 
-  private Long saveAndPublishEvent(Resource mapped, Function<Resource, ResourceEvent> resourceEventSupplier) {
-    var newResource = resourceGraphService.saveMergingGraph(mapped);
+  private String getResourceKind(Resource resource) {
+    if (resource.isAuthority()) {
+      return "Authority";
+    }
+    return "Bibliographic";
+  }
+
+  private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
+    var newResource = resourceGraphService.saveMergingGraph(resource);
     refreshWork(newResource);
     var event = resourceEventSupplier.apply(newResource);
     if (event instanceof ResourceReplacedEvent rre) {

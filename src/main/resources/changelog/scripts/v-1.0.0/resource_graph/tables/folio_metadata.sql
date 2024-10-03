@@ -1,11 +1,12 @@
 create table if not exists folio_metadata (
      resource_hash bigint primary key references resources(resource_hash),
-     inventory_id text null,
-     srs_id text null,
+     inventory_id text null unique,
+     srs_id text null unique,
      source resource_source null
   );
 
 create index if not exists folio_metadata_inventory_id_idx on folio_metadata(inventory_id);
+create index if not exists folio_metadata_srs_id_idx on folio_metadata(srs_id);
 
 comment on table folio_metadata is 'Stores FOLIO metadata of LD resources';
 comment on column folio_metadata.resource_hash is 'The unique hash identifier for the resource';

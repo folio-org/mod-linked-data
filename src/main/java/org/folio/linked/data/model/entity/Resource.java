@@ -21,6 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostRemove;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
@@ -66,6 +67,8 @@ public class Resource implements Persistable<Long> {
 
   private Date indexDate;
 
+  private boolean active = true;
+
   @OrderBy
   @ManyToMany(fetch = EAGER)
   @JoinTable(
@@ -85,7 +88,7 @@ public class Resource implements Persistable<Long> {
   @OneToMany(mappedBy = "source", cascade = {DETACH, REMOVE}, orphanRemoval = true)
   private Set<ResourceEdge> outgoingEdges;
 
-  @OneToOne(cascade = ALL, mappedBy = "resource")
+  @OneToOne(cascade = ALL, mappedBy = "resource", orphanRemoval = true)
   @PrimaryKeyJoinColumn
   private FolioMetadata folioMetadata;
 
@@ -185,15 +188,21 @@ public class Resource implements Persistable<Long> {
   @PrePersist
   void prePersist() {
     this.managed = true;
-    if (nonNull(folioMetadata) && !isOfType(INSTANCE) && isNotAuthority()) {
+    if (nonNull(folioMetadata) && !isOfType(INSTANCE) && !isAuthority()) {
       throw new IllegalStateException("Cannot save resource [" + id + "] with types " + types + ". "
         + "Folio metadata can be set only for instance and authority resources");
     }
   }
 
-  private boolean isNotAuthority() {
+  @PostRemove
+  void postRemove() {
+    this.managed = false;
+  }
+
+  public boolean isAuthority() {
     return ResourceKind.AUTHORITY
       .stream()
-      .noneMatch(this::isOfType);
+      .anyMatch(this::isOfType);
   }
+
 }

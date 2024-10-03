@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SourceRecordDomainEventHandler {
 
-  private static final String EVENT_SAVED = "SourceRecordDomainEvent [id {}] was saved as resource [id {}]";
+  private static final String EVENT_SAVED = "SourceRecordDomainEvent [id {}] was saved as {} resource [id {}]";
   private static final String EMPTY_RESOURCE_MAPPED = "Empty resource(s) mapped from SourceRecordDomainEvent [id {}]";
   private static final String NO_MARC_EVENT = "SourceRecordDomainEvent [id {}] has no Marc record inside";
   private static final String UNSUPPORTED_TYPE = "Ignoring unsupported {} type [{}] in SourceRecordDomainEvent [id {}]";
@@ -79,7 +79,7 @@ public class SourceRecordDomainEventHandler {
           if (isInstanceWithLinkedDataSource(resource)) {
             log.info(IGNORED_LINKED_DATA_SOURCE, resource.getId(), event.getId());
           } else {
-            saveResource(resource, event);
+            saveResource(resource, event, MARC_BIB);
           }
         },
         () -> logEmptyResource(event.getId())
@@ -102,14 +102,14 @@ public class SourceRecordDomainEventHandler {
     if (mapped.isEmpty()) {
       logEmptyResource(event.getId());
     } else {
-      mapped.forEach(resource -> saveResource(resource, event));
+      mapped.forEach(resource -> saveResource(resource, event, MARC_AUTHORITY));
     }
   }
 
-  private void saveResource(Resource resource, SourceRecordDomainEvent event) {
+  private void saveResource(Resource resource, SourceRecordDomainEvent event, SourceRecordType recordType) {
     if (CREATED == event.getEventType() || UPDATED == event.getEventType()) {
       var id = resourceMarcService.saveMarcResource(resource);
-      log.info(EVENT_SAVED, event.getId(), id);
+      log.info(EVENT_SAVED, event.getId(), recordType.getValue(), id);
     }
   }
 

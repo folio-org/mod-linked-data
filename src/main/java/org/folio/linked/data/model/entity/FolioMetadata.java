@@ -26,13 +26,13 @@ import org.hibernate.type.SqlTypes;
 public class FolioMetadata {
 
   @Id
-  @Column(name = "resource_hash")
+  @Column(name = "resource_hash", unique = true)
   private Long id;
 
-  @Column(name = "inventory_id")
+  @Column(name = "inventory_id", unique = true)
   private String inventoryId;
 
-  @Column(name = "srs_id")
+  @Column(name = "srs_id", unique = true)
   private String srsId;
 
   @Column(name = "source")

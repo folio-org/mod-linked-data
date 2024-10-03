@@ -17,6 +17,7 @@ import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.service.resource.hash.HashService;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootTest(classes = TargetAudienceMapperUnit.class)
 @Import({CoreMapperImpl.class, ObjectMapper.class})
+@UnitTest
 class TargetAudienceMapperUnitTest {
   @Autowired
   private TargetAudienceMapperUnit targetAudienceMapperUnit;

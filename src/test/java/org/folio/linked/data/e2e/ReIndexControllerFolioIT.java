@@ -20,11 +20,13 @@ import java.util.Date;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -47,10 +49,19 @@ class ReIndexControllerFolioIT {
   private Environment env;
   @Autowired
   private KafkaSearchWorkIndexTopicListener consumer;
+  @Autowired
+  private FolioMetadataRepository folioMetadataRepository;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
     kafkaAdminService.createTopics(TENANT_ID);
+  }
+
+  @BeforeEach
+  public void beforeEach() {
+    resourceEdgeRepository.deleteAll();
+    folioMetadataRepository.deleteAll();
+    resourceRepo.deleteAll();
   }
 
   @Test

@@ -1,13 +1,18 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.model.entity.ResourceSource.MARC;
@@ -28,6 +33,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
@@ -168,10 +174,13 @@ class SourceRecordDomainEventHandlerIT {
 
   @Transactional
   @Test
-  void shouldProcessAuthoritySourceRecordDomainEvent() {
+  void shouldProcessAuthoritySourceRecordDomainCreateEvent() {
     // given
-    var marc = loadResourceAsString("samples/marc2ld/authority_100.jsonl");
-    var expectedLabel = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
+    var marc = loadResourceAsString("samples/marc2ld/authority_100.jsonl")
+      .replace("aValue", "aaValue")
+      .replace("1125d50a-adea-4eaa-a418-6b3a0e6fa6ae", UUID.randomUUID().toString())
+      .replace("6dcb9a08-9884-4a15-b990-89c879a8e988", UUID.randomUUID().toString());
+    var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_AUTHORITY);
 
     // when
@@ -188,19 +197,8 @@ class SourceRecordDomainEventHandlerIT {
         .findFirst()
     );
 
-    assertThat(found)
-      .isPresent()
-      .get()
-      .hasFieldOrPropertyWithValue("label", expectedLabel)
-      .satisfies(resource -> assertThat(resource.getDoc()).isNotEmpty())
-      .satisfies(resource -> assertThat(resource.getOutgoingEdges()).isNotEmpty())
-      .extracting(Resource::getOutgoingEdges)
-      .satisfies(resourceEdges -> assertThat(resourceEdges)
-        .isNotEmpty()
-        .allMatch(edge -> Objects.nonNull(edge.getSource()))
-        .allMatch(edge -> Objects.nonNull(edge.getTarget()))
-        .allMatch(edge -> Objects.nonNull(edge.getPredicate()))
-      );
+    assertThat(found).isPresent();
+    assertAuthority(found.get(), expectedLabel, true, true, null);
 
     awaitAndAssert(() ->
       assertTrue(kafkaSearchAuthorityAuthorityTopicListener.getMessages()
@@ -213,6 +211,56 @@ class SourceRecordDomainEventHandlerIT {
     );
   }
 
+  @Transactional
+  @Test
+  void shouldProcessAuthoritySourceRecordDomainUpdateEvent() {
+    // given
+    var marcCreate = loadResourceAsString("samples/marc2ld/authority_100.jsonl")
+      .replace("1125d50a-adea-4eaa-a418-6b3a0e6fa6ae", UUID.randomUUID().toString())
+      .replace("6dcb9a08-9884-4a15-b990-89c879a8e988", UUID.randomUUID().toString());
+    var eventProducerRecordCreate =
+      getSrsDomainEventProducerRecord(randomUUID().toString(), marcCreate, CREATED, MARC_AUTHORITY);
+    var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
+    eventKafkaTemplate.send(eventProducerRecordCreate);
+    awaitAndAssert(() -> verify(resourceMarcService)
+      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+    var marcUpdate = marcCreate.replace("aValue", "newAValue");
+    var eventProducerRecordUpdate =
+      getSrsDomainEventProducerRecord(randomUUID().toString(), marcUpdate, UPDATED, MARC_AUTHORITY);
+    var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
+
+
+    // when
+    eventKafkaTemplate.send(eventProducerRecordUpdate);
+
+    // then
+    awaitAndAssert(() -> verify(resourceMarcService, times(2))
+      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+
+    var found = tenantScopedExecutionService.execute(
+      TENANT_ID,
+      () -> resourceRepo.findAllByType(Set.of(CONCEPT.getUri(), PERSON.getUri()), Pageable.ofSize(2))
+        .stream()
+        .toList()
+    );
+
+    assertThat(found).hasSize(2);
+    var createdResource = found.get(1);
+    var updatedResource = found.get(0);
+    assertAuthority(createdResource, expectedLabelCreated, false, false, updatedResource);
+    assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);
+
+    awaitAndAssert(() ->
+      assertTrue(kafkaSearchAuthorityAuthorityTopicListener.getMessages()
+        .stream()
+        .filter(m -> m.contains("\"type\":\"CREATE\""))
+        .filter(m -> m.contains("\"tenant\":\"test_tenant\""))
+        .filter(m -> m.contains("\"resourceName\":\"linked-data-authority\""))
+        .anyMatch(m -> m.contains(expectedLabelCreated))
+      )
+    );
+  }
+
   @Test
   void marcBibSourceRecordDomainEvent_shouldSendToIndexWorkWithTwoInstances() {
     // given
@@ -220,7 +268,9 @@ class SourceRecordDomainEventHandlerIT {
     mapAndSave(firstInstanceMarc);
     var secondInstanceMarc = firstInstanceMarc.replace("  2019493854", "  2019493855")
       .replace("code", "another code")
-      .replace("item number", "another item number");
+      .replace("item number", "another item number")
+      .replace("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1", UUID.randomUUID().toString())
+      .replace("43d58061-decf-4d74-9747-0e1c368e861b", UUID.randomUUID().toString());
     var expectedMessage = loadResourceAsString("samples/marc2ld/expected_message.json");
     var id = randomUUID().toString();
     var eventProducerRecord = getSrsDomainEventProducerRecord(id, secondInstanceMarc, CREATED, MARC_BIB);
@@ -315,5 +365,29 @@ class SourceRecordDomainEventHandlerIT {
     resourceEdgeRepository.save(resourceEdge);
     target.getOutgoingEdges()
       .forEach(this::saveEdge);
+  }
+
+  private void assertAuthority(Resource resource,
+                               String label,
+                               boolean isActive,
+                               boolean isPreferred,
+                               Resource replacedBy) {
+    assertThat(resource)
+      .hasFieldOrPropertyWithValue("label", label)
+      .hasFieldOrPropertyWithValue("active", isActive)
+      .satisfies(r -> assertThat(r.getDoc()).isNotEmpty())
+      .satisfies(r ->
+        assertThat(resource.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(isPreferred)
+      )
+      .satisfies(r -> assertThat(r.getOutgoingEdges()).isNotEmpty())
+      .extracting(Resource::getOutgoingEdges)
+      .satisfies(resourceEdges -> assertThat(resourceEdges)
+        .isNotEmpty()
+        .allMatch(edge -> Objects.equals(edge.getSource(), resource))
+        .allMatch(edge -> nonNull(edge.getTarget()))
+        .allMatch(edge -> nonNull(edge.getPredicate()))
+        .anyMatch(edge -> isNull(replacedBy) ||
+          edge.getPredicate().getUri().equals(REPLACED_BY.getUri()) && edge.getTarget().equals(replacedBy))
+      );
   }
 }
