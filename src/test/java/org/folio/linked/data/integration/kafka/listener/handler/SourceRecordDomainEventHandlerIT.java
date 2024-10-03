@@ -180,7 +180,6 @@ class SourceRecordDomainEventHandlerIT {
       .replace("aValue", "aaValue")
       .replace("1125d50a-adea-4eaa-a418-6b3a0e6fa6ae", UUID.randomUUID().toString())
       .replace("6dcb9a08-9884-4a15-b990-89c879a8e988", UUID.randomUUID().toString());
-    var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_AUTHORITY);
 
     // when
@@ -198,6 +197,7 @@ class SourceRecordDomainEventHandlerIT {
     );
 
     assertThat(found).isPresent();
+    var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     assertAuthority(found.get(), expectedLabel, true, true, null);
 
     awaitAndAssert(() ->
@@ -220,15 +220,12 @@ class SourceRecordDomainEventHandlerIT {
       .replace("6dcb9a08-9884-4a15-b990-89c879a8e988", UUID.randomUUID().toString());
     var eventProducerRecordCreate =
       getSrsDomainEventProducerRecord(randomUUID().toString(), marcCreate, CREATED, MARC_AUTHORITY);
-    var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     eventKafkaTemplate.send(eventProducerRecordCreate);
     awaitAndAssert(() -> verify(resourceMarcService)
       .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
     var marcUpdate = marcCreate.replace("aValue", "newAValue");
     var eventProducerRecordUpdate =
       getSrsDomainEventProducerRecord(randomUUID().toString(), marcUpdate, UPDATED, MARC_AUTHORITY);
-    var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
-
 
     // when
     eventKafkaTemplate.send(eventProducerRecordUpdate);
@@ -247,6 +244,8 @@ class SourceRecordDomainEventHandlerIT {
     assertThat(found).hasSize(2);
     var createdResource = found.get(1);
     var updatedResource = found.get(0);
+    var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
+    var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
     assertAuthority(createdResource, expectedLabelCreated, false, false, updatedResource);
     assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);
 
@@ -386,8 +385,8 @@ class SourceRecordDomainEventHandlerIT {
         .allMatch(edge -> Objects.equals(edge.getSource(), resource))
         .allMatch(edge -> nonNull(edge.getTarget()))
         .allMatch(edge -> nonNull(edge.getPredicate()))
-        .anyMatch(edge -> isNull(replacedBy) ||
-          edge.getPredicate().getUri().equals(REPLACED_BY.getUri()) && edge.getTarget().equals(replacedBy))
+        .anyMatch(edge -> isNull(replacedBy) || edge.getPredicate().getUri().equals(REPLACED_BY.getUri())
+          && edge.getTarget().equals(replacedBy))
       );
   }
 }
