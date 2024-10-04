@@ -129,9 +129,9 @@ public class BibframeUtils {
     Function<String, Optional<Resource>> fetchBySrsIdFunction = resourceRepository::findByFolioMetadataSrsId;
     return Optional.ofNullable(identifiable.getId())
       .flatMap(fetchByIdFunction)
+      .map(BibframeUtils::ensureActive)
       .or(() -> Optional.ofNullable(identifiable.getSrsId())
         .flatMap(fetchBySrsIdFunction))
-      .map(BibframeUtils::ensureActive)
       .map(Resource::copyWithNoEdges)
       .orElseThrow(() -> new NotFoundException(String.format("%s%s, %s%s",
         RESOURCE_WITH_GIVEN_ID_AND_SRS_ID, identifiable.getId(), identifiable.getSrsId(), IS_NOT_FOUND)));
