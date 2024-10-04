@@ -135,7 +135,7 @@
       ],
       "_genreReference": [
         {
-          "id": "-9064822434663187463"
+          "srsId": "8138e88f-4278-45ba-838c-816b80544f82"
         },
         {
           "id": "-4816872480602594231"
@@ -225,7 +225,7 @@
       ],
       "_creatorReference": [
         {
-          "id": "-603031702996824854",
+          "srsId": "5f2220d5-ddf6-410a-a459-cd4b5e1b5ddb",
           "label": "name-CREATOR-MEETING",
           "type": "http://bibfra.me/vocab/lite/Meeting"
         },
@@ -250,7 +250,7 @@
       ],
       "_contributorReference": [
         {
-          "id": "-4246830624125472784",
+          "srsId": "dad61944-17d2-4ade-afc5-ad4ce318a70b",
           "label": "name-CONTRIBUTOR-ORGANIZATION",
           "type": "http://bibfra.me/vocab/lite/Organization",
           "roles": [

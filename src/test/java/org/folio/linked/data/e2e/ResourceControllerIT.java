@@ -159,6 +159,7 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -1397,12 +1398,12 @@ class ResourceControllerIT {
         + "\"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"e\"], "
         + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"https://id.loc.gov/vocabulary/geographicAreas/e\"]}");
     var genre1 = saveResource(-9064822434663187463L, "genre 1", FORM,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}");
+      "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}", "8138e88f-4278-45ba-838c-816b80544f82");
     var genre2 = saveResource(-4816872480602594231L, "genre 2", FORM,
       "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}");
     var creatorMeeting = saveResource(-603031702996824854L, "name-CREATOR-MEETING", MEETING,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-MEETING\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}", "5f2220d5-ddf6-410a-a459-cd4b5e1b5ddb");
     var creatorPerson = saveResource(4359679744172518150L, "name-CREATOR-PERSON", PERSON,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-PERSON\"], "
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
@@ -1420,7 +1421,7 @@ class ResourceControllerIT {
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
     var contributorOrganization = saveResource(-4246830624125472784L, "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-ORGANIZATION\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}", "dad61944-17d2-4ade-afc5-ad4ce318a70b");
     var contributorFamily = saveResource(3094995075578514480L, "name-CONTRIBUTOR-FAMILY", FAMILY,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-FAMILY\"], "
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
@@ -1443,14 +1444,24 @@ class ResourceControllerIT {
     );
   }
 
-  @SneakyThrows
   private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc) {
+    return resourceTestService.saveGraph(createResource(id, label, type, doc));
+  }
+
+  private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc, String srsId) {
+    var resource = createResource(id, label, type, doc);
+    resource.setFolioMetadata(new FolioMetadata(resource).setSrsId(srsId));
+    return resourceTestService.saveGraph(resource);
+  }
+
+  @SneakyThrows
+  private Resource createResource(Long id, String label, ResourceTypeDictionary type, String doc) {
     var resource = new Resource();
     resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
     resource.setId(id);
-    return resourceTestService.saveGraph(resource);
+    return resource;
   }
 
   private String toInstance() {

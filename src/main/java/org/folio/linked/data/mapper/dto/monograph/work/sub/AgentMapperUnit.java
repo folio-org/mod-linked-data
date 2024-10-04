@@ -2,18 +2,15 @@ package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.util.BibframeUtils.ensureActive;
-import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.BibframeUtils.fetchResource;
 
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.util.BibframeUtils;
 
 @RequiredArgsConstructor
 public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
@@ -37,10 +34,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var agent = (Agent) dto;
-    var resource = resourceRepository.findById(Long.parseLong(agent.getId()))
-      .map(BibframeUtils::ensureActive)
-      .map(Resource::copyWithNoEdges)
-      .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + agent.getId() + IS_NOT_FOUND));
+    var resource = fetchResource(agent, resourceRepository);
     ofNullable(agent.getRoles())
       .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
         .ifPresent(p -> parentEntity.addOutgoingEdge(new ResourceEdge(parentEntity, resource, p)))));

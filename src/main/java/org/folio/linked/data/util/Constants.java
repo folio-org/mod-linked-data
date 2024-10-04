@@ -14,6 +14,7 @@ public class Constants {
   public static final String DTO_UNKNOWN_SUB_ELEMENT = " dto class deserialization error: Unknown sub-element ";
   public static final String AND = " and ";
   public static final String RESOURCE_WITH_GIVEN_ID = "Resource with given id [";
+  public static final String RESOURCE_WITH_GIVEN_ID_AND_SRS_ID = "Resource with given id and srsId [";
   public static final String RESOURCE_WITH_GIVEN_INVENTORY_ID = "Resource with given inventory id [";
   public static final String IS_NOT_FOUND = "] is not found";
   public static final String SEARCH_WORK_RESOURCE_NAME = "linked-data-work";
