@@ -45,6 +45,7 @@
     <lib-linked-data-dictionary.version>1.0.1-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>1.0.2-SNAPSHOT</lib-linked-data-marc4ld.version>
     <lib-linked-data-fingerprint.version>1.0.1-SNAPSHOT</lib-linked-data-fingerprint.version>
+    <mod-source-record-storage-client.version>5.9.0-SNAPSHOT</mod-source-record-storage-client.version>
     <maven-checkstyle-plugin.checkstyle.version>10.18.2</maven-checkstyle-plugin.checkstyle.version>
 
     <!-- Test dependencies versions -->
@@ -93,6 +94,11 @@
       <groupId>org.folio</groupId>
       <artifactId>lib-linked-data-fingerprint</artifactId>
       <version>${lib-linked-data-fingerprint.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.folio</groupId>
+      <artifactId>mod-source-record-storage-client</artifactId>
+      <version>${mod-source-record-storage-client.version}</version>
     </dependency>
 
     <dependency>

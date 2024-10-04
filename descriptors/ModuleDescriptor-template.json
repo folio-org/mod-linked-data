@@ -122,6 +122,18 @@
           "modulePermissions": []
         }
       ]
+    },
+    {
+      "id": "marc",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/marc/{inventoryId}/supported",
+          "permissionsRequired": [ "linked-data.marc.support.get" ],
+          "modulePermissions": ["source-storage.records.get"]
+        }
+      ]
     }
   ],
   "requires": [],
@@ -170,6 +182,11 @@
       "permissionName": "linked-data.profiles.get",
       "displayName": "Linked Data: Get the profiles for performing CRUD operations on resources",
       "description": "Get the profiles for performing CRUD operations on linked-data resources"
+    },
+    {
+      "permissionName": "linked-data.marc.support.get",
+      "displayName": "Linked Data: Find out if marc to bib conversion is supported",
+      "description": "Find out if marc to bib conversion is supported by mod-linked-data"
     }
   ],
   "launchDescriptor": {
