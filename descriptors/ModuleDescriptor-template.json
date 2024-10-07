@@ -69,6 +69,12 @@
           "pathPattern": "/resource/metadata/{inventoryId}/id",
           "permissionsRequired": [ "linked-data.resources.bib.id.get" ],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/import/{inventoryId}/check",
+          "permissionsRequired": [ "linked-data.resources.import-check.get" ],
+          "modulePermissions": ["source-storage.records.get"]
         }
       ]
     },
@@ -122,18 +128,6 @@
           "modulePermissions": []
         }
       ]
-    },
-    {
-      "id": "marc",
-      "version": "1.0",
-      "handlers": [
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/marc/{inventoryId}/supported",
-          "permissionsRequired": [ "linked-data.marc.support.get" ],
-          "modulePermissions": ["source-storage.records.get"]
-        }
-      ]
     }
   ],
   "requires": [],
@@ -179,14 +173,14 @@
       "description": "Get the ID of a linked-data instance resource using the inventory instance ID"
     },
     {
+      "permissionName": "linked-data.resources.import-check.get",
+      "displayName": "Linked Data: Check if marc to bib conversion is supported",
+      "description": "Check if marc to bib conversion is supported by mod-linked-data"
+    },
+    {
       "permissionName": "linked-data.profiles.get",
       "displayName": "Linked Data: Get the profiles for performing CRUD operations on resources",
       "description": "Get the profiles for performing CRUD operations on linked-data resources"
-    },
-    {
-      "permissionName": "linked-data.marc.support.get",
-      "displayName": "Linked Data: Find out if marc to bib conversion is supported",
-      "description": "Find out if marc to bib conversion is supported by mod-linked-data"
     }
   ],
   "launchDescriptor": {

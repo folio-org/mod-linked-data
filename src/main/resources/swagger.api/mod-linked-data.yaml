@@ -140,6 +140,23 @@ paths:
         '404':
           description: No resource id is found by its inventory id
 
+  /resource/import/{inventoryId}/check:
+    get:
+      operationId: isSupportedByInventoryId
+      description: Check if marc to bib conversion is supported
+      parameters:
+        - $ref: '#/components/parameters/inventoryId'
+      responses:
+        '200':
+          description: true if marc to bib conversion is supported and false if not supported
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: true|false
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /profile:
     get:
       operationId: getProfile
@@ -175,23 +192,6 @@ paths:
           $ref: '#/components/responses/badRequestResponse'
         '404':
           description: No Resource graph is found by id
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
-
-  /marc/{inventoryId}/supported:
-    get:
-      operationId: isSupportedByInventoryId
-      description: Find out if marc to bib conversion is supported
-      parameters:
-        - $ref: '#/components/parameters/inventoryId'
-      responses:
-        '200':
-          description: true if marc to bib conversion is supported and false if not supported
-          content:
-            text/plain:
-              schema:
-                type: string
-                example: true|false
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 

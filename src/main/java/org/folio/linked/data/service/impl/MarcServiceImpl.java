@@ -1,5 +1,8 @@
 package org.folio.linked.data.service.impl;
 
+import static org.folio.marc4ld.util.MarcUtil.isLanguageMaterial;
+import static org.folio.marc4ld.util.MarcUtil.isMonographicComponentPartOrItem;
+
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,6 @@ public class MarcServiceImpl implements MarcService {
   }
 
   private boolean isMonograph(String leader) {
-    return leader.charAt(6) == 'a' && (leader.charAt(7) == 'a' || leader.charAt(7) == 'm');
+    return isLanguageMaterial(leader.charAt(6)) && isMonographicComponentPartOrItem(leader.charAt(7));
   }
 }
