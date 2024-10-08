@@ -5,7 +5,7 @@ mod-linked-data:
     topic:
       work-search-index: linked-data.work
       authority-search-index: linked-data.authority
-      instance-ingress: linked-data.instance-ingress
+      instance-ingress: inventory.instance_ingress
 
 folio:
   environment: ${ENV:folio}
@@ -33,9 +33,6 @@ folio:
         numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
       - name: ${mod-linked-data.kafka.topic.authority-search-index:linked-data.authority}
-        numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
-        replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
-      - name: ${mod-linked-data.kafka.topic.instance-ingress:linked-data.instance-ingress}
         numPartitions: ${KAFKA_BIBFRAME_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_BIBFRAME_TOPIC_REPLICATION_FACTOR:}
 
