@@ -72,8 +72,8 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/import/{inventoryId}/check",
-          "permissionsRequired": [ "linked-data.resources.import-check.get" ],
+          "pathPattern": "/resource/check/{inventoryId}/supported",
+          "permissionsRequired": [ "linked-data.resources.support-check.get" ],
           "modulePermissions": ["source-storage.records.get"]
         }
       ]
@@ -173,7 +173,7 @@
       "description": "Get the ID of a linked-data instance resource using the inventory instance ID"
     },
     {
-      "permissionName": "linked-data.resources.import-check.get",
+      "permissionName": "linked-data.resources.support-check.get",
       "displayName": "Linked Data: Check if marc to bib conversion is supported",
       "description": "Check if marc to bib conversion is supported by mod-linked-data"
     },

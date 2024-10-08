@@ -9,4 +9,6 @@ public interface ResourceMarcService {
 
   ResourceMarcViewDto getResourceMarcView(Long id);
 
+  Boolean isSupportedByInventoryId(String inventoryId);
+
 }

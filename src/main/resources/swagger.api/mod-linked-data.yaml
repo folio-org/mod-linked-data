@@ -140,7 +140,7 @@ paths:
         '404':
           description: No resource id is found by its inventory id
 
-  /resource/import/{inventoryId}/check:
+  /resource/check/{inventoryId}/supported:
     get:
       operationId: isSupportedByInventoryId
       description: Check if marc to bib conversion is supported

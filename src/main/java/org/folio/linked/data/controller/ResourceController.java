@@ -35,6 +35,11 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
+  public ResponseEntity<String> isSupportedByInventoryId(String inventoryId) {
+    return ResponseEntity.ok(resourceMarcService.isSupportedByInventoryId(inventoryId).toString());
+  }
+
+  @Override
   public ResponseEntity<ResourceResponseDto> updateResource(Long id, String okapiTenant,
                                                     @Valid ResourceRequestDto resourceDto) {
     return ResponseEntity.ok(resourceService.updateResource(id, resourceDto));

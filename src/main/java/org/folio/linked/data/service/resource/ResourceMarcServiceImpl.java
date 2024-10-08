@@ -7,13 +7,18 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.marc4ld.util.MarcUtil.isLanguageMaterial;
+import static org.folio.marc4ld.util.MarcUtil.isMonographicComponentPartOrItem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
@@ -30,6 +35,7 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.rest.jaxrs.model.Record;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +55,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepository;
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final SrsClient srsClient;
 
 
   public Long saveMarcResource(org.folio.ld.dictionary.model.Resource modelResource) {
@@ -71,6 +78,17 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     var resourceModel = resourceModelMapper.toModel(resource);
     var marc = bibframe2MarcMapper.toMarcJson(resourceModel);
     return resourceDtoMapper.toMarcViewDto(resource, marc);
+  }
+
+  @Override
+  public Boolean isSupportedByInventoryId(String inventoryId) {
+    var response = srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId);
+    return Optional.ofNullable(response.getBody())
+      .map(Record::getParsedRecord)
+      .map(parsedRecord -> (Map<?, ?>) parsedRecord.getContent())
+      .map(content -> (String) content.get("leader"))
+      .map(this::isMonograph)
+      .orElse(false);
   }
 
   private void validateMarkViewSupportedType(Resource resource) {
@@ -182,5 +200,9 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
   private void addOutgoingEdges(Resource resource) {
     edgeRepo.findByIdSourceHash(resource.getId())
       .forEach(resource::addOutgoingEdge);
+  }
+
+  private boolean isMonograph(String leader) {
+    return isLanguageMaterial(leader.charAt(6)) && isMonographicComponentPartOrItem(leader.charAt(7));
   }
 }
