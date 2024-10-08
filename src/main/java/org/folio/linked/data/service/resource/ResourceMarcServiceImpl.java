@@ -140,7 +140,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     if (isNull(resource.getDoc())) {
       resource.setDoc(objectMapper.createObjectNode());
     }
-    var arrayNode = objectMapper.createArrayNode().add(preferred);
+    var arrayNode = objectMapper.createArrayNode().add(String.valueOf(preferred));
     ((ObjectNode) resource.getDoc()).set(RESOURCE_PREFERRED.getValue(), arrayNode);
   }
 

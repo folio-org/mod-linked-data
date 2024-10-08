@@ -272,12 +272,12 @@ class ResourceMarcServiceTest {
     // then
     assertThat(result).isEqualTo(id);
     assertThat(existed.isActive()).isFalse();
-    assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(false);
+    assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("false");
     assertThat(existed.getFolioMetadata()).isNull();
     verify(resourceRepo).save(existed);
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped));
-    assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(true);
+    assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
     assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REPLACED_BY));
   }
 
