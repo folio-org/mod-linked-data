@@ -140,6 +140,23 @@ paths:
         '404':
           description: No resource id is found by its inventory id
 
+  /resource/check/{inventoryId}/supported:
+    get:
+      operationId: isSupportedByInventoryId
+      description: Check if marc to bib conversion is supported
+      parameters:
+        - $ref: '#/components/parameters/inventoryId'
+      responses:
+        '200':
+          description: true if marc to bib conversion is supported and false if not supported
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: true|false
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /profile:
     get:
       operationId: getProfile
