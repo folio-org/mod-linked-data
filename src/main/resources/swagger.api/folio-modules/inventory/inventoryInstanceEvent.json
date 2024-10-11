@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Inventory instance event data model",
+  "javaType": "org.folio.rest.jaxrs.model.InventoryInstanceEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "Id of the event",
+      "$ref": "../common/uuid.json"
+    },
+    "new": {
+      "description": "New state of the instance",
+      "type": "object",
+      "$ref": "inventoryInstance.json"
+    },
+    "old": {
+      "description": "Old state of the instance",
+      "type": "object",
+      "$ref": "inventoryInstance.json"
+    },
+    "type": {
+      "description": "Event type",
+      "$ref": "../search/resourceIndexEventType.json"
+    },
+    "tenant": {
+      "description": "Tenant id",
+      "type": "string"
+    },
+    "ts": {
+      "description": "Timestamp",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id"
+  ],
+  "excludedFromEqualsAndHashCode": [
+    "tenant",
+    "ts"
+  ],
+  "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage"
+}

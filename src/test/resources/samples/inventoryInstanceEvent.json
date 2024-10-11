@@ -1,0 +1,22 @@
+{
+    "old": {
+        "id": "2165ef4b-001f-46b3-a60e-52bcdeb3d5a1",
+        "_version": 4,
+        "hrid": "in10391142",
+        "source": "MARC",
+        "title": "The \"\"Yoga Sutra of Patanjali\"\"A Biography.",
+        "discoverySuppress": false
+    },
+    "new": {
+        "id": "2165ef4b-001f-46b3-a60e-52bcdeb3d5a1",
+        "_version": 5,
+        "hrid": "in10391142",
+        "source": "MARC",
+        "title": "The \"\"Yoga Sutra of Patanjali\"\"A Biography.",
+        "staffSuppress": true,
+        "discoverySuppress": true
+    },
+    "id": "302e2de6-3a13-4d87-a294-8fc01ec4bddd",
+    "type": "UPDATE",
+    "tenant": "fs09000000"
+}

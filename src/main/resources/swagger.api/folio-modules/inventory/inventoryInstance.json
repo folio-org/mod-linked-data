@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Inventory instance event data model",
+  "javaType": "org.folio.rest.jaxrs.model.InventoryInstance",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "description": "UUID",
+      "$ref": "../common/uuid.json"
+    },
+    "staffSuppress": {
+      "description": "Suppress flags - Staff",
+      "type": "boolean"
+    },
+    "discoverySuppress": {
+      "description": "Suppress flags - From Discovery",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id"
+  ]
+}
