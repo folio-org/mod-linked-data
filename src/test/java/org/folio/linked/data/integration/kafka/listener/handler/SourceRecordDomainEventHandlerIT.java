@@ -41,7 +41,6 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestRepository;
@@ -67,8 +66,6 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class SourceRecordDomainEventHandlerIT {
 
-  @Autowired
-  private ResourceRepository resourceRepo;
   @Autowired
   private ResourceEdgeRepository resourceEdgeRepository;
   @Autowired
@@ -108,7 +105,7 @@ class SourceRecordDomainEventHandlerIT {
     tenantScopedExecutionService.execute(TENANT_ID,
       () -> {
         resourceEdgeRepository.deleteAll();
-        resourceRepo.deleteAll();
+        resourceTestRepository.deleteAll();
         kafkaSearchAuthorityAuthorityTopicListener.getMessages().clear();
         kafkaSearchWorkIndexTopicListener.getMessages().clear();
       }
@@ -191,7 +188,7 @@ class SourceRecordDomainEventHandlerIT {
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
-      () -> resourceRepo.findAllByType(Set.of(CONCEPT.getUri(), PERSON.getUri()), Pageable.ofSize(1))
+      () -> resourceTestRepository.findAllByTypes(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2, Pageable.ofSize(10))
         .stream()
         .findFirst()
     );
@@ -236,7 +233,7 @@ class SourceRecordDomainEventHandlerIT {
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
-      () -> resourceRepo.findAllByType(Set.of(CONCEPT.getUri(), PERSON.getUri()), Pageable.ofSize(2))
+      () -> resourceTestRepository.findAllByTypes(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2, Pageable.ofSize(10))
         .stream()
         .toList()
     );
@@ -349,7 +346,7 @@ class SourceRecordDomainEventHandlerIT {
     tenantScopedExecutionService.execute(TENANT_ID,
       () -> marc2BibframeMapper.fromMarcJson(marc)
         .map(resourceModelMapper::toEntity)
-        .map(resourceRepo::save)
+        .map(resourceTestRepository::save)
         .map(Resource::getOutgoingEdges)
         .stream()
         .flatMap(Set::stream)
@@ -360,7 +357,7 @@ class SourceRecordDomainEventHandlerIT {
   private void saveEdge(ResourceEdge resourceEdge) {
     resourceEdge.computeId();
     var target = resourceEdge.getTarget();
-    resourceRepo.save(target);
+    resourceTestRepository.save(target);
     resourceEdgeRepository.save(resourceEdge);
     target.getOutgoingEdges()
       .forEach(this::saveEdge);

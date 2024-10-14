@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static java.util.Optional.ofNullable;
-import static org.folio.linked.data.util.BibframeUtils.ensureActive;
+import static org.folio.linked.data.util.BibframeUtils.ensureLatestReplaced;
 import static org.folio.linked.data.util.BibframeUtils.fetchResource;
 
 import java.util.function.BiConsumer;
@@ -21,7 +21,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    source = ensureActive(source);
+    source = ensureLatestReplaced(source);
     var agent = new Agent()
       .id(String.valueOf(source.getId()))
       .label(source.getLabel())

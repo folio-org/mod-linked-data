@@ -111,15 +111,12 @@ public class BibframeUtils {
       .toList();
   }
 
-  public static Resource ensureActive(Resource resource) {
-    if (resource.isActive()) {
-      return resource;
-    }
+  public static Resource ensureLatestReplaced(Resource resource) {
     return resource.getOutgoingEdges()
       .stream()
       .filter(re -> re.getPredicate().getUri().equals(REPLACED_BY.getUri()))
       .map(ResourceEdge::getTarget)
-      .map(BibframeUtils::ensureActive)
+      .map(BibframeUtils::ensureLatestReplaced)
       .findFirst()
       .orElse(resource);
   }
@@ -129,7 +126,7 @@ public class BibframeUtils {
     Function<String, Optional<Resource>> fetchBySrsIdFunction = resourceRepository::findByFolioMetadataSrsId;
     return Optional.ofNullable(identifiable.getId())
       .flatMap(fetchByIdFunction)
-      .map(BibframeUtils::ensureActive)
+      .map(BibframeUtils::ensureLatestReplaced)
       .or(() -> Optional.ofNullable(identifiable.getSrsId())
         .flatMap(fetchBySrsIdFunction))
       .map(Resource::copyWithNoEdges)

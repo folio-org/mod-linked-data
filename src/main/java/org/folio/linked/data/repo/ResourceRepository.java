@@ -12,11 +12,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
-  @Query("SELECT r FROM Resource r JOIN r.types t WHERE t.uri IN :types")
-  Page<Resource> findAllByType(@Param("types") Set<String> types, Pageable pageable);
+  @Query("SELECT r FROM Resource r JOIN r.types t WHERE t.uri = :type")
+  Page<Resource> findAllByType(@Param("type") String type, Pageable pageable);
 
-  @Query("SELECT r FROM Resource r JOIN r.types t WHERE r.indexDate IS NULL AND t.uri IN :types")
-  Page<Resource> findNotIndexedByType(@Param("types") Set<String> types, Pageable pageable);
+  @Query("SELECT r FROM Resource r JOIN r.types t WHERE r.indexDate IS NULL AND t.uri = :type")
+  Page<Resource> findNotIndexedByType(@Param("type") String type, Pageable pageable);
 
   @Modifying
   @Query("update Resource r set r.indexDate = current_timestamp() where r.id = :id")

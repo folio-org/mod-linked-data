@@ -2,15 +2,17 @@ package org.folio.linked.data.test;
 
 import java.util.Set;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.repo.ResourceRepository;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ResourceTestRepository extends JpaRepository<Resource, Long> {
+@Primary
+public interface ResourceTestRepository extends ResourceRepository {
 
   @Query("SELECT r FROM Resource r "
     + "JOIN FETCH r.types t "
@@ -18,4 +20,12 @@ public interface ResourceTestRepository extends JpaRepository<Resource, Long> {
     + "LEFT JOIN FETCH r.outgoingEdges "
     + "WHERE t.uri IN :types")
   Page<Resource> findAllByTypeWithEdgesLoaded(@Param("types") Set<String> types, Pageable pageable);
+
+  @Query("SELECT r FROM Resource r "
+    + "WHERE :typeCount = ("
+    + "SELECT COUNT(DISTINCT t.uri) "
+    + "FROM r.types t "
+    + "WHERE t.uri IN :types"
+    + ")")
+  Page<Resource> findAllByTypes(@Param("types") Set<String> types, int typeCount, Pageable pageable);
 }

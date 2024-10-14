@@ -47,8 +47,7 @@ class ReindexServiceTest {
     // given
     var notIndexedWorkPage = mock(Page.class);
     var workStream = Stream.of(new Resource());
-    when(resourceRepository.findAllByType(eq(Set.of(WORK.getUri())), any(Pageable.class)))
-      .thenReturn(notIndexedWorkPage);
+    when(resourceRepository.findAllByType(eq(WORK.getUri()), any(Pageable.class))).thenReturn(notIndexedWorkPage);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
     when(notIndexedWorkPage.get()).thenReturn(workStream);
     when(batchIndexService.indexWorks(workStream))
@@ -66,7 +65,7 @@ class ReindexServiceTest {
     // given
     var notIndexedWorkPage = mock(Page.class);
     var workStream = Stream.of(new Resource());
-    when(resourceRepository.findNotIndexedByType(eq(Set.of(WORK.getUri())), any(Pageable.class)))
+    when(resourceRepository.findNotIndexedByType(eq(WORK.getUri()), any(Pageable.class)))
       .thenReturn(notIndexedWorkPage);
     when(notIndexedWorkPage.nextPageable()).thenReturn(Pageable.unpaged());
     when(notIndexedWorkPage.get()).thenReturn(workStream);
