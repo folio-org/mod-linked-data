@@ -10,12 +10,14 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.Optional;
@@ -23,6 +25,7 @@ import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -36,6 +39,7 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
 import org.folio.spring.testing.type.UnitTest;
@@ -70,6 +74,8 @@ class ResourceMarcServiceTest {
   private ResourceModelMapper resourceModelMapper;
   @Mock
   private Bibframe2MarcMapper bibframe2MarcMapper;
+  @Mock
+  private MarcBib2ldMapper marcBib2ldMapper;
   @Mock
   private ApplicationEventPublisher applicationEventPublisher;
   @Mock
@@ -316,6 +322,29 @@ class ResourceMarcServiceTest {
 
     //expect
     assertFalse(resourceMarcService.isSupportedByInventoryId(inventoryId));
+  }
+
+  @Test
+  void getResourcePreviewByInventoryId_shouldReturn_resourceResponseDto() throws JsonProcessingException {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    var marcRecord = createRecord('a', 'm');
+    var marcJson = "";
+    var resourceModel = new org.folio.ld.dictionary.model.Resource();
+    var resourceEntity = new Resource();
+    var resourceDto = new ResourceResponseDto();
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
+    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
+    when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
+    when(resourceModelMapper.toEntity(resourceModel)).thenReturn(resourceEntity);
+    when(resourceDtoMapper.toDto(resourceEntity)).thenReturn(resourceDto);
+
+    //when
+    var result = resourceMarcService.getResourcePreviewByInventoryId(inventoryId);
+
+    //then
+    assertEquals(resourceDto, result);
   }
 
   private org.folio.rest.jaxrs.model.Record createRecord(char type, char level) {

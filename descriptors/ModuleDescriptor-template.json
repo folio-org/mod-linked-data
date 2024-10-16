@@ -75,6 +75,12 @@
           "pathPattern": "/resource/check/{inventoryId}/supported",
           "permissionsRequired": [ "linked-data.resources.support-check.get" ],
           "modulePermissions": ["source-storage.records.get"]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/resource/preview/{inventoryId}",
+          "permissionsRequired": [ "linked-data.resources.preview.get" ],
+          "modulePermissions": ["source-storage.records.get"]
         }
       ]
     },
@@ -176,6 +182,11 @@
       "permissionName": "linked-data.resources.support-check.get",
       "displayName": "Linked Data: Check if marc to bib conversion is supported",
       "description": "Check if marc to bib conversion is supported by mod-linked-data"
+    },
+    {
+      "permissionName": "linked-data.resources.preview.get",
+      "displayName": "Linked Data: Get the preview of a resource",
+      "description": "Get the preview of a linked-data resource"
     },
     {
       "permissionName": "linked-data.profiles.get",

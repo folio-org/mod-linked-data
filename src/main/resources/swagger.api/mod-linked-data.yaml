@@ -157,6 +157,22 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /resource/preview/{inventoryId}:
+    get:
+      operationId: getResourcePreviewByInventoryId
+      description: Get the preview of a resource
+      parameters:
+        - $ref: '#/components/parameters/inventoryId'
+      responses:
+        '200':
+          description: Resource as json string
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceResponseDto.json
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /profile:
     get:
       operationId: getProfile
