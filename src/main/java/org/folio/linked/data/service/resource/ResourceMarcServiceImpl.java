@@ -17,9 +17,11 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -35,6 +37,8 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
+import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -52,6 +56,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
   private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceModelMapper resourceModelMapper;
   private final Bibframe2MarcMapper bibframe2MarcMapper;
+  private final MarcBib2ldMapper marcBib2ldMapper;
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepository;
   private final ApplicationEventPublisher applicationEventPublisher;
@@ -89,6 +94,19 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
       .map(content -> (String) content.get("leader"))
       .map(this::isMonograph)
       .orElse(false);
+  }
+
+  @Override
+  public ResourceResponseDto getResourcePreviewByInventoryId(String inventoryId) {
+    var response = srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId);
+    return Optional.ofNullable(response.getBody())
+      .map(Record::getParsedRecord)
+      .map(ParsedRecord::getContent)
+      .map(this::toJsonString)
+      .flatMap(marcBib2ldMapper::fromMarcJson)
+      .map(resourceModelMapper::toEntity)
+      .map(resourceDtoMapper::toDto)
+      .orElse(null);
   }
 
   private void validateMarkViewSupportedType(Resource resource) {
@@ -204,5 +222,10 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
   private boolean isMonograph(String leader) {
     return isLanguageMaterial(leader.charAt(6)) && isMonographicComponentPartOrItem(leader.charAt(7));
+  }
+
+  @SneakyThrows
+  private String toJsonString(Object content) {
+    return objectMapper.writeValueAsString(content);
   }
 }
