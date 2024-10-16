@@ -4,7 +4,6 @@ import static java.lang.Boolean.TRUE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -40,8 +39,8 @@ public class ReindexServiceImpl implements ReindexService {
     var recordsIndexed = 0L;
     while (pageable.isPaged()) {
       var page = TRUE.equals(full)
-        ? resourceRepository.findAllByType(Set.of(WORK.getUri()), pageable)
-        : resourceRepository.findNotIndexedByType(Set.of(WORK.getUri()), pageable);
+        ? resourceRepository.findAllByType(WORK.getUri(), pageable)
+        : resourceRepository.findNotIndexedByType(WORK.getUri(), pageable);
       var batchReindexResult = batchIndexService.indexWorks(page.get());
       recordsIndexed += batchReindexResult.recordsIndexed();
       resourceService.updateIndexDateBatch(batchReindexResult.indexedIds());

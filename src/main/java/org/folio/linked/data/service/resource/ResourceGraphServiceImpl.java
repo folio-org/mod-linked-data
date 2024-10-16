@@ -45,9 +45,10 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   @Override
   public void breakEdgesAndDelete(Resource resource) {
+    resource.setActive(false);
+    resource.setFolioMetadata(null);
     breakCircularEdges(resource);
     resourceRepo.delete(resource);
-    resourceRepo.flush();
   }
 
   private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
