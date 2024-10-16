@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Inventory instance event data model",
+  "javaType": "org.folio.rest.jaxrs.model.InventoryInstanceEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "$ref": "../common/uuid.json"
+    },
+    "new": {
+      "type": "object",
+      "$ref": "inventoryInstance.json"
+    },
+    "old": {
+      "type": "object",
+      "$ref": "inventoryInstance.json"
+    },
+    "type": {
+      "$ref": "../search/resourceIndexEventType.json"
+    },
+    "tenant": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "id"
+  ]
+}
