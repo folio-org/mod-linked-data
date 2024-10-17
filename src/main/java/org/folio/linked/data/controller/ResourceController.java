@@ -60,4 +60,5 @@ public class ResourceController implements ResourceApi {
   public ResponseEntity<ResourceMarcViewDto> getResourceMarcViewById(Long id, String okapiTenant) {
     return ResponseEntity.ok(resourceMarcService.getResourceMarcView(id));
   }
+
 }
