@@ -1,7 +1,6 @@
 package org.folio.linked.data.test.kafka;
 
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum;
-import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.RECORD_DOMAIN_EVENT_TOPIC;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
@@ -17,17 +16,8 @@ import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
-import org.folio.linked.data.test.TestUtil;
 
 public class KafkaEventsTestDataFixture {
-
-  public static ProducerRecord<String, String> getSrsDomainEventSampleProducerRecord() {
-    var topic = getTenantTopicName(RECORD_DOMAIN_EVENT_TOPIC, TENANT_ID);
-    var value = TestUtil.loadResourceAsString("samples/srsDomainEvent.json");
-    var headers = new ArrayList<>(defaultKafkaHeaders());
-    headers.add(new RecordHeader("folio.srs.recordType", MARC_BIB.name().getBytes()));
-    return new ProducerRecord(topic, 0, "1", value, headers);
-  }
 
   @SneakyThrows
   public static ProducerRecord<String, String> getSrsDomainEventProducerRecord(String id,
