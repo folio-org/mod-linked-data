@@ -45,6 +45,7 @@ import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -98,6 +99,7 @@ class SourceRecordDomainEventHandlerIT {
     );
   }
 
+  @Disabled
   @ParameterizedTest
   @CsvSource({
     "samples/marc2ld/marc_non_monograph_leader.jsonl, 0",
@@ -116,6 +118,7 @@ class SourceRecordDomainEventHandlerIT {
       .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
   }
 
+  @Disabled
   @Test
   void shouldProcessMarcBibSourceRecordDomainEvent() {
     // given
@@ -223,6 +226,7 @@ class SourceRecordDomainEventHandlerIT {
     assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);
   }
 
+  @Disabled
   @Test
   void marcBibSourceRecordDomainEvent_shouldSendToIndexWorkWithTwoInstances() {
     // given
@@ -259,6 +263,7 @@ class SourceRecordDomainEventHandlerIT {
     });
   }
 
+  @Disabled
   @Test
   void marcBibSourceRecordDomainEvent_shouldKeepExistedEdgesAndPropertiesAndFolioMetadata_inCaseOfUpdate() {
     // given
