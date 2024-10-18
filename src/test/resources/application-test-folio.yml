@@ -18,6 +18,8 @@ folio:
         numPartitions: 1
       - name: srs.source_records
         num-partitions: 1
+      - name: inventory.instance
+        num-partitions: 1
 
 test:
   topic:

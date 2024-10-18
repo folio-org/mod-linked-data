@@ -26,6 +26,10 @@ folio:
         concurrency: ${KAFKA_SOURCE_RECORD_DOMAIN_EVENT_CONCURRENCY:1}
         topic-pattern: ${KAFKA_SOURCE_RECORD_DOMAIN_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)srs.source_records}
         group-id: ${folio.environment}-linked-data-source-record-domain-event-group
+      inventory-instance-event:
+        concurrency: ${KAFKA_INVENTORY_INSTANCE_EVENT_CONCURRENCY:1}
+        topic-pattern: ${KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)inventory.instance}
+        group-id: ${folio.environment}-linked-data-inventory-instance-event-group
     retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
     retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
     topics:
