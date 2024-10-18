@@ -139,7 +139,9 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
       .map(previous -> {
         var previousObsolete = markObsolete(previous);
         setPreferred(resource, true);
-        resource.addIncomingEdge(new ResourceEdge(previousObsolete, resource, REPLACED_BY));
+        var re = new ResourceEdge(previousObsolete, resource, REPLACED_BY);
+        previousObsolete.addOutgoingEdge(re);
+        resource.addIncomingEdge(re);
         logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",
           "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
         return saveAndPublishEvent(resource, saved -> new ResourceReplacedEvent(previousObsolete, saved));
@@ -151,7 +153,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     resource.setActive(false);
     setPreferred(resource, false);
     resource.setFolioMetadata(null);
-    return resourceRepo.save(resource);
+    return resource;
   }
 
   private void setPreferred(Resource resource, boolean preferred) {
@@ -198,7 +200,11 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     refreshWork(newResource);
     var event = resourceEventSupplier.apply(newResource);
     if (event instanceof ResourceReplacedEvent rre) {
-      resourceGraphService.breakEdgesAndDelete(rre.previous());
+      if (resource.isAuthority()) {
+        resourceRepo.save(rre.previous());
+      } else {
+        resourceGraphService.breakEdgesAndDelete(rre.previous());
+      }
     }
     applicationEventPublisher.publishEvent(event);
     return newResource.getId();

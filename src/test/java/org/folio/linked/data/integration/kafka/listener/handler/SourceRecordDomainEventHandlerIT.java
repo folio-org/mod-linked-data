@@ -1,12 +1,8 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
-import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 import static java.util.UUID.randomUUID;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -19,6 +15,7 @@ import static org.folio.linked.data.model.entity.ResourceSource.MARC;
 import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.assertAuthority;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
@@ -31,7 +28,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
@@ -60,7 +56,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 @IntegrationTest
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
@@ -145,7 +140,7 @@ class SourceRecordDomainEventHandlerIT {
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
-      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(INSTANCE.getUri()), 1, Pageable.ofSize(1))
         .stream()
         .findFirst()
     );
@@ -169,7 +164,6 @@ class SourceRecordDomainEventHandlerIT {
     verifyNoInteractions(instanceIngressMessageProducer);
   }
 
-  @Transactional
   @Test
   void shouldProcessAuthoritySourceRecordDomainCreateEvent() {
     // given
@@ -188,7 +182,8 @@ class SourceRecordDomainEventHandlerIT {
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
-      () -> resourceTestRepository.findAllByTypes(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2, Pageable.ofSize(10))
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2,
+          Pageable.ofSize(10))
         .stream()
         .findFirst()
     );
@@ -208,7 +203,6 @@ class SourceRecordDomainEventHandlerIT {
     );
   }
 
-  @Transactional
   @Test
   void shouldProcessAuthoritySourceRecordDomainUpdateEvent() {
     // given
@@ -233,7 +227,8 @@ class SourceRecordDomainEventHandlerIT {
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
-      () -> resourceTestRepository.findAllByTypes(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2, Pageable.ofSize(10))
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2,
+          Pageable.ofSize(10))
         .stream()
         .toList()
     );
@@ -310,7 +305,7 @@ class SourceRecordDomainEventHandlerIT {
       .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
     verify(eventListener).afterUpdate(any());
     var allInstances = tenantScopedExecutionService.execute(TENANT_ID,
-      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(INSTANCE.getUri()), Pageable.ofSize(1))
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(INSTANCE.getUri()), 1, Pageable.ofSize(1))
         .stream()
         .toList()
     );
@@ -363,27 +358,4 @@ class SourceRecordDomainEventHandlerIT {
       .forEach(this::saveEdge);
   }
 
-  private void assertAuthority(Resource resource,
-                               String label,
-                               boolean isActive,
-                               boolean isPreferred,
-                               Resource replacedBy) {
-    assertThat(resource)
-      .hasFieldOrPropertyWithValue("label", label)
-      .hasFieldOrPropertyWithValue("active", isActive)
-      .satisfies(r -> assertThat(r.getDoc()).isNotEmpty())
-      .satisfies(r ->
-        assertThat(resource.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(isPreferred)
-      )
-      .satisfies(r -> assertThat(r.getOutgoingEdges()).isNotEmpty())
-      .extracting(Resource::getOutgoingEdges)
-      .satisfies(resourceEdges -> assertThat(resourceEdges)
-        .isNotEmpty()
-        .allMatch(edge -> Objects.equals(edge.getSource(), resource))
-        .allMatch(edge -> nonNull(edge.getTarget()))
-        .allMatch(edge -> nonNull(edge.getPredicate()))
-        .anyMatch(edge -> isNull(replacedBy) || edge.getPredicate().getUri().equals(REPLACED_BY.getUri())
-          && edge.getTarget().equals(replacedBy))
-      );
-  }
 }

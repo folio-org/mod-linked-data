@@ -1,5 +1,6 @@
 package org.folio.linked.data.test;
 
+import java.util.Optional;
 import java.util.Set;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -18,14 +19,16 @@ public interface ResourceTestRepository extends ResourceRepository {
     + "JOIN FETCH r.types t "
     + "LEFT JOIN FETCH r.incomingEdges "
     + "LEFT JOIN FETCH r.outgoingEdges "
-    + "WHERE t.uri IN :types")
-  Page<Resource> findAllByTypeWithEdgesLoaded(@Param("types") Set<String> types, Pageable pageable);
-
-  @Query("SELECT r FROM Resource r "
     + "WHERE :typeCount = ("
     + "SELECT COUNT(DISTINCT t.uri) "
     + "FROM r.types t "
     + "WHERE t.uri IN :types"
     + ")")
-  Page<Resource> findAllByTypes(@Param("types") Set<String> types, int typeCount, Pageable pageable);
+  Page<Resource> findAllByTypeWithEdgesLoaded(@Param("types") Set<String> types, int typeCount, Pageable pageable);
+
+  @Query("SELECT r FROM Resource r "
+    + "LEFT JOIN FETCH r.incomingEdges "
+    + "LEFT JOIN FETCH r.outgoingEdges "
+    + "WHERE r.id = :id")
+  Optional<Resource> findByIdWithEdgesLoaded(Long id);
 }

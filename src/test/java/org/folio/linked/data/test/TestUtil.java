@@ -2,6 +2,11 @@ package org.folio.linked.data.test;
 
 import static java.lang.System.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
@@ -124,5 +129,29 @@ public class TestUtil {
       .pollDelay(FIVE_SECONDS)
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(throwingRunnable);
+  }
+
+  public static void assertAuthority(Resource resource,
+                               String label,
+                               boolean isActive,
+                               boolean isPreferred,
+                               Resource replacedBy) {
+    assertThat(resource)
+      .hasFieldOrPropertyWithValue("label", label)
+      .hasFieldOrPropertyWithValue("active", isActive)
+      .satisfies(r -> assertThat(r.getDoc()).isNotEmpty())
+      .satisfies(r ->
+        assertThat(resource.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).asBoolean()).isEqualTo(isPreferred)
+      )
+      .satisfies(r -> assertThat(r.getOutgoingEdges()).isNotEmpty())
+      .extracting(Resource::getOutgoingEdges)
+      .satisfies(resourceEdges -> assertThat(resourceEdges)
+        .isNotEmpty()
+        .allMatch(edge -> Objects.equals(edge.getSource(), resource))
+        .allMatch(edge -> nonNull(edge.getTarget()))
+        .allMatch(edge -> nonNull(edge.getPredicate()))
+        .anyMatch(edge -> isNull(replacedBy) || edge.getPredicate().getUri().equals(REPLACED_BY.getUri())
+          && edge.getTarget().equals(replacedBy))
+      );
   }
 }
