@@ -40,6 +40,11 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
+  public ResponseEntity<ResourceResponseDto> getResourcePreviewByInventoryId(String inventoryId) {
+    return ResponseEntity.ok(resourceMarcService.getResourcePreviewByInventoryId(inventoryId));
+  }
+
+  @Override
   public ResponseEntity<ResourceResponseDto> updateResource(Long id, String okapiTenant,
                                                     @Valid ResourceRequestDto resourceDto) {
     return ResponseEntity.ok(resourceService.updateResource(id, resourceDto));
@@ -55,4 +60,5 @@ public class ResourceController implements ResourceApi {
   public ResponseEntity<ResourceMarcViewDto> getResourceMarcViewById(Long id, String okapiTenant) {
     return ResponseEntity.ok(resourceMarcService.getResourceMarcView(id));
   }
+
 }
