@@ -55,7 +55,7 @@ public class KafkaProducerConfiguration {
     KafkaTemplate<String, InstanceIngressEvent> instanceIngressMessageTemplate
   ) {
     var producer = new FolioMessageProducer<>(instanceIngressMessageTemplate,
-      linkedDataTopicProperties::getInstanceIngress);
+      (FolioKafkaTopicWithNamespace) linkedDataTopicProperties::getInstanceIngress);
     producer.setKeyMapper(iie -> iie.getEventPayload().getSourceRecordIdentifier());
     return producer;
   }

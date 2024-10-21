@@ -19,14 +19,17 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
+import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 
+@SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 @ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 public class ResourceControllerFolioIT extends ResourceControllerIT {
 
