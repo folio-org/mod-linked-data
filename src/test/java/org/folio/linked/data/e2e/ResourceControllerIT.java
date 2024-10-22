@@ -179,9 +179,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
-class ResourceControllerIT {
+public class ResourceControllerIT {
 
-  private static final String RESOURCE_URL = "/resource";
+  public static final String RESOURCE_URL = "/resource";
   private static final String ROLES_PROPERTY = "roles";
   private static final String NOTES_PROPERTY = "_notes";
   private static final String ID_PROPERTY = "id";
