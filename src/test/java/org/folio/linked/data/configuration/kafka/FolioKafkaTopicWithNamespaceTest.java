@@ -35,4 +35,5 @@ class FolioKafkaTopicWithNamespaceTest {
     //expect
     assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> topic.fullTopicName(tenant));
   }
+
 }
