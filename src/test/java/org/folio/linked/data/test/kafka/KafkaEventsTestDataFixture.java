@@ -54,5 +54,4 @@ public class KafkaEventsTestDataFixture {
       .eventType(type)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marc)));
   }
-
 }
