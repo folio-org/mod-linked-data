@@ -5,6 +5,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.allNull;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
@@ -49,6 +50,7 @@ import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.LinkedDataContributor;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnly;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnlyPublicationsInner;
+import org.folio.linked.data.domain.dto.LinkedDataInstanceOnlySuppress;
 import org.folio.linked.data.domain.dto.LinkedDataNote;
 import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
@@ -220,12 +222,23 @@ public abstract class WorkSearchMessageMapper {
         .notes(mapNotes(ir.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
         .contributors(extractContributors(ir))
         .publications(extractPublications(ir))
+        .suppress(extractSuppress(ir))
         .editionStatements(getPropertyValues(ir.getDoc(), EDITION_STATEMENT.getValue()).toList()))
       .filter(bii -> isNotEmpty(bii.getTitles()) || isNotEmpty(bii.getIdentifiers())
         || isNotEmpty(bii.getContributors()) || isNotEmpty(bii.getPublications())
         || isNotEmpty(bii.getEditionStatements()))
       .distinct()
       .toList();
+  }
+
+  private LinkedDataInstanceOnlySuppress extractSuppress(Resource resource) {
+    var metadata = resource.getFolioMetadata();
+    if (isNull(metadata) || allNull(metadata.getSuppressFromDiscovery(), metadata.getStaffSuppress())) {
+      return null;
+    }
+    return new LinkedDataInstanceOnlySuppress()
+      .fromDiscovery(metadata.getSuppressFromDiscovery())
+      .staff(metadata.getStaffSuppress());
   }
 
   protected List<LinkedDataInstanceOnlyPublicationsInner> extractPublications(Resource resource) {

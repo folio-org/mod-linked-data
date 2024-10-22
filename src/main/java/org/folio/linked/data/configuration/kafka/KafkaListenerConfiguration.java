@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.spring.tools.kafka.FolioKafkaProperties;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -40,19 +41,39 @@ public class KafkaListenerConfiguration {
   public ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent> srsEventListenerContainerFactory(
     ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory
   ) {
-    var factory = new ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent>();
-    factory.setBatchListener(true);
-    factory.setConsumerFactory(sourceRecordDomainEventConsumerFactory);
-    return factory;
+    return concurrentKafkaBatchListenerContainerFactory(sourceRecordDomainEventConsumerFactory);
+  }
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, InventoryInstanceEvent> inventoryEventListenerContainerFactory(
+    ConsumerFactory<String, InventoryInstanceEvent> inventoryInstanceEventConsumerFactory
+  ) {
+    return concurrentKafkaBatchListenerContainerFactory(inventoryInstanceEventConsumerFactory);
   }
 
   @Bean
   public ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory() {
-    var deserializer = new ErrorHandlingDeserializer<>(new JsonDeserializer<>(SourceRecordDomainEvent.class, mapper));
+    return errorHandlingConsumerFactory(SourceRecordDomainEvent.class);
+  }
+
+  @Bean
+  public ConsumerFactory<String, InventoryInstanceEvent> inventoryInstanceEventConsumerFactory() {
+    return errorHandlingConsumerFactory(InventoryInstanceEvent.class);
+  }
+
+  private <K, V> ConcurrentKafkaListenerContainerFactory<K, V> concurrentKafkaBatchListenerContainerFactory(
+    ConsumerFactory<K, V> consumerFactory) {
+    var factory = new ConcurrentKafkaListenerContainerFactory<K, V>();
+    factory.setBatchListener(true);
+    factory.setConsumerFactory(consumerFactory);
+    return factory;
+  }
+
+  public <T> ConsumerFactory<String, T> errorHandlingConsumerFactory(Class<T> clazz) {
+    var deserializer = new ErrorHandlingDeserializer<>(new JsonDeserializer<>(clazz, mapper));
     Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties(null));
     config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
     return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
   }
-
 }

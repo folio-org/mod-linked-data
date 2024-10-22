@@ -45,6 +45,12 @@ public class FolioMetadata {
   @ToString.Exclude
   private Resource resource;
 
+  @Column(name = "suppress_from_discovery")
+  private Boolean suppressFromDiscovery;
+
+  @Column(name = "staff_suppress")
+  private Boolean staffSuppress;
+
   public FolioMetadata(Resource resource) {
     this.resource = resource;
     this.id = resource.getId();

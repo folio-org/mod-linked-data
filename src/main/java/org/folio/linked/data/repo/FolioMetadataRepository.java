@@ -12,6 +12,8 @@ public interface FolioMetadataRepository extends JpaRepository<FolioMetadata, Lo
 
   boolean existsBySrsId(String srsId);
 
+  Optional<FolioMetadata> findByInventoryId(String inventoryId);
+
   interface IdOnly {
     Long getId();
   }

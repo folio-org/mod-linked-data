@@ -50,6 +50,7 @@ public class TestUtil {
   public static final String FOLIO_TEST_PROFILE = "test-folio";
   public static final String TENANT_ID = "test_tenant";
   public static final String RECORD_DOMAIN_EVENT_TOPIC = "srs.source_records";
+  public static final String INVENTORY_INSTANCE_EVENT_TOPIC = "inventory.instance";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
