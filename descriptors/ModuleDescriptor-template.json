@@ -12,6 +12,7 @@
           "permissionsRequired": [ "linked-data.resources.bib.post" ],
           "modulePermissions": [
             "mapping-metadata.get",
+            "mapping-metadata.type.item.get",
             "inventory-storage.instances.item.post",
             "inventory-storage.instances.item.put",
             "inventory-storage.instances.item.delete",
@@ -44,6 +45,7 @@
           "permissionsRequired": [ "linked-data.resources.bib.put" ],
           "modulePermissions": [
             "mapping-metadata.get",
+            "mapping-metadata.type.item.get",
             "inventory-storage.instances.item.post",
             "inventory-storage.instances.item.put",
             "inventory-storage.instances.item.delete",
