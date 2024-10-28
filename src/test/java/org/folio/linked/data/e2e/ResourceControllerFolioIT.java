@@ -52,6 +52,7 @@ public class ResourceControllerFolioIT extends ResourceControllerIT {
   }
 
   @BeforeEach
+  @Override
   public void beforeEach() {
     searchIndexTopicListener.getMessages().clear();
     inventoryTopicListener.getMessages().clear();

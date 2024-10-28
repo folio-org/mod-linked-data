@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.PredicateEntity;
@@ -81,7 +80,7 @@ class PredicateDictionaryIT {
             .map(PredicateDictionary::getHash)
             .contains(dbPredicate.getHash());
         }))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static final class PredicateEntityMapper implements RowMapper<PredicateEntity> {

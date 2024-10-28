@@ -10,7 +10,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
@@ -103,7 +102,7 @@ class BibframeUtilsTest {
     );
 
     // when
-    var result = given.stream().map(BibframeUtils::cleanDate).collect(Collectors.toList());
+    var result = given.stream().map(BibframeUtils::cleanDate).toList();
 
     // then
     assertThat(result).containsExactly(

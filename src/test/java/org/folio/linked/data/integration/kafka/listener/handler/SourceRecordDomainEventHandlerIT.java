@@ -20,7 +20,6 @@ import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
-import static org.folio.spring.tools.config.properties.FolioEnvironment.getFolioEnvName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -89,10 +88,6 @@ class SourceRecordDomainEventHandlerIT {
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
     kafkaAdminService.createTopics(TENANT_ID);
-  }
-
-  private static String getTopicName(String tenantId, String topic) {
-    return String.format("%s.%s.%s", getFolioEnvName(), tenantId, topic);
   }
 
   @BeforeEach
