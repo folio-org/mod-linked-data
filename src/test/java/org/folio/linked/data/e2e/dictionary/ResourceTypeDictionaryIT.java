@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -81,7 +80,7 @@ class ResourceTypeDictionaryIT {
             .map(ResourceTypeDictionary::getHash)
             .contains(dbType.getHash());
         }))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private static final class ResourceTypeEntityMapper implements RowMapper<ResourceTypeEntity> {

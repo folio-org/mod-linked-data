@@ -28,6 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Log4j2
 @Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class, ResourceTypeEntity.class})
+// We cannot use constructor injection in the subclass due to https://github.com/mapstruct/mapstruct/issues/2257
+// so, we use field injection here.
+@SuppressWarnings("java:S6813")
 public abstract class ResourceDtoMapper {
 
   @Autowired
