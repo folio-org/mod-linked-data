@@ -47,14 +47,14 @@
     <lib-linked-data-dictionary.version>1.0.1-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>1.0.2-SNAPSHOT</lib-linked-data-marc4ld.version>
     <lib-linked-data-fingerprint.version>1.0.1-SNAPSHOT</lib-linked-data-fingerprint.version>
-    <mod-source-record-storage-client.version>5.9.0-SNAPSHOT</mod-source-record-storage-client.version>
+    <mod-source-record-storage-client.version>5.9.0</mod-source-record-storage-client.version>
     <maven-checkstyle-plugin.checkstyle.version>10.18.2</maven-checkstyle-plugin.checkstyle.version>
 
     <!-- Test dependencies versions -->
     <testcontainers.version>1.20.3</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.3</jsonassert.version>
-    <folio-service-tools.version>4.1.0-SNAPSHOT</folio-service-tools.version>
+    <folio-service-tools.version>4.1.0</folio-service-tools.version>
     <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
