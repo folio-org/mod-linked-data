@@ -12,7 +12,8 @@
     },
     "parsedRecord": {
       "type": "object",
-      "$ref": "marcRecord.json"
+      "$ref": "marcRecord.json",
+      "description": "MARC record"
     }
   }
 }

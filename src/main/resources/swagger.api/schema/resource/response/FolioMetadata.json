@@ -4,13 +4,16 @@
   "properties": {
     "source": {
       "type": "string",
-      "enum": ["MARC", "LINKED_DATA"]
+      "enum": ["MARC", "LINKED_DATA"],
+      "description": "The source of the instance"
     },
     "inventoryId": {
-      "type": "string"
+      "type": "string",
+      "description": "ID of the instance in the Inventory application"
     },
     "srsId": {
-      "type": "string"
+      "type": "string",
+      "description": "ID of the MARC bib record in the SRS application"
     }
   }
 }

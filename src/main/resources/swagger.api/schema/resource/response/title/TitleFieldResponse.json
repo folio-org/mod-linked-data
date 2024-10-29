@@ -1,4 +1,5 @@
 {
+  "description": "Title of the Work or Instance resource",
   "oneOf": [
     {
       "type": "object",

@@ -60,10 +60,12 @@
       "description": "Suppress flags",
       "properties": {
         "fromDiscovery": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Indicates if instance is suppressed from discovery in FOLIO"
         },
         "staff": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Indicates if instance is suppressed from staff in FOLIO"
         }
       }
     },

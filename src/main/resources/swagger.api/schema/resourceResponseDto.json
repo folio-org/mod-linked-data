@@ -6,6 +6,7 @@
     "resource": {
       "type": "object",
       "title": "resourceResponseField",
+      "description": "Resource response. Contains either an Instance or a Work",
       "oneOf": [
         {
           "title": "InstanceResponseField",
@@ -13,7 +14,8 @@
             "Instance": {
               "type": "object",
               "$ref": "resource/response/InstanceResponse.json",
-              "x-json-property": "http://bibfra.me/vocab/lite/Instance"
+              "x-json-property": "http://bibfra.me/vocab/lite/Instance",
+              "description": "Instance response DTO."
             }
           }
         },
@@ -23,7 +25,8 @@
             "Work": {
               "type": "object",
               "$ref": "resource/response/WorkResponse.json",
-              "x-json-property": "http://bibfra.me/vocab/lite/Work"
+              "x-json-property": "http://bibfra.me/vocab/lite/Work",
+              "description": "Work response DTO."
             }
           }
         }
