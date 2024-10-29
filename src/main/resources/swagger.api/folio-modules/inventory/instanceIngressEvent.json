@@ -16,7 +16,8 @@
     },
     "InstanceIngressEventMetadata": {
       "type": "object",
-      "$ref": "../common/eventMetadata.json"
+      "$ref": "../common/eventMetadata.json",
+      "description": "Metadata about Folio event"
     },
     "eventPayload": {
       "type": "object",

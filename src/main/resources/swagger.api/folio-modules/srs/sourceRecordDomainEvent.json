@@ -19,11 +19,13 @@
     },
     "eventMetadata": {
       "type": "object",
-      "$ref": "../common/eventMetadata.json"
+      "$ref": "../common/eventMetadata.json",
+      "description": "Event metadata"
     },
     "eventPayload": {
       "type": "object",
-      "$ref": "record/sourceRecord.json"
+      "$ref": "record/sourceRecord.json",
+      "description": "Event payload"
     }
   },
   "excludedFromEqualsAndHashCode": [

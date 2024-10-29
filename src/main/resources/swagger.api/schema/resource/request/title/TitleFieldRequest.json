@@ -1,4 +1,5 @@
 {
+  "description": "A title of a resource.",
   "oneOf": [
     {
       "type": "object",

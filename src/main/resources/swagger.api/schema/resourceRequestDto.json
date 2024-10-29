@@ -6,6 +6,7 @@
     "resource": {
       "type": "object",
       "title": "resourceRequestField",
+      "description": "Resource request. Contains either an Instance or a Work request.",
       "oneOf": [
         {
           "title": "InstanceField",
@@ -13,7 +14,8 @@
             "Instance": {
               "type": "object",
               "$ref": "resource/request/InstanceRequest.json",
-              "x-json-property": "http://bibfra.me/vocab/lite/Instance"
+              "x-json-property": "http://bibfra.me/vocab/lite/Instance",
+              "description": "Instance request DTO"
             }
           }
         },
@@ -23,7 +25,8 @@
             "Work": {
               "type": "object",
               "$ref": "resource/request/WorkRequest.json",
-              "x-json-property": "http://bibfra.me/vocab/lite/Work"
+              "x-json-property": "http://bibfra.me/vocab/lite/Work",
+              "description": "Work request DTO"
             }
           }
         }

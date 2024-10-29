@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Edges",
   "type": "object",
+  "description": "Resource edges map. Key of the map is the predicate URI and value is the list of resource IDs.",
   "properties": {
     "total_elements": {
       "type": "integer",
@@ -15,7 +16,8 @@
           "type": "integer",
           "format": "int64"
         }
-      }
+      },
+      "description": "Map of resource edges. Key is the predicate URI and value is the list of resource IDs."
     }
   },
   "required": ["total_elements", "edges"]

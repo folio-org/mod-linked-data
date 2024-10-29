@@ -15,7 +15,8 @@
         "Sub Parallel",
         "Main Variant",
         "Sub Variant"
-      ]
+      ],
+      "description": "Type of Title"
     }
   },
   "required": [
