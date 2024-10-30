@@ -13,6 +13,7 @@ import static org.folio.marc4ld.util.MarcUtil.isMonographicComponentPartOrItem;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import feign.FeignException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -43,6 +44,8 @@ import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,13 +92,13 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
   @Override
   public Boolean isSupportedByInventoryId(String inventoryId) {
-    var response = srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId);
-    return Optional.ofNullable(response.getBody())
+    return getRecord(inventoryId)
+      .map(HttpEntity::getBody)
       .map(Record::getParsedRecord)
       .map(parsedRecord -> (Map<?, ?>) parsedRecord.getContent())
       .map(content -> (String) content.get("leader"))
       .map(this::isMonograph)
-      .orElse(false);
+      .orElseThrow(() -> createNotFoundException(inventoryId));
   }
 
   @Override
@@ -103,7 +106,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     return getResource(inventoryId)
       .map(resourceModelMapper::toEntity)
       .map(resourceDtoMapper::toDto)
-      .orElse(null);
+      .orElseThrow(() -> createNotFoundException(inventoryId));
   }
 
   @Override
@@ -116,7 +119,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
       .map(this::saveMarcResource)
       .map(String::valueOf)
       .map(id -> new ResourceIdDto().id(id))
-      .orElse(null);
+      .orElseThrow(() -> createNotFoundException(inventoryId));
   }
 
   private void validateMarkViewSupportedType(Resource resource) {
@@ -240,9 +243,17 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
     return isLanguageMaterial(leader.charAt(6)) && isMonographicComponentPartOrItem(leader.charAt(7));
   }
 
+  private Optional<ResponseEntity<Record>> getRecord(String inventoryId) {
+    try {
+      return Optional.of(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId));
+    } catch (FeignException.NotFound e) {
+      return Optional.empty();
+    }
+  }
+
   private Optional<org.folio.ld.dictionary.model.Resource> getResource(String inventoryId) {
-    var response = srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId);
-    return Optional.ofNullable(response.getBody())
+    return getRecord(inventoryId)
+      .map(HttpEntity::getBody)
       .map(Record::getParsedRecord)
       .map(ParsedRecord::getContent)
       .map(this::toJsonString)
@@ -252,5 +263,9 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
   @SneakyThrows
   private String toJsonString(Object content) {
     return objectMapper.writeValueAsString(content);
+  }
+
+  private NotFoundException createNotFoundException(String inventoryId) {
+    return new NotFoundException(String.format("Record with INSTANCE id: %s was not found", inventoryId));
   }
 }

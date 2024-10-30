@@ -154,6 +154,8 @@ paths:
               schema:
                 type: string
                 example: true|false
+        '404':
+          description: No Record is found by inventory id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
@@ -170,6 +172,8 @@ paths:
             application/json:
               schema:
                 $ref: schema/resourceResponseDto.json
+        '404':
+          description: No Record is found by inventory id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
@@ -186,6 +190,8 @@ paths:
             application/json:
               schema:
                 $ref: schema/resourceIdDto.json
+        '404':
+          description: No Record is found by inventory id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 

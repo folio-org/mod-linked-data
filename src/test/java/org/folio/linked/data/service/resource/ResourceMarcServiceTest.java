@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -329,6 +330,18 @@ class ResourceMarcServiceTest {
   }
 
   @Test
+  void isSupportedByInventoryId_shouldThrowNotFoundException() {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenThrow(FeignException.NotFound.class);
+
+    //expect
+    assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceMarcService.isSupportedByInventoryId(inventoryId));
+  }
+
+  @Test
   void getResourcePreviewByInventoryId_shouldReturn_resourceResponseDto() throws JsonProcessingException {
     //given
     var inventoryId = UUID.randomUUID().toString();
@@ -349,6 +362,18 @@ class ResourceMarcServiceTest {
 
     //then
     assertEquals(resourceDto, result);
+  }
+
+  @Test
+  void getResourcePreviewByInventoryId_shouldThrowNotFoundException() {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenThrow(FeignException.NotFound.class);
+
+    //expect
+    assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceMarcService.getResourcePreviewByInventoryId(inventoryId));
   }
 
   @Test
@@ -393,6 +418,18 @@ class ResourceMarcServiceTest {
         assertEquals("1", resourceIdDto.getId());
       });
     assertEquals(LINKED_DATA.name(), resourceModelCaptor.getValue().getFolioMetadata().getSource().name());
+  }
+
+  @Test
+  void importMarcRecord_shouldThrowNotFoundException() {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenThrow(FeignException.NotFound.class);
+
+    //expect
+    assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
   }
 
   private org.folio.rest.jaxrs.model.Record createRecord(char type, char level) {
