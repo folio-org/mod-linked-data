@@ -173,6 +173,22 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /resource/import/{inventoryId}:
+    post:
+      operationId: importMarcRecord
+      description: Create a Resource derived from MARC record
+      parameters:
+        - $ref: '#/components/parameters/inventoryId'
+      responses:
+        '201':
+          description: Json object with id of a resource
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceIdDto.json
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /profile:
     get:
       operationId: getProfile

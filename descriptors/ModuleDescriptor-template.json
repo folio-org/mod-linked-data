@@ -83,6 +83,28 @@
           "pathPattern": "/resource/preview/{inventoryId}",
           "permissionsRequired": [ "linked-data.resources.preview.get" ],
           "modulePermissions": ["source-storage.records.get"]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/resource/import/{inventoryId}",
+          "permissionsRequired": [ "linked-data.resources.import.post" ],
+          "modulePermissions": [
+            "source-storage.records.get",
+            "mapping-metadata.get",
+            "mapping-metadata.type.item.get",
+            "inventory-storage.instances.item.post",
+            "inventory-storage.instances.item.put",
+            "inventory-storage.instances.item.delete",
+            "inventory-storage.instance-types.item.post",
+            "inventory-storage.preceding-succeeding-titles.collection.get",
+            "inventory-storage.preceding-succeeding-titles.item.get",
+            "inventory-storage.preceding-succeeding-titles.item.post",
+            "inventory-storage.preceding-succeeding-titles.item.put",
+            "inventory-storage.preceding-succeeding-titles.item.delete",
+            "source-storage.snapshots.post",
+            "source-storage.records.post",
+            "source-storage.records.put"
+          ]
         }
       ]
     },
@@ -189,6 +211,11 @@
       "permissionName": "linked-data.resources.preview.get",
       "displayName": "Linked Data: Get the preview of a resource",
       "description": "Get the preview of a linked-data resource"
+    },
+    {
+      "permissionName": "linked-data.resources.import.post",
+      "displayName": "Linked Data: Create a bibliographic resource derived from MARC record",
+      "description": "Create a bibliographic linked-data resource derived from MARC record"
     },
     {
       "permissionName": "linked-data.profiles.get",

@@ -1,5 +1,7 @@
 package org.folio.linked.data.controller;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
@@ -42,6 +44,13 @@ public class ResourceController implements ResourceApi {
   @Override
   public ResponseEntity<ResourceResponseDto> getResourcePreviewByInventoryId(String inventoryId) {
     return ResponseEntity.ok(resourceMarcService.getResourcePreviewByInventoryId(inventoryId));
+  }
+
+  @Override
+  public ResponseEntity<ResourceIdDto> importMarcRecord(String inventoryId) {
+    return ResponseEntity
+      .status(CREATED)
+      .body(resourceMarcService.importMarcRecord(inventoryId));
   }
 
   @Override

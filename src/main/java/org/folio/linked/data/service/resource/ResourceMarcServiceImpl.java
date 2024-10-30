@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.model.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SrsClient;
+import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.NotFoundException;
@@ -98,14 +100,22 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
   @Override
   public ResourceResponseDto getResourcePreviewByInventoryId(String inventoryId) {
-    var response = srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId);
-    return Optional.ofNullable(response.getBody())
-      .map(Record::getParsedRecord)
-      .map(ParsedRecord::getContent)
-      .map(this::toJsonString)
-      .flatMap(marcBib2ldMapper::fromMarcJson)
+    return getResource(inventoryId)
       .map(resourceModelMapper::toEntity)
       .map(resourceDtoMapper::toDto)
+      .orElse(null);
+  }
+
+  @Override
+  public ResourceIdDto importMarcRecord(String inventoryId) {
+    return getResource(inventoryId)
+      .map(resource -> {
+        resource.getFolioMetadata().setSource(LINKED_DATA);
+        return resource;
+      })
+      .map(this::saveMarcResource)
+      .map(String::valueOf)
+      .map(id -> new ResourceIdDto().id(id))
       .orElse(null);
   }
 
@@ -228,6 +238,15 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
 
   private boolean isMonograph(String leader) {
     return isLanguageMaterial(leader.charAt(6)) && isMonographicComponentPartOrItem(leader.charAt(7));
+  }
+
+  private Optional<org.folio.ld.dictionary.model.Resource> getResource(String inventoryId) {
+    var response = srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId);
+    return Optional.ofNullable(response.getBody())
+      .map(Record::getParsedRecord)
+      .map(ParsedRecord::getContent)
+      .map(this::toJsonString)
+      .flatMap(marcBib2ldMapper::fromMarcJson);
   }
 
   @SneakyThrows
