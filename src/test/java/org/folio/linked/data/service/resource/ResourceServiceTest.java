@@ -15,6 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.linked.data.domain.dto.InstanceField;
@@ -198,7 +199,7 @@ class ResourceServiceTest {
   void update_shouldSaveUpdatedResourceAndSendResourceUpdatedEvent_forResourceWithSameId() {
     // given
     var id = randomLong();
-    var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest()));
+    var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest(List.of())));
     var oldWork = new Resource().setId(id).addTypes(WORK).setLabel("oldWork");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldWork));
     var work = new Resource().setId(id).setLabel("saved").addTypes(WORK);
@@ -228,7 +229,7 @@ class ResourceServiceTest {
     when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
     var mapped = new Resource().setId(newId).setLabel("mapped");
     var instanceDto =
-      new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest()));
+      new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
     var persisted = new Resource().setId(newId).setLabel("saved");
     var expectedDto = new ResourceResponseDto().resource(

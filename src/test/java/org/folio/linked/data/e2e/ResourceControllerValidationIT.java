@@ -136,15 +136,16 @@ class ResourceControllerValidationIT {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/instance_with_no_main_primary_title.json"));
-    var expectedError = getError("instance", "[class PrimaryTitleField {\n"
-      + "    primaryTitle: class PrimaryTitle {\n"
-      + "        partName: [Primary: partName]\n"
-      + "        partNumber: [Primary: partNumber]\n"
-      + "        mainTitle: []\n"
-      + "        subTitle: [Primary: subTitle]\n"
-      + "        nonSortNum: [Primary: nonSortNum]\n"
-      + "    }\n"
-      + "}]");
+    var expectedError = getError("instance", """
+      [class PrimaryTitleField {
+          primaryTitle: class PrimaryTitle {
+              partName: [Primary: partName]
+              partNumber: [Primary: partNumber]
+              mainTitle: []
+              subTitle: [Primary: subTitle]
+              nonSortNum: [Primary: nonSortNum]
+          }
+      }]""");
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
