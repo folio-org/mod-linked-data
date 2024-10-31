@@ -9,7 +9,7 @@ import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.rest.resource.ResourceApi;
-import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.resource.ResourceMarcBibService;
 import org.folio.linked.data.service.resource.ResourceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResourceController implements ResourceApi {
 
   private final ResourceService resourceService;
-  private final ResourceMarcService resourceMarcService;
+  private final ResourceMarcBibService resourceMarcService;
 
   @Override
   public ResponseEntity<ResourceResponseDto> createResource(String okapiTenant, @Valid ResourceRequestDto resourceDto) {

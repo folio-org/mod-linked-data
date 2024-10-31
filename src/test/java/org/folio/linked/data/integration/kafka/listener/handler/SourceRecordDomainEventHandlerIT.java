@@ -36,7 +36,7 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchAuthorityAuthorityTopicListener;
@@ -80,7 +80,7 @@ class SourceRecordDomainEventHandlerIT {
   private ResourceTestRepository resourceTestRepository;
   @SpyBean
   @Autowired
-  private ResourceMarcService resourceMarcService;
+  private ResourceMarcAuthorityService resourceMarcService;
   @SpyBean
   @Autowired
   private ResourceModificationEventListener eventListener;

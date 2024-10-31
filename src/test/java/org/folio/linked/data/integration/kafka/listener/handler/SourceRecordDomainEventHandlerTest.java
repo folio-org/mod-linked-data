@@ -20,7 +20,7 @@ import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
-import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.spring.testing.type.UnitTest;
@@ -42,7 +42,7 @@ class SourceRecordDomainEventHandlerTest {
   @Mock
   private MarcAuthority2ldMapper marcAuthority2ldMapper;
   @Mock
-  private ResourceMarcService resourceMarcService;
+  private ResourceMarcAuthorityService resourceMarcService;
   @Mock
   private FolioMetadataRepository folioMetadataRepository;
 
