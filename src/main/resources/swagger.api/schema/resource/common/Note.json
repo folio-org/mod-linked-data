@@ -7,13 +7,15 @@
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "description": "The note text"
     },
     "type": {
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "description": "The note type"
     }
   }
 }

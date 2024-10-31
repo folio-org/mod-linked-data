@@ -14,7 +14,8 @@
         "Meeting",
         "Organization",
         "Person"
-      ]
+      ],
+      "description": "Type of contributor"
     },
     "isCreator": {
       "type": "boolean",

@@ -1,11 +1,11 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Mark view container",
+  "description": "MARC view container",
   "type": "object",
   "properties": {
     "content": {
       "type": "string",
-      "description": "Mark view of resource in json"
+      "description": "MARC view of resource in json"
     }
   }
 }
