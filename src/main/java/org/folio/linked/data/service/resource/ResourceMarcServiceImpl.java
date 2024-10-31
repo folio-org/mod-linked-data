@@ -273,7 +273,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
       throw new AlreadyExistsException(format("MARC record having srsID %s is already imported to data graph", srsId));
     }
 
-    return createResource(resourceModelMapper.toEntity(modelResource));
+    return saveAndPublishEvent(resourceModelMapper.toEntity(modelResource), ResourceUpdatedEvent::new);
   }
 
   @SneakyThrows

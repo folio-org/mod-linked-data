@@ -410,8 +410,8 @@ class ResourceMarcServiceTest {
     verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
     assertThat(resourceEventCaptor.getValue())
       .satisfies(event -> {
-        assertThat(event).isInstanceOf(ResourceCreatedEvent.class);
-        assertEquals(resourceEntity, ((ResourceCreatedEvent) event).resource());
+        assertThat(event).isInstanceOf(ResourceUpdatedEvent.class);
+        assertEquals(resourceEntity, ((ResourceUpdatedEvent) event).resource());
       });
     assertThat(result)
       .satisfies(resourceIdDto -> {
