@@ -40,7 +40,6 @@ import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestRepository;
-import org.folio.linked.data.test.kafka.KafkaSearchAuthorityAuthorityTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
@@ -65,8 +64,6 @@ class AuthorityUpdateAndReadWorkIT {
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
-  private KafkaSearchAuthorityAuthorityTopicListener kafkaSearchAuthorityAuthorityTopicListener;
-  @Autowired
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
   @Autowired
   private ResourceTestRepository resourceTestRepository;
@@ -89,7 +86,6 @@ class AuthorityUpdateAndReadWorkIT {
       () -> {
         resourceEdgeRepository.deleteAll();
         resourceTestRepository.deleteAll();
-        kafkaSearchAuthorityAuthorityTopicListener.getMessages().clear();
         kafkaSearchWorkIndexTopicListener.getMessages().clear();
       }
     );

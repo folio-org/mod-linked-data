@@ -39,7 +39,6 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.service.resource.ResourceMarcService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestRepository;
-import org.folio.linked.data.test.kafka.KafkaSearchAuthorityAuthorityTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -66,8 +65,6 @@ class SourceRecordDomainEventHandlerIT {
   private KafkaTemplate<String, String> eventKafkaTemplate;
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
-  @Autowired
-  private KafkaSearchAuthorityAuthorityTopicListener kafkaSearchAuthorityAuthorityTopicListener;
   @Autowired
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
   @MockBean
@@ -96,7 +93,6 @@ class SourceRecordDomainEventHandlerIT {
       () -> {
         resourceEdgeRepository.deleteAll();
         resourceTestRepository.deleteAll();
-        kafkaSearchAuthorityAuthorityTopicListener.getMessages().clear();
         kafkaSearchWorkIndexTopicListener.getMessages().clear();
       }
     );
@@ -186,16 +182,6 @@ class SourceRecordDomainEventHandlerIT {
     assertThat(found).isPresent();
     var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     assertAuthority(found.get(), expectedLabel, true, true, null);
-
-    awaitAndAssert(() ->
-      assertTrue(kafkaSearchAuthorityAuthorityTopicListener.getMessages()
-        .stream()
-        .filter(m -> m.contains("\"type\":\"CREATE\""))
-        .filter(m -> m.contains("\"tenant\":\"test_tenant\""))
-        .filter(m -> m.contains("\"resourceName\":\"linked-data-authority\""))
-        .anyMatch(m -> m.contains(expectedLabel))
-      )
-    );
   }
 
   @Test
@@ -235,16 +221,6 @@ class SourceRecordDomainEventHandlerIT {
     var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
     assertAuthority(createdResource, expectedLabelCreated, false, false, updatedResource);
     assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);
-
-    awaitAndAssert(() ->
-      assertTrue(kafkaSearchAuthorityAuthorityTopicListener.getMessages()
-        .stream()
-        .filter(m -> m.contains("\"type\":\"CREATE\""))
-        .filter(m -> m.contains("\"tenant\":\"test_tenant\""))
-        .filter(m -> m.contains("\"resourceName\":\"linked-data-authority\""))
-        .anyMatch(m -> m.contains(expectedLabelCreated))
-      )
-    );
   }
 
   @Test

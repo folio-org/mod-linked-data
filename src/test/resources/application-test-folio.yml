@@ -12,8 +12,6 @@ folio:
     topics:
       - name: linked-data.work
         numPartitions: 1
-      - name: linked-data.authority
-        numPartitions: 1
       - name: inventory.instance_ingress
         numPartitions: 1
       - name: srs.source_records
@@ -24,5 +22,4 @@ folio:
 test:
   topic:
     search-work: folio.test_tenant.linked-data.work
-    search-authority: folio.test_tenant.linked-data.authority
     inventory-instance-ingress: folio.test_tenant.inventory.instance_ingress
