@@ -29,6 +29,7 @@ import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -429,6 +430,54 @@ class ResourceMarcServiceTest {
 
     //expect
     assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+  }
+
+  @Test
+  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameIdExists()
+    throws JsonProcessingException {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    var marcRecord = createRecord('a', 'm');
+    var marcJson = "";
+    var resourceId = 1L;
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(resourceId)
+      .setFolioMetadata(new FolioMetadata());
+
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
+    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
+    when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
+    when(resourceRepo.existsById(resourceId)).thenReturn(true);
+
+    //expect
+    assertThatExceptionOfType(AlreadyExistsException.class)
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+  }
+
+  @Test
+  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameSrsIdExists()
+    throws JsonProcessingException {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    var marcRecord = createRecord('a', 'm');
+    var marcJson = "";
+    var resourceId = 1L;
+    var srsId = UUID.randomUUID().toString();
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(resourceId)
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
+
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
+    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
+    when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
+    when(resourceRepo.existsById(resourceId)).thenReturn(false);
+    when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(true);
+
+    //expect
+    assertThatExceptionOfType(AlreadyExistsException.class)
       .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
   }
 

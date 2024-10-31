@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.resource;
 
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
@@ -25,6 +26,7 @@ import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -116,7 +118,7 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
         resource.getFolioMetadata().setSource(LINKED_DATA);
         return resource;
       })
-      .map(this::saveMarcResource)
+      .map(this::save)
       .map(String::valueOf)
       .map(id -> new ResourceIdDto().id(id))
       .orElseThrow(() -> createNotFoundException(inventoryId));
@@ -260,12 +262,26 @@ public class ResourceMarcServiceImpl implements ResourceMarcService {
       .flatMap(marcBib2ldMapper::fromMarcJson);
   }
 
+  private Long save(org.folio.ld.dictionary.model.Resource modelResource) {
+    var id = modelResource.getId();
+    if (resourceRepo.existsById(id)) {
+      throw new AlreadyExistsException(format("Another resource with ID %s already exists in the graph", id));
+    }
+
+    var srsId = modelResource.getFolioMetadata().getSrsId();
+    if (folioMetadataRepository.existsBySrsId(srsId)) {
+      throw new AlreadyExistsException(format("MARC record having srsID %s is already imported to data graph", srsId));
+    }
+
+    return createResource(resourceModelMapper.toEntity(modelResource));
+  }
+
   @SneakyThrows
   private String toJsonString(Object content) {
     return objectMapper.writeValueAsString(content);
   }
 
   private NotFoundException createNotFoundException(String inventoryId) {
-    return new NotFoundException(String.format("Record with INSTANCE id: %s was not found", inventoryId));
+    return new NotFoundException(format("Record with INSTANCE id: %s was not found", inventoryId));
   }
 }
