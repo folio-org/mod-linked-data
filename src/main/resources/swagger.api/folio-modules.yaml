@@ -16,8 +16,6 @@ components:
       $ref: folio-modules/search/linkedDataInstance.json
     linkedDataWork:
       $ref: folio-modules/search/linkedDataWork.json
-    linkedDataAuthority:
-      $ref: folio-modules/search/linkedDataAuthority.json
     instanceIngressEvent:
       $ref: folio-modules/inventory/instanceIngressEvent.json
     sourceRecordDomainEvent:
