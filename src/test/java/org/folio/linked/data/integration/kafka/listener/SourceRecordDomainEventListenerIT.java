@@ -45,7 +45,7 @@ class SourceRecordDomainEventListenerIT {
     kafkaAdminService.createTopics(TENANT_ID);
   }
 
-  @Disabled
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void shouldConsumeSrsDomainEvent() {
     // given
@@ -66,7 +66,7 @@ class SourceRecordDomainEventListenerIT {
     awaitAndAssert(() -> verify(sourceRecordDomainEventHandler).handle(expectedEvent, MARC_BIB));
   }
 
-  @Disabled
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void shouldRetryIfErrorOccurs() {
     // given

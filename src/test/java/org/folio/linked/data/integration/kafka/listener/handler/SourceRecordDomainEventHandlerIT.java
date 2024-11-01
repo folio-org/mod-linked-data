@@ -99,7 +99,7 @@ class SourceRecordDomainEventHandlerIT {
     );
   }
 
-  @Disabled
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @ParameterizedTest
   @CsvSource({
     "samples/marc2ld/marc_non_monograph_leader.jsonl, 0",
@@ -118,7 +118,7 @@ class SourceRecordDomainEventHandlerIT {
       .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
   }
 
-  @Disabled
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void shouldProcessMarcBibSourceRecordDomainEvent() {
     // given
@@ -226,7 +226,7 @@ class SourceRecordDomainEventHandlerIT {
     assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);
   }
 
-  @Disabled
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void marcBibSourceRecordDomainEvent_shouldSendToIndexWorkWithTwoInstances() {
     // given
@@ -263,7 +263,7 @@ class SourceRecordDomainEventHandlerIT {
     });
   }
 
-  @Disabled
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void marcBibSourceRecordDomainEvent_shouldKeepExistedEdgesAndPropertiesAndFolioMetadata_inCaseOfUpdate() {
     // given

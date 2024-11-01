@@ -91,15 +91,17 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
 
   @Override
   public ResourceResponseDto getResourcePreviewByInventoryId(String inventoryId) {
-    return getResource(inventoryId)
+    var resourceResponseDto = getResource(inventoryId)
       .map(resourceModelMapper::toEntity)
       .map(resourceDtoMapper::toDto)
       .orElseThrow(() -> createNotFoundException(format(RECORD_NOT_FOUND_BY_INVENTORY_ID, inventoryId)));
+    log.info("Returning resource preview for MARC BIB record with inventory ID: {}", inventoryId);
+    return resourceResponseDto;
   }
 
   @Override
   public ResourceIdDto importMarcRecord(String inventoryId) {
-    return getResource(inventoryId)
+    var resourceIdDto = getResource(inventoryId)
       .map(resource -> {
         resource.getFolioMetadata().setSource(LINKED_DATA);
         return resource;
@@ -108,6 +110,9 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       .map(String::valueOf)
       .map(id -> new ResourceIdDto().id(id))
       .orElseThrow(() -> createNotFoundException(format(RECORD_NOT_FOUND_BY_INVENTORY_ID, inventoryId)));
+    log.info("MARC BIB record with inventory ID: {} is successfully imported to graph resource with ID: {}",
+      inventoryId, resourceIdDto.getId());
+    return resourceIdDto;
   }
 
   private void validateMarkViewSupportedType(Resource resource) {
