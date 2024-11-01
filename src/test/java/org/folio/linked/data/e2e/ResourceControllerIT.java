@@ -53,7 +53,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
@@ -794,7 +793,7 @@ public class ResourceControllerIT {
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getDoc().size()).isEqualTo(20);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
-    validateLiteral(instance, EDITION_STATEMENT.getValue(), "edition statement");
+    validateLiteral(instance, EDITION.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
     validateLiteral(instance, STATEMENT_OF_RESPONSIBILITY.getValue(), "statement of responsibility");
@@ -1476,7 +1475,7 @@ public class ResourceControllerIT {
   }
 
   private String toEditionStatement() {
-    return join(".", toInstance(), arrayPath(EDITION_STATEMENT.getValue()));
+    return join(".", toInstance(), arrayPath(EDITION.getValue()));
   }
 
   private String toSupplementaryContentLink() {

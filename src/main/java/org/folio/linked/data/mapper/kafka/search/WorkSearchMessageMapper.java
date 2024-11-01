@@ -16,7 +16,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
-import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
@@ -226,7 +226,7 @@ public abstract class WorkSearchMessageMapper {
         .contributors(extractContributors(ir))
         .publications(extractPublications(ir))
         .suppress(extractSuppress(ir))
-        .editionStatements(getPropertyValues(ir.getDoc(), EDITION_STATEMENT.getValue()).toList()))
+        .editionStatements(getPropertyValues(ir.getDoc(), EDITION.getValue()).toList()))
       .filter(bii -> isNotEmpty(bii.getTitles()) || isNotEmpty(bii.getIdentifiers())
         || isNotEmpty(bii.getContributors()) || isNotEmpty(bii.getPublications())
         || isNotEmpty(bii.getEditionStatements()))

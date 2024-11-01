@@ -7,7 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
@@ -232,7 +232,7 @@ class WorkSearchMessageMapperTest {
     assertThat(instanceIndex.getPublications().get(0).getName()).isEqualTo("publication name");
     assertThat(instanceIndex.getEditionStatements()).hasSize(1);
     assertThat(instanceIndex.getEditionStatements().get(0))
-      .isEqualTo(instance.getDoc().get(EDITION_STATEMENT.getValue()).get(0).asText());
+      .isEqualTo(instance.getDoc().get(EDITION.getValue()).get(0).asText());
   }
 
   private void assertTitle(LinkedDataTitle titleInner, String value, LinkedDataTitle.TypeEnum type) {
