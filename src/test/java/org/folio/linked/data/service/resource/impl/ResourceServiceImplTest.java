@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource;
+package org.folio.linked.data.service.resource.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -39,6 +39,7 @@ import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceServiceTest {
+class ResourceServiceImplTest {
 
   @InjectMocks
   private ResourceServiceImpl resourceService;

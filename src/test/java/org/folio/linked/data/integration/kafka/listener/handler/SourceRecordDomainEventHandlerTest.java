@@ -1,26 +1,21 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
-import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
-import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.spring.testing.type.UnitTest;
@@ -42,7 +37,7 @@ class SourceRecordDomainEventHandlerTest {
   @Mock
   private MarcAuthority2ldMapper marcAuthority2ldMapper;
   @Mock
-  private ResourceMarcService resourceMarcService;
+  private ResourceMarcAuthorityService resourceMarcService;
   @Mock
   private FolioMetadataRepository folioMetadataRepository;
 
@@ -96,67 +91,6 @@ class SourceRecordDomainEventHandlerTest {
 
     // then
     verifyNoInteractions(resourceMarcService);
-  }
-
-  @Test
-  void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsExistedByIdInstanceWithLinkedDataSource() {
-    // given
-    var event = new SourceRecordDomainEvent().id("5")
-      .eventType(CREATED)
-      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
-    var mapped = new Resource().setId(4L).addType(INSTANCE);
-    doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
-      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
-    var existedMetaData =
-      new org.folio.linked.data.model.entity.FolioMetadata(new org.folio.linked.data.model.entity.Resource())
-        .setSource(LINKED_DATA);
-    doReturn(Optional.of(existedMetaData)).when(folioMetadataRepository).findById(mapped.getId());
-
-    // when
-    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
-
-    // then
-    verifyNoInteractions(resourceMarcService);
-  }
-
-  @Test
-  void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsExistedBySrsIdInstanceWithLinkedDataSource() {
-    // given
-    var event = new SourceRecordDomainEvent().id("6")
-      .eventType(CREATED)
-      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
-    var mapped = new Resource().setId(4L).addType(INSTANCE)
-      .setFolioMetadata(new FolioMetadata().setSrsId(UUID.randomUUID().toString()));
-    doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
-      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
-    var existedMetaData =
-      new org.folio.linked.data.model.entity.FolioMetadata(new org.folio.linked.data.model.entity.Resource())
-        .setSource(LINKED_DATA);
-    doReturn(Optional.of(existedMetaData))
-      .when(folioMetadataRepository).findBySrsId(mapped.getFolioMetadata().getSrsId());
-
-    // when
-    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
-
-    // then
-    verifyNoInteractions(resourceMarcService);
-  }
-
-  @Test
-  void shouldTriggerResourceSaving_forCorrectMarcBibEvent() {
-    // given
-    var event = new SourceRecordDomainEvent().id("7")
-      .eventType(CREATED)
-      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
-    var mapped = new Resource().setId(7L).addType(INSTANCE);
-    doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
-      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
-
-    // when
-    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
-
-    // then
-    verify(resourceMarcService).saveMarcResource(mapped);
   }
 
   @Test
