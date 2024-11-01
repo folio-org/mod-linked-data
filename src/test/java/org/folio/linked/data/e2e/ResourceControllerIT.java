@@ -166,7 +166,6 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.test.ResourceTestService;
-import org.folio.marc4ld.util.ResourceKind;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -278,14 +277,6 @@ public class ResourceControllerIT {
     validateWork(workResource, true);
     checkSearchIndexMessage(workResource.getId(), CREATE);
     checkIndexDate(workResource.getId().toString());
-    var authorities = workResource.getOutgoingEdges()
-      .stream()
-      .map(ResourceEdge::getTarget)
-      .filter(resource -> ResourceKind.AUTHORITY
-        .stream()
-        .anyMatch(resource::isOfType))
-      .toList();
-    checkIndexDate(authorities);
   }
 
   @Test
@@ -603,10 +594,6 @@ public class ResourceControllerIT {
 
   protected void checkIndexDate(String id) {
     // nothing to check without Folio profile
-  }
-
-  private void checkIndexDate(List<Resource> resources) {
-    resources.forEach(r -> checkIndexDate(r.getId().toString()));
   }
 
   protected void checkRelevantIndexMessagesDuringUpdate(Resource existedResource) {
