@@ -17,7 +17,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FOR
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
-import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
+import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
@@ -118,7 +118,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     var map = new HashMap<String, List<String>>();
     putProperty(map, EXTENT, dto.getExtent());
     putProperty(map, DIMENSIONS, dto.getDimensions());
-    putProperty(map, EDITION_STATEMENT, dto.getEdition());
+    putProperty(map, EDITION, dto.getEdition());
     putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
     putProperty(map, ISSUANCE, dto.getIssuance());
     putProperty(map, STATEMENT_OF_RESPONSIBILITY, dto.getStatementOfResponsibility());

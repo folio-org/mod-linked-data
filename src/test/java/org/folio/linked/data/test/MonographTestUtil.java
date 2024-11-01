@@ -50,7 +50,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.EDITION_STATEMENT;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
@@ -254,7 +253,7 @@ public class MonographTestUtil {
       Map.ofEntries(
         entry(EXTENT, List.of("extent info")),
         entry(DIMENSIONS, List.of("20 cm")),
-        entry(EDITION_STATEMENT, List.of("edition statement")),
+        entry(EDITION, List.of("edition statement")),
         entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),
         entry(ISSUANCE, List.of("single unit")),
         entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility")),
