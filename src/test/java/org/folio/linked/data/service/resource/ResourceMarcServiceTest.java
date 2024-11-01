@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
@@ -19,13 +20,16 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.client.SrsClient;
+import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -33,6 +37,7 @@ import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
+import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
@@ -47,6 +52,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -325,6 +331,18 @@ class ResourceMarcServiceTest {
   }
 
   @Test
+  void isSupportedByInventoryId_shouldThrowNotFoundException() {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenThrow(FeignException.NotFound.class);
+
+    //expect
+    assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceMarcService.isSupportedByInventoryId(inventoryId));
+  }
+
+  @Test
   void getResourcePreviewByInventoryId_shouldReturn_resourceResponseDto() throws JsonProcessingException {
     //given
     var inventoryId = UUID.randomUUID().toString();
@@ -345,6 +363,122 @@ class ResourceMarcServiceTest {
 
     //then
     assertEquals(resourceDto, result);
+  }
+
+  @Test
+  void getResourcePreviewByInventoryId_shouldThrowNotFoundException() {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenThrow(FeignException.NotFound.class);
+
+    //expect
+    assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceMarcService.getResourcePreviewByInventoryId(inventoryId));
+  }
+
+  @Test
+  void importMarcRecord_shouldCreateResource() throws JsonProcessingException {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    var marcRecord = createRecord('a', 'm');
+    var marcJson = "";
+    var resourceId = 1L;
+    var srsId = UUID.randomUUID().toString();
+    var resourceEntity = new Resource().setId(resourceId);
+    resourceEntity.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(resourceEntity)
+      .setSrsId(srsId));
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(resourceId)
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
+    var resourceEventCaptor = ArgumentCaptor.forClass(ResourceEvent.class);
+    var resourceModelCaptor = ArgumentCaptor.forClass(org.folio.ld.dictionary.model.Resource.class);
+
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
+    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
+    when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
+    when(resourceModelMapper.toEntity(resourceModelCaptor.capture())).thenReturn(resourceEntity);
+    when(resourceRepo.existsById(resourceId)).thenReturn(false);
+    when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(false);
+    when(resourceGraphService.saveMergingGraph(resourceEntity)).thenReturn(resourceEntity);
+
+    //when
+    var result = resourceMarcService.importMarcRecord(inventoryId);
+
+    //then
+    verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
+    assertThat(resourceEventCaptor.getValue())
+      .satisfies(event -> {
+        assertThat(event).isInstanceOf(ResourceUpdatedEvent.class);
+        assertEquals(resourceEntity, ((ResourceUpdatedEvent) event).resource());
+      });
+    assertThat(result)
+      .satisfies(resourceIdDto -> {
+        assertThat(resourceIdDto).isInstanceOf(ResourceIdDto.class);
+        assertEquals("1", resourceIdDto.getId());
+      });
+    assertEquals(LINKED_DATA.name(), resourceModelCaptor.getValue().getFolioMetadata().getSource().name());
+  }
+
+  @Test
+  void importMarcRecord_shouldThrowNotFoundException() {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenThrow(FeignException.NotFound.class);
+
+    //expect
+    assertThatExceptionOfType(NotFoundException.class)
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+  }
+
+  @Test
+  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameIdExists()
+    throws JsonProcessingException {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    var marcRecord = createRecord('a', 'm');
+    var marcJson = "";
+    var resourceId = 1L;
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(resourceId)
+      .setFolioMetadata(new FolioMetadata());
+
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
+    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
+    when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
+    when(resourceRepo.existsById(resourceId)).thenReturn(true);
+
+    //expect
+    assertThatExceptionOfType(AlreadyExistsException.class)
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+  }
+
+  @Test
+  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameSrsIdExists()
+    throws JsonProcessingException {
+    //given
+    var inventoryId = UUID.randomUUID().toString();
+    var marcRecord = createRecord('a', 'm');
+    var marcJson = "";
+    var resourceId = 1L;
+    var srsId = UUID.randomUUID().toString();
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(resourceId)
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
+
+    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+      .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
+    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
+    when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
+    when(resourceRepo.existsById(resourceId)).thenReturn(false);
+    when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(true);
+
+    //expect
+    assertThatExceptionOfType(AlreadyExistsException.class)
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
   }
 
   private org.folio.rest.jaxrs.model.Record createRecord(char type, char level) {
