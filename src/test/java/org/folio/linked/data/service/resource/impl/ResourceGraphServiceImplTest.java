@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource;
+package org.folio.linked.data.service.resource.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceGraphServiceTest {
+class ResourceGraphServiceImplTest {
 
   @InjectMocks
   private ResourceGraphServiceImpl resourceGraphService;

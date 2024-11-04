@@ -36,7 +36,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestRepository;
@@ -69,7 +69,7 @@ class AuthorityUpdateAndReadWorkIT {
   private ResourceTestRepository resourceTestRepository;
   @SpyBean
   @Autowired
-  private ResourceMarcService resourceMarcService;
+  private ResourceMarcAuthorityService resourceMarcService;
   @Autowired
   private Environment env;
   @Autowired

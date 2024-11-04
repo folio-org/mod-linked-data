@@ -36,7 +36,7 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.service.resource.ResourceMarcService;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.ResourceTestRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
@@ -45,6 +45,7 @@ import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -77,7 +78,7 @@ class SourceRecordDomainEventHandlerIT {
   private ResourceTestRepository resourceTestRepository;
   @SpyBean
   @Autowired
-  private ResourceMarcService resourceMarcService;
+  private ResourceMarcAuthorityService resourceMarcService;
   @SpyBean
   @Autowired
   private ResourceModificationEventListener eventListener;
@@ -98,6 +99,7 @@ class SourceRecordDomainEventHandlerIT {
     );
   }
 
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @ParameterizedTest
   @CsvSource({
     "samples/marc2ld/marc_non_monograph_leader.jsonl, 0",
@@ -116,6 +118,7 @@ class SourceRecordDomainEventHandlerIT {
       .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
   }
 
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void shouldProcessMarcBibSourceRecordDomainEvent() {
     // given
@@ -223,6 +226,7 @@ class SourceRecordDomainEventHandlerIT {
     assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);
   }
 
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void marcBibSourceRecordDomainEvent_shouldSendToIndexWorkWithTwoInstances() {
     // given
@@ -259,6 +263,7 @@ class SourceRecordDomainEventHandlerIT {
     });
   }
 
+  @Disabled("Handling MARC BIB records is disabled temporarily")
   @Test
   void marcBibSourceRecordDomainEvent_shouldKeepExistedEdgesAndPropertiesAndFolioMetadata_inCaseOfUpdate() {
     // given
