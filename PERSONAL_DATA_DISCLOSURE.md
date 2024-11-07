@@ -1,5 +1,3 @@
-
-
 ## Overview
 The purpose of this form is to disclose the types of personal data stored by each module.  This information enables those hosting FOLIO to better manage and comply with various privacy laws and restrictions, e.g. GDPR.
 
@@ -12,17 +10,17 @@ For the purposes of this form, "store" includes the following:
 * Sending to an external piece of infrastructure such as a queue (e.g. Kafka), search engine (e.g. Elasticsearch), distributed table, etc.
 
 ## Personal Data Stored by This Module
-- [ ] This module does not store any personal data.
+- [x] This module does not store any personal data.
 - [ ] This module provides [custom fields](https://github.com/folio-org/folio-custom-fields).
-- [x] This module stores fields with free-form text (tags, notes, descriptions, etc.)
+- [ ] This module stores fields with free-form text (tags, notes, descriptions, etc.)
 - [ ] This module caches personal data
 ---
-- [x] First name
-- [x] Last name
+- [ ] First name
+- [ ] Last name
 - [ ] Middle name
 - [ ] Pseudonym / Alias / Nickname / Username / User ID
 - [ ] Gender
-- [x] Date of birth
+- [ ] Date of birth
 - [ ] Place of birth
 - [ ] Racial or ethnic origin
 - [ ] Address
@@ -37,8 +35,6 @@ For the purposes of this form, "store" includes the following:
 - [ ] Geolocation data
 - [ ] Financial information
 - [ ] Logic or algorithms used to build a user/profile
-<!--- - [ ] Other personal data - Please list as needed -->
-<!--- - [ ] Other personal data - Please list as needed -->
 
 **NOTE** This is not intended to be a comprehensive list, but instead provide a starting point for module developers/maintainers to use.
 
