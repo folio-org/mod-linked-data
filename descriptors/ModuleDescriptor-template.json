@@ -160,7 +160,12 @@
       ]
     }
   ],
-  "requires": [],
+  "requires": [
+    {
+      "id": "source-storage-records",
+      "version": "3.2 3.3"
+    }
+  ],
   "permissionSets": [
     {
       "permissionName": "linked-data.resources.bib.get",
