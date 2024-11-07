@@ -110,7 +110,7 @@ class ResourceGraphControllerIT {
   }
 
   private ResultActions performGet(Long resourceId) throws Exception {
-    var requestBuilder = get("/graph/resource/" + resourceId)
+    var requestBuilder = get("/linked-data/resource/" + resourceId + "/graph")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
 

@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @IntegrationTest
 class ReIndexControllerIT {
 
-  public static final String INDEX_URL = "/reindex";
+  public static final String INDEX_URL = "/linked-data/reindex";
 
   @Autowired
   private MockMvc mockMvc;

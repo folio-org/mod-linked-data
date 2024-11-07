@@ -27,7 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ProfileControllerIT {
 
-  private static final String PROFILE_URL = "/profile";
+  private static final String PROFILE_URL = "/linked-data/profile";
 
   @Autowired
   private MockMvc mockMvc;

@@ -5,9 +5,11 @@ info:
   description: Linked Data service API
 
 paths:
-  /reindex:
+  /linked-data/reindex:
     put:
       operationId: reindex
+      tags:
+        - reindex
       description: Start the process of reindexing of resources in the database
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -20,9 +22,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resource:
+  /linked-data/resource:
     post:
       operationId: createResource
+      tags:
+        - resource
       description: Create a Resource
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -43,9 +47,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resource/{id}:
+  /linked-data/resource/{id}:
     get:
       operationId: getResourceById
+      tags:
+        - resource
       description: Get a resource by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -65,6 +71,8 @@ paths:
           $ref: '#/components/responses/internalServerErrorResponse'
     put:
       operationId: updateResource
+      tags:
+        - resource
       description: Update a resource by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -90,6 +98,8 @@ paths:
           $ref: '#/components/responses/internalServerErrorResponse'
     delete:
       operationId: deleteResource
+      tags:
+        - resource
       description: Delete a resource by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -102,9 +112,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resource/{id}/marc:
+  /linked-data/resource/{id}/marc:
     get:
       operationId: getResourceMarcViewById
+      tags:
+        - resource
       description: Get a marc view of resource by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -123,9 +135,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resource/metadata/{inventoryId}/id:
+  /linked-data/resource/metadata/{inventoryId}/id:
     get:
       operationId: getResourceIdByResourceInventoryId
+      tags:
+        - resource
       description: Get id of a resource by its inventory id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
@@ -140,9 +154,11 @@ paths:
         '404':
           description: No resource id is found by its inventory id
 
-  /resource/check/{inventoryId}/supported:
+  /linked-data/inventory-instance/{inventoryId}/import-supported:
     get:
       operationId: isSupportedByInventoryId
+      tags:
+        - resource
       description: Check if marc to bib conversion is supported
       parameters:
         - $ref: '#/components/parameters/inventoryId'
@@ -159,9 +175,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resource/preview/{inventoryId}:
+  /linked-data/inventory-instance/{inventoryId}/preview:
     get:
       operationId: getResourcePreviewByInventoryId
+      tags:
+        - resource
       description: Get the preview of a resource
       parameters:
         - $ref: '#/components/parameters/inventoryId'
@@ -177,9 +195,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /resource/import/{inventoryId}:
+  /linked-data/inventory-instance/{inventoryId}/import:
     post:
       operationId: importMarcRecord
+      tags:
+        - resource
       description: Create a Resource derived from MARC record
       parameters:
         - $ref: '#/components/parameters/inventoryId'
@@ -197,9 +217,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /profile:
+  /linked-data/profile:
     get:
       operationId: getProfile
+      tags:
+        - profile
       description: Get profile
       responses:
         '200':
@@ -214,9 +236,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /graph/resource/{id}:
+  /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById
+      tags:
+        - graph
       description: Get a resource graph by id
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'

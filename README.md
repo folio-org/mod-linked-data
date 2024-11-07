@@ -70,11 +70,11 @@ Details of few important APIs are provided below.
 ### Creating Work resources
 At present, API support creation of Work resource (with many other resource types included, like Instance).
 
-Resources can be created by making a POST request to the `/resource` endpoint.
+Resources can be created by making a POST request to the `/linked-data/resource` endpoint.
 Refer [src/main/resources/swagger.api/schema/resourceRequestDto.json](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/swagger.api/schema/resourceRequestDto.json) for the schema of the request body.
 #### Example request for creating a Work resource:
 ```bash
-curl --location '{{ base-uri }}/resource' \
+curl --location '{{ base-uri }}/linked-data/resource' \
 --header 'x-okapi-tenant: {{ tenant identifier }}' \
 --header 'Content-Type: application/json' \
 --header 'Accept: application/json' \
@@ -252,13 +252,13 @@ curl --location '{{ base-uri }}/resource' \
 }'
 ```
 ### Updating resources
-Resource can be updated by making a PUT request to the `/resource/{id}` endpoint. At present, only Work resources can be updated through the API.
+Resource can be updated by making a PUT request to the `/linked-data/resource/{id}` endpoint. At present, only Work resources can be updated through the API.
 Refer [src/main/resources/swagger.api/schema/resourceRequestDto.json](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/swagger.api/schema/resourceRequestDto.json) for the schema of the request body.
 ### Viewing a graph node
-A graph node can be viewed by making a GET request to the `graph/resource/{id}` endpoint. Any kind of resources can be retrieved through this API.
+A graph node can be viewed by making a GET request to the `/linked-data/resource/{id}/graph` endpoint. Any kind of resources can be retrieved through this API.
 
 ```bash
-curl --location '{{ base-uri }}/graph/resource/{id}' \
+curl --location '{{ base-uri }}/linked-data/resource/{id}/graph' \
 --header 'x-okapi-tenant: {tenant}' \
 --header 'x-okapi-token: {token}'
 ```
