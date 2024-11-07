@@ -35,6 +35,7 @@ To run mod-linked-data in standalone mode, do not set the environment variable `
 ## Environment Variables
 | Name                                                | Default Value                   | Description                                                                                                                                                                           |
 |-----------------------------------------------------|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| SERVER_PORT                                         | 8081                            | The port number of the application                                                                                                                                                    |
 | ENV                                                 | folio                           | The logical name of the deployment, must be unique across all environments using the same shared Kafka/Elasticsearch clusters, `a-z (any case)`, `0-9`, `-`, `_` symbols only allowed |
 | DB_HOST                                             | localhost                       | Postgres hostname                                                                                                                                                                     |
 | DB_PORT                                             | 5432                            | Postgres port                                                                                                                                                                         |
@@ -268,7 +269,7 @@ The [mod-search](https://github.com/folio-org/mod-search) module consumes messag
 The [mod-source-record-storage](https://github.com/folio-org/mod-source-record-storage) module pushes Source Record domain events to the topic defined by KAFKA_SOURCE_RECORD_DOMAIN_EVENT_TOPIC_PATTERN env variable.
 The Linked Data module consumes a message and creates/updates a corresponding Authority resource in Linked Data graph.
 ## Inventory module
-1. The Linked Data module pushes a new and updated Instance resource descriptions to the Kafka topic defined by KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN env variable.
+1. The Linked Data module pushes a new and updated Instance resource descriptions to the Kafka topic defined by KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC env variable.
 The [mod-inventory](https://github.com/folio-org/mod-inventory) module consumes message and creates/updates a corresponding Instance resource in the Inventory storage,
 plus sends according message to the [mod-source-record-storage](https://github.com/folio-org/mod-source-record-storage) to make it create/update according source record.
 2. The [mod-inventory](https://github.com/folio-org/mod-inventory) module pushes Inventory Instance events to the topic defined by KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN env variable.

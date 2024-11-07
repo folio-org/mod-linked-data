@@ -4,7 +4,7 @@ mod-linked-data:
   kafka:
     topic:
       work-search-index: ${KAFKA_WORK_SEARCH_INDEX_TOPIC:linked-data.work}
-      instance-ingress: ${KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC:inventory.instance_ingress}
+      instance-ingress: ${KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC:inventory.instance_ingress}
 
 folio:
   environment: ${ENV:folio}
