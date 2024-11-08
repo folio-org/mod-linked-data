@@ -1,19 +1,18 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static org.folio.linked.data.util.ResourceUtils.ensureLatestReplaced;
-import static org.folio.linked.data.util.ResourceUtils.fetchResource;
 
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 
 @RequiredArgsConstructor
 public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
 
   private final BiConsumer<Reference, Object> referenceConsumer;
-  private final ResourceRepository resourceRepository;
+  private final ResourceMarcAuthorityService resourceMarcAuthorityService;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
@@ -28,7 +27,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var reference = (Reference) dto;
-    return fetchResource(reference, resourceRepository);
+    return resourceMarcAuthorityService.fetchResourceOrCreateFromSrsRecord(reference);
   }
 
 }

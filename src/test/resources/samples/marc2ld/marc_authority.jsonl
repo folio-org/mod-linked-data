@@ -1,0 +1,41 @@
+{
+    "fields": [
+        {
+            "001": "sh85121033"
+        },
+        {
+            "100": {
+                "subfields": [
+                    {
+                        "a": "aValue"
+                    },
+                    {
+                        "b": "bValue"
+                    },
+                    {
+                        "c": "cValue"
+                    },
+                    {
+                        "d": "dValue"
+                    },
+                ],
+                "ind1": " ",
+                "ind2": " "
+            }
+        },
+        {
+            "999": {
+                "subfields": [
+                    {
+                        "i": "3225d50a-adea-4eaa-a418-6b3a0e6fa6ad"
+                    },
+                    {
+                        "s": "4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"
+                    }
+                ],
+                "ind1": "f",
+                "ind2": "f"
+            }
+        }
+    ]
+}

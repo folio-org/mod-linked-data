@@ -10,5 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface SrsClient {
 
   @GetMapping(value = "/records/{inventoryId}/formatted?idType=INSTANCE")
-  ResponseEntity<Record> getFormattedSourceStorageInstanceRecordById(@PathVariable("inventoryId") String inventoryId);
+  ResponseEntity<Record> getSourceStorageInstanceRecordById(@PathVariable("inventoryId") String inventoryId);
+
+  @GetMapping(value = "/records/{srsId}/formatted?idType=SRS_RECORD")
+  ResponseEntity<Record> getSourceStorageRecordBySrsId(@PathVariable("srsId") String srsId);
 }

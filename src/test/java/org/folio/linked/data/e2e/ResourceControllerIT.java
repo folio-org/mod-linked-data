@@ -122,6 +122,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
@@ -134,6 +135,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -152,6 +154,7 @@ import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -165,12 +168,18 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.test.ResourceTestService;
+import org.folio.linked.data.test.TestUtil;
+import org.folio.rest.jaxrs.model.ParsedRecord;
+import org.folio.rest.jaxrs.model.Record;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -207,6 +216,8 @@ public class ResourceControllerIT {
   private LookupResources lookupResources;
   @Autowired
   private HashService hashService;
+  @MockBean
+  private SrsClient srsClient;
 
   @BeforeEach
   public void beforeEach() {
@@ -245,6 +256,66 @@ public class ResourceControllerIT {
     checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
     checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
+  }
+
+  @Test
+  void createWorkWithInstanceRef_shouldCreateAuthorityFromSrs() throws Exception {
+    // given
+    var instanceForReference = getSampleInstanceResource(null, null);
+    setExistingResourcesIds(instanceForReference);
+    resourceTestService.saveGraph(instanceForReference);
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(
+        SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE
+          .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
+      );
+
+    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
+      .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toCreatorReferenceId(), equalTo("8288857748391775847")));
+  }
+
+  @Test
+  void createWorkWithInstanceRef_shouldReturn404_ifRecordNotFoundInSrs() throws Exception {
+    // given
+    var instanceForReference = getSampleInstanceResource(null, null);
+    setExistingResourcesIds(instanceForReference);
+    resourceTestService.saveGraph(instanceForReference);
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(
+        SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE
+          .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
+      );
+
+    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
+      .thenReturn(new ResponseEntity<>(null, HttpStatusCode.valueOf(404)));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isNotFound())
+      .andExpect(jsonPath("$.errors[0].message",
+        equalTo("Record with id 4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd not found in SRS")));
+  }
+
+  private org.folio.rest.jaxrs.model.Record createRecord() {
+    var content = TestUtil.loadResourceAsString("samples/marc2ld/marc_authority.jsonl");
+    var parsedRecord = new ParsedRecord().withContent(content);
+    return new Record().withParsedRecord(parsedRecord);
   }
 
   @Test
@@ -1460,6 +1531,10 @@ public class ResourceControllerIT {
 
   private String toWork() {
     return join(".", "$", path("resource"), path(WORK.getUri()));
+  }
+
+  private String toCreatorReferenceId() {
+    return join(".", toWork(), "_creatorReference[0]", "id");
   }
 
   private String toWorkReference() {

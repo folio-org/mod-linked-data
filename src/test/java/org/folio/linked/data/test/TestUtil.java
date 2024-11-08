@@ -54,6 +54,7 @@ public class TestUtil {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
+  public static final String SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/simple_work.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
   private static final String FOLIO_OKAPI_URL = "folio.okapi-url";

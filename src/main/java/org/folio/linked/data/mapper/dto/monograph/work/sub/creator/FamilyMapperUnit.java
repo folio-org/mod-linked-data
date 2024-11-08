@@ -6,14 +6,15 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.work.sub.AgentRoleAssigner;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Component;
 
 @Component("creatorFamilyMapperUnit")
 @MapperUnit(type = FAMILY, requestDto = Agent.class, predicate = CREATOR)
 public class FamilyMapperUnit extends CreatorMapperUnit {
 
-  public FamilyMapperUnit(AgentRoleAssigner agentRoleAssigner, ResourceRepository resourceRepository) {
-    super(agentRoleAssigner, resourceRepository);
+  public FamilyMapperUnit(AgentRoleAssigner agentRoleAssigner,
+                          ResourceMarcAuthorityService resourceMarcAuthorityService) {
+    super(agentRoleAssigner, resourceMarcAuthorityService);
   }
 }
