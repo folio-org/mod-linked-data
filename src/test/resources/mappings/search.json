@@ -10,7 +10,7 @@
         "headers": {
           "Content-Type": "application/json"
         },
-        "body": "{\n    \"indices\": [\n        \"folio_bibframe_public\"\n    ],\n    \"status\": \"success\"\n}"
+        "body": "{\n    \"indices\": [\n        \"folio_linked-data.work_public\"\n    ],\n    \"status\": \"success\"\n}"
       }
     }
   ]

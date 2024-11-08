@@ -36,7 +36,7 @@ import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.ResourceGraphService;
-import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
@@ -69,7 +69,7 @@ class ResourceMarcBibServiceImplTest {
   @Mock
   private ResourceModelMapper resourceModelMapper;
   @Mock
-  private Bibframe2MarcMapper bibframe2MarcMapper;
+  private Ld2MarcMapper ld2MarcMapper;
   @Mock
   private MarcBib2ldMapper marcBib2ldMapper;
   @Mock
@@ -94,7 +94,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(Optional.of(existedResource));
     when(resourceModelMapper.toModel(existedResource))
       .thenReturn(expectedModelResource);
-    when(bibframe2MarcMapper.toMarcJson(expectedModelResource))
+    when(ld2MarcMapper.toMarcJson(expectedModelResource))
       .thenReturn(expectedMarcString);
     when(resourceDtoMapper.toMarcViewDto(existedResource, expectedMarcString))
       .thenReturn(expectedResponse);

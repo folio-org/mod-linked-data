@@ -9,7 +9,7 @@ import org.folio.linked.data.domain.dto.InstanceIngressPayload;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -25,7 +25,7 @@ public abstract class InstanceIngressMessageMapper {
   private static final String LINKED_DATA_ID = "linkedDataId";
   private static final String INSTANCE_ID = "instanceId";
   @Autowired
-  protected Bibframe2MarcMapper bibframe2MarcMapper;
+  protected Ld2MarcMapper ld2MarcMapper;
   @Autowired
   protected ResourceModelMapper resourceModelMapper;
 
@@ -40,7 +40,7 @@ public abstract class InstanceIngressMessageMapper {
 
   protected String toMarcJson(Resource resource) {
     var resourceModel = resourceModelMapper.toModel(resource);
-    return bibframe2MarcMapper.toMarcJson(resourceModel);
+    return ld2MarcMapper.toMarcJson(resourceModel);
   }
 
   @AfterMapping
