@@ -3,7 +3,7 @@ package org.folio.linked.data.mapper.dto.monograph.work.sub;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
-import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
+import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.CategoryResponse;

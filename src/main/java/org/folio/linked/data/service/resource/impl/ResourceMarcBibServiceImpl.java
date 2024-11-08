@@ -3,9 +3,9 @@ package org.folio.linked.data.service.resource.impl;
 import static java.lang.String.format;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.model.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.marc4ld.util.MarcUtil.isLanguageMaterial;
 import static org.folio.marc4ld.util.MarcUtil.isMonographicComponentPartOrItem;
 

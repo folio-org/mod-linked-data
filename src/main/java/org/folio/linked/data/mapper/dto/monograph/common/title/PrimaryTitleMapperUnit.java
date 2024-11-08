@@ -6,8 +6,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
-import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
-import static org.folio.linked.data.util.BibframeUtils.putProperty;
+import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
+import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;

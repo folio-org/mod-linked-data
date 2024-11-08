@@ -3,11 +3,11 @@ package org.folio.linked.data.mapper.dto.monograph.common;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
-import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
-import static org.folio.linked.data.util.BibframeUtils.putProperty;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
+import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
+import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;

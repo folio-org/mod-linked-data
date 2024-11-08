@@ -29,9 +29,9 @@ import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VAR
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_PARALLEL;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_VARIANT;
-import static org.folio.linked.data.util.BibframeUtils.cleanDate;
 import static org.folio.linked.data.util.Constants.MSG_UNKNOWN_TYPES;
 import static org.folio.linked.data.util.Constants.SEARCH_WORK_RESOURCE_NAME;
+import static org.folio.linked.data.util.ResourceUtils.cleanDate;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import com.fasterxml.jackson.databind.JsonNode;

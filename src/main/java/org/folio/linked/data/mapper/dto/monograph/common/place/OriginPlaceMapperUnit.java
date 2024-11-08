@@ -2,10 +2,10 @@ package org.folio.linked.data.mapper.dto.monograph.common.place;
 
 import static org.folio.ld.dictionary.PredicateDictionary.ORIGIN_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
-import static org.folio.linked.data.util.BibframeUtils.getFirstValue;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR_PREDICATE;
 import static org.folio.linked.data.util.Constants.RESOURCE_TYPE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
+import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 
 import org.folio.linked.data.domain.dto.Place;
 import org.folio.linked.data.domain.dto.PlaceResponse;

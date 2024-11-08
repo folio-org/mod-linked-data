@@ -71,7 +71,7 @@ class SourceRecordDomainEventHandlerIT {
   @MockBean
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
   @Autowired
-  private MarcBib2ldMapper marc2BibframeMapper;
+  private MarcBib2ldMapper marcBib2ldMapper;
   @Autowired
   private ResourceModelMapper resourceModelMapper;
   @Autowired
@@ -315,7 +315,7 @@ class SourceRecordDomainEventHandlerIT {
 
   private void mapAndSave(String marc) {
     tenantScopedExecutionService.execute(TENANT_ID,
-      () -> marc2BibframeMapper.fromMarcJson(marc)
+      () -> marcBib2ldMapper.fromMarcJson(marc)
         .map(resourceModelMapper::toEntity)
         .map(resourceTestRepository::save)
         .map(Resource::getOutgoingEdges)

@@ -241,7 +241,7 @@ components:
       name: id
       in: path
       required: true
-      description: Bibframe resource id
+      description: Linked Data resource id
       schema:
         type: integer
         format: int64
@@ -249,7 +249,7 @@ components:
       name: inventoryId
       in: path
       required: true
-      description: Bibframe resource inventory id
+      description: Linked Data resource inventory id
       schema:
         type: string
     x-okapi-tenant-header:

@@ -8,7 +8,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
-import static org.folio.linked.data.util.BibframeUtils.putProperty;
+import static org.folio.linked.data.util.ResourceUtils.putProperty;
 import static org.folio.marc4ld.util.Constants.Classification.DDC;
 import static org.folio.marc4ld.util.Constants.Classification.LC;
 
