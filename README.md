@@ -7,9 +7,9 @@ See the file "[LICENSE](LICENSE)" for more information.
 mod-linked-data manages the data graph of the library's catalog, providing REST APIs for CRUD operations on the data graph.
 ### Dependencies on libraries
 This module is dependent on the following libraries:
-- [lib-linked-data-marc4ld](https://github.com/folio-org/lib-linked-data-marc4ld)
-- [lib-linked-data-fingerprint](https://github.com/folio-org/lib-linked-data-fingerprint)
 - [lib-linked-data-dictionary](https://github.com/folio-org/lib-linked-data-dictionary)
+- [lib-linked-data-fingerprint](https://github.com/folio-org/lib-linked-data-fingerprint)
+- [lib-linked-data-marc4ld](https://github.com/folio-org/lib-linked-data-marc4ld)
 ## Compiling
 ```bash
 mvn clean install
