@@ -1,6 +1,6 @@
 package org.folio.linked.data.configuration.standalone;
 
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 
 @Configuration
-@Profile("!" + FOLIO_PROFILE)
+@Profile(STANDALONE_PROFILE)
 @Log4j2
 @RequiredArgsConstructor
 public class StandaloneLiquibase {

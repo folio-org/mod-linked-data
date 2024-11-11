@@ -1,6 +1,6 @@
 package org.folio.linked.data.configuration;
 
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.TOKEN;
 
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Profile(FOLIO_PROFILE)
+@Profile("!" + STANDALONE_PROFILE)
 public class FeignRequestInterceptor implements RequestInterceptor {
 
   private final FolioExecutionContext folioExecutionContext;

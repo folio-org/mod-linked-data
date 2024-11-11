@@ -1,6 +1,6 @@
 package org.folio.linked.data.test.kafka;
 
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@Getter
 @Log4j2
 @Component
-@Getter
-@Profile(FOLIO_PROFILE)
+@Profile("!" + STANDALONE_PROFILE)
 public class KafkaInventoryTopicListener {
   private final List<String> messages = new CopyOnWriteArrayList<>();
 

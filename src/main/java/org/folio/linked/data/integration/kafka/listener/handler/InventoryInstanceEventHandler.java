@@ -2,7 +2,7 @@ package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Component
-@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class InventoryInstanceEventHandler {
 
   public static final String INSTANCE_REINDEX_NOT_REQUIRED = "Ignoring InventoryInstanceEvent '{}',"

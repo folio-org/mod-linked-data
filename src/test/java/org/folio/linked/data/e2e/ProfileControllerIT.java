@@ -1,6 +1,7 @@
 package org.folio.linked.data.e2e;
 
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
+import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.util.Constants.PROFILE_NOT_FOUND;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,25 +20,28 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @IntegrationTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ProfileControllerIT {
 
   private static final String PROFILE_URL = "/profile";
 
   @Autowired
   private MockMvc mockMvc;
-
   @Autowired
   private ProfileRepository profileRepository;
+  @Autowired
+  private Environment env;
 
   @Order(1)
   @Test
   void getProfile_shouldReturnProfile() throws Exception {
     //given
-    var requestBuilder = get(PROFILE_URL);
+    var requestBuilder = get(PROFILE_URL)
+      .headers(defaultHeaders(env));
 
     //when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -55,7 +59,8 @@ class ProfileControllerIT {
   @Test
   void getProfile_shouldReturn404_ifNoProfileExists() throws Exception {
     //given
-    var requestBuilder = get(PROFILE_URL);
+    var requestBuilder = get(PROFILE_URL)
+      .headers(defaultHeaders(env));
 
     profileRepository.deleteAll();
 

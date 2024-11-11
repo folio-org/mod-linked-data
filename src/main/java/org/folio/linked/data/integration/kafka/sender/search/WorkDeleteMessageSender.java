@@ -5,7 +5,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 
 import java.util.Collection;
@@ -24,8 +24,8 @@ import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
-@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class WorkDeleteMessageSender implements DeleteMessageSender {
 
   @Qualifier("bibliographicMessageProducer")

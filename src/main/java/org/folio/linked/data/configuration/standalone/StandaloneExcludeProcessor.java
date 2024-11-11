@@ -1,6 +1,6 @@
 package org.folio.linked.data.configuration.standalone;
 
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!" + FOLIO_PROFILE)
+@Profile(STANDALONE_PROFILE)
 public class StandaloneExcludeProcessor implements BeanDefinitionRegistryPostProcessor {
 
   @Override

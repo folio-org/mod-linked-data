@@ -2,12 +2,13 @@ package org.folio.linked.data.test;
 
 import static java.lang.System.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
 import static org.jeasy.random.FieldPredicates.named;
@@ -21,7 +22,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +47,7 @@ import org.testcontainers.shaded.org.awaitility.core.ThrowingRunnable;
 @UtilityClass
 public class TestUtil {
 
-  public static final String FOLIO_TEST_PROFILE = "test-folio";
+  public static final String STANDALONE_TEST_PROFILE = "test-standalone";
   public static final String TENANT_ID = "test_tenant";
   public static final String RECORD_DOMAIN_EVENT_TOPIC = "srs.source_records";
   public static final String INVENTORY_INSTANCE_EVENT_TOPIC = "inventory.instance";
@@ -79,7 +79,7 @@ public class TestUtil {
   public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
-    if (Arrays.asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
+    if (!asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
       httpHeaders.add(TENANT, TENANT_ID);
       httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
     }

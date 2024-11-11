@@ -2,7 +2,7 @@ package org.folio.linked.data.configuration.kafka;
 
 import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
@@ -25,7 +25,7 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @Configuration
 @RequiredArgsConstructor
-@Profile(FOLIO_PROFILE)
+@Profile("!" + STANDALONE_PROFILE)
 public class KafkaListenerConfiguration {
 
   private final KafkaProperties kafkaProperties;

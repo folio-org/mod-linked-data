@@ -1,9 +1,7 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.resource;
 
-import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
+import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
 import org.folio.linked.data.integration.kafka.sender.search.WorkDeleteMessageSender;
 import org.folio.linked.data.model.entity.Resource;
@@ -27,11 +26,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.context.ActiveProfiles;
 
+@IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
-public class ResourceControllerFolioIT extends ResourceControllerIT {
+public class ResourceControllerIT extends ResourceControllerITBase {
 
   @Autowired
   private KafkaSearchWorkIndexTopicListener searchIndexTopicListener;

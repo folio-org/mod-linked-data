@@ -2,7 +2,7 @@ package org.folio.linked.data.configuration.kafka;
 
 import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG;
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +24,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Configuration
 @RequiredArgsConstructor
-@Profile(FOLIO_PROFILE)
+@Profile("!" + STANDALONE_PROFILE)
 public class KafkaProducerConfiguration {
   private final KafkaProperties kafkaProperties;
   private final LinkedDataTopicProperties linkedDataTopicProperties;

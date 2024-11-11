@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="LinkedDataApplication [LocalDev]" type="Application" factoryName="Application">
+  <configuration default="false" name="LinkedDataApplication [Local-Standalone]" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.folio.linked.data.LinkedDataApplication" />
     <module name="mod-linked-data" />
-    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=folio,search,localDev" />
+    <option name="VM_PARAMETERS" value="-Dspring.profiles.active=standalone,local" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="org.folio.linked.data.*" />
