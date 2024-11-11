@@ -6,7 +6,7 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.commons.collections4.CollectionUtils.union;
 import static org.folio.ld.dictionary.PropertyDictionary.fromValue;
-import static org.folio.linked.data.util.BibframeUtils.putProperty;
+import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;

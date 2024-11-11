@@ -16,14 +16,14 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 
 @UnitTest
-class BibframeUtilsTest {
+class ResourceUtilsTest {
 
   @Test
   void getFirstValue_shouldReturnEmptyString_ifGivenSupplierIsNull() {
     // given
 
     // when
-    var result = BibframeUtils.getFirstValue(null);
+    var result = ResourceUtils.getFirstValue(null);
 
     // then
     assertThat(result).isEmpty();
@@ -42,7 +42,7 @@ class BibframeUtilsTest {
     };
 
     // when
-    var result = BibframeUtils.getFirstValue(valuesSupplier);
+    var result = ResourceUtils.getFirstValue(valuesSupplier);
 
     // then
     assertThat(result).isEqualTo(first);
@@ -61,7 +61,7 @@ class BibframeUtilsTest {
     };
 
     // when
-    var result = BibframeUtils.getFirstValue(valuesSupplier);
+    var result = ResourceUtils.getFirstValue(valuesSupplier);
 
     // then
     assertThat(result).isEqualTo(second);
@@ -80,7 +80,7 @@ class BibframeUtilsTest {
     };
 
     // when
-    var result = BibframeUtils.getFirstValue(valuesSupplier);
+    var result = ResourceUtils.getFirstValue(valuesSupplier);
 
     // then
     assertThat(result).isEmpty();
@@ -102,7 +102,7 @@ class BibframeUtilsTest {
     );
 
     // when
-    var result = given.stream().map(BibframeUtils::cleanDate).toList();
+    var result = given.stream().map(ResourceUtils::cleanDate).toList();
 
     // then
     assertThat(result).containsExactly(
@@ -124,7 +124,7 @@ class BibframeUtilsTest {
     var instance = new Resource().setId(1L).addTypes(INSTANCE);
 
     // when
-    var result = BibframeUtils.extractInstancesFromWork(instance);
+    var result = ResourceUtils.extractInstancesFromWork(instance);
 
     // then
     assertThat(result).containsOnly(instance);
@@ -139,7 +139,7 @@ class BibframeUtilsTest {
     resource.addIncomingEdge(new ResourceEdge(instance, resource, INSTANTIATES));
 
     // when
-    var result = BibframeUtils.extractInstancesFromWork(resource);
+    var result = ResourceUtils.extractInstancesFromWork(resource);
 
     // then
     assertThat(result).isEmpty();
@@ -155,7 +155,7 @@ class BibframeUtilsTest {
     work.addIncomingEdge(new ResourceEdge(instance2, work, INSTANTIATES));
 
     // when
-    var result = BibframeUtils.extractInstancesFromWork(work);
+    var result = ResourceUtils.extractInstancesFromWork(work);
 
     // then
     assertThat(result).containsOnly(instance1, instance2);

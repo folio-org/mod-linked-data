@@ -3,9 +3,9 @@ package org.folio.linked.data.service.resource.impl;
 import static java.lang.String.format;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.model.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.util.BibframeUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.marc4ld.util.MarcUtil.isLanguageMaterial;
 import static org.folio.marc4ld.util.MarcUtil.isMonographicComponentPartOrItem;
 
@@ -37,7 +37,7 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.service.resource.ResourceMarcBibService;
-import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
@@ -60,7 +60,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceModelMapper resourceModelMapper;
-  private final Bibframe2MarcMapper bibframe2MarcMapper;
+  private final Ld2MarcMapper ld2MarcMapper;
   private final MarcBib2ldMapper marcBib2ldMapper;
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepository;
@@ -74,7 +74,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       .orElseThrow(() -> createNotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND));
     validateMarkViewSupportedType(resource);
     var resourceModel = resourceModelMapper.toModel(resource);
-    var marc = bibframe2MarcMapper.toMarcJson(resourceModel);
+    var marc = ld2MarcMapper.toMarcJson(resourceModel);
     return resourceDtoMapper.toMarcViewDto(resource, marc);
   }
 

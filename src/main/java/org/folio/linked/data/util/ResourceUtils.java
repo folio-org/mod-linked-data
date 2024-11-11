@@ -32,7 +32,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 
 @Log4j2
 @UtilityClass
-public class BibframeUtils {
+public class ResourceUtils {
 
   private static final String DATE_CLEAN_PATTERN = "[^0-9T:\\-+.]";
   private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
@@ -116,7 +116,7 @@ public class BibframeUtils {
       .stream()
       .filter(re -> re.getPredicate().getUri().equals(REPLACED_BY.getUri()))
       .map(ResourceEdge::getTarget)
-      .map(BibframeUtils::ensureLatestReplaced)
+      .map(ResourceUtils::ensureLatestReplaced)
       .findFirst()
       .orElse(resource);
   }
@@ -126,7 +126,7 @@ public class BibframeUtils {
     Function<String, Optional<Resource>> fetchBySrsIdFunction = resourceRepository::findByFolioMetadataSrsId;
     return Optional.ofNullable(identifiable.getId())
       .flatMap(fetchByIdFunction)
-      .map(BibframeUtils::ensureLatestReplaced)
+      .map(ResourceUtils::ensureLatestReplaced)
       .or(() -> Optional.ofNullable(identifiable.getSrsId())
         .flatMap(fetchBySrsIdFunction))
       .map(Resource::copyWithNoEdges)

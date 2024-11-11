@@ -11,7 +11,7 @@ import org.folio.linked.data.domain.dto.InstanceIngressPayload;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.marc4ld.service.ld2marc.Bibframe2MarcMapper;
+import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ class InstanceIngressMessageMapperTest {
   @InjectMocks
   private InstanceIngressMessageMapperImpl kafkaInventoryMessageMapper;
   @Mock
-  private Bibframe2MarcMapper bibframe2MarcMapper;
+  private Ld2MarcMapper ld2MarcMapper;
   @Mock
   private ResourceModelMapper resourceModelMapper;
 
@@ -46,7 +46,7 @@ class InstanceIngressMessageMapperTest {
       .addType(INSTANCE);
     doReturn(resourceModel).when(resourceModelMapper).toModel(instance);
     var marcString = "{}";
-    doReturn(marcString).when(bibframe2MarcMapper).toMarcJson(resourceModel);
+    doReturn(marcString).when(ld2MarcMapper).toMarcJson(resourceModel);
 
     // when
     var result = kafkaInventoryMessageMapper.toInstanceIngressEvent(instance);

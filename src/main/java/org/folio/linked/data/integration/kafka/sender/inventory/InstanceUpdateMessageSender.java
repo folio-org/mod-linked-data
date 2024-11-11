@@ -4,8 +4,8 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE;
 import static org.folio.linked.data.model.entity.ResourceSource.MARC;
-import static org.folio.linked.data.util.BibframeUtils.extractInstancesFromWork;
 import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.ResourceUtils.extractInstancesFromWork;
 
 import java.util.Collection;
 import java.util.List;

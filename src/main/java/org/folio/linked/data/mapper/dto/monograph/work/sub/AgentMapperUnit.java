@@ -1,8 +1,8 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static java.util.Optional.ofNullable;
-import static org.folio.linked.data.util.BibframeUtils.ensureLatestReplaced;
-import static org.folio.linked.data.util.BibframeUtils.fetchResource;
+import static org.folio.linked.data.util.ResourceUtils.ensureLatestReplaced;
+import static org.folio.linked.data.util.ResourceUtils.fetchResource;
 
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
