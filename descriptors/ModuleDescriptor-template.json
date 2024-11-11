@@ -23,6 +23,7 @@
             "inventory-storage.preceding-succeeding-titles.item.put",
             "inventory-storage.preceding-succeeding-titles.item.delete",
             "source-storage.snapshots.post",
+            "source-storage.records.formatted.item.get",
             "source-storage.records.post",
             "source-storage.records.put"
           ]
@@ -56,6 +57,7 @@
             "inventory-storage.preceding-succeeding-titles.item.put",
             "inventory-storage.preceding-succeeding-titles.item.delete",
             "source-storage.snapshots.post",
+            "source-storage.records.formatted.item.get",
             "source-storage.records.post",
             "source-storage.records.put"
           ]
@@ -76,20 +78,20 @@
           "methods": [ "GET" ],
           "pathPattern": "/resource/check/{inventoryId}/supported",
           "permissionsRequired": [ "linked-data.resources.support-check.get" ],
-          "modulePermissions": ["source-storage.records.get"]
+          "modulePermissions": ["source-storage.records.formatted.item.get"]
         },
         {
           "methods": [ "GET" ],
           "pathPattern": "/resource/preview/{inventoryId}",
           "permissionsRequired": [ "linked-data.resources.preview.get" ],
-          "modulePermissions": ["source-storage.records.get"]
+          "modulePermissions": ["source-storage.records.formatted.item.get"]
         },
         {
           "methods": [ "POST" ],
           "pathPattern": "/resource/import/{inventoryId}",
           "permissionsRequired": [ "linked-data.resources.import.post" ],
           "modulePermissions": [
-            "source-storage.records.get",
+            "source-storage.records.formatted.item.get",
             "mapping-metadata.get",
             "mapping-metadata.type.item.get",
             "inventory-storage.instances.item.post",

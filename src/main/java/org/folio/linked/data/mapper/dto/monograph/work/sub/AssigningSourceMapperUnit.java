@@ -8,7 +8,7 @@ import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.ClassificationResponse;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,12 +20,12 @@ public class AssigningSourceMapperUnit extends ReferenceMapperUnit {
     ClassificationResponse.class
   );
 
-  public AssigningSourceMapperUnit(ResourceRepository resourceRepository) {
+  public AssigningSourceMapperUnit(ResourceMarcAuthorityService resourceMarcAuthorityService) {
     super((assigningSource, destination) -> {
       if (destination instanceof ClassificationResponse classification) {
         classification.addAssigningSourceReferenceItem(assigningSource);
       }
-    }, resourceRepository);
+    }, resourceMarcAuthorityService);
   }
 
   @Override

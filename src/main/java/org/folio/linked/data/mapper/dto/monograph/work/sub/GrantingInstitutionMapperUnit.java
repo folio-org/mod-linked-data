@@ -8,7 +8,7 @@ import org.folio.linked.data.domain.dto.Dissertation;
 import org.folio.linked.data.domain.dto.DissertationResponse;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,12 +20,12 @@ public class GrantingInstitutionMapperUnit extends ReferenceMapperUnit {
     DissertationResponse.class
   );
 
-  public GrantingInstitutionMapperUnit(ResourceRepository resourceRepository) {
+  public GrantingInstitutionMapperUnit(ResourceMarcAuthorityService resourceMarcAuthorityService) {
     super((grantingInstitution, destination) -> {
       if (destination instanceof DissertationResponse dissertation) {
         dissertation.addGrantingInstitutionReferenceItem(grantingInstitution);
       }
-    }, resourceRepository);
+    }, resourceMarcAuthorityService);
   }
 
   @Override

@@ -136,7 +136,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
 
   private Optional<ResponseEntity<Record>> getRecord(String inventoryId) {
     try {
-      return Optional.of(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId));
+      return Optional.of(srsClient.getSourceStorageInstanceRecordById(inventoryId));
     } catch (FeignException.NotFound e) {
       return Optional.empty();
     }

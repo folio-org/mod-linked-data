@@ -8,7 +8,6 @@ import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.NotFoundException;
@@ -19,18 +18,26 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.util.JsonUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceDtoMapper resourceDtoMapper;
+
+  public ResourceGraphServiceImpl(ResourceRepository resourceRepo,
+                                  ResourceEdgeRepository edgeRepo,
+                                  @Lazy ResourceDtoMapper resourceDtoMapper) {
+    this.resourceRepo = resourceRepo;
+    this.edgeRepo = edgeRepo;
+    this.resourceDtoMapper = resourceDtoMapper;
+  }
 
   @Override
   public ResourceGraphDto getResourceGraph(Long id) {

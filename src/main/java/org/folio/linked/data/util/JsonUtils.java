@@ -1,17 +1,24 @@
 package org.folio.linked.data.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @UtilityClass
 public class JsonUtils {
+
+  @SneakyThrows
+  public static String writeValueAsString(Object obj, ObjectMapper objectMapper) {
+    return obj instanceof String str ? str : objectMapper.writeValueAsString(obj);
+  }
 
   /**
    * Merges two JsonNode objects combining the data from

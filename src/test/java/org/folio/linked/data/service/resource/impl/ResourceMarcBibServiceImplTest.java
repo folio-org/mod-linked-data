@@ -142,7 +142,7 @@ class ResourceMarcBibServiceImplTest {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord(type, level);
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
@@ -163,7 +163,7 @@ class ResourceMarcBibServiceImplTest {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord(type, level);
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
@@ -174,7 +174,7 @@ class ResourceMarcBibServiceImplTest {
   void isSupportedByInventoryId_shouldThrowNotFoundException() {
     //given
     var inventoryId = UUID.randomUUID().toString();
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
 
     //expect
@@ -191,7 +191,7 @@ class ResourceMarcBibServiceImplTest {
     var resourceModel = new org.folio.ld.dictionary.model.Resource();
     var resourceEntity = new Resource();
     var resourceDto = new ResourceResponseDto();
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
     when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
@@ -209,7 +209,7 @@ class ResourceMarcBibServiceImplTest {
   void getResourcePreviewByInventoryId_shouldThrowNotFoundException() {
     //given
     var inventoryId = UUID.randomUUID().toString();
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
 
     //expect
@@ -234,7 +234,7 @@ class ResourceMarcBibServiceImplTest {
     var resourceEventCaptor = ArgumentCaptor.forClass(ResourceEvent.class);
     var resourceModelCaptor = ArgumentCaptor.forClass(org.folio.ld.dictionary.model.Resource.class);
 
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
     when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
@@ -265,7 +265,7 @@ class ResourceMarcBibServiceImplTest {
   void importMarcRecord_shouldThrowNotFoundException() {
     //given
     var inventoryId = UUID.randomUUID().toString();
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
 
     //expect
@@ -285,7 +285,7 @@ class ResourceMarcBibServiceImplTest {
       .setId(resourceId)
       .setFolioMetadata(new FolioMetadata());
 
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
     when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
@@ -309,7 +309,7 @@ class ResourceMarcBibServiceImplTest {
       .setId(resourceId)
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
 
-    when(srsClient.getFormattedSourceStorageInstanceRecordById(inventoryId))
+    when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
     when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));

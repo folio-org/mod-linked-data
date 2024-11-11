@@ -1,0 +1,50 @@
+{
+    "resource": {
+        "http://bibfra.me/vocab/lite/Work": {
+            "http://bibfra.me/vocab/marc/title": [
+                {
+                    "http://bibfra.me/vocab/marc/Title": {
+                        "http://bibfra.me/vocab/bflc/nonSortNum": [
+                            "4"
+                        ],
+                        "http://bibfra.me/vocab/marc/mainTitle": [
+                            "simple_work"
+                        ],
+                        "http://bibfra.me/vocab/marc/partNumber": [
+                            "1"
+                        ],
+                        "http://bibfra.me/vocab/marc/partName": [
+                            "part 1"
+                        ]
+                    }
+                }
+            ],
+            "http://bibfra.me/vocab/marc/content": [
+                {
+                    "http://bibfra.me/vocab/marc/term": [
+                        "cartographic image"
+                    ],
+                    "http://bibfra.me/vocab/lite/link": [
+                        "http://id.loc.gov/vocabulary/contentTypes/cri"
+                    ]
+                }
+            ],
+            "_creatorReference": [
+                {
+                    "id": "12345",
+                    "srsId": "4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd",
+                    "label": "name-CREATOR-PERSON",
+                    "type": "http://bibfra.me/vocab/lite/Person",
+                    "roles": [
+                        "http://bibfra.me/vocab/relation/author"
+                    ]
+                }
+            ],
+            "_instanceReference": [
+                {
+                    "id": "%INSTANCE_ID%"
+                }
+            ]
+        }
+    }
+}
