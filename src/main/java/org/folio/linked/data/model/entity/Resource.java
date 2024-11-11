@@ -80,11 +80,13 @@ public class Resource implements Persistable<Long> {
 
   @OrderBy
   @ToString.Exclude
+  @SuppressWarnings("javaarchitecture:S7027")
   @OneToMany(mappedBy = "target", cascade = {DETACH, REMOVE}, orphanRemoval = true)
   private Set<ResourceEdge> incomingEdges;
 
   @OrderBy
   @ToString.Exclude
+  @SuppressWarnings("javaarchitecture:S7027")
   @OneToMany(mappedBy = "source", cascade = {DETACH, REMOVE}, orphanRemoval = true)
   private Set<ResourceEdge> outgoingEdges;
 

@@ -33,18 +33,20 @@ public class ResourceEdge implements Persistable<ResourceEdgePk>  {
   @EmbeddedId
   private ResourceEdgePk id;
 
-  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("sourceHash")
+  @SuppressWarnings("javaarchitecture:S7027")
+  @ManyToOne(cascade = DETACH, optional = false)
   @JoinColumn(name = "source_hash", nullable = false)
   private Resource source;
 
-  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("targetHash")
+  @SuppressWarnings("javaarchitecture:S7027")
+  @ManyToOne(cascade = DETACH, optional = false)
   @JoinColumn(name = "target_hash", nullable = false)
   private Resource target;
 
-  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("predicateHash")
+  @ManyToOne(cascade = DETACH, optional = false)
   @JoinColumn(name = "predicate_hash", nullable = false)
   private PredicateEntity predicate;
 
