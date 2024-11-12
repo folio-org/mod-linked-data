@@ -4,7 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 
 import java.util.Collection;
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
-@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class WorkReplaceMessageSender implements ReplaceMessageSender {
 
   private final WorkDeleteMessageSender workDeleteMessageSender;

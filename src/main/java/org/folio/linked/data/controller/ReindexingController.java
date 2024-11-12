@@ -1,6 +1,6 @@
 package org.folio.linked.data.controller;
 
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.rest.resource.ReindexApi;
@@ -11,9 +11,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 @Validated
-@Profile(FOLIO_PROFILE)
 @RestController
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class ReindexingController implements ReindexApi {
 
   private final ReindexService reIndexService;

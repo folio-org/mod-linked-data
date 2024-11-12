@@ -28,23 +28,24 @@ import org.springframework.data.domain.Persistable;
 @NoArgsConstructor
 @Accessors(chain = true)
 @Table(name = "resource_edges")
+@SuppressWarnings("javaarchitecture:S7027")
 public class ResourceEdge implements Persistable<ResourceEdgePk>  {
 
   @EmbeddedId
   private ResourceEdgePk id;
 
-  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("sourceHash")
+  @ManyToOne(cascade = DETACH, optional = false)
   @JoinColumn(name = "source_hash", nullable = false)
   private Resource source;
 
-  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("targetHash")
+  @ManyToOne(cascade = DETACH, optional = false)
   @JoinColumn(name = "target_hash", nullable = false)
   private Resource target;
 
-  @ManyToOne(cascade = DETACH, optional = false)
   @MapsId("predicateHash")
+  @ManyToOne(cascade = DETACH, optional = false)
   @JoinColumn(name = "predicate_hash", nullable = false)
   private PredicateEntity predicate;
 

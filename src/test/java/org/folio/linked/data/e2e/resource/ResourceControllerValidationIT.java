@@ -1,6 +1,7 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -15,6 +16,7 @@ import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.domain.dto.Parameter;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,9 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
 class ResourceControllerValidationIT {
+
   private static final String RESOURCE_URL = "/resource";
+
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -35,10 +39,14 @@ class ResourceControllerValidationIT {
   private Environment env;
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach
   public void beforeEach() {
-    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources");
+    tenantScopedExecutionService.execute(TENANT_ID, () ->
+      JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources")
+    );
   }
 
   @Test

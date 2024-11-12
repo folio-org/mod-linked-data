@@ -1,10 +1,11 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.resource;
 
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestService;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,22 +39,22 @@ class ResourceGraphControllerIT {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
-
   @Autowired
   private ResourceTestService resourceTestService;
-
   @Autowired
   private Environment env;
-
   @Autowired
   private MockMvc mockMvc;
-
   @Autowired
   private ObjectMapper objectMapper;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach
   public void clean() {
-    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources");
+    tenantScopedExecutionService.execute(TENANT_ID, () ->
+      JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources")
+    );
   }
 
   @Test

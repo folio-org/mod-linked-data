@@ -1,7 +1,7 @@
 package org.folio.linked.data.service.resource;
 
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.linked.data.domain.dto.Identifiable;
+import org.folio.linked.data.model.dto.Identifiable;
 
 public interface ResourceMarcAuthorityService {
 

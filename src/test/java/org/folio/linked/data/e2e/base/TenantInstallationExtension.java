@@ -4,7 +4,7 @@ import static java.util.Arrays.asList;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.asJsonString;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,7 +30,7 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
     if (!init) {
       var context = SpringExtension.getApplicationContext(extensionContext);
       var env = context.getEnvironment();
-      if (asList(env.getActiveProfiles()).contains(FOLIO_PROFILE)) {
+      if (!asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
         var mockMvc = context.getBean(MockMvc.class);
         mockMvc.perform(post(TENANT_ENDPOINT_URI, TENANT_ID)
             .content(asJsonString(new TenantAttributes().moduleTo(env.getProperty("spring.application.name"))))

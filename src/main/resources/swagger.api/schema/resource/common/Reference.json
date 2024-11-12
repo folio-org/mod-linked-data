@@ -18,5 +18,5 @@
       }
     }
   ],
-  "x-implements": "org.folio.linked.data.domain.dto.Identifiable"
+  "x-implements": "org.folio.linked.data.model.dto.Identifiable"
 }

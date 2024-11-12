@@ -1,8 +1,29 @@
 spring:
   jpa:
     properties:
-      hibernate.default_schema: ${mod-linked-data.default-schema}
+      hibernate.default_schema: test_tenant_mod_linked_data
+  kafka:
+    consumer:
+      auto-offset-reset: earliest
+      group-id: search
+
+folio:
+  kafka:
+    topics:
+      - name: linked-data.work
+        numPartitions: 1
+      - name: inventory.instance_ingress
+        numPartitions: 1
+      - name: srs.source_records
+        num-partitions: 1
+      - name: inventory.instance
+        num-partitions: 1
 
 mod-linked-data:
   reindex:
     page-size: 1
+
+test:
+  topic:
+    search-work: folio.test_tenant.linked-data.work
+    inventory-instance-ingress: folio.test_tenant.inventory.instance_ingress

@@ -2,7 +2,7 @@ package org.folio.linked.data.integration.kafka.listener;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
@@ -23,10 +23,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.retry.RetryContext;
 import org.springframework.stereotype.Component;
 
-@Component
 @Log4j2
-@Profile(FOLIO_PROFILE)
+@Component
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class SourceRecordDomainEventListener {
 
   private static final String SRS_DOMAIN_EVENT_LISTENER = "mod-linked-data-source-record-domain-event-listener";

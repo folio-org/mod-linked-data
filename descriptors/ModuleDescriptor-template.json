@@ -248,7 +248,7 @@
       { "name": "DB_USERNAME", "value": "folio_admin" },
       { "name": "DB_PASSWORD", "value": "folio_admin" },
       { "name": "DB_DATABASE", "value": "okapi_modules" },
-      { "name": "SPRING_PROFILES_ACTIVE", "value": "folio" },
+      { "name": "SPRING_PROFILES_ACTIVE", "value": "" },
       { "name": "KAFKA_HOST", "value": "kafka" },
       { "name": "KAFKA_PORT", "value": "9092" },
       { "name": "KAFKA_SECURITY_PROTOCOL", "value": "PLAINTEXT" },

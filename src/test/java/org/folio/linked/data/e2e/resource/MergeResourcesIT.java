@@ -1,6 +1,7 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,6 +17,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.service.resource.ResourceGraphService;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestService;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,10 +37,14 @@ class MergeResourcesIT {
   private JdbcTemplate jdbcTemplate;
   @Autowired
   private ObjectMapper objectMapper;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach
   public void beforeEach() {
-    JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources");
+    tenantScopedExecutionService.execute(TENANT_ID, () ->
+      JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources")
+    );
   }
 
   @Test

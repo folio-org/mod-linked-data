@@ -50,6 +50,7 @@ import org.springframework.data.domain.Persistable;
 @Accessors(chain = true)
 @Table(name = "resources")
 @EqualsAndHashCode(of = "id")
+@SuppressWarnings("javaarchitecture:S7027")
 public class Resource implements Persistable<Long> {
 
   @Id

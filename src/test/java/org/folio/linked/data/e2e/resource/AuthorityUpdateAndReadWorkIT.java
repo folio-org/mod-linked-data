@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.resource;
 
 import static java.util.Comparator.comparing;
 import static java.util.UUID.randomUUID;
@@ -11,15 +11,13 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
-import static org.folio.linked.data.e2e.ResourceControllerIT.RESOURCE_URL;
-import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
+import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.assertAuthority;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -50,11 +48,9 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class AuthorityUpdateAndReadWorkIT {
 
   @Autowired

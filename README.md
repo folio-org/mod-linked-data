@@ -7,9 +7,9 @@ See the file "[LICENSE](LICENSE)" for more information.
 mod-linked-data manages the data graph of the library's catalog, providing REST APIs for CRUD operations on the data graph.
 ### Dependencies on libraries
 This module is dependent on the following libraries:
-- [lib-linked-data-marc4ld](https://github.com/folio-org/lib-linked-data-marc4ld)
-- [lib-linked-data-fingerprint](https://github.com/folio-org/lib-linked-data-fingerprint)
 - [lib-linked-data-dictionary](https://github.com/folio-org/lib-linked-data-dictionary)
+- [lib-linked-data-fingerprint](https://github.com/folio-org/lib-linked-data-fingerprint)
+- [lib-linked-data-marc4ld](https://github.com/folio-org/lib-linked-data-marc4ld)
 ## Compiling
 ```bash
 mvn clean install
@@ -21,17 +21,17 @@ mvn clean install -DskipTests
 ## Modes of Execution
 mod-linked-data can be executed in standalone mode or as part of the FOLIO platform.
 ### FOLIO mode
-In FOLIO mode, mod-linked-data integrates with other FOLIO modules:
+This is default mode. In FOLIO mode, mod-linked-data integrates with other FOLIO modules:
 - Receives MARC Authority records from [mod-source-record-storage](https://github.com/folio-org/mod-source-record-storage) via Kafka topics and updates the linked data graph.
 - Sends linked data graph updates to the [mod-search](https://github.com/folio-org/mod-search) module via Kafka topics.
 - Sends linked data graph updates to the [mod-inventory](https://github.com/folio-org/mod-inventory) module via Kafka topics.
 
-To run mod-linked-data in FOLIO mode, set the value of the environment variable `SPRING_PROFILES_ACTIVE` to `folio`.
+To run mod-linked-data in FOLIO mode, do not set the environment variable `SPRING_PROFILES_ACTIVE`.
 ### Standalone mode
 In standalone mode, mod-linked-data operates independently without communication with other FOLIO modules.
 In this mode, you can create and update graph using REST APIs. However, the graph will not be synced with other FOLIO modules.
 
-To run mod-linked-data in standalone mode, do not set the environment variable `SPRING_PROFILES_ACTIVE`.
+To run mod-linked-data in standalone mode, set the value of the environment variable `SPRING_PROFILES_ACTIVE` to `standalone`.
 ## Environment Variables
 | Name                                                | Default Value                   | Description                                                                                                                                                                           |
 |-----------------------------------------------------|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

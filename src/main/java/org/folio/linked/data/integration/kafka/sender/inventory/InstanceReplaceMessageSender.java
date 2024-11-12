@@ -1,6 +1,6 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +12,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 @Service
-@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class InstanceReplaceMessageSender implements ReplaceMessageSender {
 
   private final InstanceUpdateMessageSender instanceUpdateMessageSender;

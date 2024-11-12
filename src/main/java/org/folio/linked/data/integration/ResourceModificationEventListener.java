@@ -1,6 +1,6 @@
 package org.folio.linked.data.integration;
 
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +24,8 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Log4j2
 @Component
-@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class ResourceModificationEventListener {
 
   private final ResourceRepository resourceRepository;

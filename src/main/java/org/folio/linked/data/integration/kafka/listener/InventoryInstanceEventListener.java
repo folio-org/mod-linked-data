@@ -2,7 +2,7 @@ package org.folio.linked.data.integration.kafka.listener;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +17,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.retry.RetryContext;
 import org.springframework.stereotype.Component;
 
-@Component
 @Log4j2
-@Profile(FOLIO_PROFILE)
+@Component
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class InventoryInstanceEventListener {
 
   private static final String INVENTORY_INSTANCE_EVENT_LISTENER = "mod-linked-data-inventory-instance-event-listener";

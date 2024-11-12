@@ -6,7 +6,7 @@ import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventType
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
-@Profile(FOLIO_PROFILE)
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class SourceRecordDomainEventHandler {
 
   private static final String EVENT_SAVED = "SourceRecordDomainEvent [id {}] was saved as {} resource [id {}]";

@@ -5,12 +5,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
-import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -30,12 +28,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
-class ReIndexControllerFolioIT {
+class ReIndexControllerIT {
 
   public static final String INDEX_URL = "/reindex";
 

@@ -1,0 +1,10 @@
+folio:
+  environment: ${ENV:standalone}
+  logging:
+    request:
+      enabled: false
+    feign:
+      enabled: false
+
+mod-linked-data:
+  default-schema: public

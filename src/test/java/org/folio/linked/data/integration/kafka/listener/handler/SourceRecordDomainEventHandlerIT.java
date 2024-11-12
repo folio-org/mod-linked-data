@@ -12,14 +12,12 @@ import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventType
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.model.entity.ResourceSource.MARC;
-import static org.folio.linked.data.test.TestUtil.FOLIO_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.assertAuthority;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
-import static org.folio.linked.data.util.Constants.FOLIO_PROFILE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -54,10 +52,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.ActiveProfiles;
 
 @IntegrationTest
-@ActiveProfiles({FOLIO_PROFILE, FOLIO_TEST_PROFILE})
 class SourceRecordDomainEventHandlerIT {
 
   @Autowired

@@ -1,15 +1,13 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-@IntegrationTest
-class DatabaseIT {
+abstract class DatabaseITBase {
 
   private static final String RESOURCES_TABLE_NAME = "resources";
 
