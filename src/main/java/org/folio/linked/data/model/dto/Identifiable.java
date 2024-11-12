@@ -1,4 +1,4 @@
-package org.folio.linked.data.domain.dto;
+package org.folio.linked.data.model.dto;
 
 public interface Identifiable {
 
