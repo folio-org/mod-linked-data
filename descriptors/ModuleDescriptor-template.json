@@ -29,6 +29,12 @@
           ]
         },
         {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/authority-assignment-check",
+          "permissionsRequired": [ "linked-data.authority-assignment-check.post" ],
+          "modulePermissions": []
+        },
+        {
           "methods": [ "GET" ],
           "pathPattern": "/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.get" ],
@@ -228,6 +234,11 @@
       "permissionName": "linked-data.profiles.get",
       "displayName": "Linked Data: Get the profiles for performing CRUD operations on resources",
       "description": "Get the profiles for performing CRUD operations on linked-data resources"
+    },
+    {
+      "permissionName": "linked-data.authority-assignment-check.post",
+      "displayName": "Linked Data: Check an authority can be assigned on target type",
+      "description": "Check an authority can be assigned on work as type"
     }
   ],
   "launchDescriptor": {

@@ -235,6 +235,30 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/authority-assignment-check:
+    post:
+      operationId: authority-assignment-check
+      description: Checks if authority can be assigned to work
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-tenant-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: schema/assignmentCheckDto.json
+      responses:
+        '200':
+          description: Returns plain text boolean as response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: true|false
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     id:

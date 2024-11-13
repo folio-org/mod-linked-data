@@ -27,6 +27,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.AssignAuthorityTarget;
 import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
 import org.folio.linked.data.util.ResourceUtils;
@@ -59,6 +60,14 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   public Resource fetchResourceOrCreateFromSrsRecord(Identifiable identifiable) {
     return fetchResourceFromRepo(identifiable)
       .orElseGet(() -> createResourceFromSrs(identifiable.getSrsId()));
+  }
+
+  @Override
+  public boolean isMarcCompatibleWithTarget(String marc, AssignAuthorityTarget target) {
+    return this.marcAuthority2ldMapper.fromMarcJson(marc)
+      .stream().findFirst()
+      .map(authority -> target.isCompatibleWith(authority.getTypes()))
+      .orElse(false);
   }
 
   private Optional<Resource> fetchResourceFromRepo(Identifiable identifiable) {

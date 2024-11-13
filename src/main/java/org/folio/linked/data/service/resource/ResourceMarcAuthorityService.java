@@ -8,4 +8,6 @@ public interface ResourceMarcAuthorityService {
   Long saveMarcResource(Resource modelResource);
 
   org.folio.linked.data.model.entity.Resource fetchResourceOrCreateFromSrsRecord(Identifiable identifiable);
+
+  boolean isMarcCompatibleWithTarget(String marc, AssignAuthorityTarget target);
 }
