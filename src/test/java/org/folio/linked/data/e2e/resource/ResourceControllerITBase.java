@@ -117,6 +117,7 @@ import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
+import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
@@ -146,6 +147,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,6 +162,7 @@ import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
@@ -254,6 +257,33 @@ public abstract class ResourceControllerITBase {
     checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
     checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
+  }
+
+  @Test
+  void createInstanceWithWorkRef_shouldReturn422_ifLccnIsInvalid() throws Exception {
+    // given
+    var work = getSampleWork(null);
+    setExistingResourcesIds(work);
+    resourceTestService.saveGraph(work);
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(INSTANCE_WITH_WORK_REF_SAMPLE
+        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+      );
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isUnprocessableEntity())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors[0].message", equalTo("Invalid LCCN")))
+      .andExpect(jsonPath("errors[0].type", equalTo(ValidationException.class.getSimpleName())))
+      .andExpect(jsonPath("errors[0].code", equalTo(VALIDATION_ERROR.getValue())))
+      .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
   @Test
@@ -399,6 +429,44 @@ public abstract class ResourceControllerITBase {
 
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
+  }
+
+  @Test
+  void update_shouldReturn422_ifLccnIsInvalid() throws Exception {
+    // given
+    var updateDto = getSampleInstanceDtoMap();
+    var instance = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
+    instance.remove("inventoryId");
+    instance.remove("srsId");
+    var status = getStatus(instance);
+    ((LinkedHashMap) status.get(0)).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
+    var work = getSampleWork(null);
+    var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
+
+    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(
+        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+      );
+
+    // when
+    var resultActions = mockMvc.perform(updateRequest);
+
+    // then
+    resultActions
+      .andExpect(status().isUnprocessableEntity())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors[0].message", equalTo("Invalid LCCN")))
+      .andExpect(jsonPath("errors[0].type", equalTo(ValidationException.class.getSimpleName())))
+      .andExpect(jsonPath("errors[0].code", equalTo(VALIDATION_ERROR.getValue())))
+      .andExpect(jsonPath("total_records", equalTo(1)));
+  }
+
+  private ArrayList getStatus(LinkedHashMap instance) {
+    var map = (ArrayList) instance.get(MAP.getUri());
+    var lccn = (LinkedHashMap) ((LinkedHashMap) map.get(0)).get(ID_LCCN.getUri());
+    return (ArrayList) lccn.get(STATUS.getUri());
   }
 
   @Test

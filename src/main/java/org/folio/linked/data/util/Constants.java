@@ -23,4 +23,10 @@ public class Constants {
   public static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [resourceId = {}] conversion to Index message";
 
+  @UtilityClass
+  public static class Validators {
+
+    public static final String VALIDATOR_CHAIN_RESOURCE_SAVE = "resourceSaveValidatorsChain";
+    public static final String VALIDATOR_CHAIN_RESOURCE_UPDATE = "resourceUpdateValidatorsChain";
+  }
 }

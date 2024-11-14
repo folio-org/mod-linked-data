@@ -41,6 +41,7 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.linked.data.service.validation.LdValidator;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,6 +72,10 @@ class ResourceServiceImplTest {
   private MetadataService metadataService;
   @Mock
   private ResourceGraphService resourceGraphService;
+  @Mock
+  private LdValidator<ResourceRequestDto> resourceSaveValidator;
+  @Mock
+  private LdValidator<ResourceRequestDto> resourceUpdateValidator;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
