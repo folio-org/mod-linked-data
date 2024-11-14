@@ -1,9 +1,8 @@
 package org.folio.linked.data.e2e;
 
-import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.util.Constants.PROFILE_NOT_FOUND;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
@@ -13,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -71,9 +69,10 @@ class ProfileControllerIT {
     resultActions
       .andExpect(status().isNotFound())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo(PROFILE_NOT_FOUND)))
-      .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
+      .andExpect(jsonPath("errors[0].message",
+        equalTo("Profile not found by id: [1] in Linked Data storage")))
+      .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
+      .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
       .andExpect(jsonPath("total_records", equalTo(1)));
   }
 }

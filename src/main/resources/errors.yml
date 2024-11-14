@@ -1,0 +1,70 @@
+MethodArgumentNotValidException:
+  status: 400
+  code:
+  parameters:
+  message:
+MethodArgumentTypeMismatchException:
+  status: 400
+  code:
+  parameters:
+  message:
+IllegalArgumentException:
+  status: 400
+  code:
+  parameters:
+  message:
+HttpMediaTypeNotSupportedException:
+  status: 400
+  code:
+  parameters:
+  message:
+MissingServletRequestParameterException:
+  status: 400
+  code:
+  parameters:
+  message:
+NotFoundException:
+  status: 404
+  code: not_found
+  parameters: entityType, idType, idValue, storage
+  message: '%s not found by %s: [%s] in %s'
+JsonException:
+  status: 406
+  code:
+  parameters:
+  message:
+ValidationException:
+  status: 406
+  code:
+  parameters:
+  message:
+ConstraintViolationException:
+  status: 406
+  code:
+  parameters:
+  message:
+alreadyExistsException:
+  status: 412
+  code: already_exists
+  parameters: idType, idValue
+  message: 'Another resource with the same %s [%s] already exists in the graph'
+HttpMessageNotReadableException:
+  status: 422
+  code:
+  parameters:
+  message:
+Exception:
+  status: 500
+  code:
+  parameters:
+  message:
+UnsupportedOperationException:
+  status: 501
+  code:
+  parameters:
+  message:
+NotSupportedException:
+  status: 501
+  code:
+  parameters:
+  message:

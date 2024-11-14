@@ -1,9 +1,7 @@
 package org.folio.linked.data.service;
 
-import static org.folio.linked.data.util.Constants.PROFILE_NOT_FOUND;
-
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.springframework.stereotype.Service;
@@ -12,12 +10,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
+  private static final int ID = 1;
   private final ProfileRepository profileRepository;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
   public String getProfile() {
-    return profileRepository.findById(1)
+    return profileRepository.findById(ID)
       .map(Profile::getValue)
-      .orElseThrow(() -> new NotFoundException(PROFILE_NOT_FOUND));
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(ID)));
   }
 }

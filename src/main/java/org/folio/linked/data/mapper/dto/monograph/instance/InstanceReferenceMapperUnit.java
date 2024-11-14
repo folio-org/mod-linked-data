@@ -9,7 +9,7 @@ import org.folio.linked.data.domain.dto.IdField;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -29,10 +29,14 @@ public class InstanceReferenceMapperUnit implements SingleResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final ResourceRepository resourceRepository;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
-  public InstanceReferenceMapperUnit(CoreMapper coreMapper, ResourceRepository resourceRepository) {
+  public InstanceReferenceMapperUnit(CoreMapper coreMapper,
+                                     ResourceRepository resourceRepository,
+                                     RequestProcessingExceptionBuilder exceptionBuilder) {
     this.coreMapper = coreMapper;
     this.resourceRepository = resourceRepository;
+    this.exceptionBuilder = exceptionBuilder;
   }
 
   @Override
@@ -50,7 +54,7 @@ public class InstanceReferenceMapperUnit implements SingleResourceMapperUnit {
     var instanceIdField = (IdField) dto;
     if (nonNull(instanceIdField.getId())) {
       return resourceRepository.findById(Long.parseLong(instanceIdField.getId()))
-        .orElseThrow(() -> new NotFoundException("Instance with id [" + instanceIdField.getId() + "] is not found"));
+        .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Instance", instanceIdField.getId()));
     } else {
       throw new ValidationException("Instance id", "null");
     }

@@ -11,12 +11,14 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,8 +27,8 @@ import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.exception.AlreadyExistsException;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
@@ -80,6 +82,8 @@ class ResourceMarcBibServiceImplTest {
   private ObjectMapper objectMapper = OBJECT_MAPPER;
   @Mock
   private SrsClient srsClient;
+  @Mock
+  private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Test
   void getResourceMarcView_shouldReturnExistedEntity() {
@@ -108,14 +112,17 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void getResourceMarcView_shouldThrowNotFoundException_ifNoEntityExists() {
+  void getResourceMarcView_shouldThrowRequestProcessingException_ifNoEntityExists() {
     // given
     var notExistedId = randomLong();
     when(resourceRepo.findById(notExistedId))
       .thenReturn(Optional.empty());
+    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
+      .thenReturn(expectedException);
 
     // when
-    assertThatExceptionOfType(NotFoundException.class)
+    assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.getResourceMarcView(notExistedId));
   }
 
@@ -171,14 +178,16 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void isSupportedByInventoryId_shouldThrowNotFoundException() {
+  void isSupportedByInventoryId_shouldThrowRequestProcessingException() {
     //given
     var inventoryId = UUID.randomUUID().toString();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
+    when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
+      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
 
     //expect
-    assertThatExceptionOfType(NotFoundException.class)
+    assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.isSupportedByInventoryId(inventoryId));
   }
 
@@ -206,14 +215,16 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void getResourcePreviewByInventoryId_shouldThrowNotFoundException() {
-    //given
+  void getResourcePreviewByInventoryId_shouldThrowRequestProcessingException() {
+    // given
     var inventoryId = UUID.randomUUID().toString();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
+    when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
+      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
 
-    //expect
-    assertThatExceptionOfType(NotFoundException.class)
+    // when
+    assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.getResourcePreviewByInventoryId(inventoryId));
   }
 
@@ -262,14 +273,16 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void importMarcRecord_shouldThrowNotFoundException() {
+  void importMarcRecord_shouldThrowRequestProcessingException() {
     //given
     var inventoryId = UUID.randomUUID().toString();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
+    when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
+      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
 
     //expect
-    assertThatExceptionOfType(NotFoundException.class)
+    assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
   }
 
@@ -290,9 +303,11 @@ class ResourceMarcBibServiceImplTest {
     when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
     when(resourceRepo.existsById(resourceId)).thenReturn(true);
+    when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
+      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
 
     //expect
-    assertThatExceptionOfType(AlreadyExistsException.class)
+    assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
   }
 
@@ -315,9 +330,11 @@ class ResourceMarcBibServiceImplTest {
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
     when(resourceRepo.existsById(resourceId)).thenReturn(false);
     when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(true);
+    when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
+      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
 
     //expect
-    assertThatExceptionOfType(AlreadyExistsException.class)
+    assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
   }
 

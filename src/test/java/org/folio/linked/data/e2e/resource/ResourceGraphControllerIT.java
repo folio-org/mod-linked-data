@@ -26,9 +26,11 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestService;
+import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,6 +51,8 @@ class ResourceGraphControllerIT {
   private ObjectMapper objectMapper;
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
+  @MockBean
+  private KafkaAdminService kafkaAdminService;
 
   @BeforeEach
   public void clean() {

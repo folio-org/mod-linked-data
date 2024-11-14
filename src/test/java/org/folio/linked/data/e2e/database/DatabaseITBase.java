@@ -2,9 +2,11 @@ package org.folio.linked.data.e2e.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 abstract class DatabaseITBase {
@@ -24,6 +26,8 @@ abstract class DatabaseITBase {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
+  @MockBean
+  private KafkaAdminService kafkaAdminService;
 
   @Test
   void testTablesCreated() {

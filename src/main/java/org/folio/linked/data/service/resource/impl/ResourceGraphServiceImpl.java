@@ -2,15 +2,13 @@ package org.folio.linked.data.service.resource.impl;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
-import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -30,19 +28,22 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceDtoMapper resourceDtoMapper;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   public ResourceGraphServiceImpl(ResourceRepository resourceRepo,
                                   ResourceEdgeRepository edgeRepo,
-                                  @Lazy ResourceDtoMapper resourceDtoMapper) {
+                                  @Lazy ResourceDtoMapper resourceDtoMapper,
+                                  RequestProcessingExceptionBuilder exceptionBuilder) {
     this.resourceRepo = resourceRepo;
     this.edgeRepo = edgeRepo;
     this.resourceDtoMapper = resourceDtoMapper;
+    this.exceptionBuilder = exceptionBuilder;
   }
 
   @Override
   public ResourceGraphDto getResourceGraph(Long id) {
     var resource = resourceRepo.findById(id)
-      .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND));
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
     return resourceDtoMapper.toResourceGraphDto(resource);
   }
 

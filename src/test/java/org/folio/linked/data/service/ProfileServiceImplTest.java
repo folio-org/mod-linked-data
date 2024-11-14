@@ -1,13 +1,15 @@
 package org.folio.linked.data.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.util.Constants.PROFILE_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.Optional;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.spring.testing.type.UnitTest;
@@ -23,9 +25,10 @@ class ProfileServiceImplTest {
 
   @InjectMocks
   private ProfileServiceImpl profileService;
-
   @Mock
   private ProfileRepository profileRepository;
+  @Mock
+  private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Test
   void getProfile_shouldReturnProfile() {
@@ -49,15 +52,17 @@ class ProfileServiceImplTest {
   void getProfile_shouldThrowNotFoundException_ifNoProfileExists() {
     //given
     when(profileRepository.findById(1)).thenReturn(Optional.empty());
+    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
+      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
 
     //when
     var thrown = assertThrows(
-      NotFoundException.class,
+      RequestProcessingException.class,
       () -> profileService.getProfile()
     );
 
     //then
-    assertThat(thrown.getClass()).isEqualTo(NotFoundException.class);
-    assertThat(thrown.getMessage()).isEqualTo(PROFILE_NOT_FOUND);
+    assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
+    assertThat(thrown.getMessage()).isEqualTo("");
   }
 }

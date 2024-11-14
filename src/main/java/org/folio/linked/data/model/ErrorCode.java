@@ -11,8 +11,6 @@ public enum ErrorCode {
   UNKNOWN_ERROR("unknown_error"),
   SERVICE_ERROR("service_error"),
   VALIDATION_ERROR("validation_error"),
-  NOT_FOUND_ERROR("not_found_error"),
-  ALREADY_EXISTS_ERROR("already_exists_error"),
   NOT_SUPPORTED("not_supported"),
   JSON_EXCEPTION("json_exception");
 

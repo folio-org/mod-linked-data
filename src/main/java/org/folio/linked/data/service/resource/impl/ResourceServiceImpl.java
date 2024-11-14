@@ -1,9 +1,5 @@
 package org.folio.linked.data.service.resource.impl;
 
-import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_INVENTORY_ID;
-
 import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -34,12 +30,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-  private final FolioMetadataRepository folioMetadataRepo;
   private final ResourceRepository resourceRepo;
-  private final ResourceDtoMapper resourceDtoMapper;
-  private final ApplicationEventPublisher applicationEventPublisher;
   private final MetadataService metadataService;
+  private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceGraphService resourceGraphService;
+  private final FolioMetadataRepository folioMetadataRepo;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -62,7 +59,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceIdDto getResourceIdByInventoryId(String inventoryId) {
     return folioMetadataRepo.findIdByInventoryId(inventoryId)
       .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
-      .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_INVENTORY_ID + inventoryId + IS_NOT_FOUND));
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByInventoryIdException(inventoryId));
   }
 
   @Override
@@ -98,7 +95,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource getResource(Long id) {
     return resourceRepo.findById(id)
-      .orElseThrow(() -> new NotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND));
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
   }
 
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {

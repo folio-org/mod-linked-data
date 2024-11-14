@@ -1,29 +1,28 @@
 package org.folio.linked.data.controller.advice;
 
 import static java.util.Collections.emptyList;
-import static org.folio.linked.data.model.ErrorCode.ALREADY_EXISTS_ERROR;
-import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
 import static org.folio.linked.data.model.ErrorCode.SERVICE_ERROR;
 import static org.folio.linked.data.model.ErrorCode.UNKNOWN_ERROR;
 import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.domain.dto.Parameter;
-import org.folio.linked.data.exception.AlreadyExistsException;
 import org.folio.linked.data.exception.LinkedDataServiceException;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.ValidationException;
+import org.folio.linked.data.mapper.error.EntityNotFoundExceptionMapper;
+import org.folio.linked.data.mapper.error.RequestProcessingExceptionMapper;
 import org.folio.linked.data.model.ErrorCode;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +38,11 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @Log4j2
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ApiExceptionHandler {
+
+  private final EntityNotFoundExceptionMapper entityNotFoundExceptionMapper;
+  private final RequestProcessingExceptionMapper requestProcessingExceptionMapper;
 
   @ExceptionHandler(LinkedDataServiceException.class)
   public ResponseEntity<ErrorResponse> handleLinkedDataServiceException(LinkedDataServiceException exception) {
@@ -105,19 +108,12 @@ public class ApiExceptionHandler {
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
     logException(exception);
-    return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
+    return entityNotFoundExceptionMapper.errorResponseEntity(exception);
   }
 
-  @ExceptionHandler(NotFoundException.class)
-  public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NotFoundException exception) {
-    log.info("Not found: {}", exception.getMessage());
-    return buildResponseEntity(exception, NOT_FOUND, NOT_FOUND_ERROR);
-  }
-
-  @ExceptionHandler(AlreadyExistsException.class)
-  public ResponseEntity<ErrorResponse> handleAlreadyExistsException(AlreadyExistsException exception) {
-    logException(exception);
-    return buildResponseEntity(exception, BAD_REQUEST, ALREADY_EXISTS_ERROR);
+  @ExceptionHandler(RequestProcessingException.class)
+  public ResponseEntity<ErrorResponse> handleRequestProcessingException(RequestProcessingException exception) {
+    return requestProcessingExceptionMapper.errorResponseEntity(exception);
   }
 
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)

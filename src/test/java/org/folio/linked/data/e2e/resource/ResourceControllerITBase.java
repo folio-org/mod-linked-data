@@ -116,8 +116,6 @@ import static org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnu
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
-import static org.folio.linked.data.model.ErrorCode.NOT_FOUND_ERROR;
-import static org.folio.linked.data.model.ErrorCode.VALIDATION_ERROR;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
@@ -130,10 +128,9 @@ import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
 import static org.folio.linked.data.test.TestUtil.getSampleWorkDtoMap;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -162,7 +159,6 @@ import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkResponseField;
-import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
@@ -185,7 +181,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 public abstract class ResourceControllerITBase {
 
@@ -279,9 +274,8 @@ public abstract class ResourceControllerITBase {
     resultActions
       .andExpect(status().isBadRequest())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo("Invalid LCCN")))
-      .andExpect(jsonPath("errors[0].type", equalTo(MethodArgumentNotValidException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(VALIDATION_ERROR.getValue())))
+      .andExpect(jsonPath("errors[0].code", equalTo("invalid_lccn")))
+      .andExpect(jsonPath("errors[0].parameters", hasSize(2)))
       .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
@@ -335,8 +329,11 @@ public abstract class ResourceControllerITBase {
     // then
     resultActions
       .andExpect(status().isNotFound())
-      .andExpect(jsonPath("$.errors[0].message",
-        equalTo("Record with id 4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd not found in SRS")));
+      .andExpect(jsonPath("errors[0].message",
+        equalTo("Source Record not found by srsId: [4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd] in Source Record storage")))
+      .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
+      .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
+      .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
   private org.folio.rest.jaxrs.model.Record createRecord() {
@@ -456,9 +453,8 @@ public abstract class ResourceControllerITBase {
     resultActions
       .andExpect(status().isBadRequest())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo("Invalid LCCN")))
-      .andExpect(jsonPath("errors[0].type", equalTo(MethodArgumentNotValidException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(VALIDATION_ERROR.getValue())))
+      .andExpect(jsonPath("errors[0].code", equalTo("invalid_lccn")))
+      .andExpect(jsonPath("errors[0].parameters", hasSize(2)))
       .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
@@ -577,10 +573,10 @@ public abstract class ResourceControllerITBase {
     resultActions
       .andExpect(status().isNotFound())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message", equalTo(RESOURCE_WITH_GIVEN_ID
-        + notExistedId + IS_NOT_FOUND)))
-      .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
+      .andExpect(jsonPath("errors[0].message",
+        equalTo("Resource not found by id: [" + notExistedId + "] in Linked Data storage")))
+      .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
+      .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
       .andExpect(jsonPath("total_records", equalTo(1)));
   }
 
@@ -618,9 +614,9 @@ public abstract class ResourceControllerITBase {
       .andExpect(status().isNotFound())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("errors[0].message",
-        equalTo("Resource with given inventory id [" + inventoryId + "] is not found")))
-      .andExpect(jsonPath("errors[0].type", equalTo(NotFoundException.class.getSimpleName())))
-      .andExpect(jsonPath("errors[0].code", equalTo(NOT_FOUND_ERROR.getValue())))
+        equalTo("Resource not found by inventoryId: [" + inventoryId + "] in Linked Data storage")))
+      .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
+      .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
       .andExpect(jsonPath("total_records", equalTo(1)));
   }
 

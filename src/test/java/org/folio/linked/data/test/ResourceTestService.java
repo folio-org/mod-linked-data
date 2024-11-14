@@ -1,8 +1,8 @@
 package org.folio.linked.data.test;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.folio.linked.data.exception.NotFoundException;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
@@ -35,7 +35,7 @@ public class ResourceTestService {
         fetchEdges(resource, edgesDepth);
         return resource;
       })
-      .orElseThrow(() -> new NotFoundException("Resource not found by id: " + id));
+      .orElseThrow(() -> new EntityNotFoundException("Resource not found by id: " + id));
   }
 
   private void fetchEdges(Resource resource, int edgesDepth) {
