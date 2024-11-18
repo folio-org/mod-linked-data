@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.jdbc.JdbcTestUtils;
 
 @IntegrationTest
 class MergeResourcesIT {
@@ -43,7 +43,7 @@ class MergeResourcesIT {
   @BeforeEach
   public void beforeEach() {
     tenantScopedExecutionService.execute(TENANT_ID, () ->
-      JdbcTestUtils.deleteFromTables(jdbcTemplate, "resource_edges", "resource_type_map", "resources")
+      cleanResourceTables(jdbcTemplate)
     );
   }
 

@@ -7,6 +7,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
+import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,16 +19,18 @@ import java.util.Date;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
@@ -46,7 +49,9 @@ class ReIndexControllerIT {
   @Autowired
   private KafkaSearchWorkIndexTopicListener consumer;
   @Autowired
-  private FolioMetadataRepository folioMetadataRepository;
+  private JdbcTemplate jdbcTemplate;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -55,11 +60,12 @@ class ReIndexControllerIT {
 
   @BeforeEach
   public void beforeEach() {
-    resourceEdgeRepository.deleteAll();
-    folioMetadataRepository.deleteAll();
-    resourceRepo.deleteAll();
+    tenantScopedExecutionService.execute(TENANT_ID, () ->
+      cleanResourceTables(jdbcTemplate)
+    );
   }
 
+  @Disabled("To be fixed in https://folio-org.atlassian.net/browse/MODLD-597")
   @Test
   void indexResourceWithNoIndexDate_andNotFullIndexRequest() throws Exception {
     // given

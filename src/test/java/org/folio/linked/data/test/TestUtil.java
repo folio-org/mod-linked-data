@@ -42,6 +42,8 @@ import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.testcontainers.shaded.org.awaitility.core.ThrowingRunnable;
 
 @UtilityClass
@@ -156,4 +158,10 @@ public class TestUtil {
           && edge.getTarget().equals(replacedBy))
       );
   }
+
+  public static void cleanResourceTables(JdbcTemplate jdbcTemplate) {
+    JdbcTestUtils.deleteFromTables(jdbcTemplate,
+      "folio_metadata", "resource_edges", "resource_type_map", "resources");
+  }
+
 }
