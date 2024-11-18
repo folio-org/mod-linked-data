@@ -274,3 +274,7 @@ The [mod-inventory](https://github.com/folio-org/mod-inventory) module consumes 
 plus sends according message to the [mod-source-record-storage](https://github.com/folio-org/mod-source-record-storage) to make it create/update according source record.
 2. The [mod-inventory](https://github.com/folio-org/mod-inventory) module pushes Inventory Instance events to the topic defined by KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN env variable.
 The Linked Data module consumes a message and updates a corresponding Instance resource in Linked Data graph, but only regarding suppression flags.
+
+# Possible error responses
+All error responses are listed in [src/main/resources/errors.yml](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/errors.yml).
+Validation error could contain various message codes listed in [src/main/resources/validationMessages.properties](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/validationMessages.properties).
