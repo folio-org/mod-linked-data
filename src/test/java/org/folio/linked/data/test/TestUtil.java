@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.testcontainers.shaded.org.awaitility.Durations.TEN_MINUTES;
+import static org.testcontainers.shaded.org.awaitility.Durations.TWO_MINUTES;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +42,8 @@ import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.testcontainers.shaded.org.awaitility.core.ThrowingRunnable;
 
 @UtilityClass
@@ -127,7 +129,7 @@ public class TestUtil {
   }
 
   public static void awaitAndAssert(ThrowingRunnable throwingRunnable) {
-    await().atMost(TEN_MINUTES)
+    await().atMost(TWO_MINUTES)
       .pollDelay(FIVE_SECONDS)
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(throwingRunnable);
@@ -156,4 +158,10 @@ public class TestUtil {
           && edge.getTarget().equals(replacedBy))
       );
   }
+
+  public static void cleanResourceTables(JdbcTemplate jdbcTemplate) {
+    JdbcTestUtils.deleteFromTables(jdbcTemplate,
+      "folio_metadata", "resource_edges", "resource_type_map", "resources");
+  }
+
 }
