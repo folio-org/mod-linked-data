@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.mapper.error.ConstraintViolationExceptionMapper;
 import org.folio.linked.data.mapper.error.EntityNotFoundExceptionMapper;
 import org.folio.linked.data.mapper.error.GenericBadRequestMapper;
 import org.folio.linked.data.mapper.error.GenericServerExceptionMapper;
@@ -31,6 +32,7 @@ public class ApiExceptionHandler {
   private final GenericServerExceptionMapper genericServerExceptionMapper;
   private final EntityNotFoundExceptionMapper entityNotFoundExceptionMapper;
   private final RequestProcessingExceptionMapper requestProcessingExceptionMapper;
+  private final ConstraintViolationExceptionMapper constraintViolationExceptionMapper;
   private final MethodArgumentNotValidExceptionMapper methodArgumentNotValidExceptionMapper;
 
   @ExceptionHandler(EntityNotFoundException.class)
@@ -49,6 +51,12 @@ public class ApiExceptionHandler {
   public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
     logException(e);
     return methodArgumentNotValidExceptionMapper.errorResponseEntity(e);
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException exception) {
+    logException(exception);
+    return constraintViolationExceptionMapper.errorResponseEntity(exception);
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -80,12 +88,6 @@ public class ApiExceptionHandler {
     MissingServletRequestParameterException e) {
     logException(e);
     return genericBadRequestMapper.errorResponseEntity(e);
-  }
-
-  @ExceptionHandler(ConstraintViolationException.class)
-  public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException exception) {
-    logException(exception);
-    return genericBadRequestMapper.errorResponseEntity(exception);
   }
 
   @ExceptionHandler(RequestProcessingException.class)
