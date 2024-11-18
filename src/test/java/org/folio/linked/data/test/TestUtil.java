@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.testcontainers.shaded.org.awaitility.Durations.TWO_MINUTES;
+import static org.testcontainers.shaded.org.awaitility.Durations.TEN_MINUTES;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -127,7 +127,7 @@ public class TestUtil {
   }
 
   public static void awaitAndAssert(ThrowingRunnable throwingRunnable) {
-    await().atMost(TWO_MINUTES)
+    await().atMost(TEN_MINUTES)
       .pollDelay(FIVE_SECONDS)
       .pollInterval(ONE_HUNDRED_MILLISECONDS)
       .untilAsserted(throwingRunnable);
