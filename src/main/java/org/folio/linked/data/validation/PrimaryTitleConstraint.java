@@ -16,7 +16,7 @@ import org.folio.linked.data.validation.entity.PrimaryTitleEntityValidator;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PrimaryTitleConstraint {
 
-  String message() default "required_primary_main_title";
+  String message() default "{primaryTitleConstraint.message}";
 
   Class<?>[] groups() default {};
 
