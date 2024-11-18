@@ -50,7 +50,7 @@ class PrimaryTitleEntityValidatorIT {
     var cve = (ConstraintViolationException) thrown.getCause().getCause();
     assertThat(cve.getConstraintViolations()).hasSize(1);
     assertThat(cve.getConstraintViolations().iterator().next().getMessage())
-      .isEqualTo("Primary main title should be presented");
+      .isEqualTo("required_primary_main_title");
   }
 
   @Test
@@ -70,6 +70,6 @@ class PrimaryTitleEntityValidatorIT {
     var cve = (ConstraintViolationException) thrown.getCause().getCause();
     assertThat(cve.getConstraintViolations()).hasSize(1);
     assertThat(cve.getConstraintViolations().iterator().next().getMessage())
-      .isEqualTo("Primary main title should be presented");
+      .isEqualTo("required_primary_main_title");
   }
 }

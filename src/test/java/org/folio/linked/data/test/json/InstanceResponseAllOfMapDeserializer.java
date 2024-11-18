@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
+import static org.folio.linked.data.test.TestUtil.EMPTY_EXCEPTION_BUILDER;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -29,7 +30,7 @@ public class InstanceResponseAllOfMapDeserializer extends JsonDeserializer<Insta
     ID_UNKNOWN.getUri(), OtherIdFieldResponse.class
   );
   private final DtoDeserializer<InstanceResponseAllOfMap> dtoDeserializer =
-    new DtoDeserializer<>(IDENDTITY_MAP, InstanceResponseAllOfMap.class);
+    new DtoDeserializer<>(InstanceResponseAllOfMap.class, IDENDTITY_MAP, EMPTY_EXCEPTION_BUILDER);
 
   @Override
   public InstanceResponseAllOfMap deserialize(JsonParser jp, DeserializationContext dc) throws IOException {

@@ -17,6 +17,7 @@ import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.domain.dto.LocalIdField;
 import org.folio.linked.data.domain.dto.OtherIdField;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.util.DtoDeserializer;
 
 public class InstanceRequestAllOfMapDeserializer extends JsonDeserializer<InstanceRequestAllOfMap> {
@@ -28,8 +29,11 @@ public class InstanceRequestAllOfMapDeserializer extends JsonDeserializer<Instan
     ID_LOCAL.getUri(), LocalIdField.class,
     ID_UNKNOWN.getUri(), OtherIdField.class
   );
-  private final DtoDeserializer<InstanceRequestAllOfMap> dtoDeserializer =
-    new DtoDeserializer<>(IDENDTITY_MAP, InstanceRequestAllOfMap.class);
+  private final DtoDeserializer<InstanceRequestAllOfMap> dtoDeserializer;
+
+  public InstanceRequestAllOfMapDeserializer(RequestProcessingExceptionBuilder exceptionBuilder) {
+    dtoDeserializer = new DtoDeserializer<>(InstanceRequestAllOfMap.class, IDENDTITY_MAP, exceptionBuilder);
+  }
 
   @Override
   public InstanceRequestAllOfMap deserialize(JsonParser jp, DeserializationContext dc) throws IOException {

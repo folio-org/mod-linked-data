@@ -24,7 +24,6 @@ import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -74,7 +73,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
         log.error(RESOURCE_WITH_GIVEN_ID + "{}" + IS_NOT_FOUND, id);
         return exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id));
       });
-    validateMarkViewSupportedType(resource);
+    validateMarcViewSupportedType(resource);
     var resourceModel = resourceModelMapper.toModel(resource);
     var marc = ld2MarcMapper.toMarcJson(resourceModel);
     return resourceDtoMapper.toMarcViewDto(resource, marc);
@@ -117,18 +116,15 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     return resourceIdDto;
   }
 
-  private void validateMarkViewSupportedType(Resource resource) {
+  private void validateMarcViewSupportedType(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
       return;
     }
-    var message = "Resource is not supported for MARC view";
-    log.error(message);
-    throw new ValidationException(
-      message, "type",
-      resource.getTypes().stream()
-        .map(ResourceTypeEntity::getUri)
-        .collect(Collectors.joining(", ", "[", "]"))
-    );
+    var type = resource.getTypes().stream()
+      .map(ResourceTypeEntity::getUri)
+      .collect(Collectors.joining(", ", "[", "]"));
+    log.error("Resource is not supported for MARC view: {}", type);
+    throw exceptionBuilder.notSupportedException(type, "MARC view");
   }
 
   private RequestProcessingException createSrNotFoundException(String inventoryId) {

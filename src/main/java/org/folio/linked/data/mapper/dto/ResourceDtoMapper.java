@@ -16,9 +16,8 @@ import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.RequestProcessingException;
-import org.folio.linked.data.exception.ValidationException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -36,16 +35,18 @@ public abstract class ResourceDtoMapper {
 
   @Autowired
   private SingleResourceMapper singleResourceMapper;
+  @Autowired
+  private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @SneakyThrows
   public Resource toEntity(ResourceRequestDto dto) {
     try {
       return singleResourceMapper.toEntity(dto.getResource(), ResourceRequestDto.class, null, null);
-    } catch (BaseLinkedDataException | RequestProcessingException e) {
-      throw e;
+    } catch (RequestProcessingException rpe) {
+      throw rpe;
     } catch (Exception e) {
       log.warn("Exception during toEntity mapping", e);
-      throw new ValidationException(dto.getClass().getSimpleName(), dto.toString());
+      throw exceptionBuilder.mappingException(dto.getClass().getSimpleName(), dto.toString());
     }
   }
 

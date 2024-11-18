@@ -13,8 +13,14 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource(value = "classpath:errors.yml", factory = YamlPropertySourceFactory.class)
 public class ErrorResponseConfig {
 
-  private ErrorResponseConfig.Error alreadyExistsException;
-  private ErrorResponseConfig.Error notFoundException;
+  private ErrorResponseConfig.Error alreadyExists;
+  private ErrorResponseConfig.Error mapping;
+  private ErrorResponseConfig.Error notFound;
+  private ErrorResponseConfig.Error notSupported;
+  private ErrorResponseConfig.Error required;
+  private ErrorResponseConfig.Error genericBadRequest;
+  private ErrorResponseConfig.Error validation;
+  private ErrorResponseConfig.Error genericServer;
 
   public record Error(int status, String code, List<String> parameters, String message) {
   }

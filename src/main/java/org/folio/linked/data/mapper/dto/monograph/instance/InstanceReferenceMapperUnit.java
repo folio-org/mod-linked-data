@@ -10,7 +10,6 @@ import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
@@ -56,7 +55,7 @@ public class InstanceReferenceMapperUnit implements SingleResourceMapperUnit {
       return resourceRepository.findById(Long.parseLong(instanceIdField.getId()))
         .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Instance", instanceIdField.getId()));
     } else {
-      throw new ValidationException("Instance id", "null");
+      throw exceptionBuilder.requiredException("Instance id");
     }
   }
 

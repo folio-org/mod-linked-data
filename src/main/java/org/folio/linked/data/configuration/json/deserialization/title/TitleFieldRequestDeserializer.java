@@ -13,6 +13,7 @@ import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.TitleFieldRequest;
 import org.folio.linked.data.domain.dto.VariantTitleField;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.util.DtoDeserializer;
 
 public class TitleFieldRequestDeserializer extends JsonDeserializer<TitleFieldRequest> {
@@ -22,8 +23,11 @@ public class TitleFieldRequestDeserializer extends JsonDeserializer<TitleFieldRe
     PARALLEL_TITLE.getUri(), ParallelTitleField.class,
     VARIANT_TITLE.getUri(), VariantTitleField.class
   );
-  private final DtoDeserializer<TitleFieldRequest> dtoDeserializer =
-    new DtoDeserializer<>(IDENDTITY_MAP, TitleFieldRequest.class);
+  private final DtoDeserializer<TitleFieldRequest> dtoDeserializer;
+
+  public TitleFieldRequestDeserializer(RequestProcessingExceptionBuilder exceptionBuilder) {
+    dtoDeserializer = new DtoDeserializer<>(TitleFieldRequest.class, IDENDTITY_MAP, exceptionBuilder);
+  }
 
   @Override
   public TitleFieldRequest deserialize(JsonParser jp, DeserializationContext dc) throws IOException {

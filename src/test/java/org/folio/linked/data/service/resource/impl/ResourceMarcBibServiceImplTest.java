@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.resource.impl;
 
+import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
@@ -29,7 +30,6 @@ import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.exception.ValidationException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -131,12 +131,13 @@ class ResourceMarcBibServiceImplTest {
     // given
     var notExistedId = randomLong();
     var existedResource = getSampleWork(null);
-
     when(resourceRepo.findById(notExistedId))
       .thenReturn(Optional.of(existedResource));
+    when(exceptionBuilder.notSupportedException(anyString(), anyString()))
+      .thenReturn(new RequestProcessingException(0, "", emptyMap(), ""));
 
     // when
-    assertThatExceptionOfType(ValidationException.class)
+    assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.getResourceMarcView(notExistedId));
   }
 

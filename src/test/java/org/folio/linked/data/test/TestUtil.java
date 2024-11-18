@@ -29,10 +29,12 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.folio.linked.data.configuration.ErrorResponseConfig;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.TitleFieldResponse;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.json.InstanceResponseAllOfMapDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
@@ -53,7 +55,9 @@ public class TestUtil {
   public static final String TENANT_ID = "test_tenant";
   public static final String RECORD_DOMAIN_EVENT_TOPIC = "srs.source_records";
   public static final String INVENTORY_INSTANCE_EVENT_TOPIC = "inventory.instance";
-  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
+  public static final RequestProcessingExceptionBuilder EMPTY_EXCEPTION_BUILDER
+    = new RequestProcessingExceptionBuilder(new ErrorResponseConfig());
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper(EMPTY_EXCEPTION_BUILDER);
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
   public static final String SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/simple_work.json");

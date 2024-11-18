@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.folio.linked.data.configuration.ErrorResponseConfig;
 import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
+import org.folio.linked.data.domain.dto.Parameter;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,7 @@ public abstract class EntityNotFoundExceptionMapper {
   private ErrorResponseConfig errorResponseConfig;
 
   public ResponseEntity<ErrorResponse> errorResponseEntity(EntityNotFoundException exception) {
-    return ResponseEntity.status(errorResponseConfig.getNotFoundException().status())
-      .body(errorResponse(exception));
+    return ResponseEntity.status(errorResponseConfig.getNotFound().status()).body(errorResponse(exception));
   }
 
   @Mapping(target = "totalRecords", constant = "1")
@@ -35,11 +35,17 @@ public abstract class EntityNotFoundExceptionMapper {
   }
 
   protected Error mapErrorFromEntityNotFoundException(EntityNotFoundException exception) {
-    var notFoundExceptionConfig = errorResponseConfig.getNotFoundException();
+    var notFound = errorResponseConfig.getNotFound();
     var id = parseId(exception.getMessage());
     return new Error()
-      .code(notFoundExceptionConfig.code())
-      .message(String.format(notFoundExceptionConfig.message(), "Entity", "id", id, LINKED_DATA_STORAGE));
+      .code(notFound.code())
+      .message(String.format(notFound.message(), "Entity", "id", id, LINKED_DATA_STORAGE))
+      .parameters(List.of(
+        new Parameter().key(notFound.parameters().get(0)).value("Entity"),
+        new Parameter().key(notFound.parameters().get(1)).value("id"),
+        new Parameter().key(notFound.parameters().get(2)).value(id),
+        new Parameter().key(notFound.parameters().get(3)).value(LINKED_DATA_STORAGE)
+      ));
   }
 
   private String parseId(String message) {

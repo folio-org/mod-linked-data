@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
@@ -174,13 +173,10 @@ class ResourceControllerValidationIT {
 
   private Error getError(String resourceType, String value) {
     return new Error()
-      .code("validation_error")
-      .message("Primary main title should be presented")
-      .type(MethodArgumentNotValidException.class.getSimpleName())
+      .code("required_primary_main_title")
       .parameters(List.of(
-        new Parameter()
-          .key("resource." + resourceType + ".title")
-          .value(value)
+        new Parameter().key("field").value("resource." + resourceType + ".title"),
+        new Parameter().key("value").value(value)
       ));
   }
 }

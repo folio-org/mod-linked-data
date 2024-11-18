@@ -9,7 +9,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import org.folio.linked.data.configuration.ErrorResponseConfig;
 import org.folio.linked.data.domain.dto.Place;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
@@ -21,7 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 
 @SpringBootTest(classes = OriginPlaceMapperUnit.class)
-@Import({CoreMapperImpl.class, ObjectMapper.class})
+@Import({CoreMapperImpl.class, ObjectMapper.class, RequestProcessingExceptionBuilder.class, ErrorResponseConfig.class})
 @UnitTest
 class OriginPlaceMapperUnitTest {
 
