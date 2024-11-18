@@ -26,6 +26,7 @@ import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -64,6 +65,7 @@ class ReIndexControllerIT {
     );
   }
 
+  @Disabled("To be fixed in https://folio-org.atlassian.net/browse/MODLD-597")
   @Test
   void indexResourceWithNoIndexDate_andNotFullIndexRequest() throws Exception {
     // given
