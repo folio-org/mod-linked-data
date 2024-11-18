@@ -26,7 +26,6 @@ public class Constants {
   @UtilityClass
   public static class Validators {
 
-    public static final String VALIDATOR_CHAIN_RESOURCE_SAVE = "resourceSaveValidatorsChain";
-    public static final String VALIDATOR_CHAIN_RESOURCE_UPDATE = "resourceUpdateValidatorsChain";
+    public static final String VALIDATOR_CHAIN_LD = "ldValidatorsChain";
   }
 }

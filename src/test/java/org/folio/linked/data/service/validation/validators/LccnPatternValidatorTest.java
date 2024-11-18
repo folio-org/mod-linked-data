@@ -23,9 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class LccnValidatorTest {
+class LccnPatternValidatorTest {
 
-  private final LccnValidator validator = new LccnValidator();
+  private final LccnPatternValidator validator = new LccnPatternValidator();
 
   @ParameterizedTest
   @MethodSource("withoutExceptionProvider")
