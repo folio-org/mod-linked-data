@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.Locale;
 import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.domain.dto.Parameter;
@@ -143,6 +144,7 @@ class ResourceControllerValidationIT {
   @Test
   void createInstanceWithTitleWithoutMainTitle_shouldReturnBadRequest() throws Exception {
     // given
+    System.out.println("LOCALE: " + Locale.getDefault());
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))

@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.persistence.RollbackException;
 import jakarta.validation.ConstraintViolationException;
+import java.util.Locale;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -63,6 +64,7 @@ class PrimaryTitleEntityValidatorIT {
     var resource = new Resource()
       .setId(789L)
       .addTypes(WORK);
+    System.out.println("LOCALE: " + Locale.getDefault());
 
     // when
     var thrown = assertThrows(TransactionSystemException.class,
