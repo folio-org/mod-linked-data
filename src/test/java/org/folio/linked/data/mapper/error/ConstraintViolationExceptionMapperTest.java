@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import java.util.Set;
+import java.util.LinkedHashSet;
 import org.folio.linked.data.configuration.ErrorResponseConfig;
 import org.folio.linked.data.domain.dto.Parameter;
 import org.folio.spring.testing.type.UnitTest;
@@ -58,8 +58,11 @@ class ConstraintViolationExceptionMapperTest {
     when(violation2.getInvalidValue()).thenReturn(violation2Value);
     var violation2Message = "violation2Message";
     when(violation2.getMessage()).thenReturn(violation2Message);
+    var violations = new LinkedHashSet<ConstraintViolation<?>>();
+    violations.add(violation1);
+    violations.add(violation2);
 
-    when(exception.getConstraintViolations()).thenReturn(Set.of(violation1, violation2));
+    when(exception.getConstraintViolations()).thenReturn(violations);
     var genericError = genericError(2);
     when(errorResponseConfig.getValidation()).thenReturn(genericError);
 
