@@ -46,9 +46,10 @@ class AuthorityAssignmentControllerIT {
       .headers(defaultHeaders(env))
       .content(
         objectMapper.writeValueAsString(
-          new AssignmentCheckDto()
-            .rawMarc(loadResourceAsString(marcFile))
-            .target(AssignmentCheckDto.TargetEnum.CREATOR_OF_WORK)));
+          new AssignmentCheckDto(
+            loadResourceAsString(marcFile),
+            AssignmentCheckDto.TargetEnum.CREATOR_OF_WORK))
+      );
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
