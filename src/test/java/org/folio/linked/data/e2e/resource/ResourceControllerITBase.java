@@ -274,7 +274,7 @@ public abstract class ResourceControllerITBase {
     resultActions
       .andExpect(status().isBadRequest())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].code", equalTo("invalid_lccn")))
+      .andExpect(jsonPath("errors[0].code", equalTo("lccn_does_not_match_pattern")))
       .andExpect(jsonPath("errors[0].parameters", hasSize(2)))
       .andExpect(jsonPath("total_records", equalTo(1)));
   }
@@ -453,7 +453,7 @@ public abstract class ResourceControllerITBase {
     resultActions
       .andExpect(status().isBadRequest())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].code", equalTo("invalid_lccn")))
+      .andExpect(jsonPath("errors[0].code", equalTo("lccn_does_not_match_pattern")))
       .andExpect(jsonPath("errors[0].parameters", hasSize(2)))
       .andExpect(jsonPath("total_records", equalTo(1)));
   }
