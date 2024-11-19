@@ -1,7 +1,7 @@
 package org.folio.linked.data.mapper.error;
 
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.genericError;
