@@ -25,7 +25,7 @@ alreadyExists:
   message: 'Another resource with the same %s [%s] already exists in the graph'
 validation:
   status: 400
-  code: <one of validationMessages.properties>
+  code: <one of ValidationMessages.properties>
   parameters: field, value
 genericBadRequest:
   status: 400

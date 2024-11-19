@@ -33,7 +33,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
 
   private final ObjectMapper objectMapper;
   private final List<SingleResourceMapperUnit> mapperUnits;
-  private RequestProcessingExceptionBuilder exceptionBuilder;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @SneakyThrows
   @Override

@@ -13,7 +13,6 @@ import org.folio.linked.data.mapper.error.GenericBadRequestMapper;
 import org.folio.linked.data.mapper.error.GenericServerExceptionMapper;
 import org.folio.linked.data.mapper.error.MethodArgumentNotValidExceptionMapper;
 import org.folio.linked.data.mapper.error.RequestProcessingExceptionMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -99,10 +98,6 @@ public class ApiExceptionHandler {
   public ResponseEntity<ErrorResponse> handleAllOtherExceptions(Exception exception) {
     logException(exception);
     return genericServerExceptionMapper.errorResponseEntity(exception);
-  }
-
-  private static ResponseEntity<ErrorResponse> buildResponseEntity(ErrorResponse errorResponse, HttpStatus status) {
-    return ResponseEntity.status(status).body(errorResponse);
   }
 
   private static void logException(Exception exception) {
