@@ -1,5 +1,7 @@
 package org.folio.linked.data.validation.dto;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
@@ -16,21 +18,21 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
     if (isCurrent(lccnRequest)) {
       return lccnRequest.getValue()
         .stream()
-        .noneMatch(this::hasInvalidPattern);
+        .anyMatch(this::hasValidPattern);
     } else {
       return true;
     }
   }
 
   private boolean isCurrent(LccnRequest lccnRequest) {
-    return lccnRequest.getStatus()
+    return isEmpty(lccnRequest.getStatus()) || lccnRequest.getStatus()
       .stream()
       .flatMap(status -> status.getLink().stream())
       .anyMatch(link -> link.endsWith("current"));
   }
 
-  private boolean hasInvalidPattern(String lccnValue) {
-    return !LCCN_STRUCTURE_A_PATTERN.matcher(lccnValue).matches()
-      && !LCCN_STRUCTURE_B_PATTERN.matcher(lccnValue).matches();
+  private boolean hasValidPattern(String lccnValue) {
+    return LCCN_STRUCTURE_A_PATTERN.matcher(lccnValue).matches()
+      || LCCN_STRUCTURE_B_PATTERN.matcher(lccnValue).matches();
   }
 }
