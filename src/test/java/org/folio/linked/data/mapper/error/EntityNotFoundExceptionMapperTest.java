@@ -23,7 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class EntityNotFoundExceptionMapperTest {
+class EntityNotFoundExceptionMapperTest {
 
   private EntityNotFoundExceptionMapper mapper;
   @Mock

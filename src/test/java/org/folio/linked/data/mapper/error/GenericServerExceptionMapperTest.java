@@ -20,7 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class GenericServerExceptionMapperTest {
+class GenericServerExceptionMapperTest {
 
   private GenericServerExceptionMapper mapper;
   @Mock

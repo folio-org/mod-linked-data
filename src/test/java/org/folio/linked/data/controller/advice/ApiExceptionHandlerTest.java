@@ -31,7 +31,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class ApiExceptionHandlerTest {
+class ApiExceptionHandlerTest {
 
   @InjectMocks
   private ApiExceptionHandler apiExceptionHandler;

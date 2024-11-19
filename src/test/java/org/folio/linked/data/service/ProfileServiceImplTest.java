@@ -63,6 +63,6 @@ class ProfileServiceImplTest {
 
     //then
     assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
-    assertThat(thrown.getMessage()).isEqualTo("");
+    assertThat(thrown.getMessage()).isEmpty();
   }
 }

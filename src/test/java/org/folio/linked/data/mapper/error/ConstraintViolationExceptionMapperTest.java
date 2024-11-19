@@ -24,7 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class ConstraintViolationExceptionMapperTest {
+class ConstraintViolationExceptionMapperTest {
 
   private ConstraintViolationExceptionMapper mapper;
   @Mock
