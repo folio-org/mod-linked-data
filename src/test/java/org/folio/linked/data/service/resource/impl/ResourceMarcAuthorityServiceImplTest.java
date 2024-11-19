@@ -5,9 +5,15 @@ import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.service.resource.AssignAuthorityTarget.CREATOR_OF_WORK;
+import static org.folio.linked.data.service.resource.AssignAuthorityTarget.SUBJECT_OF_WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -19,7 +25,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.Agent;
@@ -32,6 +41,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.AssignAuthorityTarget;
 import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -40,6 +50,9 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -230,5 +243,47 @@ class ResourceMarcAuthorityServiceImplTest {
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped));
     assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
     assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REPLACED_BY));
+  }
+
+  private static Stream<Arguments> authorityAssignmentArguments() {
+    return Stream.of(
+      Arguments.of(Set.of(PERSON), CREATOR_OF_WORK, true),
+      Arguments.of(Set.of(CONCEPT, PERSON), CREATOR_OF_WORK, false),
+      Arguments.of(null, CREATOR_OF_WORK, false),
+      Arguments.of(Set.of(WORK), CREATOR_OF_WORK, false),
+      Arguments.of(Set.of(FORM), SUBJECT_OF_WORK, true),
+      Arguments.of(Set.of(CONCEPT, FORM), SUBJECT_OF_WORK, true),
+      Arguments.of(Set.of(PERSON, FORM), SUBJECT_OF_WORK, false),
+      Arguments.of(Set.of(CONCEPT, FORM, PERSON), SUBJECT_OF_WORK, false)
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("authorityAssignmentArguments")
+  void isAuthorityTypeValidForTarget(Set<ResourceTypeDictionary> authorityTypes,
+                                      AssignAuthorityTarget target,
+                                      boolean isValid) {
+    // given
+    when(marcAuthority2ldMapper.fromMarcJson(any()))
+      .thenReturn(List.of(new org.folio.ld.dictionary.model.Resource().setTypes(authorityTypes)));
+
+    // when
+    var actual = resourceMarcService.isMarcCompatibleWithTarget("{}", target);
+
+    // then
+    assertThat(actual).isEqualTo(isValid);
+    verify(marcAuthority2ldMapper).fromMarcJson(any());
+  }
+
+  @Test
+  void isAuthorityTypeValidForTarget_shouldReturnFalse_ifAuthorityIsEmpty() {
+    // given
+    when(marcAuthority2ldMapper.fromMarcJson(any())).thenReturn(List.of());
+
+    // when
+    var isValid = resourceMarcService.isMarcCompatibleWithTarget("{}", CREATOR_OF_WORK);
+
+    // then
+    assertFalse(isValid);
   }
 }

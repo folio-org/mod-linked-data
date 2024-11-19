@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Container for raw marc and target type",
+  "type": "object",
+  "properties": {
+    "rawMarc": {
+      "type": "string",
+      "description": "Raw MARC json"
+    },
+    "target": {
+      "type": "string",
+      "enum": ["CREATOR_OF_WORK", "SUBJECT_OF_WORK"],
+      "description": "Target type"
+    }
+  },
+  "required": [
+    "rawMarc",
+    "target"
+  ]
+}
