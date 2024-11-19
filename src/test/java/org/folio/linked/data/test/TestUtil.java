@@ -5,6 +5,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
@@ -22,9 +23,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
@@ -85,7 +89,7 @@ public class TestUtil {
   public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
-    if (!asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
+    if (! asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
       httpHeaders.add(TENANT, TENANT_ID);
       httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
     }
@@ -140,10 +144,10 @@ public class TestUtil {
   }
 
   public static void assertAuthority(Resource resource,
-                               String label,
-                               boolean isActive,
-                               boolean isPreferred,
-                               Resource replacedBy) {
+                                     String label,
+                                     boolean isActive,
+                                     boolean isPreferred,
+                                     Resource replacedBy) {
     assertThat(resource)
       .hasFieldOrPropertyWithValue("label", label)
       .hasFieldOrPropertyWithValue("active", isActive)
@@ -168,4 +172,23 @@ public class TestUtil {
       "folio_metadata", "resource_edges", "resource_type_map", "resources");
   }
 
+  public static ErrorResponseConfig.Error genericError(int parametersCount) {
+    return new ErrorResponseConfig.Error(
+      GENERATOR.nextInt(100, 999),
+      "genericCode",
+      genericParameters(parametersCount),
+      genericMessage(parametersCount));
+  }
+
+  private static List<String> genericParameters(int parametersCount) {
+    return IntStream.range(0, parametersCount)
+      .mapToObj(i -> "parameter_" + i)
+      .collect(toCollection(ArrayList::new));
+  }
+
+  private static String genericMessage(int parametersCount) {
+    return IntStream.range(0, parametersCount)
+      .mapToObj(i -> "message_part_" + i)
+      .collect(Collectors.joining());
+  }
 }

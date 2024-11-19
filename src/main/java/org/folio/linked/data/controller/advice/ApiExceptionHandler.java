@@ -34,6 +34,11 @@ public class ApiExceptionHandler {
   private final ConstraintViolationExceptionMapper constraintViolationExceptionMapper;
   private final MethodArgumentNotValidExceptionMapper methodArgumentNotValidExceptionMapper;
 
+  @ExceptionHandler(RequestProcessingException.class)
+  public ResponseEntity<ErrorResponse> handleRequestProcessingException(RequestProcessingException exception) {
+    return requestProcessingExceptionMapper.errorResponseEntity(exception);
+  }
+
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
     logException(exception);
@@ -64,12 +69,6 @@ public class ApiExceptionHandler {
     return genericBadRequestMapper.errorResponseEntity(e);
   }
 
-  @ExceptionHandler(IllegalArgumentException.class)
-  public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
-    logException(exception);
-    return genericBadRequestMapper.errorResponseEntity(exception);
-  }
-
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
   public ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
     logException(e);
@@ -87,11 +86,6 @@ public class ApiExceptionHandler {
     MissingServletRequestParameterException e) {
     logException(e);
     return genericBadRequestMapper.errorResponseEntity(e);
-  }
-
-  @ExceptionHandler(RequestProcessingException.class)
-  public ResponseEntity<ErrorResponse> handleRequestProcessingException(RequestProcessingException exception) {
-    return requestProcessingExceptionMapper.errorResponseEntity(exception);
   }
 
   @ExceptionHandler(Exception.class)
