@@ -1,9 +1,9 @@
 package org.folio.linked.data.service.resource.impl;
 
-import static java.lang.String.format;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.model.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
+import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.marc4ld.util.MarcUtil.isLanguageMaterial;
@@ -22,9 +22,8 @@ import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.exception.AlreadyExistsException;
-import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.exception.ValidationException;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -53,26 +52,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
 
-  private static final String RECORD_NOT_FOUND_BY_INVENTORY_ID = "Record with inventoryId: %s was not found";
-
+  private final SrsClient srsClient;
   private final ObjectMapper objectMapper;
+  private final Ld2MarcMapper ld2MarcMapper;
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
+  private final MarcBib2ldMapper marcBib2ldMapper;
   private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceModelMapper resourceModelMapper;
-  private final Ld2MarcMapper ld2MarcMapper;
-  private final MarcBib2ldMapper marcBib2ldMapper;
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepository;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
-  private final SrsClient srsClient;
 
   @Override
   @Transactional(readOnly = true)
   public ResourceMarcViewDto getResourceMarcView(Long id) {
     var resource = resourceRepo.findById(id)
-      .orElseThrow(() -> createNotFoundException(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND));
-    validateMarkViewSupportedType(resource);
+      .orElseThrow(() -> {
+        log.error(RESOURCE_WITH_GIVEN_ID + "{}" + IS_NOT_FOUND, id);
+        return exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id));
+      });
+    validateMarcViewSupportedType(resource);
     var resourceModel = resourceModelMapper.toModel(resource);
     var marc = ld2MarcMapper.toMarcJson(resourceModel);
     return resourceDtoMapper.toMarcViewDto(resource, marc);
@@ -86,7 +87,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       .map(parsedRecord -> (Map<?, ?>) parsedRecord.getContent())
       .map(content -> (String) content.get("leader"))
       .map(this::isMonograph)
-      .orElseThrow(() -> createNotFoundException(format(RECORD_NOT_FOUND_BY_INVENTORY_ID, inventoryId)));
+      .orElseThrow(() -> createSrNotFoundException(inventoryId));
   }
 
   @Override
@@ -94,7 +95,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     var resourceResponseDto = getResource(inventoryId)
       .map(resourceModelMapper::toEntity)
       .map(resourceDtoMapper::toDto)
-      .orElseThrow(() -> createNotFoundException(format(RECORD_NOT_FOUND_BY_INVENTORY_ID, inventoryId)));
+      .orElseThrow(() -> createSrNotFoundException(inventoryId));
     log.info("Returning resource preview for MARC BIB record with inventory ID: {}", inventoryId);
     return resourceResponseDto;
   }
@@ -109,29 +110,26 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       .map(this::save)
       .map(String::valueOf)
       .map(id -> new ResourceIdDto().id(id))
-      .orElseThrow(() -> createNotFoundException(format(RECORD_NOT_FOUND_BY_INVENTORY_ID, inventoryId)));
+      .orElseThrow(() -> createSrNotFoundException(inventoryId));
     log.info("MARC BIB record with inventory ID: {} is successfully imported to graph resource with ID: {}",
       inventoryId, resourceIdDto.getId());
     return resourceIdDto;
   }
 
-  private void validateMarkViewSupportedType(Resource resource) {
+  private void validateMarcViewSupportedType(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
       return;
     }
-    var message = "Resource is not supported for MARC view";
-    log.error(message);
-    throw new ValidationException(
-      message, "type",
-      resource.getTypes().stream()
-        .map(ResourceTypeEntity::getUri)
-        .collect(Collectors.joining(", ", "[", "]"))
-    );
+    var type = resource.getTypes().stream()
+      .map(ResourceTypeEntity::getUri)
+      .collect(Collectors.joining(", ", "[", "]"));
+    log.error("Resource is not supported for MARC view: {}", type);
+    throw exceptionBuilder.notSupportedException(type, "MARC view");
   }
 
-  private NotFoundException createNotFoundException(String message) {
-    log.error(message);
-    return new NotFoundException(message);
+  private RequestProcessingException createSrNotFoundException(String inventoryId) {
+    log.error(MSG_NOT_FOUND_IN, "Source Record", "inventoryId", inventoryId, "SRS");
+    return exceptionBuilder.notFoundSourceRecordException("inventoryId", inventoryId);
   }
 
   private Optional<ResponseEntity<Record>> getRecord(String inventoryId) {
@@ -163,16 +161,14 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private Long save(org.folio.ld.dictionary.model.Resource modelResource) {
     var id = modelResource.getId();
     if (resourceRepo.existsById(id)) {
-      var message = format("Another resource with ID: %s already exists in the graph", id);
-      log.error(message);
-      throw new AlreadyExistsException(message);
+      log.error("Another resource with ID: {} already exists in the graph", id);
+      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(id));
     }
 
     var srsId = modelResource.getFolioMetadata().getSrsId();
     if (folioMetadataRepository.existsBySrsId(srsId)) {
-      var message = format("MARC record having srsID: %s is already imported to data graph", srsId);
-      log.error(message);
-      throw new AlreadyExistsException(message);
+      log.error("MARC record having srsID: {} is already imported to data graph", srsId);
+      throw exceptionBuilder.alreadyExistsException("srsId", srsId);
     }
 
     // Emitting a ResourceCreatedEvent will send a "CREATE_INSTANCE" Kafka event to Inventory,

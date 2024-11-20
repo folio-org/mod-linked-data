@@ -15,8 +15,7 @@ import org.folio.linked.data.domain.dto.IdField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
-import org.folio.linked.data.exception.NotFoundException;
-import org.folio.linked.data.exception.ValidationException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
@@ -39,6 +38,7 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
   private final ResourceRepository resourceRepository;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
@@ -56,9 +56,9 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
     var workIdField = (IdField) dto;
     if (nonNull(workIdField.getId())) {
       return resourceRepository.findById(Long.parseLong(workIdField.getId()))
-        .orElseThrow(() -> new NotFoundException("Work with id [" + workIdField.getId() + "] is not found"));
+        .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Work", workIdField.getId()));
     } else {
-      throw new ValidationException("WorkReference id", "null");
+      throw exceptionBuilder.requiredException("Work id");
     }
   }
 

@@ -1,5 +1,7 @@
 package org.folio.linked.data.test.json;
 
+import static org.folio.linked.data.test.TestUtil.EMPTY_EXCEPTION_BUILDER;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -18,7 +20,7 @@ public class ResourceResponseFieldDeserializer extends JsonDeserializer<Resource
     ResourceTypeDictionary.WORK.getUri(), WorkResponseField.class
   );
   private final DtoDeserializer<ResourceResponseField> dtoDeserializer =
-    new DtoDeserializer<>(IDENDTITY_MAP, ResourceResponseField.class);
+    new DtoDeserializer<>(ResourceResponseField.class, IDENDTITY_MAP, EMPTY_EXCEPTION_BUILDER);
 
   @Override
   public ResourceResponseField deserialize(JsonParser jp, DeserializationContext dc) throws IOException {

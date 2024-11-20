@@ -16,8 +16,8 @@ import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.exception.BaseLinkedDataException;
-import org.folio.linked.data.exception.ValidationException;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -35,16 +35,18 @@ public abstract class ResourceDtoMapper {
 
   @Autowired
   private SingleResourceMapper singleResourceMapper;
+  @Autowired
+  private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @SneakyThrows
   public Resource toEntity(ResourceRequestDto dto) {
     try {
       return singleResourceMapper.toEntity(dto.getResource(), ResourceRequestDto.class, null, null);
-    } catch (BaseLinkedDataException blde) {
-      throw blde;
+    } catch (RequestProcessingException rpe) {
+      throw rpe;
     } catch (Exception e) {
       log.warn("Exception during toEntity mapping", e);
-      throw new ValidationException(dto.getClass().getSimpleName(), dto.toString());
+      throw exceptionBuilder.mappingException(dto.getClass().getSimpleName(), dto.toString());
     }
   }
 
@@ -74,7 +76,7 @@ public abstract class ResourceDtoMapper {
   }
 
   private ResourceEdgeDto getEdges(Set<ResourceEdge> edges, ToLongFunction<ResourceEdge> hashProvider) {
-    Map<String, List<Long>> edgesDtoMap =  edges.stream()
+    Map<String, List<Long>> edgesDtoMap = edges.stream()
       .limit(1000)
       .collect(Collectors.toMap(re -> re.getPredicate().getUri(),
         re -> new ArrayList<>(List.of(hashProvider.applyAsLong(re))),

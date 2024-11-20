@@ -1,6 +1,7 @@
 package org.folio.linked.data.configuration.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.EMPTY_EXCEPTION_BUILDER;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test;
 @UnitTest
 class ObjectMapperConfigTest {
 
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper(EMPTY_EXCEPTION_BUILDER);
 
   @Test
   void serializationStringFieldMarkedAsRaw_shouldReturnOriginalString() throws JsonProcessingException {

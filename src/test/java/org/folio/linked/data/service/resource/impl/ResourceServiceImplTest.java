@@ -7,14 +7,14 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,7 +28,8 @@ import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.domain.dto.WorkResponseField;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -71,6 +72,8 @@ class ResourceServiceImplTest {
   private MetadataService metadataService;
   @Mock
   private ResourceGraphService resourceGraphService;
+  @Mock
+  private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
@@ -151,19 +154,22 @@ class ResourceServiceImplTest {
   }
 
   @Test
-  void getResourceById_shouldThrowNotFoundException_ifNoEntityExists() {
+  void getResourceById_shouldThrowRequestProcessingException_ifNoEntityExists() {
     // given
     var notExistedId = randomLong();
     when(resourceRepo.findById(notExistedId)).thenReturn(Optional.empty());
+    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
+      .thenReturn(expectedException);
 
     // when
     var thrown = assertThrows(
-      NotFoundException.class,
+      RequestProcessingException.class,
       () -> resourceService.getResourceById(notExistedId)
     );
 
     // then
-    assertThat(thrown.getMessage()).isEqualTo(RESOURCE_WITH_GIVEN_ID + notExistedId + IS_NOT_FOUND);
+    assertThat(thrown).isEqualTo(expectedException);
   }
 
   @Test
@@ -181,19 +187,21 @@ class ResourceServiceImplTest {
   }
 
   @Test
-  void getResourceIdByInventoryId_shouldThrowNotFoundException_ifNoEntityExistsWithGivenInventoryId() {
+  void getResourceIdByInventoryId_shouldThrowRequestProcessingException_ifNoEntityExistsWithGivenInventoryId() {
     // given
     var inventoryId = UUID.randomUUID().toString();
+    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    when(exceptionBuilder.notFoundLdResourceByInventoryIdException(anyString()))
+      .thenReturn(expectedException);
 
     // when
     var thrown = assertThrows(
-      NotFoundException.class,
+      RequestProcessingException.class,
       () -> resourceService.getResourceIdByInventoryId(inventoryId)
     );
 
     // then
-    assertThat(thrown.getMessage())
-      .isEqualTo("Resource with given inventory id [" + inventoryId + "] is not found");
+    assertThat(thrown).isEqualTo(expectedException);
   }
 
   @Test

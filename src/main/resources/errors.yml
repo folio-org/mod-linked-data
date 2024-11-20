@@ -1,0 +1,39 @@
+notFound:
+  status: 404
+  code: not_found
+  parameters: entityType, idType, idValue, storage
+  message: '%s not found by %s: [%s] in %s'
+mapping:
+  status: 400
+  code: mapping
+  parameters: key, value
+  message: 'Exception during DTO <-> Entity mapping: [%s] with value [%s]'
+notSupported:
+  status: 400
+  code: not_supported
+  parameters: value, process
+  message: '[%s] is not supported by [%s]'
+required:
+  status: 400
+  code: required
+  parameters: object
+  message: '%s is required'
+alreadyExists:
+  status: 400
+  code: already_exists
+  parameters: idType, idValue
+  message: 'Another resource with the same %s [%s] already exists in the graph'
+validation:
+  status: 400
+  code: <one of ValidationMessages.properties>
+  parameters: field, value
+genericBadRequest:
+  status: 400
+  code: generic_bad_request
+  parameters: exception, message
+  message: 'Bad request: [%s] with message [%s]'
+genericServer:
+  status: 500
+  code: server
+  parameters: exception, message
+  message: 'Server error: [%s] with message [%s]'

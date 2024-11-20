@@ -1,20 +1,19 @@
 package org.folio.linked.data.util;
 
-import static org.folio.linked.data.util.Constants.DTO_UNKNOWN_SUB_ELEMENT;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.exception.JsonException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 
 @RequiredArgsConstructor
 public class DtoDeserializer<D> {
 
-  private final Map<String, Class<? extends D>> identityMap;
   private final Class<D> dtoClass;
+  private final Map<String, Class<? extends D>> identityMap;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   public D deserialize(JsonParser jp)
     throws IOException {
@@ -25,7 +24,7 @@ public class DtoDeserializer<D> {
       .map(Map.Entry::getValue)
       .map(clazz -> deserialize(jp, node, clazz))
       .findFirst()
-      .orElseThrow(() -> createUnknownElementException(node));
+      .orElseThrow(() -> exceptionBuilder.mappingException(dtoClass.getSimpleName(), String.valueOf(node)));
   }
 
 
@@ -33,12 +32,8 @@ public class DtoDeserializer<D> {
     try {
       return jp.getCodec().treeToValue(node, clazz);
     } catch (JsonProcessingException e) {
-      throw new JsonException(e.getMessage(), e);
+      throw exceptionBuilder.mappingException(clazz.getSimpleName(), String.valueOf(node));
     }
   }
 
-  private JsonException createUnknownElementException(JsonNode node) {
-    var field = node.fieldNames().hasNext() ? node.fieldNames().next() : "";
-    return new JsonException(dtoClass.getSimpleName() + DTO_UNKNOWN_SUB_ELEMENT + field);
-  }
 }

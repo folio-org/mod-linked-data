@@ -15,6 +15,7 @@ import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.TitleFieldRequest;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -24,21 +25,21 @@ import org.springframework.context.annotation.Primary;
 public class ObjectMapperConfig {
 
   @Bean
-  public ObjectMapper objectMapper() {
+  public ObjectMapper objectMapper(RequestProcessingExceptionBuilder exceptionBuilder) {
     var om = new ObjectMapper()
       .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
       .addMixIn(MarcRecord.class, MarcRecordSerializationConfig.class);
-    om.registerModule(monographModule(om));
+    om.registerModule(monographModule(om, exceptionBuilder));
     return om;
   }
 
-  private Module monographModule(ObjectMapper objectMapper) {
+  private Module monographModule(ObjectMapper objectMapper, RequestProcessingExceptionBuilder exceptionBuilder) {
     return new SimpleModule()
-      .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer())
-      .addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer())
-      .addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer())
+      .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer(exceptionBuilder))
+      .addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer(exceptionBuilder))
+      .addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer(exceptionBuilder))
       .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer(objectMapper));
   }
 

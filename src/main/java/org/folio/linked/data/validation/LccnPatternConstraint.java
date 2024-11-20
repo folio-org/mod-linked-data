@@ -15,7 +15,7 @@ import org.folio.linked.data.validation.dto.LccnPatternValidator;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LccnPatternConstraint {
 
-  String message() default "Invalid LCCN";
+  String message() default "{lccnPatternConstraint.message}";
 
   Class<?>[] groups() default {};
 

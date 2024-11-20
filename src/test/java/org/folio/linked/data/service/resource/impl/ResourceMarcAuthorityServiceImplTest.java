@@ -32,7 +32,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -162,7 +162,7 @@ class ResourceMarcAuthorityServiceImplTest {
     var agent = new Agent().id(id).srsId(id);
 
     // then
-    assertThrows(NotFoundException.class,
+    assertThrows(RequestProcessingException.class,
       () -> resourceMarcService.fetchResourceOrCreateFromSrsRecord(agent));
   }
 

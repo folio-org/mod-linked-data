@@ -15,23 +15,29 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.WorkResponse;
-import org.folio.linked.data.exception.JsonException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class CoreMapperImpl implements CoreMapper {
 
   private final ObjectMapper jsonMapper;
   private final SingleResourceMapper singleResourceMapper;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
-  public CoreMapperImpl(ObjectMapper objectMapper, @Lazy SingleResourceMapper singleResourceMapper) {
+  public CoreMapperImpl(ObjectMapper objectMapper,
+                        @Lazy SingleResourceMapper singleResourceMapper,
+                        RequestProcessingExceptionBuilder exceptionBuilder) {
     this.jsonMapper = objectMapper;
     this.singleResourceMapper = singleResourceMapper;
+    this.exceptionBuilder = exceptionBuilder;
   }
 
   public <D> D toDtoWithEdges(@NonNull Resource resource, @NonNull Class<D> dtoClass, boolean mapIncomingEdges) {
@@ -95,7 +101,8 @@ public class CoreMapperImpl implements CoreMapper {
         return jsonMapper.treeToValue(jsonMapper.createObjectNode(), dtoClass);
       }
     } catch (JsonProcessingException e) {
-      throw new JsonException(e.getMessage());
+      log.error("JsonProcessingException during doc mapping to [{}]", dtoClass);
+      throw exceptionBuilder.mappingException(dtoClass.getSimpleName(), String.valueOf(node));
     }
   }
 

@@ -10,8 +10,10 @@ import jakarta.validation.ConstraintViolationException;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.TransactionSystemException;
 
 @IntegrationTest
@@ -19,6 +21,8 @@ class PrimaryTitleEntityValidatorIT {
 
   @Autowired
   private ResourceRepository resourceRepository;
+  @MockBean
+  private KafkaAdminService kafkaAdminService;
 
   @Test
   void saveNotInstanceAndWorkResourceWithNoPrimaryMainTitle_shouldBeOk() {
@@ -50,7 +54,7 @@ class PrimaryTitleEntityValidatorIT {
     var cve = (ConstraintViolationException) thrown.getCause().getCause();
     assertThat(cve.getConstraintViolations()).hasSize(1);
     assertThat(cve.getConstraintViolations().iterator().next().getMessage())
-      .isEqualTo("Primary main title should be presented");
+      .isEqualTo("required_primary_main_title");
   }
 
   @Test
@@ -70,6 +74,6 @@ class PrimaryTitleEntityValidatorIT {
     var cve = (ConstraintViolationException) thrown.getCause().getCause();
     assertThat(cve.getConstraintViolations()).hasSize(1);
     assertThat(cve.getConstraintViolations().iterator().next().getMessage())
-      .isEqualTo("Primary main title should be presented");
+      .isEqualTo("required_primary_main_title");
   }
 }

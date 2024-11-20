@@ -2,14 +2,15 @@ package org.folio.linked.data.service.resource.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
-import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.Optional;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
-import org.folio.linked.data.exception.NotFoundException;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
@@ -34,6 +35,8 @@ class ResourceGraphServiceImplTest {
   private ResourceEdgeRepository edgeRepo;
   @Mock
   private ResourceDtoMapper resourceDtoMapper;
+  @Mock
+  private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Test
   void getResourceGraph_shouldReturnResourceGraphDto_whenResourceExists() {
@@ -56,14 +59,16 @@ class ResourceGraphServiceImplTest {
   void getResourceGraph_shouldThrowNotFoundException_whenResourceDoesNotExist() {
     // given
     var id = randomLong();
-
     when(resourceRepo.findById(id)).thenReturn(Optional.empty());
+    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
+      .thenReturn(expectedException);
 
     // when
-    var thrown = assertThrows(NotFoundException.class, () -> resourceGraphService.getResourceGraph(id));
+    var thrown = assertThrows(RequestProcessingException.class, () -> resourceGraphService.getResourceGraph(id));
 
     // then
-    assertThat(thrown.getMessage()).isEqualTo(RESOURCE_WITH_GIVEN_ID + id + IS_NOT_FOUND);
+    assertThat(thrown).isEqualTo(expectedException);
   }
 
 }

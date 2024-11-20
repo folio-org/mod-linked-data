@@ -19,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Predicate;
-import org.folio.linked.data.exception.BaseLinkedDataException;
 import org.folio.linked.data.exception.NotSupportedException;
-import org.folio.linked.data.exception.ValidationException;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.springframework.stereotype.Service;
@@ -33,6 +33,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
 
   private final ObjectMapper objectMapper;
   private final List<SingleResourceMapperUnit> mapperUnits;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @SneakyThrows
   @Override
@@ -45,11 +46,11 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
           + (nonNull(predicate) ? PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET + AND : EMPTY)
           + "parentDto [" + parentRequestDto.getSimpleName() + RIGHT_SQUARE_BRACKET)
         );
-    } catch (BaseLinkedDataException blde) {
-      throw blde;
+    } catch (RequestProcessingException rpe) {
+      throw rpe;
     } catch (Exception e) {
       log.warn("Exception during toEntity mapping", e);
-      throw new ValidationException(dto.getClass().getSimpleName()
+      throw exceptionBuilder.mappingException(dto.getClass().getSimpleName()
         + ofNullable(predicate).map(p -> " under Predicate: " + p.getUri()).orElse(""),
         objectMapper.writeValueAsString(dto));
     }
