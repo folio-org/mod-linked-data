@@ -41,8 +41,6 @@ class ConstraintViolationExceptionMapperTest {
   @Test
   void shouldReturnCorrectErrorResponse() {
     // given
-    var exception = mock(ConstraintViolationException.class);
-
     var violation1 = mock(ConstraintViolation.class);
     var violation1PropertyPath = "";
     when(violation1.getPropertyPath()).thenReturn(PathImpl.createPathFromString(violation1PropertyPath));
@@ -62,6 +60,7 @@ class ConstraintViolationExceptionMapperTest {
     violations.add(violation1);
     violations.add(violation2);
 
+    var exception = mock(ConstraintViolationException.class);
     when(exception.getConstraintViolations()).thenReturn(violations);
     var genericError = genericError(2);
     when(errorResponseConfig.getValidation()).thenReturn(genericError);
