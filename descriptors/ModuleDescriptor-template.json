@@ -22,6 +22,7 @@
             "inventory-storage.preceding-succeeding-titles.item.post",
             "inventory-storage.preceding-succeeding-titles.item.put",
             "inventory-storage.preceding-succeeding-titles.item.delete",
+            "search.instances.collection.get",
             "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
             "source-storage.records.post",
@@ -64,6 +65,7 @@
             "inventory-storage.preceding-succeeding-titles.item.post",
             "inventory-storage.preceding-succeeding-titles.item.put",
             "inventory-storage.preceding-succeeding-titles.item.delete",
+            "search.instances.collection.get",
             "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
             "source-storage.records.post",
@@ -180,6 +182,10 @@
     {
       "id": "specification-storage",
       "version": "1.0"
+    },
+    {
+      "id": "search",
+      "version": "1.3"
     }
   ],
   "permissionSets": [

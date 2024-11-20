@@ -1,6 +1,6 @@
 package org.folio.linked.data.validation.dto;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.folio.linked.data.util.LccnUtils.isCurrent;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -30,13 +30,6 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
     } else {
       return true;
     }
-  }
-
-  private boolean isCurrent(LccnRequest lccnRequest) {
-    return isEmpty(lccnRequest.getStatus()) || lccnRequest.getStatus()
-      .stream()
-      .flatMap(status -> status.getLink().stream())
-      .anyMatch(link -> link.endsWith("current"));
   }
 
   private boolean isLccnFormatValidationEnabled() {

@@ -1,8 +1,14 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Resource request DTO",
+  "x-class-extra-annotation": "@org.folio.linked.data.validation.LccnUniqueConstraint",
   "type": "object",
   "properties": {
+    "id":{
+      "type": "integer",
+      "format": "int64",
+      "description": "ID of the resource"
+    },
     "resource": {
       "type": "object",
       "title": "resourceRequestField",

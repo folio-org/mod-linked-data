@@ -14,7 +14,13 @@ public interface FolioMetadataRepository extends JpaRepository<FolioMetadata, Lo
 
   Optional<FolioMetadata> findByInventoryId(String inventoryId);
 
+  Optional<InventoryIdOnly> findInventoryIdById(Long id);
+
   interface IdOnly {
     Long getId();
+  }
+
+  interface InventoryIdOnly {
+    String getInventoryId();
   }
 }

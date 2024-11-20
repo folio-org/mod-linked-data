@@ -135,6 +135,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -155,11 +157,13 @@ import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.client.SpecClient;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
@@ -183,6 +187,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -191,6 +196,8 @@ import org.springframework.test.web.servlet.ResultActions;
 
 public abstract class ResourceControllerITBase {
 
+  public static final String LCCN_VALIDATION_NOT_AVAILABLE =
+    "[Could not validate LCCN for duplicate] - reason: [Unable to reach search service]. Please try later.";
   public static final String RESOURCE_URL = "/resource";
   private static final String ROLES_PROPERTY = "roles";
   private static final String NOTES_PROPERTY = "_notes";
@@ -223,6 +230,8 @@ public abstract class ResourceControllerITBase {
   private SrsClient srsClient;
   @MockBean
   private SpecClient specClient;
+  @MockBean
+  private SearchClient searchClient;
 
   @BeforeEach
   public void beforeEach() {
@@ -279,6 +288,8 @@ public abstract class ResourceControllerITBase {
         .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
         .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
       );
+    when(searchClient.searchInstances(any()))
+      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(0L), HttpStatus.OK));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -290,6 +301,102 @@ public abstract class ResourceControllerITBase {
       .andExpect(jsonPath("errors[0].code", equalTo("lccn_does_not_match_pattern")))
       .andExpect(jsonPath("errors[0].parameters", hasSize(2)))
       .andExpect(jsonPath("total_records", equalTo(1)));
+  }
+
+  @Test
+  void createInstanceWithWorkRef_shouldReturn424_ifSearchServiceThrownException() throws Exception {
+    // given
+    var work = getSampleWork(null);
+    setExistingResourcesIds(work);
+    resourceTestService.saveGraph(work);
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(INSTANCE_WITH_WORK_REF_SAMPLE
+        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+        .replace("lccn value", "nn0123456789")
+      );
+    var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
+    when(searchClient.searchInstances(any())).thenThrow(new RuntimeException());
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isFailedDependency())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors[0].code", equalTo("failed_dependency")))
+      .andExpect(jsonPath("errors[0].message", equalTo(LCCN_VALIDATION_NOT_AVAILABLE)))
+      .andExpect(jsonPath("total_records", equalTo(1)));
+    verify(searchClient).searchInstances(query);
+  }
+
+  @Test
+  void createInstanceWithWorkRef_shouldReturn400_ifLccnIsNotUnique() throws Exception {
+    // given
+    var work = getSampleWork(null);
+    setExistingResourcesIds(work);
+    resourceTestService.saveGraph(work);
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(INSTANCE_WITH_WORK_REF_SAMPLE
+        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+        .replace("lccn value", "nn0123456789")
+      );
+    var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
+    when(searchClient.searchInstances(query))
+      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(1L), HttpStatus.OK));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isBadRequest())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors[0].code", equalTo("lccn_not_unique")))
+      .andExpect(jsonPath("total_records", equalTo(1)));
+    verify(searchClient).searchInstances(query);
+  }
+
+  @Test
+  void update_shouldReturn400_ifLccnIsNotUnique() throws Exception {
+    // given
+    var updateDto = getSampleInstanceDtoMap();
+    var instance = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
+    instance.remove("inventoryId");
+    instance.remove("srsId");
+    var status = getStatus(instance);
+    ((LinkedHashMap) status.get(0)).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
+    var work = getSampleWork(null);
+    var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
+
+    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(
+        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+          .replace("lccn value", "nn0123456789")
+      );
+    var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")"
+      + " and id <> \"2165ef4b-001f-46b3-a60e-52bcdeb3d5a1\"";
+    when(searchClient.searchInstances(query))
+      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(1L), HttpStatus.OK));
+
+    // when
+    var resultActions = mockMvc.perform(updateRequest);
+
+    // then
+    resultActions
+      .andExpect(status().isBadRequest())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors[0].code", equalTo("lccn_not_unique")))
+      .andExpect(jsonPath("total_records", equalTo(1)));
+    verify(searchClient).searchInstances(query);
   }
 
   @Test
@@ -466,6 +573,8 @@ public abstract class ResourceControllerITBase {
       .content(
         OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
       );
+    when(searchClient.searchInstances(any()))
+      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(0L), HttpStatus.OK));
 
     // when
     var resultActions = mockMvc.perform(updateRequest);

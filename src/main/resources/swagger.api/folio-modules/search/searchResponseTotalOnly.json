@@ -1,0 +1,12 @@
+{
+  "description": "Wrapper for search response",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "totalRecords": {
+      "description": "Total number of records",
+      "type": "integer",
+      "format": "int64"
+    }
+  }
+}

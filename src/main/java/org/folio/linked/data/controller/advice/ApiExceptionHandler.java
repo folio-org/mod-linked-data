@@ -2,6 +2,7 @@ package org.folio.linked.data.controller.advice;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
@@ -86,6 +87,18 @@ public class ApiExceptionHandler {
     MissingServletRequestParameterException e) {
     logException(e);
     return genericBadRequestMapper.errorResponseEntity(e);
+  }
+
+  @ExceptionHandler(ValidationException.class)
+  public ResponseEntity<ErrorResponse> handleValidationException(ValidationException exception) {
+    return handleValidationExceptionCause(exception);
+  }
+
+  private ResponseEntity<ErrorResponse> handleValidationExceptionCause(ValidationException exception) {
+    if (exception.getCause() instanceof RequestProcessingException e) {
+      return handleRequestProcessingException(e);
+    }
+    return handleAllOtherExceptions(exception);
   }
 
   @ExceptionHandler(Exception.class)

@@ -1,7 +1,10 @@
 package org.folio.linked.data.controller;
 
+import static java.util.Optional.ofNullable;
+import static org.springframework.http.HttpMethod.PUT;
 import static org.springframework.http.HttpStatus.CREATED;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
@@ -12,6 +15,8 @@ import org.folio.linked.data.rest.resource.ResourceApi;
 import org.folio.linked.data.service.resource.ResourceMarcBibService;
 import org.folio.linked.data.service.resource.ResourceService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -70,4 +75,22 @@ public class ResourceController implements ResourceApi {
     return ResponseEntity.ok(resourceMarcService.getResourceMarcView(id));
   }
 
+  @InitBinder
+  public void bindIdForResourcePutRequest(WebDataBinder binder, HttpServletRequest request) {
+    var target = binder.getTarget();
+    if (target instanceof ResourceRequestDto dto && isPutRequest(request)) {
+      dto.setId(idFromUri(request.getRequestURI()));
+    }
+  }
+
+  private boolean isPutRequest(HttpServletRequest request) {
+    return ofNullable(request)
+      .map(r -> PUT.name().equalsIgnoreCase(r.getMethod()))
+      .orElse(false);
+  }
+
+  private Long idFromUri(String path) {
+    String[] parts = path.split("/");
+    return Long.parseLong(parts[parts.length - 1]);
+  }
 }
