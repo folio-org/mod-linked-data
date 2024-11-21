@@ -16,6 +16,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.ResourceEdgeService;
 import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.service.resource.ResourceService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -37,6 +38,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final FolioMetadataRepository folioMetadataRepo;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final ResourceEdgeService resourceEdgeService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -101,6 +103,7 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     metadataService.ensure(mapped, old.getFolioMetadata());
+    resourceEdgeService.copyOutgoingEdges(old, mapped);
     return resourceGraphService.saveMergingGraph(mapped);
   }
 

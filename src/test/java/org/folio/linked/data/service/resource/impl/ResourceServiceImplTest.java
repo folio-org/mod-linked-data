@@ -38,8 +38,8 @@ import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
-import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.ResourceEdgeService;
 import org.folio.linked.data.service.resource.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.spring.testing.type.UnitTest;
@@ -63,8 +63,6 @@ class ResourceServiceImplTest {
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
-  private ResourceEdgeRepository edgeRepo;
-  @Mock
   private ResourceDtoMapper resourceDtoMapper;
   @Mock
   private ApplicationEventPublisher applicationEventPublisher;
@@ -74,6 +72,8 @@ class ResourceServiceImplTest {
   private ResourceGraphService resourceGraphService;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
+  @Mock
+  private ResourceEdgeService resourceEdgeService;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
