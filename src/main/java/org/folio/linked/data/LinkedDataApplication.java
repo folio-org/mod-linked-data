@@ -9,10 +9,12 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableCaching
 @EnableAsync
 @EnableFeignClients
+@EnableScheduling
 @SpringBootApplication
 @ComponentScan(value = "org.folio", excludeFilters = @Filter(type = REGEX, pattern =
   {"org.folio.spring.tools.systemuser.*", "org.folio.spring.tools.batch.*"}))

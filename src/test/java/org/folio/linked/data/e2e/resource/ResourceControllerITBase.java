@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
+import static java.util.UUID.randomUUID;
 import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
@@ -154,6 +155,7 @@ import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.client.SpecClient;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
@@ -169,6 +171,10 @@ import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.TestUtil;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
+import org.folio.rspec.domain.dto.SpecificationDto;
+import org.folio.rspec.domain.dto.SpecificationDtoCollection;
+import org.folio.rspec.domain.dto.SpecificationRuleDto;
+import org.folio.rspec.domain.dto.SpecificationRuleDtoCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -214,6 +220,8 @@ public abstract class ResourceControllerITBase {
   private HashService hashService;
   @MockBean
   private SrsClient srsClient;
+  @MockBean
+  private SpecClient specClient;
 
   @BeforeEach
   public void beforeEach() {
@@ -376,6 +384,17 @@ public abstract class ResourceControllerITBase {
   @Test
   void update_shouldReturnCorrectlyUpdatedInstanceWithWorkRef_deleteOldOne_sendMessages() throws Exception {
     // given
+    var specifications = new SpecificationDtoCollection();
+    var specRuleId = randomUUID();
+    specifications.setSpecifications(List.of(new SpecificationDto().id(specRuleId)));
+    var specRules = new SpecificationRuleDtoCollection();
+    var specRule = new SpecificationRuleDto();
+    specRule.setCode("invalidLccnSubfieldValue");
+    specRule.setEnabled(true);
+    specRules.setRules(List.of(specRule));
+    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(specifications));
+    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(specRules));
+
     var work = getSampleWork(null);
     var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     var updateDto = getSampleInstanceDtoMap();
