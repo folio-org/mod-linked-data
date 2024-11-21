@@ -37,6 +37,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final FolioMetadataRepository folioMetadataRepo;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final ResourceEdgeServiceImpl resourceEdgeService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -101,6 +102,7 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     metadataService.ensure(mapped, old.getFolioMetadata());
+    resourceEdgeService.copyOutgoingEdges(old, mapped);
     return resourceGraphService.saveMergingGraph(mapped);
   }
 
