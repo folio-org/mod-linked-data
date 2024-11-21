@@ -309,3 +309,4 @@ components:
           example: example/unknownError.sample
           schema:
             $ref: "#/components/schemas/errorResponse"
+

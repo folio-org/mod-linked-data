@@ -23,10 +23,16 @@ name: api-lint
 env:
   API_TYPES: 'OAS'
   API_DIRECTORIES: 'src/main/resources/swagger.api'
-  API_EXCLUDES: 'paths responses src/main/resources/swagger.api/folio-modules.yaml'
+  API_EXCLUDES: 'folio-modules.yaml'
   API_WARNINGS: false
 
 on:
+  push:
+    paths:
+      - 'src/main/resources/swagger.api/**'
+  pull_request:
+    paths:
+      - 'src/main/resources/swagger.api/**'
   workflow_dispatch:
 
 jobs:
@@ -34,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Prepare folio-tools
