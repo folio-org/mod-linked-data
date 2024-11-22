@@ -33,10 +33,12 @@ class LccnPatternValidatorTest {
 
   @ParameterizedTest
   @MethodSource("positiveCaseProvider")
-  void shouldReturnTrue_ifLccnIsValid(String value, String link, List<SpecificationRuleDto> specRules) {
+  void shouldReturnTrue(String value, String link, List<SpecificationRuleDto> specRules) {
     // given
     var lccnRequest = createLccnRequest(value, link);
-    doReturn(specRules).when(specProvider).getSpecRules();
+    if (!"http://id.loc.gov/vocabulary/mstatus/cancinv".equals(link)) {
+      doReturn(specRules).when(specProvider).getSpecRules();
+    }
 
     // expect
     assertTrue(validator.isValid(lccnRequest, null));
@@ -45,28 +47,28 @@ class LccnPatternValidatorTest {
   private static Stream<Arguments> positiveCaseProvider() {
     return Stream.of(
       // structure A
-      arguments("   12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("n  12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nn 12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nnn12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nnn12345678 ", null, List.of(createSpecRule(true))),
-      arguments(" nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/cancinv", List.of(createSpecRule(true))),
-      arguments(" nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(false))),
+      arguments("   12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("n  12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nn 12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nnn12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nnn12345678 ", null, createSpecRules(true)),
+      arguments(" nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/cancinv", createSpecRules(true)),
+      arguments(" nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(false)),
       arguments(" nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of()),
 
       // structure B
-      arguments("  0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("n 0123456781", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nn0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nn0123456789", null, List.of(createSpecRule(true))),
-      arguments("mmm0123456789", "http://id.loc.gov/vocabulary/mstatus/cancinv", List.of(createSpecRule(true))),
-      arguments("mmm0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(false))),
+      arguments("  0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("n 0123456781", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nn0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nn0123456789", null, createSpecRules(true)),
+      arguments("mmm0123456789", "http://id.loc.gov/vocabulary/mstatus/cancinv", createSpecRules(true)),
+      arguments("mmm0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(false)),
       arguments("mmm0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of()));
   }
 
   @ParameterizedTest
   @MethodSource("negativeCaseProvider")
-  void shouldReturnFalse_ifLccnIsInvalid(String value, String link, List<SpecificationRuleDto> specRules) {
+  void shouldReturnFalse(String value, String link, List<SpecificationRuleDto> specRules) {
     // given
     var lccnRequest = createLccnRequest(value, link);
     doReturn(specRules).when(specProvider).getSpecRules();
@@ -78,29 +80,29 @@ class LccnPatternValidatorTest {
   public static Stream<Arguments> negativeCaseProvider() {
     return Stream.of(
       // structure A
-      arguments(" 12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("  12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments(" n 12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("  n12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("   1234567 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("   12345678", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments(" nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nnnn12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nNn12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nNn12345678 ", null, List.of(createSpecRule(true))),
-      arguments("n-n12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
+      arguments(" 12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("  12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments(" n 12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("  n12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("   1234567 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("   12345678", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments(" nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nnn123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nnnn12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nNn12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nNn12345678 ", null, createSpecRules(true)),
+      arguments("n-n12345678 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
 
       // structure B
-      arguments(" 0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments(" m123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("  m123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments(" mm123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("mm123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("mmm0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nN0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))),
-      arguments("nN0123456789", null, List.of(createSpecRule(true))),
-      arguments("n-0123456789", "http://id.loc.gov/vocabulary/mstatus/current", List.of(createSpecRule(true))));
+      arguments(" 0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments(" m123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("  m123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments(" mm123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("mm123456789 ", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("mmm0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nN0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)),
+      arguments("nN0123456789", null, createSpecRules(true)),
+      arguments("n-0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)));
   }
 
   private LccnRequest createLccnRequest(String value, String link) {
@@ -109,10 +111,10 @@ class LccnPatternValidatorTest {
       .status(link == null ? emptyList() : List.of(new Status().link(List.of(link))));
   }
 
-  private static SpecificationRuleDto createSpecRule(boolean enabled) {
+  private static List<SpecificationRuleDto> createSpecRules(boolean enabled) {
     var specRule = new SpecificationRuleDto();
-    specRule.setCode("invalidLccnSubfieldValue");
+    specRule.setCode(LccnPatternValidator.CODE);
     specRule.setEnabled(enabled);
-    return specRule;
+    return List.of(specRule);
   }
 }

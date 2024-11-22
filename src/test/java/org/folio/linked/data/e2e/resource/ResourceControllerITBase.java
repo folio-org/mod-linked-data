@@ -169,6 +169,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.TestUtil;
+import org.folio.linked.data.validation.dto.LccnPatternValidator;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
 import org.folio.rspec.domain.dto.SpecificationDto;
@@ -264,6 +265,10 @@ public abstract class ResourceControllerITBase {
   @Test
   void createInstanceWithWorkRef_shouldReturn400_ifLccnIsInvalid() throws Exception {
     // given
+    var specRuleId = randomUUID();
+    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
+    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
+
     var work = getSampleWork(null);
     setExistingResourcesIds(work);
     resourceTestService.saveGraph(work);
@@ -384,16 +389,9 @@ public abstract class ResourceControllerITBase {
   @Test
   void update_shouldReturnCorrectlyUpdatedInstanceWithWorkRef_deleteOldOne_sendMessages() throws Exception {
     // given
-    var specifications = new SpecificationDtoCollection();
     var specRuleId = randomUUID();
-    specifications.setSpecifications(List.of(new SpecificationDto().id(specRuleId)));
-    var specRules = new SpecificationRuleDtoCollection();
-    var specRule = new SpecificationRuleDto();
-    specRule.setCode("invalidLccnSubfieldValue");
-    specRule.setEnabled(true);
-    specRules.setRules(List.of(specRule));
-    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(specifications));
-    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(specRules));
+    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
+    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
 
     var work = getSampleWork(null);
     var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
@@ -449,6 +447,10 @@ public abstract class ResourceControllerITBase {
   @Test
   void update_shouldReturn400_ifLccnIsInvalid() throws Exception {
     // given
+    var specRuleId = randomUUID();
+    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
+    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
+
     var updateDto = getSampleInstanceDtoMap();
     var instance = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
     instance.remove("inventoryId");
@@ -2081,6 +2083,21 @@ public abstract class ResourceControllerITBase {
     var map = (ArrayList) instance.get(MAP.getUri());
     var lccn = (LinkedHashMap) ((LinkedHashMap) map.get(0)).get(ID_LCCN.getUri());
     return (ArrayList) lccn.get(STATUS.getUri());
+  }
+
+  private SpecificationDtoCollection createSpecifications(UUID specRuleId) {
+    var specifications = new SpecificationDtoCollection();
+    specifications.setSpecifications(List.of(new SpecificationDto().id(specRuleId)));
+    return specifications;
+  }
+
+  private SpecificationRuleDtoCollection createSpecRules() {
+    var specRules = new SpecificationRuleDtoCollection();
+    var specRule = new SpecificationRuleDto();
+    specRule.setCode(LccnPatternValidator.CODE);
+    specRule.setEnabled(true);
+    specRules.setRules(List.of(specRule));
+    return specRules;
   }
 
   private record LookupResources(
