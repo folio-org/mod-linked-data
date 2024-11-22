@@ -3,17 +3,11 @@
   "description": "Work request DTO",
   "allOf": [
     {
+      "$ref": "title/TitleFieldRequest.json"
+    },
+    {
       "type": "object",
       "properties": {
-        "title": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "title/TitleFieldRequest.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/title",
-          "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
-        },
         "targetAudience": {
           "type": "array",
           "items": {
@@ -149,8 +143,7 @@
           },
           "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
         }
-      },
-      "required": ["title"]
+      }
     }
   ]
 }

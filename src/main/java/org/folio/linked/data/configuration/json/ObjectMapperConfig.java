@@ -14,7 +14,7 @@ import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
 import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
-import org.folio.linked.data.domain.dto.TitleFieldRequest;
+import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +38,7 @@ public class ObjectMapperConfig {
   private Module monographModule(ObjectMapper objectMapper, RequestProcessingExceptionBuilder exceptionBuilder) {
     return new SimpleModule()
       .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer(exceptionBuilder))
-      .addDeserializer(TitleFieldRequest.class, new TitleFieldRequestDeserializer(exceptionBuilder))
+      .addDeserializer(TitleFieldRequestTitleInner.class, new TitleFieldRequestDeserializer(exceptionBuilder))
       .addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer(exceptionBuilder))
       .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer(objectMapper));
   }

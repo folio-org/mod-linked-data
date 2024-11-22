@@ -8,7 +8,7 @@ import java.util.Set;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.TitleFieldRequest;
+import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 
 public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit {
@@ -23,7 +23,7 @@ public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit 
     return SUPPORTED_PARENTS;
   }
 
-  protected List<String> getPrimaryMainTitles(List<TitleFieldRequest> titles) {
+  protected List<String> getPrimaryMainTitles(List<TitleFieldRequestTitleInner> titles) {
     if (isNull(titles)) {
       return new ArrayList<>();
     }
