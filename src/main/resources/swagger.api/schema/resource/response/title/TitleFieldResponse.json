@@ -1,38 +1,52 @@
 {
+  "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Title of the Work or Instance resource",
-  "oneOf": [
-    {
-      "type": "object",
-      "title": "PrimaryTitleFieldResponse",
-      "properties": {
-        "PrimaryTitle": {
-          "type": "object",
-          "$ref": "schema/resource/response/title/PrimaryTitleResponse.json",
-          "x-json-property": "http://bibfra.me/vocab/marc/Title"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "title": "VariantTitleFieldResponse",
-      "properties": {
-        "VariantTitle": {
-          "type": "object",
-          "$ref": "schema/resource/response/title/VariantTitleResponse.json",
-          "x-json-property": "http://bibfra.me/vocab/marc/VariantTitle"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "title": "ParallelTitleFieldResponse",
-      "properties": {
-        "ParallelTitle": {
-          "type": "object",
-          "$ref": "schema/resource/response/title/ParallelTitleResponse.json",
-          "x-json-property": "http://bibfra.me/vocab/marc/ParallelTitle"
-        }
-      }
+  "properties": {
+    "title": {
+      "type": "array",
+      "description": "The title of the work or instance",
+      "items": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "title": "PrimaryTitleFieldResponse",
+            "properties": {
+              "PrimaryTitle": {
+                "type": "object",
+                "$ref": "PrimaryTitleResponse.json",
+                "x-json-property": "http://bibfra.me/vocab/marc/Title",
+                "description": "The primary title of the work or instance"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "VariantTitleFieldResponse",
+            "properties": {
+              "VariantTitle": {
+                "type": "object",
+                "$ref": "VariantTitleResponse.json",
+                "x-json-property": "http://bibfra.me/vocab/marc/VariantTitle",
+                "description": "The variant title of the work or instance"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "title": "ParallelTitleFieldResponse",
+            "properties": {
+              "ParallelTitle": {
+                "type": "object",
+                "$ref": "ParallelTitleResponse.json",
+                "x-json-property": "http://bibfra.me/vocab/marc/ParallelTitle",
+                "description": "The parallel title of the work or instance"
+              }
+            }
+          }
+        ]
+      },
+      "x-json-property": "http://bibfra.me/vocab/marc/title"
     }
-  ]
+  }
 }

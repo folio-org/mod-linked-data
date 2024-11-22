@@ -37,7 +37,7 @@ import org.folio.linked.data.configuration.ErrorResponseConfig;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
-import org.folio.linked.data.domain.dto.TitleFieldResponse;
+import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.json.InstanceResponseAllOfMapDeserializer;
@@ -72,7 +72,7 @@ public class TestUtil {
   static {
     OBJECT_MAPPER.registerModule(new SimpleModule()
       .addDeserializer(ResourceResponseField.class, new ResourceResponseFieldDeserializer())
-      .addDeserializer(TitleFieldResponse.class, new TitleFieldResponseDeserializer())
+      .addDeserializer(TitleFieldResponseTitleInner.class, new TitleFieldResponseDeserializer())
       .addDeserializer(InstanceResponseAllOfMap.class, new InstanceResponseAllOfMapDeserializer())
     );
     PARAMETERS.excludeField(named("id"));
