@@ -8,7 +8,7 @@ import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.PrimaryTitle;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
-import org.folio.linked.data.domain.dto.TitleFieldRequest;
+import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ class PrimaryTitleDtoValidatorTest {
   @Test
   void shouldReturnFalse_ifGivenTitleFieldRequestListIsEmpty() {
     // given
-    var titleFields = new ArrayList<TitleFieldRequest>();
+    var titleFields = new ArrayList<TitleFieldRequestTitleInner>();
 
     // when
     boolean result = validator.isValid(titleFields, null);
@@ -41,7 +41,7 @@ class PrimaryTitleDtoValidatorTest {
   @Test
   void shouldReturnFalse_ifGivenTitleFieldRequestListContainsNoPrimaryTitle() {
     // given
-    var titleFields = new ArrayList<TitleFieldRequest>();
+    var titleFields = new ArrayList<TitleFieldRequestTitleInner>();
     titleFields.add(new ParallelTitleField().parallelTitle(
       new ParallelTitle().mainTitle(List.of("parallel main title"))
     ));
@@ -56,7 +56,7 @@ class PrimaryTitleDtoValidatorTest {
   @Test
   void shouldReturnFalse_ifGivenTitleFieldRequestListContainsPrimaryTitleWithNoMainTitle() {
     // given
-    var titleFields = new ArrayList<TitleFieldRequest>();
+    var titleFields = new ArrayList<TitleFieldRequestTitleInner>();
     titleFields.add(new ParallelTitleField().parallelTitle(
       new ParallelTitle().mainTitle(List.of("parallel main title"))
     ));
@@ -74,7 +74,7 @@ class PrimaryTitleDtoValidatorTest {
   @Test
   void shouldReturnTrue_ifGivenTitleFieldListContainsPrimaryTitleWithMainTitle() {
     // given
-    var titleFields = new ArrayList<TitleFieldRequest>();
+    var titleFields = new ArrayList<TitleFieldRequestTitleInner>();
     titleFields.add(new ParallelTitleField().parallelTitle(
       new ParallelTitle().mainTitle(List.of("parallel main title"))
     ));

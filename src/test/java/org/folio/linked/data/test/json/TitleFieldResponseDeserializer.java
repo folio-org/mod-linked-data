@@ -12,21 +12,21 @@ import java.io.IOException;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.ParallelTitleFieldResponse;
 import org.folio.linked.data.domain.dto.PrimaryTitleFieldResponse;
-import org.folio.linked.data.domain.dto.TitleFieldResponse;
+import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
 import org.folio.linked.data.domain.dto.VariantTitleFieldResponse;
 import org.folio.linked.data.util.DtoDeserializer;
 
-public class TitleFieldResponseDeserializer extends JsonDeserializer<TitleFieldResponse> {
-  private static final Map<String, Class<? extends TitleFieldResponse>> IDENDTITY_MAP = Map.of(
+public class TitleFieldResponseDeserializer extends JsonDeserializer<TitleFieldResponseTitleInner> {
+  private static final Map<String, Class<? extends TitleFieldResponseTitleInner>> IDENDTITY_MAP = Map.of(
     TITLE.getUri(), PrimaryTitleFieldResponse.class,
     PARALLEL_TITLE.getUri(), ParallelTitleFieldResponse.class,
     VARIANT_TITLE.getUri(), VariantTitleFieldResponse.class
   );
-  private final DtoDeserializer<TitleFieldResponse> dtoDeserializer =
-    new DtoDeserializer<>(TitleFieldResponse.class, IDENDTITY_MAP, EMPTY_EXCEPTION_BUILDER);
+  private final DtoDeserializer<TitleFieldResponseTitleInner> dtoDeserializer =
+    new DtoDeserializer<>(TitleFieldResponseTitleInner.class, IDENDTITY_MAP, EMPTY_EXCEPTION_BUILDER);
 
   @Override
-  public TitleFieldResponse deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
+  public TitleFieldResponseTitleInner deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
     return dtoDeserializer.deserialize(jp);
   }
 }

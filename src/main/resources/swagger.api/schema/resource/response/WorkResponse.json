@@ -6,16 +6,11 @@
       "$ref": "../common/IdField.json"
     },
     {
+      "$ref": "title/TitleFieldResponse.json"
+    },
+    {
       "type": "object",
       "properties": {
-        "title": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "title/TitleFieldResponse.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/title"
-        },
         "targetAudience": {
           "type": "array",
           "items": {

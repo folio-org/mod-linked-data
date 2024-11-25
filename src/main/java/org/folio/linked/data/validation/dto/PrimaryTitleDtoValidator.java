@@ -8,13 +8,14 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
-import org.folio.linked.data.domain.dto.TitleFieldRequest;
+import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
 
-public class PrimaryTitleDtoValidator implements ConstraintValidator<PrimaryTitleConstraint, List<TitleFieldRequest>> {
+public class PrimaryTitleDtoValidator implements
+  ConstraintValidator<PrimaryTitleConstraint, List<TitleFieldRequestTitleInner>> {
 
   @Override
-  public boolean isValid(List<TitleFieldRequest> titleFields, ConstraintValidatorContext context) {
+  public boolean isValid(List<TitleFieldRequestTitleInner> titleFields, ConstraintValidatorContext context) {
     if (isNull(titleFields)) {
       return true;
     }
