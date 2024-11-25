@@ -285,7 +285,8 @@
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC", "value": "linked-data.work" },
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC_PARTITIONS", "value": "1" },
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR", "value": "" },
-      { "name": "KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC", "value": "" }
+      { "name": "KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC", "value": "" },
+      { "name": "CACHE_TTL_SPEC_RULES_MS", "value": "18000000" }
     ]
   }
 }
