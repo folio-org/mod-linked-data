@@ -21,4 +21,8 @@ public class Constants {
   public static final String MSG_NOT_FOUND_IN = "{} with {}: {} was not found in {}";
   public static final String LINKED_DATA_STORAGE = "Linked Data storage";
 
+  @UtilityClass
+  public static class Cache {
+    public static final String SPEC_RULES = "spec-rules";
+  }
 }

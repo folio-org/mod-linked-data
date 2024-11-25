@@ -79,6 +79,9 @@ mod-linked-data:
     topic:
       work-search-index: ${KAFKA_WORK_SEARCH_INDEX_TOPIC:linked-data.work}
       instance-ingress: ${KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC:inventory.instance_ingress}
+  cache:
+    ttl:
+      spec-rules: ${CACHE_TTL_SPEC_RULES:18000000}
 
 management:
   endpoints:

@@ -25,7 +25,9 @@
             "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
             "source-storage.records.post",
-            "source-storage.records.put"
+            "source-storage.records.put",
+            "specification-storage.specifications.collection.get",
+            "specification-storage.specification.rules.collection.get"
           ]
         },
         {
@@ -65,7 +67,9 @@
             "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
             "source-storage.records.post",
-            "source-storage.records.put"
+            "source-storage.records.put",
+            "specification-storage.specifications.collection.get",
+            "specification-storage.specification.rules.collection.get"
           ]
         },
         {
@@ -172,6 +176,10 @@
     {
       "id": "source-storage-records",
       "version": "3.2 3.3"
+    },
+    {
+      "id": "specification-storage",
+      "version": "1.0"
     }
   ],
   "permissionSets": [
@@ -277,7 +285,8 @@
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC", "value": "linked-data.work" },
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC_PARTITIONS", "value": "1" },
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR", "value": "" },
-      { "name": "KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC", "value": "" }
+      { "name": "KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC", "value": "" },
+      { "name": "CACHE_TTL_SPEC_RULES_MS", "value": "18000000" }
     ]
   }
 }
