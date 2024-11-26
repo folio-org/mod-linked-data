@@ -24,5 +24,6 @@ public class Constants {
   @UtilityClass
   public static class Cache {
     public static final String SPEC_RULES = "spec-rules";
+    public static final String SETTINGS_ENTRIES = "settings-entries";
   }
 }

@@ -28,7 +28,8 @@
             "source-storage.records.post",
             "source-storage.records.put",
             "specification-storage.specifications.collection.get",
-            "specification-storage.specification.rules.collection.get"
+            "specification-storage.specification.rules.collection.get",
+            "ui-quick-marc.settings.lccn-duplicate-check.edit"
           ]
         },
         {
@@ -71,7 +72,8 @@
             "source-storage.records.post",
             "source-storage.records.put",
             "specification-storage.specifications.collection.get",
-            "specification-storage.specification.rules.collection.get"
+            "specification-storage.specification.rules.collection.get",
+            "ui-quick-marc.settings.lccn-duplicate-check.edit"
           ]
         },
         {
@@ -292,7 +294,8 @@
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC_PARTITIONS", "value": "1" },
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR", "value": "" },
       { "name": "KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC", "value": "" },
-      { "name": "CACHE_TTL_SPEC_RULES_MS", "value": "18000000" }
+      { "name": "CACHE_TTL_SPEC_RULES_MS", "value": "18000000" },
+      { "name": "CACHE_TTL_SETTINGS_ENTRIES_MS", "value": "18000000" }
     ]
   }
 }

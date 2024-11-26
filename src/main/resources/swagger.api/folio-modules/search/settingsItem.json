@@ -1,0 +1,14 @@
+{
+  "description": "Settings item containing map of properties",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "value": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object"
+      },
+      "description": "Map of setting properties"
+    }
+  }
+}

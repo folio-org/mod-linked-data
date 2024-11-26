@@ -61,7 +61,8 @@ To run mod-linked-data in standalone mode, set the value of the environment vari
 | KAFKA_WORK_SEARCH_INDEX_TOPIC_PARTITIONS`*`         | 1                               | Custom Work Search Index topic partitions number                                                                                                                                      |
 | KAFKA_WORK_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR`*` | -                               | Custom Work Search Index topic replication factor                                                                                                                                     |
 | KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC`*`     | inventory.instance_ingress      | Custom Inventory Instance Ingress Event topic name                                                                                                                                    |
-| CACHE_TTL_SPEC_RULES_MS                             | 18000000                        | Specifies time to live for `spec-rules` cache                                                                                                                                           |
+| CACHE_TTL_SPEC_RULES_MS                             | 18000000                        | Specifies time to live for `spec-rules` cache                                                                                                                                         |
+| CACHE_TTL_SETTINGS_ENTRIES_MS                       | 18000000                        | Specifies time to live for `settings-entries` cache                                                                                                                                   |
 * Applicable only in FOLIO mode
 ## REST API
 Full list of APIs are documented in [src/main/resources/swagger.api/mod-linked-data.yaml](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/swagger.api/mod-linked-data.yaml).

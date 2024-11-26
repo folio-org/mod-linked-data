@@ -16,6 +16,7 @@ import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.repo.FolioMetadataRepository;
+import org.folio.linked.data.service.SettingsService;
 import org.folio.linked.data.service.search.InstanceSearchService;
 import org.folio.linked.data.util.LccnUtils;
 import org.folio.linked.data.validation.LccnUniqueConstraint;
@@ -27,18 +28,39 @@ import org.springframework.stereotype.Component;
 @SuppressWarnings("javaarchitecture:S7091")
 public class LccnUniquenessValidator implements ConstraintValidator<LccnUniqueConstraint, ResourceRequestDto> {
 
+  private static final String DUPLICATE_CHECK_SCOPE = "ui-quick-marc.lccn-duplicate-check.manage";
+  private static final String DUPLICATE_CHECK_KEY = "lccn-duplicate-check";
+  private static final String DUPLICATE_CHECK_PROPERTY = "duplicateLccnCheckingEnabled";
+
   private final InstanceSearchService instanceSearchService;
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final SettingsService settingsService;
 
   @Override
   public boolean isValid(ResourceRequestDto resourceRequestDto, ConstraintValidatorContext constraintValidatorContext) {
+    if (isValidationDisabled()) {
+      return true;
+    }
+    return isValid(resourceRequestDto);
+  }
+
+  private boolean isValid(ResourceRequestDto resourceRequestDto) {
     var resource = resourceRequestDto.getResource();
     if (resource instanceof InstanceField instance && hasCurrentLccn(instance)) {
       var inventoryId = findInventoryId(resourceRequestDto);
       return isUnique(getLccnValues(instance), inventoryId);
     }
     return true;
+  }
+
+  private boolean isValidationDisabled() {
+    try {
+      return !settingsService.isSettingEnabled(DUPLICATE_CHECK_SCOPE, DUPLICATE_CHECK_KEY, DUPLICATE_CHECK_PROPERTY);
+    } catch (Exception e) {
+      log.error("An exception occurred during settings service call", e);
+      return true;
+    }
   }
 
   private String findInventoryId(ResourceRequestDto resourceRequestDto) {
