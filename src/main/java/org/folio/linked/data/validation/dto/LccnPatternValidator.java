@@ -12,6 +12,7 @@ import org.folio.linked.data.validation.spec.SpecProvider;
 import org.folio.rspec.domain.dto.SpecificationRuleDto;
 
 @RequiredArgsConstructor
+@SuppressWarnings("javaarchitecture:S7091")
 public class LccnPatternValidator implements ConstraintValidator<LccnPatternConstraint, LccnRequest> {
 
   public static final String CODE = "invalidLccnSubfieldValue";

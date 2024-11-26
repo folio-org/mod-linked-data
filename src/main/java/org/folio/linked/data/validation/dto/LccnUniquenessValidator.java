@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Log4j2
+@SuppressWarnings("javaarchitecture:S7091")
 public class LccnUniquenessValidator implements ConstraintValidator<LccnUniqueConstraint, ResourceRequestDto> {
 
   private final InstanceSearchService instanceSearchService;
