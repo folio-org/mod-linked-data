@@ -17,8 +17,8 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
 
   public static final String CODE = "invalidLccnSubfieldValue";
 
-  private static final Pattern LCCN_STRUCTURE_A_PATTERN = Pattern.compile("( {3}|[a-z][ |a-z]{2})\\d{8} ");
-  private static final Pattern LCCN_STRUCTURE_B_PATTERN = Pattern.compile("( {2}|[a-z][ |a-z])\\d{10}");
+  private static final Pattern LCCN_STRUCTURE_A_PATTERN = Pattern.compile("( {3}|[a-z][ a-z]{2})\\d{8} ");
+  private static final Pattern LCCN_STRUCTURE_B_PATTERN = Pattern.compile("( {2}|[a-z][ a-z])\\d{10}");
 
   private final SpecProvider specProvider;
 
