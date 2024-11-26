@@ -12,6 +12,8 @@ components:
       $ref: folio-modules/search/resourceIndexEvent.json
     resourceIndexEventType:
       $ref: folio-modules/search/resourceIndexEventType.json
+    searchResponseTotalOnly:
+      $ref: folio-modules/search/searchResponseTotalOnly.json
     linkedDataInstance:
       $ref: folio-modules/search/linkedDataInstance.json
     linkedDataWork:

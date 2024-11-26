@@ -37,3 +37,8 @@ genericServer:
   code: server
   parameters: exception, message
   message: 'Server error: [%s] with message [%s]'
+failedDependency:
+  status: 424
+  code: failed_dependency
+  parameters: message, reason
+  message: '[%s] - reason: [%s]. Please try later.'

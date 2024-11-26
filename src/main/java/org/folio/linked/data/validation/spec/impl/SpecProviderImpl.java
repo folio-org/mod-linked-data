@@ -26,7 +26,8 @@ public class SpecProviderImpl implements SpecProvider {
   @Override
   public List<SpecificationRuleDto> getSpecRules() {
     try {
-      return Optional.ofNullable(client.getBibMarcSpecs().getBody())
+      return Optional.ofNullable(client.getBibMarcSpecs())
+        .map(ResponseEntity::getBody)
         .map(SpecificationDtoCollection::getSpecifications)
         .stream()
         .flatMap(Collection::stream)

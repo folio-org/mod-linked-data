@@ -21,6 +21,7 @@ public class ErrorResponseConfig {
   private ErrorResponseConfig.Error genericBadRequest;
   private ErrorResponseConfig.Error validation;
   private ErrorResponseConfig.Error genericServer;
+  private ErrorResponseConfig.Error failedDependency;
 
   public record Error(int status, String code, List<String> parameters, String message) {
   }

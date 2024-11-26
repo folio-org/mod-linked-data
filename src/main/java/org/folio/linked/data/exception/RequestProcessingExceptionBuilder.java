@@ -49,6 +49,10 @@ public class RequestProcessingExceptionBuilder {
     return requestProcessingException(notFoundError, "Source Record", idType, idValue, "Source Record storage");
   }
 
+  public RequestProcessingException failedDependencyException(String message, String reason) {
+    return requestProcessingException(errorResponseConfig.getFailedDependency(), message, reason);
+  }
+
   private RequestProcessingException requestProcessingException(ErrorResponseConfig.Error error, String... arguments) {
     var parameters = new HashMap<String, String>();
     for (int i = 0; i < arguments.length; i++) {

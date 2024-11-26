@@ -7,16 +7,16 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.folio.linked.data.validation.dto.LccnPatternValidator;
+import org.folio.linked.data.validation.dto.LccnUniquenessValidator;
 
 @Documented
 @SuppressWarnings("javaarchitecture:S7091")
-@Constraint(validatedBy = LccnPatternValidator.class)
-@Target({ElementType.FIELD, ElementType.TYPE})
+@Constraint(validatedBy = LccnUniquenessValidator.class)
+@Target({ElementType.FIELD, ElementType.TYPE, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LccnPatternConstraint {
+public @interface LccnUniqueConstraint {
 
-  String message() default "{lccnPatternConstraint.message}";
+  String message() default "{lccnUniqueConstraint.message}";
 
   Class<?>[] groups() default {};
 
