@@ -170,6 +170,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.service.SettingsService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.TestUtil;
@@ -232,6 +233,8 @@ public abstract class ResourceControllerITBase {
   private SpecClient specClient;
   @MockBean
   private SearchClient searchClient;
+  @MockBean
+  private SettingsService settingsService;
 
   @BeforeEach
   public void beforeEach() {
@@ -319,6 +322,7 @@ public abstract class ResourceControllerITBase {
       );
     var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
     when(searchClient.searchInstances(any())).thenThrow(new RuntimeException());
+    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -350,6 +354,7 @@ public abstract class ResourceControllerITBase {
     var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
     when(searchClient.searchInstances(query))
       .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(1L), HttpStatus.OK));
+    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -361,6 +366,31 @@ public abstract class ResourceControllerITBase {
       .andExpect(jsonPath("errors[0].code", equalTo("lccn_not_unique")))
       .andExpect(jsonPath("total_records", equalTo(1)));
     verify(searchClient).searchInstances(query);
+  }
+
+  @Test
+  void createInstanceWithWorkRef_shouldSuccess_ifLccnDeduplicationDisabled() throws Exception {
+    // given
+    var work = getSampleWork(null);
+    setExistingResourcesIds(work);
+    resourceTestService.saveGraph(work);
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(INSTANCE_WITH_WORK_REF_SAMPLE
+        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+        .replace("lccn value", "nn0123456789")
+      );
+    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(false);
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON));
   }
 
   @Test
@@ -386,6 +416,7 @@ public abstract class ResourceControllerITBase {
       + " and id <> \"2165ef4b-001f-46b3-a60e-52bcdeb3d5a1\"";
     when(searchClient.searchInstances(query))
       .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(1L), HttpStatus.OK));
+    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
 
     // when
     var resultActions = mockMvc.perform(updateRequest);

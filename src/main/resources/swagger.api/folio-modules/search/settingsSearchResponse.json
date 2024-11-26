@@ -1,0 +1,14 @@
+{
+  "description": "Wrapper for settings search response",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "items": {
+      "description": "List of settings items",
+      "type": "array",
+      "items": {
+        "$ref": "settingsItem.json"
+      }
+    }
+  }
+}

@@ -1,5 +1,6 @@
 package org.folio.linked.data.job;
 
+import static org.folio.linked.data.util.Constants.Cache.SETTINGS_ENTRIES;
 import static org.folio.linked.data.util.Constants.Cache.SPEC_RULES;
 
 import lombok.extern.slf4j.Slf4j;
@@ -15,5 +16,11 @@ public class CacheCleaningJob {
   @Scheduled(fixedRateString = "${mod-linked-data.cache.ttl.spec-rules}")
   public void emptySpecRules() {
     log.info("Emptying {} cache", SPEC_RULES);
+  }
+
+  @CacheEvict(value = SETTINGS_ENTRIES, allEntries = true)
+  @Scheduled(fixedRateString = "${mod-linked-data.cache.ttl.settings-entries}")
+  public void emptySettingsEntries() {
+    log.info("Emptying {} cache", SETTINGS_ENTRIES);
   }
 }
