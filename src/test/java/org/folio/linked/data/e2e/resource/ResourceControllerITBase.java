@@ -199,7 +199,7 @@ public abstract class ResourceControllerITBase {
 
   public static final String LCCN_VALIDATION_NOT_AVAILABLE =
     "[Could not validate LCCN for duplicate] - reason: [Unable to reach search service]. Please try later.";
-  public static final String RESOURCE_URL = "/resource";
+  public static final String RESOURCE_URL = "/linked-data/resource";
   private static final String ROLES_PROPERTY = "roles";
   private static final String NOTES_PROPERTY = "_notes";
   private static final String ID_PROPERTY = "id";

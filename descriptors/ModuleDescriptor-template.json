@@ -3,12 +3,12 @@
   "name": "Linked Data Module",
   "provides": [
     {
-      "id": "resource",
+      "id": "linked-data",
       "version": "1.0",
       "handlers": [
         {
           "methods": [ "POST" ],
-          "pathPattern": "/resource",
+          "pathPattern": "/linked-data/resource",
           "permissionsRequired": [ "linked-data.resources.bib.post" ],
           "modulePermissions": [
             "mapping-metadata.get",
@@ -40,19 +40,19 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource/{id}",
+          "pathPattern": "/linked-data/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource/{id}/marc",
+          "pathPattern": "/linked-data/resource/{id}/marc",
           "permissionsRequired": [ "linked-data.resources.bib.marc.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "PUT" ],
-          "pathPattern": "/resource/{id}",
+          "pathPattern": "/linked-data/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.put" ],
           "modulePermissions": [
             "mapping-metadata.get",
@@ -78,31 +78,31 @@
         },
         {
           "methods": [ "DELETE" ],
-          "pathPattern": "/resource/{id}",
+          "pathPattern": "/linked-data/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.delete" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource/metadata/{inventoryId}/id",
+          "pathPattern": "/linked-data/resource/metadata/{inventoryId}/id",
           "permissionsRequired": [ "linked-data.resources.bib.id.get" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource/check/{inventoryId}/supported",
+          "pathPattern": "/linked-data/inventory-instance/{inventoryId}/import-supported",
           "permissionsRequired": [ "linked-data.resources.support-check.get" ],
           "modulePermissions": ["source-storage.records.formatted.item.get"]
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/resource/preview/{inventoryId}",
+          "pathPattern": "/linked-data/inventory-instance/{inventoryId}/preview",
           "permissionsRequired": [ "linked-data.resources.preview.get" ],
           "modulePermissions": ["source-storage.records.formatted.item.get"]
         },
         {
           "methods": [ "POST" ],
-          "pathPattern": "/resource/import/{inventoryId}",
+          "pathPattern": "/linked-data/inventory-instance/{inventoryId}/import",
           "permissionsRequired": [ "linked-data.resources.import.post" ],
           "modulePermissions": [
             "source-storage.records.formatted.item.get",
@@ -121,6 +121,23 @@
             "source-storage.records.post",
             "source-storage.records.put"
           ]
+        },
+        {
+          "methods": [ "PUT" ],
+          "pathPattern": "/linked-data/reindex",
+          "permissionsRequired": [ "linked-data.resources.reindex.post" ],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profile",
+          "permissionsRequired": [ "linked-data.profiles.get" ]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/resource/{id}/graph",
+          "permissionsRequired": [ "linked-data.resources.graph.get" ],
+          "modulePermissions": []
         }
       ]
     },
@@ -137,41 +154,6 @@
         {
           "methods": [ "DELETE", "GET" ],
           "pathPattern": "/_/tenant/{id}"
-        }
-      ]
-    },
-    {
-      "id": "reindex",
-      "version": "1.0",
-      "handlers": [
-        {
-          "methods": [ "PUT" ],
-          "pathPattern": "/reindex",
-          "permissionsRequired": [ "linked-data.resources.reindex.post" ],
-          "modulePermissions": []
-        }
-      ]
-    },
-    {
-      "id": "profile",
-      "version": "1.0",
-      "handlers": [
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/profile",
-          "permissionsRequired": [ "linked-data.profiles.get" ]
-        }
-      ]
-    },
-    {
-      "id": "graph",
-      "version": "1.0",
-      "handlers": [
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/graph/resource/{id}",
-          "permissionsRequired": [ "linked-data.resources.graph.get" ],
-          "modulePermissions": []
         }
       ]
     }

@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @IntegrationTest
 class ResourceControllerValidationIT {
 
-  private static final String RESOURCE_URL = "/resource";
+  private static final String RESOURCE_URL = "/linked-data/resource";
 
   @Autowired
   private MockMvc mockMvc;
