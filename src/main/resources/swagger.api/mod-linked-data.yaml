@@ -262,6 +262,8 @@ paths:
   /linked-data/authority-assignment-check:
     post:
       operationId: authority-assignment-check
+      tags:
+        - authority
       description: Checks if authority can be assigned to work
       parameters:
         - $ref: '#/components/parameters/x-okapi-tenant-header'
