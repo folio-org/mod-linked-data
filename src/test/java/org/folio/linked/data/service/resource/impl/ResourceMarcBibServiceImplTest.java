@@ -1,12 +1,12 @@
 package org.folio.linked.data.service.resource.impl;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -117,7 +116,7 @@ class ResourceMarcBibServiceImplTest {
     var notExistedId = randomLong();
     when(resourceRepo.findById(notExistedId))
       .thenReturn(Optional.empty());
-    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    var expectedException = emptyRequestProcessingException();
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(expectedException);
 
@@ -134,7 +133,7 @@ class ResourceMarcBibServiceImplTest {
     when(resourceRepo.findById(notExistedId))
       .thenReturn(Optional.of(existedResource));
     when(exceptionBuilder.notSupportedException(anyString(), anyString()))
-      .thenReturn(new RequestProcessingException(0, "", emptyMap(), ""));
+      .thenReturn(emptyRequestProcessingException());
 
     // when
     assertThatExceptionOfType(RequestProcessingException.class)
@@ -185,7 +184,7 @@ class ResourceMarcBibServiceImplTest {
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
     when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
-      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
+      .thenReturn(emptyRequestProcessingException());
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
@@ -222,7 +221,7 @@ class ResourceMarcBibServiceImplTest {
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
     when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
-      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
+      .thenReturn(emptyRequestProcessingException());
 
     // when
     assertThatExceptionOfType(RequestProcessingException.class)
@@ -280,7 +279,7 @@ class ResourceMarcBibServiceImplTest {
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenThrow(FeignException.NotFound.class);
     when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
-      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
+      .thenReturn(emptyRequestProcessingException());
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
@@ -305,7 +304,7 @@ class ResourceMarcBibServiceImplTest {
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
     when(resourceRepo.existsById(resourceId)).thenReturn(true);
     when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
-      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
+      .thenReturn(emptyRequestProcessingException());
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
@@ -332,7 +331,7 @@ class ResourceMarcBibServiceImplTest {
     when(resourceRepo.existsById(resourceId)).thenReturn(false);
     when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(true);
     when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
-      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
+      .thenReturn(emptyRequestProcessingException());
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)

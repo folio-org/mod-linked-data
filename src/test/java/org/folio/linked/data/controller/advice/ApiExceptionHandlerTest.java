@@ -1,14 +1,13 @@
 package org.folio.linked.data.controller.advice;
 
-import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.folio.linked.data.domain.dto.ErrorResponse;
-import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.mapper.error.ConstraintViolationExceptionMapper;
 import org.folio.linked.data.mapper.error.EntityNotFoundExceptionMapper;
 import org.folio.linked.data.mapper.error.GenericBadRequestMapper;
@@ -52,7 +51,7 @@ class ApiExceptionHandlerTest {
   @Test
   void handleRequestProcessingException_shouldReturnCorrectResult() {
     // given
-    var exception = new RequestProcessingException(0, "", emptyMap(), "");
+    var exception = emptyRequestProcessingException();
     var expectedResult = new ResponseEntity<ErrorResponse>(HttpStatusCode.valueOf(400));
     when(requestProcessingExceptionMapper.errorResponseEntity(exception)).thenReturn(expectedResult);
 

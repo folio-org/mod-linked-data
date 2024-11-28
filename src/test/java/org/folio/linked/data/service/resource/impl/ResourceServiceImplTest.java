@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,7 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -158,7 +158,7 @@ class ResourceServiceImplTest {
     // given
     var notExistedId = randomLong();
     when(resourceRepo.findById(notExistedId)).thenReturn(Optional.empty());
-    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    var expectedException = emptyRequestProcessingException();
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(expectedException);
 
@@ -190,7 +190,7 @@ class ResourceServiceImplTest {
   void getResourceIdByInventoryId_shouldThrowRequestProcessingException_ifNoEntityExistsWithGivenInventoryId() {
     // given
     var inventoryId = UUID.randomUUID().toString();
-    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    var expectedException = emptyRequestProcessingException();
     when(exceptionBuilder.notFoundLdResourceByInventoryIdException(anyString()))
       .thenReturn(expectedException);
 

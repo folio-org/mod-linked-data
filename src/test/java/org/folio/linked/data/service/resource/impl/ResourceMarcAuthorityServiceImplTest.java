@@ -12,6 +12,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.service.resource.AssignAuthorityTarget.CREATOR_OF_WORK;
 import static org.folio.linked.data.service.resource.AssignAuthorityTarget.SUBJECT_OF_WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,6 +34,7 @@ import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -47,7 +49,6 @@ import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
 import org.folio.spring.testing.type.UnitTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -62,7 +63,6 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 @UnitTest
-@Disabled
 @ExtendWith(MockitoExtension.class)
 class ResourceMarcAuthorityServiceImplTest {
 
@@ -83,6 +83,8 @@ class ResourceMarcAuthorityServiceImplTest {
   private MarcAuthority2ldMapper marcAuthority2ldMapper;
   @Mock
   private SrsClient srsClient;
+  @Mock
+  private RequestProcessingExceptionBuilder exceptionBuilder;
   @Spy
   private ObjectMapper objectMapper = OBJECT_MAPPER;
 
@@ -160,6 +162,7 @@ class ResourceMarcAuthorityServiceImplTest {
     when(srsClient.getSourceStorageRecordBySrsId(id))
       .thenThrow(FeignException.NotFound.class);
     var agent = new Agent().id(id).srsId(id);
+    when(exceptionBuilder.notFoundSourceRecordException(any(), any())).thenReturn(emptyRequestProcessingException());
 
     // then
     assertThrows(RequestProcessingException.class,

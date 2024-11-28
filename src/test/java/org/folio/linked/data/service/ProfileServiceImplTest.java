@@ -1,12 +1,12 @@
 package org.folio.linked.data.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
 import java.util.Optional;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
@@ -53,7 +53,7 @@ class ProfileServiceImplTest {
     //given
     when(profileRepository.findById(1)).thenReturn(Optional.empty());
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
-      .thenReturn(new RequestProcessingException(0, "", new HashMap<>(), ""));
+      .thenReturn(emptyRequestProcessingException());
 
     //when
     var thrown = assertThrows(
