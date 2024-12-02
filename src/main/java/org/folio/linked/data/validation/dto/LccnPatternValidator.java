@@ -4,6 +4,8 @@ import static org.folio.linked.data.util.LccnUtils.isCurrent;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.LccnRequest;
@@ -21,10 +23,13 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
   private static final Pattern LCCN_STRUCTURE_B_PATTERN = Pattern.compile("( {2}|[a-z][ a-z])\\d{10}");
 
   private final SpecProvider specProvider;
+  private final List<Function<String, String>> lccnNormalizers;
 
   @Override
   public boolean isValid(LccnRequest lccnRequest, ConstraintValidatorContext constraintValidatorContext) {
+
     if (isCurrent(lccnRequest) && isLccnFormatValidationEnabled()) {
+      normalize(lccnRequest);
       return lccnRequest.getValue()
         .stream()
         .anyMatch(this::hasValidPattern);
@@ -40,6 +45,16 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
       .findFirst()
       .map(SpecificationRuleDto::getEnabled)
       .orElse(false);
+  }
+
+  private void normalize(LccnRequest lccnRequest) {
+    var normalizer = lccnNormalizers.stream()
+      .reduce(Function.identity(), Function::andThen);
+    var normalized = lccnRequest.getValue()
+      .stream()
+      .map(normalizer)
+      .toList();
+    lccnRequest.setValue(normalized);
   }
 
   private boolean hasValidPattern(String lccnValue) {

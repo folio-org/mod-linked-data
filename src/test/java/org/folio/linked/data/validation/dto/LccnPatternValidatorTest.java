@@ -7,6 +7,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.LccnRequest;
 import org.folio.linked.data.domain.dto.Status;
@@ -27,6 +28,9 @@ class LccnPatternValidatorTest {
 
   @Mock
   private SpecProvider specProvider;
+
+  @Mock
+  private List<UnaryOperator<String>> lccnNormalizers;
 
   @InjectMocks
   private LccnPatternValidator validator;
