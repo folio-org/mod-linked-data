@@ -3,13 +3,11 @@ package org.folio.linked.data.e2e;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
-import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -26,7 +24,6 @@ import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -63,20 +60,13 @@ class ReIndexControllerIT {
     tenantScopedExecutionService.execute(TENANT_ID, () ->
       cleanResourceTables(jdbcTemplate)
     );
+    consumer.getMessages().clear();
   }
 
-  @Disabled("To be fixed in https://folio-org.atlassian.net/browse/MODLD-597")
   @Test
   void indexResourceWithNoIndexDate_andNotFullIndexRequest() throws Exception {
     // given
     var work = resourceRepo.save(getSampleWork(null));
-    var instance = resourceRepo.save(getSampleInstanceResource(null, work));
-    var anotherWork = getSampleWork(instance);
-    anotherWork.setId(randomLong());
-    resourceRepo.save(anotherWork);
-    var resourceEdge = work.getIncomingEdges().iterator().next();
-    resourceEdge.computeId();
-    resourceEdgeRepository.save(resourceEdge);
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)
@@ -93,8 +83,7 @@ class ReIndexControllerIT {
   @Test
   void notIndexResourceWithIndexDate_andNotFullIndexRequest() throws Exception {
     // given
-    var work = resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));
-    resourceRepo.save(getSampleInstanceResource(null, work));
+    resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)
@@ -112,10 +101,6 @@ class ReIndexControllerIT {
   void indexResourceWithNoIndexDate_andFullIndexRequest() throws Exception {
     // given
     var work = resourceRepo.save(getSampleWork(null));
-    resourceRepo.save(getSampleInstanceResource(null, work));
-    var resourceEdge = work.getIncomingEdges().iterator().next();
-    resourceEdge.computeId();
-    resourceEdgeRepository.save(resourceEdge);
 
     var requestBuilder = put(INDEX_URL)
       .param("full", "true")
@@ -134,10 +119,6 @@ class ReIndexControllerIT {
   void indexResourceWithIndexDate_andFullIndexRequest() throws Exception {
     // given
     var work = resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));
-    resourceRepo.save(getSampleInstanceResource(null, work));
-    var resourceEdge = work.getIncomingEdges().iterator().next();
-    resourceEdge.computeId();
-    resourceEdgeRepository.save(resourceEdge);
 
     var requestBuilder = put(INDEX_URL)
       .param("full", "true")

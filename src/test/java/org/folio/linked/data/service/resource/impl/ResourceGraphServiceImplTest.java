@@ -1,12 +1,12 @@
 package org.folio.linked.data.service.resource.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
 import java.util.Optional;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.RequestProcessingException;
@@ -60,7 +60,7 @@ class ResourceGraphServiceImplTest {
     // given
     var id = randomLong();
     when(resourceRepo.findById(id)).thenReturn(Optional.empty());
-    var expectedException = new RequestProcessingException(0, "", new HashMap<>(), "");
+    var expectedException = emptyRequestProcessingException();
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(expectedException);
 

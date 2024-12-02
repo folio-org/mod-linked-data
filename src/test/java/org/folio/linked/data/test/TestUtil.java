@@ -3,6 +3,7 @@ package org.folio.linked.data.test;
 import static java.lang.System.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toCollection;
@@ -38,6 +39,7 @@ import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
+import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.json.InstanceResponseAllOfMapDeserializer;
@@ -178,6 +180,10 @@ public class TestUtil {
       "genericCode",
       genericParameters(parametersCount),
       genericMessage(parametersCount));
+  }
+
+  public static RequestProcessingException emptyRequestProcessingException() {
+    return new RequestProcessingException(0, "", emptyMap(), "");
   }
 
   private static List<String> genericParameters(int parametersCount) {
