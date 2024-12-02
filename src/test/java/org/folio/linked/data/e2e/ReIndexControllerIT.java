@@ -3,7 +3,6 @@ package org.folio.linked.data.e2e;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
-import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
@@ -84,8 +83,7 @@ class ReIndexControllerIT {
   @Test
   void notIndexResourceWithIndexDate_andNotFullIndexRequest() throws Exception {
     // given
-    var work = resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));
-    resourceRepo.save(getSampleInstanceResource(null, work));
+    resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));
 
     var requestBuilder = put(INDEX_URL)
       .contentType(APPLICATION_JSON)
@@ -103,7 +101,6 @@ class ReIndexControllerIT {
   void indexResourceWithNoIndexDate_andFullIndexRequest() throws Exception {
     // given
     var work = resourceRepo.save(getSampleWork(null));
-    resourceRepo.save(getSampleInstanceResource(null, work));
 
     var requestBuilder = put(INDEX_URL)
       .param("full", "true")
