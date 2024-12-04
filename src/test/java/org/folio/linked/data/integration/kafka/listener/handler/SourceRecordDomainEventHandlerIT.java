@@ -15,6 +15,7 @@ import static org.folio.linked.data.model.entity.ResourceSource.MARC;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.assertAuthority;
+import static org.folio.linked.data.test.TestUtil.assertResourceMetadata;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
@@ -161,7 +162,9 @@ class SourceRecordDomainEventHandlerIT {
       .replace("aValue", "aaValue")
       .replace("1125d50a-adea-4eaa-a418-6b3a0e6fa6ae", UUID.randomUUID().toString())
       .replace("6dcb9a08-9884-4a15-b990-89c879a8e988", UUID.randomUUID().toString());
-    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_AUTHORITY);
+    var createdBy = UUID.randomUUID();
+    var eventProducerRecord = getSrsDomainEventProducerRecord(
+      randomUUID().toString(), marc, CREATED, MARC_AUTHORITY, createdBy);
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);
@@ -178,9 +181,11 @@ class SourceRecordDomainEventHandlerIT {
         .findFirst()
     );
 
-    assertThat(found).isPresent();
     var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
-    assertAuthority(found.get(), expectedLabel, true, true, null);
+    assertThat(found)
+      .get()
+      .satisfies(authority -> assertAuthority(authority, expectedLabel, true, true, null))
+      .satisfies(authority -> assertResourceMetadata(authority, createdBy));
   }
 
   @Test

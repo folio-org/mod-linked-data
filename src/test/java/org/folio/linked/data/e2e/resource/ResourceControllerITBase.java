@@ -124,6 +124,7 @@ import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
+import static org.folio.linked.data.test.TestUtil.assertResourceMetadata;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
@@ -133,6 +134,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -522,6 +524,7 @@ public abstract class ResourceControllerITBase {
     validateWork(workResource, true);
     checkSearchIndexMessage(workResource.getId(), CREATE);
     checkIndexDate(workResource.getId().toString());
+    assertResourceMetadata(workResource, null);
   }
 
   @Test
@@ -565,21 +568,27 @@ public abstract class ResourceControllerITBase {
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
 
-    var updatedFolioMetadata = updatedInstance.getFolioMetadata();
-    var originalFolioMetadata = originalInstance.getFolioMetadata();
-    var folioMetadataDto = instanceDto.getFolioMetadata();
-    assertThat(updatedFolioMetadata.getInventoryId())
-      .isEqualTo(folioMetadataDto.getInventoryId())
-      .isEqualTo(originalFolioMetadata.getInventoryId());
-    assertThat(updatedFolioMetadata.getSrsId())
-      .isEqualTo(folioMetadataDto.getSrsId())
-      .isEqualTo(originalFolioMetadata.getSrsId());
-    assertThat(updatedFolioMetadata.getSource().name())
-      .isEqualTo(folioMetadataDto.getSource().name())
-      .isEqualTo(LINKED_DATA.name());
-
+    compareMetadataOfOriginalAndUpdatedInstances(originalInstance, updatedInstance, instanceDto.getFolioMetadata());
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
+  }
+
+  private void compareMetadataOfOriginalAndUpdatedInstances(Resource original, Resource updated,
+                                                            org.folio.linked.data.domain.dto.FolioMetadata dto) {
+    var updatedFolioMetadata = updated.getFolioMetadata();
+    var originalFolioMetadata = original.getFolioMetadata();
+    assertThat(updatedFolioMetadata.getInventoryId())
+      .isEqualTo(dto.getInventoryId())
+      .isEqualTo(originalFolioMetadata.getInventoryId());
+    assertThat(updatedFolioMetadata.getSrsId())
+      .isEqualTo(dto.getSrsId())
+      .isEqualTo(originalFolioMetadata.getSrsId());
+    assertThat(updatedFolioMetadata.getSource().name())
+      .isEqualTo(dto.getSource().name())
+      .isEqualTo(LINKED_DATA.name());
+    assertEquals(original.getCreatedDate(), updated.getCreatedDate());
+    assertTrue(updated.getUpdatedDate().after(original.getUpdatedDate()));
+    assertEquals(1, updated.getVersion() - original.getVersion());
   }
 
   @Test

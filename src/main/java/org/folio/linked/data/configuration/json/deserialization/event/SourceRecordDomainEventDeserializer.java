@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.domain.dto.EventMetadata;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
@@ -25,6 +26,7 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
   private static final String ID = "id";
   private static final String EVENT_TYPE = "eventType";
   private static final String EVENT_PAYLOAD = "eventPayload";
+  private static final String EVENT_METADATA = "eventMetadata";
   private static final String DELETED = "deleted";
   private static final String PARSED_RECORD = "parsedRecord";
   private static final String CONTENT = "content";
@@ -44,7 +46,22 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
     if (node.has(EVENT_PAYLOAD)) {
       event.setEventPayload(getSourceRecord(node.get(EVENT_PAYLOAD)));
     }
+    if (node.has(EVENT_METADATA)) {
+      event.setEventMetadata(getEventMetadata(node));
+    }
     return event;
+  }
+
+  private EventMetadata getEventMetadata(JsonNode node) {
+    if (node.has(EVENT_METADATA)) {
+      var value = node.get(EVENT_METADATA);
+      try {
+        return value.isNull() ? null : objectMapper.readValue(value.toString(), EventMetadata.class);
+      } catch (Exception e) {
+        log.warn("Can't convert event metadata",  e);
+      }
+    }
+    return null;
   }
 
   private EventTypeEnum getEventType(JsonNode node) {

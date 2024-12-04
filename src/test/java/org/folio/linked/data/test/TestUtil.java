@@ -14,6 +14,8 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
 import static org.jeasy.random.FieldPredicates.named;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.SneakyThrows;
@@ -167,6 +170,12 @@ public class TestUtil {
         .anyMatch(edge -> isNull(replacedBy) || edge.getPredicate().getUri().equals(REPLACED_BY.getUri())
           && edge.getTarget().equals(replacedBy))
       );
+  }
+
+  public static void assertResourceMetadata(Resource resource, UUID createdBy) {
+    assertNotNull(resource.getCreatedDate());
+    assertNotNull(resource.getUpdatedDate());
+    assertEquals(createdBy, resource.getCreatedBy());
   }
 
   public static void cleanResourceTables(JdbcTemplate jdbcTemplate) {
