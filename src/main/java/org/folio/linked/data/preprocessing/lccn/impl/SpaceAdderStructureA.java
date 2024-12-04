@@ -1,4 +1,4 @@
-package org.folio.linked.data.preprocessing.lccn;
+package org.folio.linked.data.preprocessing.lccn.impl;
 
 import static com.github.jknack.handlebars.internal.lang3.StringUtils.SPACE;
 
@@ -21,9 +21,7 @@ public class SpaceAdderStructureA extends AbstractSpaceAdder {
     if (noTrailingSpace(builder)) {
       builder.append(SPACE);
     }
-    while (isProcessable(builder.toString())) {
-      builder.insert(0, SPACE);
-    }
+    addSpaces(builder);
     return builder.toString();
   }
 

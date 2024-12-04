@@ -5,15 +5,13 @@ import static org.folio.linked.data.util.LccnUtils.isCurrent;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
-import java.util.function.Function;
 import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.LccnRequest;
+import org.folio.linked.data.preprocessing.lccn.LccnNormalizer;
 import org.folio.linked.data.validation.LccnPatternConstraint;
 import org.folio.linked.data.validation.spec.SpecProvider;
 import org.folio.rspec.domain.dto.SpecificationRuleDto;
 
-@RequiredArgsConstructor
 @SuppressWarnings("javaarchitecture:S7091")
 public class LccnPatternValidator implements ConstraintValidator<LccnPatternConstraint, LccnRequest> {
 
@@ -23,7 +21,12 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
   private static final Pattern LCCN_STRUCTURE_B_PATTERN = Pattern.compile("( {2}|[a-z][ a-z])\\d{10}");
 
   private final SpecProvider specProvider;
-  private final List<Function<String, String>> lccnNormalizers;
+  private final LccnNormalizer<String> lccnNormalizer;
+
+  public LccnPatternValidator(SpecProvider specProvider, List<LccnNormalizer<String>> lccnNormalizers) {
+    this.specProvider = specProvider;
+    this.lccnNormalizer = lccnNormalizers.stream().reduce(LccnNormalizer.identity(), LccnNormalizer::andThen);
+  }
 
   @Override
   public boolean isValid(LccnRequest lccnRequest, ConstraintValidatorContext constraintValidatorContext) {
@@ -48,13 +51,11 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
   }
 
   private void normalize(LccnRequest lccnRequest) {
-    var normalizer = lccnNormalizers.stream()
-      .reduce(Function.identity(), Function::andThen);
-    var normalized = lccnRequest.getValue()
+    var normalizedLccn = lccnRequest.getValue()
       .stream()
-      .map(normalizer)
+      .map(lccnNormalizer::normalize)
       .toList();
-    lccnRequest.setValue(normalized);
+    lccnRequest.setValue(normalizedLccn);
   }
 
   private boolean hasValidPattern(String lccnValue) {

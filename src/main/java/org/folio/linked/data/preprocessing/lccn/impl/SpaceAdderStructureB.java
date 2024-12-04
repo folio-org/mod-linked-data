@@ -1,6 +1,4 @@
-package org.folio.linked.data.preprocessing.lccn;
-
-import static com.github.jknack.handlebars.internal.lang3.StringUtils.SPACE;
+package org.folio.linked.data.preprocessing.lccn.impl;
 
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
@@ -18,9 +16,7 @@ public class SpaceAdderStructureB extends AbstractSpaceAdder {
   @Override
   protected String handle(String lccn) {
     var builder = new StringBuilder(lccn);
-    while (isProcessable(builder.toString())) {
-      builder.insert(0, SPACE);
-    }
+    addSpaces(builder);
     return builder.toString();
   }
 }

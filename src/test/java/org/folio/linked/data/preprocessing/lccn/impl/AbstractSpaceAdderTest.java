@@ -1,4 +1,4 @@
-package org.folio.linked.data.preprocessing.lccn;
+package org.folio.linked.data.preprocessing.lccn.impl;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,9 +45,9 @@ class AbstractSpaceAdderTest {
     "0123456789",
     "1a345678",
   })
-  void apply_shouldNot_invokeHandle(String input) {
+  void normalize_shouldNot_invokeHandle(String input) {
     // when
-    spaceAdder.apply(input);
+    spaceAdder.normalize(input);
 
     // then
     verify(spaceAdder, never()).handle(input);
@@ -60,9 +60,9 @@ class AbstractSpaceAdderTest {
     " 12345678",
     "  12345678",
   })
-  void apply_should_invokeHandle(String input) {
+  void normalize_should_invokeHandle(String input) {
     // when
-    spaceAdder.apply(input);
+    spaceAdder.normalize(input);
 
     // then
     verify(spaceAdder).handle(input);

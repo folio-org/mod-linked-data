@@ -1,4 +1,4 @@
-package org.folio.linked.data.preprocessing.lccn;
+package org.folio.linked.data.preprocessing.lccn.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,11 +22,11 @@ class SpaceAdderStructurebTest {
   @ParameterizedTest
   @CsvSource({
     "0123456789, '  0123456789'",
+    "a0123456789, 'a 0123456789'",
     " 0123456789 , '  0123456789'"
   })
   void handle_shouldAdd_appropriateSpaces(String input, String expectedOutput) {
     // expect
     assertEquals(expectedOutput, spaceAdder.handle(input));
   }
-
 }

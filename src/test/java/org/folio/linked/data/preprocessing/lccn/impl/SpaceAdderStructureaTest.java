@@ -1,4 +1,4 @@
-package org.folio.linked.data.preprocessing.lccn;
+package org.folio.linked.data.preprocessing.lccn.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,6 +24,9 @@ class SpaceAdderStructureaTest {
     "abc12345678, 'abc12345678 '",
     "12345678 , '   12345678 '",
     "12345678, '   12345678 '",
+    "a12345678, 'a  12345678 '",
+    "a 12345678, 'a  12345678 '",
+    "ab12345678, 'ab 12345678 '",
     " 12345678 , '   12345678 '",
     "  12345678 , '   12345678 '",
   })
