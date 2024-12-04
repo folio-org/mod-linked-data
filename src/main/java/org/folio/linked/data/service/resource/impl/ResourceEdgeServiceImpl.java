@@ -1,7 +1,10 @@
 package org.folio.linked.data.service.resource.impl;
 
+import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+
 import java.util.Map;
-import java.util.function.Predicate;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.Resource;
@@ -12,30 +15,41 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResourceEdgeServiceImpl implements ResourceEdgeService {
 
-  private static final Predicate<ResourceEdge> IS_ADMIN_METADATA = edge -> edge.getPredicate().getUri()
-    .equals(PredicateDictionary.ADMIN_METADATA.getUri());
-
-  private final Map<ResourceTypeDictionary, Predicate<ResourceEdge>> edgesTobeCopied;
+  private final Map<ResourceTypeDictionary, Set<PredicateDictionary>> edgesToBeCopied;
 
   public ResourceEdgeServiceImpl() {
-    edgesTobeCopied = initializeEdgesTobeCopied();
+    edgesToBeCopied = initializeEdgesToBeCopied();
   }
 
   public void copyOutgoingEdges(Resource from, Resource to) {
-    this.edgesTobeCopied.entrySet()
+    getEdgesToBeCopied(from)
       .stream()
-      .filter(entry -> from.isOfType(entry.getKey()))
-      .filter(entry -> to.isOfType(entry.getKey()))
-      .map(Map.Entry::getValue)
-      .flatMap(condition -> from.getOutgoingEdges().stream().filter(condition))
       .map(edge -> new ResourceEdge(to, edge.getTarget(), edge.getPredicate()))
       .forEach(to::addOutgoingEdge);
   }
 
-  private Map<ResourceTypeDictionary, Predicate<ResourceEdge>> initializeEdgesTobeCopied() {
+  private Set<ResourceEdge> getEdgesToBeCopied(Resource resource) {
+    var predicatesToBeCopied = getPredicatesToBeCopied(resource);
+    return getOutgoingEdgesWithPredicate(resource, predicatesToBeCopied);
+  }
+
+  private static Set<ResourceEdge> getOutgoingEdgesWithPredicate(Resource resource, Set<String> predicateUris) {
+    return resource.getOutgoingEdges().stream()
+      .filter(edge -> predicateUris.contains(edge.getPredicate().getUri()))
+      .collect(Collectors.toSet());
+  }
+
+  private Set<String> getPredicatesToBeCopied(Resource resource) {
+    return edgesToBeCopied.entrySet().stream()
+      .filter(entry -> resource.isOfType(entry.getKey()))
+      .flatMap(entry -> entry.getValue().stream())
+      .map(PredicateDictionary::getUri)
+      .collect(Collectors.toSet());
+  }
+
+  private Map<ResourceTypeDictionary, Set<PredicateDictionary>> initializeEdgesToBeCopied() {
     return Map.of(
-      ResourceTypeDictionary.WORK, IS_ADMIN_METADATA,
-      ResourceTypeDictionary.INSTANCE, IS_ADMIN_METADATA
+      ResourceTypeDictionary.INSTANCE, Set.of(ADMIN_METADATA)
     );
   }
 }

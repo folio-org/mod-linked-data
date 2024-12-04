@@ -2,15 +2,12 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.createPrimaryTitle;
 import static org.folio.linked.data.test.MonographTestUtil.createResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
-import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_TITLE_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,7 +22,6 @@ import java.util.UUID;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
@@ -39,7 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
 class ResourceControllerRetainOutgoingEdgesIT {
-  public static final String RESOURCE_URL = "/linked-data/resource";
+  private static final String RESOURCE_URL = "/linked-data/resource";
   private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
 
   @Autowired
@@ -50,30 +46,6 @@ class ResourceControllerRetainOutgoingEdgesIT {
   private MockMvc mockMvc;
   @Autowired
   private HashService hashService;
-
-  @Test
-  void shouldRetainAdminMetadataOfWorkAfterUpdate() throws Exception {
-    // given
-    var creatorPerson = createResource(Map.of(), Set.of(PERSON), Map.of());
-    var annotation = createResource(Map.of(), Set.of(ANNOTATION), Map.of());
-    var work = createResource(Map.of(), Set.of(WORK),
-      Map.of(
-        PredicateDictionary.TITLE, List.of(createPrimaryTitle(1L)),
-        PredicateDictionary.ADMIN_METADATA, List.of(annotation),
-        PredicateDictionary.CREATOR, List.of(creatorPerson),
-        PredicateDictionary.DESIGNER_OF_BOOK, List.of(creatorPerson)
-      )
-    );
-    setResourceIds(work);
-    resourceTestService.saveGraph(work);
-
-    // when
-    var updatedResource = updateResource(work.getId(), SIMPLE_WORK_WITH_TITLE_SAMPLE);
-    var newWorkId = ((WorkResponseField) updatedResource.getResource()).getWork().getId();
-
-    // then
-    assertAdminMetadataEdgeRetained(newWorkId);
-  }
 
   @Test
   void shouldRetainAdminMetadataOfInstanceAfterUpdate() throws Exception {
