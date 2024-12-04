@@ -19,6 +19,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.spring.FolioExecutionContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
   private final ResourceEdgeService resourceEdgeService;
+  private final FolioExecutionContext folioExecutionContext;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -103,6 +105,10 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     metadataService.ensure(mapped, old.getFolioMetadata());
     resourceEdgeService.copyOutgoingEdges(old, mapped);
+    mapped.setCreatedDate(old.getCreatedDate());
+    mapped.setVersion(old.getVersion() + 1);
+    mapped.setCreatedBy(old.getCreatedBy());
+    mapped.setUpdatedBy(folioExecutionContext.getUserId());
     return resourceGraphService.saveMergingGraph(mapped);
   }
 
