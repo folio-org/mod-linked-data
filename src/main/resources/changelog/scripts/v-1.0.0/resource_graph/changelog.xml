@@ -18,4 +18,5 @@
 
   <include file="functions/drop_staging_tables.sql" relativeToChangelogFile="true"/>
   <include file="functions/create_staging_tables.sql" relativeToChangelogFile="true"/>
+  <include file="migration/resources_date_fields.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
