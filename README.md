@@ -279,4 +279,4 @@ The Linked Data module consumes a message and updates a corresponding Instance r
 
 # Possible error responses
 All error responses are listed in [src/main/resources/errors.yml](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/errors.yml).
-Validation error could contain various message codes listed in [src/main/resources/validationMessages.properties](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/validationMessages.properties).
+Validation error could contain various message codes listed in [src/main/resources/ValidationMessages.properties](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/ValidationMessages.properties).
