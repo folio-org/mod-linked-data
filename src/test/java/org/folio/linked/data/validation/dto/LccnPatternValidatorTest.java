@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.LccnRequest;
 import org.folio.linked.data.domain.dto.Status;
+import org.folio.linked.data.preprocessing.lccn.LccnNormalizer;
 import org.folio.linked.data.validation.spec.SpecProvider;
 import org.folio.rspec.domain.dto.SpecificationRuleDto;
 import org.folio.spring.testing.type.UnitTest;
@@ -27,6 +28,9 @@ class LccnPatternValidatorTest {
 
   @Mock
   private SpecProvider specProvider;
+
+  @Mock
+  private List<LccnNormalizer> lccnNormalizers;
 
   @InjectMocks
   private LccnPatternValidator validator;
