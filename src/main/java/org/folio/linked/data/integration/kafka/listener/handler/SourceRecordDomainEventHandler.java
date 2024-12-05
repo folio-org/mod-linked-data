@@ -78,8 +78,18 @@ public class SourceRecordDomainEventHandler {
 
   private void saveAuthority(Resource resource, SourceRecordDomainEvent event) {
     if (CREATED == event.getEventType() || UPDATED == event.getEventType()) {
+      setUserMetadata(resource, event);
       var id = resourceMarcService.saveMarcResource(resource);
       log.info(EVENT_SAVED, event.getId(), MARC_AUTHORITY, id);
+    }
+  }
+
+  private void setUserMetadata(Resource resource, SourceRecordDomainEvent event) {
+    if (CREATED == event.getEventType()) {
+      resource.setCreatedBy(event.getEventMetadata().getCreatedBy());
+    }
+    if (UPDATED == event.getEventType()) {
+      resource.setUpdatedBy(event.getEventMetadata().getCreatedBy());
     }
   }
 

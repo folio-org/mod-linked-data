@@ -101,6 +101,8 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     metadataService.ensure(mapped, old.getFolioMetadata());
+    mapped.setCreatedDate(old.getCreatedDate());
+    mapped.setVersion(old.getVersion() + 1);
     return resourceGraphService.saveMergingGraph(mapped);
   }
 

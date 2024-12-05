@@ -11,9 +11,11 @@ import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.folio.linked.data.domain.dto.EventMetadata;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
@@ -41,26 +43,38 @@ public class KafkaEventsTestDataFixture {
   public static ProducerRecord<String, String> getSrsDomainEventProducerRecord(String id,
                                                                                String marc,
                                                                                EventTypeEnum type,
-                                                                               SourceRecordType recordType) {
+                                                                               SourceRecordType recordType,
+                                                                               UUID createdBy) {
     var topic = getTenantTopicName(RECORD_DOMAIN_EVENT_TOPIC, TENANT_ID);
     var value = OBJECT_MAPPER.writeValueAsString(Map.of(
         "id", id,
         "eventType", type,
-        "eventPayload", new SourceRecord().parsedRecord(new ParsedRecord(marc))
+        "eventPayload", new SourceRecord().parsedRecord(new ParsedRecord(marc)),
+        "eventMetadata", new EventMetadata().createdBy(createdBy.toString())
       )
     );
     var headers = new ArrayList<>(defaultKafkaHeaders());
     headers.add(new RecordHeader("folio.srs.recordType", recordType.name().getBytes()));
     return new ProducerRecord(topic, 0, id, value, headers);
+
+  }
+
+  public static ProducerRecord<String, String> getSrsDomainEventProducerRecord(String id,
+                                                                               String marc,
+                                                                               EventTypeEnum type,
+                                                                               SourceRecordType recordType) {
+    return getSrsDomainEventProducerRecord(id, marc, type, recordType, UUID.randomUUID());
   }
 
   public static SourceRecordDomainEvent getSrsDomainEvent(String id,
                                                           String marc,
-                                                          EventTypeEnum type) {
+                                                          EventTypeEnum type,
+                                                          String createdBy) {
     return new SourceRecordDomainEvent()
       .id(id)
       .eventType(type)
-      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marc)));
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marc)))
+      .eventMetadata(new EventMetadata().createdBy(createdBy));
   }
 
 }

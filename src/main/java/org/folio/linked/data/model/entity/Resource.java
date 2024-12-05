@@ -26,10 +26,13 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.Version;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,6 +44,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
 import org.folio.marc4ld.util.ResourceKind;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
 
 @Entity
@@ -93,6 +97,23 @@ public class Resource implements Persistable<Long> {
   @PrimaryKeyJoinColumn
   private FolioMetadata folioMetadata;
 
+  @Column(name = "created_date", updatable = false, nullable = false)
+  private Timestamp createdDate;
+
+  @UpdateTimestamp
+  @Column(name = "updated_date", nullable = false)
+  private Timestamp updatedDate;
+
+  @Column(name = "created_by")
+  private UUID createdBy;
+
+  @Column(name = "updated_by")
+  private UUID updatedBy;
+
+  @Version
+  @Column(name = "version", nullable = false)
+  private long version;
+
   @Transient
   private boolean managed;
 
@@ -103,6 +124,11 @@ public class Resource implements Persistable<Long> {
     this.folioMetadata = that.folioMetadata;
     this.indexDate = that.indexDate;
     this.types = new LinkedHashSet<>(that.getTypes());
+    this.createdDate = that.createdDate;
+    this.createdBy = that.createdBy;
+    this.updatedDate = that.updatedDate;
+    this.updatedBy = that.updatedBy;
+    this.version = that.version;
     this.outgoingEdges = ofNullable(that.getOutgoingEdges())
       .map(outEdges -> outEdges.stream().map(ResourceEdge::new).collect(Collectors.toSet()))
       .orElse(null);
@@ -192,6 +218,9 @@ public class Resource implements Persistable<Long> {
     if (nonNull(folioMetadata) && !isOfType(INSTANCE) && !isAuthority()) {
       throw new IllegalStateException("Cannot save resource [" + id + "] with types " + types + ". "
         + "Folio metadata can be set only for instance and authority resources");
+    }
+    if (isNull(this.createdDate)) {
+      this.createdDate = new Timestamp(System.currentTimeMillis());
     }
   }
 

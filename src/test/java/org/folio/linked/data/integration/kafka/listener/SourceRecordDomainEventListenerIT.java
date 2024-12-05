@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.util.UUID;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
@@ -71,7 +72,7 @@ class SourceRecordDomainEventListenerIT {
     var recordType = MARC_BIB;
     var eventType = CREATED;
     var eventProducerRecord = getSrsDomainEventProducerRecord(eventId, marc, eventType, recordType);
-    var expectedEvent = getSrsDomainEvent(eventId, marc, eventType);
+    var expectedEvent = getSrsDomainEvent(eventId, marc, eventType, UUID.randomUUID().toString());
     doThrow(new RuntimeException("An error occurred"))
       .doNothing()
       .when(sourceRecordDomainEventHandler).handle(expectedEvent, recordType);
@@ -101,8 +102,9 @@ class SourceRecordDomainEventListenerIT {
     var eventId = "2";
     var marc = "{}";
     var eventType = CREATED;
-    var eventProducerRecord = getSrsDomainEventProducerRecord(eventId, marc, eventType, MARC_AUTHORITY);
-    var expectedEvent = getSrsDomainEvent(eventId, marc, eventType);
+    var createdBy = UUID.randomUUID();
+    var eventProducerRecord = getSrsDomainEventProducerRecord(eventId, marc, eventType, MARC_AUTHORITY, createdBy);
+    var expectedEvent = getSrsDomainEvent(eventId, marc, eventType, createdBy.toString());
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);

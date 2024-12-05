@@ -5,12 +5,15 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
+import java.util.UUID;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.EventMetadata;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
@@ -96,9 +99,11 @@ class SourceRecordDomainEventHandlerTest {
   @Test
   void shouldTriggerResourceSaving_forCorrectMarcAuthorityEvent() {
     // given
+    var createdBy = UUID.randomUUID().toString();
     var event = new SourceRecordDomainEvent().id("8")
       .eventType(CREATED)
-      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")))
+      .eventMetadata(new EventMetadata().createdBy(createdBy));
     var mapped1 = new Resource().setId(9L).addType(PERSON);
     var mapped2 = new Resource().setId(10L).addType(CONCEPT);
     doReturn(List.of(mapped1, mapped2)).when(marcAuthority2ldMapper)
@@ -108,6 +113,8 @@ class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_AUTHORITY);
 
     // then
+    assertEquals(createdBy, mapped1.getCreatedBy());
+    assertEquals(createdBy, mapped2.getCreatedBy());
     verify(resourceMarcService).saveMarcResource(mapped1);
     verify(resourceMarcService).saveMarcResource(mapped2);
   }
