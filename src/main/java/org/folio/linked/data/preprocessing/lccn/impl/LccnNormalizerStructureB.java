@@ -4,19 +4,22 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SpaceAdderStructureB extends AbstractSpaceAdder {
+public class LccnNormalizerStructureB extends AbstractLccnNormalizer {
 
   private static final Pattern PATTERN = Pattern.compile("(?<!\\d)\\d{10}(?!\\d)");
 
   @Override
-  protected Pattern getPattern() {
-    return PATTERN;
+  public boolean test(String lccn) {
+    return PATTERN.matcher(lccn)
+      .find();
   }
 
   @Override
-  protected String handle(String lccn) {
+  public String apply(String lccn) {
     var builder = new StringBuilder(lccn);
-    addSpaces(builder);
+    if (isProcessable(builder)) {
+      addSpaces(builder);
+    }
     return builder.toString();
   }
 }

@@ -1,15 +1,15 @@
 package org.folio.linked.data.preprocessing.lccn;
 
-@FunctionalInterface
-public interface LccnNormalizer<T> {
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 
-  T normalize(T t);
+public interface LccnNormalizer extends Predicate<String>, UnaryOperator<String> {
 
-  default LccnNormalizer<T> andThen(LccnNormalizer<T> after) {
-    return t -> after.normalize(normalize(t));
-  }
-
-  static <T> LccnNormalizer<T> identity() {
-    return t -> t;
+  default Optional<String> normalize(String lccn) {
+    if (this.test(lccn)) {
+      return Optional.of(this.apply(lccn));
+    }
+    return Optional.empty();
   }
 }

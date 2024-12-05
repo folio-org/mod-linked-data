@@ -7,10 +7,10 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.LccnRequest;
 import org.folio.linked.data.domain.dto.Status;
+import org.folio.linked.data.preprocessing.lccn.LccnNormalizer;
 import org.folio.linked.data.validation.spec.SpecProvider;
 import org.folio.rspec.domain.dto.SpecificationRuleDto;
 import org.folio.spring.testing.type.UnitTest;
@@ -30,7 +30,7 @@ class LccnPatternValidatorTest {
   private SpecProvider specProvider;
 
   @Mock
-  private List<UnaryOperator<String>> lccnNormalizers;
+  private List<LccnNormalizer> lccnNormalizers;
 
   @InjectMocks
   private LccnPatternValidator validator;

@@ -6,22 +6,25 @@ import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SpaceAdderStructureA extends AbstractSpaceAdder {
+public class LccnNormalizerStructureA extends AbstractLccnNormalizer {
 
   private static final Pattern PATTERN = Pattern.compile("(?<!\\d)\\d{8}(?!\\d)");
 
   @Override
-  protected Pattern getPattern() {
-    return PATTERN;
+  public boolean test(String lccn) {
+    return PATTERN.matcher(lccn)
+      .find();
   }
 
   @Override
-  protected String handle(String lccn) {
+  public String apply(String lccn) {
     var builder = new StringBuilder(lccn);
-    if (noTrailingSpace(builder)) {
-      builder.append(SPACE);
+    if (isProcessable(builder)) {
+      if (noTrailingSpace(builder)) {
+        builder.append(SPACE);
+      }
+      addSpaces(builder);
     }
-    addSpaces(builder);
     return builder.toString();
   }
 
