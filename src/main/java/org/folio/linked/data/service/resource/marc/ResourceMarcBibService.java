@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource;
+package org.folio.linked.data.service.resource.marc;
 
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;

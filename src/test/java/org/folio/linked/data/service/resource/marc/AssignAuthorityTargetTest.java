@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource;
+package org.folio.linked.data.service.resource.marc;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -10,8 +10,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
-import static org.folio.linked.data.service.resource.AssignAuthorityTarget.CREATOR_OF_WORK;
-import static org.folio.linked.data.service.resource.AssignAuthorityTarget.SUBJECT_OF_WORK;
+import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.CREATOR_OF_WORK;
+import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.SUBJECT_OF_WORK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;

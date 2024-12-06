@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource;
+package org.folio.linked.data.service.resource.edge;
 
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.linked.data.model.entity.Resource;

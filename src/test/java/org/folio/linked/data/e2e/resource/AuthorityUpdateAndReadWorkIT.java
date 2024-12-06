@@ -34,7 +34,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestRepository;
@@ -99,7 +99,7 @@ class AuthorityUpdateAndReadWorkIT {
     // when
     eventKafkaTemplate.send(updateAuthorityEvent);
     awaitAndAssert(() -> verify(resourceMarcService, times(2))
-        .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+        .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
 
     // then
     var authoritiesFromDb = readAndAssertAuthoritiesInTheDb();
@@ -156,7 +156,7 @@ class AuthorityUpdateAndReadWorkIT {
         getSrsDomainEventProducerRecord(randomUUID().toString(), getAuthorityJson(), CREATED, MARC_AUTHORITY);
     eventKafkaTemplate.send(authorityCreateEvent);
     awaitAndAssert(() -> verify(resourceMarcService)
-        .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+        .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
     return tenantScopedExecutionService.execute(TENANT_ID,
         () -> resourceTestRepository.findById(- 6897633277634168127L)
             .stream()
