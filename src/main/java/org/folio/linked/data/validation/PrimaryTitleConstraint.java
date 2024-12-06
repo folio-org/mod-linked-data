@@ -14,6 +14,7 @@ import org.folio.linked.data.validation.entity.PrimaryTitleEntityValidator;
 @Constraint(validatedBy = {PrimaryTitleDtoValidator.class, PrimaryTitleEntityValidator.class})
 @Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@SuppressWarnings("javaarchitecture:S7091")
 public @interface PrimaryTitleConstraint {
 
   String message() default "{primaryTitleConstraint.message}";

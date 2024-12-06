@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource.impl;
+package org.folio.linked.data.service.resource.marc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -41,8 +41,8 @@ import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.ResourceEdgeService;
-import org.folio.linked.data.service.resource.ResourceGraphService;
+import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;

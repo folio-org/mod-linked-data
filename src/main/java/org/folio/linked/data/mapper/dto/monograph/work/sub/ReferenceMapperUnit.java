@@ -6,7 +6,7 @@ import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 
 @RequiredArgsConstructor
 public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
@@ -27,7 +27,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var reference = (Reference) dto;
-    return resourceMarcAuthorityService.fetchResourceOrCreateFromSrsRecord(reference);
+    return resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(reference);
   }
 
 }

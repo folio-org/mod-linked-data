@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.edge;
+package org.folio.linked.data.service.resource.edge;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -12,7 +12,6 @@ import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.impl.ResourceEdgeServiceImpl;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class ResourceEdgeServiceTest {
+class ResourceEdgeServiceTest {
 
   @InjectMocks
   private ResourceEdgeServiceImpl resourceEdgeService;

@@ -14,8 +14,8 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
-import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
-import org.folio.linked.data.service.resource.ResourceMarcBibService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcBibService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.springframework.context.annotation.Profile;
@@ -79,7 +79,7 @@ public class SourceRecordDomainEventHandler {
 
   private void saveAuthority(Resource resource, SourceRecordDomainEvent event) {
     if (CREATED == event.getEventType() || UPDATED == event.getEventType()) {
-      var id = resourceMarcAuthorityService.saveMarcResource(resource);
+      var id = resourceMarcAuthorityService.saveMarcAuthority(resource);
       log.info(EVENT_SAVED, event.getId(), MARC_AUTHORITY, id);
     }
   }

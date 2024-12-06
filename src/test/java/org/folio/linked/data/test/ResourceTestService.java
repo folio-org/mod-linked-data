@@ -8,7 +8,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

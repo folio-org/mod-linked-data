@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource.impl;
+package org.folio.linked.data.service.resource.marc;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
@@ -9,8 +9,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.service.resource.AssignAuthorityTarget.CREATOR_OF_WORK;
-import static org.folio.linked.data.service.resource.AssignAuthorityTarget.SUBJECT_OF_WORK;
+import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.CREATOR_OF_WORK;
+import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.SUBJECT_OF_WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -43,8 +43,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.AssignAuthorityTarget;
-import org.folio.linked.data.service.resource.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
@@ -67,7 +66,7 @@ import org.springframework.http.ResponseEntity;
 class ResourceMarcAuthorityServiceImplTest {
 
   @InjectMocks
-  private ResourceMarcAuthorityServiceImpl resourceMarcService;
+  private ResourceMarcAuthorityServiceImpl resourceMarcAuthorityService;
 
   @Mock
   private ResourceModelMapper resourceModelMapper;
@@ -89,13 +88,13 @@ class ResourceMarcAuthorityServiceImplTest {
   private ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @Test
-  void fetchResourceOrCreateFromSrsRecord_shouldFetchResource_ifExistsById() {
+  void fetchResourceOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsById() {
     // given
     var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findById(123L)).thenReturn(of(existingResource));
 
     // when
-    var actualResource = resourceMarcService.fetchResourceOrCreateFromSrsRecord(new Agent().id("123"));
+    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(new Agent().id("123"));
 
     // then
     assertThat(actualResource).isEqualTo(existingResource);
@@ -103,7 +102,7 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void fetchResourceOrCreateFromSrsRecord_shouldFetchResource_ifExistsBySrsId() {
+  void fetchResourceOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsBySrsId() {
     // given
     var id = "123";
     var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
@@ -111,7 +110,7 @@ class ResourceMarcAuthorityServiceImplTest {
     when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(of(existingResource));
 
     // when
-    var actualResource = resourceMarcService.fetchResourceOrCreateFromSrsRecord(new Agent().id(id).srsId(id));
+    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(new Agent().id(id).srsId(id));
 
     // then
     assertThat(actualResource).isEqualTo(existingResource);
@@ -120,7 +119,7 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void fetchResourceOrCreateFromSrsRecord_shouldCreateResourceFromSrs_ifNotExistsInRepo() {
+  void fetchResourceOrCreateFromSrsRecord_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
     // given
     var id = "123";
     var createdResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
@@ -135,7 +134,7 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(createdResource).when(resourceGraphService).saveMergingGraph(createdResource);
 
     // when
-    var actualResource = resourceMarcService.fetchResourceOrCreateFromSrsRecord(new Agent().id(id).srsId(id));
+    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(new Agent().id(id).srsId(id));
 
     // then
     assertThat(actualResource).isEqualTo(createdResource);
@@ -154,7 +153,7 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void fetchResourceOrCreateFromSrsRecord_shouldThrowNotFound_ifRecordNotExistsInSrs() {
+  void fetchAuthorityOrCreateFromSrsRecord_shouldThrowNotFound_ifRecordNotExistsInSrs() {
     // given
     var id = "123";
     when(resourceRepo.findById(123L)).thenReturn(empty());
@@ -166,7 +165,7 @@ class ResourceMarcAuthorityServiceImplTest {
 
     // then
     assertThrows(RequestProcessingException.class,
-      () -> resourceMarcService.fetchResourceOrCreateFromSrsRecord(agent));
+      () -> resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(agent));
   }
 
   @Test
@@ -183,7 +182,7 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
 
     // when
-    var result = resourceMarcService.saveMarcResource(model);
+    var result = resourceMarcAuthorityService.saveMarcAuthority(model);
 
     // then
     assertThat(result).isEqualTo(id);
@@ -205,7 +204,7 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
 
     // when
-    var result = resourceMarcService.saveMarcResource(model);
+    var result = resourceMarcAuthorityService.saveMarcAuthority(model);
 
     // then
     assertThat(result).isEqualTo(id);
@@ -234,7 +233,7 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
 
     // when
-    var result = resourceMarcService.saveMarcResource(model);
+    var result = resourceMarcAuthorityService.saveMarcAuthority(model);
 
     // then
     assertThat(result).isEqualTo(id);
@@ -271,7 +270,7 @@ class ResourceMarcAuthorityServiceImplTest {
       .thenReturn(List.of(new org.folio.ld.dictionary.model.Resource().setTypes(authorityTypes)));
 
     // when
-    var actual = resourceMarcService.isMarcCompatibleWithTarget("{}", target);
+    var actual = resourceMarcAuthorityService.isMarcAuthorityCompatibleWithTarget("{}", target);
 
     // then
     assertThat(actual).isEqualTo(isValid);
@@ -284,7 +283,7 @@ class ResourceMarcAuthorityServiceImplTest {
     when(marcAuthority2ldMapper.fromMarcJson(any())).thenReturn(List.of());
 
     // when
-    var isValid = resourceMarcService.isMarcCompatibleWithTarget("{}", CREATOR_OF_WORK);
+    var isValid = resourceMarcAuthorityService.isMarcAuthorityCompatibleWithTarget("{}", CREATOR_OF_WORK);
 
     // then
     assertFalse(isValid);

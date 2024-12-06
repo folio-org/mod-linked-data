@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource.impl;
+package org.folio.linked.data.service.resource.graph;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;

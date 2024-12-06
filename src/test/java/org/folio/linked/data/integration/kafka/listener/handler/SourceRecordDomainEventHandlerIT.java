@@ -34,8 +34,8 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
-import org.folio.linked.data.service.resource.ResourceMarcBibService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcBibService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.ResourceTestRepository;
@@ -173,7 +173,7 @@ class SourceRecordDomainEventHandlerIT {
 
     // then
     awaitAndAssert(() -> verify(resourceMarcAuthorityService)
-      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+      .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,
@@ -198,7 +198,7 @@ class SourceRecordDomainEventHandlerIT {
       getSrsDomainEventProducerRecord(randomUUID().toString(), marcCreate, CREATED, MARC_AUTHORITY);
     eventKafkaTemplate.send(eventProducerRecordCreate);
     awaitAndAssert(() -> verify(resourceMarcAuthorityService)
-      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+      .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
     var marcUpdate = marcCreate.replace("aValue", "newAValue");
     var eventProducerRecordUpdate =
       getSrsDomainEventProducerRecord(randomUUID().toString(), marcUpdate, UPDATED, MARC_AUTHORITY);
@@ -208,7 +208,7 @@ class SourceRecordDomainEventHandlerIT {
 
     // then
     awaitAndAssert(() -> verify(resourceMarcAuthorityService, times(2))
-      .saveMarcResource(any(org.folio.ld.dictionary.model.Resource.class)));
+      .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
 
     var found = tenantScopedExecutionService.execute(
       TENANT_ID,

@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource;
+package org.folio.linked.data.service.resource.marc;
 
 import static org.apache.commons.collections4.CollectionUtils.containsAny;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
