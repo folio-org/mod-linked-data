@@ -96,3 +96,8 @@ management:
 
 server:
   port: ${SERVER_PORT:8081}
+
+influx:
+  metrics:
+    export:
+      enabled: false
