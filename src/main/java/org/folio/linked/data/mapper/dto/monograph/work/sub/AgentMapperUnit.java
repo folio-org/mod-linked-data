@@ -9,7 +9,7 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 
 @RequiredArgsConstructor
 public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
@@ -33,7 +33,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var agent = (Agent) dto;
-    var resource = resourceMarcAuthorityService.fetchResourceOrCreateFromSrsRecord(agent);
+    var resource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(agent);
     ofNullable(agent.getRoles())
       .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
         .ifPresent(p -> parentEntity.addOutgoingEdge(new ResourceEdge(parentEntity, resource, p)))));

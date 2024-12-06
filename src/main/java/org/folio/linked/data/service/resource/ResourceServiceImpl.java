@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource.impl;
+package org.folio.linked.data.service.resource;
 
 import java.util.Objects;
 import java.util.Set;
@@ -16,9 +16,8 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.ResourceEdgeService;
-import org.folio.linked.data.service.resource.ResourceGraphService;
-import org.folio.linked.data.service.resource.ResourceService;
+import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;

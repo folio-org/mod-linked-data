@@ -8,7 +8,7 @@ import org.folio.linked.data.domain.dto.Dissertation;
 import org.folio.linked.data.domain.dto.DissertationResponse;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Component;
 
 @Component
