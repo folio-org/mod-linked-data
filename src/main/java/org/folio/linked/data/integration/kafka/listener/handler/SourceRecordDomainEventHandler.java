@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
@@ -85,12 +86,15 @@ public class SourceRecordDomainEventHandler {
   }
 
   private void setUserMetadata(Resource resource, SourceRecordDomainEvent event) {
-    if (CREATED == event.getEventType()) {
-      resource.setCreatedBy(event.getEventMetadata().getCreatedBy());
-    }
-    if (UPDATED == event.getEventType()) {
-      resource.setUpdatedBy(event.getEventMetadata().getCreatedBy());
-    }
+    ofNullable(event.getEventMetadata())
+      .ifPresent(eventMetadata -> {
+        if (CREATED == event.getEventType()) {
+          resource.setCreatedBy(eventMetadata.getCreatedBy());
+        }
+        if (UPDATED == event.getEventType()) {
+          resource.setUpdatedBy(eventMetadata.getCreatedBy());
+        }
+      });
   }
 
   private void logUnsupportedType(SourceRecordDomainEvent event, String typeKind, Enum<?> type) {
