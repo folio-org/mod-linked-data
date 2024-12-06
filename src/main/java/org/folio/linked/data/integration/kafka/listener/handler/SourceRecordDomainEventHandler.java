@@ -15,7 +15,9 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
 import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.ResourceMarcBibService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
+import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -31,8 +33,10 @@ public class SourceRecordDomainEventHandler {
   private static final String UNSUPPORTED_TYPE = "Ignoring unsupported {} type [{}] in SourceRecordDomainEvent [id {}]";
   private static final Set<SourceRecordType> SUPPORTED_RECORD_TYPES = Set.of(MARC_BIB, MARC_AUTHORITY);
   private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES = Set.of(CREATED, UPDATED);
+  private final ResourceMarcAuthorityService resourceMarcAuthorityService;
+  private final ResourceMarcBibService resourceMarcBibService;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
-  private final ResourceMarcAuthorityService resourceMarcService;
+  private final MarcBib2ldMapper marcBib2ldMapper;
 
   @SuppressWarnings("java:S125")
   public void handle(SourceRecordDomainEvent event, SourceRecordType recordType) {
@@ -41,11 +45,8 @@ public class SourceRecordDomainEventHandler {
     }
     if (recordType == MARC_AUTHORITY) {
       saveAuthorities(event);
-      //  } else if (recordType == MARC_BIB) {
-      //     For now, you can discard the event if it is a MARC_BIB record
-      //     In coming sprints, we will have stories to update the hrid (extracted out of MARC field 001) in DB for marc
-      //     bib records
-      //     this.updateHrId(event);
+    } else if (recordType == MARC_BIB) {
+      saveAdminMetadata(event);
     }
   }
 
@@ -78,9 +79,22 @@ public class SourceRecordDomainEventHandler {
 
   private void saveAuthority(Resource resource, SourceRecordDomainEvent event) {
     if (CREATED == event.getEventType() || UPDATED == event.getEventType()) {
-      var id = resourceMarcService.saveMarcResource(resource);
+      var id = resourceMarcAuthorityService.saveMarcResource(resource);
       log.info(EVENT_SAVED, event.getId(), MARC_AUTHORITY, id);
     }
+  }
+
+  private void saveAdminMetadata(SourceRecordDomainEvent event) {
+    marcBib2ldMapper.fromMarcJson(event.getEventPayload().getParsedRecord().getContent())
+      .ifPresentOrElse(mapped -> {
+          if (resourceMarcBibService.saveAdminMetadata(mapped)) {
+            log.info("AdminMetadata has been added to resource with id [{}], SourceRecordDomainEvent id [{}]",
+              mapped.getId(), event.getId());
+          }
+        },
+        () -> log.info("SourceRecordDomainEvent with id [{}] doesn't contain AdminMetadata fields, skipping",
+          event.getId())
+      );
   }
 
   private void logUnsupportedType(SourceRecordDomainEvent event, String typeKind, Enum<?> type) {

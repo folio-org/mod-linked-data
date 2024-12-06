@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
@@ -10,12 +11,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
+import java.util.Optional;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.ResourceMarcBibService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.spring.testing.type.UnitTest;
@@ -37,7 +40,9 @@ class SourceRecordDomainEventHandlerTest {
   @Mock
   private MarcAuthority2ldMapper marcAuthority2ldMapper;
   @Mock
-  private ResourceMarcAuthorityService resourceMarcService;
+  private ResourceMarcAuthorityService resourceMarcAuthorityService;
+  @Mock
+  private ResourceMarcBibService resourceMarcBibService;
   @Mock
   private FolioMetadataRepository folioMetadataRepository;
 
@@ -50,7 +55,8 @@ class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceMarcService);
+    verifyNoInteractions(resourceMarcAuthorityService);
+    verifyNoInteractions(resourceMarcBibService);
   }
 
   @Test
@@ -63,7 +69,8 @@ class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, null);
 
     // then
-    verifyNoInteractions(resourceMarcService);
+    verifyNoInteractions(resourceMarcAuthorityService);
+    verifyNoInteractions(resourceMarcBibService);
   }
 
   @Test
@@ -76,7 +83,8 @@ class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceMarcService);
+    verifyNoInteractions(resourceMarcAuthorityService);
+    verifyNoInteractions(resourceMarcBibService);
   }
 
   @Test
@@ -90,11 +98,12 @@ class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
 
     // then
-    verifyNoInteractions(resourceMarcService);
+    verifyNoInteractions(resourceMarcAuthorityService);
+    verifyNoInteractions(resourceMarcBibService);
   }
 
   @Test
-  void shouldTriggerResourceSaving_forCorrectMarcAuthorityEvent() {
+  void shouldTriggerAuthoritySaving_forCorrectMarcAuthorityEvent() {
     // given
     var event = new SourceRecordDomainEvent().id("8")
       .eventType(CREATED)
@@ -108,7 +117,26 @@ class SourceRecordDomainEventHandlerTest {
     sourceRecordDomainEventHandler.handle(event, MARC_AUTHORITY);
 
     // then
-    verify(resourceMarcService).saveMarcResource(mapped1);
-    verify(resourceMarcService).saveMarcResource(mapped2);
+    verify(resourceMarcAuthorityService).saveMarcResource(mapped1);
+    verify(resourceMarcAuthorityService).saveMarcResource(mapped2);
+    verifyNoInteractions(resourceMarcBibService);
+  }
+
+  @Test
+  void shouldTriggerAdminMetadataSaving_forCorrectMarcBibEvent() {
+    // given
+    var event = new SourceRecordDomainEvent().id("7")
+      .eventType(CREATED)
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
+    var mapped = new Resource().setId(9L).addType(INSTANCE);
+    doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
+      .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());
+
+    // when
+    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
+
+    // then
+    verify(resourceMarcBibService).saveAdminMetadata(mapped);
+    verifyNoInteractions(resourceMarcAuthorityService);
   }
 }

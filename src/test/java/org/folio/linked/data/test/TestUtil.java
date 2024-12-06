@@ -91,7 +91,7 @@ public class TestUtil {
   public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
-    if (! asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
+    if (!asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
       httpHeaders.add(TENANT, TENANT_ID);
       httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
     }

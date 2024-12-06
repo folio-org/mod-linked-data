@@ -14,4 +14,6 @@ public interface ResourceMarcBibService {
 
   ResourceIdDto importMarcRecord(String inventoryId);
 
+  boolean saveAdminMetadata(org.folio.ld.dictionary.model.Resource modelResource);
+
 }

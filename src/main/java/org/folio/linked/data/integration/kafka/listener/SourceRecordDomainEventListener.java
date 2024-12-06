@@ -2,6 +2,7 @@ package org.folio.linked.data.integration.kafka.listener;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
+import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
@@ -57,7 +58,7 @@ public class SourceRecordDomainEventListener {
       .map(SourceRecordType::fromValue)
       .orElseThrow();
 
-    if (sourceRecordType == MARC_AUTHORITY) {
+    if (sourceRecordType == MARC_AUTHORITY || sourceRecordType == MARC_BIB) {
       tenantScopedExecutionService.executeAsyncWithRetry(
         consumerRecord.headers(),
         retryContext -> runRetryableJob(event, sourceRecordType, retryContext),
