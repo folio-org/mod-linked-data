@@ -29,7 +29,7 @@
             "source-storage.records.put",
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
-            "ui-quick-marc.settings.lccn-duplicate-check.edit",
+            "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
             "mod-settings.entries.collection.get"
           ]
         },
@@ -74,7 +74,7 @@
             "source-storage.records.put",
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
-            "ui-quick-marc.settings.lccn-duplicate-check.edit",
+            "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
             "mod-settings.entries.collection.get"
           ]
         },
