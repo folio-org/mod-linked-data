@@ -45,7 +45,7 @@ public class SourceRecordDomainEventHandler {
     }
     if (recordType == MARC_AUTHORITY) {
       saveAuthorities(event);
-    } else if (recordType == MARC_BIB) {
+    } else if (recordType == MARC_BIB && event.getEventType() == CREATED) {
       saveAdminMetadata(event);
     }
   }

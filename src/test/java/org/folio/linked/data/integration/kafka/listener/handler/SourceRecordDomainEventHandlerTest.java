@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.mockito.Mockito.doReturn;
@@ -137,6 +138,21 @@ class SourceRecordDomainEventHandlerTest {
 
     // then
     verify(resourceMarcBibService).saveAdminMetadata(mapped);
+    verifyNoInteractions(resourceMarcAuthorityService);
+  }
+
+  @Test
+  void shouldNotTriggerAdminMetadataSaving_forUpdateMarcBibEvent() {
+    // given
+    var event = new SourceRecordDomainEvent().id("7")
+      .eventType(UPDATED)
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
+
+    // when
+    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
+
+    // then
+    verifyNoInteractions(resourceMarcBibService);
     verifyNoInteractions(resourceMarcAuthorityService);
   }
 }
