@@ -34,4 +34,16 @@ class KafkaAdminWorkerTest {
     verify(kafkaAdminService).createTopics(tenantId);
     verify(kafkaAdminService).restartEventListeners();
   }
+
+  @Test
+  void shouldDeleteTopics() {
+    // given
+    var tenantId = "tenant-01";
+
+    // when
+    kafkaAdminWorker.afterTenantDeletion(tenantId);
+
+    // then
+    verify(kafkaAdminService).deleteTopics(tenantId);
+  }
 }

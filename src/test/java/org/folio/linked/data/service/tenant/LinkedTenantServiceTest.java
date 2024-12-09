@@ -69,4 +69,17 @@ class LinkedTenantServiceTest {
     verify(testWorker)
       .afterTenantUpdate(tenantId, attributes);
   }
+
+  @Test
+  void shouldCallWorker_afterTenantDeletion() {
+    //given
+    var attributes = mock(TenantAttributes.class);
+
+    //when
+    tenantService.afterTenantDeletion(attributes);
+
+    //then
+    verify(testWorker)
+      .afterTenantDeletion(tenantId);
+  }
 }
