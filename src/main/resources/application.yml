@@ -93,11 +93,10 @@ management:
   endpoint:
     loggers:
       enabled: true
+  influx:
+    metrics:
+      export:
+        enabled: false
 
 server:
   port: ${SERVER_PORT:8081}
-
-influx:
-  metrics:
-    export:
-      enabled: false
