@@ -11,4 +11,8 @@ public interface TenantServiceWorker {
   default void afterTenantUpdate(String tenantId, TenantAttributes tenantAttributes) {
     // no action by default
   }
+
+  default void afterTenantDeletion(String tenantId) {
+    // no action by default
+  }
 }
