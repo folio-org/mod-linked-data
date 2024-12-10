@@ -19,7 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class LinkedTenantServiceTest {
+class LinkedDataTenantServiceTest {
 
   @Mock
   private JdbcTemplate jdbcTemplate;
@@ -30,12 +30,12 @@ class LinkedTenantServiceTest {
   @Mock
   private TenantServiceWorker testWorker;
 
-  private LinkedTenantService tenantService;
+  private LinkedDataTenantService tenantService;
   private final String tenantId = "tenant-01";
 
   @BeforeEach
   void init() {
-    tenantService = new LinkedTenantService(
+    tenantService = new LinkedDataTenantService(
       jdbcTemplate,
       context,
       folioSpringLiquibase,

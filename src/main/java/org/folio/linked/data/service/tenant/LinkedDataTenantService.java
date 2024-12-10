@@ -19,12 +19,12 @@ import org.springframework.stereotype.Service;
 @Primary
 @Service
 @Profile("!" + STANDALONE_PROFILE)
-public class LinkedTenantService extends TenantService {
+public class LinkedDataTenantService extends TenantService {
 
   private final Collection<TenantServiceWorker> workers;
 
   @Autowired
-  public LinkedTenantService(
+  public LinkedDataTenantService(
     JdbcTemplate jdbcTemplate,
     FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase,
