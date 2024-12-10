@@ -77,6 +77,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
@@ -356,7 +357,8 @@ public class MonographTestUtil {
     var creatorPerson = createResource(
       Map.of(
         NAME, List.of("name-CREATOR-PERSON"),
-        LCNAF_ID, List.of("2002801801-PERSON")
+        LCNAF_ID, List.of("2002801801-PERSON"),
+        RESOURCE_PREFERRED, List.of("true")
       ),
       Set.of(PERSON),
       emptyMap()
@@ -386,7 +388,8 @@ public class MonographTestUtil {
     var contributorPerson = createResource(
       Map.of(
         NAME, List.of("name-CONTRIBUTOR-PERSON"),
-        LCNAF_ID, List.of("2002801801-PERSON")
+        LCNAF_ID, List.of("2002801801-PERSON"),
+        RESOURCE_PREFERRED, List.of("true")
       ),
       Set.of(PERSON),
       emptyMap()
@@ -425,12 +428,13 @@ public class MonographTestUtil {
 
     var subject1 = createResource(
       Map.of(
-        NAME, List.of("Subject 1")
+        NAME, List.of("Subject 1"),
+        RESOURCE_PREFERRED, List.of("true")
       ),
       Set.of(CONCEPT),
       emptyMap()
     ).setLabel("subject 1")
-      .setId(-2609581195837993519L);
+      .setId(5116157127128345626L);
 
     var subject2 = createResource(
       Map.of(
@@ -465,7 +469,8 @@ public class MonographTestUtil {
 
     var genre1 = createResource(
       Map.of(
-        NAME, List.of("genre 1")
+        NAME, List.of("genre 1"),
+        RESOURCE_PREFERRED, List.of("true")
       ),
       Set.of(FORM),
       emptyMap()

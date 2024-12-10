@@ -204,6 +204,7 @@ public abstract class ResourceControllerITBase {
   private static final String NOTES_PROPERTY = "_notes";
   private static final String ID_PROPERTY = "id";
   private static final String LABEL_PROPERTY = "label";
+  private static final String IS_PREFERRED_PROPERTY = "isPreferred";
   private static final String VALUE_PROPERTY = "value";
   private static final String TYPE_PROPERTY = "type";
   private static final String INSTANCE_REF = "_instanceReference";
@@ -712,6 +713,7 @@ public abstract class ResourceControllerITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
     validateWorkResponse(resultActions, toWork());
+    validateAuthorities(resultActions, toWork());
   }
 
   @ParameterizedTest
@@ -1050,7 +1052,7 @@ public abstract class ResourceControllerITBase {
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
-      .andExpect(jsonPath(toWorkSubjectLabel(workBase), equalTo(List.of("subject 1", "subject 2"))))
+      .andExpect(jsonPath(toWorkSubjectLabel(workBase), containsInAnyOrder("subject 1", "subject 2")))
       .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
       .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
       .andExpect(jsonPath(toWorkNotesValues(workBase),
@@ -1072,6 +1074,14 @@ public abstract class ResourceControllerITBase {
       resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
     }
+  }
+
+  private void validateAuthorities(ResultActions resultActions, String workBase) throws Exception {
+    resultActions
+      .andExpect(jsonPath(toWorkCreatorIsPreferred(workBase), containsInAnyOrder(true, false, false, false)))
+      .andExpect(jsonPath(toWorkContributorIsPreferred(workBase), containsInAnyOrder(true, false, false, false)))
+      .andExpect(jsonPath(toWorkSubjectIsPreferred(workBase), containsInAnyOrder(true, false)))
+      .andExpect(jsonPath(toWorkGenreIsPreferred(workBase), containsInAnyOrder(true, false)));
   }
 
   private void validateInstance(Resource instance, boolean validateFullWork) {
@@ -1453,8 +1463,8 @@ public abstract class ResourceControllerITBase {
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR);
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR);
     validateVariantTitle(outgoingEdgeIterator.next(), work);
-    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(0), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
     validateOriginPlace(outgoingEdgeIterator.next(), work);
@@ -1564,7 +1574,6 @@ public abstract class ResourceControllerITBase {
     assertThat(creator.getId()).isEqualTo(hashService.hash(creator));
     var types = creator.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).contains(type.getUri());
-    assertThat(creator.getDoc().size()).isEqualTo(2);
     assertThat(creator.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
     assertThat(creator.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("name-" + predicate + "-" + type);
     assertThat(creator.getDoc().get(LCNAF_ID.getValue()).size()).isEqualTo(1);
@@ -1658,8 +1667,8 @@ public abstract class ResourceControllerITBase {
   }
 
   private LookupResources saveLookupResources() {
-    var subject1 = saveResource(-2609581195837993519L, "subject 1", CONCEPT,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"Subject 1\"]}");
+    var subject1 = saveResource(5116157127128345626L, "subject 1", CONCEPT,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"Subject 1\"], \"http://library.link/vocab/resourcePreferred\":[\"true\"]}");
     var subject2 = saveResource(-643516859818423084L, "subject 2", CONCEPT,
       "{\"http://bibfra.me/vocab/lite/name\": [\"Subject 2\"]}");
     var unitedStates = saveResource(7109832602847218134L, "United States", PLACE,
@@ -2131,6 +2140,10 @@ public abstract class ResourceControllerITBase {
     return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ROLES_PROPERTY));
   }
 
+  private String toWorkCreatorIsPreferred(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(IS_PREFERRED_PROPERTY));
+  }
+
   private String toWorkContributorId(String workBase) {
     return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ID_PROPERTY));
   }
@@ -2144,7 +2157,11 @@ public abstract class ResourceControllerITBase {
   }
 
   private String toWorkContributorRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path("roles"));
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ROLES_PROPERTY));
+  }
+
+  private String toWorkContributorIsPreferred(String workBase) {
+    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(IS_PREFERRED_PROPERTY));
   }
 
   private String toWorkContentTerm(String workBase) {
@@ -2152,7 +2169,11 @@ public abstract class ResourceControllerITBase {
   }
 
   private String toWorkSubjectLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path("label"));
+    return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path(LABEL_PROPERTY));
+  }
+
+  private String toWorkSubjectIsPreferred(String workBase) {
+    return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path(IS_PREFERRED_PROPERTY));
   }
 
   private String toWorkGeographicCoverageLabel(String workBase) {
@@ -2160,7 +2181,11 @@ public abstract class ResourceControllerITBase {
   }
 
   private String toWorkGenreLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(GENRE_REF), path("label"));
+    return join(".", workBase, dynamicArrayPath(GENRE_REF), path(LABEL_PROPERTY));
+  }
+
+  private String toWorkGenreIsPreferred(String workBase) {
+    return join(".", workBase, dynamicArrayPath(GENRE_REF), path(IS_PREFERRED_PROPERTY));
   }
 
   private String toWorkDateStart(String workBase) {

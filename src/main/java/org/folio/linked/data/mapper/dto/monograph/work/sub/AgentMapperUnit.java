@@ -24,7 +24,8 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
     var agent = new Agent()
       .id(String.valueOf(source.getId()))
       .label(source.getLabel())
-      .type(source.getTypes().iterator().next().getUri());
+      .type(source.getTypes().iterator().next().getUri())
+      .isPreferred(isPreferred(source));
     agentRoleAssigner.assignRoles(agent, parentResource);
     agentConsumer.accept(parentDto, agent);
     return parentDto;

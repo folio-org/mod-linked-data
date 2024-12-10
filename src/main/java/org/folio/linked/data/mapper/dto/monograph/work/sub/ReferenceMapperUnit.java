@@ -19,7 +19,8 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
     source = ensureLatestReplaced(source);
     var reference = new Reference()
       .id(String.valueOf(source.getId()))
-      .label(source.getLabel());
+      .label(source.getLabel())
+      .isPreferred(isPreferred(source));
     referenceConsumer.accept(reference, parentDto);
     return parentDto;
   }
