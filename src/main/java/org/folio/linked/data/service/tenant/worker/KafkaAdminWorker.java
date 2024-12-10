@@ -20,4 +20,9 @@ public class KafkaAdminWorker implements TenantServiceWorker {
     kafkaAdminService.createTopics(tenantId);
     kafkaAdminService.restartEventListeners();
   }
+
+  @Override
+  public void afterTenantDeletion(String tenantId) {
+    kafkaAdminService.deleteTopics(tenantId);
+  }
 }

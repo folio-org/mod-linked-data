@@ -19,12 +19,12 @@ import org.springframework.stereotype.Service;
 @Primary
 @Service
 @Profile("!" + STANDALONE_PROFILE)
-public class LinkedTenantService extends TenantService {
+public class LinkedDataTenantService extends TenantService {
 
   private final Collection<TenantServiceWorker> workers;
 
   @Autowired
-  public LinkedTenantService(
+  public LinkedDataTenantService(
     JdbcTemplate jdbcTemplate,
     FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase,
@@ -36,13 +36,19 @@ public class LinkedTenantService extends TenantService {
 
   @Override
   public void beforeTenantUpdate(TenantAttributes tenantAttributes) {
-    log.debug("Start before actions for the tenant [{}]", context.getTenantId());
+    log.debug("Start before update actions for the tenant [{}]", context.getTenantId());
     workers.forEach(worker -> worker.beforeTenantUpdate(context.getTenantId(), tenantAttributes));
   }
 
   @Override
   public void afterTenantUpdate(TenantAttributes tenantAttributes) {
-    log.info("Start after actions for the tenant [{}]", context.getTenantId());
+    log.info("Start after update actions for the tenant [{}]", context.getTenantId());
     workers.forEach(worker -> worker.afterTenantUpdate(context.getTenantId(), tenantAttributes));
+  }
+
+  @Override
+  public void afterTenantDeletion(TenantAttributes tenantAttributes) {
+    log.info("Start after delete actions for the tenant [{}]", context.getTenantId());
+    workers.forEach(worker -> worker.afterTenantDeletion(context.getTenantId()));
   }
 }
