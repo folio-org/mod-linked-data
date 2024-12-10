@@ -1,5 +1,7 @@
-package org.folio.linked.data.service.resource.impl;
+package org.folio.linked.data.service.resource.marc;
 
+import static java.util.Objects.isNull;
+import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.model.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
@@ -34,8 +36,8 @@ import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.ResourceGraphService;
-import org.folio.linked.data.service.resource.ResourceMarcBibService;
+import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -59,6 +61,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final ResourceEdgeRepository edgeRepo;
   private final MarcBib2ldMapper marcBib2ldMapper;
   private final ResourceDtoMapper resourceDtoMapper;
+  private final ResourceEdgeService resourceEdgeService;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepository;
@@ -114,6 +117,25 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     log.info("MARC BIB record with inventory ID: {} is successfully imported to graph resource with ID: {}",
       inventoryId, resourceIdDto.getId());
     return resourceIdDto;
+  }
+
+  @Override
+  public boolean saveAdminMetadata(org.folio.ld.dictionary.model.Resource modelResource) {
+    var adminMetadataEdge = modelResource.getOutgoingEdges().stream()
+      .filter(re -> ADMIN_METADATA.equals(re.getPredicate()))
+      .findFirst()
+      .orElse(null);
+    if (isNull(adminMetadataEdge)) {
+      log.info("Resource with id [{}] doesn't contain AdminMetadata", modelResource.getId());
+      return false;
+    }
+    if (!resourceRepo.existsById(modelResource.getId())) {
+      log.info("Resource doesn't exist by id [{}]", modelResource.getId());
+      return false;
+    }
+    var edgeId = resourceEdgeService.saveNewResourceEdge(modelResource.getId(), adminMetadataEdge);
+    log.info("New AdminMetadata has been added and saved under id [{}]", edgeId);
+    return true;
   }
 
   private void validateMarcViewSupportedType(Resource resource) {

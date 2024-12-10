@@ -1,4 +1,4 @@
-package org.folio.linked.data.service.resource.impl;
+package org.folio.linked.data.service.resource.marc;
 
 import static java.lang.Long.parseLong;
 import static java.util.Objects.isNull;
@@ -28,9 +28,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.AssignAuthorityTarget;
-import org.folio.linked.data.service.resource.ResourceGraphService;
-import org.folio.linked.data.service.resource.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.util.ResourceUtils;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -57,13 +55,13 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
-  public Resource fetchResourceOrCreateFromSrsRecord(Identifiable identifiable) {
+  public Resource fetchAuthorityOrCreateFromSrsRecord(Identifiable identifiable) {
     return fetchResourceFromRepo(identifiable)
       .orElseGet(() -> createResourceFromSrs(identifiable.getSrsId()));
   }
 
   @Override
-  public boolean isMarcCompatibleWithTarget(String marc, AssignAuthorityTarget target) {
+  public boolean isMarcAuthorityCompatibleWithTarget(String marc, AssignAuthorityTarget target) {
     return this.marcAuthority2ldMapper.fromMarcJson(marc)
       .stream().findFirst()
       .map(authority -> target.isCompatibleWith(authority.getTypes()))
@@ -113,7 +111,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   @Override
-  public Long saveMarcResource(org.folio.ld.dictionary.model.Resource modelResource) {
+  public Long saveMarcAuthority(org.folio.ld.dictionary.model.Resource modelResource) {
     var mapped = resourceModelMapper.toEntity(modelResource);
     if (!mapped.isAuthority()) {
       var message = "Resource is not an authority";

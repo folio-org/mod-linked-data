@@ -1,7 +1,9 @@
-package org.folio.linked.data.service.resource.impl;
+package org.folio.linked.data.service.resource.marc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
@@ -13,7 +15,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
+import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
@@ -36,7 +41,8 @@ import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.ResourceGraphService;
+import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -83,6 +89,8 @@ class ResourceMarcBibServiceImplTest {
   private SrsClient srsClient;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
+  @Mock
+  private ResourceEdgeService resourceEdgeService;
 
   @Test
   void getResourceMarcView_shouldReturnExistedEntity() {
@@ -336,6 +344,58 @@ class ResourceMarcBibServiceImplTest {
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
       .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+  }
+
+  @Test
+  void saveAdminMetadata_shouldDoNothingAndReturnFalse_ifGivenResourceDoesNotContainAdminMetadata() {
+    // given
+    var resourceModel = new org.folio.ld.dictionary.model.Resource();
+
+    // when
+    boolean result = resourceMarcService.saveAdminMetadata(resourceModel);
+
+    // then
+    assertThat(result).isFalse();
+    verifyNoInteractions(resourceRepo);
+    verifyNoInteractions(resourceEdgeService);
+  }
+
+  @Test
+  void saveAdminMetadata_shouldSaveNothingAndReturnFalse_ifThereIsNoResourceByGivenId() {
+    // given
+    var adminMetadata = new org.folio.ld.dictionary.model.Resource()
+      .addType(ANNOTATION);
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(randomLong());
+    resourceModel
+      .addOutgoingEdge(new ResourceEdge(resourceModel, adminMetadata, ADMIN_METADATA));
+
+    // when
+    boolean result = resourceMarcService.saveAdminMetadata(resourceModel);
+
+    // then
+    assertThat(result).isFalse();
+    verifyNoInteractions(resourceEdgeService);
+  }
+
+  @Test
+  void saveAdminMetadata_shouldSaveAdminMetadata_ifGivenResourceModelContainsAdminMetadataAndSuchResourceExists() {
+    // given
+    var id = randomLong();
+    var adminMetadata = new org.folio.ld.dictionary.model.Resource()
+      .addType(ANNOTATION);
+    var resourceModel = new org.folio.ld.dictionary.model.Resource()
+      .setId(id);
+    var edgeModel = new ResourceEdge(resourceModel, adminMetadata, ADMIN_METADATA);
+    resourceModel.addOutgoingEdge(edgeModel);
+    doReturn(true).when(resourceRepo).existsById(id);
+
+    // when
+    boolean result = resourceMarcService.saveAdminMetadata(resourceModel);
+
+    // then
+    assertThat(result).isTrue();
+    verify(resourceEdgeService).saveNewResourceEdge(id, edgeModel);
   }
 
   private org.folio.rest.jaxrs.model.Record createRecord(char type, char level) {
