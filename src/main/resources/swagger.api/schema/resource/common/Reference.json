@@ -14,6 +14,10 @@
         "srsId": {
           "type": "string",
           "description": "SRS ID of the resource"
+        },
+        "isPreferred": {
+          "type": "boolean",
+          "description": "Indicates whether resource is controlled or not"
         }
       }
     }
