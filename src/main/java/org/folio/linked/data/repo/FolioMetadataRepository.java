@@ -8,8 +8,6 @@ public interface FolioMetadataRepository extends JpaRepository<FolioMetadata, Lo
 
   Optional<IdOnly> findIdByInventoryId(String inventoryId);
 
-  Optional<FolioMetadata> findBySrsId(String srsId);
-
   boolean existsBySrsId(String srsId);
 
   Optional<FolioMetadata> findByInventoryId(String inventoryId);

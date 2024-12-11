@@ -121,19 +121,29 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
 
   @Override
   public boolean saveAdminMetadata(org.folio.ld.dictionary.model.Resource modelResource) {
+    if (isNull(modelResource.getFolioMetadata())) {
+      log.info("Incoming Resource with id [{}] doesn't contain FolioMetadata", modelResource.getId());
+      return false;
+    }
+    var inventoryId = modelResource.getFolioMetadata().getInventoryId();
+    if (isNull(inventoryId)) {
+      log.info("Incoming Resource with id [{}] doesn't contain Inventory ID", modelResource.getId());
+      return false;
+    }
     var adminMetadataEdge = modelResource.getOutgoingEdges().stream()
       .filter(re -> ADMIN_METADATA.equals(re.getPredicate()))
       .findFirst()
       .orElse(null);
     if (isNull(adminMetadataEdge)) {
-      log.info("Resource with id [{}] doesn't contain AdminMetadata", modelResource.getId());
+      log.info("Incoming Resource with id [{}] doesn't contain AdminMetadata", modelResource.getId());
       return false;
     }
-    if (!resourceRepo.existsById(modelResource.getId())) {
-      log.info("Resource doesn't exist by id [{}]", modelResource.getId());
+    var idOptional = folioMetadataRepository.findIdByInventoryId(inventoryId);
+    if (idOptional.isEmpty()) {
+      log.info("Resource doesn't exist by Inventory ID [{}]", inventoryId);
       return false;
     }
-    var edgeId = resourceEdgeService.saveNewResourceEdge(modelResource.getId(), adminMetadataEdge);
+    var edgeId = resourceEdgeService.saveNewResourceEdge(idOptional.get().getId(), adminMetadataEdge);
     log.info("New AdminMetadata has been added and saved under id [{}]", edgeId);
     return true;
   }

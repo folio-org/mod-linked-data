@@ -347,7 +347,7 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void saveAdminMetadata_shouldDoNothingAndReturnFalse_ifGivenResourceDoesNotContainAdminMetadata() {
+  void saveAdminMetadata_shouldDoNothingAndReturnFalse_ifGivenResourceDoesNotContainFolioMetadata() {
     // given
     var resourceModel = new org.folio.ld.dictionary.model.Resource();
 
@@ -361,12 +361,43 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void saveAdminMetadata_shouldSaveNothingAndReturnFalse_ifThereIsNoResourceByGivenId() {
+  void saveAdminMetadata_shouldDoNothingAndReturnFalse_ifGivenResourceDoesNotContainInventoryId() {
+    // given
+    var resourceModel = new org.folio.ld.dictionary.model.Resource().setFolioMetadata(new FolioMetadata());
+
+    // when
+    boolean result = resourceMarcService.saveAdminMetadata(resourceModel);
+
+    // then
+    assertThat(result).isFalse();
+    verifyNoInteractions(resourceRepo);
+    verifyNoInteractions(resourceEdgeService);
+  }
+
+  @Test
+  void saveAdminMetadata_shouldDoNothingAndReturnFalse_ifGivenResourceDoesNotContainAdminMetadata() {
+    // given
+    var folioMetadata = new FolioMetadata().setInventoryId(UUID.randomUUID().toString());
+    var resourceModel = new org.folio.ld.dictionary.model.Resource().setFolioMetadata(folioMetadata);
+
+    // when
+    boolean result = resourceMarcService.saveAdminMetadata(resourceModel);
+
+    // then
+    assertThat(result).isFalse();
+    verifyNoInteractions(resourceRepo);
+    verifyNoInteractions(resourceEdgeService);
+  }
+
+  @Test
+  void saveAdminMetadata_shouldSaveNothingAndReturnFalse_ifThereIsNoResourceByGivenInventoryId() {
     // given
     var adminMetadata = new org.folio.ld.dictionary.model.Resource()
       .addType(ANNOTATION);
+    var folioMetadata = new FolioMetadata().setInventoryId(UUID.randomUUID().toString());
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
-      .setId(randomLong());
+      .setId(randomLong())
+      .setFolioMetadata(folioMetadata);
     resourceModel
       .addOutgoingEdge(new ResourceEdge(resourceModel, adminMetadata, ADMIN_METADATA));
 
@@ -384,11 +415,14 @@ class ResourceMarcBibServiceImplTest {
     var id = randomLong();
     var adminMetadata = new org.folio.ld.dictionary.model.Resource()
       .addType(ANNOTATION);
+    var folioMetadata = new FolioMetadata().setInventoryId(UUID.randomUUID().toString());
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
-      .setId(id);
+      .setId(id)
+      .setFolioMetadata(folioMetadata);
     var edgeModel = new ResourceEdge(resourceModel, adminMetadata, ADMIN_METADATA);
     resourceModel.addOutgoingEdge(edgeModel);
-    doReturn(true).when(resourceRepo).existsById(id);
+    doReturn(Optional.of((FolioMetadataRepository.IdOnly) () -> id))
+      .when(folioMetadataRepo).findIdByInventoryId(folioMetadata.getInventoryId());
 
     // when
     boolean result = resourceMarcService.saveAdminMetadata(resourceModel);
