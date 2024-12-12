@@ -31,6 +31,7 @@ import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.mapper.ResourceModelMapper;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
@@ -122,14 +123,16 @@ class SourceRecordDomainEventHandlerIT {
   @Test
   void shouldSaveAdminMetadataOutOfMarcBibSourceRecordDomainEvent() {
     // given
-    var marc = loadResourceAsString("samples/marc2ld/full_marc_sample.jsonl");
-    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_BIB);
     var existedInstance = new Resource()
       .setId(6331008328653046125L)
       .addTypes(INSTANCE);
+    var folioMetadata = new FolioMetadata(existedInstance).setInventoryId("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
+    existedInstance.setFolioMetadata(folioMetadata);
     var title = MonographTestUtil.createPrimaryTitle(randomLong());
     existedInstance.addOutgoingEdge(new ResourceEdge(existedInstance, title, PredicateDictionary.TITLE));
     resourceTestRepository.save(existedInstance);
+    var marc = loadResourceAsString("samples/marc2ld/full_marc_sample.jsonl");
+    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_BIB);
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);
