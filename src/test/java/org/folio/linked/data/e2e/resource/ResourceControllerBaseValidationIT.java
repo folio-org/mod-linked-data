@@ -1,8 +1,7 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.TestUtil.TENANT_ID;
-import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
+import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -17,40 +16,18 @@ import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.domain.dto.Parameter;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.spring.tools.kafka.KafkaAdminService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
-class ResourceControllerValidationIT {
+class ResourceControllerBaseValidationIT extends AbstractResourceControllerIT {
 
-  private static final String RESOURCE_URL = "/linked-data/resource";
-
-  @Autowired
-  private MockMvc mockMvc;
   @Autowired
   private ObjectMapper objectMapper;
-  @Autowired
-  private Environment env;
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
-  @Autowired
-  private TenantScopedExecutionService tenantScopedExecutionService;
   @MockBean
   private KafkaAdminService kafkaAdminService;
-
-  @BeforeEach
-  public void beforeEach() {
-    tenantScopedExecutionService.execute(TENANT_ID, () ->
-      cleanResourceTables(jdbcTemplate)
-    );
-  }
 
   @Test
   void createEmptyInstance_shouldReturnBadRequest() throws Exception {

@@ -15,11 +15,10 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
 import org.folio.linked.data.integration.kafka.sender.search.WorkDeleteMessageSender;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
-import org.folio.linked.data.test.ResourceTestService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
+import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,14 +28,12 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
-public class ResourceControllerIT extends ResourceControllerITBase {
+class ResourceControllerIT extends ResourceControllerITBase {
 
   @Autowired
   private KafkaSearchWorkIndexTopicListener searchIndexTopicListener;
   @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
-  @Autowired
-  private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
   private ResourceTestService resourceTestService;
   @SpyBean

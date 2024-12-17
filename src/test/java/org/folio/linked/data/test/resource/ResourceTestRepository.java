@@ -1,4 +1,4 @@
-package org.folio.linked.data.test;
+package org.folio.linked.data.test.resource;
 
 import java.util.Optional;
 import java.util.Set;

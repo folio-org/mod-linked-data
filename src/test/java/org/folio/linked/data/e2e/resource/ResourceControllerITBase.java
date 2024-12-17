@@ -1,7 +1,6 @@
 package org.folio.linked.data.e2e.resource;
 
 import static java.lang.String.format;
-import static java.lang.String.join;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.UUID.randomUUID;
@@ -55,7 +54,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
@@ -122,21 +120,132 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
-import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
 import static org.folio.linked.data.test.TestUtil.getSampleWorkDtoMap;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toAccessLocationLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toAccessLocationNote;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toCarrierCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toCarrierLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toCarrierTerm;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toClassificationAssigningSourceIds;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toClassificationAssigningSourceLabels;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toClassificationCodes;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toClassificationItemNumbers;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toClassificationSources;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toCopyrightDate;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDimensions;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationDegree;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationGrantingInstitutionIds;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationGrantingInstitutionLabels;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationId;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationNote;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationYear;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanQualifier;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toEditionStatement;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtent;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toId;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstance;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceNotesTypes;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceNotesValues;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceReference;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnQualifier;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnStatusLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnStatusValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIssuance;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLanguageCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLanguageLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLanguageTerm;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLcStatusLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLcStatusValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLccnStatusLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLccnStatusValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLccnValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLocalIdAssigner;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLocalIdValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaTerm;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toOtherIdQualifier;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toOtherIdValue;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleDate;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleMain;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleNote;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitlePartName;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitlePartNumber;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleSubtitle;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitleMain;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitleNonSortNum;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitlePartName;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitlePartNumber;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitleSubtitle;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProjectedProvisionDate;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventDate;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventName;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventPlaceCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventPlaceLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventPlaceLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventProviderDate;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventSimplePlace;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toStatementOfResponsibility;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toSupplementaryContentLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toSupplementaryContentName;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleDate;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleMain;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleNote;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitlePartName;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitlePartNumber;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleSubtitle;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleType;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWork;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentTerm;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorId;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorIsPreferred;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorRoles;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorType;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorId;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorIsPreferred;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorRoles;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorType;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDateEnd;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDateStart;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDeweyEdition;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDeweyEditionNumber;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGenreIsPreferred;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGenreLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGeographicCoverageLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPublicationCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPublicationLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPublicationTerm;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesTypes;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesValues;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkReference;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectIsPreferred;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSummary;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTableOfContents;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTargetAudienceCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTargetAudienceLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTargetAudienceTerm;
+import static org.folio.linked.data.test.resource.ResourceSpecUtil.createSpecRules;
+import static org.folio.linked.data.test.resource.ResourceSpecUtil.createSpecifications;
+import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -148,94 +257,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.client.SpecClient;
-import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.service.SettingsService;
-import org.folio.linked.data.service.resource.hash.HashService;
-import org.folio.linked.data.test.ResourceTestService;
-import org.folio.linked.data.test.TestUtil;
-import org.folio.linked.data.validation.dto.LccnPatternValidator;
-import org.folio.rest.jaxrs.model.ParsedRecord;
-import org.folio.rest.jaxrs.model.Record;
-import org.folio.rspec.domain.dto.SpecificationDto;
-import org.folio.rspec.domain.dto.SpecificationDtoCollection;
-import org.folio.rspec.domain.dto.SpecificationRuleDto;
-import org.folio.rspec.domain.dto.SpecificationRuleDtoCollection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-public abstract class ResourceControllerITBase {
+abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
 
-  public static final String LCCN_VALIDATION_NOT_AVAILABLE =
-    "[Could not validate LCCN for duplicate] - reason: [Unable to reach search service]. Please try later.";
-  public static final String RESOURCE_URL = "/linked-data/resource";
-  private static final String ROLES_PROPERTY = "roles";
-  private static final String NOTES_PROPERTY = "_notes";
-  private static final String ID_PROPERTY = "id";
-  private static final String LABEL_PROPERTY = "label";
-  private static final String IS_PREFERRED_PROPERTY = "isPreferred";
-  private static final String VALUE_PROPERTY = "value";
-  private static final String TYPE_PROPERTY = "type";
-  private static final String INSTANCE_REF = "_instanceReference";
-  private static final String WORK_REF = "_workReference";
-  private static final String CREATOR_REF = "_creatorReference";
-  private static final String CONTRIBUTOR_REF = "_contributorReference";
-  private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
-  private static final String GENRE_REF = "_genreReference";
-  private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
-  private static final String GRANTING_INSTITUTION_REF = "_grantingInstitutionReference";
-  private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
-  private static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
-  @Autowired
-  private MockMvc mockMvc;
-  @Autowired
-  private Environment env;
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
-  @Autowired
-  private ResourceTestService resourceTestService;
-  private LookupResources lookupResources;
-  @Autowired
-  private HashService hashService;
-  @MockBean
-  private SrsClient srsClient;
+  static final String RESOURCE_URL = "/linked-data/resource";
+  static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
+  static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
+
   @MockBean
   private SpecClient specClient;
-  @MockBean
-  private SearchClient searchClient;
-  @MockBean
-  private SettingsService settingsService;
+
+  private LookupResources lookupResources;
 
   @BeforeEach
   public void beforeEach() {
@@ -247,7 +303,7 @@ public abstract class ResourceControllerITBase {
   void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
     // given
     var work = getSampleWork(null);
-    setExistingResourcesIds(work);
+    setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
@@ -276,229 +332,10 @@ public abstract class ResourceControllerITBase {
   }
 
   @Test
-  void createInstanceWithWorkRef_shouldReturn400_ifLccnIsInvalid() throws Exception {
-    // given
-    var specRuleId = randomUUID();
-    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
-    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
-
-    var work = getSampleWork(null);
-    setExistingResourcesIds(work);
-    resourceTestService.saveGraph(work);
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(INSTANCE_WITH_WORK_REF_SAMPLE
-        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
-      );
-    when(searchClient.searchInstances(any()))
-      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(0L), HttpStatus.OK));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isBadRequest())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].code", equalTo("lccn_does_not_match_pattern")))
-      .andExpect(jsonPath("errors[0].parameters", hasSize(2)))
-      .andExpect(jsonPath("total_records", equalTo(1)));
-  }
-
-  @Test
-  void createInstanceWithWorkRef_shouldReturn424_ifSearchServiceThrownException() throws Exception {
-    // given
-    var work = getSampleWork(null);
-    setExistingResourcesIds(work);
-    resourceTestService.saveGraph(work);
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(INSTANCE_WITH_WORK_REF_SAMPLE
-        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
-        .replace("lccn value", "nn0123456789")
-      );
-    var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
-    when(searchClient.searchInstances(any())).thenThrow(new RuntimeException());
-    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isFailedDependency())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].code", equalTo("failed_dependency")))
-      .andExpect(jsonPath("errors[0].message", equalTo(LCCN_VALIDATION_NOT_AVAILABLE)))
-      .andExpect(jsonPath("total_records", equalTo(1)));
-    verify(searchClient).searchInstances(query);
-  }
-
-  @Test
-  void createInstanceWithWorkRef_shouldReturn400_ifLccnIsNotUnique() throws Exception {
-    // given
-    var work = getSampleWork(null);
-    setExistingResourcesIds(work);
-    resourceTestService.saveGraph(work);
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(INSTANCE_WITH_WORK_REF_SAMPLE
-        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
-        .replace("lccn value", "nn0123456789")
-      );
-    var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
-    when(searchClient.searchInstances(query))
-      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(1L), HttpStatus.OK));
-    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isBadRequest())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].code", equalTo("lccn_not_unique")))
-      .andExpect(jsonPath("total_records", equalTo(1)));
-    verify(searchClient).searchInstances(query);
-  }
-
-  @Test
-  void createInstanceWithWorkRef_shouldSuccess_ifLccnDeduplicationDisabled() throws Exception {
-    // given
-    var work = getSampleWork(null);
-    setExistingResourcesIds(work);
-    resourceTestService.saveGraph(work);
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(INSTANCE_WITH_WORK_REF_SAMPLE
-        .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
-        .replace("lccn value", "nn0123456789")
-      );
-    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(false);
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON));
-  }
-
-  @Test
-  void update_shouldReturn400_ifLccnIsNotUnique() throws Exception {
-    // given
-    var updateDto = getSampleInstanceDtoMap();
-    var instance = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
-    instance.remove("inventoryId");
-    instance.remove("srsId");
-    var status = getStatus(instance);
-    ((LinkedHashMap) status.get(0)).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
-    var work = getSampleWork(null);
-    var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
-
-    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(
-        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-          .replace("lccn value", "nn0123456789")
-      );
-    var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")"
-      + " and id <> \"2165ef4b-001f-46b3-a60e-52bcdeb3d5a1\"";
-    when(searchClient.searchInstances(query))
-      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(1L), HttpStatus.OK));
-    when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
-
-    // when
-    var resultActions = mockMvc.perform(updateRequest);
-
-    // then
-    resultActions
-      .andExpect(status().isBadRequest())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].code", equalTo("lccn_not_unique")))
-      .andExpect(jsonPath("total_records", equalTo(1)));
-    verify(searchClient).searchInstances(query);
-  }
-
-  @Test
-  void createWorkWithInstanceRef_shouldCreateAuthorityFromSrs() throws Exception {
-    // given
-    var instanceForReference = getSampleInstanceResource(null, null);
-    setExistingResourcesIds(instanceForReference);
-    resourceTestService.saveGraph(instanceForReference);
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(
-        SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE
-          .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
-      );
-
-    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
-      .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toCreatorReferenceId(), equalTo("8288857748391775847")));
-  }
-
-  @Test
-  void createWorkWithInstanceRef_shouldReturn404_ifRecordNotFoundInSrs() throws Exception {
-    // given
-    var instanceForReference = getSampleInstanceResource(null, null);
-    setExistingResourcesIds(instanceForReference);
-    resourceTestService.saveGraph(instanceForReference);
-    var requestBuilder = post(RESOURCE_URL)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(
-        SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE
-          .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
-      );
-
-    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
-      .thenReturn(new ResponseEntity<>(null, HttpStatusCode.valueOf(404)));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isNotFound())
-      .andExpect(jsonPath("errors[0].message",
-        equalTo("Source Record not found by srsId: [4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd] in Source Record storage")))
-      .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
-      .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
-      .andExpect(jsonPath("total_records", equalTo(1)));
-  }
-
-  private org.folio.rest.jaxrs.model.Record createRecord() {
-    var content = TestUtil.loadResourceAsString("samples/marc2ld/marc_authority.jsonl");
-    var parsedRecord = new ParsedRecord().withContent(content);
-    return new Record().withParsedRecord(parsedRecord);
-  }
-
-  @Test
   void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
     // given
     var instanceForReference = getSampleInstanceResource(null, null);
-    setExistingResourcesIds(instanceForReference);
+    setExistingResourcesIds(instanceForReference, hashService);
     resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
@@ -584,48 +421,11 @@ public abstract class ResourceControllerITBase {
   }
 
   @Test
-  void update_shouldReturn400_ifLccnIsInvalid() throws Exception {
-    // given
-    var specRuleId = randomUUID();
-    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
-    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
-
-    var updateDto = getSampleInstanceDtoMap();
-    var instance = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
-    instance.remove("inventoryId");
-    instance.remove("srsId");
-    var status = getStatus(instance);
-    ((LinkedHashMap) status.get(0)).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
-    var work = getSampleWork(null);
-    var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
-
-    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(
-        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-      );
-    when(searchClient.searchInstances(any()))
-      .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(0L), HttpStatus.OK));
-
-    // when
-    var resultActions = mockMvc.perform(updateRequest);
-
-    // then
-    resultActions
-      .andExpect(status().isBadRequest())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].code", equalTo("lccn_does_not_match_pattern")))
-      .andExpect(jsonPath("errors[0].parameters", hasSize(2)))
-      .andExpect(jsonPath("total_records", equalTo(1)));
-  }
-
-  @Test
   void update_shouldReturnCorrectlyUpdatedWorkWithInstanceRef_deleteOldOne_sendMessages() throws Exception {
     // given
     var instance = getSampleInstanceResource(null, null);
     var originalWork = getSampleWork(instance);
-    setExistingResourcesIds(instance);
+    setExistingResourcesIds(instance, hashService);
     resourceTestService.saveGraph(originalWork);
     var updateDto = getSampleWorkDtoMap();
     var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
@@ -744,46 +544,6 @@ public abstract class ResourceControllerITBase {
   }
 
   @Test
-  void getResourceIdByResourceInventoryId_shouldReturnResourceId() throws Exception {
-    //given
-    var resource = resourceTestService.saveGraph(getSampleInstanceResource(null, null));
-    var requestBuilder = get(RESOURCE_URL + "/metadata/" + resource.getFolioMetadata().getInventoryId() + "/id")
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
-
-    //when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    //then
-    resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("id", equalTo(String.valueOf(resource.getId()))));
-  }
-
-  @Test
-  void getResourceIdByResourceInventoryId_shouldReturn404_ifNoEntityExistsWithGivenInventoryId() throws Exception {
-    //given
-    var inventoryId = UUID.randomUUID();
-    var requestBuilder = get(RESOURCE_URL + "/metadata/" + inventoryId + "/id")
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
-
-    //when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    //then
-    resultActions
-      .andExpect(status().isNotFound())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("errors[0].message",
-        equalTo("Resource not found by inventoryId: [" + inventoryId + "] in Linked Data storage")))
-      .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
-      .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
-      .andExpect(jsonPath("total_records", equalTo(1)));
-  }
-
-  @Test
   void deleteResourceById_shouldDeleteRootInstanceAndRootEdges_reindexWork() throws Exception {
     // given
     var work = getSampleWork(null);
@@ -849,29 +609,6 @@ public abstract class ResourceControllerITBase {
     checkRelevantIndexMessagesDuringUpdate(existedResource);
   }
 
-  @Test
-  void getResourceViewById_shouldReturnInstance() throws Exception {
-    // given
-    var existed = resourceTestService.saveGraph(getSampleInstanceResource());
-    var requestBuilder = get(RESOURCE_URL + "/" + existed.getId() + "/marc")
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env));
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andReturn().getResponse().getContentAsString();
-
-    resultActions
-      .andExpect(jsonPath("id", equalTo(existed.getId().toString())))
-      .andExpect(jsonPath("recordType", equalTo("MARC_BIB")))
-      .andExpect(jsonPath("parsedRecord.content", notNullValue()));
-  }
-
   protected void checkSearchIndexMessage(Long id, ResourceIndexEventType eventType) {
     // nothing to check without Folio profile
   }
@@ -886,14 +623,6 @@ public abstract class ResourceControllerITBase {
 
   protected void checkRelevantIndexMessagesDuringUpdate(Resource existedResource) {
     // nothing to check without Folio profile
-  }
-
-  private void setExistingResourcesIds(Resource resource) {
-    resource.setId(hashService.hash(resource));
-    resource.getOutgoingEdges()
-      .stream()
-      .map(ResourceEdge::getTarget)
-      .forEach(this::setExistingResourcesIds);
   }
 
   private void validateInstanceResponse(ResultActions resultActions, String instanceBase) throws Exception {
@@ -1744,525 +1473,6 @@ public abstract class ResourceControllerITBase {
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
     resource.setId(id);
     return resource;
-  }
-
-  private String toInstance() {
-    return join(".", "$", path("resource"), path(INSTANCE.getUri()));
-  }
-
-  private String toInstanceReference(String workBase) {
-    return join(".", workBase, arrayPath(INSTANCE_REF));
-  }
-
-  private String toWork() {
-    return join(".", "$", path("resource"), path(WORK.getUri()));
-  }
-
-  private String toCreatorReferenceId() {
-    return join(".", toWork(), "_creatorReference[0]", "id");
-  }
-
-  private String toWorkReference() {
-    return join(".", toInstance(), arrayPath(WORK_REF));
-  }
-
-  private String toExtent() {
-    return String.join(".", toInstance(), arrayPath(EXTENT.getValue()));
-  }
-
-  private String toDimensions() {
-    return join(".", toInstance(), arrayPath(DIMENSIONS.getValue()));
-  }
-
-  private String toEditionStatement() {
-    return join(".", toInstance(), arrayPath(EDITION.getValue()));
-  }
-
-  private String toSupplementaryContentLink() {
-    return join(".", toInstance(), arrayPath(SUPPLEMENTARY_CONTENT.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toSupplementaryContentName() {
-    return join(".", toInstance(), arrayPath(SUPPLEMENTARY_CONTENT.getUri()), arrayPath(NAME.getValue()));
-  }
-
-  private String toAccessLocationLink() {
-    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toAccessLocationNote() {
-    return join(".", toInstance(), arrayPath(ACCESS_LOCATION.getUri()), arrayPath(NOTE.getValue()));
-  }
-
-  private String toProjectedProvisionDate() {
-    return join(".", toInstance(), arrayPath(PROJECTED_PROVISION_DATE.getValue()));
-  }
-
-  private String toPrimaryTitlePartName(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NAME.getValue()));
-  }
-
-  private String toPrimaryTitlePartNumber(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(PART_NUMBER.getValue()));
-  }
-
-  private String toPrimaryTitleMain(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(MAIN_TITLE.getValue()));
-  }
-
-  private String toPrimaryTitleNonSortNum(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(NON_SORT_NUM.getValue()));
-  }
-
-  private String toPrimaryTitleSubtitle(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()),
-      path(ResourceTypeDictionary.TITLE.getUri()), arrayPath(SUBTITLE.getValue()));
-  }
-
-  private String toIssuance() {
-    return join(".", toInstance(), arrayPath(ISSUANCE.getValue()));
-  }
-
-  private String toStatementOfResponsibility() {
-    return join(".", toInstance(), arrayPath(STATEMENT_OF_RESPONSIBILITY.getValue()));
-  }
-
-  private String toInstanceNotesValues() {
-    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
-  }
-
-  private String toInstanceNotesTypes() {
-    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
-  }
-
-  private String toParallelTitlePartName(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(PART_NAME.getValue()));
-  }
-
-  private String toParallelTitlePartNumber(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(PART_NUMBER.getValue()));
-  }
-
-  private String toParallelTitleMain(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(MAIN_TITLE.getValue()));
-  }
-
-  private String toParallelTitleDate(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(DATE.getValue()));
-  }
-
-  private String toParallelTitleSubtitle(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(SUBTITLE.getValue()));
-  }
-
-  private String toParallelTitleNote(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(NOTE.getValue()));
-  }
-
-  private String toVariantTitlePartName(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(PART_NAME.getValue()));
-  }
-
-  private String toVariantTitlePartNumber(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(PART_NUMBER.getValue()));
-  }
-
-  private String toVariantTitleMain(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(MAIN_TITLE.getValue()));
-  }
-
-  private String toVariantTitleDate(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(DATE.getValue()));
-  }
-
-  private String toVariantTitleSubtitle(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(SUBTITLE.getValue()));
-  }
-
-  private String toVariantTitleType(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(VARIANT_TYPE.getValue()));
-  }
-
-  private String toVariantTitleNote(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(NOTE.getValue()));
-  }
-
-  private String toProviderEventDate(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(DATE.getValue()));
-  }
-
-  private String toProviderEventName(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(NAME.getValue()));
-  }
-
-  private String toProviderEventPlaceCode(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
-      arrayPath(CODE.getValue()));
-  }
-
-  private String toProviderEventPlaceLabel(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
-      arrayPath(LABEL.getValue()));
-  }
-
-  private String toProviderEventPlaceLink(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_PLACE.getUri()),
-      arrayPath(LINK.getValue()));
-  }
-
-  private String toProviderEventProviderDate(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(PROVIDER_DATE.getValue()));
-  }
-
-  private String toProviderEventSimplePlace(PredicateDictionary predicate) {
-    return join(".", toInstance(), arrayPath(predicate.getUri()), arrayPath(SIMPLE_PLACE.getValue()));
-  }
-
-  private String toLccnValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(NAME.getValue()));
-  }
-
-  private String toLccnStatusValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LCCN.getUri()),
-      arrayPath(STATUS.getUri()), arrayPath(LABEL.getValue()));
-  }
-
-  private String toLccnStatusLink() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LCCN.getUri()), arrayPath(STATUS.getUri()),
-      arrayPath(LINK.getValue()));
-  }
-
-  private String toIsbnValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()), arrayPath(NAME.getValue()));
-  }
-
-  private String toIsbnQualifier() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()),
-      arrayPath(QUALIFIER.getValue()));
-  }
-
-  private String toIsbnStatusValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()),
-      arrayPath(STATUS.getUri()), arrayPath(LABEL.getValue()));
-  }
-
-  private String toIsbnStatusLink() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_ISBN.getUri()),
-      arrayPath(STATUS.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toEanValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_EAN.getUri()),
-      arrayPath(EAN_VALUE.getValue()));
-  }
-
-  private String toEanQualifier() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_EAN.getUri()),
-      arrayPath(QUALIFIER.getValue()));
-  }
-
-  private String toLocalIdValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LOCAL.getUri()),
-      arrayPath(LOCAL_ID_VALUE.getValue()));
-  }
-
-  private String toLocalIdAssigner() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_LOCAL.getUri()),
-      arrayPath(ASSIGNING_SOURCE.getValue()));
-  }
-
-  private String toOtherIdValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_UNKNOWN.getUri()),
-      arrayPath(NAME.getValue()));
-  }
-
-  private String toOtherIdQualifier() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_UNKNOWN.getUri()),
-      arrayPath(QUALIFIER.getValue()));
-  }
-
-  private String toCarrierCode(String instanceBase) {
-    return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  private String toCarrierLink(String instanceBase) {
-    return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toCarrierTerm(String instanceBase) {
-    return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toCopyrightDate() {
-    return join(".", toInstance(), arrayPath(COPYRIGHT.getUri()), arrayPath(DATE.getValue()));
-  }
-
-  private String toMediaCode() {
-    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  private String toMediaLink() {
-    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toMediaTerm() {
-    return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toWorkNotesValues(String workBase) {
-    return join(".", workBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
-  }
-
-  private String toWorkNotesTypes(String workBase) {
-    return join(".", workBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
-  }
-
-  private String toWorkTableOfContents(String workBase) {
-    return join(".", workBase, arrayPath(TABLE_OF_CONTENTS.getValue()));
-  }
-
-  private String toWorkSummary(String workBase) {
-    return join(".", workBase, arrayPath(SUMMARY.getValue()));
-  }
-
-  private String toLanguageCode(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  private String toLanguageTerm(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toLanguageLink(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toClassificationSources(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(SOURCE.getValue()));
-  }
-
-  private String toClassificationCodes(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  private String toClassificationItemNumbers(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(ITEM_NUMBER.getValue()));
-  }
-
-  private String toWorkDeweyEditionNumber(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION_NUMBER.getValue()));
-  }
-
-  private String toWorkDeweyEdition(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(EDITION.getValue()));
-  }
-
-  private String toLcStatusValue(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(STATUS.getUri()),
-      arrayPath(LABEL.getValue()));
-  }
-
-  private String toLcStatusLink(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri()), arrayPath(STATUS.getUri()),
-      arrayPath(LINK.getValue()));
-  }
-
-  private String toClassificationAssigningSourceIds(String workBase) {
-    return join(".", join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri())),
-      dynamicArrayPath(ASSIGNING_SOURCE_REF), path(ID_PROPERTY));
-  }
-
-  private String toClassificationAssigningSourceLabels(String workBase) {
-    return join(".", join(".", workBase, dynamicArrayPath(CLASSIFICATION.getUri())),
-      dynamicArrayPath(ASSIGNING_SOURCE_REF), path(LABEL_PROPERTY));
-  }
-
-  private String toDissertationLabel(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(LABEL.getValue()));
-  }
-
-  private String toDissertationDegree(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DEGREE.getValue()));
-  }
-
-  private String toDissertationYear(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_YEAR.getValue()));
-  }
-
-  private String toDissertationNote(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_NOTE.getValue()));
-  }
-
-  private String toDissertationId(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_ID.getValue()));
-  }
-
-  private String toDissertationGrantingInstitutionIds(String workBase) {
-    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
-      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(ID_PROPERTY));
-  }
-
-  private String toDissertationGrantingInstitutionLabels(String workBase) {
-    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
-      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(LABEL_PROPERTY));
-  }
-
-  private String toWorkCreatorId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ID_PROPERTY));
-  }
-
-  private String toWorkCreatorLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(LABEL_PROPERTY));
-  }
-
-  private String toWorkCreatorType(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(TYPE_PROPERTY));
-  }
-
-  private String toWorkCreatorRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ROLES_PROPERTY));
-  }
-
-  private String toWorkCreatorIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(IS_PREFERRED_PROPERTY));
-  }
-
-  private String toWorkContributorId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ID_PROPERTY));
-  }
-
-  private String toWorkContributorLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(LABEL_PROPERTY));
-  }
-
-  private String toWorkContributorType(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(TYPE_PROPERTY));
-  }
-
-  private String toWorkContributorRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ROLES_PROPERTY));
-  }
-
-  private String toWorkContributorIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(IS_PREFERRED_PROPERTY));
-  }
-
-  private String toWorkContentTerm(String workBase) {
-    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toWorkSubjectLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path(LABEL_PROPERTY));
-  }
-
-  private String toWorkSubjectIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path(IS_PREFERRED_PROPERTY));
-  }
-
-  private String toWorkGeographicCoverageLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(GEOGRAPHIC_COVERAGE_REF), path("label"));
-  }
-
-  private String toWorkGenreLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(GENRE_REF), path(LABEL_PROPERTY));
-  }
-
-  private String toWorkGenreIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(GENRE_REF), path(IS_PREFERRED_PROPERTY));
-  }
-
-  private String toWorkDateStart(String workBase) {
-    return join(".", workBase, arrayPath(DATE_START.getValue()));
-  }
-
-  private String toWorkDateEnd(String workBase) {
-    return join(".", workBase, arrayPath(DATE_END.getValue()));
-  }
-
-  private String toWorkGovPublicationCode(String workBase) {
-    return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  private String toWorkGovPublicationTerm(String workBase) {
-    return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toWorkGovPublicationLink(String workBase) {
-    return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toWorkTargetAudienceCode(String workBase) {
-    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  private String toWorkTargetAudienceTerm(String workBase) {
-    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  private String toWorkTargetAudienceLink(String workBase) {
-    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toWorkContentCode(String workBase) {
-    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  private String toWorkContentLink(String workBase) {
-    return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  private String toId(String base) {
-    return join(".", base, path("id"));
-  }
-
-  private String path(String path) {
-    return format("['%s']", path);
-  }
-
-  private String arrayPath(String path) {
-    return format("['%s'][0]", path);
-  }
-
-  private String dynamicArrayPath(String path) {
-    return format("['%s'][*]", path);
-  }
-
-  private ArrayList getStatus(LinkedHashMap instance) {
-    var map = (ArrayList) instance.get(MAP.getUri());
-    var lccn = (LinkedHashMap) ((LinkedHashMap) map.get(0)).get(ID_LCCN.getUri());
-    return (ArrayList) lccn.get(STATUS.getUri());
-  }
-
-  private SpecificationDtoCollection createSpecifications(UUID specRuleId) {
-    var specifications = new SpecificationDtoCollection();
-    specifications.setSpecifications(List.of(new SpecificationDto().id(specRuleId)));
-    return specifications;
-  }
-
-  private SpecificationRuleDtoCollection createSpecRules() {
-    var specRules = new SpecificationRuleDtoCollection();
-    var specRule = new SpecificationRuleDto();
-    specRule.setCode(LccnPatternValidator.CODE);
-    specRule.setEnabled(true);
-    specRules.setRules(List.of(specRule));
-    return specRules;
   }
 
   private record LookupResources(

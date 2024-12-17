@@ -1,4 +1,4 @@
-package org.folio.linked.data.test;
+package org.folio.linked.data.test.resource;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
