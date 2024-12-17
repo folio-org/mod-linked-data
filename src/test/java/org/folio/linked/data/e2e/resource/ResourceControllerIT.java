@@ -18,7 +18,6 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
-import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +33,6 @@ class ResourceControllerIT extends ResourceControllerITBase {
   private KafkaSearchWorkIndexTopicListener searchIndexTopicListener;
   @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
-  @Autowired
-  private ResourceTestService resourceTestService;
   @SpyBean
   private WorkCreateMessageSender createEventProducer;
   @SpyBean
