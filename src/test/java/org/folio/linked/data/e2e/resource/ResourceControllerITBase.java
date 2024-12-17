@@ -294,6 +294,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
   private LookupResources lookupResources;
 
   @BeforeEach
+  @Override
   public void beforeEach() {
     cleanResourceTables(jdbcTemplate);
     lookupResources = saveLookupResources();
