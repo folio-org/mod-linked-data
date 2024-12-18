@@ -20,7 +20,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
-import org.folio.linked.data.test.ResourceTestService;
+import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -2,6 +2,8 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
+import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.WORK_ID_PLACEHOLDER;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.createPrimaryTitle;
 import static org.folio.linked.data.test.MonographTestUtil.createResource;
@@ -9,6 +11,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -24,34 +27,19 @@ import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.FolioMetadata;
-import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.service.resource.hash.HashService;
-import org.folio.linked.data.test.ResourceTestService;
+import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @IntegrationTest
-class ResourceControllerRetainOutgoingEdgesIT {
-  private static final String RESOURCE_URL = "/linked-data/resource";
-  private static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
-
-  @Autowired
-  private ResourceTestService resourceTestService;
-  @Autowired
-  private Environment env;
-  @Autowired
-  private MockMvc mockMvc;
-  @Autowired
-  private HashService hashService;
+@SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
+class ResourceControllerRetainOutgoingEdgesIT extends AbstractResourceControllerIT {
 
   @Test
   void shouldRetainAdminMetadataOfInstanceAfterUpdate() throws Exception {
     // given
     var work = getSampleWork(null);
-    setResourceIds(work);
+    setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
 
     var annotation = createResource(Map.of(), Set.of(ANNOTATION), Map.of());
@@ -66,7 +54,7 @@ class ResourceControllerRetainOutgoingEdgesIT {
       .setSource(LINKED_DATA)
       .setInventoryId(UUID.randomUUID().toString());
     instance.setFolioMetadata(folioMetadata);
-    setResourceIds(instance);
+    setExistingResourcesIds(instance, hashService);
     resourceTestService.saveGraph(instance);
 
     // when
@@ -90,7 +78,6 @@ class ResourceControllerRetainOutgoingEdgesIT {
       .andExpect(jsonPath("$.outgoingEdges.edges['http://bibfra.me/vocab/marc/adminMetadata'].length()").value(1));
   }
 
-
   private ResourceResponseDto updateResource(Long id, String payload) throws Exception {
     var updateRequest = put(RESOURCE_URL + "/" + id)
       .contentType(APPLICATION_JSON)
@@ -101,13 +88,5 @@ class ResourceControllerRetainOutgoingEdgesIT {
       .andReturn()
       .getResponse().getContentAsString();
     return OBJECT_MAPPER.readValue(responseString, ResourceResponseDto.class);
-  }
-
-  private void setResourceIds(Resource resource) {
-    resource.setId(hashService.hash(resource));
-    resource.getOutgoingEdges()
-      .stream()
-      .map(ResourceEdge::getTarget)
-      .forEach(this::setResourceIds);
   }
 }
