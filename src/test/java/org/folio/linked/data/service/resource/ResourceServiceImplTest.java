@@ -42,6 +42,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -74,6 +75,8 @@ class ResourceServiceImplTest {
   private RequestProcessingExceptionBuilder exceptionBuilder;
   @Mock
   private ResourceEdgeService resourceEdgeService;
+  @Mock
+  private FolioExecutionContext folioExecutionContext;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
@@ -218,6 +221,7 @@ class ResourceServiceImplTest {
     );
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(work)).thenReturn(work);
+    when(folioExecutionContext.getUserId()).thenReturn(UUID.randomUUID());
 
     // when
     var result = resourceService.updateResource(id, workDto);
@@ -226,6 +230,7 @@ class ResourceServiceImplTest {
     assertThat(expectedDto).isEqualTo(result);
     verify(resourceGraphService).breakEdgesAndDelete(oldWork);
     verify(resourceGraphService).saveMergingGraph(work);
+    verify(folioExecutionContext).getUserId();
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work));
   }
 
