@@ -121,8 +121,10 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
+import static org.folio.linked.data.test.TestUtil.assertResourceMetadata;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
 import static org.folio.linked.data.test.TestUtil.getSampleWorkDtoMap;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -244,7 +246,9 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -260,6 +264,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -287,6 +292,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
   static final String RESOURCE_URL = "/linked-data/resource";
   static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
   static final String INSTANCE_ID_PLACEHOLDER = "%INSTANCE_ID%";
+
+  private static final UUID USER_ID = UUID.randomUUID();
 
   @MockBean
   private SpecClient specClient;
@@ -340,7 +347,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
+      .headers(defaultHeadersWithUserId(env, USER_ID.toString()))
       .content(
         WORK_WITH_INSTANCE_REF_SAMPLE.replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
       );
@@ -361,6 +368,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateWork(workResource, true);
     checkSearchIndexMessage(workResource.getId(), CREATE);
     checkIndexDate(workResource.getId().toString());
+    assertResourceMetadata(workResource, USER_ID, null);
   }
 
   @Test
@@ -476,6 +484,62 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     checkSearchIndexMessage(originalWork.getId(), DELETE);
     checkSearchIndexMessage(Long.valueOf(id), CREATE);
     checkIndexDate(id);
+  }
+
+  @Test
+  void update_shouldReturnCorrectlyUpdateMetadataFields() throws Exception {
+    // given
+    var instanceForReference = getSampleInstanceResource(null, null);
+    setExistingResourcesIds(instanceForReference, hashService);
+    resourceTestService.saveGraph(instanceForReference);
+    var requestBuilder = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeadersWithUserId(env, USER_ID.toString()))
+      .content(
+        WORK_WITH_INSTANCE_REF_SAMPLE.replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
+      );
+
+    var response = mockMvc.perform(requestBuilder)
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var originalWorkId = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
+    var originalWorkResource = resourceTestService.getResourceById(originalWorkId, 4);
+
+
+    var updateDto = getSampleWorkDtoMap();
+    var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
+    workMap.put(PropertyDictionary.LANGUAGE.getValue(),
+      Map.of(
+        LINK.getValue(), List.of("http://id.loc.gov/vocabulary/languages/eng"),
+        TERM.getValue(), List.of("English")
+      ));
+    var updatedById = UUID.randomUUID();
+
+    // when
+    var updateRequest = put(RESOURCE_URL + "/" + originalWorkId)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeadersWithUserId(env, updatedById.toString()))
+      .content(OBJECT_MAPPER.writeValueAsString(updateDto)
+        .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
+      );
+
+    // then
+    var updatedResponse = mockMvc.perform(updateRequest).andReturn().getResponse().getContentAsString();
+    var updatedResourceResponse = OBJECT_MAPPER.readValue(updatedResponse, ResourceResponseDto.class);
+    var updatedWorkId = ((WorkResponseField) updatedResourceResponse.getResource()).getWork().getId();
+    var updatedWorkResource = resourceTestService.getResourceById(updatedWorkId, 4);
+    compareResourceMetadataOfOriginalAndUpdated(originalWorkResource, updatedWorkResource, updatedById);
+  }
+
+  private void compareResourceMetadataOfOriginalAndUpdated(Resource original, Resource updated, UUID updatedById) {
+    assertEquals(USER_ID, updated.getCreatedBy());
+    assertEquals(updatedById, updated.getUpdatedBy());
+    assertTrue(updated.getUpdatedDate().after(original.getUpdatedDate()));
+    assertEquals(original.getCreatedDate(), updated.getCreatedDate());
+    assertEquals(original.getCreatedBy(), updated.getCreatedBy());
+    assertNull(original.getUpdatedBy());
+    assertEquals(1, updated.getVersion() - original.getVersion());
   }
 
   @Test
