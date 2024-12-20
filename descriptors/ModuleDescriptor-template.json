@@ -26,7 +26,7 @@
             "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
             "source-storage.records.post",
-            "source-storage.records.put",
+            "source-storage.records.generation.item.put",
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
             "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
@@ -71,7 +71,7 @@
             "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
             "source-storage.records.post",
-            "source-storage.records.put",
+            "source-storage.records.generation.item.put",
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
             "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
@@ -121,7 +121,7 @@
             "inventory-storage.preceding-succeeding-titles.item.delete",
             "source-storage.snapshots.post",
             "source-storage.records.post",
-            "source-storage.records.put"
+            "source-storage.records.generation.item.put"
           ]
         },
         {
