@@ -47,7 +47,7 @@
     <lib-linked-data-dictionary.version>1.0.1-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>1.0.2-SNAPSHOT</lib-linked-data-marc4ld.version>
     <lib-linked-data-fingerprint.version>1.0.1-SNAPSHOT</lib-linked-data-fingerprint.version>
-    <mod-source-record-storage-client.version>5.9.3</mod-source-record-storage-client.version>
+    <mod-source-record-storage-client.version>5.9.4</mod-source-record-storage-client.version>
     <mod-record-specifications-dto.version>1.1.0-SNAPSHOT</mod-record-specifications-dto.version>
     <maven-checkstyle-plugin.checkstyle.version>10.21.0</maven-checkstyle-plugin.checkstyle.version>
 
