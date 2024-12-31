@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @MapperUnit(type = SUPPLEMENTARY_CONTENT, predicate = PredicateDictionary.SUPPLEMENTARY_CONTENT,
   requestDto = SupplementaryContent.class)
-public class SupplementaryContentMapperUnit implements InstanceSubResourceMapperUnit {
+public class InstanceSupplementaryContentMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

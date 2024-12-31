@@ -533,6 +533,16 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("illustrations term");
 
+    var supplementaryContent = createResource(
+      Map.of(
+        CODE, List.of("code"),
+        TERM, List.of("supplementary content term"),
+        LINK, List.of("http://id.loc.gov/vocabulary/msupplcont/code")
+      ),
+      Set.of(CATEGORY),
+      emptyMap()
+    ).setLabel("supplementary content term");
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
@@ -552,6 +562,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
     pred2OutgoingResources.put(ILLUSTRATIONS, List.of(illustrations));
+    pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(supplementaryContent));
 
     var work = createResource(
       Map.ofEntries(
