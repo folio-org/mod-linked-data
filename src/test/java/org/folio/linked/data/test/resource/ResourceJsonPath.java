@@ -9,6 +9,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
@@ -349,6 +350,18 @@ public class ResourceJsonPath {
 
   public static String toCarrierTerm(String instanceBase) {
     return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(TERM.getValue()));
+  }
+
+  public static String toIllustrationsCode(String instanceBase) {
+    return join(".", instanceBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(CODE.getValue()));
+  }
+
+  public static String toIllustrationsLink(String instanceBase) {
+    return join(".", instanceBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(LINK.getValue()));
+  }
+
+  public static String toIllustrationsTerm(String instanceBase) {
+    return join(".", instanceBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(TERM.getValue()));
   }
 
   public static String toCopyrightDate() {

@@ -18,6 +18,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
+import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
@@ -230,6 +231,16 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("carrier term");
 
+    var illustrations = createResource(
+      Map.of(
+        CODE, List.of("code"),
+        TERM, List.of("illustrations term"),
+        LINK, List.of("http://id.loc.gov/vocabulary/millus/code")
+      ),
+      Set.of(CATEGORY),
+      emptyMap()
+    ).setLabel("illustrations term");
+
     var copyrightEvent = createResource(
       Map.of(
         DATE, List.of("copyright date value")
@@ -249,6 +260,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ean, localId, otherId));
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
+    pred2OutgoingResources.put(ILLUSTRATIONS, List.of(illustrations));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
 
     var instance = createResource(

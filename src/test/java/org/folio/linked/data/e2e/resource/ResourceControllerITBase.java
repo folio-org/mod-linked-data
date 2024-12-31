@@ -20,6 +20,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
@@ -152,6 +153,9 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEditionStatement;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtent;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toId;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsCode;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsTerm;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstance;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceNotesTypes;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceNotesValues;
@@ -614,8 +618,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(57);
-    assertThat(resourceTestService.countEdges()).isEqualTo(59);
+    assertThat(resourceTestService.countResources()).isEqualTo(58);
+    assertThat(resourceTestService.countEdges()).isEqualTo(60);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -626,7 +630,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(56);
+    assertThat(resourceTestService.countResources()).isEqualTo(57);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(41);
     checkSearchIndexMessage(work.getId(), UPDATE);
@@ -638,8 +642,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(57);
-    assertThat(resourceTestService.countEdges()).isEqualTo(59);
+    assertThat(resourceTestService.countResources()).isEqualTo(58);
+    assertThat(resourceTestService.countEdges()).isEqualTo(60);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -650,9 +654,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(56);
+    assertThat(resourceTestService.countResources()).isEqualTo(57);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(30);
+    assertThat(resourceTestService.countEdges()).isEqualTo(31);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -698,6 +702,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
       .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("ha")))
       .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("http://id.loc.gov/vocabulary/carriers/ha")))
       .andExpect(jsonPath(toCarrierTerm(instanceBase), equalTo("carrier term")))
+      .andExpect(jsonPath(toIllustrationsCode(instanceBase), equalTo("code")))
+      .andExpect(jsonPath(toIllustrationsLink(instanceBase), equalTo("http://id.loc.gov/vocabulary/millus/code")))
+      .andExpect(jsonPath(toIllustrationsTerm(instanceBase), equalTo("illustrations term")))
       .andExpect(jsonPath(toPrimaryTitlePartName(instanceBase), equalTo(List.of("Primary: partName"))))
       .andExpect(jsonPath(toPrimaryTitlePartNumber(instanceBase), equalTo(List.of("Primary: partNumber"))))
       .andExpect(jsonPath(toPrimaryTitleMain(instanceBase), equalTo(List.of("Primary: mainTitle"))))
@@ -902,12 +909,16 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateLiteral(instance, REPRODUCTION_NOTE.getValue(), "reproduction note");
     validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
     validateLiteral(instance, WITH_NOTE.getValue(), "with note");
-    assertThat(instance.getOutgoingEdges()).hasSize(18);
+    assertThat(instance.getOutgoingEdges()).hasSize(19);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateParallelTitle(edgeIterator.next(), instance);
     validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
     validateCategory(edgeIterator.next(), instance, MEDIA, "http://id.loc.gov/vocabulary/mediaTypes/s", "s");
+    validateCategory(edgeIterator.next(), instance, ILLUSTRATIONS, "illustrations term",
+      Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/code", CODE.getValue(), "code"),
+      "Illustrative Content"
+    );
     validateLccn(edgeIterator.next(), instance);
     var edge = edgeIterator.next();
     assertThat(edge.getId()).isNotNull();
@@ -1188,6 +1199,27 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     assertThat(locator.getOutgoingEdges()).isEmpty();
   }
 
+  private void validateCategory(ResourceEdge edge,
+                                Resource source,
+                                PredicateDictionary pred,
+                                String label,
+                                Map<String, String> doc,
+                                String categorySetLabel) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(pred.getUri());
+    var category = edge.getTarget();
+    assertThat(category.getLabel()).isEqualTo(label);
+    assertThat(category.getTypes().iterator().next().getUri()).isEqualTo(CATEGORY.getUri());
+    assertThat(category.getId()).isEqualTo(hashService.hash(category));
+    doc.forEach((key, value) -> validateLiteral(category, key, value));
+    if (category.getOutgoingEdges().isEmpty()) {
+      return;
+    }
+    assertCategorySetIsDefinedBy(category);
+    assertEquals(category.getOutgoingEdges().iterator().next().getTarget().getLabel(), categorySetLabel);
+  }
+
   private void validateCategory(ResourceEdge edge, Resource source, PredicateDictionary pred,
                                 String expectedLink, String expectedCode) {
     var prefix = pred.getUri().substring(pred.getUri().lastIndexOf("/") + 1);
@@ -1206,6 +1238,10 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     if (category.getOutgoingEdges().isEmpty()) {
       return;
     }
+    assertCategorySetIsDefinedBy(category);
+  }
+
+  private void assertCategorySetIsDefinedBy(Resource category) {
     assertThat(category.getOutgoingEdges())
       .extracting(ResourceEdge::getPredicate)
       .extracting(PredicateEntity::getUri)
