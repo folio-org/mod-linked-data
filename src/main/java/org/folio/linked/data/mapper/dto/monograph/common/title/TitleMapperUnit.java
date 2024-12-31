@@ -20,4 +20,8 @@ public abstract class TitleMapperUnit implements SingleResourceMapperUnit {
   public Set<Class<?>> supportedParents() {
     return SUPPORTED_PARENTS;
   }
+
+  protected String getLabel(String mainTitle, String subTitle) {
+    return String.join(" ", mainTitle, subTitle);
+  }
 }
