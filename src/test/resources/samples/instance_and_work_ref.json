@@ -252,19 +252,6 @@
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/illustrations": [
-        {
-          "http://bibfra.me/vocab/lite/link": [
-              "http://id.loc.gov/vocabulary/millus/code"
-          ],
-          "http://bibfra.me/vocab/marc/term": [
-              "illustrations term"
-          ],
-          "http://bibfra.me/vocab/marc/code": [
-              "code"
-          ]
-        }
-      ],
       "http://bibfra.me/vocab/marc/accessLocation": [
         {
           "http://bibfra.me/vocab/lite/link": [

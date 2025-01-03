@@ -632,7 +632,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
     assertThat(resourceTestService.countResources()).isEqualTo(57);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(41);
+    assertThat(resourceTestService.countEdges()).isEqualTo(42);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -656,7 +656,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
     assertThat(resourceTestService.countResources()).isEqualTo(57);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(31);
+    assertThat(resourceTestService.countEdges()).isEqualTo(30);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -702,9 +702,6 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
       .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("ha")))
       .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("http://id.loc.gov/vocabulary/carriers/ha")))
       .andExpect(jsonPath(toCarrierTerm(instanceBase), equalTo("carrier term")))
-      .andExpect(jsonPath(toIllustrationsCode(instanceBase), equalTo("code")))
-      .andExpect(jsonPath(toIllustrationsLink(instanceBase), equalTo("http://id.loc.gov/vocabulary/millus/code")))
-      .andExpect(jsonPath(toIllustrationsTerm(instanceBase), equalTo("illustrations term")))
       .andExpect(jsonPath(toPrimaryTitlePartName(instanceBase), equalTo(List.of("Primary: partName"))))
       .andExpect(jsonPath(toPrimaryTitlePartNumber(instanceBase), equalTo(List.of("Primary: partNumber"))))
       .andExpect(jsonPath(toPrimaryTitleMain(instanceBase), equalTo(List.of("Primary: mainTitle"))))
@@ -870,7 +867,10 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
       .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
       .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
       .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
-      .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")));
+      .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")))
+      .andExpect(jsonPath(toIllustrationsCode(workBase), equalTo("code")))
+      .andExpect(jsonPath(toIllustrationsLink(workBase), equalTo("http://id.loc.gov/vocabulary/millus/code")))
+      .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("illustrations term")));
     if (workBase.equals(toWork())) {
       resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
@@ -909,16 +909,12 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateLiteral(instance, REPRODUCTION_NOTE.getValue(), "reproduction note");
     validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
     validateLiteral(instance, WITH_NOTE.getValue(), "with note");
-    assertThat(instance.getOutgoingEdges()).hasSize(19);
+    assertThat(instance.getOutgoingEdges()).hasSize(18);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateParallelTitle(edgeIterator.next(), instance);
     validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
     validateCategory(edgeIterator.next(), instance, MEDIA, "http://id.loc.gov/vocabulary/mediaTypes/s", "s");
-    validateCategory(edgeIterator.next(), instance, ILLUSTRATIONS, "illustrations term",
-      Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/code", CODE.getValue(), "code"),
-      "Illustrative Content"
-    );
     validateLccn(edgeIterator.next(), instance);
     var edge = edgeIterator.next();
     assertThat(edge.getId()).isNotNull();
@@ -1269,6 +1265,10 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateParallelTitle(outgoingEdgeIterator.next(), work);
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
+    validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "illustrations term",
+      Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/code", CODE.getValue(), "code"),
+      "Illustrative Content"
+    );
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
     validateLanguage(outgoingEdgeIterator.next(), work);
     validateDissertation(outgoingEdgeIterator.next(), work);

@@ -231,16 +231,6 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("carrier term");
 
-    var illustrations = createResource(
-      Map.of(
-        CODE, List.of("code"),
-        TERM, List.of("illustrations term"),
-        LINK, List.of("http://id.loc.gov/vocabulary/millus/code")
-      ),
-      Set.of(CATEGORY),
-      emptyMap()
-    ).setLabel("illustrations term");
-
     var copyrightEvent = createResource(
       Map.of(
         DATE, List.of("copyright date value")
@@ -260,7 +250,6 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ean, localId, otherId));
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
-    pred2OutgoingResources.put(ILLUSTRATIONS, List.of(illustrations));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
 
     var instance = createResource(
@@ -529,6 +518,16 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("eng");
 
+    var illustrations = createResource(
+      Map.of(
+        CODE, List.of("code"),
+        TERM, List.of("illustrations term"),
+        LINK, List.of("http://id.loc.gov/vocabulary/millus/code")
+      ),
+      Set.of(CATEGORY),
+      emptyMap()
+    ).setLabel("illustrations term");
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
@@ -547,6 +546,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(DISSERTATION, List.of(createDissertation()));
     pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
+    pred2OutgoingResources.put(ILLUSTRATIONS, List.of(illustrations));
 
     var work = createResource(
       Map.ofEntries(

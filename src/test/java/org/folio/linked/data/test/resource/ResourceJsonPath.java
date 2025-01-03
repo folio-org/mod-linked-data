@@ -352,16 +352,16 @@ public class ResourceJsonPath {
     return join(".", instanceBase, arrayPath(CARRIER.getUri()), arrayPath(TERM.getValue()));
   }
 
-  public static String toIllustrationsCode(String instanceBase) {
-    return join(".", instanceBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(CODE.getValue()));
+  public static String toIllustrationsCode(String workBase) {
+    return join(".", workBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(CODE.getValue()));
   }
 
-  public static String toIllustrationsLink(String instanceBase) {
-    return join(".", instanceBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(LINK.getValue()));
+  public static String toIllustrationsLink(String workBase) {
+    return join(".", workBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(LINK.getValue()));
   }
 
-  public static String toIllustrationsTerm(String instanceBase) {
-    return join(".", instanceBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(TERM.getValue()));
+  public static String toIllustrationsTerm(String workBase) {
+    return join(".", workBase, arrayPath(ILLUSTRATIONS.getUri()), arrayPath(TERM.getValue()));
   }
 
   public static String toCopyrightDate() {

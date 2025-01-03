@@ -165,14 +165,6 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/dimensions"
         },
-        "illustrations": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "../common/Category.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/illustrations"
-        },
         "projectProvisionDate": {
           "type": "array",
           "items": {

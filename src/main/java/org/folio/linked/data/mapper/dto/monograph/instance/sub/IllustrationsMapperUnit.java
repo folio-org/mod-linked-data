@@ -5,7 +5,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.CategoryResponse;
-import org.folio.linked.data.domain.dto.InstanceResponse;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.CategoryMapperUnit;
@@ -26,8 +26,8 @@ public class IllustrationsMapperUnit extends CategoryMapperUnit {
 
   @Override
   protected void addToParent(CategoryResponse category, Object parentDto) {
-    if (parentDto instanceof InstanceResponse instance) {
-      instance.addIllustrationsItem(category);
+    if (parentDto instanceof WorkResponse work) {
+      work.addIllustrationsItem(category);
     }
   }
 
