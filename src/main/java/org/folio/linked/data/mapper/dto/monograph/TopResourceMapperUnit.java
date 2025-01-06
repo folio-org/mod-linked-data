@@ -34,6 +34,7 @@ public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit 
       .map(PrimaryTitleField.class::cast)
       .map(PrimaryTitleField::getPrimaryTitle)
       .map(pt -> join(" ", getFirstValue(pt::getMainTitle), getFirstValue(pt::getSubTitle)))
+      .map(String::trim)
       .toList();
   }
 }
