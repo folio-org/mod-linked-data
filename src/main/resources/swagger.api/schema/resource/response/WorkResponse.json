@@ -145,6 +145,14 @@
             "$ref": "DissertationResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/scholar/dissertation"
+        },
+        "illustrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "CategoryResponse.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/illustrations"
         }
       }
     }
