@@ -50,7 +50,7 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var primaryTitle = ((PrimaryTitleField) dto).getPrimaryTitle();
     var resource = new Resource();
-    resource.setLabel(getFirstValue(primaryTitle::getMainTitle));
+    resource.setLabel(getLabel(getFirstValue(primaryTitle::getMainTitle), getFirstValue(primaryTitle::getSubTitle)));
     resource.addTypes(TITLE);
     resource.setDoc(getDoc(primaryTitle));
     resource.setId(hashService.hash(resource));

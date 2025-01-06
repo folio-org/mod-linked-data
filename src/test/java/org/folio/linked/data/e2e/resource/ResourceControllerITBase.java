@@ -887,7 +887,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
 
   private void validateInstance(Resource instance, boolean validateFullWork) {
     assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
-    assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle");
+    assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getDoc().size()).isEqualTo(20);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
@@ -993,7 +993,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(TITLE.getUri());
     var title = edge.getTarget();
-    assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle");
+    assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle" + " " + prefix + "subTitle");
     assertThat(title.getTypes().iterator().next().getUri()).isEqualTo(type.getUri());
     assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
@@ -1251,7 +1251,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
 
   private void validateWork(Resource work, boolean validateFullInstance) {
     assertThat(work.getId()).isEqualTo(hashService.hash(work));
-    assertThat(work.getLabel()).isEqualTo("Primary: mainTitle");
+    assertThat(work.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
     assertThat(work.getDoc().size()).isEqualTo(7);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));

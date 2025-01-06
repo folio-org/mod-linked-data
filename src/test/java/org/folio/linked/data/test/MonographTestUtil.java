@@ -298,6 +298,7 @@ public class MonographTestUtil {
 
   public static Resource createPrimaryTitle(Long id) {
     var primaryTitleValue = "Primary: mainTitle" + (nonNull(id) ? id : "");
+    var subTitleValue = "Primary: subTitle";
 
     return createResource(
       Map.of(
@@ -305,42 +306,46 @@ public class MonographTestUtil {
         PART_NUMBER, List.of("Primary: partNumber"),
         MAIN_TITLE, List.of(primaryTitleValue),
         NON_SORT_NUM, List.of("Primary: nonSortNum"),
-        SUBTITLE, List.of("Primary: subTitle")
+        SUBTITLE, List.of(subTitleValue)
       ),
       Set.of(ResourceTypeDictionary.TITLE),
       emptyMap()
-    ).setLabel(primaryTitleValue);
+    ).setLabel(primaryTitleValue + " " + subTitleValue);
   }
 
   private static Resource createParallelTitle() {
+    var mainTitle = "Parallel: mainTitle";
+    var subTitle = "Parallel: subTitle";
     return createResource(
       Map.of(
         PART_NAME, List.of("Parallel: partName"),
         PART_NUMBER, List.of("Parallel: partNumber"),
-        MAIN_TITLE, List.of("Parallel: mainTitle"),
+        MAIN_TITLE, List.of(mainTitle),
         DATE, List.of("Parallel: date"),
-        SUBTITLE, List.of("Parallel: subTitle"),
+        SUBTITLE, List.of(subTitle),
         NOTE, List.of("Parallel: noteLabel")
       ),
       Set.of(PARALLEL_TITLE),
       emptyMap()
-    ).setLabel("Parallel: mainTitle");
+    ).setLabel(mainTitle + " " + subTitle);
   }
 
   private static Resource createVariantTitle() {
+    var mainTitle = "Variant: mainTitle";
+    var subTitle = "Variant: subTitle";
     return createResource(
       Map.of(
         PART_NAME, List.of("Variant: partName"),
         PART_NUMBER, List.of("Variant: partNumber"),
-        MAIN_TITLE, List.of("Variant: mainTitle"),
+        MAIN_TITLE, List.of(mainTitle),
         DATE, List.of("Variant: date"),
-        SUBTITLE, List.of("Variant: subTitle"),
+        SUBTITLE, List.of(subTitle),
         VARIANT_TYPE, List.of("Variant: variantType"),
         NOTE, List.of("Variant: noteLabel")
       ),
       Set.of(VARIANT_TITLE),
       emptyMap()
-    ).setLabel("Variant: mainTitle");
+    ).setLabel(mainTitle + " " + subTitle);
   }
 
   public static Resource getSampleWork(Resource linkedInstance) {

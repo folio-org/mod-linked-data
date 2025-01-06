@@ -1,6 +1,8 @@
 package org.folio.linked.data.mapper.dto.monograph;
 
+import static java.lang.String.join;
 import static java.util.Objects.isNull;
+import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ public abstract class TopResourceMapperUnit implements SingleResourceMapperUnit 
       .filter(PrimaryTitleField.class::isInstance)
       .map(PrimaryTitleField.class::cast)
       .map(PrimaryTitleField::getPrimaryTitle)
-      .flatMap(pt -> pt.getMainTitle().stream())
+      .map(pt -> join(" ", getFirstValue(pt::getMainTitle), getFirstValue(pt::getSubTitle)))
       .toList();
   }
 }

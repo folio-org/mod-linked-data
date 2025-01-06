@@ -52,7 +52,7 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
-    resource.setLabel(getFirstValue(variantTitle::getMainTitle));
+    resource.setLabel(getLabel(getFirstValue(variantTitle::getMainTitle), getFirstValue(variantTitle::getSubTitle)));
     resource.addTypes(VARIANT_TITLE);
     resource.setDoc(getDoc(variantTitle));
     resource.setId(hashService.hash(resource));
