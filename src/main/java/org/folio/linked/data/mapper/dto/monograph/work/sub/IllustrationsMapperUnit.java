@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.monograph.instance.sub;
+package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 
