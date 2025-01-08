@@ -1,5 +1,8 @@
 package org.folio.linked.data.mapper.dto.monograph.common.title;
 
+import static java.lang.String.join;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 import java.util.Set;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
@@ -22,6 +25,6 @@ public abstract class TitleMapperUnit implements SingleResourceMapperUnit {
   }
 
   protected String getLabel(String mainTitle, String subTitle) {
-    return String.join(" ", mainTitle, subTitle);
+    return isBlank(subTitle) ? mainTitle : join(" ", mainTitle, subTitle);
   }
 }
