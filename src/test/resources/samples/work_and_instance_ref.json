@@ -316,6 +316,19 @@
           ]
         }
       ],
+      "http://bibfra.me/vocab/marc/supplementaryContent": [
+        {
+          "http://bibfra.me/vocab/lite/link": [
+            "http://id.loc.gov/vocabulary/msupplcont/code"
+          ],
+          "http://bibfra.me/vocab/marc/term": [
+            "supplementary content term"
+          ],
+          "http://bibfra.me/vocab/marc/code": [
+            "code"
+          ]
+        }
+      ],
       "http://bibfra.me/vocab/scholar/dissertation": [
         {
           "http://bibfra.me/vocab/lite/label": [

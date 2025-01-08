@@ -150,6 +150,14 @@
             "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/illustrations"
+        },
+        "supplementaryContent": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/supplementaryContent"
         }
       }
     }
