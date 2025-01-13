@@ -61,22 +61,21 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
     if (resource.isNew()) {
-      saveOrUpdate(resource);
+      resource = saveOrUpdate(resource);
       saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
       saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     }
     return resource;
   }
 
-  private void saveOrUpdate(Resource resource) {
-    resourceRepo.findById(resource.getId())
-      .ifPresentOrElse(existing -> updateResourceDoc(existing, resource),
-        () -> resourceRepo.save(resource)
-      );
+  private Resource saveOrUpdate(Resource resource) {
+    return resourceRepo.findById(resource.getId())
+      .map(existing -> updateResourceDoc(existing, resource))
+      .orElseGet(() -> resourceRepo.save(resource));
   }
 
-  private void updateResourceDoc(Resource existing, Resource incoming) {
-    resourceRepo.save(existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc())));
+  private Resource updateResourceDoc(Resource existing, Resource incoming) {
+    return resourceRepo.save(existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc())));
   }
 
   private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
