@@ -4,6 +4,7 @@
 CREATE TABLE if not exists resources (
   resource_hash bigint not null primary key,
   doc jsonb null,
+  raw_data jsonb null,
   label text null,
   resource_uri text,
   created_event_id bigint null,
@@ -23,6 +24,7 @@ create index if not exists resources_active_idx on resources(active);
 comment on table resources is 'All resources in a graph and their non-link data';
 comment on column resources.resource_hash is 'The unique hash identifier for the resource';
 comment on column resources.doc is 'JSON representation of literal properties for the resource';
+comment on column resources.raw_data is 'JSON representation of unmapped MARC data related to the resource';
 comment on column resources.label is 'Descriptive label for the resource';
 comment on column resources.created_event_id is 'The event that created the resource';
 comment on column resources.updated_event_id is 'The latest event that updated the resource';

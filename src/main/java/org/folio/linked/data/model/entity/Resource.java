@@ -75,6 +75,10 @@ public class Resource implements Persistable<Long> {
   @Type(JsonBinaryType.class)
   private JsonNode doc;
 
+  @Column(columnDefinition = "json")
+  @Type(JsonBinaryType.class)
+  private String rawData;
+
   private Date indexDate;
 
   private boolean active = true;
@@ -128,6 +132,7 @@ public class Resource implements Persistable<Long> {
     this.id = that.id;
     this.label = that.label;
     this.doc = (JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
+    this.rawData = that.rawData;
     this.folioMetadata = that.folioMetadata;
     this.indexDate = that.indexDate;
     this.types = new LinkedHashSet<>(that.getTypes());
@@ -152,6 +157,7 @@ public class Resource implements Persistable<Long> {
       .setId(that.id)
       .setLabel(that.label)
       .setDoc((JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null))
+      .setRawData(that.rawData)
       .setIndexDate(that.indexDate)
       .setTypes(new LinkedHashSet<>(that.getTypes()))
       .setIncomingEdges(new LinkedHashSet<>())
