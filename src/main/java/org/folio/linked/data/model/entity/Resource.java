@@ -147,17 +147,6 @@ public class Resource implements Persistable<Long> {
       .orElse(null);
   }
 
-  public static Resource copyWithNoEdges(@NonNull Resource that) {
-    return new Resource()
-      .setId(that.id)
-      .setLabel(that.label)
-      .setDoc((JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null))
-      .setIndexDate(that.indexDate)
-      .setTypes(new LinkedHashSet<>(that.getTypes()))
-      .setIncomingEdges(new LinkedHashSet<>())
-      .setOutgoingEdges(new LinkedHashSet<>());
-  }
-
   @Override
   public boolean isNew() {
     return !managed;
