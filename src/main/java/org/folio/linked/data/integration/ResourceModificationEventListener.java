@@ -49,9 +49,10 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterReplace(ResourceReplacedEvent resourceReplacedEvent) {
     log.info("ResourceReplacedEvent received [{}]", resourceReplacedEvent);
-    replaceMessageSenders.forEach(
-      sender -> sender.produce(resourceReplacedEvent.previous(), resourceReplacedEvent.current())
-    );
+    resourceRepository.findById(resourceReplacedEvent.current().getId())
+      .ifPresent(
+        resource -> replaceMessageSenders.forEach(sender -> sender.produce(resourceReplacedEvent.previous(), resource))
+      );
   }
 
   @TransactionalEventListener
