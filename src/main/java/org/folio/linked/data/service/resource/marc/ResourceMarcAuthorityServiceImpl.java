@@ -73,8 +73,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       .flatMap(id -> resourceRepo.findById(parseLong(id)))
       .map(ResourceUtils::ensureLatestReplaced)
       .or(() -> Optional.ofNullable(identifiable.getSrsId())
-        .flatMap(resourceRepo::findByFolioMetadataSrsId))
-      .map(Resource::copyWithNoEdges);
+        .flatMap(resourceRepo::findByFolioMetadataSrsId));
   }
 
   private Resource createResourceFromSrs(String srsId) {
@@ -83,7 +82,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
         .flatMap(this::contentAsJsonString)
         .flatMap(this::firstAuthorityToEntity)
         .map(resourceGraphService::saveMergingGraph)
-        .map(Resource::copyWithNoEdges)
         .orElseThrow(() -> notFoundException(srsId));
     } catch (FeignException.NotFound e) {
       throw notFoundException(srsId);
