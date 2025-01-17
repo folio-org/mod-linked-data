@@ -78,8 +78,8 @@ class ResourceControllerUpdateAndMergeWorksIT {
   void merge_two_works_should_send_correct_events_to_inventory_and_search() throws Exception {
     // given
     // Create two works with 2 different titles
-    String work1Title = "simple_work1";
-    String work2Title = "simple_work2";
+    var work1Title = "simple_work1";
+    var work2Title = "simple_work2";
     var work1 = getWork(work1Title);
     var work2 = getWork(work2Title);
     var work1Instance = getInstance(work1);
@@ -160,7 +160,7 @@ class ResourceControllerUpdateAndMergeWorksIT {
   }
 
   private Resource getWork(String titleStr) {
-    String titleDoc = """
+    var titleDoc = """
       {
         "http://bibfra.me/vocab/marc/mainTitle": ["%TITLE%"]
       }
@@ -235,7 +235,6 @@ class ResourceControllerUpdateAndMergeWorksIT {
 
   private boolean isSearchCreateEvent(ResourceIndexEvent event, Long createdWorkId) {
     var work = getWorkFromEvent(event);
-    ;
     return event.getType().equals(ResourceIndexEventType.CREATE)
       && work.getId().equals(createdWorkId.toString())
       && work.getInstances().size() == 2
@@ -251,18 +250,18 @@ class ResourceControllerUpdateAndMergeWorksIT {
   }
 
   private LinkedDataWork getWorkFromEvent(ResourceIndexEvent event) {
-    Map<String, Object> data = (Map<String, Object>) event.getNew();
+    var data = (Map<String, Object>) event.getNew();
     return objectMapper.convertValue(data, LinkedDataWork.class);
   }
 
   private boolean isExpectedInventoryEvents(Set<InstanceIngressEvent> inventoryEventList) {
     return inventoryEventList.size() == 2 && inventoryEventList.stream()
       .allMatch(
-        e -> {
-          var payload = e.getEventPayload();
+        event -> {
+          var payload = event.getEventPayload();
           var marcStr = payload.getSourceRecordObject();
           var marcRecord = marcReader.readMarc(marcStr).toList().get(0);
-          return e.getEventType().equals(InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE)
+          return event.getEventType().equals(InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE)
             && isExpectedMarc(marcRecord);
         }
       );

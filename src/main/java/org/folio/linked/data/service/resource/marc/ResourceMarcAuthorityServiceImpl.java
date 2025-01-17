@@ -143,7 +143,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
         resource.addIncomingEdge(re);
         logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",
           "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
-        return saveAndPublishEvent(resource, saved -> new ResourceReplacedEvent(previousObsolete, saved));
+        return saveAndPublishEvent(resource, saved -> new ResourceReplacedEvent(previousObsolete, saved.getId()));
       })
       .orElseThrow(() -> notFoundException(srsId));
   }

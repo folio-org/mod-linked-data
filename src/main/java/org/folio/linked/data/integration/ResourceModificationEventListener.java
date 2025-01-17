@@ -49,7 +49,7 @@ public class ResourceModificationEventListener {
   @TransactionalEventListener
   public void afterReplace(ResourceReplacedEvent resourceReplacedEvent) {
     log.info("ResourceReplacedEvent received [{}]", resourceReplacedEvent);
-    resourceRepository.findById(resourceReplacedEvent.current().getId())
+    resourceRepository.findById(resourceReplacedEvent.currentResourceId())
       .ifPresent(
         resource -> replaceMessageSenders.forEach(sender -> sender.produce(resourceReplacedEvent.previous(), resource))
       );

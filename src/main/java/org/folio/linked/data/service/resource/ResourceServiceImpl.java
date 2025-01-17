@@ -75,7 +75,7 @@ public class ResourceServiceImpl implements ResourceService {
     if (Objects.equals(oldResource.getId(), newResource.getId())) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
     } else {
-      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(oldResource, newResource));
+      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(oldResource, newResource.getId()));
     }
     return resourceDtoMapper.toDto(newResource);
   }
