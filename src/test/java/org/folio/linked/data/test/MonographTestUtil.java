@@ -523,26 +523,6 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("eng");
 
-    var illustrations = createResource(
-      Map.of(
-        CODE, List.of("code"),
-        TERM, List.of("illustrations term"),
-        LINK, List.of("http://id.loc.gov/vocabulary/millus/code")
-      ),
-      Set.of(CATEGORY),
-      emptyMap()
-    ).setLabel("illustrations term");
-
-    var supplementaryContent = createResource(
-      Map.of(
-        CODE, List.of("code"),
-        TERM, List.of("supplementary content term"),
-        LINK, List.of("http://id.loc.gov/vocabulary/msupplcont/code")
-      ),
-      Set.of(CATEGORY),
-      emptyMap()
-    ).setLabel("supplementary content term");
-
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
@@ -561,8 +541,8 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(DISSERTATION, List.of(createDissertation()));
     pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
-    pred2OutgoingResources.put(ILLUSTRATIONS, List.of(illustrations));
-    pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(supplementaryContent));
+    pred2OutgoingResources.put(ILLUSTRATIONS, List.of(createIllustrations()));
+    pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(createSupplementaryContent()));
 
     var work = createResource(
       Map.ofEntries(
@@ -710,6 +690,50 @@ public class MonographTestUtil {
       Set.of(CATEGORY),
       pred2OutgoingResources
     ).setLabel("Primary");
+  }
+
+  private static Resource createIllustrations() {
+    var categorySet = createResource(
+      Map.of(
+        LINK, List.of("http://id.loc.gov/vocabulary/millus"),
+        LABEL, List.of("Illustrative Content")
+      ),
+      Set.of(CATEGORY_SET),
+      emptyMap())
+      .setLabel("Illustrative Content");
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(IS_DEFINED_BY, List.of(categorySet));
+    return createResource(
+      Map.of(
+        CODE, List.of("code"),
+        TERM, List.of("illustrations term"),
+        LINK, List.of("http://id.loc.gov/vocabulary/millus/code")
+      ),
+      Set.of(CATEGORY),
+      pred2OutgoingResources
+    ).setLabel("illustrations term");
+  }
+
+  private static Resource createSupplementaryContent() {
+    var categorySet = createResource(
+      Map.of(
+        LINK, List.of("http://id.loc.gov/vocabulary/msupplcont"),
+        LABEL, List.of("Supplementary Content")
+      ),
+      Set.of(CATEGORY_SET),
+      emptyMap())
+      .setLabel("Supplementary Content");
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(IS_DEFINED_BY, List.of(categorySet));
+    return createResource(
+      Map.of(
+        CODE, List.of("code"),
+        TERM, List.of("supplementary content term"),
+        LINK, List.of("http://id.loc.gov/vocabulary/msupplcont/code")
+      ),
+      Set.of(CATEGORY),
+      pred2OutgoingResources
+    ).setLabel("supplementary content term");
   }
 
   private Resource status(String prefix) {

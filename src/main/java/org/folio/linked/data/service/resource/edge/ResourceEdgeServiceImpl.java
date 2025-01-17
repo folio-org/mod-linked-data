@@ -1,7 +1,12 @@
 package org.folio.linked.data.service.resource.edge;
 
 import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
+import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
+import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +28,8 @@ import org.springframework.stereotype.Service;
 public class ResourceEdgeServiceImpl implements ResourceEdgeService {
 
   private static final Map<ResourceTypeDictionary, Set<PredicateDictionary>> EDGES_TO_BE_COPIED = Map.of(
-    INSTANCE, Set.of(ADMIN_METADATA)
+    INSTANCE, Set.of(ADMIN_METADATA),
+    WORK, Set.of(ILLUSTRATIONS, SUPPLEMENTARY_CONTENT, DISSERTATION, GENRE)
   );
   private final ResourceRepository resourceRepository;
   private final ResourceModelMapper resourceModelMapper;
@@ -31,10 +37,12 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
 
   @Override
   public void copyOutgoingEdges(Resource from, Resource to) {
-    getEdgesToBeCopied(from)
-      .stream()
-      .map(edge -> new ResourceEdge(to, edge.getTarget(), edge.getPredicate()))
-      .forEach(to::addOutgoingEdge);
+    if (from.getTypes().equals(to.getTypes())) {
+      getEdgesToBeCopied(from)
+        .stream()
+        .map(edge -> new ResourceEdge(to, edge.getTarget(), edge.getPredicate()))
+        .forEach(to::addOutgoingEdge);
+    }
   }
 
   @Override

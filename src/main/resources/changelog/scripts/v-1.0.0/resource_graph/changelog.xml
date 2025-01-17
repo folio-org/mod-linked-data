@@ -9,6 +9,7 @@
   <include file="tables/type_lookup.sql" relativeToChangelogFile="true"/>
   <include file="tables/resources.sql" relativeToChangelogFile="true"/>
   <include file="tables/folio_metadata.sql" relativeToChangelogFile="true"/>
+  <include file="tables/raw_marcs.sql" relativeToChangelogFile="true"/>
   <include file="tables/resource_edges.sql" relativeToChangelogFile="true"/>
   <include file="tables/resource_type_map.sql" relativeToChangelogFile="true"/>
   <include file="tables/resource_context_map.sql" relativeToChangelogFile="true"/>
