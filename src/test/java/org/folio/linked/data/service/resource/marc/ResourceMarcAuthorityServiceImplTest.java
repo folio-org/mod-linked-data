@@ -242,7 +242,7 @@ class ResourceMarcAuthorityServiceImplTest {
     assertThat(existed.getFolioMetadata()).isNull();
     verify(resourceRepo).save(existed);
     verify(resourceGraphService).saveMergingGraph(mapped);
-    verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped));
+    verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped.getId()));
     assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
     assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REPLACED_BY));
   }

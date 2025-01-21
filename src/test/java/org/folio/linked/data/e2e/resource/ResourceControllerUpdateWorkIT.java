@@ -23,6 +23,7 @@ import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.marc4ld.service.marc2ld.reader.MarcReaderProcessor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.marc4j.marc.DataField;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,11 @@ class ResourceControllerUpdateWorkIT {
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
   private MarcReaderProcessor marcReader;
+
+  @AfterEach
+  void clenUp() {
+    inventoryTopicListener.getMessages().clear();
+  }
 
   @Test
   void updateWork_should_send_update_instance_event_to_inventory() throws Exception {

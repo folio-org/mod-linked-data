@@ -259,7 +259,7 @@ class ResourceServiceImplTest {
     assertThat(expectedDto).isEqualTo(result);
     verify(resourceGraphService).breakEdgesAndDelete(oldInstance);
     verify(resourceGraphService).saveMergingGraph(mapped);
-    verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped));
+    verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
   }
 
   @Test
