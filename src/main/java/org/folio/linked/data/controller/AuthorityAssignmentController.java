@@ -17,7 +17,7 @@ public class AuthorityAssignmentController implements AuthorityApi {
   private final ResourceMarcAuthorityService resourceMarcAuthorityService;
 
   @Override
-  public ResponseEntity<String> authorityAssignmentCheck(String okapiTenant, AssignmentCheckDto dto) {
+  public ResponseEntity<String> authorityAssignmentCheck(AssignmentCheckDto dto) {
     return ok(String.valueOf(
       resourceMarcAuthorityService.isMarcAuthorityCompatibleWithTarget(
         dto.getRawMarc(),

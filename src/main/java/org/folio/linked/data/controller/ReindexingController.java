@@ -19,7 +19,7 @@ public class ReindexingController implements ReindexApi {
   private final ReindexService reIndexService;
 
   @Override
-  public ResponseEntity<Void> reindex(String okapiTenant, Boolean full) {
+  public ResponseEntity<Void> reindex(Boolean full) {
     reIndexService.reindexWorks(full);
     return ResponseEntity.noContent().build();
   }
