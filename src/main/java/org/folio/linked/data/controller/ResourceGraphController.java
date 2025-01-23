@@ -16,7 +16,7 @@ public class ResourceGraphController implements GraphApi {
   private final ResourceGraphService resourceGraphService;
 
   @Override
-  public ResponseEntity<ResourceGraphDto> getResourceGraphById(Long id, String okapiTenant) {
+  public ResponseEntity<ResourceGraphDto> getResourceGraphById(Long id) {
     return ResponseEntity.ok(resourceGraphService.getResourceGraph(id));
   }
 }

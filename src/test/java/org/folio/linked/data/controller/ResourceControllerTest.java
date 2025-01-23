@@ -17,8 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ResourceControllerTest {
 
-  private static final String OKAPI_TENANT = "okapiTenant";
-
   @InjectMocks
   ResourceController resourceController;
   @Mock
@@ -37,7 +35,7 @@ class ResourceControllerTest {
       .thenReturn(expectedDto);
 
     //when
-    var response = resourceController.getResourceMarcViewById(id, OKAPI_TENANT);
+    var response = resourceController.getResourceMarcViewById(id);
 
     //then
     assertThat(response)

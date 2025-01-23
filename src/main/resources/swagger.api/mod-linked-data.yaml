@@ -12,7 +12,6 @@ paths:
         - reindex
       description: Start the process of reindexing of resources in the database
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/full'
       responses:
         '204':
@@ -28,8 +27,6 @@ paths:
       tags:
         - resource
       description: Create a Resource
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
       requestBody:
         content:
           application/json:
@@ -54,7 +51,6 @@ paths:
         - resource
       description: Get a resource by id
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '200':
@@ -75,7 +71,6 @@ paths:
         - resource
       description: Update a resource by id
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       requestBody:
         content:
@@ -102,7 +97,6 @@ paths:
         - resource
       description: Delete a resource by id
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '204':
@@ -119,7 +113,6 @@ paths:
         - resource
       description: Get a marc view of resource by id
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '200':
@@ -142,7 +135,6 @@ paths:
         - resource
       description: Get id of a resource by its inventory id
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/inventoryId'
       responses:
         '200':
@@ -243,7 +235,6 @@ paths:
         - graph
       description: Get a resource graph by id
       parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
         - $ref: '#/components/parameters/id'
       responses:
         '200':
@@ -265,8 +256,6 @@ paths:
       tags:
         - authority
       description: Checks if authority can be assigned to work
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-tenant-header'
       requestBody:
         content:
           application/json:
@@ -300,12 +289,6 @@ components:
       in: path
       required: true
       description: Linked Data resource inventory id
-      schema:
-        type: string
-    x-okapi-tenant-header:
-      name: x-okapi-tenant
-      in: header
-      description: X-Okapi-Tenant header value
       schema:
         type: string
     full:

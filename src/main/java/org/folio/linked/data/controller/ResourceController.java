@@ -27,17 +27,17 @@ public class ResourceController implements ResourceApi {
   private final ResourceMarcBibService resourceMarcService;
 
   @Override
-  public ResponseEntity<ResourceResponseDto> createResource(String okapiTenant, @Valid ResourceRequestDto resourceDto) {
+  public ResponseEntity<ResourceResponseDto> createResource(@Valid ResourceRequestDto resourceDto) {
     return ResponseEntity.ok(resourceService.createResource(resourceDto));
   }
 
   @Override
-  public ResponseEntity<ResourceResponseDto> getResourceById(Long id, String okapiTenant) {
+  public ResponseEntity<ResourceResponseDto> getResourceById(Long id) {
     return ResponseEntity.ok(resourceService.getResourceById(id));
   }
 
   @Override
-  public ResponseEntity<ResourceIdDto> getResourceIdByResourceInventoryId(String inventoryId, String okapiTenant) {
+  public ResponseEntity<ResourceIdDto> getResourceIdByResourceInventoryId(String inventoryId) {
     return ResponseEntity.ok(resourceService.getResourceIdByInventoryId(inventoryId));
   }
 
@@ -59,19 +59,18 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
-  public ResponseEntity<ResourceResponseDto> updateResource(Long id, String okapiTenant,
-                                                    @Valid ResourceRequestDto resourceDto) {
+  public ResponseEntity<ResourceResponseDto> updateResource(Long id, @Valid ResourceRequestDto resourceDto) {
     return ResponseEntity.ok(resourceService.updateResource(id, resourceDto));
   }
 
   @Override
-  public ResponseEntity<Void> deleteResource(Long id, String okapiTenant) {
+  public ResponseEntity<Void> deleteResource(Long id) {
     resourceService.deleteResource(id);
     return ResponseEntity.noContent().build();
   }
 
   @Override
-  public ResponseEntity<ResourceMarcViewDto> getResourceMarcViewById(Long id, String okapiTenant) {
+  public ResponseEntity<ResourceMarcViewDto> getResourceMarcViewById(Long id) {
     return ResponseEntity.ok(resourceMarcService.getResourceMarcView(id));
   }
 
