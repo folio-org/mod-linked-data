@@ -1,12 +1,17 @@
 package org.folio.linked.data.service.resource;
 
+import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
+
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -43,8 +48,9 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
+    log.info("Received request to create new resource - {}", toLogString(resourceDto));
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    log.info("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
+    log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = resourceGraphService.saveMergingGraph(mapped);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
@@ -67,7 +73,8 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public ResourceResponseDto updateResource(Long id, ResourceRequestDto resourceDto) {
-    log.info("updateResource [{}] from DTO [{}]", id, resourceDto);
+    log.info("Received request to update resource {} - {}", id, toLogString(resourceDto));
+    log.debug("updateResource [{}] from DTO [{}]", id, resourceDto);
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
@@ -110,6 +117,19 @@ public class ResourceServiceImpl implements ResourceService {
     mapped.setCreatedBy(old.getCreatedBy());
     mapped.setUpdatedBy(folioExecutionContext.getUserId());
     return resourceGraphService.saveMergingGraph(mapped);
+  }
+
+  private String toLogString(ResourceRequestDto resourceDto) {
+    String type = "-";
+    List<String> titles = List.of();
+    if (resourceDto.getResource() instanceof InstanceField instanceField) {
+      type = "Instance";
+      titles = getPrimaryMainTitles(instanceField.getInstance().getTitle());
+    } else if (resourceDto.getResource() instanceof WorkField workField) {
+      type = "Work";
+      titles = getPrimaryMainTitles(workField.getWork().getTitle());
+    }
+    return String.format("Type: %s, Title: %s", type, titles);
   }
 
 }
