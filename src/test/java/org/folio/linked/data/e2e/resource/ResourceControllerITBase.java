@@ -618,8 +618,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(59);
-    assertThat(resourceTestService.countEdges()).isEqualTo(61);
+    assertThat(resourceTestService.countResources()).isEqualTo(61);
+    assertThat(resourceTestService.countEdges()).isEqualTo(63);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -630,9 +630,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(58);
+    assertThat(resourceTestService.countResources()).isEqualTo(60);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(43);
+    assertThat(resourceTestService.countEdges()).isEqualTo(45);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -642,8 +642,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(59);
-    assertThat(resourceTestService.countEdges()).isEqualTo(61);
+    assertThat(resourceTestService.countResources()).isEqualTo(61);
+    assertThat(resourceTestService.countEdges()).isEqualTo(63);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -654,9 +654,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(58);
+    assertThat(resourceTestService.countResources()).isEqualTo(60);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(30);
+    assertThat(resourceTestService.countEdges()).isEqualTo(32);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 

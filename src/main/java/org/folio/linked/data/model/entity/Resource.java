@@ -102,6 +102,10 @@ public class Resource implements Persistable<Long> {
   @PrimaryKeyJoinColumn
   private FolioMetadata folioMetadata;
 
+  @OneToOne(cascade = ALL, mappedBy = "resource", orphanRemoval = true)
+  @PrimaryKeyJoinColumn
+  private RawMarc unmappedMarc;
+
   @Column(name = "created_date", updatable = false, nullable = false)
   private Timestamp createdDate;
 
