@@ -36,7 +36,7 @@
     </sonar.exclusions>
 
     <!-- Dependencies versions -->
-    <folio-spring-base.version>8.2.2</folio-spring-base.version>
+    <folio-spring-base.version>8.3.0-SNAPSHOT</folio-spring-base.version>
     <folio-kafka-wrapper.version>3.2.0</folio-kafka-wrapper.version>
     <apache-commons-io.version>2.18.0</apache-commons-io.version>
     <apache-commons-collections.version>4.4</apache-commons-collections.version>
@@ -55,7 +55,7 @@
     <testcontainers.version>1.20.4</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.3</jsonassert.version>
-    <folio-service-tools.version>4.1.1</folio-service-tools.version>
+    <folio-service-tools.version>4.2.0-SNAPSHOT</folio-service-tools.version>
     <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
