@@ -2,8 +2,8 @@ package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_CREATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
@@ -32,7 +32,8 @@ public class SourceRecordDomainEventHandler {
   private static final String NO_MARC_EVENT = "SourceRecordDomainEvent [id {}] has no Marc record inside";
   private static final String UNSUPPORTED_TYPE = "Ignoring unsupported {} type [{}] in SourceRecordDomainEvent [id {}]";
   private static final Set<SourceRecordType> SUPPORTED_RECORD_TYPES = Set.of(MARC_BIB, MARC_AUTHORITY);
-  private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES = Set.of(CREATED, UPDATED);
+  private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES =
+    Set.of(SOURCE_RECORD_CREATED, SOURCE_RECORD_UPDATED);
   private final ResourceMarcAuthorityService resourceMarcAuthorityService;
   private final ResourceMarcBibService resourceMarcBibService;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
@@ -45,7 +46,7 @@ public class SourceRecordDomainEventHandler {
     }
     if (recordType == MARC_AUTHORITY) {
       saveAuthorities(event);
-    } else if (recordType == MARC_BIB && event.getEventType() == CREATED) {
+    } else if (recordType == MARC_BIB && event.getEventType() == SOURCE_RECORD_CREATED) {
       saveAdminMetadata(event);
     }
   }
@@ -78,7 +79,7 @@ public class SourceRecordDomainEventHandler {
   }
 
   private void saveAuthority(Resource resource, SourceRecordDomainEvent event) {
-    if (CREATED == event.getEventType() || UPDATED == event.getEventType()) {
+    if (SOURCE_RECORD_CREATED == event.getEventType() || SOURCE_RECORD_UPDATED == event.getEventType()) {
       var id = resourceMarcAuthorityService.saveMarcAuthority(resource);
       log.info(EVENT_SAVED, event.getId(), MARC_AUTHORITY, id);
     }
