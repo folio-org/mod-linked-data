@@ -3,13 +3,13 @@ package org.folio.linked.data.job;
 import static org.folio.linked.data.util.Constants.Cache.SETTINGS_ENTRIES;
 import static org.folio.linked.data.util.Constants.Cache.SPEC_RULES;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
+@Log4j2
 public class CacheCleaningJob {
 
   @CacheEvict(value = SPEC_RULES, allEntries = true)

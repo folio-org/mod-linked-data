@@ -69,7 +69,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       .map(mapper -> mapper.toDto(source, parentDto, parentResource))
       .orElseGet(() -> {
         var types = source.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", "));
-        log.info(
+        log.debug(
           "Resource with types [" + types + IS_NOT_SUPPORTED_FOR
             + (nonNull(predicate) ? PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET + AND : EMPTY)
             + "parent [" + parentDto.getClass().getSimpleName() + ".class]");

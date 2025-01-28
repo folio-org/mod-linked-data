@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SpecClient;
 import org.folio.linked.data.validation.spec.SpecProvider;
 import org.folio.rspec.domain.dto.SpecificationDto;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
+@Log4j2
 public class SpecProviderImpl implements SpecProvider {
 
   private final SpecClient client;

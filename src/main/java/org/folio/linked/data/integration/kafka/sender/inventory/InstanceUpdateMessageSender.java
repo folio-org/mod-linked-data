@@ -10,6 +10,7 @@ import static org.folio.linked.data.util.ResourceUtils.extractInstancesFromWork;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.integration.kafka.sender.UpdateMessageSender;
 import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
@@ -19,6 +20,7 @@ import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
@@ -37,6 +39,7 @@ public class InstanceUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public void accept(Resource resource) {
+    log.info("Publishing UPDATE_INSTANCE message to inventory for instance with ID [{}]", resource.getId());
     var message = instanceIngressMessageMapper.toInstanceIngressEvent(resource)
       .eventType(UPDATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));

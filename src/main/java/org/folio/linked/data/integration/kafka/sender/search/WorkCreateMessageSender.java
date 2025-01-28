@@ -68,6 +68,7 @@ public class WorkCreateMessageSender implements CreateMessageSender {
   }
 
   private void accept(Resource resource, Boolean putIndexDate) {
+    log.info("Publishing Index create message for work with ID [{}]", resource.getId());
     var message = workSearchMessageMapper.toIndex(resource)
       .type(CREATE);
     bibliographicMessageProducer.sendMessages(List.of(message));
