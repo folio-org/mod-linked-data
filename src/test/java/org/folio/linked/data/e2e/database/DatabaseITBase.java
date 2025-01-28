@@ -6,8 +6,8 @@ import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 abstract class DatabaseITBase {
 
@@ -26,7 +26,7 @@ abstract class DatabaseITBase {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
-  @MockBean
+  @MockitoBean
   private KafkaAdminService kafkaAdminService;
 
   @Test

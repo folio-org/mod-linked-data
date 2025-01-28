@@ -30,9 +30,9 @@ import org.folio.linked.data.service.SettingsService;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
@@ -41,9 +41,9 @@ class ResourceControllerLccnUniquenessValidationIT extends AbstractResourceContr
   private static final String LCCN_VALIDATION_NOT_AVAILABLE =
     "[Could not validate LCCN for duplicate] - reason: [Unable to reach search service]. Please try later.";
 
-  @MockBean
+  @MockitoBean
   private SearchClient searchClient;
-  @MockBean
+  @MockitoBean
   private SettingsService settingsService;
 
   @Test

@@ -50,11 +50,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
 class SourceRecordDomainEventHandlerIT {
@@ -67,7 +67,7 @@ class SourceRecordDomainEventHandlerIT {
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
-  @MockBean
+  @MockitoBean
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
   @Autowired
   private MarcBib2ldMapper marcBib2ldMapper;
@@ -75,13 +75,13 @@ class SourceRecordDomainEventHandlerIT {
   private ResourceModelMapper resourceModelMapper;
   @Autowired
   private ResourceTestRepository resourceTestRepository;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceMarcAuthorityService resourceMarcAuthorityService;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceMarcBibService resourceMarcBibService;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceModificationEventListener eventListener;
   @Autowired

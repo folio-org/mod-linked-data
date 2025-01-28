@@ -78,36 +78,43 @@
       <artifactId>folio-spring-base</artifactId>
       <version>${folio-spring-base.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>folio-service-tools-spring-dev</artifactId>
       <version>${folio-service-tools.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>lib-linked-data-dictionary</artifactId>
       <version>${lib-linked-data-dictionary.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>lib-linked-data-marc4ld</artifactId>
       <version>${lib-linked-data-marc4ld.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>lib-linked-data-fingerprint</artifactId>
       <version>${lib-linked-data-fingerprint.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>mod-source-record-storage-client</artifactId>
       <version>${mod-source-record-storage-client.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>mod-record-specifications-dto</artifactId>
       <version>${mod-record-specifications-dto.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.folio</groupId>
       <artifactId>folio-kafka-wrapper</artifactId>
@@ -261,7 +268,6 @@
       <version>${easy-random.version}</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -585,6 +591,7 @@
       <name>FOLIO Maven repository</name>
       <url>https://repository.folio.org/repository/maven-folio</url>
     </repository>
+
     <repository>
       <id>index-data-nexus</id>
       <name>FOLIO Maven repository</name>
@@ -600,6 +607,7 @@
       <uniqueVersion>false</uniqueVersion>
       <layout>default</layout>
     </repository>
+
     <snapshotRepository>
       <id>folio-nexus</id>
       <name>FOLIO Snapshot Repository</name>

@@ -45,10 +45,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
@@ -64,7 +64,7 @@ class AuthorityUpdateAndReadWorkIT {
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
   @Autowired
   private ResourceTestRepository resourceTestRepository;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceMarcAuthorityService resourceMarcService;
   @Autowired

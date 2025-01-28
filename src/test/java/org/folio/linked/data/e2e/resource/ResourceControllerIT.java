@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
@@ -33,9 +33,9 @@ class ResourceControllerIT extends ResourceControllerITBase {
   private KafkaSearchWorkIndexTopicListener searchIndexTopicListener;
   @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
-  @SpyBean
+  @MockitoSpyBean
   private WorkCreateMessageSender createEventProducer;
-  @SpyBean
+  @MockitoSpyBean
   private WorkDeleteMessageSender deleteEventProducer;
 
   @BeforeAll

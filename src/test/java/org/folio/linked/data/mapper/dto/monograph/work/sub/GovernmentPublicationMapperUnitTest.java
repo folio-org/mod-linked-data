@@ -20,8 +20,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(classes = GovernmentPublicationMapperUnit.class)
 @Import({CoreMapperImpl.class, ObjectMapper.class, RequestProcessingExceptionBuilder.class, ErrorResponseConfig.class})
@@ -31,7 +31,7 @@ class GovernmentPublicationMapperUnitTest {
   private GovernmentPublicationMapperUnit governmentPublicationMapperUnit;
   @Autowired
   private ObjectMapper objectMapper;
-  @MockBean
+  @MockitoBean
   private HashService hashService;
 
   @ParameterizedTest
