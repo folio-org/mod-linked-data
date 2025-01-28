@@ -15,9 +15,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 abstract class PredicateDictionaryITBase {
@@ -29,7 +29,7 @@ abstract class PredicateDictionaryITBase {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
-  @MockBean
+  @MockitoBean
   private KafkaAdminService kafkaAdminService;
 
   @Test

@@ -3,8 +3,8 @@ package org.folio.linked.data.integration.kafka.listener.handler;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_CREATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.mockito.Mockito.doReturn;
@@ -92,7 +92,7 @@ class SourceRecordDomainEventHandlerTest {
   void shouldNotTriggerSaving_ifResourceMappedOutOfIncomingEventIsEmpty() {
     // given
     var event = new SourceRecordDomainEvent().id("4")
-      .eventType(CREATED)
+      .eventType(SOURCE_RECORD_CREATED)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
 
     // when
@@ -107,7 +107,7 @@ class SourceRecordDomainEventHandlerTest {
   void shouldTriggerAuthoritySaving_forCorrectMarcAuthorityEvent() {
     // given
     var event = new SourceRecordDomainEvent().id("8")
-      .eventType(CREATED)
+      .eventType(SOURCE_RECORD_CREATED)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
     var mapped1 = new Resource().setId(9L).addType(PERSON);
     var mapped2 = new Resource().setId(10L).addType(CONCEPT);
@@ -127,7 +127,7 @@ class SourceRecordDomainEventHandlerTest {
   void shouldTriggerAdminMetadataSaving_forCorrectMarcBibEvent() {
     // given
     var event = new SourceRecordDomainEvent().id("7")
-      .eventType(CREATED)
+      .eventType(SOURCE_RECORD_CREATED)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
     var mapped = new Resource().setId(9L).addType(INSTANCE);
     doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
@@ -145,7 +145,7 @@ class SourceRecordDomainEventHandlerTest {
   void shouldNotTriggerAdminMetadataSaving_forUpdateMarcBibEvent() {
     // given
     var event = new SourceRecordDomainEvent().id("7")
-      .eventType(UPDATED)
+      .eventType(SOURCE_RECORD_UPDATED)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
 
     // when

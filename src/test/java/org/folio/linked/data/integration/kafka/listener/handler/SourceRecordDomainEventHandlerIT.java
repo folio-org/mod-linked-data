@@ -8,8 +8,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_CREATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
@@ -50,11 +50,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
 class SourceRecordDomainEventHandlerIT {
@@ -67,7 +67,7 @@ class SourceRecordDomainEventHandlerIT {
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
-  @MockBean
+  @MockitoBean
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
   @Autowired
   private MarcBib2ldMapper marcBib2ldMapper;
@@ -75,13 +75,13 @@ class SourceRecordDomainEventHandlerIT {
   private ResourceModelMapper resourceModelMapper;
   @Autowired
   private ResourceTestRepository resourceTestRepository;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceMarcAuthorityService resourceMarcAuthorityService;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceMarcBibService resourceMarcBibService;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceModificationEventListener eventListener;
   @Autowired
@@ -110,7 +110,8 @@ class SourceRecordDomainEventHandlerIT {
   void shouldNotProcessEventForNullableResource(String resource, int interactions) {
     // given
     var marc = loadResourceAsString(resource);
-    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_BIB);
+    var eventProducerRecord =
+      getSrsDomainEventProducerRecord(randomUUID().toString(), marc, SOURCE_RECORD_CREATED, MARC_BIB);
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);
@@ -132,7 +133,8 @@ class SourceRecordDomainEventHandlerIT {
     existedInstance.addOutgoingEdge(new ResourceEdge(existedInstance, title, PredicateDictionary.TITLE));
     resourceTestRepository.save(existedInstance);
     var marc = loadResourceAsString("samples/marc2ld/full_marc_sample.jsonl");
-    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_BIB);
+    var eventProducerRecord =
+      getSrsDomainEventProducerRecord(randomUUID().toString(), marc, SOURCE_RECORD_CREATED, MARC_BIB);
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);
@@ -169,7 +171,8 @@ class SourceRecordDomainEventHandlerIT {
       .replace("aValue", "aaValue")
       .replace("1125d50a-adea-4eaa-a418-6b3a0e6fa6ae", UUID.randomUUID().toString())
       .replace("6dcb9a08-9884-4a15-b990-89c879a8e988", UUID.randomUUID().toString());
-    var eventProducerRecord = getSrsDomainEventProducerRecord(randomUUID().toString(), marc, CREATED, MARC_AUTHORITY);
+    var eventProducerRecord =
+      getSrsDomainEventProducerRecord(randomUUID().toString(), marc, SOURCE_RECORD_CREATED, MARC_AUTHORITY);
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);
@@ -198,13 +201,13 @@ class SourceRecordDomainEventHandlerIT {
       .replace("1125d50a-adea-4eaa-a418-6b3a0e6fa6ae", UUID.randomUUID().toString())
       .replace("6dcb9a08-9884-4a15-b990-89c879a8e988", UUID.randomUUID().toString());
     var eventProducerRecordCreate =
-      getSrsDomainEventProducerRecord(randomUUID().toString(), marcCreate, CREATED, MARC_AUTHORITY);
+      getSrsDomainEventProducerRecord(randomUUID().toString(), marcCreate, SOURCE_RECORD_CREATED, MARC_AUTHORITY);
     eventKafkaTemplate.send(eventProducerRecordCreate);
     awaitAndAssert(() -> verify(resourceMarcAuthorityService)
       .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
     var marcUpdate = marcCreate.replace("aValue", "newAValue");
     var eventProducerRecordUpdate =
-      getSrsDomainEventProducerRecord(randomUUID().toString(), marcUpdate, UPDATED, MARC_AUTHORITY);
+      getSrsDomainEventProducerRecord(randomUUID().toString(), marcUpdate, SOURCE_RECORD_UPDATED, MARC_AUTHORITY);
 
     // when
     eventKafkaTemplate.send(eventProducerRecordUpdate);

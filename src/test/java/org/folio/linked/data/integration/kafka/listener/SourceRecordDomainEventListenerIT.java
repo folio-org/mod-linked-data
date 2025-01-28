@@ -1,6 +1,6 @@
 package org.folio.linked.data.integration.kafka.listener;
 
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_CREATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
@@ -22,8 +22,8 @@ import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 class SourceRecordDomainEventListenerIT {
@@ -31,7 +31,7 @@ class SourceRecordDomainEventListenerIT {
   @Autowired
   private KafkaTemplate<String, String> eventKafkaTemplate;
 
-  @MockBean
+  @MockitoBean
   private SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
 
   @BeforeAll
@@ -43,14 +43,15 @@ class SourceRecordDomainEventListenerIT {
   void shouldHandleSrsDomainEvent_whenSourceRecordType_isMarcBib() {
     // given
     var eventProducerRecord = getSrsDomainEventSampleProducerRecord();
-    var expectedEvent = new SourceRecordDomainEvent("23b34a6f-c095-41ea-917b-9765add1a444", CREATED).eventPayload(
-      new SourceRecord()
-        .id("758f57ff-7dad-419e-803c-44b621400c11")
-        .parsedRecord(new ParsedRecord()
-          .content(TestUtil.loadResourceAsString("samples/srsDomainEventParsedContent.txt"))
-        )
-        .deleted(true)
-    );
+    var expectedEvent = new SourceRecordDomainEvent("23b34a6f-c095-41ea-917b-9765add1a444", SOURCE_RECORD_CREATED)
+      .eventPayload(
+        new SourceRecord()
+          .id("758f57ff-7dad-419e-803c-44b621400c11")
+          .parsedRecord(new ParsedRecord()
+            .content(TestUtil.loadResourceAsString("samples/srsDomainEventParsedContent.txt"))
+          )
+          .deleted(true)
+      );
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);
@@ -65,7 +66,7 @@ class SourceRecordDomainEventListenerIT {
     var eventId = "event_id_02";
     var marc = "{}";
     var recordType = MARC_BIB;
-    var eventType = CREATED;
+    var eventType = SOURCE_RECORD_CREATED;
     var eventProducerRecord = getSrsDomainEventProducerRecord(eventId, marc, eventType, recordType);
     var expectedEvent = getSrsDomainEvent(eventId, marc, eventType);
     doThrow(new RuntimeException("An error occurred"))
@@ -84,7 +85,7 @@ class SourceRecordDomainEventListenerIT {
     // given
     var eventId = "2";
     var marc = "{}";
-    var eventType = CREATED;
+    var eventType = SOURCE_RECORD_CREATED;
     var eventProducerRecord = getSrsDomainEventProducerRecord(eventId, marc, eventType, MARC_AUTHORITY);
     var expectedEvent = getSrsDomainEvent(eventId, marc, eventType);
 

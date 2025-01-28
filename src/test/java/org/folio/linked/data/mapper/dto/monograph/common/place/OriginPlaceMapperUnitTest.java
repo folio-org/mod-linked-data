@@ -19,8 +19,8 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(classes = OriginPlaceMapperUnit.class)
 @Import({CoreMapperImpl.class, ObjectMapper.class, RequestProcessingExceptionBuilder.class, ErrorResponseConfig.class})
@@ -31,7 +31,7 @@ class OriginPlaceMapperUnitTest {
   private OriginPlaceMapperUnit originPlaceMapperUnit;
   @Autowired
   private ObjectMapper objectMapper;
-  @MockBean
+  @MockitoBean
   private HashService hashService;
 
   @Test

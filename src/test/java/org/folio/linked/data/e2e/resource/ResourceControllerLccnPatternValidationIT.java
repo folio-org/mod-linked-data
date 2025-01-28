@@ -31,16 +31,16 @@ import org.folio.linked.data.client.SpecClient;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 class ResourceControllerLccnPatternValidationIT extends AbstractResourceControllerIT {
 
-  @MockBean
+  @MockitoBean
   private SpecClient specClient;
-  @MockBean
+  @MockitoBean
   private SearchClient searchClient;
 
   @Test

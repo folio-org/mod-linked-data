@@ -8,8 +8,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.CREATED;
-import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.UPDATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_CREATED;
+import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_UPDATED;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
@@ -45,10 +45,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
@@ -64,7 +64,7 @@ class AuthorityUpdateAndReadWorkIT {
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
   @Autowired
   private ResourceTestRepository resourceTestRepository;
-  @SpyBean
+  @MockitoSpyBean
   @Autowired
   private ResourceMarcAuthorityService resourceMarcService;
   @Autowired
@@ -94,13 +94,13 @@ class AuthorityUpdateAndReadWorkIT {
     var authority = createAuthority();
     var work = createWorkAndLinkToAuthority(authority);
     var authorityUpdateJson = getAuthorityJson().replace("aValue", "newAValue");
-    var updateAuthorityEvent =
-        getSrsDomainEventProducerRecord(randomUUID().toString(), authorityUpdateJson, UPDATED, MARC_AUTHORITY);
+    var updateAuthorityEvent = getSrsDomainEventProducerRecord(randomUUID().toString(), authorityUpdateJson,
+      SOURCE_RECORD_UPDATED, MARC_AUTHORITY);
 
     // when
     eventKafkaTemplate.send(updateAuthorityEvent);
     awaitAndAssert(() -> verify(resourceMarcService, times(2))
-        .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
+      .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
 
     // then
     var authoritiesFromDb = readAndAssertAuthoritiesInTheDb();
@@ -110,25 +110,25 @@ class AuthorityUpdateAndReadWorkIT {
 
   private void assertGetWorkWithActiveAuthority(Long workId, List<Resource> authorities) throws Exception {
     var requestBuilder = get(RESOURCE_URL + "/" + workId)
-        .contentType(APPLICATION_JSON)
-        .headers(defaultHeaders(env));
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
     var resultActions = mockMvc.perform(requestBuilder);
     var response = resultActions
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(APPLICATION_JSON))
-        .andReturn().getResponse().getContentAsString();
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
     assertThat(response)
-        .isNotEmpty()
-        .contains(authorities.get(1).getId().toString())
-        .contains(authorities.get(1).getLabel())
-        .doesNotContain(authorities.get(0).getId().toString())
-        .doesNotContain(authorities.get(0).getLabel());
+      .isNotEmpty()
+      .contains(authorities.get(1).getId().toString())
+      .contains(authorities.get(1).getLabel())
+      .doesNotContain(authorities.get(0).getId().toString())
+      .doesNotContain(authorities.get(0).getLabel());
   }
 
   private void assertWorkIsStillLinkedToObsoleteAuthorityInTheDb(Resource work, Resource obsoleteAuthority) {
     var workFromDb = tenantScopedExecutionService.execute(
-        TENANT_ID,
-        () -> resourceTestRepository.findByIdWithEdgesLoaded(work.getId()).orElseThrow()
+      TENANT_ID,
+      () -> resourceTestRepository.findByIdWithEdgesLoaded(work.getId()).orElseThrow()
     );
     assertThat(workFromDb.getOutgoingEdges()).hasSize(3);
     assertThat(workFromDb.getOutgoingEdges()).contains(new ResourceEdge(workFromDb, obsoleteAuthority, AUTHOR));
@@ -137,12 +137,12 @@ class AuthorityUpdateAndReadWorkIT {
 
   private List<Resource> readAndAssertAuthoritiesInTheDb() {
     var authoritiesFromDb = tenantScopedExecutionService.execute(
-        TENANT_ID,
-        () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2,
-                Pageable.ofSize(10))
-            .stream()
-            .sorted(comparing(Resource::getLabel))
-            .toList()
+      TENANT_ID,
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2,
+          Pageable.ofSize(10))
+        .stream()
+        .sorted(comparing(Resource::getLabel))
+        .toList()
     );
     assertThat(authoritiesFromDb).hasSize(2);
     var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
@@ -153,16 +153,16 @@ class AuthorityUpdateAndReadWorkIT {
   }
 
   private Resource createAuthority() {
-    var authorityCreateEvent =
-        getSrsDomainEventProducerRecord(randomUUID().toString(), getAuthorityJson(), CREATED, MARC_AUTHORITY);
+    var authorityCreateEvent = getSrsDomainEventProducerRecord(randomUUID().toString(), getAuthorityJson(),
+      SOURCE_RECORD_CREATED, MARC_AUTHORITY);
     eventKafkaTemplate.send(authorityCreateEvent);
     awaitAndAssert(() -> verify(resourceMarcService)
-        .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
+      .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
     return tenantScopedExecutionService.execute(TENANT_ID,
-        () -> resourceTestRepository.findById(- 6897633277634168127L)
-            .stream()
-            .findFirst()
-            .orElseThrow()
+      () -> resourceTestRepository.findById(- 6897633277634168127L)
+        .stream()
+        .findFirst()
+        .orElseThrow()
     );
   }
 
@@ -184,13 +184,13 @@ class AuthorityUpdateAndReadWorkIT {
     reCreator.computeId();
     work.addOutgoingEdge(reCreator);
     tenantScopedExecutionService.execute(TENANT_ID,
-        () -> {
-          resourceTestRepository.save(work);
-          resourceTestRepository.save(title);
-          resourceEdgeRepository.save(reTitle);
-          resourceEdgeRepository.save(reAuthor);
-          resourceEdgeRepository.save(reCreator);
-        }
+      () -> {
+        resourceTestRepository.save(work);
+        resourceTestRepository.save(title);
+        resourceEdgeRepository.save(reTitle);
+        resourceEdgeRepository.save(reAuthor);
+        resourceEdgeRepository.save(reCreator);
+      }
     );
     return work;
   }

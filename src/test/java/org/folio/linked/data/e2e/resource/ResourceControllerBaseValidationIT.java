@@ -19,14 +19,14 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 class ResourceControllerBaseValidationIT extends AbstractResourceControllerIT {
 
   @Autowired
   private ObjectMapper objectMapper;
-  @MockBean
+  @MockitoBean
   private KafkaAdminService kafkaAdminService;
 
   @Test

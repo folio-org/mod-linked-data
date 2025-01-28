@@ -22,14 +22,14 @@ import org.folio.linked.data.test.TestUtil;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 class ResourceControllerSrsIT extends AbstractResourceControllerIT {
 
-  @MockBean
+  @MockitoBean
   private SrsClient srsClient;
 
   @Test
