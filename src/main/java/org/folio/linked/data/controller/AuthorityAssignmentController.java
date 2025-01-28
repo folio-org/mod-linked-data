@@ -4,6 +4,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.AssignmentCheckDto;
+import org.folio.linked.data.domain.dto.AssignmentCheckResponseDto;
 import org.folio.linked.data.rest.resource.AuthorityApi;
 import org.folio.linked.data.service.resource.marc.AssignAuthorityTarget;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
@@ -17,11 +18,10 @@ public class AuthorityAssignmentController implements AuthorityApi {
   private final ResourceMarcAuthorityService resourceMarcAuthorityService;
 
   @Override
-  public ResponseEntity<String> authorityAssignmentCheck(AssignmentCheckDto dto) {
-    return ok(String.valueOf(
-      resourceMarcAuthorityService.isMarcAuthorityCompatibleWithTarget(
-        dto.getRawMarc(),
-        AssignAuthorityTarget.valueOf(dto.getTarget().name()))
-      ));
+  public ResponseEntity<AssignmentCheckResponseDto> authorityAssignmentCheck(AssignmentCheckDto dto) {
+    var isValidAssignment = resourceMarcAuthorityService.isMarcAuthorityCompatibleWithTarget(
+      dto.getRawMarc(),
+      AssignAuthorityTarget.valueOf(dto.getTarget().name()));
+    return ok(new AssignmentCheckResponseDto().validAssignment(isValidAssignment));
   }
 }

@@ -2,9 +2,10 @@ package org.folio.linked.data.e2e;
 
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +43,7 @@ class AuthorityAssignmentControllerIT {
   void authorityAssignmentCheck(String marcFile, String expectedResponse) throws Exception {
     // given
     var requestBuilder = post(ASSIGNMENT_CHECK_ENDPOINT)
+      .accept(APPLICATION_JSON)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(
@@ -57,6 +59,6 @@ class AuthorityAssignmentControllerIT {
     // then
     resultActions
       .andExpect(status().isOk())
-      .andExpect(content().string(expectedResponse));
+      .andExpect(jsonPath("$.validAssignment", equalTo(Boolean.valueOf(expectedResponse))));
   }
 }

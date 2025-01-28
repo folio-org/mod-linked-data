@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "MARC authority assignment check response",
+  "type": "object",
+  "properties": {
+    "validAssignment": {
+      "type": "boolean",
+      "description": "Indicates if the assignment is valid"
+    },
+    "invalidAssignmentReason": {
+      "type": "string",
+      "enum": ["UNSUPPORTED_MARC", "NO_LCCN", "NOT_VALID_FOR_TARGET"],
+      "description": "Indicates the reason why the assignment is not valid. Only present if 'validAssignment' is false."
+    }
+  },
+  "required": [
+    "validAssignment"
+  ]
+}
