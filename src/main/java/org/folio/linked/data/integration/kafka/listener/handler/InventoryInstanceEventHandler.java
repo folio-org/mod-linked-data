@@ -23,10 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Profile("!" + STANDALONE_PROFILE)
 public class InventoryInstanceEventHandler {
 
-  public static final String INSTANCE_REINDEX_NOT_REQUIRED = "Ignoring InventoryInstanceEvent '{}',"
+  private static final String INSTANCE_REINDEX_NOT_REQUIRED = "Ignoring InventoryInstanceEvent '{}',"
     + " reindexing not required.";
-  public static final String SENT_FOR_REINDEXING = "Instance '{}' has some fields updated, sent for reindexing.";
-  public static final String SUPPRESS_FLAGS_CHANGED = "InventoryInstanceEvent:{} - changes in suppress flags: {}.";
+  private static final String SENT_FOR_REINDEXING = "Instance '{}' has some fields updated, sent for reindexing.";
+  private static final String SUPPRESS_FLAGS_CHANGED = "InventoryInstanceEvent:{} - changes in suppress flags: {}.";
+  private static final String UPDATING_SUPPRESS_FLAGS = "Updating suppress flags for instance {}. Staff: {}, "
+    + "discovery: {}";
 
   private final FolioMetadataRepository folioMetadataRepository;
   private final WorkUpdateMessageSender workUpdateMessageSender;
@@ -52,8 +54,10 @@ public class InventoryInstanceEventHandler {
   }
 
   private Resource updateMetadataAndGetResource(FolioMetadata folioMetadata, InventoryInstanceEvent event) {
-    folioMetadata.setStaffSuppress(event.getNew().getStaffSuppress());
-    folioMetadata.setSuppressFromDiscovery(event.getNew().getDiscoverySuppress());
+    var instance = event.getNew();
+    log.info(UPDATING_SUPPRESS_FLAGS, instance.getId(), instance.getStaffSuppress(), instance.getDiscoverySuppress());
+    folioMetadata.setStaffSuppress(instance.getStaffSuppress());
+    folioMetadata.setSuppressFromDiscovery(instance.getDiscoverySuppress());
     return folioMetadataRepository.save(folioMetadata).getResource();
   }
 
