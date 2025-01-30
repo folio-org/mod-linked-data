@@ -22,6 +22,6 @@ public class AuthorityAssignmentController implements AuthorityApi {
     var isValidAssignment = resourceMarcAuthorityService.isMarcAuthorityCompatibleWithTarget(
       dto.getRawMarc(),
       AssignAuthorityTarget.valueOf(dto.getTarget().name()));
-    return ok(new AssignmentCheckResponseDto().validAssignment(isValidAssignment));
+    return ok(new AssignmentCheckResponseDto(isValidAssignment));
   }
 }
