@@ -47,7 +47,7 @@ public class SourceRecordDomainEventListener {
   }
 
   private void processRecord(ConsumerRecord<String, SourceRecordDomainEvent> consumerRecord) {
-    log.info("Received event [key {}]", consumerRecord.key());
+    log.debug("Received event [key {}]", consumerRecord.key());
     var event = consumerRecord.value();
     if (notAllRequiredHeaders(consumerRecord.headers())) {
       log.warn("Received SourceRecordDomainEvent [id {}] will be ignored since not all required headers were provided",
