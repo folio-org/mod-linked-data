@@ -263,12 +263,11 @@ paths:
               $ref: schema/assignmentCheckDto.json
       responses:
         '200':
-          description: Returns plain text boolean as response
+          description: Returns the result of the assignment check, including whether the assignment is valid and, if not, the reason for invalidity
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: true|false
+                $ref: schema/assignmentCheckResponseDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
