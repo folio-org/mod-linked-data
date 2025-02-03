@@ -4,16 +4,33 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 
 @Log4j2
 @UtilityClass
 public class JsonUtils {
+
+  private static final JsonProvider JSON_PROVIDER = Configuration.defaultConfiguration()
+    .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL)
+    .jsonProvider();
+
+  public static boolean hasElementByJsonPath(String json, String jsonPath) {
+    if (StringUtils.isAnyBlank(json, jsonPath)) {
+      return false;
+    }
+    return !JsonPath.<List<String>>read(JSON_PROVIDER.parse(json), jsonPath).isEmpty();
+  }
 
   @SneakyThrows
   public static String writeValueAsString(Object obj, ObjectMapper objectMapper) {

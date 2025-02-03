@@ -7,6 +7,7 @@ import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventType
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.JsonUtils.hasElementByJsonPath;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class SourceRecordDomainEventHandler {
   private static final String EMPTY_RESOURCE_MAPPED = "Empty resource(s) mapped from SourceRecordDomainEvent [id {}]";
   private static final String NO_MARC_EVENT = "SourceRecordDomainEvent [id {}] has no Marc record inside";
   private static final String UNSUPPORTED_TYPE = "Ignoring unsupported {} type [{}] in SourceRecordDomainEvent [id {}]";
+  private static final String LINKED_DATA_ID_JSONPATH = "$.fields[*].999.subfields[*].l";
   private static final Set<SourceRecordType> SUPPORTED_RECORD_TYPES = Set.of(MARC_BIB, MARC_AUTHORITY);
   private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES =
     Set.of(SOURCE_RECORD_CREATED, SOURCE_RECORD_UPDATED);
@@ -46,7 +48,7 @@ public class SourceRecordDomainEventHandler {
     }
     if (recordType == MARC_AUTHORITY) {
       saveAuthorities(event);
-    } else if (recordType == MARC_BIB && event.getEventType() == SOURCE_RECORD_CREATED) {
+    } else if (isBibCreatedEvent(event, recordType)) {
       saveAdminMetadata(event);
     }
   }
@@ -83,6 +85,12 @@ public class SourceRecordDomainEventHandler {
       var id = resourceMarcAuthorityService.saveMarcAuthority(resource);
       log.info(EVENT_SAVED, event.getId(), MARC_AUTHORITY, id);
     }
+  }
+
+  private boolean isBibCreatedEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
+    return recordType == MARC_BIB
+      && event.getEventType() == SOURCE_RECORD_CREATED
+      && hasElementByJsonPath(event.getEventPayload().getParsedRecord().getContent(), LINKED_DATA_ID_JSONPATH);
   }
 
   private void saveAdminMetadata(SourceRecordDomainEvent event) {
