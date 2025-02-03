@@ -1,5 +1,7 @@
 package org.folio.linked.data.util;
 
+import static org.apache.commons.lang3.StringUtils.isAnyBlank;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -15,7 +17,6 @@ import java.util.stream.StreamSupport;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 
 @Log4j2
 @UtilityClass
@@ -26,7 +27,7 @@ public class JsonUtils {
     .jsonProvider();
 
   public static boolean hasElementByJsonPath(String json, String jsonPath) {
-    if (StringUtils.isAnyBlank(json, jsonPath)) {
+    if (isAnyBlank(json, jsonPath)) {
       return false;
     }
     return !JsonPath.<List<String>>read(JSON_PROVIDER.parse(json), jsonPath).isEmpty();
