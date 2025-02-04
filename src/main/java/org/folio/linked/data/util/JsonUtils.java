@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JsonProvider;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -22,15 +21,15 @@ import lombok.extern.log4j.Log4j2;
 @UtilityClass
 public class JsonUtils {
 
-  private static final JsonProvider JSON_PROVIDER = Configuration.defaultConfiguration()
-    .addOptions(Option.DEFAULT_PATH_LEAF_TO_NULL)
-    .jsonProvider();
+  private static final Configuration JSONPATH_CONFIG = Configuration.builder()
+    .options(Option.SUPPRESS_EXCEPTIONS)
+    .build();
 
   public static boolean hasElementByJsonPath(String json, String jsonPath) {
     if (isAnyBlank(json, jsonPath)) {
       return false;
     }
-    return !JsonPath.<List<String>>read(JSON_PROVIDER.parse(json), jsonPath).isEmpty();
+    return !JsonPath.using(JSONPATH_CONFIG).parse(json).read(jsonPath, List.class).isEmpty();
   }
 
   @SneakyThrows

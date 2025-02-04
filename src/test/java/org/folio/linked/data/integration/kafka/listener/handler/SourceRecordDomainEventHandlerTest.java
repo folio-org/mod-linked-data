@@ -128,7 +128,8 @@ class SourceRecordDomainEventHandlerTest {
     // given
     var event = new SourceRecordDomainEvent().id("7")
       .eventType(SOURCE_RECORD_CREATED)
-      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
+      .eventPayload(new SourceRecord()
+        .parsedRecord(new ParsedRecord("{\"fields\": [{\"999\": {\"subfields\": [{\"l\": \"lvalue\"}]}}]}")));
     var mapped = new Resource().setId(9L).addType(INSTANCE);
     doReturn(Optional.of(mapped)).when(marcBib2ldMapper)
       .fromMarcJson(event.getEventPayload().getParsedRecord().getContent());

@@ -48,7 +48,7 @@ public class SourceRecordDomainEventHandler {
     }
     if (recordType == MARC_AUTHORITY) {
       saveAuthorities(event);
-    } else if (isBibCreatedEvent(event, recordType)) {
+    } else if (isLinkedDataBibCreateEvent(event, recordType)) {
       saveAdminMetadata(event);
     }
   }
@@ -87,7 +87,7 @@ public class SourceRecordDomainEventHandler {
     }
   }
 
-  private boolean isBibCreatedEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
+  private boolean isLinkedDataBibCreateEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
     return recordType == MARC_BIB
       && event.getEventType() == SOURCE_RECORD_CREATED
       && hasElementByJsonPath(event.getEventPayload().getParsedRecord().getContent(), LINKED_DATA_ID_JSONPATH);
