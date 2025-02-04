@@ -1,9 +1,15 @@
 package org.folio.linked.data.util;
 
+import static org.apache.commons.lang3.StringUtils.isAnyBlank;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -14,6 +20,17 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @UtilityClass
 public class JsonUtils {
+
+  private static final Configuration JSONPATH_CONFIG = Configuration.builder()
+    .options(Option.SUPPRESS_EXCEPTIONS)
+    .build();
+
+  public static boolean hasElementByJsonPath(String json, String jsonPath) {
+    if (isAnyBlank(json, jsonPath)) {
+      return false;
+    }
+    return !JsonPath.using(JSONPATH_CONFIG).parse(json).read(jsonPath, List.class).isEmpty();
+  }
 
   @SneakyThrows
   public static String writeValueAsString(Object obj, ObjectMapper objectMapper) {

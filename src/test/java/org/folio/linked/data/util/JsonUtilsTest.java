@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.util.JsonUtils.merge;
 import static org.folio.linked.data.util.JsonUtils.writeValueAsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,4 +41,42 @@ class JsonUtilsTest {
     var result = merge(MAPPER.readTree(existing), MAPPER.readTree(incoming));
     assertThat(result).isEqualTo(MAPPER.readTree(merged));
   }
+
+
+  @ParameterizedTest
+  @MethodSource("hasElementByJsonPathArguments")
+  void hasElementByJsonPath_shouldReturnCorrectBoolean(String jsonPath, boolean expected) {
+    // when
+    var actual = JsonUtils.hasElementByJsonPath(LINKED_DATA_ID_JSON, jsonPath);
+
+    // then
+    assertEquals(expected, actual);
+  }
+
+  static Stream<Arguments> hasElementByJsonPathArguments() {
+    return Stream.of(
+      Arguments.of("$.fields[*].999.subfields[*].l", true),
+      Arguments.of("$.fields[*].999.subfields[*].a", false),
+      Arguments.of("$.fields[*].111", false),
+      Arguments.of(null, false)
+    );
+  }
+
+  private static final String LINKED_DATA_ID_JSON = """
+        {
+          "fields": [
+            {
+              "999": {
+                "subfields": [
+                  {
+                    "l": "lvalue"
+                  }
+                ],
+                "ind1": " ",
+                "ind2": " "
+              }
+            }
+          ]
+        }
+        """;
 }
