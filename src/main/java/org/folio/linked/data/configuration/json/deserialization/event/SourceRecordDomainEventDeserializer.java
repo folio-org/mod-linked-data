@@ -28,6 +28,7 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
   private static final String DELETED = "deleted";
   private static final String PARSED_RECORD = "parsedRecord";
   private static final String CONTENT = "content";
+  private static final String NEW = "new";
 
   private final ObjectMapper objectMapper;
 
@@ -60,6 +61,9 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
   private SourceRecord getSourceRecord(JsonNode node) throws JsonProcessingException {
     if (node.isTextual()) {
       node = objectMapper.readTree(node.textValue());
+    }
+    if (node.has(NEW)) {
+      node = node.get(NEW);
     }
     var sourceRecord = new SourceRecord();
     if (node.has(ID)) {
