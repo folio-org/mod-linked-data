@@ -38,6 +38,7 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.marc4ld.enums.UnmappedMarcHandling;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -78,7 +79,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       });
     validateMarcViewSupportedType(resource);
     var resourceModel = resourceModelMapper.toModel(resource);
-    var marc = ld2MarcMapper.toMarcJson(resourceModel);
+    var marc = ld2MarcMapper.toMarcJson(resourceModel, UnmappedMarcHandling.APPEND);
     return resourceDtoMapper.toMarcViewDto(resource, marc);
   }
 

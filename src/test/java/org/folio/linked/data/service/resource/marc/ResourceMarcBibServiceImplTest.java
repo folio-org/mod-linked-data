@@ -43,6 +43,7 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.marc4ld.enums.UnmappedMarcHandling;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -105,7 +106,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(Optional.of(existedResource));
     when(resourceModelMapper.toModel(existedResource))
       .thenReturn(expectedModelResource);
-    when(ld2MarcMapper.toMarcJson(expectedModelResource))
+    when(ld2MarcMapper.toMarcJson(expectedModelResource, UnmappedMarcHandling.APPEND))
       .thenReturn(expectedMarcString);
     when(resourceDtoMapper.toMarcViewDto(existedResource, expectedMarcString))
       .thenReturn(expectedResponse);
