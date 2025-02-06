@@ -18,7 +18,7 @@ class SourceRecordDomainEventDeserializerTest {
   @Test
   void deserialize_shouldReturnCorrectlyMappedEvent() throws Exception {
     // given
-    var jsonParser = OBJECT_MAPPER.createParser(loadResourceAsString("samples/newSrsDomainEvent.json"));
+    var jsonParser = OBJECT_MAPPER.createParser(loadResourceAsString("samples/srsDomainEvent.json"));
 
     // when
     var deserializedEvent = deserializer.deserialize(jsonParser, null);
@@ -33,19 +33,5 @@ class SourceRecordDomainEventDeserializerTest {
     assertThat(deserializedPayload.getDeleted()).isTrue();
     assertThat(deserializedPayload.getState()).isEqualTo(ACTUAL);
     assertThat(deserializedPayload.getParsedRecord().getContent()).isNotBlank();
-  }
-
-  @Test
-  void deserialize_shouldReturnIdenticalEventForOldAndNewSchema() throws Exception {
-    // given
-    var oldEvent = OBJECT_MAPPER.createParser(loadResourceAsString("samples/srsDomainEvent.json"));
-    var newEvent = OBJECT_MAPPER.createParser(loadResourceAsString("samples/newSrsDomainEvent.json"));
-
-    // when
-    var oldDeserializedEvent = deserializer.deserialize(oldEvent, null);
-    var newDeserializedEvent = deserializer.deserialize(newEvent, null);
-
-    // then
-    assertThat(oldDeserializedEvent).isEqualTo(newDeserializedEvent);
   }
 }
