@@ -133,6 +133,7 @@ public class Resource implements Persistable<Long> {
     this.label = that.label;
     this.doc = (JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
     this.folioMetadata = that.folioMetadata;
+    this.unmappedMarc = that.unmappedMarc;
     this.indexDate = that.indexDate;
     this.types = new LinkedHashSet<>(that.getTypes());
     this.createdDate = that.createdDate;
