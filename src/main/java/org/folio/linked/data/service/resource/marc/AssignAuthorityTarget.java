@@ -32,7 +32,7 @@ public enum AssignAuthorityTarget {
   private final Set<ResourceTypeDictionary> exact;
   private final Set<ResourceTypeDictionary> any;
 
-  public Boolean isCompatibleWith(Collection<ResourceTypeDictionary> types) {
+  public boolean isCompatibleWith(Collection<ResourceTypeDictionary> types) {
     var isWithinExpectedSize = isWithinExpectedSize(types);
     return isWithinExpectedSize
       && (hasSingleTypeAndMatchesExact(types) || hasCombinedType(types));

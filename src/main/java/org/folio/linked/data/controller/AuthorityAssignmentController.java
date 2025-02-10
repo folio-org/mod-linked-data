@@ -19,9 +19,9 @@ public class AuthorityAssignmentController implements AuthorityApi {
 
   @Override
   public ResponseEntity<AssignmentCheckResponseDto> authorityAssignmentCheck(AssignmentCheckDto dto) {
-    var isValidAssignment = resourceMarcAuthorityService.isMarcAuthorityCompatibleWithTarget(
+    var validationResult = resourceMarcAuthorityService.validateAuthorityAssignment(
       dto.getRawMarc(),
       AssignAuthorityTarget.valueOf(dto.getTarget().name()));
-    return ok(new AssignmentCheckResponseDto(isValidAssignment));
+    return ok(validationResult);
   }
 }
