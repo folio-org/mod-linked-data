@@ -1,14 +1,30 @@
 package org.folio.linked.data.service.resource;
 
+import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
+import static org.folio.ld.dictionary.PropertyDictionary.OTHER_EVENT_INFORMATION;
+import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
+import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
@@ -39,6 +55,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
+  private static final Set<String> INSTANCE_PROPERTIES = Set.of(
+    PUBLICATION_FREQUENCY.getValue(),
+    DATES_OF_PUBLICATION_NOTE.getValue(),
+    GOVERNING_ACCESS_NOTE.getValue(),
+    CREDITS_NOTE.getValue(),
+    PARTICIPANT_NOTE.getValue(),
+    CITATION_COVERAGE.getValue(),
+    LOCATION_OF_ORIGINALS_DUPLICATES.getValue()
+  );
+  private static final Set<String> WORK_PROPERTIES = Set.of(
+    REFERENCES.getValue(),
+    OTHER_EVENT_INFORMATION.getValue(),
+    GEOGRAPHIC_COVERAGE.getValue()
+  );
+
   private final ResourceRepository resourceRepo;
   private final MetadataService metadataService;
   private final ResourceDtoMapper resourceDtoMapper;
@@ -48,6 +79,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ApplicationEventPublisher applicationEventPublisher;
   private final ResourceEdgeService resourceEdgeService;
   private final FolioExecutionContext folioExecutionContext;
+  private final ObjectMapper objectMapper;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -116,6 +148,7 @@ public class ResourceServiceImpl implements ResourceService {
     resourceEdgeService.copyOutgoingEdges(old, mapped);
     metadataService.ensure(mapped, old.getFolioMetadata());
     copyUnmappedMarc(old, mapped);
+    copyProperties(old, mapped);
     mapped.setCreatedDate(old.getCreatedDate());
     mapped.setVersion(old.getVersion() + 1);
     mapped.setCreatedBy(old.getCreatedBy());
@@ -144,6 +177,31 @@ public class ResourceServiceImpl implements ResourceService {
           mapped.setUnmappedMarc(newUnmappedMarc);
         });
     }
+  }
+
+  @SneakyThrows
+  private void copyProperties(Resource from, Resource to) {
+    if (from.getDoc() == null) {
+      return;
+    }
+
+    var fromDoc = objectMapper.treeToValue(from.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
+    var toDoc = to.getDoc() == null
+      ? new HashMap<String, List<String>>()
+      : objectMapper.treeToValue(to.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
+    fromDoc.entrySet()
+      .stream()
+      .filter(entry -> {
+        if (from.isOfType(INSTANCE)) {
+          return INSTANCE_PROPERTIES.contains(entry.getKey());
+        } else if (from.isOfType(ResourceTypeDictionary.WORK)) {
+          return WORK_PROPERTIES.contains(entry.getKey());
+        } else {
+          return false;
+        }
+      })
+      .forEach(entry -> toDoc.put(entry.getKey(), entry.getValue()));
+    to.setDoc(objectMapper.convertValue(toDoc, JsonNode.class));
   }
 
 }

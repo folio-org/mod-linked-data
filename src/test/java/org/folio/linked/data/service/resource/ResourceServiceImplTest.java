@@ -11,15 +11,26 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
@@ -36,6 +47,7 @@ import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
@@ -49,6 +61,9 @@ import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -80,6 +95,8 @@ class ResourceServiceImplTest {
   private ResourceEdgeService resourceEdgeService;
   @Mock
   private FolioExecutionContext folioExecutionContext;
+  @Mock
+  private ObjectMapper objectMapper;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
@@ -290,6 +307,60 @@ class ResourceServiceImplTest {
   }
 
   @Test
+  void update_shouldNotCopyProperties_whenOldResourceDoesNotHaveDoc() {
+    // given
+    var oldId = randomLong();
+    var oldResource = new Resource().setId(oldId);
+    var updatedResource = new Resource();
+    when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldResource));
+    var updateDto = new ResourceRequestDto();
+    when(resourceDtoMapper.toEntity(updateDto)).thenReturn(updatedResource);
+    when(resourceGraphService.saveMergingGraph(updatedResource)).thenReturn(new Resource());
+
+    // when
+    resourceService.updateResource(oldId, updateDto);
+
+    // then
+    verifyNoInteractions(objectMapper);
+  }
+
+  private static Stream<Arguments> dataProvider() {
+    return Stream.of(
+      arguments(randomLong(), new Resource()
+        .addType(new ResourceTypeEntity().setUri(INSTANCE.getUri())).setDoc(new ArrayNode(new JsonNodeFactory(true))),
+        new Resource(), getOldInstanceDoc(), getNewInstanceDoc()),
+      arguments(randomLong(), new Resource()
+        .addType(new ResourceTypeEntity().setUri(WORK.getUri())).setDoc(new ArrayNode(new JsonNodeFactory(true))),
+        new Resource(), getOldWorkDoc(), getNewWorkDoc())
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("dataProvider")
+  void update_shouldRetainProperties_thatAreNotSupportedOnUi(Long oldId, Resource oldResource,
+                                                             Resource updatedResource,
+                                                             HashMap<String, List<String>> fromDoc,
+                                                             HashMap<String, List<String>> expectedDoc)
+    throws JsonProcessingException {
+    // given
+    oldResource.setId(oldId);
+    when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldResource));
+    var updateDto = new ResourceRequestDto();
+    when(resourceDtoMapper.toEntity(updateDto)).thenReturn(updatedResource);
+    when(objectMapper.treeToValue(eq(oldResource.getDoc()), any(TypeReference.class)))
+      .thenReturn(fromDoc);
+    when(resourceGraphService.saveMergingGraph(updatedResource)).thenReturn(new Resource());
+
+    // when
+    resourceService.updateResource(oldId, updateDto);
+
+    // then
+    var docCaptor = ArgumentCaptor.forClass(HashMap.class);
+    verify(objectMapper).convertValue(docCaptor.capture(), eq(JsonNode.class));
+    assertThat(docCaptor.getValue()).isEqualTo(expectedDoc);
+  }
+
+  @Test
   void delete_shouldDeleteWorkAndPublishResourceDeletedEvent() {
     // given
     var work = new Resource().setId(randomLong()).addTypes(WORK);
@@ -327,6 +398,38 @@ class ResourceServiceImplTest {
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
     assertThat(instance).isEqualTo(resourceDeletedEventCaptor.getValue().resource());
+  }
+
+  private static HashMap<String, List<String>> getOldInstanceDoc() {
+    var doc = getNewInstanceDoc();
+    doc.put("http://bibfra.me/vocab/lite/note", List.of("generalNote"));
+    return doc;
+  }
+
+  private static HashMap<String, List<String>> getNewInstanceDoc() {
+    var doc = new HashMap<String, List<String>>();
+    doc.put("http://bibfra.me/vocab/marc/publicationFrequency", List.of("publicationFrequency"));
+    doc.put("http://bibfra.me/vocab/marc/datesOfPublicationNote", List.of("datesOfPublicationNote"));
+    doc.put("http://bibfra.me/vocab/marc/governingAccessNote", List.of("governingAccessNote"));
+    doc.put("http://bibfra.me/vocab/marc/creditsNote", List.of("creditsNote"));
+    doc.put("http://bibfra.me/vocab/marc/participantNote", List.of("participantNote"));
+    doc.put("http://bibfra.me/vocab/marc/citationCoverage", List.of("citationCoverage"));
+    doc.put("http://bibfra.me/vocab/marc/locationOfOriginalsDuplicates", List.of("locationOfOriginalsDuplicates"));
+    return doc;
+  }
+
+  private static HashMap<String, List<String>> getOldWorkDoc() {
+    var doc = getNewWorkDoc();
+    doc.put("http://bibfra.me/vocab/lite/note", List.of("generalNote"));
+    return doc;
+  }
+
+  private static HashMap<String, List<String>> getNewWorkDoc() {
+    var doc = new HashMap<String, List<String>>();
+    doc.put("http://bibfra.me/vocab/marc/references", List.of("references"));
+    doc.put("http://bibfra.me/vocab/marc/otherEventInformation", List.of("otherEventInformation"));
+    doc.put("http://bibfra.me/vocab/marc/geographicCoverage", List.of("geographicCoverage"));
+    return doc;
   }
 
 }
