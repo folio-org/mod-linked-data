@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.resource;
 
+import static java.util.Collections.emptySet;
 import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
@@ -11,20 +12,22 @@ import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
@@ -55,19 +58,21 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ResourceServiceImpl implements ResourceService {
 
-  private static final Set<String> INSTANCE_PROPERTIES = Set.of(
-    PUBLICATION_FREQUENCY.getValue(),
-    DATES_OF_PUBLICATION_NOTE.getValue(),
-    GOVERNING_ACCESS_NOTE.getValue(),
-    CREDITS_NOTE.getValue(),
-    PARTICIPANT_NOTE.getValue(),
-    CITATION_COVERAGE.getValue(),
-    LOCATION_OF_ORIGINALS_DUPLICATES.getValue()
-  );
-  private static final Set<String> WORK_PROPERTIES = Set.of(
-    REFERENCES.getValue(),
-    OTHER_EVENT_INFORMATION.getValue(),
-    GEOGRAPHIC_COVERAGE.getValue()
+  private static final Map<String, Set<String>> PROPERTIES_TO_BE_COPIED = Map.of(
+    INSTANCE.getUri(), Set.of(
+      PUBLICATION_FREQUENCY.getValue(),
+      DATES_OF_PUBLICATION_NOTE.getValue(),
+      GOVERNING_ACCESS_NOTE.getValue(),
+      CREDITS_NOTE.getValue(),
+      PARTICIPANT_NOTE.getValue(),
+      CITATION_COVERAGE.getValue(),
+      LOCATION_OF_ORIGINALS_DUPLICATES.getValue()
+    ),
+    WORK.getUri(), Set.of(
+      REFERENCES.getValue(),
+      OTHER_EVENT_INFORMATION.getValue(),
+      GEOGRAPHIC_COVERAGE.getValue()
+    )
   );
 
   private final ResourceRepository resourceRepo;
@@ -184,24 +189,27 @@ public class ResourceServiceImpl implements ResourceService {
     if (from.getDoc() == null) {
       return;
     }
+    var properties = getProperties(from);
+    if (!properties.isEmpty()) {
+      var toDoc = to.getDoc() == null
+        ? new HashMap<String, List<String>>()
+        : objectMapper.treeToValue(to.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
+      properties.forEach(entry -> toDoc.put(entry.getKey(), entry.getValue()));
+      to.setDoc(objectMapper.convertValue(toDoc, JsonNode.class));
+    }
+  }
 
+  private List<Map.Entry<String, List<String>>> getProperties(Resource from) throws JsonProcessingException {
     var fromDoc = objectMapper.treeToValue(from.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
-    var toDoc = to.getDoc() == null
-      ? new HashMap<String, List<String>>()
-      : objectMapper.treeToValue(to.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
-    fromDoc.entrySet()
+    var fromType = from.getTypes()
       .stream()
-      .filter(entry -> {
-        if (from.isOfType(INSTANCE)) {
-          return INSTANCE_PROPERTIES.contains(entry.getKey());
-        } else if (from.isOfType(ResourceTypeDictionary.WORK)) {
-          return WORK_PROPERTIES.contains(entry.getKey());
-        } else {
-          return false;
-        }
-      })
-      .forEach(entry -> toDoc.put(entry.getKey(), entry.getValue()));
-    to.setDoc(objectMapper.convertValue(toDoc, JsonNode.class));
+      .findFirst()
+      .orElseThrow()
+      .getUri();
+    return fromDoc.entrySet()
+      .stream()
+      .filter(entry -> PROPERTIES_TO_BE_COPIED.getOrDefault(fromType, emptySet()).contains(entry.getKey()))
+      .toList();
   }
 
 }
