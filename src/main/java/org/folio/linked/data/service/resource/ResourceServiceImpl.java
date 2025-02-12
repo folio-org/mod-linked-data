@@ -1,11 +1,9 @@
 package org.folio.linked.data.service.resource;
 
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,7 +14,6 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
-import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
@@ -24,7 +21,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.spring.FolioExecutionContext;
@@ -46,8 +43,8 @@ public class ResourceServiceImpl implements ResourceService {
   private final FolioMetadataRepository folioMetadataRepo;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
-  private final ResourceEdgeService resourceEdgeService;
   private final FolioExecutionContext folioExecutionContext;
+  private final ResourceCopyService resourceCopyService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -113,9 +110,8 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    resourceEdgeService.copyOutgoingEdges(old, mapped);
+    resourceCopyService.copyEdgesAndProperties(old, mapped);
     metadataService.ensure(mapped, old.getFolioMetadata());
-    copyUnmappedMarc(old, mapped);
     mapped.setCreatedDate(old.getCreatedDate());
     mapped.setVersion(old.getVersion() + 1);
     mapped.setCreatedBy(old.getCreatedBy());
@@ -134,16 +130,6 @@ public class ResourceServiceImpl implements ResourceService {
       titles = getPrimaryMainTitles(workField.getWork().getTitle());
     }
     return String.format("Type: %s, Title: %s", type, titles);
-  }
-
-  private void copyUnmappedMarc(Resource old, Resource mapped) {
-    if (mapped.isOfType(INSTANCE)) {
-      Optional.ofNullable(old.getUnmappedMarc())
-        .ifPresent(unmappedMarc -> {
-          var newUnmappedMarc = new RawMarc(mapped).setContent(unmappedMarc.getContent());
-          mapped.setUnmappedMarc(newUnmappedMarc);
-        });
-    }
   }
 
 }

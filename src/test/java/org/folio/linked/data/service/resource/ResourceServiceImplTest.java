@@ -8,8 +8,6 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,7 +31,6 @@ import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
-import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -42,7 +39,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.spring.FolioExecutionContext;
@@ -77,9 +74,9 @@ class ResourceServiceImplTest {
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
   @Mock
-  private ResourceEdgeService resourceEdgeService;
-  @Mock
   private FolioExecutionContext folioExecutionContext;
+  @Mock
+  private ResourceCopyService resourceCopyService;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
@@ -235,6 +232,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).saveMergingGraph(work);
     verify(folioExecutionContext).getUserId();
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work));
+    verify(resourceCopyService).copyEdgesAndProperties(oldWork, work);
   }
 
   @Test
@@ -263,30 +261,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).breakEdgesAndDelete(oldInstance);
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
-  }
-
-  @Test
-  void update_shouldRetainUnmappedMarc() {
-    // given
-    var oldId = randomLong();
-    var oldInstance = new Resource()
-      .setId(oldId)
-      .addTypes(INSTANCE);
-    var rawMarc = "raw marc";
-    var unmappedMarc = new RawMarc(oldInstance).setContent(rawMarc);
-    oldInstance.setUnmappedMarc(unmappedMarc);
-    when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().addTypes(INSTANCE);
-    var instanceDto = new ResourceRequestDto();
-    when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(new Resource());
-
-    // when
-    resourceService.updateResource(oldId, instanceDto);
-
-    // then
-    assertNotNull(mapped.getUnmappedMarc());
-    assertEquals(rawMarc, mapped.getUnmappedMarc().getContent());
+    verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
   }
 
   @Test
