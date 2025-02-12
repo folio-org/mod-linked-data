@@ -93,9 +93,10 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
       .findFirst()
       .orElseThrow()
       .getUri();
+    var propertiesToCopy = PROPERTIES_TO_BE_COPIED.getOrDefault(fromType, emptySet());
     return fromDoc.entrySet()
       .stream()
-      .filter(entry -> PROPERTIES_TO_BE_COPIED.getOrDefault(fromType, emptySet()).contains(entry.getKey()))
+      .filter(entry -> propertiesToCopy.contains(entry.getKey()))
       .toList();
   }
 }
