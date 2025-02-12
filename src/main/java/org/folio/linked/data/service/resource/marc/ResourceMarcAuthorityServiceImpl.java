@@ -74,12 +74,12 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     return marcAuthority2ldMapper.fromMarcJson(marc)
       .stream()
       .findFirst()
-      .map(authority -> validateAuthorityAssignment(authority, target))
+      .map(authority -> checkCompatibilityWithTarget(authority, target))
       .orElseGet(() -> new AssignmentCheckResponseDto(false).invalidAssignmentReason(UNSUPPORTED_MARC));
   }
 
-  private AssignmentCheckResponseDto validateAuthorityAssignment(org.folio.ld.dictionary.model.Resource authority,
-                                                                 AssignAuthorityTarget target) {
+  private AssignmentCheckResponseDto checkCompatibilityWithTarget(org.folio.ld.dictionary.model.Resource authority,
+                                                                  AssignAuthorityTarget target) {
     boolean isCompatible = target.isCompatibleWith(authority.getTypes());
     return new AssignmentCheckResponseDto(isCompatible)
       .invalidAssignmentReason(isCompatible ? null : NOT_VALID_FOR_TARGET);
