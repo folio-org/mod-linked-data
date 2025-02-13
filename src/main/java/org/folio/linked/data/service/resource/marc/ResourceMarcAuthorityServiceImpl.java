@@ -5,8 +5,12 @@ import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
+import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
+import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NO_LCCN;
+import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.UNSUPPORTED_MARC;
 import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.JsonUtils.writeValueAsString;
+import static org.folio.linked.data.util.LccnUtils.hasLccn;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -16,6 +20,7 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SrsClient;
+import org.folio.linked.data.domain.dto.AssignmentCheckResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -61,11 +66,23 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   @Override
-  public boolean isMarcAuthorityCompatibleWithTarget(String marc, AssignAuthorityTarget target) {
-    return this.marcAuthority2ldMapper.fromMarcJson(marc)
-      .stream().findFirst()
-      .map(authority -> target.isCompatibleWith(authority.getTypes()))
-      .orElse(false);
+  public AssignmentCheckResponseDto validateAuthorityAssignment(String marc, AssignAuthorityTarget target) {
+    if (!hasLccn(marc)) {
+      return new AssignmentCheckResponseDto(false).invalidAssignmentReason(NO_LCCN);
+    }
+
+    return marcAuthority2ldMapper.fromMarcJson(marc)
+      .stream()
+      .findFirst()
+      .map(authority -> checkCompatibilityWithTarget(authority, target))
+      .orElseGet(() -> new AssignmentCheckResponseDto(false).invalidAssignmentReason(UNSUPPORTED_MARC));
+  }
+
+  private AssignmentCheckResponseDto checkCompatibilityWithTarget(org.folio.ld.dictionary.model.Resource authority,
+                                                                  AssignAuthorityTarget target) {
+    boolean isCompatible = target.isCompatibleWith(authority.getTypes());
+    return new AssignmentCheckResponseDto(isCompatible)
+      .invalidAssignmentReason(isCompatible ? null : NOT_VALID_FOR_TARGET);
   }
 
   private Optional<Resource> fetchResourceFromRepo(Identifiable identifiable) {

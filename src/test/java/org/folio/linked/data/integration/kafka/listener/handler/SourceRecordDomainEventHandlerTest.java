@@ -106,9 +106,16 @@ class SourceRecordDomainEventHandlerTest {
   @Test
   void shouldTriggerAuthoritySaving_forCorrectMarcAuthorityEvent() {
     // given
+    String marc = """
+        {
+           "fields":[
+              { "010":{ "subfields":[ { "a":"no2023016747" } ] } }
+           ]
+        }
+      """;
     var event = new SourceRecordDomainEvent().id("8")
       .eventType(SOURCE_RECORD_CREATED)
-      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marc)));
     var mapped1 = new Resource().setId(9L).addType(PERSON);
     var mapped2 = new Resource().setId(10L).addType(CONCEPT);
     doReturn(List.of(mapped1, mapped2)).when(marcAuthority2ldMapper)
