@@ -2,7 +2,11 @@ package org.folio.linked.data.service.resource.graph;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
+import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,6 +66,10 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
     if (resource.isNew()) {
       saveOrUpdate(resource);
+      if (isPreferred(resource)) {
+        // remove "replacedBy" outgoing edge if the current resource is a preferred one
+        resource.getOutgoingEdges().removeIf(edge -> edge.getPredicate().getUri().equals(REPLACED_BY.getUri()));
+      }
       saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
       saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     }
@@ -70,13 +78,23 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private void saveOrUpdate(Resource resource) {
     resourceRepo.findById(resource.getId())
-      .ifPresentOrElse(existing -> updateResourceDoc(existing, resource),
+      .ifPresentOrElse(existing -> updateResource(existing, resource),
         () -> resourceRepo.save(resource)
       );
   }
 
-  private void updateResourceDoc(Resource existing, Resource incoming) {
-    resourceRepo.save(existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc())));
+  private void updateResource(Resource existing, Resource incoming) {
+    var resourceToSave = existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc()));
+    resourceToSave.setActive(incoming.isActive());
+    resourceRepo.save(resourceToSave);
+  }
+
+  private boolean isPreferred(Resource resource) {
+    return Optional.ofNullable(resource.getDoc())
+      .map(doc -> doc.get(RESOURCE_PREFERRED.getValue()))
+      .filter(JsonNode::isArray)
+      .filter(preferredNode -> preferredNode.get(0).asText().equals("true"))
+      .isPresent();
   }
 
   private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
