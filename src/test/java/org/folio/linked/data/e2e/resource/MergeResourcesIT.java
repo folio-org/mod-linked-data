@@ -122,6 +122,24 @@ class MergeResourcesIT {
     assertResourceDoc("4", getMergedDoc());
   }
 
+  @Test
+  void should_remove_replacedBy_edge_when_resource_becomes_preferred() {
+    // given
+    var replacedByTargetResource = createResource(2L, Map.of()).setDoc(getInitialDoc());
+    var sourceResource = createResource(1L, Map.of(PredicateDictionary.REPLACED_BY, List.of(replacedByTargetResource)))
+      .setDoc(getInitialDoc());
+    resourceGraphService.saveMergingGraph(sourceResource);
+
+    // when
+    var newSourceResource = createResource(1L, Map.of()).setDoc(getNewDoc());
+    resourceGraphService.saveMergingGraph(newSourceResource);
+
+    // then
+    assertResourceDoc("1", getMergedDoc());
+    var mergedResource = resourceTestService.getResourceById("1", 4);
+    assertThat(mergedResource.getOutgoingEdges()).isEmpty();
+  }
+
   private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {
     var mainResource = resourceTestService.getResourceById(mainId.toString(), 4);
     assertThat(mainResource.getOutgoingEdges()).hasSize(1);
@@ -160,14 +178,14 @@ class MergeResourcesIT {
   }
 
   @SneakyThrows
-  private JsonNode getDocWithPreferredFlag(String docFile, boolean preferred) {
+  private JsonNode getDocWithPreferredFlag(String docFile, boolean isPreferred) {
     var preferredJson = """
     {
       "http://library.link/vocab/resourcePreferred": [
         "$PREFERRED_FLAG"
       ]
     }
-  """.replace("$PREFERRED_FLAG", String.valueOf(preferred));
+  """.replace("$PREFERRED_FLAG", String.valueOf(isPreferred));
     return JsonUtils.merge(getDoc(docFile), objectMapper.readTree(preferredJson));
   }
 

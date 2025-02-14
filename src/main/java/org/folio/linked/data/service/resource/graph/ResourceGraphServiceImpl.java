@@ -65,10 +65,6 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
     if (resource.isNew()) {
       saveOrUpdate(resource);
-      if (isPreferred(resource)) {
-        // remove "replacedBy" outgoing edge if the current resource is a preferred one
-        resource.getOutgoingEdges().removeIf(edge -> edge.getPredicate().getUri().equals(REPLACED_BY.getUri()));
-      }
       saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
       saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
     }
@@ -84,11 +80,13 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private void updateResource(Resource existing, Resource incoming) {
     var resourceToSave = existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc()));
-    if (isPreferred(incoming)) {
-      setPreferred(resourceToSave, true);
-    }
     resourceToSave.setActive(incoming.isActive());
-    resourceRepo.save(resourceToSave);
+    var savedResource = resourceRepo.save(resourceToSave);
+    if (isPreferred(incoming)) {
+      setPreferred(savedResource, true);
+      // remove "replacedBy" outgoing edge of the existing resource if the incoming resource is a preferred one
+      savedResource.getOutgoingEdges().removeIf(edge -> edge.getPredicate().getUri().equals(REPLACED_BY.getUri()));
+    }
   }
 
   private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
