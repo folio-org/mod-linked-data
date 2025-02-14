@@ -21,6 +21,7 @@ import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.resource.ResourceTestService;
+import org.folio.linked.data.util.JsonUtils;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -145,17 +146,29 @@ class MergeResourcesIT {
 
   @SneakyThrows
   private JsonNode getInitialDoc() {
-    return getDoc("samples/json_merge/existing.jsonl");
+    return getDocWithPreferredFlag("samples/json_merge/existing.jsonl", false);
   }
 
   @SneakyThrows
   private JsonNode getNewDoc() {
-    return getDoc("samples/json_merge/incoming.jsonl");
+    return getDocWithPreferredFlag("samples/json_merge/incoming.jsonl", true);
   }
 
   @SneakyThrows
   private JsonNode getMergedDoc() {
-    return getDoc("samples/json_merge/merged.jsonl");
+    return getDocWithPreferredFlag("samples/json_merge/merged.jsonl", true);
+  }
+
+  @SneakyThrows
+  private JsonNode getDocWithPreferredFlag(String docFile, boolean preferred) {
+    var preferredJson = """
+    {
+      "http://library.link/vocab/resourcePreferred": [
+        "$PREFERRED_FLAG"
+      ]
+    }
+  """.replace("$PREFERRED_FLAG", String.valueOf(preferred));
+    return JsonUtils.merge(getDoc(docFile), objectMapper.readTree(preferredJson));
   }
 
   @SneakyThrows

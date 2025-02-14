@@ -13,8 +13,5 @@
   "impossible_key1": "impossible_key1_value2",
   "impossible_key2": {
     "key1": "value1"
-  },
-  "http://library.link/vocab/resourcePreferred": [
-    "true"
-  ]
+  }
 }

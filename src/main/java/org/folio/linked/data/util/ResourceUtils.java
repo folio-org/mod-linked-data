@@ -8,9 +8,13 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -130,5 +134,21 @@ public class ResourceUtils {
       .map(pt -> join(" ", getFirstValue(pt::getMainTitle), getFirstValue(pt::getSubTitle)))
       .map(String::trim)
       .toList();
+  }
+
+  public static void setPreferred(Resource resource, boolean preferred) {
+    if (isNull(resource.getDoc())) {
+      resource.setDoc(JsonNodeFactory.instance.objectNode());
+    }
+    var arrayNode = JsonNodeFactory.instance.arrayNode().add(String.valueOf(preferred));
+    ((ObjectNode) resource.getDoc()).set(RESOURCE_PREFERRED.getValue(), arrayNode);
+  }
+
+  public static boolean isPreferred(Resource resource) {
+    return Optional.ofNullable(resource.getDoc())
+      .map(doc -> doc.get(RESOURCE_PREFERRED.getValue()))
+      .filter(JsonNode::isArray)
+      .filter(preferredNode -> preferredNode.get(0).asText().equals("true"))
+      .isPresent();
   }
 }

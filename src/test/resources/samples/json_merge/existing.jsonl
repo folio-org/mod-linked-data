@@ -10,8 +10,5 @@
   "key3": [
     "key3-value1"
   ],
-  "http://library.link/vocab/resourcePreferred": [
-    "false"
-  ],
   "impossible_key1": "impossible_key1_value1"
 }

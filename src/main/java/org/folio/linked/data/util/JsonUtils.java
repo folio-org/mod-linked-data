@@ -1,7 +1,6 @@
 package org.folio.linked.data.util;
 
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,11 +74,7 @@ public class JsonUtils {
     incoming.fieldNames().forEachRemaining(incomingFieldName -> {
       var existingField = copyOfExisting.get(incomingFieldName);
       var incomingField = incoming.get(incomingFieldName);
-      if (RESOURCE_PREFERRED.getValue().equals(incomingFieldName)) {
-        // "resourcePreferred" is a special field. It should only contain a single value ("ture" or "false")
-        // If the incoming field has a "resourcePreferred" field, it should replace the existing one.
-        copyOfExisting.set(incomingFieldName, incomingField.deepCopy());
-      } else if (isNull(existingField) && nonNull(incomingField)) {
+      if (isNull(existingField) && nonNull(incomingField)) {
         copyOfExisting.set(incomingFieldName, incomingField.deepCopy());
       } else if (allArray(existingField, incomingField)) {
         copyOfExisting.set(incomingFieldName, mergeArrays((ArrayNode) existingField, (ArrayNode) incomingField));

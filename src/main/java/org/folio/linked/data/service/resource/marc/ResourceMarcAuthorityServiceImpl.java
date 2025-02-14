@@ -1,19 +1,17 @@
 package org.folio.linked.data.service.resource.marc;
 
 import static java.lang.Long.parseLong;
-import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NO_LCCN;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.UNSUPPORTED_MARC;
 import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.JsonUtils.writeValueAsString;
 import static org.folio.linked.data.util.LccnUtils.hasLccn;
+import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import feign.FeignException;
 import java.util.Optional;
 import java.util.function.Function;
@@ -190,13 +188,5 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     setPreferred(resource, false);
     resource.setFolioMetadata(null);
     return resource;
-  }
-
-  private void setPreferred(Resource resource, boolean preferred) {
-    if (isNull(resource.getDoc())) {
-      resource.setDoc(objectMapper.createObjectNode());
-    }
-    var arrayNode = objectMapper.createArrayNode().add(String.valueOf(preferred));
-    ((ObjectNode) resource.getDoc()).set(RESOURCE_PREFERRED.getValue(), arrayNode);
   }
 }

@@ -3,10 +3,9 @@ package org.folio.linked.data.service.resource.graph;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
+import static org.folio.linked.data.util.ResourceUtils.isPreferred;
+import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -85,16 +84,11 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private void updateResource(Resource existing, Resource incoming) {
     var resourceToSave = existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc()));
+    if (isPreferred(incoming)) {
+      setPreferred(resourceToSave, true);
+    }
     resourceToSave.setActive(incoming.isActive());
     resourceRepo.save(resourceToSave);
-  }
-
-  private boolean isPreferred(Resource resource) {
-    return Optional.ofNullable(resource.getDoc())
-      .map(doc -> doc.get(RESOURCE_PREFERRED.getValue()))
-      .filter(JsonNode::isArray)
-      .filter(preferredNode -> preferredNode.get(0).asText().equals("true"))
-      .isPresent();
   }
 
   private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
