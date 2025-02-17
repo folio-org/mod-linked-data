@@ -145,10 +145,11 @@ public class ResourceUtils {
   }
 
   public static boolean isPreferred(Resource resource) {
-    return Optional.ofNullable(resource.getDoc())
-      .map(doc -> doc.get(RESOURCE_PREFERRED.getValue()))
+    return ofNullable(resource.getDoc())
+      .flatMap(doc -> JsonUtils.getProperty(doc, RESOURCE_PREFERRED.getValue()))
       .filter(JsonNode::isArray)
-      .filter(preferredNode -> preferredNode.get(0).asText().equals("true"))
+      .map(value -> value.get(0).asText())
+      .filter(value -> value.equals("true"))
       .isPresent();
   }
 }

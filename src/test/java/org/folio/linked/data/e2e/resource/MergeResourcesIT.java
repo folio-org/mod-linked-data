@@ -46,7 +46,7 @@ class MergeResourcesIT {
   private KafkaAdminService kafkaAdminService;
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
     tenantScopedExecutionService.execute(TENANT_ID, () ->
       cleanResourceTables(jdbcTemplate)
     );
@@ -126,18 +126,32 @@ class MergeResourcesIT {
   void should_remove_replacedBy_edge_when_resource_becomes_preferred() {
     // given
     var replacedByTargetResource = createResource(2L, Map.of()).setDoc(getInitialDoc());
-    var sourceResource = createResource(1L, Map.of(PredicateDictionary.REPLACED_BY, List.of(replacedByTargetResource)))
-      .setDoc(getInitialDoc());
+    var lccnResource = new Resource().setId(3L);
+    var sourceResource = createResource(1L,
+      Map.of(
+        PredicateDictionary.REPLACED_BY, List.of(replacedByTargetResource),
+        PredicateDictionary.MAP, List.of(lccnResource)
+      )
+    ).setDoc(getInitialDoc());
     resourceGraphService.saveMergingGraph(sourceResource);
 
     // when
-    var newSourceResource = createResource(1L, Map.of()).setDoc(getNewDoc());
+    var statusResource = new Resource().setId(4L);
+    var newSourceResource = createResource(1L,
+      Map.of(PredicateDictionary.STATUS, List.of(statusResource))
+    ).setDoc(getNewDoc());
     resourceGraphService.saveMergingGraph(newSourceResource);
 
     // then
     assertResourceDoc("1", getMergedDoc());
-    var mergedResource = resourceTestService.getResourceById("1", 4);
-    assertThat(mergedResource.getOutgoingEdges()).isEmpty();
+    var mergedResource = resourceTestService.getResourceById("1", 2);
+    assertThat(mergedResource.getOutgoingEdges()).hasSize(2);
+    assertThat(mergedResource.getOutgoingEdges())
+      .anyMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.MAP.getUri()));
+    assertThat(mergedResource.getOutgoingEdges())
+      .anyMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.STATUS.getUri()));
+    assertThat(mergedResource.getOutgoingEdges())
+      .noneMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.REPLACED_BY.getUri()));
   }
 
   private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {

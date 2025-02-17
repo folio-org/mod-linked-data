@@ -162,4 +162,33 @@ class ResourceUtilsTest {
     assertThat(instance1.getOutgoingEdges()).containsOnly(new ResourceEdge(instance1, work, INSTANTIATES));
     assertThat(instance2.getOutgoingEdges()).containsOnly(new ResourceEdge(instance2, work, INSTANTIATES));
   }
+
+  @Test
+  void test_isPreferred_when_preferred_flag_is_not_set() {
+    // given
+    Resource resource = new Resource();
+
+    // then
+    assertThat(ResourceUtils.isPreferred(resource)).isFalse();
+  }
+
+  @Test
+  void test_isPreferred_when_preferred_flag_is_set_as_true() {
+    // given
+    Resource resource = new Resource();
+    ResourceUtils.setPreferred(resource, true);
+
+    // then
+    assertThat(ResourceUtils.isPreferred(resource)).isTrue();
+  }
+
+  @Test
+  void test_isPreferred_when_preferred_flag_is_set_as_false() {
+    // given
+    Resource resource = new Resource();
+    ResourceUtils.setPreferred(resource, false);
+
+    // then
+    assertThat(ResourceUtils.isPreferred(resource)).isFalse();
+  }
 }
