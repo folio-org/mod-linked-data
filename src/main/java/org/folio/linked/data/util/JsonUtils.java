@@ -11,6 +11,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.SneakyThrows;
@@ -58,6 +59,16 @@ public class JsonUtils {
       log.error("And exception occurred on merging JSON properties, the docs have different structure");
     }
     return existing;
+  }
+
+  public static void setProperty(JsonNode existing, String property, JsonNode value) {
+    if (existing.isObject()) {
+      ((ObjectNode) existing).set(property, value);
+    }
+  }
+
+  public static Optional<JsonNode> getProperty(JsonNode node, String property) {
+    return Optional.ofNullable(node.get(property));
   }
 
   private static JsonNode mergeNodes(JsonNode existing, JsonNode incoming) {

@@ -2,7 +2,11 @@ package org.folio.linked.data.service.resource.graph;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
+import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
+import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -70,13 +74,34 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private void saveOrUpdate(Resource resource) {
     resourceRepo.findById(resource.getId())
-      .ifPresentOrElse(existing -> updateResourceDoc(existing, resource),
+      .ifPresentOrElse(existing -> updateResource(existing, resource),
         () -> resourceRepo.save(resource)
       );
   }
 
-  private void updateResourceDoc(Resource existing, Resource incoming) {
-    resourceRepo.save(existing.setDoc(JsonUtils.merge(existing.getDoc(), incoming.getDoc())));
+  private void updateResource(Resource existingResource, Resource incomingResource) {
+    existingResource.setDoc(mergeDocs(existingResource, incomingResource));
+    existingResource.setActive(incomingResource.isActive());
+    removeReplacedByEdgeIfPreferred(existingResource);
+  }
+
+  private JsonNode mergeDocs(Resource existingResource, Resource incomingResource) {
+    var mergedDoc = JsonUtils.merge(existingResource.getDoc(), incomingResource.getDoc());
+    resetPreferredFlagWithIncomingValue(incomingResource, mergedDoc);
+    return mergedDoc;
+  }
+
+  private static void resetPreferredFlagWithIncomingValue(Resource incomingResource, JsonNode mergedDoc) {
+    var resourcePreferred = RESOURCE_PREFERRED.getValue();
+    ofNullable(incomingResource.getDoc())
+      .flatMap(incomingDoc -> JsonUtils.getProperty(incomingDoc, resourcePreferred))
+      .ifPresent(incomingPreferredFlag -> JsonUtils.setProperty(mergedDoc, resourcePreferred, incomingPreferredFlag));
+  }
+
+  private void removeReplacedByEdgeIfPreferred(Resource resource) {
+    if (isPreferred(resource)) {
+      resource.getOutgoingEdges().removeIf(edge -> edge.getPredicate().getUri().equals(REPLACED_BY.getUri()));
+    }
   }
 
   private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,

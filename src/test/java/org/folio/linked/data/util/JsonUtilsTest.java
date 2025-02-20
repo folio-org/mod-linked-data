@@ -5,10 +5,15 @@ import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.util.JsonUtils.merge;
 import static org.folio.linked.data.util.JsonUtils.writeValueAsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -51,6 +56,59 @@ class JsonUtilsTest {
 
     // then
     assertEquals(expected, actual);
+  }
+
+  @Test
+  void testGetProperty() {
+    // given
+    ObjectNode node = JsonNodeFactory.instance.objectNode();
+    node.put("testProperty", "testValue");
+
+    // when
+    Optional<JsonNode> result = JsonUtils.getProperty(node, "testProperty");
+
+    // then
+    assertTrue(result.isPresent());
+    assertThat(result.get().asText()).isEqualTo("testValue");
+  }
+
+  @Test
+  void testGetProperty_NotFound() {
+    // given
+    ObjectNode node = JsonNodeFactory.instance.objectNode();
+
+    // when
+    Optional<JsonNode> result = JsonUtils.getProperty(node, "nonExistentProperty");
+
+    // then
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  void testSetProperty() {
+    // given
+    ObjectNode node = JsonNodeFactory.instance.objectNode();
+    JsonNode value = JsonNodeFactory.instance.textNode("newValue");
+
+    // when
+    JsonUtils.setProperty(node, "newProperty", value);
+
+    // then
+    assertThat(node.get("newProperty").asText()).isEqualTo("newValue");
+  }
+
+  @Test
+  void testSetProperty_Overwrite() {
+    // given
+    ObjectNode node = JsonNodeFactory.instance.objectNode();
+    node.put("existingProperty", "oldValue");
+    JsonNode value = JsonNodeFactory.instance.textNode("newValue");
+
+    // when
+    JsonUtils.setProperty(node, "existingProperty", value);
+
+    // then
+    assertThat(node.get("existingProperty").asText()).isEqualTo("newValue");
   }
 
   static Stream<Arguments> hasElementByJsonPathArguments() {

@@ -21,6 +21,7 @@ import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.resource.ResourceTestService;
+import org.folio.linked.data.util.JsonUtils;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ class MergeResourcesIT {
   private KafkaAdminService kafkaAdminService;
 
   @BeforeEach
-  public void beforeEach() {
+  void beforeEach() {
     tenantScopedExecutionService.execute(TENANT_ID, () ->
       cleanResourceTables(jdbcTemplate)
     );
@@ -121,6 +122,38 @@ class MergeResourcesIT {
     assertResourceDoc("4", getMergedDoc());
   }
 
+  @Test
+  void should_remove_replacedBy_edge_when_resource_becomes_preferred() {
+    // given
+    var replacedByTargetResource = createResource(2L, Map.of()).setDoc(getInitialDoc());
+    var lccnResource = new Resource().setId(3L);
+    var sourceResource = createResource(1L,
+      Map.of(
+        PredicateDictionary.REPLACED_BY, List.of(replacedByTargetResource),
+        PredicateDictionary.MAP, List.of(lccnResource)
+      )
+    ).setDoc(getInitialDoc());
+    resourceGraphService.saveMergingGraph(sourceResource);
+
+    // when
+    var statusResource = new Resource().setId(4L);
+    var newSourceResource = createResource(1L,
+      Map.of(PredicateDictionary.STATUS, List.of(statusResource))
+    ).setDoc(getNewDoc());
+    resourceGraphService.saveMergingGraph(newSourceResource);
+
+    // then
+    assertResourceDoc("1", getMergedDoc());
+    var mergedResource = resourceTestService.getResourceById("1", 2);
+    assertThat(mergedResource.getOutgoingEdges()).hasSize(2);
+    assertThat(mergedResource.getOutgoingEdges())
+      .anyMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.MAP.getUri()));
+    assertThat(mergedResource.getOutgoingEdges())
+      .anyMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.STATUS.getUri()));
+    assertThat(mergedResource.getOutgoingEdges())
+      .noneMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.REPLACED_BY.getUri()));
+  }
+
   private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {
     var mainResource = resourceTestService.getResourceById(mainId.toString(), 4);
     assertThat(mainResource.getOutgoingEdges()).hasSize(1);
@@ -145,17 +178,29 @@ class MergeResourcesIT {
 
   @SneakyThrows
   private JsonNode getInitialDoc() {
-    return getDoc("samples/json_merge/existing.jsonl");
+    return getDocWithPreferredFlag("samples/json_merge/existing.jsonl", false);
   }
 
   @SneakyThrows
   private JsonNode getNewDoc() {
-    return getDoc("samples/json_merge/incoming.jsonl");
+    return getDocWithPreferredFlag("samples/json_merge/incoming.jsonl", true);
   }
 
   @SneakyThrows
   private JsonNode getMergedDoc() {
-    return getDoc("samples/json_merge/merged.jsonl");
+    return getDocWithPreferredFlag("samples/json_merge/merged.jsonl", true);
+  }
+
+  @SneakyThrows
+  private JsonNode getDocWithPreferredFlag(String docFile, boolean isPreferred) {
+    var preferredJson = """
+    {
+      "http://library.link/vocab/resourcePreferred": [
+        "$PREFERRED_FLAG"
+      ]
+    }
+  """.replace("$PREFERRED_FLAG", String.valueOf(isPreferred));
+    return JsonUtils.merge(getDoc(docFile), objectMapper.readTree(preferredJson));
   }
 
   @SneakyThrows
