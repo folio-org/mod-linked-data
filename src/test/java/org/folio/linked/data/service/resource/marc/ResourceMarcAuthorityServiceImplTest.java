@@ -3,13 +3,15 @@ package org.folio.linked.data.service.resource.marc;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.folio.linked.data.test.TestUtil.randomString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.client.SrsClient;
@@ -152,8 +155,8 @@ class ResourceMarcAuthorityServiceImplTest {
     when(exceptionBuilder.notFoundSourceRecordException(any(), any())).thenReturn(emptyRequestProcessingException());
 
     // then
-    assertThrows(RequestProcessingException.class,
-      () -> resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(agent));
+    assertThatThrownBy(() -> resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(agent))
+      .isInstanceOf(RequestProcessingException.class);
   }
 
   @Test
@@ -179,7 +182,7 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void saveMarcAuthority_shouldUpdateAuthority_ifGivenModelExistsById() {
+  void saveMarcAuthority_shouldUpdateAuthority_ifGivenModelExistsByIdAndSrsId() {
     // given
     var id = randomLong();
     var srsId = UUID.randomUUID().toString();
@@ -189,6 +192,7 @@ class ResourceMarcAuthorityServiceImplTest {
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(true).when(resourceRepo).existsById(id);
+    doReturn(Optional.of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
 
     // when
@@ -216,7 +220,6 @@ class ResourceMarcAuthorityServiceImplTest {
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(false).when(resourceRepo).existsById(id);
-    doReturn(existed).when(resourceRepo).save(existed);
 
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
 
@@ -228,10 +231,36 @@ class ResourceMarcAuthorityServiceImplTest {
     assertThat(existed.isActive()).isFalse();
     assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("false");
     assertThat(existed.getFolioMetadata()).isNull();
-    verify(resourceRepo).save(existed);
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped.getId()));
     assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
     assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REPLACED_BY));
+  }
+
+  @Test
+  void saveMarcAuthority_shouldThrowException_whenSrsIdIsMissing() {
+    // given
+    var model = new org.folio.ld.dictionary.model.Resource();
+    var personWithoutSrsId = new Resource().setId(randomLong()).addTypes(PERSON);
+    doReturn(personWithoutSrsId).when(resourceModelMapper).toEntity(model);
+
+    // then
+    assertThatThrownBy(() -> resourceMarcAuthorityService.saveMarcAuthority(model))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("SRS ID is missing in the resource");
+  }
+
+  @Test
+  void saveMarcAuthority_shouldThrowException_whenResourceIsNotAuthority() {
+    // given
+    var model = new org.folio.ld.dictionary.model.Resource();
+    var work = new Resource().setId(randomLong()).addTypes(WORK);
+    work.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(work).setSrsId(randomString()));
+    doReturn(work).when(resourceModelMapper).toEntity(model);
+
+    // then
+    assertThatThrownBy(() -> resourceMarcAuthorityService.saveMarcAuthority(model))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Resource is not an authority");
   }
 }

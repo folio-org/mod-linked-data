@@ -126,18 +126,44 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   @Override
   public Long saveMarcAuthority(org.folio.ld.dictionary.model.Resource modelResource) {
     var mapped = resourceModelMapper.toEntity(modelResource);
-    if (!mapped.isAuthority()) {
-      var message = "Resource is not an authority";
-      log.error(message);
-      throw new IllegalArgumentException(message);
-    }
-    if (resourceRepo.existsById(modelResource.getId())) {
+    validateResource(mapped);
+    if (sameResourceExistsByIdAndSrsId(mapped)) {
       return updateAuthority(mapped);
     }
-    if (folioMetadataRepository.existsBySrsId(modelResource.getFolioMetadata().getSrsId())) {
+    if (resourceExistsBySrsId(mapped)) {
       return replaceAuthority(mapped);
     }
     return createAuthority(mapped);
+  }
+
+  private static void validateResource(Resource resource) {
+    if (!resource.isAuthority()) {
+      logAndThrow("Resource is not an authority");
+    }
+
+    if (resource.getFolioMetadata() == null || resource.getFolioMetadata().getSrsId() == null) {
+      logAndThrow("SRS ID is missing in the resource");
+    }
+  }
+
+  private static void logAndThrow(String message) {
+    log.error(message);
+    throw new IllegalArgumentException(message);
+  }
+
+  private boolean sameResourceExistsByIdAndSrsId(Resource resource) {
+    var id = resource.getId();
+    var srsId  = resource.getFolioMetadata().getSrsId();
+    return resourceRepo.existsById(id) && getIdBySrsId(srsId).filter(id::equals).isPresent();
+  }
+
+  private Optional<Long> getIdBySrsId(String srsId) {
+    return folioMetadataRepository.findIdBySrsId(srsId)
+      .map(FolioMetadataRepository.IdOnly::getId);
+  }
+
+  private boolean resourceExistsBySrsId(Resource resource) {
+    return folioMetadataRepository.existsBySrsId(resource.getFolioMetadata().getSrsId());
   }
 
   private Long updateAuthority(Resource resource) {
@@ -176,9 +202,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
     var newResource = resourceGraphService.saveMergingGraph(resource);
     var event = resourceEventSupplier.apply(newResource);
-    if (event instanceof ResourceReplacedEvent rre) {
-      resourceRepo.save(rre.previous());
-    }
     applicationEventPublisher.publishEvent(event);
     return newResource.getId();
   }
