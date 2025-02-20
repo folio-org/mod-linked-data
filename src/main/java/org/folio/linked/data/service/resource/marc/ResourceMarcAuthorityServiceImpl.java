@@ -125,15 +125,18 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
 
   @Override
   public Long saveMarcAuthority(org.folio.ld.dictionary.model.Resource modelResource) {
-    var mapped = resourceModelMapper.toEntity(modelResource);
-    validateResource(mapped);
-    if (sameResourceExistsByIdAndSrsId(mapped)) {
-      return updateAuthority(mapped);
+    var resource = resourceModelMapper.toEntity(modelResource);
+    validateResource(resource);
+
+    if (existsBySrsIdAndIdUnchanged(resource)) {
+      return updateAuthority(resource);
     }
-    if (resourceExistsBySrsId(mapped)) {
-      return replaceAuthority(mapped);
+
+    if (existsBySrsId(resource)) {
+      return replaceAuthority(resource);
     }
-    return createAuthority(mapped);
+
+    return createAuthority(resource);
   }
 
   private static void validateResource(Resource resource) {
@@ -151,7 +154,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     throw new IllegalArgumentException(message);
   }
 
-  private boolean sameResourceExistsByIdAndSrsId(Resource resource) {
+  private boolean existsBySrsIdAndIdUnchanged(Resource resource) {
     var id = resource.getId();
     var srsId  = resource.getFolioMetadata().getSrsId();
     return resourceRepo.existsById(id) && getIdBySrsId(srsId).filter(id::equals).isPresent();
@@ -162,7 +165,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       .map(FolioMetadataRepository.IdOnly::getId);
   }
 
-  private boolean resourceExistsBySrsId(Resource resource) {
+  private boolean existsBySrsId(Resource resource) {
     return folioMetadataRepository.existsBySrsId(resource.getFolioMetadata().getSrsId());
   }
 
