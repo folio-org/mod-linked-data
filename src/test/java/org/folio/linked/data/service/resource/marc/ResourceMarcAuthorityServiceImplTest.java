@@ -160,7 +160,7 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void saveMarcAuthority_shouldCreateNewAuthority_ifGivenModelDoesNotExistsByIdAndSrsId() {
+  void saveMarcAuthority_shouldCreateNewAuthority_ifGivenModelDoesNotExistsBySrsId() {
     // given
     var id = randomLong();
     var srsId = UUID.randomUUID().toString();
@@ -169,8 +169,8 @@ class ResourceMarcAuthorityServiceImplTest {
     var mapped = new Resource().setId(id).addTypes(PERSON);
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
-    doReturn(false).when(resourceRepo).existsById(id);
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
+    doReturn(Optional.empty()).when(folioMetadataRepo).findIdBySrsId(srsId);
 
     // when
     var result = resourceMarcAuthorityService.saveMarcAuthority(model);
@@ -191,7 +191,6 @@ class ResourceMarcAuthorityServiceImplTest {
     var mapped = new Resource().setId(id).addTypes(PERSON);
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
-    doReturn(true).when(resourceRepo).existsById(id);
     doReturn(Optional.of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
 
@@ -212,15 +211,14 @@ class ResourceMarcAuthorityServiceImplTest {
     var existed = new Resource().setId(id).setManaged(true);
     existed.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(existed));
     doReturn(of(existed)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
-    doReturn(true).when(folioMetadataRepo).existsBySrsId(srsId);
     var model = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
     var mapped = new Resource().setId(id).addTypes(PERSON);
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
-    doReturn(false).when(resourceRepo).existsById(id);
-
+    var anotherResourceId = Optional.of((FolioMetadataRepository.IdOnly) () -> id - 1);
+    doReturn(anotherResourceId).when(folioMetadataRepo).findIdBySrsId(srsId);
     doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
 
     // when
