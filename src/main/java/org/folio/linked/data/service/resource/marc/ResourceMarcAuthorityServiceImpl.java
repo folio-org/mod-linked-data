@@ -125,19 +125,40 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
 
   @Override
   public Long saveMarcAuthority(org.folio.ld.dictionary.model.Resource modelResource) {
-    var mapped = resourceModelMapper.toEntity(modelResource);
-    if (!mapped.isAuthority()) {
-      var message = "Resource is not an authority";
-      log.error(message);
-      throw new IllegalArgumentException(message);
+    var resource = resourceModelMapper.toEntity(modelResource);
+    validateResource(resource);
+
+    var srsId = resource.getFolioMetadata().getSrsId();
+    return getResourceIdBySrsId(srsId)
+      .map(existingResourceId -> replaceOrUpdate(resource, existingResourceId))
+      .orElseGet(() -> createAuthority(resource));
+  }
+
+  private Long replaceOrUpdate(Resource incomingResource, Long existingResourceId) {
+    if (existingResourceId.equals(incomingResource.getId())) {
+      return updateAuthority(incomingResource);
     }
-    if (resourceRepo.existsById(modelResource.getId())) {
-      return updateAuthority(mapped);
+    return replaceAuthority(incomingResource);
+  }
+
+  private static void validateResource(Resource resource) {
+    if (!resource.isAuthority()) {
+      logAndThrow("Resource is not an authority");
     }
-    if (folioMetadataRepository.existsBySrsId(modelResource.getFolioMetadata().getSrsId())) {
-      return replaceAuthority(mapped);
+
+    if (resource.getFolioMetadata() == null || resource.getFolioMetadata().getSrsId() == null) {
+      logAndThrow("SRS ID is missing in the resource");
     }
-    return createAuthority(mapped);
+  }
+
+  private static void logAndThrow(String message) {
+    log.error(message);
+    throw new IllegalArgumentException(message);
+  }
+
+  private Optional<Long> getResourceIdBySrsId(String srsId) {
+    return folioMetadataRepository.findIdBySrsId(srsId)
+      .map(FolioMetadataRepository.IdOnly::getId);
   }
 
   private Long updateAuthority(Resource resource) {
@@ -174,12 +195,11 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
+    System.out.println("IN SAVE AND PUBLISH EVENT");
     var newResource = resourceGraphService.saveMergingGraph(resource);
     var event = resourceEventSupplier.apply(newResource);
-    if (event instanceof ResourceReplacedEvent rre) {
-      resourceRepo.save(rre.previous());
-    }
     applicationEventPublisher.publishEvent(event);
+    System.out.println("NEW RESOURCE ID: " + newResource.getId());
     return newResource.getId();
   }
 
