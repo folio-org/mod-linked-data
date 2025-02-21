@@ -128,15 +128,17 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     var resource = resourceModelMapper.toEntity(modelResource);
     validateResource(resource);
 
-    if (existsBySrsIdAndIdUnchanged(resource)) {
-      return updateAuthority(resource);
-    }
+    var srsId = resource.getFolioMetadata().getSrsId();
+    return getResourceIdBySrsId(srsId)
+      .map(existingResourceId -> replaceOrUpdate(resource, existingResourceId))
+      .orElseGet(() -> createAuthority(resource));
+  }
 
-    if (existsBySrsId(resource)) {
-      return replaceAuthority(resource);
+  private Long replaceOrUpdate(Resource incomingResource, Long existingResourceId) {
+    if (existingResourceId.equals(incomingResource.getId())) {
+      return updateAuthority(incomingResource);
     }
-
-    return createAuthority(resource);
+    return replaceAuthority(incomingResource);
   }
 
   private static void validateResource(Resource resource) {
@@ -154,19 +156,9 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     throw new IllegalArgumentException(message);
   }
 
-  private boolean existsBySrsIdAndIdUnchanged(Resource resource) {
-    var id = resource.getId();
-    var srsId  = resource.getFolioMetadata().getSrsId();
-    return resourceRepo.existsById(id) && getIdBySrsId(srsId).filter(id::equals).isPresent();
-  }
-
-  private Optional<Long> getIdBySrsId(String srsId) {
+  private Optional<Long> getResourceIdBySrsId(String srsId) {
     return folioMetadataRepository.findIdBySrsId(srsId)
       .map(FolioMetadataRepository.IdOnly::getId);
-  }
-
-  private boolean existsBySrsId(Resource resource) {
-    return folioMetadataRepository.existsBySrsId(resource.getFolioMetadata().getSrsId());
   }
 
   private Long updateAuthority(Resource resource) {
