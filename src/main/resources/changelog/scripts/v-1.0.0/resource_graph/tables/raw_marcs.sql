@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset pkjacob@ebsco.com:3.4_raw_marcs dbms:postgresql
+--changeset pkjacob@ebsco.com:3.6_raw_marcs dbms:postgresql
 create table if not exists raw_marcs (
      resource_hash bigint primary key references resources(resource_hash),
      content jsonb null

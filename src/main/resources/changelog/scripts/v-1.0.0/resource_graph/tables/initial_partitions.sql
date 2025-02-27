@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset dfeeney@ebsco.com:3.10_initial_partitions dbms:postgresql splitStatements:false
+--changeset dfeeney@ebsco.com:3.12_initial_partitions dbms:postgresql splitStatements:false
 
 do $do$
   BEGIN

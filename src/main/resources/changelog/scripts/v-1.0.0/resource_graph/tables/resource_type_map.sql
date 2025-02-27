@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset dfeeney@ebsco.com:3.6_resource_type_map dbms:postgresql
+--changeset dfeeney@ebsco.com:3.8_resource_type_map dbms:postgresql
 create table if not exists resource_type_map (
   resource_hash bigint references resources(resource_hash) on delete cascade,
   type_hash bigint references type_lookup(type_hash),

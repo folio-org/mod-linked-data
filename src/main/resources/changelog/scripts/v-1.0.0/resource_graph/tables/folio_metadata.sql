@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset pkjacob@ebsco.com:3.4_folio_metadata dbms:postgresql
+--changeset pkjacob@ebsco.com:3.5_folio_metadata dbms:postgresql
 create table if not exists folio_metadata (
      resource_hash bigint primary key references resources(resource_hash),
      inventory_id text null unique,
