@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
-  private static final int ID = 1;
+  private static final int ID = 2;
   private final ProfileRepository profileRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 

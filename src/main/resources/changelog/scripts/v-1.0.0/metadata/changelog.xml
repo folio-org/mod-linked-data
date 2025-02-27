@@ -23,10 +23,11 @@
   <include file="functions/detach_graph_table_partitions.sql" relativeToChangelogFile="true"/>
   <include file="functions/add_graph_scale_partitions.sql" relativeToChangelogFile="true"/>
 
-  <include file="data/profiles.xml" relativeToChangelogFile="true"/>
+  <include file="data/profile-full.xml" relativeToChangelogFile="true"/>
   <include file="data/events.xml" relativeToChangelogFile="true"/>
   <include file="data/settings.xml" relativeToChangelogFile="true"/>
   <include file="functions/start_event_v2.sql" relativeToChangelogFile="true"/>
   <include file="data/scaling_exponent.sql" relativeToChangelogFile="true"/>
+  <include file="data/profile-1.0.1.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

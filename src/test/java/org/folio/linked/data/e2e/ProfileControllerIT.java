@@ -74,7 +74,7 @@ class ProfileControllerIT {
       .andExpect(status().isNotFound())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("errors[0].message",
-        equalTo("Profile not found by id: [1] in Linked Data storage")))
+        equalTo("Profile not found by id: [2] in Linked Data storage")))
       .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
       .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
       .andExpect(jsonPath("total_records", equalTo(1)));
