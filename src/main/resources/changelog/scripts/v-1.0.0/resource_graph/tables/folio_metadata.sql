@@ -8,8 +8,8 @@ create table if not exists folio_metadata (
      source resource_source null,
      suppress_from_discovery boolean null,
      staff_suppress boolean null,
-     constraint unique (resource_hash, srs_id),
-     constraint unique (resource_hash, inventory_id)
+     constraint unique_resource_hash_srs_id unique (resource_hash, srs_id),
+     constraint unique_resource_hash_inventory_id unique (resource_hash, inventory_id)
   ) partition by hash(resource_hash);
 
 create index if not exists folio_metadata_inventory_id_idx on folio_metadata(inventory_id);
