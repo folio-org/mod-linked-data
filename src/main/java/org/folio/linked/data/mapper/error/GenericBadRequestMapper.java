@@ -37,9 +37,9 @@ public abstract class GenericBadRequestMapper {
     var exceptionMessage = exception.getMessage();
     return new Error()
       .code(badRequest.code())
-      .message(String.format(badRequest.message(), exceptionName, exceptionMessage))
+      .message(badRequest.message().formatted(exceptionName, exceptionMessage))
       .parameters(List.of(
-        new Parameter().key(badRequest.parameters().get(0)).value(exceptionName),
+        new Parameter().key(badRequest.parameters().getFirst()).value(exceptionName),
         new Parameter().key(badRequest.parameters().get(1)).value(exceptionMessage)
       ));
   }

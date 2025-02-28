@@ -39,9 +39,9 @@ public abstract class EntityNotFoundExceptionMapper {
     var id = parseId(exception.getMessage());
     return new Error()
       .code(notFound.code())
-      .message(String.format(notFound.message(), "Entity", "id", id, LINKED_DATA_STORAGE))
+      .message(notFound.message().formatted("Entity", "id", id, LINKED_DATA_STORAGE))
       .parameters(List.of(
-        new Parameter().key(notFound.parameters().get(0)).value("Entity"),
+        new Parameter().key(notFound.parameters().getFirst()).value("Entity"),
         new Parameter().key(notFound.parameters().get(1)).value("id"),
         new Parameter().key(notFound.parameters().get(2)).value(id),
         new Parameter().key(notFound.parameters().get(3)).value(LINKED_DATA_STORAGE)

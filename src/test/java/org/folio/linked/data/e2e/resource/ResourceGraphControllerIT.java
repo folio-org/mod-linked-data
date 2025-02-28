@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -51,7 +51,7 @@ class ResourceGraphControllerIT {
   private ObjectMapper objectMapper;
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
-  @MockitoBean
+  @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
   @BeforeEach
@@ -82,14 +82,14 @@ class ResourceGraphControllerIT {
     assertNotNull(providerEventGraphDto.getId());
     assertEquals(List.of(PROVIDER_EVENT.getUri()), providerEventGraphDto.getTypes());
     assertEquals("production name",
-      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(NAME.getValue()).get(0));
+      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(NAME.getValue()).getFirst());
     assertEquals("production provider date",
-      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(PROVIDER_DATE.getValue()).get(0));
+      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(PROVIDER_DATE.getValue()).getFirst());
     assertEquals("production simple place",
-      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(SIMPLE_PLACE.getValue()).get(0));
+      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(SIMPLE_PLACE.getValue()).getFirst());
     assertEquals("production name", providerEventGraphDto.getLabel());
     var providerPlaceHash = (providerEventGraphDto.getOutgoingEdges()).getEdges()
-      .get(PROVIDER_PLACE.getUri()).get(0);
+      .get(PROVIDER_PLACE.getUri()).getFirst();
     assertNotNull(providerPlaceHash);
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(date),
       providerEventGraphDto.getIndexDate());
@@ -103,7 +103,7 @@ class ResourceGraphControllerIT {
       .andReturn().getResponse().getContentAsString();
     var providerPlaceGraphDto = objectMapper.readValue(providerPlaceResponse, ResourceGraphDto.class);
     var providerPlaceSourceHash = providerPlaceGraphDto.getIncomingEdges().getEdges()
-      .get(PROVIDER_PLACE.getUri()).get(0);
+      .get(PROVIDER_PLACE.getUri()).getFirst();
     assertEquals(providerPlaceSourceHash, providerEventResource.getId());
     assertEquals(1, providerPlaceGraphDto.getIncomingEdges().getTotalElements()); // 1 incoming edge from ProviderEvent
     assertEquals(0, providerPlaceGraphDto.getOutgoingEdges().getTotalElements()); // No outgoing edges from Place

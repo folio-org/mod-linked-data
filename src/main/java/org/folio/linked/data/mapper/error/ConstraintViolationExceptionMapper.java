@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.error;
 
+import static java.lang.String.valueOf;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import jakarta.validation.ConstraintViolation;
@@ -36,8 +37,8 @@ public abstract class ConstraintViolationExceptionMapper {
   protected List<Parameter> parameters(ConstraintViolation<?> constraintViolation) {
     var validation = errorResponseConfig.getValidation();
     return List.of(
-      new Parameter().key(validation.parameters().get(0)).value(String.valueOf(constraintViolation.getPropertyPath())),
-      new Parameter().key(validation.parameters().get(1)).value(String.valueOf(constraintViolation.getInvalidValue()))
+      new Parameter().key(validation.parameters().getFirst()).value(valueOf(constraintViolation.getPropertyPath())),
+      new Parameter().key(validation.parameters().get(1)).value(valueOf(constraintViolation.getInvalidValue()))
     );
   }
 

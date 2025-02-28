@@ -148,7 +148,7 @@ class WorkSearchMessageMapperTest {
       .isInstanceOf(LinkedDataWork.class);
     var linkedDataWork = (LinkedDataWork) result.getNew();
     validateWork(linkedDataWork, work, wrongContributor, 2);
-    validateInstance(linkedDataWork.getInstances().get(0), instance1);
+    validateInstance(linkedDataWork.getInstances().getFirst(), instance1);
     validateInstance(linkedDataWork.getInstances().get(1), instance2);
   }
 
@@ -183,14 +183,14 @@ class WorkSearchMessageMapperTest {
 
   private void validateWork(LinkedDataWork result, Resource work, Resource wrongContributor, int instancesExpected) {
     assertThat(result.getId()).isEqualTo(work.getId().toString());
-    assertTitle(result.getTitles().get(0), "Primary: mainTitle", MAIN);
+    assertTitle(result.getTitles().getFirst(), "Primary: mainTitle", MAIN);
     assertTitle(result.getTitles().get(1), "Primary: subTitle", SUB);
     assertTitle(result.getTitles().get(2), "Parallel: mainTitle", MAIN_PARALLEL);
     assertTitle(result.getTitles().get(3), "Parallel: subTitle", SUB_PARALLEL);
     assertTitle(result.getTitles().get(4), "Variant: mainTitle", MAIN_VARIANT);
     assertTitle(result.getTitles().get(5), "Variant: subTitle", SUB_VARIANT);
     assertThat(result.getContributors()).hasSize(11);
-    assertContributor(result.getContributors().get(0), "name-CREATOR-PERSON", PERSON, true);
+    assertContributor(result.getContributors().getFirst(), "name-CREATOR-PERSON", PERSON, true);
     assertContributor(result.getContributors().get(1), "name-CREATOR-MEETING", MEETING, true);
     assertContributor(result.getContributors().get(2), "name-CREATOR-ORGANIZATION", ORGANIZATION, true);
     assertContributor(result.getContributors().get(3), "name-CREATOR-FAMILY", FAMILY, true);
@@ -203,28 +203,28 @@ class WorkSearchMessageMapperTest {
     assertContributor(result.getContributors().get(10), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
       null, false);
     assertThat(result.getLanguages()).hasSize(1);
-    assertThat(result.getLanguages().get(0)).isEqualTo("eng");
+    assertThat(result.getLanguages().getFirst()).isEqualTo("eng");
     assertThat(result.getClassifications()).hasSize(2);
-    assertThat(result.getClassifications().get(0).getNumber()).isEqualTo("lc code");
-    assertThat(result.getClassifications().get(0).getSource()).isEqualTo("lc");
+    assertThat(result.getClassifications().getFirst().getNumber()).isEqualTo("lc code");
+    assertThat(result.getClassifications().getFirst().getSource()).isEqualTo("lc");
     assertThat(result.getClassifications().get(1).getNumber()).isEqualTo("ddc code");
     assertThat(result.getClassifications().get(1).getSource()).isEqualTo("ddc");
     assertThat(result.getSubjects()).hasSize(2);
-    assertThat(result.getSubjects().get(0)).isEqualTo("subject 1");
+    assertThat(result.getSubjects().getFirst()).isEqualTo("subject 1");
     assertThat(result.getSubjects().get(1)).isEqualTo("subject 2");
     assertThat(result.getInstances()).hasSize(instancesExpected);
   }
 
   private void validateInstance(LinkedDataInstanceOnly instanceIndex, Resource instance) {
     assertThat(instanceIndex.getId()).isEqualTo(instance.getId().toString());
-    assertTitle(instanceIndex.getTitles().get(0), "Primary: mainTitle" + instance.getId(), MAIN);
+    assertTitle(instanceIndex.getTitles().getFirst(), "Primary: mainTitle" + instance.getId(), MAIN);
     assertTitle(instanceIndex.getTitles().get(1), "Primary: subTitle", SUB);
     assertTitle(instanceIndex.getTitles().get(2), "Parallel: mainTitle", MAIN_PARALLEL);
     assertTitle(instanceIndex.getTitles().get(3), "Parallel: subTitle", SUB_PARALLEL);
     assertTitle(instanceIndex.getTitles().get(4), "Variant: mainTitle", MAIN_VARIANT);
     assertTitle(instanceIndex.getTitles().get(5), "Variant: subTitle", SUB_VARIANT);
     assertThat(instanceIndex.getIdentifiers()).hasSize(6);
-    assertId(instanceIndex.getIdentifiers().get(0), "lccn value", LCCN);
+    assertId(instanceIndex.getIdentifiers().getFirst(), "lccn value", LCCN);
     assertId(instanceIndex.getIdentifiers().get(1), "isbn value", ISBN);
     assertId(instanceIndex.getIdentifiers().get(2), "ean value", EAN);
     assertId(instanceIndex.getIdentifiers().get(3), "localId value", LOCAL_ID);
@@ -232,10 +232,10 @@ class WorkSearchMessageMapperTest {
     assertId(instanceIndex.getIdentifiers().get(5), "wrongId", null);
     assertThat(instanceIndex.getContributors()).isEmpty();
     assertThat(instanceIndex.getPublications()).hasSize(1);
-    assertThat(instanceIndex.getPublications().get(0).getDate()).isNull();
-    assertThat(instanceIndex.getPublications().get(0).getName()).isEqualTo("publication name");
+    assertThat(instanceIndex.getPublications().getFirst().getDate()).isNull();
+    assertThat(instanceIndex.getPublications().getFirst().getName()).isEqualTo("publication name");
     assertThat(instanceIndex.getEditionStatements()).hasSize(1);
-    assertThat(instanceIndex.getEditionStatements().get(0))
+    assertThat(instanceIndex.getEditionStatements().getFirst())
       .isEqualTo(instance.getDoc().get(EDITION.getValue()).get(0).asText());
   }
 

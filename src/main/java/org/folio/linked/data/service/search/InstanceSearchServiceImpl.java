@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.search;
 
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.joining;
 
@@ -31,7 +30,7 @@ public class InstanceSearchServiceImpl implements InstanceSearchService {
     if (isNull(instanceId)) {
       return searchByLccn(lccn);
     }
-    return search(format("%s and %s", getLccnQuery(lccn), format(ID_NOT_EQUALS, instanceId)));
+    return search("%s and %s".formatted(getLccnQuery(lccn), ID_NOT_EQUALS.formatted(instanceId)));
   }
 
   private SearchResponseTotalOnly search(String query) {
@@ -41,8 +40,8 @@ public class InstanceSearchServiceImpl implements InstanceSearchService {
   private String getLccnQuery(Collection<String> lccnCol) {
     var orLccnQuery = lccnCol.stream()
       .filter(Objects::nonNull)
-      .map(lccn -> format(LCCN_EQUALS, lccn))
+      .map(LCCN_EQUALS::formatted)
       .collect(joining(" or "));
-    return format("(%s) and (%s)", orLccnQuery, EXCLUDE_SUPPRESSED);
+    return "(%s) and (%s)".formatted(orLccnQuery, EXCLUDE_SUPPRESSED);
   }
 }

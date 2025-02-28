@@ -52,7 +52,7 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
     resource.setDoc(getDoc(classification));
     coreMapper.addOutgoingEdges(resource, Classification.class,
       classification.getAssigningSourceReference(), ASSIGNING_SOURCE);
-    if (LC.equals(classification.getSource().get(0))) {
+    if (LC.equals(classification.getSource().getFirst())) {
       coreMapper.addOutgoingEdges(resource, Classification.class,
         classification.getStatus(), STATUS);
     }
@@ -65,7 +65,7 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
     putProperty(map, CODE, dto.getCode());
     putProperty(map, SOURCE, dto.getSource());
     putProperty(map, ITEM_NUMBER, dto.getItemNumber());
-    if (DDC.equals(dto.getSource().get(0))) {
+    if (DDC.equals(dto.getSource().getFirst())) {
       putProperty(map, EDITION_NUMBER, dto.getEditionNumber());
       putProperty(map, EDITION, dto.getEdition());
     }

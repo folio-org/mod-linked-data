@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 abstract class ResourceTypeDictionaryITBase {
@@ -28,13 +28,13 @@ abstract class ResourceTypeDictionaryITBase {
   private String schema;
   @Autowired
   private JdbcTemplate jdbcTemplate;
-  @MockitoBean
+  @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
   @Test
   void countTypes_shouldSameAsLibTypes() {
     //given
-    var table = String.format("%s.%s", schema, TABLE_NAME);
+    var table = "%s.%s".formatted(schema, TABLE_NAME);
 
     // when
     var countDb = JdbcTestUtils.countRowsInTable(jdbcTemplate, table);
@@ -50,7 +50,7 @@ abstract class ResourceTypeDictionaryITBase {
   void valueInLib_shouldBeTheSameAsInDb(ResourceTypeDictionary type) {
     //given
     var uri = type.getUri();
-    var sql = String.format("SELECT type_hash, type_uri FROM %s.%s WHERE type_uri = ?", schema, TABLE_NAME);
+    var sql = "SELECT type_hash, type_uri FROM %s.%s WHERE type_uri = ?".formatted(schema, TABLE_NAME);
 
     // when
     var dbType = jdbcTemplate.queryForObject(
@@ -66,7 +66,7 @@ abstract class ResourceTypeDictionaryITBase {
   @TestFactory
   List<DynamicTest> valueInDb_shouldBeInLib() {
     //given
-    var sql = String.format("SELECT type_hash, type_uri FROM %s.%s", schema, TABLE_NAME);
+    var sql = "SELECT type_hash, type_uri FROM %s.%s".formatted(schema, TABLE_NAME);
     var testData = jdbcTemplate.query(sql, new ResourceTypeEntityMapper());
 
     return testData.stream()
