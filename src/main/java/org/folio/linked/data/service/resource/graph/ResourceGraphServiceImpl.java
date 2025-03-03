@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.resource.graph;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
@@ -82,7 +83,20 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   private void updateResource(Resource existingResource, Resource incomingResource) {
     existingResource.setDoc(mergeDocs(existingResource, incomingResource));
     existingResource.setActive(incomingResource.isActive());
+    updateFolioMetadataIfAbsent(existingResource, incomingResource);
     removeReplacedByEdgeIfPreferred(existingResource);
+  }
+
+  private void updateFolioMetadataIfAbsent(Resource existingResource, Resource incomingResource) {
+    if (nonNull(existingResource.getFolioMetadata())) {
+      return;
+    }
+    ofNullable(incomingResource.getFolioMetadata())
+      .ifPresent(folioMetadata -> existingResource.setFolioMetadata(
+        folioMetadata.toBuilder()
+          .resource(existingResource)
+          .build()
+      ));
   }
 
   private JsonNode mergeDocs(Resource existingResource, Resource incomingResource) {
