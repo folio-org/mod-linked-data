@@ -16,6 +16,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.FAMILY;
+import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.JURISDICTION;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.MEETING;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.ORGANIZATION;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.PERSON;
@@ -90,7 +91,8 @@ class WorkSearchMessageMapperTest {
       ResourceTypeDictionary.PERSON.getUri(),
       ResourceTypeDictionary.MEETING.getUri(),
       ResourceTypeDictionary.FAMILY.getUri(),
-      ResourceTypeDictionary.ORGANIZATION.getUri()
+      ResourceTypeDictionary.ORGANIZATION.getUri(),
+      ResourceTypeDictionary.JURISDICTION.getUri()
     ).forEach(t ->
       lenient().when(singleResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
     );
@@ -187,16 +189,18 @@ class WorkSearchMessageMapperTest {
     assertTitle(result.getTitles().get(3), "Parallel: subTitle", SUB_PARALLEL);
     assertTitle(result.getTitles().get(4), "Variant: mainTitle", MAIN_VARIANT);
     assertTitle(result.getTitles().get(5), "Variant: subTitle", SUB_VARIANT);
-    assertThat(result.getContributors()).hasSize(9);
+    assertThat(result.getContributors()).hasSize(11);
     assertContributor(result.getContributors().get(0), "name-CREATOR-PERSON", PERSON, true);
     assertContributor(result.getContributors().get(1), "name-CREATOR-MEETING", MEETING, true);
     assertContributor(result.getContributors().get(2), "name-CREATOR-ORGANIZATION", ORGANIZATION, true);
     assertContributor(result.getContributors().get(3), "name-CREATOR-FAMILY", FAMILY, true);
-    assertContributor(result.getContributors().get(4), "name-CONTRIBUTOR-PERSON", PERSON, false);
-    assertContributor(result.getContributors().get(5), "name-CONTRIBUTOR-MEETING", MEETING, false);
-    assertContributor(result.getContributors().get(6), "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION, false);
-    assertContributor(result.getContributors().get(7), "name-CONTRIBUTOR-FAMILY", FAMILY, false);
-    assertContributor(result.getContributors().get(8), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
+    assertContributor(result.getContributors().get(4), "name-CREATOR-JURISDICTION", JURISDICTION, true);
+    assertContributor(result.getContributors().get(5), "name-CONTRIBUTOR-PERSON", PERSON, false);
+    assertContributor(result.getContributors().get(6), "name-CONTRIBUTOR-MEETING", MEETING, false);
+    assertContributor(result.getContributors().get(7), "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION, false);
+    assertContributor(result.getContributors().get(8), "name-CONTRIBUTOR-FAMILY", FAMILY, false);
+    assertContributor(result.getContributors().get(9), "name-CONTRIBUTOR-JURISDICTION", JURISDICTION, false);
+    assertContributor(result.getContributors().get(10), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
       null, false);
     assertThat(result.getLanguages()).hasSize(1);
     assertThat(result.getLanguages().get(0)).isEqualTo("eng");

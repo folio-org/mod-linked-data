@@ -103,6 +103,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
@@ -392,6 +393,16 @@ public class MonographTestUtil {
     ).setLabel("name-CREATOR-FAMILY")
       .setId(8296435493593701280L);
 
+    var creatorJurisdiction = createResource(
+      Map.of(
+        NAME, List.of("name-CREATOR-JURISDICTION"),
+        LCNAF_ID, List.of("2002801801-JURISDICTION")
+      ),
+      Set.of(JURISDICTION),
+      emptyMap()
+    ).setLabel("name-CREATOR-JURISDICTION")
+      .setId(5487607357549327916L);
+
     var contributorPerson = createResource(
       Map.of(
         NAME, List.of("name-CONTRIBUTOR-PERSON"),
@@ -432,6 +443,16 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("name-CONTRIBUTOR-FAMILY")
       .setId(3094995075578514480L);
+
+    var contributorJurisdiction = createResource(
+      Map.of(
+        NAME, List.of("name-CONTRIBUTOR-JURISDICTION"),
+        LCNAF_ID, List.of("2002801801-JURISDICTION")
+      ),
+      Set.of(JURISDICTION),
+      emptyMap()
+    ).setLabel("name-CONTRIBUTOR-JURISDICTION")
+      .setId(2250127472356730540L);
 
     var subject1 = createResource(
       Map.of(
@@ -526,10 +547,11 @@ public class MonographTestUtil {
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
-    pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily));
+    pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily,
+      creatorJurisdiction));
     pred2OutgoingResources.put(AUTHOR, List.of(creatorPerson));
     pred2OutgoingResources.put(CONTRIBUTOR, List.of(contributorPerson, contributorMeeting, contributorOrganization,
-      contributorFamily));
+      contributorFamily, contributorJurisdiction));
     pred2OutgoingResources.put(EDITOR, List.of(contributorOrganization));
     pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
     pred2OutgoingResources.put(CONTENT, List.of(createContent()));
