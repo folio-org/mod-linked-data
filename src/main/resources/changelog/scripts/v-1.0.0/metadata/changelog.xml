@@ -28,5 +28,6 @@
   <include file="data/settings.xml" relativeToChangelogFile="true"/>
   <include file="functions/start_event_v2.sql" relativeToChangelogFile="true"/>
   <include file="data/scaling_exponent.sql" relativeToChangelogFile="true"/>
+  <include file="data/profile-1.0.1.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

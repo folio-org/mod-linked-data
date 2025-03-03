@@ -4,8 +4,9 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd">
 
-  <changeSet author="Askhat_Abishev@epam.com" id="02.20_insert_profiles_table">
-    <loadData file="changelog/data/profile-full.csv" tableName="profiles"/>
+  <!-- Profile that just contains the properties supported by Sunflower (1.0.1) release -->
+  <changeSet author="pkjacob@ebsco.com" id="02.25_insert_profile-1.0.1">
+    <loadData file="changelog/data/profile-1.0.1.csv" tableName="profiles"/>
   </changeSet>
 
 </databaseChangeLog>
