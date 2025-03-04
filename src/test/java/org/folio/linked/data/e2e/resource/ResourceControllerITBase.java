@@ -102,6 +102,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
@@ -618,8 +619,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(61);
-    assertThat(resourceTestService.countEdges()).isEqualTo(63);
+    assertThat(resourceTestService.countResources()).isEqualTo(63);
+    assertThat(resourceTestService.countEdges()).isEqualTo(65);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -630,9 +631,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(60);
+    assertThat(resourceTestService.countResources()).isEqualTo(62);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(45);
+    assertThat(resourceTestService.countEdges()).isEqualTo(47);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -642,8 +643,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(61);
-    assertThat(resourceTestService.countEdges()).isEqualTo(63);
+    assertThat(resourceTestService.countResources()).isEqualTo(63);
+    assertThat(resourceTestService.countEdges()).isEqualTo(65);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -654,7 +655,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(60);
+    assertThat(resourceTestService.countResources()).isEqualTo(62);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(32);
     checkSearchIndexMessage(existed.getId(), DELETE);
@@ -833,18 +834,19 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
       .andExpect(jsonPath(toDissertationGrantingInstitutionLabels(workBase),
         containsInAnyOrder("granting institution 1", "granting institution 2")))
       .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("-603031702996824854", "4359679744172518150",
-        "-466724080127664871", "8296435493593701280")))
+        "-466724080127664871", "8296435493593701280", "5487607357549327916")))
       .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-CREATOR-MEETING",
-        "name-CREATOR-PERSON", "name-CREATOR-ORGANIZATION", "name-CREATOR-FAMILY")))
+        "name-CREATOR-PERSON", "name-CREATOR-ORGANIZATION", "name-CREATOR-FAMILY", "name-CREATOR-JURISDICTION")))
       .andExpect(jsonPath(toWorkCreatorType(workBase), containsInAnyOrder(MEETING.getUri(), PERSON.getUri(),
-        ORGANIZATION.getUri(), FAMILY.getUri())))
+        ORGANIZATION.getUri(), FAMILY.getUri(), JURISDICTION.getUri())))
       .andExpect(jsonPath(toWorkCreatorRoles(workBase), equalTo(List.of(List.of(AUTHOR.getUri())))))
       .andExpect(jsonPath(toWorkContributorId(workBase), containsInAnyOrder("-6054989039809126250",
-        "-7286109411186266518", "-4246830624125472784", "3094995075578514480")))
+        "-7286109411186266518", "-4246830624125472784", "3094995075578514480", "2250127472356730540")))
       .andExpect(jsonPath(toWorkContributorLabel(workBase), containsInAnyOrder("name-CONTRIBUTOR-ORGANIZATION",
-        "name-CONTRIBUTOR-FAMILY", "name-CONTRIBUTOR-PERSON", "name-CONTRIBUTOR-MEETING")))
+        "name-CONTRIBUTOR-FAMILY", "name-CONTRIBUTOR-PERSON", "name-CONTRIBUTOR-MEETING",
+        "name-CONTRIBUTOR-JURISDICTION")))
       .andExpect(jsonPath(toWorkContributorType(workBase), containsInAnyOrder(ORGANIZATION.getUri(), FAMILY.getUri(),
-        PERSON.getUri(), MEETING.getUri())))
+        PERSON.getUri(), MEETING.getUri(), JURISDICTION.getUri())))
       .andExpect(jsonPath(toWorkContributorRoles(workBase), equalTo(List.of(List.of(EDITOR.getUri(),
         ASSIGNEE.getUri())))))
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
@@ -879,8 +881,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
 
   private void validateAuthorities(ResultActions resultActions, String workBase) throws Exception {
     resultActions
-      .andExpect(jsonPath(toWorkCreatorIsPreferred(workBase), containsInAnyOrder(true, false, false, false)))
-      .andExpect(jsonPath(toWorkContributorIsPreferred(workBase), containsInAnyOrder(true, false, false, false)))
+      .andExpect(jsonPath(toWorkCreatorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
+      .andExpect(jsonPath(toWorkContributorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
       .andExpect(jsonPath(toWorkSubjectIsPreferred(workBase), containsInAnyOrder(true, false)))
       .andExpect(jsonPath(toWorkGenreIsPreferred(workBase), containsInAnyOrder(true, false)));
   }
@@ -1296,6 +1298,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateResourceEdge(authorEdge, work, authorEdge.getTarget(), AUTHOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR);
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR);
+    validateWorkContributor(outgoingEdgeIterator.next(), work, JURISDICTION, CREATOR);
+    validateWorkContributor(outgoingEdgeIterator.next(), work, JURISDICTION, CONTRIBUTOR);
     validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
@@ -1529,6 +1533,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var creatorFamily = saveResource(8296435493593701280L, "name-CREATOR-FAMILY", FAMILY,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-FAMILY\"], "
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
+    var creatorJurisdiction = saveResource(5487607357549327916L, "name-CREATOR-JURISDICTION", JURISDICTION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-JURISDICTION\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}");
     var contributorMeeting = saveResource(-7286109411186266518L, "name-CONTRIBUTOR-MEETING", MEETING,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-MEETING\"], "
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
@@ -1541,6 +1548,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var contributorFamily = saveResource(3094995075578514480L, "name-CONTRIBUTOR-FAMILY", FAMILY,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-FAMILY\"], "
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
+    var contributorJurisdiction = saveResource(2250127472356730540L, "name-CONTRIBUTOR-JURISDICTION", JURISDICTION,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-JURISDICTION\"], "
+        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}");
     var assigningAgency = saveResource(4932783899755316479L, "assigning agency", ORGANIZATION,
       "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}");
     var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", ORGANIZATION,
@@ -1553,8 +1563,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
       List.of(subject1, subject2),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
-      List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily,
-        contributorPerson, contributorMeeting, contributorOrganization, contributorFamily),
+      List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily, creatorJurisdiction,
+        contributorPerson, contributorMeeting, contributorOrganization, contributorFamily, contributorJurisdiction),
       List.of(assigningAgency, libraryOfCongress),
       List.of(grantingInstitution1, grantingInstitution2)
     );

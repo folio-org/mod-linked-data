@@ -246,6 +246,11 @@
           "id": "8296435493593701280",
           "label": "name-CREATOR-FAMILY",
           "type": "http://bibfra.me/vocab/lite/Family"
+        },
+        {
+          "id": "5487607357549327916",
+          "label": "name-CREATOR-JURISDICTION",
+          "type": "http://bibfra.me/vocab/lite/Jurisdiction"
         }
       ],
       "_contributorReference": [
@@ -272,6 +277,11 @@
           "id": "-7286109411186266518",
           "label": "name-CONTRIBUTOR-MEETING",
           "type": "http://bibfra.me/vocab/lite/Meeting"
+        },
+        {
+          "id": "2250127472356730540",
+          "label": "name-CONTRIBUTOR-JURISDICTION",
+          "type": "http://bibfra.me/vocab/lite/Jurisdiction"
         }
       ],
       "http://bibfra.me/vocab/lite/dateStart": [
