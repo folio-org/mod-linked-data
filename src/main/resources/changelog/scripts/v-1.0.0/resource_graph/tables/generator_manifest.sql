@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset dfeeney@ebsco.com:3.8_generator_manifest dbms:postgresql
+--changeset dfeeney@ebsco.com:3.10_generator_manifest dbms:postgresql
 
 create table if not exists generator_manifest (
   input_hash bigint not null,

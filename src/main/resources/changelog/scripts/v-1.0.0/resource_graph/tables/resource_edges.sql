@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset dfeeney@ebsco.com:3.5_resource_edges dbms:postgresql
+--changeset dfeeney@ebsco.com:3.7_resource_edges dbms:postgresql
 create table if not exists resource_edges (
   source_hash bigint not null,
   target_hash bigint not null,

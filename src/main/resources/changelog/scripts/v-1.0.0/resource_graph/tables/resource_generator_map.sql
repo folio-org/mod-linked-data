@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset dfeeney@ebsco.com:3.9_resource_generator_map dbms:postgresql
+--changeset dfeeney@ebsco.com:3.11_resource_generator_map dbms:postgresql
 
 create table if not exists resource_generator_map (
   generator_hash bigint not null,
