@@ -50,6 +50,10 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     log.info("Received request to create new resource - {}", toLogString(resourceDto));
     var mapped = resourceDtoMapper.toEntity(resourceDto);
+    if (resourceRepo.existsById(mapped.getId())) {
+      log.error("The same resource ID {} already exists", mapped.getId());
+      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(mapped.getId()));
+    }
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = resourceGraphService.saveMergingGraph(mapped);

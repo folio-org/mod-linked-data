@@ -194,7 +194,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private Long save(org.folio.ld.dictionary.model.Resource modelResource) {
     var id = modelResource.getId();
     if (resourceRepo.existsById(id)) {
-      log.error("Another resource with ID: {} already exists in the graph", id);
+      log.error("The same resource ID {} already exists", id);
       throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(id));
     }
 
