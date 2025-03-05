@@ -141,6 +141,28 @@ class ResourceServiceImplTest {
   }
 
   @Test
+  void create_shouldNotPersistResourceAndThrowAlreadyExists_forExistedResource() {
+    // given
+    var request = new ResourceRequestDto();
+    var mapped = new Resource().setId(12345L);
+    when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
+    when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
+    var expectedException = emptyRequestProcessingException();
+    when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
+      .thenReturn(expectedException);
+
+    // when
+    var thrown = assertThrows(
+      RequestProcessingException.class,
+      () -> resourceService.createResource(request)
+    );
+
+    // then
+    assertThat(thrown).isEqualTo(expectedException);
+    verify(resourceGraphService, never()).saveMergingGraph(any());
+  }
+
+  @Test
   void getResourceById_shouldReturnExistedEntity() {
     // given
     var id = randomLong();
