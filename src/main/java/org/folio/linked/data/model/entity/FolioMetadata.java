@@ -9,6 +9,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,8 @@ import org.hibernate.type.SqlTypes;
 @Accessors(chain = true)
 @Table(name = "folio_metadata")
 @EqualsAndHashCode(of = "id")
+@Builder(toBuilder = true)
+@AllArgsConstructor
 public class FolioMetadata {
 
   @Id

@@ -11,6 +11,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ class ResourceMarcAuthorityServiceIT {
   private ObjectMapper objectMapper;
   @Autowired
   private ResourceTestService resourceTestService;
+  @Autowired
+  private FolioMetadataRepository folioMetadataRepository;
 
   @Test
   @SneakyThrows
@@ -38,6 +41,7 @@ class ResourceMarcAuthorityServiceIT {
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
 
     resourceMarcAuthorityService.saveMarcAuthority(v1Resource);
+    validateResourceIdBySrsId(srsId, v1Resource.getId());
 
     // save version 2 of the authority
     var v2Resource = new Resource()
@@ -51,6 +55,7 @@ class ResourceMarcAuthorityServiceIT {
 
     var v1ResourceFromDb = resourceTestService.getResourceById("1", 1);
     var v2ResourceFromDb = resourceTestService.getResourceById("2", 1);
+    validateResourceIdBySrsId(srsId, v2Resource.getId());
     assertResourceIsPreferred(v2ResourceFromDb);
     assertResourceIsNotPreferred(v1ResourceFromDb);
     assertReplacedBy(v1ResourceFromDb, v2ResourceFromDb);
@@ -60,9 +65,15 @@ class ResourceMarcAuthorityServiceIT {
 
     v1ResourceFromDb = resourceTestService.getResourceById("1", 1);
     v2ResourceFromDb = resourceTestService.getResourceById("2", 1);
+    validateResourceIdBySrsId(srsId, v1Resource.getId());
     assertResourceIsPreferred(v1ResourceFromDb);
     assertResourceIsNotPreferred(v2ResourceFromDb);
     assertReplacedBy(v2ResourceFromDb, v1ResourceFromDb);
+  }
+
+  private void validateResourceIdBySrsId(String srsId, Long expectedResourceId) {
+    var resourceIdOptional = folioMetadataRepository.findIdBySrsId(srsId).map(FolioMetadataRepository.IdOnly::getId);
+    assertThat(resourceIdOptional).contains(expectedResourceId);
   }
 
   private void assertResourceIsPreferred(org.folio.linked.data.model.entity.Resource resource) {
