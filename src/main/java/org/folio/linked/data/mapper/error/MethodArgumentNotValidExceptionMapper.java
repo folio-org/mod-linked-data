@@ -39,7 +39,7 @@ public abstract class MethodArgumentNotValidExceptionMapper {
     var validation = errorResponseConfig.getValidation();
     if (error instanceof FieldError fieldError) {
       return List.of(
-        new Parameter().key(validation.parameters().get(0)).value(fieldError.getField()),
+        new Parameter().key(validation.parameters().getFirst()).value(fieldError.getField()),
         new Parameter().key(validation.parameters().get(1)).value(String.valueOf(fieldError.getRejectedValue()))
       );
     } else {

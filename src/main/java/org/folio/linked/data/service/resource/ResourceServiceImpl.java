@@ -133,7 +133,7 @@ public class ResourceServiceImpl implements ResourceService {
       type = "Work";
       titles = getPrimaryMainTitles(workField.getWork().getTitle());
     }
-    return String.format("Type: %s, Title: %s", type, titles);
+    return "Type: %s, Title: %s".formatted(type, titles);
   }
 
 }

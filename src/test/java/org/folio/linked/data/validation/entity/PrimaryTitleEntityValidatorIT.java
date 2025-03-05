@@ -13,7 +13,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.TransactionSystemException;
 
 @IntegrationTest
@@ -21,7 +21,7 @@ class PrimaryTitleEntityValidatorIT {
 
   @Autowired
   private ResourceRepository resourceRepository;
-  @MockitoBean
+  @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
   @Test

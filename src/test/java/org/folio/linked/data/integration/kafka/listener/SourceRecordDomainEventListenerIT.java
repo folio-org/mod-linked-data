@@ -23,7 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
 class SourceRecordDomainEventListenerIT {
@@ -31,7 +31,7 @@ class SourceRecordDomainEventListenerIT {
   @Autowired
   private KafkaTemplate<String, String> eventKafkaTemplate;
 
-  @MockitoBean
+  @MockitoSpyBean
   private SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
 
   @BeforeAll

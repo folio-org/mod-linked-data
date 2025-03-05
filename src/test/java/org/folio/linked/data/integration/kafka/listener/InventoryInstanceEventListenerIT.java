@@ -18,7 +18,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
 class InventoryInstanceEventListenerIT {
@@ -29,7 +29,7 @@ class InventoryInstanceEventListenerIT {
   @Autowired
   private ObjectMapper objectMapper;
 
-  @MockitoBean
+  @MockitoSpyBean
   private InventoryInstanceEventHandler inventoryInstanceDomainEventHandler;
 
   @BeforeAll

@@ -73,19 +73,19 @@ class ConstraintViolationExceptionMapperTest {
     assertThat(result.getBody()).isNotNull();
     assertThat(result.getBody().getTotalRecords()).isEqualTo(2);
     assertThat(result.getBody().getErrors()).hasSize(2);
-    var error1 = result.getBody().getErrors().get(0);
+    var error1 = result.getBody().getErrors().getFirst();
     assertThat(error1.getCode()).isEqualTo(violation1Message);
     assertThat(error1.getMessage()).isEqualTo(violation1Message);
     assertThat(error1.getParameters())
       .hasSize(2)
-      .contains(new Parameter().key(genericError.parameters().get(0)).value(violation1PropertyPath))
+      .contains(new Parameter().key(genericError.parameters().getFirst()).value(violation1PropertyPath))
       .contains(new Parameter().key(genericError.parameters().get(1)).value(violation1Value));
     var error2 = result.getBody().getErrors().get(1);
     assertThat(error2.getCode()).isEqualTo(violation2Message);
     assertThat(error2.getMessage()).isEqualTo(violation2Message);
     assertThat(error2.getParameters())
       .hasSize(2)
-      .contains(new Parameter().key(genericError.parameters().get(0)).value(violation2PropertyPath))
+      .contains(new Parameter().key(genericError.parameters().getFirst()).value(violation2PropertyPath))
       .contains(new Parameter().key(genericError.parameters().get(1)).value(violation2Value));
   }
 

@@ -177,7 +177,7 @@ public abstract class WorkSearchMessageMapper {
     return noteMapper.toNotes(doc, supportedNotes)
       .stream()
       .filter(note -> isNotEmpty(note.getValue()) && isNotEmpty(note.getType()))
-      .map(note -> new LinkedDataNote(note.getValue().get(0), note.getType().get(0)))
+      .map(note -> new LinkedDataNote(note.getValue().getFirst(), note.getType().getFirst()))
       .toList();
   }
 

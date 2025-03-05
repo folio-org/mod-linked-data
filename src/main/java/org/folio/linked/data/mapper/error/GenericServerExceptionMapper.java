@@ -37,9 +37,9 @@ public abstract class GenericServerExceptionMapper {
     var exceptionMessage = exception.getMessage();
     return new Error()
       .code(genericServer.code())
-      .message(String.format(genericServer.message(), exceptionName, exceptionMessage))
+      .message(genericServer.message().formatted(exceptionName, exceptionMessage))
       .parameters(List.of(
-        new Parameter().key(genericServer.parameters().get(0)).value(exceptionName),
+        new Parameter().key(genericServer.parameters().getFirst()).value(exceptionName),
         new Parameter().key(genericServer.parameters().get(1)).value(exceptionMessage)
       ));
   }

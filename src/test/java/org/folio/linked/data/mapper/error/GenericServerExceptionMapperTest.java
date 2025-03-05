@@ -1,7 +1,6 @@
 package org.folio.linked.data.mapper.error;
 
 
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.genericError;
@@ -50,13 +49,13 @@ class GenericServerExceptionMapperTest {
     assertThat(result.getBody()).isNotNull();
     assertThat(result.getBody().getTotalRecords()).isEqualTo(1);
     assertThat(result.getBody().getErrors()).hasSize(1);
-    var error = result.getBody().getErrors().get(0);
+    var error = result.getBody().getErrors().getFirst();
     assertThat(error.getCode()).isEqualTo(genericError.code());
     assertThat(error.getMessage())
-      .isEqualTo(format(genericError.message(), exception.getClass().getSimpleName(), message));
+      .isEqualTo(genericError.message().formatted(exception.getClass().getSimpleName(), message));
     assertThat(error.getParameters())
       .hasSize(2)
-      .contains(new Parameter().key(genericError.parameters().get(0)).value(exception.getClass().getSimpleName()))
+      .contains(new Parameter().key(genericError.parameters().getFirst()).value(exception.getClass().getSimpleName()))
       .contains(new Parameter().key(genericError.parameters().get(1)).value(message));
   }
 

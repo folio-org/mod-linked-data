@@ -1,7 +1,6 @@
 package org.folio.linked.data.mapper.error;
 
 
-import static java.lang.String.format;
 import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.genericError;
@@ -54,12 +53,12 @@ class EntityNotFoundExceptionMapperTest {
     assertThat(result.getBody()).isNotNull();
     assertThat(result.getBody().getTotalRecords()).isEqualTo(1);
     assertThat(result.getBody().getErrors()).hasSize(1);
-    var error = result.getBody().getErrors().get(0);
+    var error = result.getBody().getErrors().getFirst();
     assertThat(error.getCode()).isEqualTo(genericError.code());
-    assertThat(error.getMessage()).isEqualTo(format(genericError.message(), "Entity", "id", id, LINKED_DATA_STORAGE));
+    assertThat(error.getMessage()).isEqualTo(genericError.message().formatted("Entity", "id", id, LINKED_DATA_STORAGE));
     assertThat(error.getParameters())
       .hasSize(4)
-      .contains(new Parameter().key(genericError.parameters().get(0)).value("Entity"))
+      .contains(new Parameter().key(genericError.parameters().getFirst()).value("Entity"))
       .contains(new Parameter().key(genericError.parameters().get(1)).value("id"))
       .contains(new Parameter().key(genericError.parameters().get(2)).value(id.toString()))
       .contains(new Parameter().key(genericError.parameters().get(3)).value(LINKED_DATA_STORAGE));

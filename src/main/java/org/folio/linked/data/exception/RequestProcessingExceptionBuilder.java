@@ -1,6 +1,5 @@
 package org.folio.linked.data.exception;
 
-import static java.lang.String.format;
 import static org.folio.linked.data.util.Constants.LINKED_DATA_STORAGE;
 
 import java.util.HashMap;
@@ -61,7 +60,7 @@ public class RequestProcessingExceptionBuilder {
     return new RequestProcessingException(error.status(),
       error.code(),
       parameters,
-      format(error.message(), (Object[]) arguments)
+      error.message().formatted((Object[]) arguments)
     );
   }
 }

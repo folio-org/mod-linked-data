@@ -196,7 +196,7 @@ class ResourceControllerUpdateWorkIT {
   }
 
   private boolean isExpectedMarc(String marcStr) {
-    var marc = marcReader.readMarc(marcStr).toList().get(0);
+    var marc = marcReader.readMarc(marcStr).toList().getFirst();
     var df100 = (DataField) marc.getVariableField("100");
     var df245 = (DataField) marc.getVariableField("245");
     var isDf100Valid = df100.getSubfields().stream().anyMatch(

@@ -67,7 +67,7 @@ class ResourceControllerRetainOutgoingEdgesIT extends AbstractResourceController
   }
 
   private void assertAdminMetadataEdgeRetained(String id) throws Exception {
-    var resourceGraphUrl = String.format("%s/%s/graph", RESOURCE_URL, id);
+    var resourceGraphUrl = "%s/%s/graph".formatted(RESOURCE_URL, id);
     var requestBuilder = get(resourceGraphUrl)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));

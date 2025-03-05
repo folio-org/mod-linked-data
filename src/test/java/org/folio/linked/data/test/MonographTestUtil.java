@@ -814,8 +814,8 @@ public class MonographTestUtil {
 
   public static void setCurrentStatus(LinkedHashMap instance) {
     var map = (ArrayList) instance.get(MAP.getUri());
-    var lccn = (LinkedHashMap) ((LinkedHashMap) map.get(0)).get(ID_LCCN.getUri());
+    var lccn = (LinkedHashMap) ((LinkedHashMap) map.getFirst()).get(ID_LCCN.getUri());
     var status = (ArrayList) lccn.get(STATUS.getUri());
-    ((LinkedHashMap) status.get(0)).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
+    ((LinkedHashMap) status.getFirst()).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
   }
 }

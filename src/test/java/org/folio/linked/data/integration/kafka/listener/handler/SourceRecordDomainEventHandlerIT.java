@@ -53,7 +53,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
@@ -67,7 +66,7 @@ class SourceRecordDomainEventHandlerIT {
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
   private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
-  @MockitoBean
+  @MockitoSpyBean
   private FolioMessageProducer<InstanceIngressEvent> instanceIngressMessageProducer;
   @Autowired
   private MarcBib2ldMapper marcBib2ldMapper;
@@ -226,7 +225,7 @@ class SourceRecordDomainEventHandlerIT {
 
     assertThat(found).hasSize(2);
     var createdResource = found.get(1);
-    var updatedResource = found.get(0);
+    var updatedResource = found.getFirst();
     var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
     assertAuthority(createdResource, expectedLabelCreated, false, false, updatedResource);

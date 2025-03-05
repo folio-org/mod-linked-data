@@ -1,6 +1,5 @@
 package org.folio.linked.data.service;
 
-import static java.lang.String.format;
 import static java.util.Optional.ofNullable;
 
 import java.util.Optional;
@@ -37,6 +36,6 @@ public class SettingsServiceImpl implements SettingsService {
   }
 
   private String buildQuery(String scope, String key) {
-    return format(SCOPE_AND_KEY_PATTERN, scope, key);
+    return SCOPE_AND_KEY_PATTERN.formatted(scope, key);
   }
 }

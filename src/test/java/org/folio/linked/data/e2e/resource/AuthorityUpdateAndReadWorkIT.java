@@ -104,7 +104,7 @@ class AuthorityUpdateAndReadWorkIT {
 
     // then
     var authoritiesFromDb = readAndAssertAuthoritiesInTheDb();
-    assertWorkIsStillLinkedToObsoleteAuthorityInTheDb(work, authoritiesFromDb.get(0));
+    assertWorkIsStillLinkedToObsoleteAuthorityInTheDb(work, authoritiesFromDb.getFirst());
     assertGetWorkWithActiveAuthority(work.getId(), authoritiesFromDb);
   }
 
@@ -121,8 +121,8 @@ class AuthorityUpdateAndReadWorkIT {
       .isNotEmpty()
       .contains(authorities.get(1).getId().toString())
       .contains(authorities.get(1).getLabel())
-      .doesNotContain(authorities.get(0).getId().toString())
-      .doesNotContain(authorities.get(0).getLabel());
+      .doesNotContain(authorities.getFirst().getId().toString())
+      .doesNotContain(authorities.getFirst().getLabel());
   }
 
   private void assertWorkIsStillLinkedToObsoleteAuthorityInTheDb(Resource work, Resource obsoleteAuthority) {
@@ -147,7 +147,7 @@ class AuthorityUpdateAndReadWorkIT {
     assertThat(authoritiesFromDb).hasSize(2);
     var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
     var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
-    assertAuthority(authoritiesFromDb.get(0), expectedLabelCreated, false, false, authoritiesFromDb.get(1));
+    assertAuthority(authoritiesFromDb.getFirst(), expectedLabelCreated, false, false, authoritiesFromDb.get(1));
     assertAuthority(authoritiesFromDb.get(1), expectedLabelUpdated, true, true, null);
     return authoritiesFromDb;
   }
