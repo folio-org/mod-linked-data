@@ -22,7 +22,7 @@ alreadyExists:
   status: 400
   code: already_exists
   parameters: idType, idValue
-  message: 'Another resource with the same %s [%s] already exists in the graph'
+  message: 'The same resource %s [%s] already exists.'
 validation:
   status: 400
   code: <one of ValidationMessages.properties>

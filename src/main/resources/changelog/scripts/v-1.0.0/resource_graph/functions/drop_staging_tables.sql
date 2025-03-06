@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset dfeeney@ebsco.com:3.11_drop_staging_tables_function dbms:postgresql splitStatements:false
+--changeset dfeeney@ebsco.com:3.13_drop_staging_tables_function dbms:postgresql splitStatements:false
 do $do$
   BEGIN
 

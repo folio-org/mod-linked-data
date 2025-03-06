@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset dfeeney@ebsco.com:3.7_resource_context_map dbms:postgresql
+--changeset dfeeney@ebsco.com:3.9_resource_context_map dbms:postgresql
 
 create table if not exists resource_context_map (
   resource_hash bigint references resources(resource_hash) on delete cascade,

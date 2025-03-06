@@ -25,7 +25,8 @@ do $do$
                                                         ('resource_context_map'),
                                                         ('generator_manifest'),
                                                         ('resource_generator_map'),
-                                                        ('folio_metadata');
+                                                        ('folio_metadata'),
+                                                        ('raw_marcs');
 
       create table %1$I.existing_partitions (
         id serial,
