@@ -50,10 +50,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     log.info("Received request to create new resource - {}", toLogString(resourceDto));
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    if (resourceRepo.existsById(mapped.getId())) {
-      log.error("The same resource ID {} already exists", mapped.getId());
-      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(mapped.getId()));
-    }
+    rejectDuplicatedResource(mapped);
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = resourceGraphService.saveMergingGraph(mapped);
@@ -79,10 +76,12 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto updateResource(Long id, ResourceRequestDto resourceDto) {
     log.info("Received request to update resource {} - {}", id, toLogString(resourceDto));
     log.debug("updateResource [{}] from DTO [{}]", id, resourceDto);
+    var mapped = resourceDtoMapper.toEntity(resourceDto);
+    rejectDuplicatedResource(mapped);
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
-    var newResource = saveNewResource(resourceDto, oldResource);
+    var newResource = saveNewResource(mapped, oldResource);
     if (Objects.equals(oldResource.getId(), newResource.getId())) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
     } else {
@@ -91,6 +90,12 @@ public class ResourceServiceImpl implements ResourceService {
     return resourceDtoMapper.toDto(newResource);
   }
 
+  private void rejectDuplicatedResource(Resource resourceToSave) {
+    if (resourceRepo.existsById(resourceToSave.getId())) {
+      log.error("The same resource ID {} already exists", resourceToSave.getId());
+      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
+    }
+  }
 
   @Override
   public void deleteResource(Long id) {
@@ -112,15 +117,14 @@ public class ResourceServiceImpl implements ResourceService {
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
   }
 
-  private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
-    var mapped = resourceDtoMapper.toEntity(resourceDto);
-    resourceCopyService.copyEdgesAndProperties(old, mapped);
-    metadataService.ensure(mapped, old.getFolioMetadata());
-    mapped.setCreatedDate(old.getCreatedDate());
-    mapped.setVersion(old.getVersion() + 1);
-    mapped.setCreatedBy(old.getCreatedBy());
-    mapped.setUpdatedBy(folioExecutionContext.getUserId());
-    return resourceGraphService.saveMergingGraph(mapped);
+  private Resource saveNewResource(Resource resourceToSave, Resource old) {
+    resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
+    metadataService.ensure(resourceToSave, old.getFolioMetadata());
+    resourceToSave.setCreatedDate(old.getCreatedDate());
+    resourceToSave.setVersion(old.getVersion() + 1);
+    resourceToSave.setCreatedBy(old.getCreatedBy());
+    resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
+    return resourceGraphService.saveMergingGraph(resourceToSave);
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {
