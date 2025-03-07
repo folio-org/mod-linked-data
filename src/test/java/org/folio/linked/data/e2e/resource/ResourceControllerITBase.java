@@ -1285,13 +1285,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateResourceEdge(assigneeEdge, work, assigneeEdge.getTarget(), ASSIGNEE.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR);
     validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR);
-    if (!validateFullInstance) {
-      outgoingEdgeIterator.next();
-      validateDdcClassification(outgoingEdgeIterator.next(), work);
-    } else {
-      validateLcClassification(outgoingEdgeIterator.next(), work);
-      validateDdcClassification(outgoingEdgeIterator.next(), work);
-    }
+    validateDdcClassification(outgoingEdgeIterator.next(), work);
+    validateLcClassification(outgoingEdgeIterator.next(), work);
     validatePrimaryTitle(outgoingEdgeIterator.next(), work);
     var authorEdge = outgoingEdgeIterator.next();
     validateResourceEdge(authorEdge, work, authorEdge.getTarget(), AUTHOR.getUri());
