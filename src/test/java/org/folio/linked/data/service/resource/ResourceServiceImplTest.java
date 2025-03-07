@@ -287,6 +287,31 @@ class ResourceServiceImplTest {
   }
 
   @Test
+  void update_shouldRejectDuplicatedResource() {
+    // given
+    var id = 123L;
+    var request = new ResourceRequestDto();
+    var mapped = new Resource().setId(id);
+    when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
+    when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
+    var expectedException = emptyRequestProcessingException();
+    when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
+      .thenReturn(expectedException);
+
+    // when
+    var thrown = assertThrows(
+      RequestProcessingException.class,
+      () -> resourceService.updateResource(id, request)
+    );
+
+    // then
+    assertThat(thrown).isEqualTo(expectedException);
+    verify(resourceGraphService, never()).breakEdgesAndDelete(any());
+    verify(resourceGraphService, never()).saveMergingGraph(any());
+    verify(applicationEventPublisher, never()).publishEvent(any());
+  }
+
+  @Test
   void delete_shouldDeleteWorkAndPublishResourceDeletedEvent() {
     // given
     var work = new Resource().setId(randomLong()).addTypes(WORK);
