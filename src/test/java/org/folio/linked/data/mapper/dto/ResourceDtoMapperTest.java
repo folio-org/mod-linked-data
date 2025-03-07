@@ -44,12 +44,12 @@ class ResourceDtoMapperTest {
 
     //then
     assertEquals(resource.getId().toString(), resourceGraphDto.getId());
-    assertEquals(resource.getTypes().iterator().next().getUri(), resourceGraphDto.getTypes().get(0));
+    assertEquals(resource.getTypes().iterator().next().getUri(), resourceGraphDto.getTypes().getFirst());
     assertEquals(resource.getDoc(), resourceGraphDto.getDoc());
     assertEquals(resource.getLabel(), resourceGraphDto.getLabel());
     assertEquals(resource.getOutgoingEdges().iterator().next().getTarget().getId(),
       resourceGraphDto.getOutgoingEdges().getEdges()
-        .get(resource.getOutgoingEdges().iterator().next().getPredicate().getUri()).get(0));
+        .get(resource.getOutgoingEdges().iterator().next().getPredicate().getUri()).getFirst());
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(resource.getIndexDate()),
       resourceGraphDto.getIndexDate());
   }

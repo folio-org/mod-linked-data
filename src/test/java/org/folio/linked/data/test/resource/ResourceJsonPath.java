@@ -1,6 +1,5 @@
 package org.folio.linked.data.test.resource;
 
-import static java.lang.String.format;
 import static java.lang.String.join;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
@@ -587,14 +586,14 @@ public class ResourceJsonPath {
   }
 
   public static String path(String path) {
-    return format("['%s']", path);
+    return "['%s']".formatted(path);
   }
 
   public static String arrayPath(String path) {
-    return format("['%s'][0]", path);
+    return "['%s'][0]".formatted(path);
   }
 
   public static String dynamicArrayPath(String path) {
-    return format("['%s'][*]", path);
+    return "['%s'][*]".formatted(path);
   }
 }

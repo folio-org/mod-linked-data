@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 abstract class PredicateDictionaryITBase {
@@ -29,13 +29,13 @@ abstract class PredicateDictionaryITBase {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
-  @MockitoBean
+  @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
   @Test
   void countPredicates_shouldSameAsLibPredicates() {
     //given
-    var table = String.format("%s.%s", schema, TABLE_NAME);
+    var table = "%s.%s".formatted(schema, TABLE_NAME);
 
     // when
     var countDb = JdbcTestUtils.countRowsInTable(jdbcTemplate, table);
@@ -51,7 +51,7 @@ abstract class PredicateDictionaryITBase {
   void valueInLib_shouldBeTheSameAsInDb(PredicateDictionary predicate) {
     //given
     var uri = predicate.getUri();
-    var sql = String.format("SELECT predicate_hash, predicate FROM %s.%s WHERE predicate = ?", schema, TABLE_NAME);
+    var sql = "SELECT predicate_hash, predicate FROM %s.%s WHERE predicate = ?".formatted(schema, TABLE_NAME);
 
     // when
     var dbPredicate = jdbcTemplate.queryForObject(
@@ -67,7 +67,7 @@ abstract class PredicateDictionaryITBase {
   @TestFactory
   List<DynamicTest> valueInDb_shouldBeInLib() {
     //given
-    var sql = String.format("SELECT predicate_hash, predicate FROM %s.%s", schema, TABLE_NAME);
+    var sql = "SELECT predicate_hash, predicate FROM %s.%s".formatted(schema, TABLE_NAME);
     var testData = jdbcTemplate.query(sql, new PredicateEntityMapper());
 
     return testData.stream()

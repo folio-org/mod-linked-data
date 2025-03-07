@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
@@ -35,7 +35,7 @@ class ProfileControllerIT {
   private ProfileRepository profileRepository;
   @Autowired
   private Environment env;
-  @MockitoBean
+  @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
   @Order(1)

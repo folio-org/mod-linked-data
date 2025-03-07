@@ -1,6 +1,5 @@
 package org.folio.linked.data.e2e.resource;
 
-import static java.lang.String.format;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.UUID.randomUUID;
@@ -338,7 +337,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
     assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
-    var workId = instanceResponse.getWorkReference().get(0).getId();
+    var workId = instanceResponse.getWorkReference().getFirst().getId();
     checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
     checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
@@ -594,7 +593,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
   void getResourceById_shouldReturn404_ifNoExistedEntity(String pattern) throws Exception {
     // given
     var notExistedId = randomLong();
-    var path = format(pattern, RESOURCE_URL, notExistedId);
+    var path = pattern.formatted(RESOURCE_URL, notExistedId);
     var requestBuilder = get(path)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -1302,13 +1301,13 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateWorkContributor(outgoingEdgeIterator.next(), work, JURISDICTION, CONTRIBUTOR);
     validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
-    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(0), SUBJECT.getUri());
-    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(0), GENRE.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().getFirst(), SUBJECT.getUri());
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().getFirst(), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
     validateOriginPlace(outgoingEdgeIterator.next(), work);
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(1),
       GEOGRAPHIC_COVERAGE.getUri());
-    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().get(0),
+    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().getFirst(),
       GEOGRAPHIC_COVERAGE.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR);
     validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR);

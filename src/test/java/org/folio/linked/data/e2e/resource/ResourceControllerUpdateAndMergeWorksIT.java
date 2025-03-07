@@ -260,7 +260,7 @@ class ResourceControllerUpdateAndMergeWorksIT {
         event -> {
           var payload = event.getEventPayload();
           var marcStr = payload.getSourceRecordObject();
-          var marcRecord = marcReader.readMarc(marcStr).toList().get(0);
+          var marcRecord = marcReader.readMarc(marcStr).toList().getFirst();
           return event.getEventType().equals(InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE)
             && isExpectedMarc(marcRecord);
         }

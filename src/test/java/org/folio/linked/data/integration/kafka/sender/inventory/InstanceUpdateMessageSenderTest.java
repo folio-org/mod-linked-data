@@ -97,7 +97,7 @@ class InstanceUpdateMessageSenderTest {
     verify(instanceIngressMessageProducer, times(2)).sendMessages(messageCaptor.capture());
     var messagesLists = messageCaptor.getAllValues();
     assertThat(messagesLists).hasSize(2);
-    assertThat(messagesLists.get(0)).singleElement().isEqualTo(ingressEvent1);
+    assertThat(messagesLists.getFirst()).singleElement().isEqualTo(ingressEvent1);
     assertThat(messagesLists.get(1)).singleElement().isEqualTo(ingressEvent2);
   }
 }

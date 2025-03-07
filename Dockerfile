@@ -1,4 +1,9 @@
-FROM folioci/alpine-jre-openjdk17:latest
+FROM folioci/alpine-jre-openjdk21:latest
+
+# Install latest patch versions of packages: https://pythonspeed.com/articles/security-updates-in-docker/
+USER root
+RUN apk upgrade --no-cache
+USER folio
 
 # Copy your fat jar to the container
 ENV APP_FILE mod-linked-data-fat.jar
