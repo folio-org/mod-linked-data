@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.resource.graph;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
@@ -82,7 +84,20 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   private void updateResource(Resource existingResource, Resource incomingResource) {
     existingResource.setDoc(mergeDocs(existingResource, incomingResource));
     existingResource.setActive(incomingResource.isActive());
+    addFolioMetadataIfAbsent(existingResource, incomingResource.getFolioMetadata());
     removeReplacedByEdgeIfPreferred(existingResource);
+  }
+
+  private void addFolioMetadataIfAbsent(Resource existingResource, FolioMetadata incomingFolioMetadata) {
+    if (nonNull(existingResource.getFolioMetadata())) {
+      return;
+    }
+    ofNullable(incomingFolioMetadata)
+      .ifPresent(folioMetadata -> existingResource.setFolioMetadata(
+        folioMetadata.toBuilder()
+          .resource(existingResource)
+          .build()
+      ));
   }
 
   private JsonNode mergeDocs(Resource existingResource, Resource incomingResource) {
