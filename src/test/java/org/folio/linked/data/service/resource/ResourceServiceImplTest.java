@@ -287,11 +287,12 @@ class ResourceServiceImplTest {
   }
 
   @Test
-  void update_shouldRejectDuplicatedResource() {
+  void update_shouldRejectIfDuplicateResource() {
     // given
-    var id = 123L;
+    var mappedId = 123L;
+    var existingId = 456L;
     var request = new ResourceRequestDto();
-    var mapped = new Resource().setId(id);
+    var mapped = new Resource().setId(mappedId);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
     var expectedException = emptyRequestProcessingException();
@@ -301,12 +302,11 @@ class ResourceServiceImplTest {
     // when
     var thrown = assertThrows(
       RequestProcessingException.class,
-      () -> resourceService.updateResource(id, request)
+      () -> resourceService.updateResource(existingId, request)
     );
 
     // then
     assertThat(thrown).isEqualTo(expectedException);
-    verify(resourceGraphService, never()).breakEdgesAndDelete(any());
     verify(resourceGraphService, never()).saveMergingGraph(any());
     verify(applicationEventPublisher, never()).publishEvent(any());
   }

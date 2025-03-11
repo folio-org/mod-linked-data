@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.resource;
 
+import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import java.util.List;
@@ -50,7 +51,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     log.info("Received request to create new resource - {}", toLogString(resourceDto));
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    rejectDuplicatedResource(mapped);
+    rejectIfDuplicateResource(mapped);
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = resourceGraphService.saveMergingGraph(mapped);
@@ -77,7 +78,9 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("Received request to update resource {} - {}", id, toLogString(resourceDto));
     log.debug("updateResource [{}] from DTO [{}]", id, resourceDto);
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    rejectDuplicatedResource(mapped);
+    if (notEqual(mapped.getId(), id)) {
+      rejectIfDuplicateResource(mapped);
+    }
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
@@ -88,13 +91,6 @@ public class ResourceServiceImpl implements ResourceService {
       applicationEventPublisher.publishEvent(new ResourceReplacedEvent(oldResource, newResource.getId()));
     }
     return resourceDtoMapper.toDto(newResource);
-  }
-
-  private void rejectDuplicatedResource(Resource resourceToSave) {
-    if (resourceRepo.existsById(resourceToSave.getId())) {
-      log.error("The same resource ID {} already exists", resourceToSave.getId());
-      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
-    }
   }
 
   @Override
@@ -110,6 +106,13 @@ public class ResourceServiceImpl implements ResourceService {
   @Override
   public void updateIndexDateBatch(Set<Long> ids) {
     resourceRepo.updateIndexDateBatch(ids);
+  }
+
+  private void rejectIfDuplicateResource(Resource resourceToSave) {
+    if (resourceRepo.existsById(resourceToSave.getId())) {
+      log.error("Resource with same ID {} already exists", resourceToSave.getId());
+      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
+    }
   }
 
   private Resource getResource(Long id) {
