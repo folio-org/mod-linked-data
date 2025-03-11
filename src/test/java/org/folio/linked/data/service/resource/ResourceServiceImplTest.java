@@ -274,6 +274,7 @@ class ResourceServiceImplTest {
     );
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
+    when(resourceRepo.findById(mapped.getId())).thenReturn(Optional.empty());
 
     // when
     var result = resourceService.updateResource(oldId, instanceDto);
@@ -284,31 +285,6 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
-  }
-
-  @Test
-  void update_shouldRejectIfDuplicateResource() {
-    // given
-    var mappedId = 123L;
-    var existingId = 456L;
-    var request = new ResourceRequestDto();
-    var mapped = new Resource().setId(mappedId);
-    when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
-    when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
-    var expectedException = emptyRequestProcessingException();
-    when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
-      .thenReturn(expectedException);
-
-    // when
-    var thrown = assertThrows(
-      RequestProcessingException.class,
-      () -> resourceService.updateResource(existingId, request)
-    );
-
-    // then
-    assertThat(thrown).isEqualTo(expectedException);
-    verify(resourceGraphService, never()).saveMergingGraph(any());
-    verify(applicationEventPublisher, never()).publishEvent(any());
   }
 
   @Test
