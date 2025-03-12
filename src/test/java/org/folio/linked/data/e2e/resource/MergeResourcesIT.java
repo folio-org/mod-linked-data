@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
+import static org.folio.linked.data.test.TestUtil.readTree;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -200,12 +201,7 @@ class MergeResourcesIT {
       ]
     }
   """.replace("$PREFERRED_FLAG", String.valueOf(isPreferred));
-    return JsonUtils.merge(getDoc(docFile), objectMapper.readTree(preferredJson));
-  }
-
-  @SneakyThrows
-  private JsonNode getDoc(String doc) {
-    return objectMapper.readTree(loadResourceAsString(doc));
+    return JsonUtils.merge(readTree(loadResourceAsString(docFile)), objectMapper.readTree(preferredJson));
   }
 
   private Resource createGraph1toto2() {

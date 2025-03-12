@@ -274,6 +274,7 @@ class ResourceServiceImplTest {
     );
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
+    when(resourceRepo.findById(mapped.getId())).thenReturn(Optional.empty());
 
     // when
     var result = resourceService.updateResource(oldId, instanceDto);

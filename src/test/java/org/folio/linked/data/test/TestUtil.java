@@ -92,6 +92,11 @@ public class TestUtil {
     return OBJECT_MAPPER.writeValueAsString(value);
   }
 
+  @SneakyThrows
+  public static JsonNode readTree(String value) {
+    return OBJECT_MAPPER.readTree(value);
+  }
+
   public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);

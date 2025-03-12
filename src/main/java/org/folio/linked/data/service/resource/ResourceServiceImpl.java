@@ -1,5 +1,7 @@
 package org.folio.linked.data.service.resource;
 
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import java.util.List;
@@ -24,6 +26,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.linked.data.util.ResourceUtils;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
@@ -50,10 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     log.info("Received request to create new resource - {}", toLogString(resourceDto));
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    if (resourceRepo.existsById(mapped.getId())) {
-      log.error("The same resource ID {} already exists", mapped.getId());
-      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(mapped.getId()));
-    }
+    rejectDuplication(mapped);
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = resourceGraphService.saveMergingGraph(mapped);
@@ -79,10 +79,12 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto updateResource(Long id, ResourceRequestDto resourceDto) {
     log.info("Received request to update resource {} - {}", id, toLogString(resourceDto));
     log.debug("updateResource [{}] from DTO [{}]", id, resourceDto);
+    var mapped = resourceDtoMapper.toEntity(resourceDto);
+    rejectInstanceOfAnotherWork(id, mapped);
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
-    var newResource = saveNewResource(resourceDto, oldResource);
+    var newResource = saveNewResource(mapped, oldResource);
     if (Objects.equals(oldResource.getId(), newResource.getId())) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
     } else {
@@ -90,7 +92,6 @@ public class ResourceServiceImpl implements ResourceService {
     }
     return resourceDtoMapper.toDto(newResource);
   }
-
 
   @Override
   public void deleteResource(Long id) {
@@ -107,20 +108,44 @@ public class ResourceServiceImpl implements ResourceService {
     resourceRepo.updateIndexDateBatch(ids);
   }
 
+  private void rejectDuplication(Resource resourceToSave) {
+    if (resourceRepo.existsById(resourceToSave.getId())) {
+      log.error("Resource with same ID {} already exists", resourceToSave.getId());
+      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
+    }
+  }
+
+  private void rejectInstanceOfAnotherWork(Long requestId, Resource resourceToSave) {
+    if (resourceToSave.isNotOfType(INSTANCE) || Objects.equals(requestId, resourceToSave.getId())) {
+      return;
+    }
+
+    var incomingInstanceWorkId = extractWorkFromInstance(resourceToSave)
+      .map(Resource::getId);
+    var existedInstanceWorkId = resourceRepo.findById(resourceToSave.getId())
+      .flatMap(ResourceUtils::extractWorkFromInstance)
+      .map(Resource::getId);
+
+    if (existedInstanceWorkId.isPresent() && !existedInstanceWorkId.equals(incomingInstanceWorkId)) {
+      log.error("Instance {} is already connected to work {}. Connecting the instance to another work {} "
+        + "is not allowed.", resourceToSave.getId(), existedInstanceWorkId, incomingInstanceWorkId);
+      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
+    }
+  }
+
   private Resource getResource(Long id) {
     return resourceRepo.findById(id)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
   }
 
-  private Resource saveNewResource(ResourceRequestDto resourceDto, Resource old) {
-    var mapped = resourceDtoMapper.toEntity(resourceDto);
-    resourceCopyService.copyEdgesAndProperties(old, mapped);
-    metadataService.ensure(mapped, old.getFolioMetadata());
-    mapped.setCreatedDate(old.getCreatedDate());
-    mapped.setVersion(old.getVersion() + 1);
-    mapped.setCreatedBy(old.getCreatedBy());
-    mapped.setUpdatedBy(folioExecutionContext.getUserId());
-    return resourceGraphService.saveMergingGraph(mapped);
+  private Resource saveNewResource(Resource resourceToSave, Resource old) {
+    resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
+    metadataService.ensure(resourceToSave, old.getFolioMetadata());
+    resourceToSave.setCreatedDate(old.getCreatedDate());
+    resourceToSave.setVersion(old.getVersion() + 1);
+    resourceToSave.setCreatedBy(old.getCreatedBy());
+    resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
+    return resourceGraphService.saveMergingGraph(resourceToSave);
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {
