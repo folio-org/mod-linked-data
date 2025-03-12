@@ -1,6 +1,6 @@
 package org.folio.linked.data.service.resource;
 
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
@@ -116,7 +116,7 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   private void rejectInstanceOfAnotherWork(Long requestId, Resource resourceToSave) {
-    if (resourceToSave.isOfType(WORK) || Objects.equals(requestId, resourceToSave.getId())) {
+    if (resourceToSave.isNotOfType(INSTANCE) || Objects.equals(requestId, resourceToSave.getId())) {
       return;
     }
 
@@ -126,7 +126,7 @@ public class ResourceServiceImpl implements ResourceService {
       .flatMap(ResourceUtils::extractWorkFromInstance)
       .map(Resource::getId);
 
-    if (existedInstanceWorkId.isPresent() && !incomingInstanceWorkId.equals(existedInstanceWorkId)) {
+    if (existedInstanceWorkId.isPresent() && !existedInstanceWorkId.equals(incomingInstanceWorkId)) {
       log.error("Instance {} is already connected to work {}. Connecting the instance to another work {} "
         + "is not allowed.", resourceToSave.getId(), existedInstanceWorkId, incomingInstanceWorkId);
       throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
