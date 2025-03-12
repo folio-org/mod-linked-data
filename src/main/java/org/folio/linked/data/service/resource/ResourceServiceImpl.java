@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.resource;
 
-import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
@@ -54,7 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
     log.info("Received request to create new resource - {}", toLogString(resourceDto));
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    rejectIfDuplicateResource(mapped);
+    rejectDuplication(mapped);
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     metadataService.ensure(mapped);
     var persisted = resourceGraphService.saveMergingGraph(mapped);
@@ -81,7 +80,7 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("Received request to update resource {} - {}", id, toLogString(resourceDto));
     log.debug("updateResource [{}] from DTO [{}]", id, resourceDto);
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    rejectIfInstanceConnectedToAnotherWork(id, mapped);
+    rejectInstanceOfAnotherWork(id, mapped);
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
@@ -109,27 +108,27 @@ public class ResourceServiceImpl implements ResourceService {
     resourceRepo.updateIndexDateBatch(ids);
   }
 
-  private void rejectIfDuplicateResource(Resource resourceToSave) {
+  private void rejectDuplication(Resource resourceToSave) {
     if (resourceRepo.existsById(resourceToSave.getId())) {
       log.error("Resource with same ID {} already exists", resourceToSave.getId());
       throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
     }
   }
 
-  private void rejectIfInstanceConnectedToAnotherWork(Long requestId, Resource resourceToSave) {
+  private void rejectInstanceOfAnotherWork(Long requestId, Resource resourceToSave) {
     if (resourceToSave.isOfType(WORK) || Objects.equals(requestId, resourceToSave.getId())) {
       return;
     }
 
-    var workIdOfInstanceToSave = extractWorkFromInstance(resourceToSave)
+    var incomingInstanceWorkId = extractWorkFromInstance(resourceToSave)
       .map(Resource::getId);
-    var workIdOfInstanceInDb = resourceRepo.findById(resourceToSave.getId())
+    var existedInstanceWorkId = resourceRepo.findById(resourceToSave.getId())
       .flatMap(ResourceUtils::extractWorkFromInstance)
       .map(Resource::getId);
 
-    if (workIdOfInstanceInDb.isPresent() && notEqual(workIdOfInstanceToSave, workIdOfInstanceInDb)) {
+    if (existedInstanceWorkId.isPresent() && !incomingInstanceWorkId.equals(existedInstanceWorkId)) {
       log.error("Instance {} is already connected to work {}. Connecting the instance to another work {} "
-        + "is not allowed.", resourceToSave.getId(), workIdOfInstanceInDb, workIdOfInstanceToSave);
+        + "is not allowed.", resourceToSave.getId(), existedInstanceWorkId, incomingInstanceWorkId);
       throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
     }
   }
