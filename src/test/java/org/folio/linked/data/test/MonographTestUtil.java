@@ -117,6 +117,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
+import static org.folio.linked.data.test.TestUtil.readTree;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -130,6 +131,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.service.resource.hash.HashService;
 
 @UtilityClass
 public class MonographTestUtil {
@@ -817,5 +819,35 @@ public class MonographTestUtil {
     var lccn = (LinkedHashMap) ((LinkedHashMap) map.getFirst()).get(ID_LCCN.getUri());
     var status = (ArrayList) lccn.get(STATUS.getUri());
     ((LinkedHashMap) status.getFirst()).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
+  }
+
+  public static Resource getWork(String titleStr, HashService hashService) {
+    var titleDoc = """
+      {
+        "http://bibfra.me/vocab/marc/mainTitle": ["%TITLE%"]
+      }
+      """
+      .replace("%TITLE%", titleStr);
+    var workDoc = """
+      {
+        "http://bibfra.me/vocab/marc/summary": ["%SUMMARY_NOTE%"]
+      }
+      """
+      .replace("%SUMMARY_NOTE%", titleStr + "_summary_note");
+    var title = new Resource()
+      .addTypes(ResourceTypeDictionary.TITLE)
+      .setDoc(readTree(titleDoc))
+      .setLabel(titleStr);
+    var work = new Resource()
+      .addTypes(ResourceTypeDictionary.WORK)
+      .setDoc(readTree(workDoc))
+      .setLabel(titleStr);
+
+    work.addOutgoingEdge(new ResourceEdge(work, title, PredicateDictionary.TITLE));
+
+    title.setId(hashService.hash(title));
+    work.setId(hashService.hash(work));
+
+    return work;
   }
 }

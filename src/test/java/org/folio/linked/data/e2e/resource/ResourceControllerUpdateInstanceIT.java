@@ -1,15 +1,15 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
+import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -43,8 +43,8 @@ class ResourceControllerUpdateInstanceIT {
   void update_should_reject_if_instance_with_same_id_exists_and_connected_to_different_work() throws Exception {
     var instance1Title = "simple_instance1";
     var instance2Title = "simple_instance2";
-    var work1 = getWork("simple_work1");
-    var work2 = getWork("simple_work2");
+    var work1 = getWork("simple_work1", hashService);
+    var work2 = getWork("simple_work2", hashService);
     var work1Instance = getInstance(work1, instance1Title);
     var work2Instance = getInstance(work2, instance2Title);
     resourceTestService.saveGraph(work1Instance);
@@ -70,7 +70,7 @@ class ResourceControllerUpdateInstanceIT {
   void update_should_succeed_if_instance_with_same_id_exists_and_connected_to_same_work() throws Exception {
     var instance1Title = "simple_instance1";
     var instance2Title = "simple_instance2";
-    var work = getWork("simple_work1");
+    var work = getWork("simple_work1", hashService);
     var instance1 = getInstance(work, instance1Title);
     var instance2 = getInstance(work, instance2Title);
     resourceTestService.saveGraph(instance1);
@@ -95,7 +95,7 @@ class ResourceControllerUpdateInstanceIT {
   void update_should_update_instance_when_fingerprint_changed() throws Exception {
     // given
     var instanceTitle = "simple_instance1";
-    var work = getWork("simple_work1");
+    var work = getWork("simple_work1", hashService);
     var instance = getInstance(work, instanceTitle);
     resourceTestService.saveGraph(instance);
 
@@ -122,11 +122,11 @@ class ResourceControllerUpdateInstanceIT {
       .replace("%TITLE%", titleStr);
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(getDoc(titleDoc))
+      .setDoc(readTree(titleDoc))
       .setLabel(titleStr);
     var instance = new Resource()
       .addTypes(ResourceTypeDictionary.INSTANCE)
-      .setDoc(getDoc("{}"))
+      .setDoc(readTree("{}"))
       .setLabel(titleStr);
 
     instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
@@ -138,41 +138,6 @@ class ResourceControllerUpdateInstanceIT {
     FolioMetadata metadata = new FolioMetadata(instance)
       .setInventoryId(titleStr + "_inventoryId").setSrsId(titleStr + "_srsId");
     return instance.setFolioMetadata(metadata);
-  }
-
-  private Resource getWork(String titleStr) {
-    var titleDoc = """
-      {
-        "http://bibfra.me/vocab/marc/mainTitle": ["%TITLE%"]
-      }
-      """
-      .replace("%TITLE%", titleStr);
-    var workDoc = """
-      {
-        "http://bibfra.me/vocab/marc/summary": ["%SUMMARY_NOTE%"]
-      }
-      """
-      .replace("%SUMMARY_NOTE%", titleStr + "_summary_note");
-    var title = new Resource()
-      .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(getDoc(titleDoc))
-      .setLabel(titleStr);
-    var work = new Resource()
-      .addTypes(ResourceTypeDictionary.WORK)
-      .setDoc(getDoc(workDoc))
-      .setLabel(titleStr);
-
-    work.addOutgoingEdge(new ResourceEdge(work, title, PredicateDictionary.TITLE));
-
-    title.setId(hashService.hash(title));
-    work.setId(hashService.hash(work));
-
-    return work;
-  }
-
-  @SneakyThrows
-  private JsonNode getDoc(String doc) {
-    return objectMapper.readTree(doc);
   }
 
   private String getInstanceRequestDto(Long workId, String title) {

@@ -1,14 +1,15 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
+import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
 import java.util.Map;
@@ -80,8 +81,8 @@ class ResourceControllerUpdateAndMergeWorksIT {
     // Create two works with 2 different titles
     var work1Title = "simple_work1";
     var work2Title = "simple_work2";
-    var work1 = getWork(work1Title);
-    var work2 = getWork(work2Title);
+    var work1 = getWork(work1Title, hashService);
+    var work2 = getWork(work2Title, hashService);
     var work1Instance = getInstance(work1);
     var work2Instance = getInstance(work2);
     resourceTestService.saveGraph(work1Instance);
@@ -159,36 +160,6 @@ class ResourceControllerUpdateAndMergeWorksIT {
       .replace("%TITLE%", title);
   }
 
-  private Resource getWork(String titleStr) {
-    var titleDoc = """
-      {
-        "http://bibfra.me/vocab/marc/mainTitle": ["%TITLE%"]
-      }
-      """
-      .replace("%TITLE%", titleStr);
-    var workDoc = """
-      {
-        "http://bibfra.me/vocab/marc/summary": ["%SUMMARY_NOTE%"]
-      }
-      """
-      .replace("%SUMMARY_NOTE%", titleStr + "_summary_note");
-    var title = new Resource()
-      .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(getDoc(titleDoc))
-      .setLabel(titleStr);
-    var work = new Resource()
-      .addTypes(ResourceTypeDictionary.WORK)
-      .setDoc(getDoc(workDoc))
-      .setLabel(titleStr);
-
-    work.addOutgoingEdge(new ResourceEdge(work, title, PredicateDictionary.TITLE));
-
-    title.setId(hashService.hash(title));
-    work.setId(hashService.hash(work));
-
-    return work;
-  }
-
   private Resource getInstance(Resource work) {
     var titleStr = work.getLabel() + "_instance";
     var titleDoc = """
@@ -199,11 +170,11 @@ class ResourceControllerUpdateAndMergeWorksIT {
       .replace("%TITLE%", titleStr);
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(getDoc(titleDoc))
+      .setDoc(readTree(titleDoc))
       .setLabel(titleStr);
     var instance = new Resource()
       .addTypes(ResourceTypeDictionary.INSTANCE)
-      .setDoc(getDoc("{}"))
+      .setDoc(readTree("{}"))
       .setLabel(titleStr);
 
     instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
@@ -213,11 +184,6 @@ class ResourceControllerUpdateAndMergeWorksIT {
     instance.setId(hashService.hash(instance));
 
     return instance;
-  }
-
-  @SneakyThrows
-  private JsonNode getDoc(String doc) {
-    return objectMapper.readTree(doc);
   }
 
   @SneakyThrows

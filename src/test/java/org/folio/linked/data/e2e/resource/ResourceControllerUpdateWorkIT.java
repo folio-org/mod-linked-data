@@ -3,12 +3,12 @@ package org.folio.linked.data.e2e.resource;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -106,7 +106,7 @@ class ResourceControllerUpdateWorkIT {
   private Resource getWork() {
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(getDoc("""
+      .setDoc(readTree("""
         {
           "http://bibfra.me/vocab/marc/mainTitle": ["simple_work"]
         }
@@ -114,7 +114,7 @@ class ResourceControllerUpdateWorkIT {
       .setLabel("simple_work");
     var work = new Resource()
       .addTypes(ResourceTypeDictionary.WORK)
-      .setDoc(getDoc("{}"))
+      .setDoc(readTree("{}"))
       .setLabel("simple_work");
 
     work.addOutgoingEdge(new ResourceEdge(work, title, PredicateDictionary.TITLE));
@@ -128,7 +128,7 @@ class ResourceControllerUpdateWorkIT {
   private Resource getInstance(Resource work) {
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(getDoc("""
+      .setDoc(readTree("""
         {
           "http://bibfra.me/vocab/marc/mainTitle": ["simple_instance"]
         }
@@ -136,7 +136,7 @@ class ResourceControllerUpdateWorkIT {
       .setLabel("simple_instance");
     var instance = new Resource()
       .addTypes(ResourceTypeDictionary.INSTANCE)
-      .setDoc(getDoc("{}"))
+      .setDoc(readTree("{}"))
       .setLabel("simple_instance");
 
     instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
@@ -151,7 +151,7 @@ class ResourceControllerUpdateWorkIT {
   private Resource getPerson() {
     var person = new Resource()
       .addTypes(ResourceTypeDictionary.PERSON)
-      .setDoc(getDoc("""
+      .setDoc(readTree("""
         {
           "http://bibfra.me/vocab/lite/name": ["Person name"]
         }
@@ -160,7 +160,7 @@ class ResourceControllerUpdateWorkIT {
 
     var lccn = new Resource()
       .addTypes(ResourceTypeDictionary.ID_LCCN, ResourceTypeDictionary.IDENTIFIER)
-      .setDoc(getDoc("""
+      .setDoc(readTree("""
         {
           "http://bibfra.me/vocab/lite/link": ["n123456789"]
         }
@@ -174,11 +174,6 @@ class ResourceControllerUpdateWorkIT {
     lccn.setId(hashService.hash(lccn));
 
     return person;
-  }
-
-  @SneakyThrows
-  private JsonNode getDoc(String doc) {
-    return objectMapper.readTree(doc);
   }
 
   @SneakyThrows
