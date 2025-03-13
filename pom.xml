@@ -6,7 +6,7 @@
   <name>mod-linked-data</name>
   <groupId>org.folio</groupId>
   <artifactId>mod-linked-data</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -95,15 +95,15 @@
     </dependency>
 
     <dependency>
-      <groupId>org.folio</groupId>
+      <groupId>com.github.folio-org</groupId>
       <artifactId>lib-linked-data-marc4ld</artifactId>
-      <version>${lib-linked-data-marc4ld.version}</version>
+      <version>v1.0.3-SNAPSHOT</version>
     </dependency>
 
     <dependency>
-      <groupId>org.folio</groupId>
+      <groupId>com.github.folio-org</groupId>
       <artifactId>lib-linked-data-fingerprint</artifactId>
-      <version>${lib-linked-data-fingerprint.version}</version>
+      <version>v1.0.2-SNAPSHOT</version>
     </dependency>
 
     <dependency>
@@ -605,6 +605,10 @@
       <id>index-data-nexus</id>
       <name>FOLIO Maven repository</name>
       <url>https://maven.indexdata.com</url>
+    </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
     </repository>
   </repositories>
 
