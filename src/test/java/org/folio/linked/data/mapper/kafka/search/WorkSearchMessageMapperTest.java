@@ -205,10 +205,12 @@ class WorkSearchMessageMapperTest {
     assertThat(result.getLanguages()).hasSize(1);
     assertThat(result.getLanguages().getFirst()).isEqualTo("eng");
     assertThat(result.getClassifications()).hasSize(2);
+    assertThat(result.getClassifications().getFirst().getType()).isEqualTo("lc");
     assertThat(result.getClassifications().getFirst().getNumber()).isEqualTo("lc code");
-    assertThat(result.getClassifications().getFirst().getSource()).isEqualTo("lc");
+    assertThat(result.getClassifications().getFirst().getAdditionalNumber()).isEqualTo("lc item number");
+    assertThat(result.getClassifications().get(1).getType()).isEqualTo("ddc");
     assertThat(result.getClassifications().get(1).getNumber()).isEqualTo("ddc code");
-    assertThat(result.getClassifications().get(1).getSource()).isEqualTo("ddc");
+    assertThat(result.getClassifications().get(1).getAdditionalNumber()).isEqualTo("ddc item number");
     assertThat(result.getSubjects()).hasSize(2);
     assertThat(result.getSubjects().getFirst()).isEqualTo("subject 1");
     assertThat(result.getSubjects().get(1)).isEqualTo("subject 2");
