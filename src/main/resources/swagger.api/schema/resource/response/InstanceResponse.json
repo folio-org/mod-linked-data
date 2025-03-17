@@ -156,7 +156,8 @@
         "extent": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "object",
+            "$ref": "ExtentResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/extent"
         },

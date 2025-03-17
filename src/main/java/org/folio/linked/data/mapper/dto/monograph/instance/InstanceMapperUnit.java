@@ -4,6 +4,7 @@ import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
+import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
@@ -19,7 +20,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
@@ -110,6 +110,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCarrier(), CARRIER);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getExtent(), EXTENT);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));
     return instance;
@@ -117,7 +118,6 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
 
   private JsonNode getDoc(InstanceRequest dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, EXTENT, dto.getExtent());
     putProperty(map, DIMENSIONS, dto.getDimensions());
     putProperty(map, EDITION, dto.getEdition());
     putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());

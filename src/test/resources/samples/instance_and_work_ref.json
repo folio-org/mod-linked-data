@@ -296,7 +296,17 @@
         }
       ],
       "http://bibfra.me/vocab/lite/extent": [
-        "extent info"
+        {
+            "http://bibfra.me/vocab/lite/label": [
+                "extent label"
+            ],
+            "http://bibfra.me/vocab/marc/materialsSpec": [
+                "materials spec"
+            ],
+            "http://bibfra.me/vocab/lite/note": [
+                "extent note"
+            ]
+        }
       ],
       "http://bibfra.me/vocab/marc/dimensions": [
         "20 cm"

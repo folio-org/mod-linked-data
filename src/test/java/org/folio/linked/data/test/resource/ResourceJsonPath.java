@@ -38,6 +38,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPEC;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
@@ -125,6 +126,19 @@ public class ResourceJsonPath {
 
   public static String toSupplementaryContentName() {
     return join(".", toInstance(), arrayPath(SUPPLEMENTARY_CONTENT.getUri()), arrayPath(NAME.getValue()));
+  }
+
+  public static String toExtentLabel() {
+    return join(".", toInstance(), arrayPath(PredicateDictionary.EXTENT.getUri()), arrayPath(LABEL.getValue()));
+  }
+
+  public static String toExtentMaterialsSpec() {
+    return join(".", toInstance(), arrayPath(PredicateDictionary.EXTENT.getUri()),
+      arrayPath(MATERIALS_SPEC.getValue()));
+  }
+
+  public static String toExtentNote() {
+    return join(".", toInstance(), arrayPath(PredicateDictionary.EXTENT.getUri()), arrayPath(NOTE.getValue()));
   }
 
   public static String toAccessLocationLink() {
