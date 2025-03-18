@@ -269,6 +269,7 @@ public class MonographTestUtil {
 
     var instance = createResource(
       Map.ofEntries(
+        entry(PropertyDictionary.EXTENT, List.of("extent info")),
         entry(DIMENSIONS, List.of("20 cm")),
         entry(EDITION, List.of("edition statement")),
         entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),

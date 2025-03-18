@@ -87,6 +87,7 @@ public class ResourceJsonPath {
   private static final String GENRE_REF = "_genreReference";
   private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
   private static final String GRANTING_INSTITUTION_REF = "_grantingInstitutionReference";
+  private static final String EXTENT_V2_URI = "http://bibfra.me/vocab/lite/extentV2";
 
   public static String toInstance() {
     return join(".", "$", path("resource"), path(INSTANCE.getUri()));
@@ -129,16 +130,16 @@ public class ResourceJsonPath {
   }
 
   public static String toExtentLabel() {
-    return join(".", toInstance(), arrayPath(PredicateDictionary.EXTENT.getUri()), arrayPath(LABEL.getValue()));
+    return join(".", toInstance(), arrayPath(EXTENT_V2_URI), arrayPath(LABEL.getValue()));
   }
 
   public static String toExtentMaterialsSpec() {
-    return join(".", toInstance(), arrayPath(PredicateDictionary.EXTENT.getUri()),
+    return join(".", toInstance(), arrayPath(EXTENT_V2_URI),
       arrayPath(MATERIALS_SPEC.getValue()));
   }
 
   public static String toExtentNote() {
-    return join(".", toInstance(), arrayPath(PredicateDictionary.EXTENT.getUri()), arrayPath(NOTE.getValue()));
+    return join(".", toInstance(), arrayPath(EXTENT_V2_URI), arrayPath(NOTE.getValue()));
   }
 
   public static String toAccessLocationLink() {

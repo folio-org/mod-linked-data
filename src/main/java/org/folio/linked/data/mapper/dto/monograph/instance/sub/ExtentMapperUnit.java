@@ -32,7 +32,7 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
     if (parentDto instanceof InstanceResponse instance) {
       var extent = coreMapper.toDtoWithEdges(source, ExtentResponse.class, false);
       extent.setId(String.valueOf(source.getId()));
-      instance.addExtentItem(extent);
+      instance.addExtentV2Item(extent);
     }
     return parentDto;
   }

@@ -295,7 +295,10 @@
           ]
         }
       ],
-      "http://bibfra.me/vocab/lite/extent": [
+             "http://bibfra.me/vocab/lite/extent": [
+               "extent info"
+             ],
+      "http://bibfra.me/vocab/lite/extentV2": [
         {
             "http://bibfra.me/vocab/lite/label": [
                 "extent label"
