@@ -17,6 +17,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
+import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
@@ -194,8 +195,9 @@ public abstract class WorkSearchMessageMapper {
       .filter(re -> CLASSIFICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(tr -> new LinkedDataWorkOnlyClassificationsInner()
+        .type(getValue(tr.getDoc(), SOURCE.getValue()))
         .number(getValue(tr.getDoc(), CODE.getValue()))
-        .source(getValue(tr.getDoc(), SOURCE.getValue())))
+        .additionalNumber(getValue(tr.getDoc(), ITEM_NUMBER.getValue())))
       .filter(bci -> nonNull(bci.getNumber()))
       .distinct()
       .toList();
