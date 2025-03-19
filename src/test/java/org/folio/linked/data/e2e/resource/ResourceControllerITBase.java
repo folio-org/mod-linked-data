@@ -67,7 +67,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPEC;
+import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPECIFIED;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
@@ -1206,7 +1206,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
 
     assertThat(doc.size()).isEqualTo(3);
     validateLiteral(extent, LABEL.getValue(), "extent label");
-    validateLiteral(extent, MATERIALS_SPEC.getValue(), "materials spec");
+    validateLiteral(extent, MATERIALS_SPECIFIED.getValue(), "materials spec");
     validateLiteral(extent, NOTE.getValue(), "extent note");
     assertThat(extent.getOutgoingEdges()).isEmpty();
   }

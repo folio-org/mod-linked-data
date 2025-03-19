@@ -17,7 +17,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/materialsSpec"
+          "x-json-property": "http://bibfra.me/vocab/marc/materialsSpecified"
         },
         "note": {
           "type": "array",

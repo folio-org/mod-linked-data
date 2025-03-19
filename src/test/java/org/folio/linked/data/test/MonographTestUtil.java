@@ -67,7 +67,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPEC;
+import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPECIFIED;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
@@ -246,7 +246,7 @@ public class MonographTestUtil {
     var extent = createResource(
       Map.of(
         LABEL, List.of("extent label"),
-        MATERIALS_SPEC, List.of("materials spec"),
+        MATERIALS_SPECIFIED, List.of("materials spec"),
         NOTE, List.of("extent note")
       ),
       Set.of(ResourceTypeDictionary.EXTENT),

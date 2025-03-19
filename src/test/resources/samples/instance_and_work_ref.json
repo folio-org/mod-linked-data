@@ -303,7 +303,7 @@
             "http://bibfra.me/vocab/lite/label": [
                 "extent label"
             ],
-            "http://bibfra.me/vocab/marc/materialsSpec": [
+            "http://bibfra.me/vocab/marc/materialsSpecified": [
                 "materials spec"
             ],
             "http://bibfra.me/vocab/lite/note": [

@@ -51,7 +51,7 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
   private JsonNode getDoc(Extent dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, PropertyDictionary.LABEL, dto.getLabel());
-    putProperty(map, PropertyDictionary.MATERIALS_SPEC, dto.getMaterialsSpec());
+    putProperty(map, PropertyDictionary.MATERIALS_SPECIFIED, dto.getMaterialsSpec());
     putProperty(map, PropertyDictionary.NOTE, dto.getNote());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
