@@ -16,6 +16,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
+import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
@@ -66,6 +67,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPECIFIED;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
@@ -152,6 +154,9 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanQualifie
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEditionStatement;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtent;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentMaterialsSpec;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentNote;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toId;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsLink;
@@ -618,8 +623,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(63);
-    assertThat(resourceTestService.countEdges()).isEqualTo(65);
+    assertThat(resourceTestService.countResources()).isEqualTo(64);
+    assertThat(resourceTestService.countEdges()).isEqualTo(66);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -630,7 +635,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(62);
+    assertThat(resourceTestService.countResources()).isEqualTo(63);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(47);
     checkSearchIndexMessage(work.getId(), UPDATE);
@@ -642,8 +647,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(63);
-    assertThat(resourceTestService.countEdges()).isEqualTo(65);
+    assertThat(resourceTestService.countResources()).isEqualTo(64);
+    assertThat(resourceTestService.countEdges()).isEqualTo(66);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -654,9 +659,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(62);
+    assertThat(resourceTestService.countResources()).isEqualTo(63);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(32);
+    assertThat(resourceTestService.countEdges()).isEqualTo(33);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -728,6 +733,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
         .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
         .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
         .andExpect(jsonPath(toExtent(), equalTo("extent info")))
+        .andExpect(jsonPath(toExtentLabel(), equalTo("extent label")))
+        .andExpect(jsonPath(toExtentMaterialsSpec(), equalTo("materials spec")))
+        .andExpect(jsonPath(toExtentNote(), equalTo("extent note")))
         .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
         .andExpect(jsonPath(toEanValue(), equalTo(List.of("ean value"))))
         .andExpect(jsonPath(toEanQualifier(), equalTo(List.of("ean qualifier"))))
@@ -891,6 +899,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(instance.getDoc().size()).isEqualTo(20);
+    validateLiteral(instance, PropertyDictionary.EXTENT.getValue(), "extent info");
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
@@ -910,13 +919,14 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateLiteral(instance, REPRODUCTION_NOTE.getValue(), "reproduction note");
     validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
     validateLiteral(instance, WITH_NOTE.getValue(), "with note");
-    assertThat(instance.getOutgoingEdges()).hasSize(18);
+    assertThat(instance.getOutgoingEdges()).hasSize(19);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateParallelTitle(edgeIterator.next(), instance);
     validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
     validateCategory(edgeIterator.next(), instance, MEDIA, "http://id.loc.gov/vocabulary/mediaTypes/s", "s");
     validateLccn(edgeIterator.next(), instance);
+    validateExtent(edgeIterator.next(), instance);
     var edge = edgeIterator.next();
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(instance);
@@ -1178,6 +1188,27 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateLiteral(supplementaryContent, LINK.getValue(), "supplementaryContent link");
     validateLiteral(supplementaryContent, NAME.getValue(), "supplementaryContent name");
     assertThat(supplementaryContent.getOutgoingEdges()).isEmpty();
+  }
+
+  private void validateExtent(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(EXTENT.getUri());
+
+    var extent = edge.getTarget();
+
+    assertThat(extent.getLabel()).isEqualTo("extent label");
+    assertThat(extent.getTypes().iterator().next().getUri())
+      .isEqualTo(ResourceTypeDictionary.EXTENT.getUri());
+    assertThat(extent.getId()).isEqualTo(hashService.hash(extent));
+
+    var doc = extent.getDoc();
+
+    assertThat(doc.size()).isEqualTo(3);
+    validateLiteral(extent, LABEL.getValue(), "extent label");
+    validateLiteral(extent, MATERIALS_SPECIFIED.getValue(), "materials spec");
+    validateLiteral(extent, NOTE.getValue(), "extent note");
+    assertThat(extent.getOutgoingEdges()).isEmpty();
   }
 
   private void validateAccessLocation(ResourceEdge edge, Resource source) {
