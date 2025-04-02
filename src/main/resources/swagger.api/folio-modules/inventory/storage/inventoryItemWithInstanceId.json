@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Inventory Item with InstanceId",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "instanceId": {
+      "description": "Inventory Instance ID",
+      "type": "string"
+    },
+    "item": {
+      "type": "object",
+      "$ref": "inventoryItem.json",
+      "description": "Inventory Item"
+    }
+  }
+}

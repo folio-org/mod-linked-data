@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Inventory domain event data model",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "eventId": {
+      "description": "UUID",
+      "$ref": "../../common/uuid.json"
+    },
+    "eventTs": {
+      "description": "Event timestamp",
+      "type": "string"
+    },
+    "oldEntity": {
+      "description": "Old entity",
+      "$ref": "inventoryDomainEventPayload.json"
+    },
+    "newEntity": {
+      "description": "New entity",
+      "$ref": "inventoryDomainEventPayload.json"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "UPDATE",
+        "DELETE",
+        "CREATE",
+        "DELETE_ALL",
+        "REINDEX",
+        "ITERATE",
+        "MIGRATION"
+      ],
+      "description": "Inventory domain event type"
+    },
+    "eventMetadata": {
+      "type": "object",
+      "$ref": "../../common/eventMetadata.json",
+      "description": "Event metadata"
+    },
+    "tenant": {
+      "type": "string",
+      "description": "Tenant id"
+    }
+  },
+  "excludedFromEqualsAndHashCode": [
+    "eventMetadata"
+  ],
+  "required": [
+    "id",
+    "eventType"
+  ]
+}
