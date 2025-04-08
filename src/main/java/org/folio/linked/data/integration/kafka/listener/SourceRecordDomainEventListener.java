@@ -3,6 +3,7 @@ package org.folio.linked.data.integration.kafka.listener;
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
+import static org.folio.linked.data.util.Constants.MISSING_MODULE_MSG;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
 import org.folio.linked.data.integration.kafka.listener.handler.SourceRecordDomainEventHandler;
+import org.folio.linked.data.service.ApplicationService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -35,6 +37,7 @@ public class SourceRecordDomainEventListener {
   private static final Set<String> REQUIRED_HEADERS = Set.of(TENANT, URL, RECORD_TYPE);
   private final TenantScopedExecutionService tenantScopedExecutionService;
   private final SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
+  private final ApplicationService applicationService;
 
   @KafkaListener(
     id = SRS_DOMAIN_EVENT_LISTENER,
@@ -43,7 +46,15 @@ public class SourceRecordDomainEventListener {
     concurrency = "#{folioKafkaProperties.listener['source-record-domain-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['source-record-domain-event'].topicPattern}")
   public void handleSourceRecordDomainEvent(List<ConsumerRecord<String, SourceRecordDomainEvent>> consumerRecords) {
-    consumerRecords.forEach(this::processRecord);
+    consumerRecords.forEach(consumerRecord -> {
+      var tenant = getHeaderValueByName(consumerRecord, TENANT).orElseThrow();
+      if (applicationService.isModuleInstalled(tenant)) {
+        processRecord(consumerRecord);
+      } else {
+        var event = consumerRecord.value();
+        log.debug(MISSING_MODULE_MSG, event.getClass().getSimpleName(), event.getId(), tenant);
+      }
+    });
   }
 
   private void processRecord(ConsumerRecord<String, SourceRecordDomainEvent> consumerRecord) {

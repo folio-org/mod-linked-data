@@ -8,9 +8,11 @@ import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEvent;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventSampleProducerRecord;
+import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
@@ -94,6 +96,20 @@ class SourceRecordDomainEventListenerIT {
 
     // then
     awaitAndAssert(() -> verify(sourceRecordDomainEventHandler).handle(expectedEvent, MARC_AUTHORITY));
+  }
+
+  @Test
+  void shouldNotHandleSrsDomainEvent_whenModuleNotInstalled() {
+    // given
+    var eventProducerRecord = getSrsDomainEventSampleProducerRecord();
+    eventProducerRecord.headers().remove(TENANT);
+    eventProducerRecord.headers().add(TENANT, "some-tenant-without-linked-data-module".getBytes());
+
+    // when
+    eventKafkaTemplate.send(eventProducerRecord);
+
+    // then
+    awaitAndAssert(() -> verifyNoInteractions(sourceRecordDomainEventHandler));
   }
 
 }
