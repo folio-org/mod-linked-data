@@ -3,7 +3,6 @@ package org.folio.linked.data.integration.kafka.listener;
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
-import static org.folio.linked.data.util.Constants.MISSING_MODULE_MSG;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
@@ -30,7 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class SourceRecordDomainEventListener {
+public class SourceRecordDomainEventListener implements LinkedDataListener<SourceRecordDomainEvent> {
 
   private static final String SRS_DOMAIN_EVENT_LISTENER = "mod-linked-data-source-record-domain-event-listener";
   private static final String RECORD_TYPE = "folio.srs.recordType";
@@ -46,15 +45,12 @@ public class SourceRecordDomainEventListener {
     concurrency = "#{folioKafkaProperties.listener['source-record-domain-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['source-record-domain-event'].topicPattern}")
   public void handleSourceRecordDomainEvent(List<ConsumerRecord<String, SourceRecordDomainEvent>> consumerRecords) {
-    consumerRecords.forEach(consumerRecord -> {
-      var tenant = getHeaderValueByName(consumerRecord, TENANT).orElseThrow();
-      if (applicationService.isModuleInstalled(tenant)) {
-        processRecord(consumerRecord);
-      } else {
-        var event = consumerRecord.value();
-        log.debug(MISSING_MODULE_MSG, event.getClass().getSimpleName(), event.getId(), tenant);
-      }
-    });
+    handle(consumerRecords, this::processRecord, applicationService, log);
+  }
+
+  @Override
+  public String getEventId(SourceRecordDomainEvent event) {
+    return event.getId();
   }
 
   private void processRecord(ConsumerRecord<String, SourceRecordDomainEvent> consumerRecord) {

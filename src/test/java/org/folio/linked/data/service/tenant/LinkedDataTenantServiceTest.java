@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import org.folio.linked.data.job.CacheCleaningJob;
 import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
@@ -29,6 +30,8 @@ class LinkedDataTenantServiceTest {
   private FolioSpringLiquibase folioSpringLiquibase;
   @Mock
   private TenantServiceWorker testWorker;
+  @Mock
+  private CacheCleaningJob cacheCleaningJob;
 
   private LinkedDataTenantService tenantService;
   private final String tenantId = "tenant-01";
@@ -39,7 +42,8 @@ class LinkedDataTenantServiceTest {
       jdbcTemplate,
       context,
       folioSpringLiquibase,
-      List.of(testWorker)
+      List.of(testWorker),
+      cacheCleaningJob
     );
     when(context.getTenantId()).thenReturn(tenantId);
   }
@@ -58,7 +62,7 @@ class LinkedDataTenantServiceTest {
   }
 
   @Test
-  void shouldCallWorker_afterTenantUpdate() {
+  void shouldCallWorker_andCleanModuleStateCache_afterTenantUpdate() {
     //given
     var attributes = mock(TenantAttributes.class);
 
@@ -68,10 +72,11 @@ class LinkedDataTenantServiceTest {
     //then
     verify(testWorker)
       .afterTenantUpdate(tenantId, attributes);
+    verify(cacheCleaningJob).emptyModuleState();
   }
 
   @Test
-  void shouldCallWorker_afterTenantDeletion() {
+  void shouldCallWorker_andCleanModuleStateCache_afterTenantDeletion() {
     //given
     var attributes = mock(TenantAttributes.class);
 
@@ -81,5 +86,6 @@ class LinkedDataTenantServiceTest {
     //then
     verify(testWorker)
       .afterTenantDeletion(tenantId);
+    verify(cacheCleaningJob).emptyModuleState();
   }
 }

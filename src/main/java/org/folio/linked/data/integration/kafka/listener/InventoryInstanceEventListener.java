@@ -2,10 +2,7 @@ package org.folio.linked.data.integration.kafka.listener;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
-import static org.folio.linked.data.util.Constants.MISSING_MODULE_MSG;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
-import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
-import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class InventoryInstanceEventListener {
+public class InventoryInstanceEventListener implements LinkedDataListener<InventoryInstanceEvent> {
 
   private static final String INVENTORY_INSTANCE_EVENT_LISTENER = "mod-linked-data-inventory-instance-event-listener";
   private static final String INVENTORY_EVENT_LISTENER_CONTAINER_FACTORY = "inventoryEventListenerContainerFactory";
@@ -40,15 +37,12 @@ public class InventoryInstanceEventListener {
     concurrency = "#{folioKafkaProperties.listener['inventory-instance-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['inventory-instance-event'].topicPattern}")
   public void handleInventoryInstanceEvent(List<ConsumerRecord<String, InventoryInstanceEvent>> consumerRecords) {
-    consumerRecords.forEach(consumerRecord -> {
-      var tenant = getHeaderValueByName(consumerRecord, TENANT).orElseThrow();
-      if (applicationService.isModuleInstalled(tenant)) {
-        handleRecord(consumerRecord);
-      } else {
-        var event = consumerRecord.value();
-        log.debug(MISSING_MODULE_MSG, event.getClass().getSimpleName(), event.getId(), tenant);
-      }
-    });
+    handle(consumerRecords, this::handleRecord, applicationService, log);
+  }
+
+  @Override
+  public String getEventId(InventoryInstanceEvent event) {
+    return event.getId();
   }
 
   private void handleRecord(ConsumerRecord<String, InventoryInstanceEvent> consumerRecord) {

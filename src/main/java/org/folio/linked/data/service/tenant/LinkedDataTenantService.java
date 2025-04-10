@@ -4,6 +4,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Collection;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.job.CacheCleaningJob;
 import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
@@ -22,16 +23,19 @@ import org.springframework.stereotype.Service;
 public class LinkedDataTenantService extends TenantService {
 
   private final Collection<TenantServiceWorker> workers;
+  private final CacheCleaningJob cacheCleaningJob;
 
   @Autowired
   public LinkedDataTenantService(
     JdbcTemplate jdbcTemplate,
     FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase,
-    Collection<TenantServiceWorker> workers
+    Collection<TenantServiceWorker> workers,
+    CacheCleaningJob cacheCleaningJob
   ) {
     super(jdbcTemplate, context, folioSpringLiquibase);
     this.workers = workers;
+    this.cacheCleaningJob = cacheCleaningJob;
   }
 
   @Override
@@ -44,11 +48,13 @@ public class LinkedDataTenantService extends TenantService {
   public void afterTenantUpdate(TenantAttributes tenantAttributes) {
     log.info("Start after update actions for the tenant [{}]", context.getTenantId());
     workers.forEach(worker -> worker.afterTenantUpdate(context.getTenantId(), tenantAttributes));
+    cacheCleaningJob.emptyModuleState();
   }
 
   @Override
   public void afterTenantDeletion(TenantAttributes tenantAttributes) {
     log.info("Start after delete actions for the tenant [{}]", context.getTenantId());
     workers.forEach(worker -> worker.afterTenantDeletion(context.getTenantId()));
+    cacheCleaningJob.emptyModuleState();
   }
 }

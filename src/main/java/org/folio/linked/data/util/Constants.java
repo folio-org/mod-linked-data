@@ -21,8 +21,6 @@ public class Constants {
   public static final String MSG_NOT_FOUND_IN = "{} with {}: {} was not found in {}";
   public static final String LINKED_DATA_STORAGE = "Linked Data storage";
   public static final String EMPTY_CACHE_MSG = "Emptying {} cache";
-  public static final String MISSING_MODULE_MSG =
-    "Received {} [id {}] will be ignored since module is not installed on tenant {}";
 
   @UtilityClass
   public static class Cache {
