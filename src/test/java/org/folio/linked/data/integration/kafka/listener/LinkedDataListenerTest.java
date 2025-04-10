@@ -49,10 +49,11 @@ class LinkedDataListenerTest {
     when(consumerRecord.value()).thenReturn(new InventoryInstanceEvent(eventId));
     when(consumerRecord.headers()).thenReturn(headers);
     when(headers.lastHeader(TENANT)).thenReturn(null);
+    var consumerRecords = List.of(consumerRecord);
 
     // when
     var thrown = assertThrows(IllegalArgumentException.class,
-      () -> listener.handle(List.of(consumerRecord), System.out::println, applicationService, logger));
+      () -> listener.handle(consumerRecords, System.out::println, applicationService, logger));
 
     // then
     assertThat(thrown.getMessage())
