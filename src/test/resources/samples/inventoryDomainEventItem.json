@@ -1,0 +1,62 @@
+{
+	"new": {
+		"instanceId": "c1ef011b-f97e-4ed0-aec3-636cd2f64107",
+		"id": "bafdd67b-f8f5-45e7-971a-8ab0fb76b03a",
+		"_version": 1,
+		"hrid": "oit00160053757",
+		"holdingsRecordId": "d48996b4-170e-43e4-8f4d-cafaa75e7b52",
+		"formerIds": [],
+		"displaySummary": "Enum display summary",
+		"barcode": "Barcode",
+		"effectiveShelvingOrder": "41509 VOLUME VALUE ENUMERATION VALUE CHRONOLOGY VALUE",
+		"itemLevelCallNumber": "1509",
+		"effectiveCallNumberComponents": {
+			"callNumber": "1509",
+			"typeId": "95467209-6d7b-468b-94df-0f5d7ad2747d"
+		},
+		"volume": "Volume value",
+		"enumeration": "Enumeration value",
+		"chronology": "Chronology value",
+		"yearCaption": [
+			"Year, caption"
+		],
+		"itemDamagedStatusId": "516b82eb-1f19-4a63-8c48-8f1a3e9ff311",
+		"itemDamagedStatusDate": "2025-04-11",
+		"administrativeNotes": [],
+		"notes": [
+			{
+				"itemNoteTypeId": "f618d7d8-0ab2-40ed-b76a-9a6cff141643",
+				"note": "Action note",
+				"staffOnly": false
+			},
+			{
+				"itemNoteTypeId": "2864ca78-7d78-4a90-8ff6-13a4e30128b4",
+				"note": "Note",
+				"staffOnly": false
+			}
+		],
+		"circulationNotes": [],
+		"status": {
+			"name": "Available",
+			"date": "2025-04-11T11:44:08.630+00:00"
+		},
+		"materialTypeId": "025ba2c5-5e96-4667-a677-8186463aee69",
+		"permanentLoanTypeId": "668c4500-fc4e-4140-8a9f-872b54f5ef31",
+		"effectiveLocationId": "574326a1-f240-4222-82b3-21ccd6d6e5e5",
+		"electronicAccess": [],
+		"statisticalCodeIds": [],
+		"tags": {
+			"tagList": []
+		},
+		"metadata": {
+			"createdDate": "2025-04-11T11:44:08.629+00:00",
+			"createdByUserId": "cee695b3-8732-447c-90d2-534f1fa16991",
+			"updatedDate": "2025-04-11T11:44:08.629+00:00",
+			"updatedByUserId": "cee695b3-8732-447c-90d2-534f1fa16991"
+		}
+	},
+	"type": "CREATE",
+	"tenant": "fs09000000",
+	"eventId": "ae3aa2db-c71a-4a32-83d7-3d7534178f5a",
+	"eventTs": 1744371848744
+}

@@ -3,6 +3,10 @@
   "description": "An item record",
   "type": "object",
   "properties": {
+    "instanceId": {
+      "description": "Inventory Instance ID",
+      "type": "string"
+    },
     "id": {
       "type": "string",
       "description": "Unique ID of the item record"
