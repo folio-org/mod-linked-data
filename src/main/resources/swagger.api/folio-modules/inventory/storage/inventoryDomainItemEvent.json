@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Inventory domain event data model",
+  "description": "Inventory Item domain event data model",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -12,13 +12,13 @@
       "description": "Event timestamp",
       "type": "string"
     },
-    "oldEntity": {
+    "old": {
       "description": "Old entity",
-      "$ref": "inventoryDomainEventPayload.json"
+      "$ref": "inventoryItem.json"
     },
-    "newEntity": {
+    "new": {
       "description": "New entity",
-      "$ref": "inventoryDomainEventPayload.json"
+      "$ref": "inventoryItem.json"
     },
     "type": {
       "type": "string",
