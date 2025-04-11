@@ -47,7 +47,7 @@
     <lombok.mapstruct-binding.version>0.2.0</lombok.mapstruct-binding.version>
     <hibernate-types.version>2.21.1</hibernate-types.version>
     <lib-linked-data-dictionary.version>1.0.1</lib-linked-data-dictionary.version>
-    <lib-linked-data-marc4ld.version>1.0.2</lib-linked-data-marc4ld.version>
+    <lib-linked-data-marc4ld.version>1.0.3</lib-linked-data-marc4ld.version>
     <lib-linked-data-fingerprint.version>1.0.1</lib-linked-data-fingerprint.version>
     <mod-source-record-storage-client.version>5.9.11</mod-source-record-storage-client.version>
     <mod-record-specifications-dto.version>2.0.0</mod-record-specifications-dto.version>
@@ -94,9 +94,9 @@
     </dependency>
 
     <dependency>
-      <groupId>com.github.folio-org</groupId>
+      <groupId>org.folio</groupId>
       <artifactId>lib-linked-data-marc4ld</artifactId>
-      <version>v1.0.3-master-SNAPSHOT</version>
+      <version>${lib-linked-data-marc4ld.version}</version>
     </dependency>
 
     <dependency>
@@ -604,10 +604,6 @@
       <id>index-data-nexus</id>
       <name>FOLIO Maven repository</name>
       <url>https://maven.indexdata.com</url>
-    </repository>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
     </repository>
   </repositories>
 
