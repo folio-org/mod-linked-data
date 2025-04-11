@@ -11,6 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.integration.kafka.listener.handler.InventoryInstanceEventHandler;
+import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -21,12 +22,13 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class InventoryInstanceEventListener {
+public class InventoryInstanceEventListener implements LinkedDataListener<InventoryInstanceEvent> {
 
   private static final String INVENTORY_INSTANCE_EVENT_LISTENER = "mod-linked-data-inventory-instance-event-listener";
   private static final String INVENTORY_EVENT_LISTENER_CONTAINER_FACTORY = "inventoryEventListenerContainerFactory";
   private final TenantScopedExecutionService tenantScopedExecutionService;
   private final InventoryInstanceEventHandler inventoryInstanceEventHandler;
+  private final LinkedDataTenantService linkedDataTenantService;
 
   @KafkaListener(
     id = INVENTORY_INSTANCE_EVENT_LISTENER,
@@ -35,7 +37,12 @@ public class InventoryInstanceEventListener {
     concurrency = "#{folioKafkaProperties.listener['inventory-instance-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['inventory-instance-event'].topicPattern}")
   public void handleInventoryInstanceEvent(List<ConsumerRecord<String, InventoryInstanceEvent>> consumerRecords) {
-    consumerRecords.forEach(this::handleRecord);
+    handle(consumerRecords, this::handleRecord, linkedDataTenantService, log);
+  }
+
+  @Override
+  public String getEventId(InventoryInstanceEvent event) {
+    return event.getId();
   }
 
   private void handleRecord(ConsumerRecord<String, InventoryInstanceEvent> consumerRecord) {

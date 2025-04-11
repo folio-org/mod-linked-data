@@ -20,10 +20,12 @@ public class Constants {
     "Unknown type(s) [{}] of [{}] was ignored during Resource [resourceId = {}] conversion to Index message";
   public static final String MSG_NOT_FOUND_IN = "{} with {}: {} was not found in {}";
   public static final String LINKED_DATA_STORAGE = "Linked Data storage";
+  public static final String EMPTY_CACHE_MSG = "Emptying {} cache";
 
   @UtilityClass
   public static class Cache {
     public static final String SPEC_RULES = "spec-rules";
     public static final String SETTINGS_ENTRIES = "settings-entries";
+    public static final String MODULE_STATE = "module-state";
   }
 }

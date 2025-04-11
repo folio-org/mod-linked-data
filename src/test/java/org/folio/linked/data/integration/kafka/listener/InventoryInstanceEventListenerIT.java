@@ -3,12 +3,15 @@ package org.folio.linked.data.integration.kafka.listener;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getInventoryInstanceEventSampleProducerRecord;
+import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -71,5 +74,19 @@ class InventoryInstanceEventListenerIT {
     // then
     awaitAndAssert(() -> verify(inventoryInstanceDomainEventHandler, times(2))
       .handle(expectedEvent));
+  }
+
+  @Test
+  void shouldNotConsumeInventoryInstanceEvent_whenModuleNotInstalled() {
+    // given
+    var eventProducerRecord = getInventoryInstanceEventSampleProducerRecord();
+    eventProducerRecord.headers().remove(TENANT);
+    eventProducerRecord.headers().add(new RecordHeader(TENANT, "diku".getBytes()));
+
+    // when
+    eventKafkaTemplate.send(eventProducerRecord);
+
+    // then
+    awaitAndAssert(() -> verifyNoInteractions(inventoryInstanceDomainEventHandler));
   }
 }
