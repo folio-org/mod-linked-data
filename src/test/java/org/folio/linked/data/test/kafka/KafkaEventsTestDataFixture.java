@@ -2,6 +2,8 @@ package org.folio.linked.data.test.kafka;
 
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
+import static org.folio.linked.data.test.TestUtil.INVENTORY_DOMAIN_EVENT_HOLDING_TOPIC;
+import static org.folio.linked.data.test.TestUtil.INVENTORY_DOMAIN_EVENT_ITEM_TOPIC;
 import static org.folio.linked.data.test.TestUtil.INVENTORY_INSTANCE_EVENT_TOPIC;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.RECORD_DOMAIN_EVENT_TOPIC;
@@ -34,6 +36,20 @@ public class KafkaEventsTestDataFixture {
     var value = TestUtil.loadResourceAsString("samples/srsDomainEvent.json");
     var headers = new ArrayList<>(defaultKafkaHeaders());
     headers.add(new RecordHeader("folio.srs.recordType", MARC_BIB.name().getBytes()));
+    return new ProducerRecord(topic, 0, "1", value, headers);
+  }
+
+  public static ProducerRecord<String, String> getInventoryDomainEventItemSampleProducerRecord() {
+    var topic = getTenantTopicName(INVENTORY_DOMAIN_EVENT_ITEM_TOPIC, TENANT_ID);
+    var value = TestUtil.loadResourceAsString("samples/inventoryDomainEventItem.json");
+    var headers = new ArrayList<>(defaultKafkaHeaders());
+    return new ProducerRecord(topic, 0, "1", value, headers);
+  }
+
+  public static ProducerRecord<String, String> getInventoryDomainEventHoldingSampleProducerRecord() {
+    var topic = getTenantTopicName(INVENTORY_DOMAIN_EVENT_HOLDING_TOPIC, TENANT_ID);
+    var value = TestUtil.loadResourceAsString("samples/inventoryDomainEventHolding.json");
+    var headers = new ArrayList<>(defaultKafkaHeaders());
     return new ProducerRecord(topic, 0, "1", value, headers);
   }
 
