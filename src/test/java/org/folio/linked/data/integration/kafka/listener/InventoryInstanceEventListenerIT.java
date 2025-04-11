@@ -81,7 +81,7 @@ class InventoryInstanceEventListenerIT {
     // given
     var eventProducerRecord = getInventoryInstanceEventSampleProducerRecord();
     eventProducerRecord.headers().remove(TENANT);
-    eventProducerRecord.headers().add(new RecordHeader(TENANT, "some-tenant-without-linked-data-module".getBytes()));
+    eventProducerRecord.headers().add(new RecordHeader(TENANT, "diku".getBytes()));
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);

@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
 import org.folio.linked.data.integration.kafka.listener.handler.SourceRecordDomainEventHandler;
-import org.folio.linked.data.service.ApplicationService;
+import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -36,7 +36,7 @@ public class SourceRecordDomainEventListener implements LinkedDataListener<Sourc
   private static final Set<String> REQUIRED_HEADERS = Set.of(TENANT, URL, RECORD_TYPE);
   private final TenantScopedExecutionService tenantScopedExecutionService;
   private final SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
-  private final ApplicationService applicationService;
+  private final LinkedDataTenantService linkedDataTenantService;
 
   @KafkaListener(
     id = SRS_DOMAIN_EVENT_LISTENER,
@@ -45,7 +45,7 @@ public class SourceRecordDomainEventListener implements LinkedDataListener<Sourc
     concurrency = "#{folioKafkaProperties.listener['source-record-domain-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['source-record-domain-event'].topicPattern}")
   public void handleSourceRecordDomainEvent(List<ConsumerRecord<String, SourceRecordDomainEvent>> consumerRecords) {
-    handle(consumerRecords, this::processRecord, applicationService, log);
+    handle(consumerRecords, this::processRecord, linkedDataTenantService, log);
   }
 
   @Override

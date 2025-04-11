@@ -103,7 +103,7 @@ class SourceRecordDomainEventListenerIT {
     // given
     var eventProducerRecord = getSrsDomainEventSampleProducerRecord();
     eventProducerRecord.headers().remove(TENANT);
-    eventProducerRecord.headers().add(TENANT, "some-tenant-without-linked-data-module".getBytes());
+    eventProducerRecord.headers().add(TENANT, "diku".getBytes());
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);

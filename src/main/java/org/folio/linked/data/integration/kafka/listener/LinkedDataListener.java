@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.logging.log4j.Logger;
-import org.folio.linked.data.service.ApplicationService;
+import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 
 public interface LinkedDataListener<T> {
 
@@ -15,7 +15,7 @@ public interface LinkedDataListener<T> {
 
   default void handle(List<ConsumerRecord<String, T>> consumerRecords,
                       Consumer<ConsumerRecord<String, T>> handler,
-                      ApplicationService applicationService,
+                      LinkedDataTenantService linkedDataTenantService,
                       Logger log) {
     consumerRecords.forEach(consumerRecord -> {
       var event = consumerRecord.value();
@@ -25,7 +25,7 @@ public interface LinkedDataListener<T> {
         .orElseThrow(() -> new IllegalArgumentException("Received %s [id %s] is missing x-okapi-tenant header"
           .formatted(eventName, eventId)));
 
-      if (applicationService.isModuleInstalled(tenant)) {
+      if (linkedDataTenantService.isTenantExists(tenant)) {
         handler.accept(consumerRecord);
       } else {
         log.debug("Received {} [id {}] will be ignored since module is not installed on tenant {}",

@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.tenant;
 
+import static org.folio.linked.data.util.Constants.Cache.MODULE_STATE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Collection;
@@ -11,6 +12,7 @@ import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,6 +26,7 @@ public class LinkedDataTenantService extends TenantService {
 
   private final Collection<TenantServiceWorker> workers;
   private final CacheCleaningJob cacheCleaningJob;
+  private final TenantScopedExecutionService tenantScopedExecutionService;
 
   @Autowired
   public LinkedDataTenantService(
@@ -31,11 +34,13 @@ public class LinkedDataTenantService extends TenantService {
     FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase,
     Collection<TenantServiceWorker> workers,
-    CacheCleaningJob cacheCleaningJob
+    CacheCleaningJob cacheCleaningJob,
+    TenantScopedExecutionService tenantScopedExecutionService
   ) {
     super(jdbcTemplate, context, folioSpringLiquibase);
     this.workers = workers;
     this.cacheCleaningJob = cacheCleaningJob;
+    this.tenantScopedExecutionService = tenantScopedExecutionService;
   }
 
   @Override
@@ -56,5 +61,10 @@ public class LinkedDataTenantService extends TenantService {
     log.info("Start after delete actions for the tenant [{}]", context.getTenantId());
     workers.forEach(worker -> worker.afterTenantDeletion(context.getTenantId()));
     cacheCleaningJob.emptyModuleState();
+  }
+
+  @Cacheable(cacheNames = MODULE_STATE)
+  public boolean isTenantExists(String tenantId) {
+    return tenantScopedExecutionService.execute(tenantId, super::tenantExists);
   }
 }

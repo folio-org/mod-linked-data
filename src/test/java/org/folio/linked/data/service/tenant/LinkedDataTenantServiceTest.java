@@ -32,6 +32,8 @@ class LinkedDataTenantServiceTest {
   private TenantServiceWorker testWorker;
   @Mock
   private CacheCleaningJob cacheCleaningJob;
+  @Mock
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   private LinkedDataTenantService tenantService;
   private final String tenantId = "tenant-01";
@@ -43,7 +45,8 @@ class LinkedDataTenantServiceTest {
       context,
       folioSpringLiquibase,
       List.of(testWorker),
-      cacheCleaningJob
+      cacheCleaningJob,
+      tenantScopedExecutionService
     );
     when(context.getTenantId()).thenReturn(tenantId);
   }

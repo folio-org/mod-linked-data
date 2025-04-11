@@ -11,7 +11,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.integration.kafka.listener.handler.InventoryInstanceEventHandler;
-import org.folio.linked.data.service.ApplicationService;
+import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -28,7 +28,7 @@ public class InventoryInstanceEventListener implements LinkedDataListener<Invent
   private static final String INVENTORY_EVENT_LISTENER_CONTAINER_FACTORY = "inventoryEventListenerContainerFactory";
   private final TenantScopedExecutionService tenantScopedExecutionService;
   private final InventoryInstanceEventHandler inventoryInstanceEventHandler;
-  private final ApplicationService applicationService;
+  private final LinkedDataTenantService linkedDataTenantService;
 
   @KafkaListener(
     id = INVENTORY_INSTANCE_EVENT_LISTENER,
@@ -37,7 +37,7 @@ public class InventoryInstanceEventListener implements LinkedDataListener<Invent
     concurrency = "#{folioKafkaProperties.listener['inventory-instance-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['inventory-instance-event'].topicPattern}")
   public void handleInventoryInstanceEvent(List<ConsumerRecord<String, InventoryInstanceEvent>> consumerRecords) {
-    handle(consumerRecords, this::handleRecord, applicationService, log);
+    handle(consumerRecords, this::handleRecord, linkedDataTenantService, log);
   }
 
   @Override

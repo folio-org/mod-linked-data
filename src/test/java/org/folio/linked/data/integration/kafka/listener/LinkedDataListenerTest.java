@@ -14,7 +14,7 @@ import org.apache.kafka.common.header.Headers;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.logging.log4j.Logger;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
-import org.folio.linked.data.service.ApplicationService;
+import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +26,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class LinkedDataListenerTest {
 
   @Mock
-  private ApplicationService applicationService;
+  private LinkedDataTenantService linkedDataTenantService;
 
   @Mock
   private Logger logger;
@@ -53,7 +53,7 @@ class LinkedDataListenerTest {
 
     // when
     var thrown = assertThrows(IllegalArgumentException.class,
-      () -> listener.handle(consumerRecords, System.out::println, applicationService, logger));
+      () -> listener.handle(consumerRecords, System.out::println, linkedDataTenantService, logger));
 
     // then
     assertThat(thrown.getMessage())
@@ -67,10 +67,10 @@ class LinkedDataListenerTest {
     when(consumerRecord.headers()).thenReturn(headers);
     when(headers.lastHeader(TENANT))
       .thenReturn(new RecordHeader(TENANT, TENANT_ID.getBytes()));
-    when(applicationService.isModuleInstalled(TENANT_ID)).thenReturn(false);
+    when(linkedDataTenantService.isTenantExists(TENANT_ID)).thenReturn(false);
 
     // when
-    listener.handle(List.of(consumerRecord), System.out::println, applicationService, logger);
+    listener.handle(List.of(consumerRecord), System.out::println, linkedDataTenantService, logger);
 
     // then
     verify(logger).debug("Received {} [id {}] will be ignored since module is not installed on tenant {}",
@@ -84,10 +84,10 @@ class LinkedDataListenerTest {
     when(consumerRecord.headers()).thenReturn(headers);
     when(headers.lastHeader(TENANT))
       .thenReturn(new RecordHeader(TENANT, TENANT_ID.getBytes()));
-    when(applicationService.isModuleInstalled(TENANT_ID)).thenReturn(true);
+    when(linkedDataTenantService.isTenantExists(TENANT_ID)).thenReturn(true);
 
     // when
-    listener.handle(List.of(consumerRecord), consumer, applicationService, logger);
+    listener.handle(List.of(consumerRecord), consumer, linkedDataTenantService, logger);
 
     // then
     verify(consumer).accept(consumerRecord);
