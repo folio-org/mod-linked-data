@@ -158,6 +158,14 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/extent"
         },
+        "extentV2": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Extent.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/extentV2"
+        },
         "dimensions": {
           "type": "array",
           "items": {
