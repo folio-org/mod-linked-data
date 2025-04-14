@@ -191,4 +191,12 @@ class ResourceUtilsTest {
     // then
     assertThat(ResourceUtils.isPreferred(resource)).isFalse();
   }
+
+  @Test
+  void getType_shouldReturn_resourceType() {
+
+    // expect
+    assertThat(ResourceUtils.getType(new Resource().addTypes(INSTANCE)))
+      .isEqualTo("http://bibfra.me/vocab/lite/Instance");
+  }
 }
