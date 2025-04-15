@@ -2,18 +2,24 @@ package org.folio.linked.data.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @UnitTest
 class ResourceUtilsTest {
@@ -192,11 +198,20 @@ class ResourceUtilsTest {
     assertThat(ResourceUtils.isPreferred(resource)).isFalse();
   }
 
-  @Test
-  void getType_shouldReturn_resourceType() {
-
+  @ParameterizedTest
+  @MethodSource("dataProvider")
+  void getTypes_shouldReturn_resourceTypes(Resource resource, List<String> expectedTypes) {
     // expect
-    assertThat(ResourceUtils.getType(new Resource().addTypes(INSTANCE)))
-      .isEqualTo("http://bibfra.me/vocab/lite/Instance");
+    assertThat(ResourceUtils.getTypes(resource))
+      .containsExactlyInAnyOrderElementsOf(expectedTypes);
+  }
+
+  private static Stream<Arguments> dataProvider() {
+    return Stream.of(
+      Arguments.of(new Resource().addTypes(INSTANCE), List.of("http://bibfra.me/vocab/lite/Instance")),
+      Arguments.of(new Resource().addTypes(WORK), List.of("http://bibfra.me/vocab/lite/Work")),
+      Arguments.of(new Resource().addTypes(CONCEPT, PERSON),
+        List.of("http://bibfra.me/vocab/lite/Concept", "http://bibfra.me/vocab/lite/Person"))
+    );
   }
 }

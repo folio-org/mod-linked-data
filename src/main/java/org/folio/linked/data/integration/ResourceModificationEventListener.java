@@ -1,7 +1,7 @@
 package org.folio.linked.data.integration;
 
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
-import static org.folio.linked.data.util.ResourceUtils.getType;
+import static org.folio.linked.data.util.ResourceUtils.getTypes;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class ResourceModificationEventListener {
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     var resource = resourceCreatedEvent.resource();
     log.debug("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
-    log.info("Resource with id {} and type {} was created", resource.getId(), getType(resource));
+    log.info("Resource with id {} and types {} was created", resource.getId(), getTypes(resource));
     createMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
@@ -47,7 +47,7 @@ public class ResourceModificationEventListener {
   public void afterUpdate(ResourceUpdatedEvent resourceUpdatedEvent) {
     var resource = resourceUpdatedEvent.resource();
     log.debug("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
-    log.info("Resource with id {} and type {} was updated", resource.getId(), getType(resource));
+    log.info("Resource with id {} and types {} was updated", resource.getId(), getTypes(resource));
     updateMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
@@ -56,8 +56,8 @@ public class ResourceModificationEventListener {
     var previous = resourceReplacedEvent.previous();
     var currentResourceId = resourceReplacedEvent.currentResourceId();
     log.debug("ResourceReplacedEvent received [{}]", resourceReplacedEvent);
-    log.info("Resource with id {} and type {} was replaced by resource with id {}",
-      previous.getId(), getType(previous), currentResourceId);
+    log.info("Resource with id {} and types {} was replaced by resource with id {}",
+      previous.getId(), getTypes(previous), currentResourceId);
     resourceRepository.findById(currentResourceId)
       .ifPresent(
         resource -> replaceMessageSenders.forEach(sender -> sender.produce(previous, resource))
@@ -68,7 +68,7 @@ public class ResourceModificationEventListener {
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
     var resource = resourceDeletedEvent.resource();
     log.debug("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
-    log.info("Resource with id {} and type {} was deleted", resource.getId(), getType(resource));
+    log.info("Resource with id {} and types {} was deleted", resource.getId(), getTypes(resource));
     deleteMessageSenders.forEach(sender -> sender.produce(resource));
   }
 

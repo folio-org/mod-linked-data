@@ -154,11 +154,10 @@ public class ResourceUtils {
       .isPresent();
   }
 
-  public static String getType(Resource resource) {
+  public static List<String> getTypes(Resource resource) {
     return resource.getTypes()
       .stream()
       .map(ResourceTypeEntity::getUri)
-      .findFirst()
-      .orElseThrow();
+      .toList();
   }
 }
