@@ -491,7 +491,7 @@ public class MonographTestUtil {
       Map.of(
         NAME, List.of("United States"),
         GEOGRAPHIC_AREA_CODE, List.of("n-us"),
-        GEOGRAPHIC_COVERAGE, List.of("https://id.loc.gov/vocabulary/geographicAreas/n-us")
+        GEOGRAPHIC_COVERAGE, List.of("http://id.loc.gov/vocabulary/geographicAreas/n-us")
       ),
       Set.of(PLACE),
       emptyMap()
@@ -502,7 +502,7 @@ public class MonographTestUtil {
       Map.of(
         NAME, List.of("Europe"),
         GEOGRAPHIC_AREA_CODE, List.of("e"),
-        GEOGRAPHIC_COVERAGE, List.of("https://id.loc.gov/vocabulary/geographicAreas/e")
+        GEOGRAPHIC_COVERAGE, List.of("http://id.loc.gov/vocabulary/geographicAreas/e")
       ),
       Set.of(PLACE),
       emptyMap()

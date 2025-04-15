@@ -1537,11 +1537,11 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var unitedStates = saveResource(7109832602847218134L, "United States", PLACE,
       "{\"http://bibfra.me/vocab/lite/name\": [\"United States\"], "
         + "\"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"n-us\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"https://id.loc.gov/vocabulary/geographicAreas/n-us\"]}");
+        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/n-us\"]}");
     var europe = saveResource(-4654600487710655316L, "Europe", PLACE,
       "{\"http://bibfra.me/vocab/lite/name\": [\"Europe\"], "
         + "\"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"e\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"https://id.loc.gov/vocabulary/geographicAreas/e\"]}");
+        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/e\"]}");
     var genre1 = saveResource(-9064822434663187463L, "genre 1", FORM,
       "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}", "8138e88f-4278-45ba-838c-816b80544f82");
     var genre2 = saveResource(-4816872480602594231L, "genre 2", FORM,

@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
 import org.folio.linked.data.integration.kafka.listener.handler.SourceRecordDomainEventHandler;
+import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -28,13 +29,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class SourceRecordDomainEventListener {
+public class SourceRecordDomainEventListener implements LinkedDataListener<SourceRecordDomainEvent> {
 
   private static final String SRS_DOMAIN_EVENT_LISTENER = "mod-linked-data-source-record-domain-event-listener";
   private static final String RECORD_TYPE = "folio.srs.recordType";
   private static final Set<String> REQUIRED_HEADERS = Set.of(TENANT, URL, RECORD_TYPE);
   private final TenantScopedExecutionService tenantScopedExecutionService;
   private final SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
+  private final LinkedDataTenantService linkedDataTenantService;
 
   @KafkaListener(
     id = SRS_DOMAIN_EVENT_LISTENER,
@@ -43,7 +45,12 @@ public class SourceRecordDomainEventListener {
     concurrency = "#{folioKafkaProperties.listener['source-record-domain-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['source-record-domain-event'].topicPattern}")
   public void handleSourceRecordDomainEvent(List<ConsumerRecord<String, SourceRecordDomainEvent>> consumerRecords) {
-    consumerRecords.forEach(this::processRecord);
+    handle(consumerRecords, this::processRecord, linkedDataTenantService, log);
+  }
+
+  @Override
+  public String getEventId(SourceRecordDomainEvent event) {
+    return event.getId();
   }
 
   private void processRecord(ConsumerRecord<String, SourceRecordDomainEvent> consumerRecord) {

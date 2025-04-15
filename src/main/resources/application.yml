@@ -83,6 +83,7 @@ mod-linked-data:
     ttl:
       spec-rules: ${CACHE_TTL_SPEC_RULES_MS:18000000}
       settings-entries: ${CACHE_TTL_SETTINGS_ENTRIES_MS:18000000}
+      module-state: ${CACHE_TTL_MODULE_STATE_MS:18000000}
 
 management:
   endpoints:
