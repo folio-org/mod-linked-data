@@ -82,7 +82,6 @@ public class TestUtil {
       .addDeserializer(InstanceResponseAllOfMap.class, new InstanceResponseAllOfMapDeserializer())
     );
     PARAMETERS.excludeField(named("id"));
-    PARAMETERS.randomize(Resource.class, MonographTestUtil::getSampleInstanceResource);
     PARAMETERS.randomizationDepth(3);
     PARAMETERS.scanClasspathForConcreteTypes(true);
   }
