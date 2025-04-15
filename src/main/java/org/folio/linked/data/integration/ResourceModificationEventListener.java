@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration;
 
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.ResourceUtils.getTypes;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -36,35 +37,46 @@ public class ResourceModificationEventListener {
 
   @TransactionalEventListener
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
-    log.info("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
-    createMessageSenders.forEach(sender -> sender.produce(resourceCreatedEvent.resource()));
+    var resource = resourceCreatedEvent.resource();
+    log.debug("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
+    log.info("Resource with id {} and types {} was created", resource.getId(), getTypes(resource));
+    createMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
   @TransactionalEventListener
   public void afterUpdate(ResourceUpdatedEvent resourceUpdatedEvent) {
-    log.info("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
-    updateMessageSenders.forEach(sender -> sender.produce(resourceUpdatedEvent.resource()));
+    var resource = resourceUpdatedEvent.resource();
+    log.debug("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
+    log.info("Resource with id {} and types {} was updated", resource.getId(), getTypes(resource));
+    updateMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
   @TransactionalEventListener
   public void afterReplace(ResourceReplacedEvent resourceReplacedEvent) {
-    log.info("ResourceReplacedEvent received [{}]", resourceReplacedEvent);
-    resourceRepository.findById(resourceReplacedEvent.currentResourceId())
+    var previous = resourceReplacedEvent.previous();
+    var currentResourceId = resourceReplacedEvent.currentResourceId();
+    log.debug("ResourceReplacedEvent received [{}]", resourceReplacedEvent);
+    log.info("Resource with id {} and types {} was replaced by resource with id {}",
+      previous.getId(), getTypes(previous), currentResourceId);
+    resourceRepository.findById(currentResourceId)
       .ifPresent(
-        resource -> replaceMessageSenders.forEach(sender -> sender.produce(resourceReplacedEvent.previous(), resource))
+        resource -> replaceMessageSenders.forEach(sender -> sender.produce(previous, resource))
       );
   }
 
   @TransactionalEventListener
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
-    log.info("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
-    deleteMessageSenders.forEach(sender -> sender.produce(resourceDeletedEvent.resource()));
+    var resource = resourceDeletedEvent.resource();
+    log.debug("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
+    log.info("Resource with id {} and types {} was deleted", resource.getId(), getTypes(resource));
+    deleteMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
   @EventListener
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void afterIndex(ResourceIndexedEvent resourceIndexedEvent) {
-    log.info("ResourceIndexedEvent received [{}]", resourceIndexedEvent);
+    log.debug("ResourceIndexedEvent received [{}]", resourceIndexedEvent);
+    log.info("Resource with id {} was indexed", resourceIndexedEvent.resourceId());
     resourceRepository.updateIndexDate(resourceIndexedEvent.resourceId());
   }
 }
