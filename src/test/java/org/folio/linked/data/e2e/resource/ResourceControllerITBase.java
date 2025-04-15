@@ -925,7 +925,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
     validateLiteral(instance, WITH_NOTE.getValue(), "with note");
     validateLiteral(instance, HISTORICAL_DATA.getValue(), "historical data");
-    validateLiteral(instance, BIOGRAPHICAL_DATA.getValue(), "bibliographical data");
+    validateLiteral(instance, BIOGRAPHICAL_DATA.getValue(), "biographical data");
     validateLiteral(instance, PHYSICAL_DESCRIPTION.getValue(), "physical description");
     validateLiteral(instance, ACCOMPANYING_MATERIAL.getValue(), "accompanying material");
     assertThat(instance.getOutgoingEdges()).hasSize(19);
