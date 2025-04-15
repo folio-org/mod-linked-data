@@ -35,9 +35,12 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.ACCOMPANYING_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
+import static org.folio.ld.dictionary.PropertyDictionary.AWARDS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.BIOGRAPHICAL_DATA;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
@@ -56,6 +59,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_AREA_CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.HISTORICAL_DATA;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
@@ -74,6 +78,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
@@ -288,7 +293,11 @@ public class MonographTestUtil {
         entry(RELATED_PARTS, List.of("related parts")),
         entry(REPRODUCTION_NOTE, List.of("reproduction note")),
         entry(TYPE_OF_REPORT, List.of("type of report")),
-        entry(WITH_NOTE, List.of("with note"))
+        entry(WITH_NOTE, List.of("with note")),
+        entry(HISTORICAL_DATA, List.of("historical data")),
+        entry(BIOGRAPHICAL_DATA, List.of("biographical data")),
+        entry(PHYSICAL_DESCRIPTION, List.of("physical description")),
+        entry(ACCOMPANYING_MATERIAL, List.of("accompanying material"))
       ),
       Set.of(INSTANCE),
       pred2OutgoingResources
@@ -588,7 +597,8 @@ public class MonographTestUtil {
         entry(LANGUAGE_NOTE, List.of("language note", "another note")),
         entry(NOTE, List.of("note", "another note")),
         entry(DATE_START, List.of("2024")),
-        entry(DATE_END, List.of("2025"))
+        entry(DATE_END, List.of("2025")),
+        entry(AWARDS_NOTE, List.of("awards note"))
       ),
       Set.of(WORK),
       pred2OutgoingResources

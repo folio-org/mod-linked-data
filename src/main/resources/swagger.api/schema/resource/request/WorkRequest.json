@@ -158,6 +158,13 @@
             "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/supplementaryContent"
+        },
+        "awardsNote": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/awardsNote"
         }
       }
     }

@@ -195,6 +195,34 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/statementOfResponsibility"
         },
+        "adminhist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/adminhist"
+        },
+        "biogdata": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/biogdata"
+        },
+        "physicalDescription": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/physicalDescription"
+        },
+        "accompanyingMaterial": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/accompanyingMaterial"
+        },
         "_notes": {
           "type": "array",
           "items": {

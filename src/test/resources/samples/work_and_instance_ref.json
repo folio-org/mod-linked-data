@@ -290,6 +290,9 @@
       "http://bibfra.me/vocab/lite/dateEnd": [
         "2025"
       ],
+      "http://bibfra.me/vocab/marc/awardsNote": [
+        "awards note"
+      ],
       "http://bibfra.me/vocab/marc/governmentPublication": [
         {
           "http://bibfra.me/vocab/marc/code": [
