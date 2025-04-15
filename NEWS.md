@@ -7,6 +7,9 @@
 - Send Classification Number and Additional Classification Number to mod-search ([MODLD-677](https://folio-org.atlassian.net/browse/MODLD-677))
 - Update API to support Award, Admin history, Biog data, Physical & Accmat Notes ([MODLD-520](https://folio-org.atlassian.net/browse/MODLD-520))
 
+## 1.0.3 (IN PROGRESS)
+- Optimize log messages [MODLD-707](https://folio-org.atlassian.net/browse/MODLD-707)
+
 ## 1.0.2 (04-13-2025)
 - "targetAudience", "geographicCoverage" links contain https instead of http [MODLD-695](https://folio-org.atlassian.net/browse/MODLD-695)
 - Bump up lib-linked-data-marc4ld version to [1.0.3](https://github.com/folio-org/lib-linked-data-marc4ld/tree/v1.0.3)
