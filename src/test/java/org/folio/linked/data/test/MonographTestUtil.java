@@ -16,6 +16,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
@@ -468,25 +469,6 @@ public class MonographTestUtil {
     ).setLabel("name-CONTRIBUTOR-JURISDICTION")
       .setId(2250127472356730540L);
 
-    var subject1 = createResource(
-      Map.of(
-        NAME, List.of("Subject 1"),
-        RESOURCE_PREFERRED, List.of("true")
-      ),
-      Set.of(CONCEPT),
-      emptyMap()
-    ).setLabel("subject 1")
-      .setId(5116157127128345626L);
-
-    var subject2 = createResource(
-      Map.of(
-        NAME, List.of("Subject 2")
-      ),
-      Set.of(CONCEPT),
-      emptyMap()
-    ).setLabel("subject 2")
-      .setId(-643516859818423084L);
-
     var unitedStates = createResource(
       Map.of(
         NAME, List.of("United States"),
@@ -569,7 +551,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(EDITOR, List.of(contributorOrganization));
     pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
     pred2OutgoingResources.put(CONTENT, List.of(createContent()));
-    pred2OutgoingResources.put(SUBJECT, List.of(subject1, subject2));
+    pred2OutgoingResources.put(SUBJECT, List.of(getSubjectPersonPreferred(), getSubjectFormNotPreferred()));
     pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
     pred2OutgoingResources.put(GENRE, List.of(genre1, genre2));
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
@@ -600,6 +582,41 @@ public class MonographTestUtil {
     }
     work.setLabel(primaryTitle.getLabel());
     return work;
+  }
+
+  public static Resource getSubjectPersonPreferred() {
+    return getSubjectAndConcept("person", -6999093488677112301L, -3951421359442339069L, PERSON, true);
+  }
+
+  public static Resource getSubjectFormNotPreferred() {
+    return getSubjectAndConcept("form", -4718450084121784027L, -354125450028352284L, FORM, false);
+  }
+
+  private static Resource getSubjectAndConcept(String name,
+                                               Long subjectId,
+                                               Long conceptId,
+                                               ResourceTypeDictionary type,
+                                               boolean isPreferred) {
+    var subject = createResource(
+      isPreferred
+        ? Map.of(NAME, List.of("Subject " + name), RESOURCE_PREFERRED, List.of("true"))
+        : Map.of(NAME, List.of("Subject " + name)),
+      Set.of(type),
+      emptyMap()
+    ).setLabel("subject " + name)
+      .setId(subjectId);
+
+    var subjectConcept = createResource(
+      Map.of(
+        NAME, List.of("Subject " + name)
+      ),
+      Set.of(CONCEPT, type),
+      emptyMap()
+    ).setLabel("subject " + name)
+      .setId(conceptId);
+
+    subjectConcept.addOutgoingEdge(new ResourceEdge(subjectConcept, subject, FOCUS));
+    return subjectConcept;
   }
 
   private static Resource createDeweyClassification() {
@@ -855,7 +872,7 @@ public class MonographTestUtil {
       .setDoc(readTree(workDoc))
       .setLabel(titleStr);
 
-    work.addOutgoingEdge(new ResourceEdge(work, title, PredicateDictionary.TITLE));
+    work.addOutgoingEdge(new ResourceEdge(work, title, TITLE));
 
     title.setId(hashService.hash(title));
     work.setId(hashService.hash(work));

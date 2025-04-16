@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
@@ -190,5 +191,51 @@ class ResourceUtilsTest {
 
     // then
     assertThat(ResourceUtils.isPreferred(resource)).isFalse();
+  }
+
+  @Test
+  void copyWithoutPreferred_removesPreferredProperty_whenDocContainsPreferred() {
+    // given
+    var resource = new Resource();
+    var doc = JsonNodeFactory.instance.objectNode();
+    doc.set("http://library.link/vocab/resourcePreferred", JsonNodeFactory.instance.arrayNode().add("true"));
+    resource.setDoc(doc);
+
+    // when
+    var result = ResourceUtils.copyWithoutPreferred(resource);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.has("http://library.link/vocab/resourcePreferred")).isFalse();
+  }
+
+  @Test
+  void copyWithoutPreferred_returnsNull_whenDocIsNull() {
+    // given
+    var resource = new Resource();
+    resource.setDoc(null);
+
+    // when
+    var result = ResourceUtils.copyWithoutPreferred(resource);
+
+    // then
+    assertThat(result).isNull();
+  }
+
+  @Test
+  void copyWithoutPreferred_returnsUnchangedCopy_whenDocDoesNotContainPreferred() {
+    // given
+    var resource = new Resource();
+    var doc = JsonNodeFactory.instance.objectNode();
+    doc.put("otherProperty", "value");
+    resource.setDoc(doc);
+
+    // when
+    var result = ResourceUtils.copyWithoutPreferred(resource);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.has("otherProperty")).isTrue();
+    assertThat(result.get("otherProperty").asText()).isEqualTo("value");
   }
 }
