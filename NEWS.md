@@ -1,4 +1,4 @@
-## 1.0.3 (IN PROGRESS)
+## 1.0.3 (04-16-2025)
 - Optimize log messages [MODLD-707](https://folio-org.atlassian.net/browse/MODLD-707)
 
 ## 1.0.2 (04-13-2025)
