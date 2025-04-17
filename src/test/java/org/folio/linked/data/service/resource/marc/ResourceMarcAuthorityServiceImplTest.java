@@ -14,6 +14,7 @@ import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingExceptio
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.test.TestUtil.randomString;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -207,23 +208,27 @@ class ResourceMarcAuthorityServiceImplTest {
   @Test
   void saveMarcAuthority_shouldNotReplaceOldAuthority_ifNewAuthorityHasDifferentTypes() {
     // given
-    var expectedId = 12345L;
-    var existedAuthority = new Resource().setId(expectedId).addTypes(PERSON);
-    var newAuthority = new Resource().setId(expectedId - 1).addTypes(PERSON, CONCEPT);
+    var id = 12345L;
+    var existedAuthority = new Resource().setId(id).addTypes(PERSON);
+    var newAuthority = new Resource().setId(id - 1).addTypes(PERSON, CONCEPT);
 
     var srsId = UUID.randomUUID().toString();
     newAuthority.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(newAuthority).setSrsId(srsId));
 
     doReturn(newAuthority).when(resourceModelMapper).toEntity(any());
     doReturn(of(existedAuthority)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
-    doReturn(of((FolioMetadataRepository.IdOnly) () -> expectedId)).when(folioMetadataRepo).findIdBySrsId(srsId);
+    doReturn(of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
+    doReturn(existedAuthority).when(resourceGraphService).saveMergingGraph(existedAuthority);
+    doReturn(newAuthority).when(resourceGraphService).saveMergingGraph(newAuthority);
 
     // when
     var actualId = resourceMarcAuthorityService.saveMarcAuthority(new org.folio.ld.dictionary.model.Resource());
 
     // then
-    assertThat(actualId).isEqualTo(expectedId);
+    assertThat(actualId).isEqualTo(newAuthority.getId());
     assertThat(newAuthority.getOutgoingEdges()).isEmpty();
+    assertThat(newAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
+    assertThat(existedAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("false");
   }
 
   @Test

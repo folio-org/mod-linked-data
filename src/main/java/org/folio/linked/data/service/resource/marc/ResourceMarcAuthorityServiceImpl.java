@@ -2,7 +2,6 @@ package org.folio.linked.data.service.resource.marc;
 
 import static java.lang.Long.parseLong;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NO_LCCN;
@@ -14,6 +13,7 @@ import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -177,17 +177,21 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   private Long markObsoleteAndReplace(Resource previous, Resource incoming) {
-    if (notEqual(previous.getTypes(), incoming.getTypes())) {
-      logMarcAction(incoming, "having different types", "be skipped");
-      return previous.getId();
+    if (Objects.equals(previous.getTypes(), incoming.getTypes())) {
+      var previousObsolete = markObsolete(previous);
+      setPreferred(incoming, true);
+      addReplacedByRelation(previousObsolete, incoming);
+      logMarcAction(incoming,
+        "not found by id, but found by srsId [" + incoming.getFolioMetadata().getSrsId() + "]",
+        "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
+      return saveAndPublishEvent(incoming, saved -> new ResourceReplacedEvent(previousObsolete, saved.getId()));
     }
-    var previousObsolete = markObsolete(previous);
+    markObsolete(previous);
+    resourceGraphService.saveMergingGraph(previous);
     setPreferred(incoming, true);
-    addReplacedByRelation(previousObsolete, incoming);
-    logMarcAction(incoming,
-      "not found by id, but found by srsId [" + incoming.getFolioMetadata().getSrsId() + "]",
-      "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
-    return saveAndPublishEvent(incoming, saved -> new ResourceReplacedEvent(previousObsolete, saved.getId()));
+    var saved = resourceGraphService.saveMergingGraph(incoming);
+    logMarcAction(incoming, "set as preferred", "be saved");
+    return saved.getId();
   }
 
   private void addReplacedByRelation(Resource previousObsolete, Resource incoming) {
