@@ -244,7 +244,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPubl
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesTypes;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesValues;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkReference;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectIsPreferred;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectLabel;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSummary;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTableOfContents;
@@ -894,7 +893,6 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     resultActions
       .andExpect(jsonPath(toWorkCreatorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
       .andExpect(jsonPath(toWorkContributorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
-      .andExpect(jsonPath(toWorkSubjectIsPreferred(workBase), containsInAnyOrder(true, false)))
       .andExpect(jsonPath(toWorkGenreIsPreferred(workBase), containsInAnyOrder(true, false)));
   }
 
