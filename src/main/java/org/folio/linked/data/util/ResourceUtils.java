@@ -152,4 +152,16 @@ public class ResourceUtils {
       .filter(value -> value.equals("true"))
       .isPresent();
   }
+
+  public static JsonNode copyWithoutPreferred(Resource subject) {
+    return ofNullable(subject.getDoc())
+      .map(node -> {
+        var copiedDoc = node.deepCopy();
+        if (copiedDoc.isObject()) {
+          ((ObjectNode) copiedDoc).remove(RESOURCE_PREFERRED.getValue());
+        }
+        return copiedDoc;
+      })
+      .orElse(null);
+  }
 }
