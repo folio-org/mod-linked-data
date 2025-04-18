@@ -31,18 +31,12 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
   }
 
   @Override
-  public <P> P toDto(Resource concept, P parentDto, Resource parentResource) {
-    var subject = concept.getOutgoingEdges().iterator().next().getTarget();
-    return super.toDto(subject, parentDto, parentResource);
-  }
-
-  @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var subject = super.toEntity(dto, parentEntity);
-    return buildConcept(subject);
+    return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
   }
 
-  private Resource buildConcept(Resource subject) {
+  private Resource wrapWithConcept(Resource subject) {
     var concept = new Resource()
       .setLabel(subject.getLabel())
       .setDoc(copyWithoutPreferred(subject))
