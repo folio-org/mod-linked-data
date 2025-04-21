@@ -17,6 +17,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
@@ -126,6 +127,8 @@ import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
+import static org.folio.linked.data.test.MonographTestUtil.getSubjectFormNotPreferred;
+import static org.folio.linked.data.test.MonographTestUtil.getSubjectPersonPreferred;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
@@ -246,7 +249,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPubl
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesTypes;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesValues;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkReference;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectIsPreferred;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectLabel;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSummary;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTableOfContents;
@@ -275,6 +277,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -628,8 +631,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(64);
-    assertThat(resourceTestService.countEdges()).isEqualTo(66);
+    assertThat(resourceTestService.countResources()).isEqualTo(66);
+    assertThat(resourceTestService.countEdges()).isEqualTo(68);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -640,9 +643,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(63);
+    assertThat(resourceTestService.countResources()).isEqualTo(65);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(47);
+    assertThat(resourceTestService.countEdges()).isEqualTo(49);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -652,8 +655,8 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(64);
-    assertThat(resourceTestService.countEdges()).isEqualTo(66);
+    assertThat(resourceTestService.countResources()).isEqualTo(66);
+    assertThat(resourceTestService.countEdges()).isEqualTo(68);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -664,9 +667,9 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(63);
+    assertThat(resourceTestService.countResources()).isEqualTo(65);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(33);
+    assertThat(resourceTestService.countEdges()).isEqualTo(35);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -864,7 +867,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
-      .andExpect(jsonPath(toWorkSubjectLabel(workBase), containsInAnyOrder("subject 1", "subject 2")))
+      .andExpect(jsonPath(toWorkSubjectLabel(workBase), containsInAnyOrder("subject person", "subject form")))
       .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
       .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
       .andExpect(jsonPath(toWorkNotesValues(workBase),
@@ -895,7 +898,6 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     resultActions
       .andExpect(jsonPath(toWorkCreatorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
       .andExpect(jsonPath(toWorkContributorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
-      .andExpect(jsonPath(toWorkSubjectIsPreferred(workBase), containsInAnyOrder(true, false)))
       .andExpect(jsonPath(toWorkGenreIsPreferred(workBase), containsInAnyOrder(true, false)));
   }
 
@@ -1332,12 +1334,12 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     var authorEdge = outgoingEdgeIterator.next();
     validateResourceEdge(authorEdge, work, authorEdge.getTarget(), AUTHOR.getUri());
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR);
+    validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().getFirst());
     validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR);
     validateWorkContributor(outgoingEdgeIterator.next(), work, JURISDICTION, CREATOR);
     validateWorkContributor(outgoingEdgeIterator.next(), work, JURISDICTION, CONTRIBUTOR);
     validateVariantTitle(outgoingEdgeIterator.next(), work);
-    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1), SUBJECT.getUri());
-    validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.subjects().getFirst(), SUBJECT.getUri());
+    validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1));
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().getFirst(), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
     validateOriginPlace(outgoingEdgeIterator.next(), work);
@@ -1539,63 +1541,64 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     assertThat(copyrightEvent.getOutgoingEdges()).isEmpty();
   }
 
+  private void validateSubject(ResourceEdge edge,
+                               Resource source,
+                               Resource expectedConcept) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(SUBJECT.getUri());
+    var subjectConcept = edge.getTarget();
+    var types = subjectConcept.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    var expectedSubject = expectedConcept.getOutgoingEdges().iterator().next().getTarget();
+    assertThat(types).containsOnly(CONCEPT.getUri(), expectedSubject.getTypes().iterator().next().getUri());
+    assertThat(subjectConcept.getLabel()).isEqualTo(expectedConcept.getLabel());
+    assertThat(subjectConcept.getDoc().size()).isEqualTo(1);
+    validateLiteral(subjectConcept, NAME.getValue(), expectedConcept.getDoc().get(NAME.getValue()).get(0).asText());
+    assertThat(subjectConcept.getOutgoingEdges()).hasSize(1);
+    var subjectEdge = subjectConcept.getOutgoingEdges().iterator().next();
+    validateResourceEdge(subjectEdge, subjectConcept, expectedSubject, FOCUS.getUri());
+  }
+
   private LookupResources saveLookupResources() {
-    var subject1 = saveResource(5116157127128345626L, "subject 1", CONCEPT,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"Subject 1\"], \"http://library.link/vocab/resourcePreferred\":[\"true\"]}");
-    var subject2 = saveResource(-643516859818423084L, "subject 2", CONCEPT,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"Subject 2\"]}");
-    var unitedStates = saveResource(7109832602847218134L, "United States", PLACE,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"United States\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"n-us\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/n-us\"]}");
-    var europe = saveResource(-4654600487710655316L, "Europe", PLACE,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"Europe\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"e\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/e\"]}");
-    var genre1 = saveResource(-9064822434663187463L, "genre 1", FORM,
+    var subjectPerson = resourceTestService.saveGraph(getSubjectPersonPreferred());
+    var subjectForm = resourceTestService.saveGraph(getSubjectFormNotPreferred());
+    var unitedStates = saveResource(7109832602847218134L, "United States",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"United States\"], \"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"n-us\"], "
+        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/n-us\"]}", PLACE);
+    var europe = saveResource(- 4654600487710655316L, "Europe",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"Europe\"], \"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"e\"], "
+        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/e\"]}", PLACE);
+    var genre1 = saveResource(- 9064822434663187463L, "genre 1", FORM,
       "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}", "8138e88f-4278-45ba-838c-816b80544f82");
-    var genre2 = saveResource(-4816872480602594231L, "genre 2", FORM,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}");
-    var creatorMeeting = saveResource(-603031702996824854L, "name-CREATOR-MEETING", MEETING,
+    var genre2 = saveResource(- 4816872480602594231L, "genre 2", "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}", FORM);
+    var creatorMeeting = saveResource(- 603031702996824854L, "name-CREATOR-MEETING", MEETING,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-MEETING\"], "
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}", "5f2220d5-ddf6-410a-a459-cd4b5e1b5ddb");
-    var creatorPerson = saveResource(4359679744172518150L, "name-CREATOR-PERSON", PERSON,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-PERSON\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
-    var creatorOrganization = saveResource(-466724080127664871L, "name-CREATOR-ORGANIZATION", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-ORGANIZATION\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}");
-    var creatorFamily = saveResource(8296435493593701280L, "name-CREATOR-FAMILY", FAMILY,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-FAMILY\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
-    var creatorJurisdiction = saveResource(5487607357549327916L, "name-CREATOR-JURISDICTION", JURISDICTION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-JURISDICTION\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}");
-    var contributorMeeting = saveResource(-7286109411186266518L, "name-CONTRIBUTOR-MEETING", MEETING,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-MEETING\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}");
-    var contributorPerson = saveResource(-6054989039809126250L, "name-CONTRIBUTOR-PERSON", PERSON,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-PERSON\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}");
-    var contributorOrganization = saveResource(-4246830624125472784L, "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION,
+    var creatorPerson = saveResource(4359679744172518150L, "name-CREATOR-PERSON",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}", PERSON);
+    var creatorOrganization = saveResource(- 466724080127664871L, "name-CREATOR-ORGANIZATION",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-ORGANIZATION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}", ORGANIZATION);
+    var creatorFamily = saveResource(8296435493593701280L, "name-CREATOR-FAMILY",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}", FAMILY);
+    var creatorJurisdiction = saveResource(5487607357549327916L, "name-CREATOR-JURISDICTION",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-JURISDICTION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}", JURISDICTION);
+    var contributorMeeting = saveResource(- 7286109411186266518L, "name-CONTRIBUTOR-MEETING",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-MEETING\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}", MEETING);
+    var contributorPerson = saveResource(- 6054989039809126250L, "name-CONTRIBUTOR-PERSON",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}", PERSON);
+    var contributorOrganization = saveResource(- 4246830624125472784L, "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION,
       "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-ORGANIZATION\"], "
         + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}", "dad61944-17d2-4ade-afc5-ad4ce318a70b");
-    var contributorFamily = saveResource(3094995075578514480L, "name-CONTRIBUTOR-FAMILY", FAMILY,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-FAMILY\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}");
-    var contributorJurisdiction = saveResource(2250127472356730540L, "name-CONTRIBUTOR-JURISDICTION", JURISDICTION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-JURISDICTION\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}");
-    var assigningAgency = saveResource(4932783899755316479L, "assigning agency", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}");
-    var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"United States, Library of Congress\"]}");
-    var grantingInstitution1 = saveResource(5481852630377445080L, "granting institution 1", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 1\"]}");
-    var grantingInstitution2 = saveResource(-6468470931408362304L, "granting institution 2", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 2\"]}");
+    var contributorFamily = saveResource(3094995075578514480L, "name-CONTRIBUTOR-FAMILY",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}", FAMILY);
+    var contributorJurisdiction = saveResource(2250127472356730540L, "name-CONTRIBUTOR-JURISDICTION",
+      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-JURISDICTION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}", JURISDICTION);
+    var assigningAgency = saveResource(4932783899755316479L, "assigning agency", "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}", ORGANIZATION);
+    var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", "{\"http://bibfra.me/vocab/lite/name\": [\"United States, Library of Congress\"]}", ORGANIZATION);
+    var grantingInstitution1 = saveResource(5481852630377445080L, "granting institution 1", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 1\"]}", ORGANIZATION);
+    var grantingInstitution2 = saveResource(- 6468470931408362304L, "granting institution 2", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 2\"]}", ORGANIZATION);
     return new LookupResources(
-      List.of(subject1, subject2),
+      List.of(subjectPerson, subjectForm),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
       List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily, creatorJurisdiction,
@@ -1605,20 +1608,22 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
     );
   }
 
-  private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc) {
-    return resourceTestService.saveGraph(createResource(id, label, type, doc));
+  private Resource saveResource(Long id, String label, String doc, ResourceTypeDictionary... types) {
+    return resourceTestService.saveGraph(createResource(id, label, doc, types));
   }
 
   private Resource saveResource(Long id, String label, ResourceTypeDictionary type, String doc, String srsId) {
-    var resource = createResource(id, label, type, doc);
+    var resource = createResource(id, label, doc, type);
     resource.setFolioMetadata(new FolioMetadata(resource).setSrsId(srsId));
     return resourceTestService.saveGraph(resource);
   }
 
   @SneakyThrows
-  private Resource createResource(Long id, String label, ResourceTypeDictionary type, String doc) {
+  private Resource createResource(Long id, String label, String doc, ResourceTypeDictionary... types) {
     var resource = new Resource();
-    resource.addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()));
+    Arrays.stream(types)
+      .map(t -> new ResourceTypeEntity().setHash(t.getHash()).setUri(t.getUri()))
+      .forEach(resource::addType);
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
     resource.setId(id);

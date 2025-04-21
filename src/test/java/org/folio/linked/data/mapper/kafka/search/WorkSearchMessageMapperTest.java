@@ -212,8 +212,8 @@ class WorkSearchMessageMapperTest {
     assertThat(result.getClassifications().get(1).getNumber()).isEqualTo("ddc code");
     assertThat(result.getClassifications().get(1).getAdditionalNumber()).isEqualTo("ddc item number");
     assertThat(result.getSubjects()).hasSize(2);
-    assertThat(result.getSubjects().getFirst()).isEqualTo("subject 1");
-    assertThat(result.getSubjects().get(1)).isEqualTo("subject 2");
+    assertThat(result.getSubjects().getFirst()).isEqualTo("subject person");
+    assertThat(result.getSubjects().get(1)).isEqualTo("subject form");
     assertThat(result.getInstances()).hasSize(instancesExpected);
   }
 
