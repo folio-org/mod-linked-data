@@ -31,6 +31,7 @@ import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 
 @Log4j2
 @UtilityClass
@@ -151,6 +152,13 @@ public class ResourceUtils {
       .map(value -> value.get(0).asText())
       .filter(value -> value.equals("true"))
       .isPresent();
+  }
+
+  public static List<String> getTypes(Resource resource) {
+    return resource.getTypes()
+      .stream()
+      .map(ResourceTypeEntity::getUri)
+      .toList();
   }
 
   public static JsonNode copyWithoutPreferred(Resource subject) {
