@@ -20,4 +20,11 @@ public class ProfileServiceImpl implements ProfileService {
       .map(Profile::getValue)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(ID)));
   }
+
+  @Override
+  public String getProfileById(Long id) {
+    return profileRepository.findById(Math.toIntExact(id))
+      .map(Profile::getValue)
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(id)));
+  }
 }

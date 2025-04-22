@@ -59,6 +59,25 @@ class ProfileControllerIT {
 
   @Order(2)
   @Test
+  void getProfileById_shouldReturnProfileWithSpecifiedId() throws Exception {
+    //given
+    var requestBuilder = get(PROFILE_URL + "/1")
+      .headers(defaultHeaders(env));
+
+    //when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    //then
+    var profile = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(TEXT_PLAIN_VALUE + ";charset=UTF-8"))
+      .andReturn().getResponse().getContentAsString();
+
+    assertTrue(profile.contains("BIBFRAME 2.0"));
+  }
+
+  @Order(3)
+  @Test
   void getProfile_shouldReturn404_ifNoProfileExists() throws Exception {
     //given
     var requestBuilder = get(PROFILE_URL)
@@ -75,6 +94,29 @@ class ProfileControllerIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("errors[0].message",
         equalTo("Profile not found by id: [2] in Linked Data storage")))
+      .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
+      .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
+      .andExpect(jsonPath("total_records", equalTo(1)));
+  }
+
+  @Order(4)
+  @Test
+  void getProfileById_shouldReturn404_ifNoProfileExistsWithSpecifiedId() throws Exception {
+    //given
+    var requestBuilder = get(PROFILE_URL + "/1")
+      .headers(defaultHeaders(env));
+
+    profileRepository.deleteAll();
+
+    //when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    //then
+    resultActions
+      .andExpect(status().isNotFound())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("errors[0].message",
+        equalTo("Profile not found by id: [1] in Linked Data storage")))
       .andExpect(jsonPath("errors[0].code", equalTo("not_found")))
       .andExpect(jsonPath("errors[0].parameters", hasSize(4)))
       .andExpect(jsonPath("total_records", equalTo(1)));

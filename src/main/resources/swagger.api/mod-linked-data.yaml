@@ -228,6 +228,27 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/profile/{id}:
+    get:
+      operationId: getProfileById
+      tags:
+        - profile
+      description: Get a profile by id
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: Profile with a given id
+          content:
+            text/plain;charset=utf-8:
+              schema:
+                type: string
+                example: example/profile.sample
+        '404':
+          description: No profile is found with a given id
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById

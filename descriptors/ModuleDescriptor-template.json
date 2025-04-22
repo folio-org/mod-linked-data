@@ -137,6 +137,11 @@
         },
         {
           "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profile/{id}",
+          "permissionsRequired": [ "linked-data.profiles.item.get" ]
+        },
+        {
+          "methods": [ "GET" ],
           "pathPattern": "/linked-data/resource/{id}/graph",
           "permissionsRequired": [ "linked-data.resources.graph.get" ],
           "modulePermissions": []
@@ -238,6 +243,11 @@
       "permissionName": "linked-data.profiles.get",
       "displayName": "Linked Data: Get the profiles for performing CRUD operations on resources",
       "description": "Get the profiles for performing CRUD operations on linked-data resources"
+    },
+    {
+      "permissionName": "linked-data.profiles.item.get",
+      "displayName": "Linked Data: Get the specified profile for performing CRUD operations on resources",
+      "description": "Get the specified profile for performing CRUD operations on linked-data resources"
     },
     {
       "permissionName": "linked-data.authority-assignment-check.post",
