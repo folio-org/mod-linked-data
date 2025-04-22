@@ -24,6 +24,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.dto.Identifiable;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -206,8 +207,8 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   private void logMarcAction(Resource resource, String existence, String action) {
-    log.info("Incoming Authority resource [id {}, srsId {}] is {} and will {}",
-      resource.getId(), resource.getFolioMetadata().getSrsId(), existence, action);
+    log.info("Incoming Authority resource [id {}, srsId {}] is {} and will {}", resource.getId(),
+      ofNullable(resource.getFolioMetadata()).map(FolioMetadata::getSrsId).orElse(null), existence, action);
   }
 
   private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {

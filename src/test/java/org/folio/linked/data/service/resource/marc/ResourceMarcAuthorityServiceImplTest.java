@@ -217,7 +217,6 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(newAuthority).when(resourceModelMapper).toEntity(any());
     doReturn(of(existedAuthority)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
     doReturn(of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
-    doReturn(existedAuthority).when(resourceGraphService).saveMergingGraph(existedAuthority);
     doReturn(newAuthority).when(resourceGraphService).saveMergingGraph(newAuthority);
 
     // when
