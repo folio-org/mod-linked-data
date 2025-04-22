@@ -187,7 +187,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       return saveAndPublishEvent(incoming, saved -> new ResourceReplacedEvent(previousObsolete, saved.getId()));
     }
     markObsolete(previous);
-    resourceGraphService.saveMergingGraph(previous);
+    logMarcAction(previous, "set as obsolete", "be saved");
     setPreferred(incoming, true);
     var saved = resourceGraphService.saveMergingGraph(incoming);
     logMarcAction(incoming, "set as preferred", "be saved");
