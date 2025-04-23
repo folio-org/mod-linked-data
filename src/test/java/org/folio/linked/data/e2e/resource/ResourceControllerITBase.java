@@ -719,7 +719,20 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
       .andExpect(jsonPath(toVariantTitleNote(instanceBase), equalTo(List.of("Variant: noteLabel"))))
       .andExpect(jsonPath(toVariantTitleDate(instanceBase), equalTo(List.of("Variant: date"))))
       .andExpect(jsonPath(toVariantTitleSubtitle(instanceBase), equalTo(List.of("Variant: subTitle"))))
-      .andExpect(jsonPath(toVariantTitleType(instanceBase), equalTo(List.of("Variant: variantType"))));
+      .andExpect(jsonPath(toVariantTitleType(instanceBase), equalTo(List.of("Variant: variantType"))))
+      .andExpect(
+        jsonPath(toInstanceNotesValues(instanceBase), containsInAnyOrder("additional physical form",
+          "computer data note", "description source note", "exhibitions note", "funding information", "issuance note",
+          "issuing body", "location of other archival material", "note", "original version note", "related parts",
+          "reproduction note", "type of report", "with note")))
+      .andExpect(jsonPath(toInstanceNotesTypes(instanceBase), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
+        "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/typeOfReport",
+        "http://bibfra.me/vocab/marc/issuanceNote", "http://bibfra.me/vocab/marc/computerDataNote",
+        "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/reproductionNote",
+        "http://bibfra.me/vocab/marc/originalVersionNote", "http://bibfra.me/vocab/marc/relatedParts",
+        "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
+        "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
+        "http://bibfra.me/vocab/marc/fundingInformation")));
     if (instanceBase.equals(toInstance())) {
       resultActions
         .andExpect(jsonPath(toSupplementaryContentLink(), equalTo("supplementaryContent link")))
@@ -738,20 +751,6 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
         .andExpect(jsonPath(toIsbnStatusLink(), equalTo(List.of("isbn status link"))))
         .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
         .andExpect(jsonPath(toStatementOfResponsibility(), equalTo("statement of responsibility")))
-        .andExpect(
-          jsonPath(toInstanceNotesValues(), containsInAnyOrder("additional physical form", "computer data note",
-            "description source note", "exhibitions note", "funding information", "issuance note", "issuing body",
-            "location of other archival material", "note", "original version note", "related parts",
-            "reproduction note",
-            "type of report", "with note")))
-        .andExpect(jsonPath(toInstanceNotesTypes(), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
-          "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/typeOfReport",
-          "http://bibfra.me/vocab/marc/issuanceNote", "http://bibfra.me/vocab/marc/computerDataNote",
-          "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/reproductionNote",
-          "http://bibfra.me/vocab/marc/originalVersionNote", "http://bibfra.me/vocab/marc/relatedParts",
-          "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
-          "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
-          "http://bibfra.me/vocab/marc/fundingInformation")))
         .andExpect(jsonPath(toLccnValue(), equalTo(List.of("lccn value"))))
         .andExpect(jsonPath(toLccnStatusValue(), equalTo(List.of("lccn status value"))))
         .andExpect(jsonPath(toLccnStatusLink(), equalTo(List.of("lccn status link"))))

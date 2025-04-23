@@ -172,12 +172,12 @@ public class ResourceJsonPath {
     return join(".", toInstance(), arrayPath(STATEMENT_OF_RESPONSIBILITY.getValue()));
   }
 
-  public static String toInstanceNotesValues() {
-    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
+  public static String toInstanceNotesValues(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
   }
 
-  public static String toInstanceNotesTypes() {
-    return join(".", toInstance(), dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
+  public static String toInstanceNotesTypes(String instanceBase) {
+    return join(".", instanceBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
   public static String toParallelTitlePartName(String instanceBase) {
