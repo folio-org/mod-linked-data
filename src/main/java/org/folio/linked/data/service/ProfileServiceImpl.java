@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
-  private static final int ID = 2;
+  private static final String ID = "2";
   private final ProfileRepository profileRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
@@ -18,13 +18,13 @@ public class ProfileServiceImpl implements ProfileService {
   public String getProfile() {
     return profileRepository.findById(ID)
       .map(Profile::getValue)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(ID)));
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", ID));
   }
 
   @Override
-  public String getProfileById(Long id) {
-    return profileRepository.findById(Math.toIntExact(id))
+  public String getProfileById(String id) {
+    return profileRepository.findById(id)
       .map(Profile::getValue)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(id)));
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", id));
   }
 }

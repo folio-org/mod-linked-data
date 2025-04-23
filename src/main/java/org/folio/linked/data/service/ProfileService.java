@@ -4,5 +4,5 @@ public interface ProfileService {
 
   String getProfile();
 
-  String getProfileById(Long id);
+  String getProfileById(String id);
 }

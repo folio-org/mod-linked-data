@@ -2,7 +2,7 @@ package org.folio.linked.data.model.entity;
 
 import static lombok.AccessLevel.PROTECTED;
 
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

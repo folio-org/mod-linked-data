@@ -33,7 +33,7 @@ class ProfileServiceImplTest {
   @Test
   void getProfile_shouldReturnProfile() {
     //given
-    var id = 2;
+    var id = "2";
     var value = "[{\"key\": \"value\"}]";
     var profile = new Profile();
     profile.setId(id);
@@ -51,7 +51,7 @@ class ProfileServiceImplTest {
   @Test
   void getProfile_shouldThrowNotFoundException_ifNoProfileExists() {
     //given
-    when(profileRepository.findById(2)).thenReturn(Optional.empty());
+    when(profileRepository.findById("2")).thenReturn(Optional.empty());
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
 
@@ -69,7 +69,7 @@ class ProfileServiceImplTest {
   @Test
   void getProfileById_shouldReturnProfileWithSpecifiedId() {
     //given
-    var id = 1;
+    var id = "monogarph-1.0";
     var value = "[{\"key\": \"value\"}]";
     var profile = new Profile();
     profile.setId(id);
@@ -78,7 +78,7 @@ class ProfileServiceImplTest {
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
 
     //when
-    var result = profileService.getProfileById((long) id);
+    var result = profileService.getProfileById(id);
 
     //then
     assertEquals(value, result);
@@ -87,14 +87,15 @@ class ProfileServiceImplTest {
   @Test
   void getProfileById_shouldThrowNotFoundException_ifNoProfileExistsWithSpecifiedId() {
     //given
-    when(profileRepository.findById(1)).thenReturn(Optional.empty());
+    var id = "rare-book-2.0";
+    when(profileRepository.findById(id)).thenReturn(Optional.empty());
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
 
     //when
     var thrown = assertThrows(
       RequestProcessingException.class,
-      () -> profileService.getProfileById(1L)
+      () -> profileService.getProfileById(id)
     );
 
     //then
