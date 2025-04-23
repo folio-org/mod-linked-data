@@ -1,3 +1,6 @@
+## 1.0.4 (IN PROGRESS)
+- Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
+
 ## 1.0.3 (04-16-2025)
 - Optimize log messages [MODLD-707](https://folio-org.atlassian.net/browse/MODLD-707)
 
