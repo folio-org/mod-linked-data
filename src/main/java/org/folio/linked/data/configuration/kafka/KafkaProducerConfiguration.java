@@ -12,7 +12,6 @@ import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +20,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.lang.NonNull;
 
 @Configuration
 @RequiredArgsConstructor
@@ -72,7 +72,7 @@ public class KafkaProducerConfiguration {
     return new DefaultKafkaProducerFactory<>(getProducerProperties());
   }
 
-  private @NotNull Map<String, Object> getProducerProperties() {
+  private @NonNull Map<String, Object> getProducerProperties() {
     Map<String, Object> configProps = new HashMap<>(kafkaProperties.buildProducerProperties(null));
     configProps.put(KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     configProps.put(VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
