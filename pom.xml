@@ -5,7 +5,7 @@
   <name>mod-linked-data</name>
   <groupId>org.folio</groupId>
   <artifactId>mod-linked-data</artifactId>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.4</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -629,6 +629,6 @@
     <url>https://github.com/folio-org/${project.artifactId}</url>
     <connection>scm:git:git://github.com/folio-org/${project.artifactId}.git</connection>
     <developerConnection>scm:git:git@github.com:folio-org/${project.artifactId}.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>v1.0.4</tag>
   </scm>
 </project>
