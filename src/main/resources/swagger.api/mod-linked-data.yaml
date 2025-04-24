@@ -228,6 +228,27 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/profile/{profileId}:
+    get:
+      operationId: getProfileById
+      tags:
+        - profile
+      description: Get a profile by profileId
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Profile with a given profileId
+          content:
+            text/plain;charset=utf-8:
+              schema:
+                type: string
+                example: example/profile.sample
+        '404':
+          description: No profile is found with a given profileId
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById
@@ -297,6 +318,13 @@ components:
       description: Reindex all records if true, otherwise only not indexed
       schema:
         type: boolean
+    profileId:
+      name: profileId
+      in: path
+      required: true
+      description: Linked Data bibframe profile id
+      schema:
+        type: string
 
   schemas:
     errorResponse:
