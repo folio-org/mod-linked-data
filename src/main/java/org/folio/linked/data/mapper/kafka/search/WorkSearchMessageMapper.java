@@ -66,11 +66,11 @@ import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMappe
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 @Log4j2
 @Mapper(componentModel = SPRING, imports = {WorkMapperUnit.class, UUID.class})
@@ -299,7 +299,7 @@ public abstract class WorkSearchMessageMapper {
       });
   }
 
-  @NotNull
+  @NonNull
   protected <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
     return enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
   }
