@@ -7,6 +7,7 @@
 ### Features
 - Send Classification Number and Additional Classification Number to mod-search ([MODLD-677](https://folio-org.atlassian.net/browse/MODLD-677))
 - Update API to support Award, Admin history, Biog data, Physical & Accmat Notes ([MODLD-520](https://folio-org.atlassian.net/browse/MODLD-520))
+- Solve loop that appears while updating a Person to a Person, Concept ([MODLD-682](https://folio-org.atlassian.net/browse/MODLD-682))
 
 ## 1.0.3 (04-16-2025)
 - Optimize log messages [MODLD-707](https://folio-org.atlassian.net/browse/MODLD-707)

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
@@ -204,11 +205,36 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
+  void saveMarcAuthority_shouldNotReplaceOldAuthority_ifNewAuthorityHasDifferentTypes() {
+    // given
+    var id = 12345L;
+    var existedAuthority = new Resource().setId(id).addTypes(PERSON);
+    var newAuthority = new Resource().setId(id - 1).addTypes(PERSON, CONCEPT);
+
+    var srsId = UUID.randomUUID().toString();
+    newAuthority.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(newAuthority).setSrsId(srsId));
+
+    doReturn(newAuthority).when(resourceModelMapper).toEntity(any());
+    doReturn(of(existedAuthority)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
+    doReturn(of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
+    doReturn(newAuthority).when(resourceGraphService).saveMergingGraph(newAuthority);
+
+    // when
+    var actualId = resourceMarcAuthorityService.saveMarcAuthority(new org.folio.ld.dictionary.model.Resource());
+
+    // then
+    assertThat(actualId).isEqualTo(newAuthority.getId());
+    assertThat(newAuthority.getOutgoingEdges()).isEmpty();
+    assertThat(newAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
+    assertThat(existedAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("false");
+  }
+
+  @Test
   void saveMarcAuthority_shouldCreateNewAuthorityVersionAndMarkOldAsObsolete_ifGivenModelExistsBySrsIdButNotById() {
     // given
     var id = randomLong();
     var srsId = UUID.randomUUID().toString();
-    var existed = new Resource().setId(id).setManaged(true);
+    var existed = new Resource().setId(id).addTypes(PERSON).setManaged(true);
     existed.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(existed));
     doReturn(of(existed)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
     var model = new org.folio.ld.dictionary.model.Resource()

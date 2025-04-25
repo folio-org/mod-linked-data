@@ -13,6 +13,7 @@ import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.dto.Identifiable;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -171,17 +173,32 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   private Long replaceAuthority(Resource resource) {
     var srsId = resource.getFolioMetadata().getSrsId();
     return resourceRepo.findByFolioMetadataSrsId(srsId)
-      .map(previous -> {
-        var previousObsolete = markObsolete(previous);
-        setPreferred(resource, true);
-        var re = new ResourceEdge(previousObsolete, resource, REPLACED_BY);
-        previousObsolete.addOutgoingEdge(re);
-        resource.addIncomingEdge(re);
-        logMarcAction(resource, "not found by id, but found by srsId [" + srsId + "]",
-          "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
-        return saveAndPublishEvent(resource, saved -> new ResourceReplacedEvent(previousObsolete, saved.getId()));
-      })
+      .map(previous -> markObsoleteAndReplace(previous, resource))
       .orElseThrow(() -> notFoundException(srsId));
+  }
+
+  private Long markObsoleteAndReplace(Resource previous, Resource incoming) {
+    if (Objects.equals(previous.getTypes(), incoming.getTypes())) {
+      var previousObsolete = markObsolete(previous);
+      setPreferred(incoming, true);
+      addReplacedByRelation(previousObsolete, incoming);
+      logMarcAction(incoming,
+        "not found by id, but found by srsId [" + incoming.getFolioMetadata().getSrsId() + "]",
+        "be saved as a new version of previously existed resource [id " + previous.getId() + "]");
+      return saveAndPublishEvent(incoming, saved -> new ResourceReplacedEvent(previousObsolete, saved.getId()));
+    }
+    markObsolete(previous);
+    logMarcAction(previous, "set as obsolete", "be saved");
+    setPreferred(incoming, true);
+    var saved = resourceGraphService.saveMergingGraph(incoming);
+    logMarcAction(incoming, "set as preferred", "be saved");
+    return saved.getId();
+  }
+
+  private void addReplacedByRelation(Resource previousObsolete, Resource incoming) {
+    var re = new ResourceEdge(previousObsolete, incoming, REPLACED_BY);
+    previousObsolete.addOutgoingEdge(re);
+    incoming.addIncomingEdge(re);
   }
 
   private Long createAuthority(Resource resource) {
@@ -190,8 +207,8 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   private void logMarcAction(Resource resource, String existence, String action) {
-    log.info("Incoming Authority resource [id {}, srsId {}] is {} and will {}",
-      resource.getId(), resource.getFolioMetadata().getSrsId(), existence, action);
+    log.info("Incoming Authority resource [id {}, srsId {}] is {} and will {}", resource.getId(),
+      ofNullable(resource.getFolioMetadata()).map(FolioMetadata::getSrsId).orElse(null), existence, action);
   }
 
   private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
