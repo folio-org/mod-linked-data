@@ -55,7 +55,7 @@
     <jayway-jsonpath.version>2.9.0</jayway-jsonpath.version>
 
     <!-- Test dependencies versions -->
-    <testcontainers.version>1.20.6</testcontainers.version>
+    <testcontainers.version>1.21.0</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.3</jsonassert.version>
     <easy-random.version>5.0.0</easy-random.version>
