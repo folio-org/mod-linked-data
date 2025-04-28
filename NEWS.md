@@ -9,6 +9,9 @@
 - Update API to support Award, Admin history, Biog data, Physical & Accmat Notes ([MODLD-520](https://folio-org.atlassian.net/browse/MODLD-520))
 - Solve loop that appears while updating a Person to a Person, Concept ([MODLD-682](https://folio-org.atlassian.net/browse/MODLD-682))
 
+## 1.0.4 (04-24-2025)
+- Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
+
 ## 1.0.3 (04-16-2025)
 - Optimize log messages [MODLD-707](https://folio-org.atlassian.net/browse/MODLD-707)
 

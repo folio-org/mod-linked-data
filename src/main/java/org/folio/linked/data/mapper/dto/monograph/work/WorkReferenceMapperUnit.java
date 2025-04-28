@@ -3,14 +3,11 @@ package org.folio.linked.data.mapper.dto.monograph.work;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.mapper.dto.monograph.work.WorkMapperUnit.SUPPORTED_NOTES;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.IdField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
@@ -33,7 +30,6 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
     InstanceRequest.class,
     InstanceResponse.class
   );
-  private static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
