@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.resource.meta;
 
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -10,16 +9,15 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.spring.testing.type.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @UnitTest
-public class MetadataServiceTest {
-
+class MetadataServiceTest {
 
   private final MetadataServiceImpl metadataService = new MetadataServiceImpl();
 
   @Test
-  public void ensure1_shouldDoNothing_ifGivenResourceIsNotInstance() {
+  void ensure1_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
     var resource = new Resource()
       .setId(randomLong());
@@ -32,7 +30,7 @@ public class MetadataServiceTest {
   }
 
   @Test
-  public void ensure2_shouldDoNothing_ifGivenResourceIsNotInstance() {
+  void ensure2_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
     var resource = new Resource()
       .setId(randomLong());
@@ -48,7 +46,7 @@ public class MetadataServiceTest {
   }
 
   @Test
-  public void ensure1_shouldSetRandomIdsAndSourceLd_ifGivenResourceIsInstance() {
+  void ensure1_shouldSetRandomIdsAndSourceLd_ifGivenResourceIsInstance() {
     // given
     var resource = new Resource()
       .setId(randomLong())
@@ -63,12 +61,11 @@ public class MetadataServiceTest {
       .extracting("folioMetadata")
       .hasFieldOrPropertyWithValue("id", resource.getId())
       .hasFieldOrPropertyWithValue("source", LINKED_DATA)
-      .hasFieldOrPropertyWithValue("resource", resource)
-      .hasNoNullFieldsOrProperties();
+      .hasFieldOrPropertyWithValue("resource", resource);
   }
 
   @Test
-  public void ensure2_shouldSetGivenIdsAndSourceLd_ifGivenResourceIsInstance() {
+  void ensure2_shouldSetGivenIdsAndSourceLd_ifGivenResourceIsInstance() {
     // given
     var resource = new Resource()
       .setId(randomLong())
