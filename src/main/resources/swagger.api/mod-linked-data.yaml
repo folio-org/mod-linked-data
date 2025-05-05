@@ -294,6 +294,34 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/import/file:
+    post:
+      operationId: import-file
+      tags:
+        - import
+      description: Imports an uploaded JSON file containing at least one resource
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Placeholder
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: placeholder
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     id:
