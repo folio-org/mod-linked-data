@@ -1,11 +1,8 @@
 package org.folio.linked.data.mapper.dto.common;
 
-import static java.util.Optional.ofNullable;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
-
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Set;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.util.ResourceUtils;
 
 public interface SingleResourceMapperUnit {
 
@@ -16,11 +13,7 @@ public interface SingleResourceMapperUnit {
   Set<Class<?>> supportedParents();
 
   default boolean isPreferred(Resource resource) {
-    return ofNullable(resource.getDoc())
-      .map(doc -> doc.get(RESOURCE_PREFERRED.getValue()))
-      .map(jsonNode -> jsonNode.get(0))
-      .map(JsonNode::asBoolean)
-      .orElse(false);
+    return ResourceUtils.isPreferred(resource);
   }
 
 }
