@@ -93,7 +93,7 @@ management:
       base-path: /admin
   endpoint:
     loggers:
-      enabled: true
+      access: unrestricted
   influx:
     metrics:
       export:

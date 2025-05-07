@@ -145,6 +145,12 @@
           "pathPattern": "/linked-data/resource/{id}/graph",
           "permissionsRequired": [ "linked-data.resources.graph.get" ],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/import/file",
+          "permissionsRequired": ["linked-data.import.file.post"],
+          "modulePermissions": []
         }
       ]
     },
@@ -253,6 +259,11 @@
       "permissionName": "linked-data.authority-assignment-check.post",
       "displayName": "Linked Data: Check an authority can be assigned on target type",
       "description": "Check an authority can be assigned on work as type"
+    },
+    {
+      "permissionName": "linked-data.import.file.post",
+      "displayName": "Linked Data: Import a file containing resources into the graph",
+      "description": "Import a file containing resources into the graph"
     }
   ],
   "launchDescriptor": {
