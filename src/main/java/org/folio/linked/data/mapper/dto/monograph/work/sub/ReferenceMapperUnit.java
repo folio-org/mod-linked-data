@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.util.ResourceUtils;
 
 @RequiredArgsConstructor
 public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
@@ -31,4 +32,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
     return resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(reference);
   }
 
+  protected boolean isPreferred(Resource resource) {
+    return ResourceUtils.isPreferred(resource);
+  }
 }

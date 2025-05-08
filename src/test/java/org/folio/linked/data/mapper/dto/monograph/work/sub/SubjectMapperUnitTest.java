@@ -2,15 +2,20 @@ package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
+import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import org.folio.linked.data.domain.dto.Reference;
+import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
@@ -76,5 +81,117 @@ class SubjectMapperUnitTest {
 
     // then
     assertThat(result).isSameAs(resource);
+  }
+
+  @Test
+  void toDto_shouldConvertResourceToDto() {
+    // given
+    var label = "label string";
+    var id = 1L;
+    var resource = new Resource()
+      .setDoc(readTree("""
+        {
+            "http://library.link/vocab/resourcePreferred": ["true"]
+        }
+        """))
+      .setLabel(label)
+      .setId(id);
+
+
+    // when
+    var result = subjectMapperUnit.toDto(resource, new WorkResponse(), null);
+
+    // then
+    assertThat(result.getSubjects()).hasSize(1);
+    var subject = result.getSubjects().getFirst();
+    assertThat(subject.getIsPreferred()).isTrue();
+    assertThat(subject.getLabel()).isEqualTo(label);
+    assertThat(subject.getId()).isEqualTo(id + "");
+  }
+
+  @Test
+  void toDto_preferredFlagShouldBeFalse_whenResourceHasSubFocusEdge() {
+    // given
+    var focus = new Resource()
+      .setLabel("John Doe")
+      .addTypes(PERSON)
+      .setDoc(readTree("""
+        {
+            "http://library.link/vocab/resourcePreferred": ["true"]
+        }
+        """));
+
+    var subFocus = new Resource()
+      .setLabel("Childhood")
+      .addTypes(TOPIC)
+      .setDoc(readTree("""
+        {
+            "http://library.link/vocab/resourcePreferred": ["true"]
+        }
+        """));
+
+    var conceptWithSubFocus = new Resource()
+      .setLabel("John Doe -- Childhood")
+      .addTypes(CONCEPT);
+
+    conceptWithSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithSubFocus, focus, FOCUS));
+    conceptWithSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithSubFocus, subFocus, SUB_FOCUS));
+
+    // when
+    var result = subjectMapperUnit.toDto(conceptWithSubFocus, new WorkResponse(), null);
+
+    // then
+    assertThat(result.getSubjects()).hasSize(1);
+    var subject = result.getSubjects().getFirst();
+    assertThat(subject.getIsPreferred()).isFalse();
+  }
+
+  @Test
+  void toDto_shouldFetchPreferredFlagFromFocus_whenResourceHasNoSubFocusEdges() {
+    // given
+    var focus = new Resource()
+      .setLabel("John Doe")
+      .addTypes(PERSON)
+      .setDoc(readTree("""
+        {
+            "http://library.link/vocab/resourcePreferred": ["true"]
+        }
+        """));
+
+    var conceptWithoutSubFocus = new Resource()
+      .setLabel("John Doe")
+      .addTypes(CONCEPT);
+
+    conceptWithoutSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithoutSubFocus, focus, FOCUS));
+
+    // when
+    var result = subjectMapperUnit.toDto(conceptWithoutSubFocus, new WorkResponse(), null);
+
+    // then
+    assertThat(result.getSubjects()).hasSize(1);
+    var subject = result.getSubjects().getFirst();
+    assertThat(subject.getIsPreferred()).isTrue();
+  }
+
+  @Test
+  void toDto_shouldDefaultPreferredFlagToFalse() {
+    // given
+    var focusWithNoPreferredFlag = new Resource()
+      .setLabel("John Doe")
+      .addTypes(PERSON);
+
+    var concept = new Resource()
+      .setLabel("John Doe")
+      .addTypes(CONCEPT);
+
+    concept.addOutgoingEdge(new ResourceEdge(concept, focusWithNoPreferredFlag, FOCUS));
+
+    // when
+    var result = subjectMapperUnit.toDto(concept, new WorkResponse(), null);
+
+    // then
+    assertThat(result.getSubjects()).hasSize(1);
+    var subject = result.getSubjects().getFirst();
+    assertThat(subject.getIsPreferred()).isFalse();
   }
 }
