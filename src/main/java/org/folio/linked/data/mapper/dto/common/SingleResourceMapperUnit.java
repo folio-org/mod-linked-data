@@ -2,7 +2,6 @@ package org.folio.linked.data.mapper.dto.common;
 
 import java.util.Set;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.util.ResourceUtils;
 
 public interface SingleResourceMapperUnit {
 
@@ -11,9 +10,5 @@ public interface SingleResourceMapperUnit {
   Resource toEntity(Object dto, Resource parentEntity);
 
   Set<Class<?>> supportedParents();
-
-  default boolean isPreferred(Resource resource) {
-    return ResourceUtils.isPreferred(resource);
-  }
 
 }

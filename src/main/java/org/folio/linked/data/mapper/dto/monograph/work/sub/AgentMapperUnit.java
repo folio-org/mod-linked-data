@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.util.ResourceUtils.ensureLatestReplaced;
+import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 
 import java.util.function.BiConsumer;
 import lombok.RequiredArgsConstructor;

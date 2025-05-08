@@ -130,15 +130,15 @@ class SubjectMapperUnitTest {
         }
         """));
 
-    var concept = new Resource()
+    var conceptWithSubFocus = new Resource()
       .setLabel("John Doe -- Childhood")
       .addTypes(CONCEPT);
 
-    concept.addOutgoingEdge(new ResourceEdge(concept, focus, FOCUS));
-    concept.addOutgoingEdge(new ResourceEdge(concept, subFocus, SUB_FOCUS));
+    conceptWithSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithSubFocus, focus, FOCUS));
+    conceptWithSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithSubFocus, subFocus, SUB_FOCUS));
 
     // when
-    var result = subjectMapperUnit.toDto(concept, new WorkResponse(), null);
+    var result = subjectMapperUnit.toDto(conceptWithSubFocus, new WorkResponse(), null);
 
     // then
     assertThat(result.getSubjects()).hasSize(1);
@@ -158,14 +158,14 @@ class SubjectMapperUnitTest {
         }
         """));
 
-    var concept = new Resource()
+    var conceptWithoutSubFocus = new Resource()
       .setLabel("John Doe")
       .addTypes(CONCEPT);
 
-    concept.addOutgoingEdge(new ResourceEdge(concept, focus, FOCUS));
+    conceptWithoutSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithoutSubFocus, focus, FOCUS));
 
     // when
-    var result = subjectMapperUnit.toDto(concept, new WorkResponse(), null);
+    var result = subjectMapperUnit.toDto(conceptWithoutSubFocus, new WorkResponse(), null);
 
     // then
     assertThat(result.getSubjects()).hasSize(1);
@@ -176,7 +176,7 @@ class SubjectMapperUnitTest {
   @Test
   void toDto_shouldDefaultPreferredFlagToFalse() {
     // given
-    var person = new Resource()
+    var focusWithNoPreferredFlag = new Resource()
       .setLabel("John Doe")
       .addTypes(PERSON);
 
@@ -184,7 +184,7 @@ class SubjectMapperUnitTest {
       .setLabel("John Doe")
       .addTypes(CONCEPT);
 
-    concept.addOutgoingEdge(new ResourceEdge(concept, person, FOCUS));
+    concept.addOutgoingEdge(new ResourceEdge(concept, focusWithNoPreferredFlag, FOCUS));
 
     // when
     var result = subjectMapperUnit.toDto(concept, new WorkResponse(), null);
