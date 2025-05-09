@@ -223,6 +223,14 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/accompanyingMaterial"
         },
+        "bookFormat": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/bookFormat"
+        },
         "_notes": {
           "type": "array",
           "items": {

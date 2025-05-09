@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.dto.monograph.instance;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
@@ -42,13 +43,16 @@ import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
@@ -78,17 +82,16 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
   private final NoteMapper noteMapper;
   private final FolioMetadataMapper folioMetadataMapper;
   private final HashService hashService;
+  private final TextBookFormatConverter bookFormatConverter;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
       var instance = coreMapper.toDtoWithEdges(source, InstanceResponse.class, false);
       instance.setId(String.valueOf(source.getId()));
-      ofNullable(source.getFolioMetadata())
-        .map(folioMetadataMapper::toDto)
-        .ifPresent(instance::setFolioMetadata);
-      ofNullable(source.getDoc())
-        .ifPresent(doc -> instance.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      setFolioMetadata(source, instance);
+      setNotes(source, instance);
+      setBookFormats(source, instance);
       resourceDto.resource(new InstanceResponseField().instance(instance));
     }
     return parentDto;
@@ -115,6 +118,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getExtentV2(), EXTENT);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, standardBookFormats(instanceDto), BOOK_FORMAT);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));
     return instance;
@@ -132,8 +136,36 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     putProperty(map, BIOGRAPHICAL_DATA, dto.getBiogdata());
     putProperty(map, PHYSICAL_DESCRIPTION, dto.getPhysicalDescription());
     putProperty(map, ACCOMPANYING_MATERIAL, dto.getAccompanyingMaterial());
+    putProperty(map, PropertyDictionary.BOOK_FORMAT, bookFormatConverter.convertCategoriesToText(dto.getBookFormat()));
     noteMapper.putNotes(dto.getNotes(), map);
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
+  private void setFolioMetadata(Resource source, InstanceResponse instance) {
+    ofNullable(source.getFolioMetadata())
+      .map(folioMetadataMapper::toDto)
+      .ifPresent(instance::setFolioMetadata);
+  }
+
+  private void setBookFormats(Resource source, InstanceResponse instance) {
+    ofNullable(source.getDoc())
+      .ifPresent(doc -> {
+        var bookFormats = new ArrayList<>(instance.getBookFormat());
+        bookFormats.addAll(bookFormatConverter.convertTextToCategories(doc));
+        instance.setBookFormat(bookFormats);
+      });
+  }
+
+  private void setNotes(Resource source, InstanceResponse instance) {
+    ofNullable(source.getDoc())
+      .ifPresent(doc -> {
+        instance.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES));
+      });
+  }
+
+  private List<Category> standardBookFormats(InstanceRequest instanceDto) {
+    return instanceDto.getBookFormat().stream()
+      .filter(category -> !isEmpty(category.getLink()))
+      .toList();
+  }
 }
