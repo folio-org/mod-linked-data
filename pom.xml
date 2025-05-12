@@ -547,6 +547,7 @@
         <configuration>
           <groups>integration</groups>
           <reuseForks>false</reuseForks>
+          <forkCount>2</forkCount>
         </configuration>
       </plugin>
 
