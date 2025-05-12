@@ -12,21 +12,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.tenant.domain.dto.TenantAttributes;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 @Log4j2
-public class TenantInstallationExtension implements Extension, BeforeEachCallback {
+public class TenantInstallationExtension implements Extension, BeforeAllCallback {
 
   private static final String TENANT_ENDPOINT_URI = "/_/tenant";
   private static boolean init;
 
   @SneakyThrows
   @Override
-  public void beforeEach(ExtensionContext extensionContext) {
+  public void beforeAll(ExtensionContext extensionContext) {
     if (!init) {
       var context = SpringExtension.getApplicationContext(extensionContext);
       var env = context.getEnvironment();
