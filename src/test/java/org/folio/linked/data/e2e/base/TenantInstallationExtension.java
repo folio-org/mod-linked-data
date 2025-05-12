@@ -37,8 +37,8 @@ public class TenantInstallationExtension implements Extension, BeforeAllCallback
             .headers(defaultHeaders(env))
             .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent());
+        init = true;
       }
-      init = true;
     }
   }
 
