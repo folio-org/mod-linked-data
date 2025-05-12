@@ -9,7 +9,6 @@ updates:
       prefix-development: chore
       include: scope
     reviewers:
-      - "andreibordak"
-      - "askhat-abishev"
       - "pbobylev"
       - "pkjacob"
+      - "zepheiryan"
