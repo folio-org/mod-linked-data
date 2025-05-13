@@ -1,10 +1,15 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
+import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.linked.data.util.ResourceUtils.copyWithoutPreferred;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.Optional;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -34,6 +39,35 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var subject = super.toEntity(dto, parentEntity);
     return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
+  }
+
+  @Override
+  public boolean isPreferred(Resource resource) {
+    return getPreferredFromDoc(resource)
+      .orElseGet(() -> hasNoSubFocusEdges(resource) && isFocusEdgePreferred(resource));
+  }
+
+  private Optional<Boolean> getPreferredFromDoc(Resource resource) {
+    return ofNullable(resource.getDoc())
+      .map(doc -> doc.get(RESOURCE_PREFERRED.getValue()))
+      .filter(jsonNode -> !jsonNode.isEmpty())
+      .map(jsonNode -> jsonNode.get(0))
+      .map(JsonNode::asBoolean);
+  }
+
+  private boolean hasNoSubFocusEdges(Resource resource) {
+    return resource.getOutgoingEdges().stream()
+      .map(edge -> edge.getPredicate().getUri())
+      .noneMatch(predicate -> predicate.equals(SUB_FOCUS.getUri()));
+  }
+
+  private boolean isFocusEdgePreferred(Resource resource) {
+    return resource.getOutgoingEdges().stream()
+      .filter(edge -> edge.getPredicate().getUri().equals(FOCUS.getUri()))
+      .findFirst()
+      .map(ResourceEdge::getTarget)
+      .flatMap(this::getPreferredFromDoc)
+      .orElse(false);
   }
 
   private Resource wrapWithConcept(Resource subject) {
