@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.dto.monograph.instance;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
@@ -42,6 +43,7 @@ import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
@@ -49,6 +51,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
@@ -115,6 +118,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getExtentV2(), EXTENT);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, standardBookFormats(instanceDto), BOOK_FORMAT);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));
     return instance;
@@ -132,8 +136,21 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     putProperty(map, BIOGRAPHICAL_DATA, dto.getBiogdata());
     putProperty(map, PHYSICAL_DESCRIPTION, dto.getPhysicalDescription());
     putProperty(map, ACCOMPANYING_MATERIAL, dto.getAccompanyingMaterial());
+    putProperty(map, PropertyDictionary.BOOK_FORMAT, nonStandardBookFormats(dto));
     noteMapper.putNotes(dto.getNotes(), map);
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
+  private List<Category> standardBookFormats(InstanceRequest instanceDto) {
+    return instanceDto.getBookFormat().stream()
+      .filter(category -> !isEmpty(category.getLink()))
+      .toList();
+  }
+
+  List<String> nonStandardBookFormats(InstanceRequest instanceDto) {
+    return instanceDto.getBookFormat().stream()
+      .filter(category -> isEmpty(category.getLink()))
+      .flatMap(format -> format.getTerm().stream())
+      .toList();
+  }
 }
