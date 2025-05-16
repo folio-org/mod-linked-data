@@ -36,7 +36,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
-import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ACCOMPANYING_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
@@ -251,9 +250,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkReferen
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectLabel;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSummary;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTableOfContents;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTargetAudienceCode;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTargetAudienceLink;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkTargetAudienceTerm;
 import static org.folio.linked.data.test.resource.ResourceSpecUtil.createSpecRules;
 import static org.folio.linked.data.test.resource.ResourceSpecUtil.createSpecifications;
 import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
@@ -631,8 +627,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(66);
-    assertThat(resourceTestService.countEdges()).isEqualTo(68);
+    assertThat(resourceTestService.countResources()).isEqualTo(64);
+    assertThat(resourceTestService.countEdges()).isEqualTo(66);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -643,9 +639,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(65);
+    assertThat(resourceTestService.countResources()).isEqualTo(63);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(49);
+    assertThat(resourceTestService.countEdges()).isEqualTo(47);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -655,8 +651,8 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(66);
-    assertThat(resourceTestService.countEdges()).isEqualTo(68);
+    assertThat(resourceTestService.countResources()).isEqualTo(64);
+    assertThat(resourceTestService.countEdges()).isEqualTo(66);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -667,9 +663,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(65);
+    assertThat(resourceTestService.countResources()).isEqualTo(63);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(35);
+    assertThat(resourceTestService.countEdges()).isEqualTo(34);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -881,9 +877,6 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
       .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
       .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
-      .andExpect(jsonPath(toWorkTargetAudienceCode(workBase), equalTo("b")))
-      .andExpect(jsonPath(toWorkTargetAudienceTerm(workBase), equalTo("Primary")))
-      .andExpect(jsonPath(toWorkTargetAudienceLink(workBase), equalTo("http://id.loc.gov/vocabulary/maudience/pri")))
       .andExpect(jsonPath(toIllustrationsCode(workBase), equalTo("code")))
       .andExpect(jsonPath(toIllustrationsLink(workBase), equalTo("http://id.loc.gov/vocabulary/millus/code")))
       .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("illustrations term")));
@@ -1307,7 +1300,6 @@ abstract class ResourceControllerITBase extends ITBase {
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
     validateParallelTitle(outgoingEdgeIterator.next(), work);
     validateWorkContentType(outgoingEdgeIterator.next(), work);
-    validateWorkTargetAudience(outgoingEdgeIterator.next(), work);
     validateCategory(outgoingEdgeIterator.next(), work, SUPPLEMENTARY_CONTENT, "supplementary content term",
       Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/msupplcont/code", CODE.getValue(), "code"),
       "Supplementary Content"
@@ -1418,25 +1410,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(categorySet, LINK.getValue(), "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent");
     validateLiteral(categorySet, LABEL.getValue(), "rdacontent");
     assertThat(categorySet.getLabel()).isEqualTo("rdacontent");
-  }
-
-  private void validateWorkTargetAudience(ResourceEdge edge, Resource source) {
-    assertThat(edge.getId()).isNotNull();
-    assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(TARGET_AUDIENCE.getUri());
-    var contentType = edge.getTarget();
-    assertThat(contentType.getId()).isEqualTo(hashService.hash(contentType));
-    assertThat(contentType.getDoc().size()).isEqualTo(3);
-    validateLiteral(contentType, CODE.getValue(), "b");
-    validateLiteral(contentType, LINK.getValue(), "http://id.loc.gov/vocabulary/maudience/pri");
-    validateLiteral(contentType, TERM.getValue(), "Primary");
-    var resourceEdge = contentType.getOutgoingEdges().iterator().next();
-    var categorySet = resourceEdge.getTarget();
-    validateResourceEdge(resourceEdge, contentType, categorySet, IS_DEFINED_BY.getUri());
-    assertThat(categorySet.getDoc().size()).isEqualTo(2);
-    validateLiteral(categorySet, LINK.getValue(), "http://id.loc.gov/vocabulary/maudience");
-    validateLiteral(categorySet, LABEL.getValue(), "Target audience");
-    assertThat(categorySet.getLabel()).isEqualTo("Target audience");
   }
 
   private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
