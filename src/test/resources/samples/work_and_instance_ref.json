@@ -141,19 +141,6 @@
           "id": "-4816872480602594231"
         }
       ],
-      "http://bibfra.me/vocab/marc/targetAudience": [
-        {
-          "http://bibfra.me/vocab/marc/code": [
-            "b"
-          ],
-          "http://bibfra.me/vocab/marc/term": [
-            "Primary"
-          ],
-          "http://bibfra.me/vocab/lite/link": [
-            "http://id.loc.gov/vocabulary/maudience/pri"
-          ]
-        }
-      ],
       "http://bibfra.me/vocab/marc/tableOfContents": [
         "table of contents"
       ],

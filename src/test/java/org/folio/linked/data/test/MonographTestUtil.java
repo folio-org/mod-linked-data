@@ -34,7 +34,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
-import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ACCOMPANYING_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
@@ -566,7 +565,6 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
     pred2OutgoingResources.put(ORIGIN_PLACE, List.of(originPlace));
     pred2OutgoingResources.put(DISSERTATION, List.of(createDissertation()));
-    pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
     pred2OutgoingResources.put(ILLUSTRATIONS, List.of(createIllustrations()));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(createSupplementaryContent()));
@@ -731,28 +729,6 @@ public class MonographTestUtil {
       Set.of(CATEGORY),
       pred2OutgoingResources
     ).setLabel("text");
-  }
-
-  private static Resource createTargetAudience() {
-    var categorySet = createResource(
-      Map.of(
-        LINK, List.of("http://id.loc.gov/vocabulary/maudience"),
-        LABEL, List.of("Target audience")
-      ),
-      Set.of(CATEGORY_SET),
-      emptyMap())
-      .setLabel("Target audience");
-    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
-    pred2OutgoingResources.put(IS_DEFINED_BY, List.of(categorySet));
-    return createResource(
-      Map.of(
-        TERM, List.of("Primary"),
-        LINK, List.of("http://id.loc.gov/vocabulary/maudience/pri"),
-        CODE, List.of("b")
-      ),
-      Set.of(CATEGORY),
-      pred2OutgoingResources
-    ).setLabel("Primary");
   }
 
   private static Resource createIllustrations() {
