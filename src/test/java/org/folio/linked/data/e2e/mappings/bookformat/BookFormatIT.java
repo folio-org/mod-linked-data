@@ -6,10 +6,10 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -46,7 +46,8 @@ class BookFormatIT extends PostResourceIT {
   }
 
   @Override
-  protected void validateApiResponse(ResultActions apiResponse) throws Exception {
+  @SneakyThrows
+  protected void validateApiResponse(ResultActions apiResponse)  {
     var bookFormatPath = "$.resource['http://bibfra.me/vocab/lite/Instance']['http://bibfra.me/vocab/marc/bookFormat']";
     apiResponse
       .andExpect(status().isOk())
@@ -70,7 +71,7 @@ class BookFormatIT extends PostResourceIT {
     assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/bookFormat"))
       .isEqualTo("non-standard-format");
 
-    var bookFormat = getTarget(instance, "http://bibfra.me/vocab/marc/bookFormat");
+    var bookFormat = getFirstOutgoingResource(instance, "http://bibfra.me/vocab/marc/bookFormat");
     assertThat(bookFormat.getId()).isEqualTo(expectedBookFormatId);
     assertThat(getProperty(bookFormat, "http://bibfra.me/vocab/marc/term")).isEqualTo("128mo");
     assertThat(getProperty(bookFormat, "http://bibfra.me/vocab/marc/code")).isEqualTo("128mo");
@@ -78,7 +79,7 @@ class BookFormatIT extends PostResourceIT {
       .isEqualTo("http://id.loc.gov/vocabulary/bookformat/128mo");
     assertThat(bookFormat.getLabel()).isEqualTo("128mo");
 
-    var categorySet = getTarget(bookFormat, "http://bibfra.me/vocab/lite/isDefinedBy");
+    var categorySet = getFirstOutgoingResource(bookFormat, "http://bibfra.me/vocab/lite/isDefinedBy");
     assertThat(categorySet.getId()).isEqualTo(expectedCategorySetId);
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/label")).isEqualTo("Book Format");
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/link"))
@@ -86,14 +87,7 @@ class BookFormatIT extends PostResourceIT {
     assertThat(categorySet.getLabel()).isEqualTo("Book Format");
   }
 
-  private String getProperty(Resource resource, String property) {
-    return resource.getDoc().get(property).get(0).asText();
-  }
-
-  private Resource getTarget(Resource resource, String predicate) {
-    return resource.getOutgoingEdges().stream()
-      .filter(edge -> edge.getPredicate().getUri().equals(predicate))
-      .map(ResourceEdge::getTarget)
-      .findFirst().orElseThrow();
+  private Resource getFirstOutgoingResource(Resource instance, String url) {
+    return getOutgoingResources(instance, url).getFirst();
   }
 }
