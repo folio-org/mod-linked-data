@@ -16,7 +16,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
-import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
@@ -492,46 +491,6 @@ public class ResourceJsonPath {
       dynamicArrayPath(GRANTING_INSTITUTION_REF), path(LABEL_PROPERTY));
   }
 
-  public static String toWorkCreatorId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ID_PROPERTY));
-  }
-
-  public static String toWorkCreatorLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(LABEL_PROPERTY));
-  }
-
-  public static String toWorkCreatorType(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(TYPE_PROPERTY));
-  }
-
-  public static String toWorkCreatorRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ROLES_PROPERTY));
-  }
-
-  public static String toWorkCreatorIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(IS_PREFERRED_PROPERTY));
-  }
-
-  public static String toWorkContributorId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ID_PROPERTY));
-  }
-
-  public static String toWorkContributorLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(LABEL_PROPERTY));
-  }
-
-  public static String toWorkContributorType(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(TYPE_PROPERTY));
-  }
-
-  public static String toWorkContributorRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ROLES_PROPERTY));
-  }
-
-  public static String toWorkContributorIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(IS_PREFERRED_PROPERTY));
-  }
-
   public static String toWorkContentTerm(String workBase) {
     return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
   }
@@ -574,18 +533,6 @@ public class ResourceJsonPath {
 
   public static String toWorkGovPublicationLink(String workBase) {
     return join(".", workBase, arrayPath(GOVERNMENT_PUBLICATION.getUri()), arrayPath(LINK.getValue()));
-  }
-
-  public static String toWorkTargetAudienceCode(String workBase) {
-    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(CODE.getValue()));
-  }
-
-  public static String toWorkTargetAudienceTerm(String workBase) {
-    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  public static String toWorkTargetAudienceLink(String workBase) {
-    return join(".", workBase, arrayPath(TARGET_AUDIENCE.getUri()), arrayPath(LINK.getValue()));
   }
 
   public static String toWorkContentCode(String workBase) {
