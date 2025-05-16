@@ -32,7 +32,7 @@ class RdfImportIT {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = - 4596132172574222417L;
+    var expectedId = -4596132172574222417L;
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);

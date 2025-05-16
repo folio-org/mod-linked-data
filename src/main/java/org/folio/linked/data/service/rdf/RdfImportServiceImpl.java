@@ -1,10 +1,8 @@
 package org.folio.linked.data.service.rdf;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
@@ -33,14 +31,9 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   @Override
   public List<Long> importFile(MultipartFile multipartFile) {
-    var is = getInputStream(multipartFile);
-    var resources = rdf4LdService.mapToLdInstance(is, multipartFile.getContentType());
-    return save(resources);
-  }
-
-  private InputStream getInputStream(MultipartFile multipartFile) {
-    try (var inputStream = multipartFile.getInputStream()) {
-      return inputStream;
+    try (var is = multipartFile.getInputStream()) {
+      var resources = rdf4LdService.mapToLdInstance(is, multipartFile.getContentType());
+      return save(resources);
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf import incoming file reading error", e.getMessage());
     }
@@ -62,6 +55,6 @@ public class RdfImportServiceImpl implements RdfImportService {
         applicationEventPublisher.publishEvent(new ResourceCreatedEvent(saved));
         return resource.getId();
       })
-      .collect(Collectors.toList());
+      .toList();
   }
 }
