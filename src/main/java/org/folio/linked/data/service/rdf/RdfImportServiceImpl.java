@@ -2,13 +2,14 @@ package org.folio.linked.data.service.rdf;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -17,6 +18,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class RdfImportServiceImpl implements RdfImportService {
@@ -30,38 +32,36 @@ public class RdfImportServiceImpl implements RdfImportService {
   private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
-  public Set<Long> importFile(MultipartFile multipartFile) {
+  public List<Long> importFile(MultipartFile multipartFile) {
     var is = getInputStream(multipartFile);
     var resources = rdf4LdService.mapToLdInstance(is, multipartFile.getContentType());
     return save(resources);
   }
 
   private InputStream getInputStream(MultipartFile multipartFile) {
-    InputStream is;
-    try {
-      is = multipartFile.getInputStream();
+    try (var inputStream = multipartFile.getInputStream()) {
+      return inputStream;
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf import incoming file reading error", e.getMessage());
     }
-    return is;
   }
 
-  private Set<Long> save(Set<org.folio.ld.dictionary.model.Resource> resources) {
+  private List<Long> save(Set<org.folio.ld.dictionary.model.Resource> resources) {
     return resources.stream()
       .map(resourceModelMapper::toEntity)
-      .map(resource -> {
-        var existing = resourceRepo.findById(resource.getId());
-        if (existing.isPresent()) {
-          resource.setFolioMetadata(existing.get().getFolioMetadata());
-          var saved = resourceGraphService.saveMergingGraph(resource);
-          applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(saved));
-        } else {
-          metadataService.ensure(resource);
-          var saved = resourceGraphService.saveMergingGraph(resource);
-          applicationEventPublisher.publishEvent(new ResourceCreatedEvent(saved));
+      .filter(r -> {
+        boolean exists = resourceRepo.existsById(r.getId());
+        if (exists) {
+          log.warn("Instance with id {} was ignored during RDF import because it exists already", r.getId());
         }
+        return !exists;
+      })
+      .map(resource -> {
+        metadataService.ensure(resource);
+        var saved = resourceGraphService.saveMergingGraph(resource);
+        applicationEventPublisher.publishEvent(new ResourceCreatedEvent(saved));
         return resource.getId();
       })
-      .collect(Collectors.toSet());
+      .collect(Collectors.toList());
   }
 }

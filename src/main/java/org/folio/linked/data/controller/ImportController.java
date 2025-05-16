@@ -1,7 +1,6 @@
 package org.folio.linked.data.controller;
 
-import static java.util.stream.Collectors.joining;
-
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.rest.resource.ImportApi;
 import org.folio.linked.data.service.rdf.RdfImportService;
@@ -15,11 +14,7 @@ public class ImportController implements ImportApi {
   private final RdfImportService rdfImportService;
 
   @Override
-  public ResponseEntity<String> importFile(MultipartFile multipartFile) {
-    var importedIds = rdfImportService.importFile(multipartFile)
-      .stream()
-      .map(Object::toString)
-      .collect(joining(", "));
-    return ResponseEntity.ok(importedIds);
+  public ResponseEntity<List<Long>> importFile(MultipartFile multipartFile) {
+    return ResponseEntity.ok(rdfImportService.importFile(multipartFile));
   }
 }

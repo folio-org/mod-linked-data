@@ -5,19 +5,18 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Set;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -60,7 +59,7 @@ class RdfImportServiceTest {
     when(multipartFile.getInputStream()).thenReturn(inputStream);
     when(rdf4LdService.mapToLdInstance(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
-    when(resourceRepo.findById(anyLong())).thenReturn(Optional.empty());
+    when(resourceRepo.existsById(anyLong())).thenReturn(false);
     when(resourceGraphService.saveMergingGraph(entity)).thenReturn(entity);
 
     // when
@@ -73,25 +72,24 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importFile_updatesExistingResourceAndPublishesEvent_whenResourceAlreadyExists() throws IOException {
+  void importFile_ignoresExistingResourceAndNotPublishEvent_whenResourceAlreadyExists() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     var inputStream = mock(InputStream.class);
     var resources = Set.of(mock(org.folio.ld.dictionary.model.Resource.class));
-    var existingEntity = mock(org.folio.linked.data.model.entity.Resource.class);
-    var updatedEntity = mock(org.folio.linked.data.model.entity.Resource.class);
+    var mappedEntity = mock(org.folio.linked.data.model.entity.Resource.class);
     when(multipartFile.getInputStream()).thenReturn(inputStream);
     when(rdf4LdService.mapToLdInstance(inputStream, multipartFile.getContentType())).thenReturn(resources);
-    when(resourceModelMapper.toEntity(any())).thenReturn(existingEntity);
-    when(resourceRepo.findById(anyLong())).thenReturn(Optional.of(existingEntity));
-    when(resourceGraphService.saveMergingGraph(existingEntity)).thenReturn(updatedEntity);
+    when(resourceModelMapper.toEntity(any())).thenReturn(mappedEntity);
+    when(resourceRepo.existsById(anyLong())).thenReturn(true);
 
     // when
     var result = rdfImportService.importFile(multipartFile);
 
     // then
-    assertThat(result).hasSize(1);
-    verify(applicationEventPublisher).publishEvent(any(ResourceUpdatedEvent.class));
+    assertThat(result).isEmpty();
+    verify(resourceGraphService, never()).saveMergingGraph(any());
+    verify(applicationEventPublisher, never()).publishEvent(any());
   }
 
   @Test

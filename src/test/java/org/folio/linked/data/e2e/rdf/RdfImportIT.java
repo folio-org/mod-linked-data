@@ -41,7 +41,7 @@ class RdfImportIT {
     var response = resultActions
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString();
-    assertThat(response).isEqualTo(String.valueOf(expectedId));
+    assertThat(response).isEqualTo("[" + expectedId + "]");
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
   }
 
