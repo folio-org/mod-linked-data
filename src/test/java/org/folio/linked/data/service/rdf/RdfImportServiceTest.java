@@ -21,6 +21,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.rdf4ld.service.Rdf4LdService;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.multipart.MultipartFile;
 
+@UnitTest
 @ExtendWith(MockitoExtension.class)
 class RdfImportServiceTest {
 
