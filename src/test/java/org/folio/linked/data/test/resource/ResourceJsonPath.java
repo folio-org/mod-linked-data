@@ -491,46 +491,6 @@ public class ResourceJsonPath {
       dynamicArrayPath(GRANTING_INSTITUTION_REF), path(LABEL_PROPERTY));
   }
 
-  public static String toWorkCreatorId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ID_PROPERTY));
-  }
-
-  public static String toWorkCreatorLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(LABEL_PROPERTY));
-  }
-
-  public static String toWorkCreatorType(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(TYPE_PROPERTY));
-  }
-
-  public static String toWorkCreatorRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(ROLES_PROPERTY));
-  }
-
-  public static String toWorkCreatorIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CREATOR_REF), path(IS_PREFERRED_PROPERTY));
-  }
-
-  public static String toWorkContributorId(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ID_PROPERTY));
-  }
-
-  public static String toWorkContributorLabel(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(LABEL_PROPERTY));
-  }
-
-  public static String toWorkContributorType(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(TYPE_PROPERTY));
-  }
-
-  public static String toWorkContributorRoles(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(ROLES_PROPERTY));
-  }
-
-  public static String toWorkContributorIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(CONTRIBUTOR_REF), path(IS_PREFERRED_PROPERTY));
-  }
-
   public static String toWorkContentTerm(String workBase) {
     return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
   }

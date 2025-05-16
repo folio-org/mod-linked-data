@@ -10,8 +10,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +84,16 @@ public abstract class PostResourceIT {
   }
 
   protected void validateGraph(Resource resource){
+  }
+
+  protected String getProperty(Resource resource, String property) {
+    return resource.getDoc().get(property).get(0).asText();
+  }
+
+  protected List<Resource> getTargets(Resource resource, String predicate) {
+    return resource.getOutgoingEdges().stream()
+      .filter(edge -> edge.getPredicate().getUri().equals(predicate))
+      .map(ResourceEdge::getTarget)
+      .toList();
   }
 }
