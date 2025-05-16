@@ -210,67 +210,6 @@
           ]
         }
       ],
-      "_creatorReference": [
-        {
-          "srsId": "5f2220d5-ddf6-410a-a459-cd4b5e1b5ddb",
-          "label": "name-CREATOR-MEETING",
-          "type": "http://bibfra.me/vocab/lite/Meeting"
-        },
-        {
-          "id": "4359679744172518150",
-          "label": "name-CREATOR-PERSON",
-          "type": "http://bibfra.me/vocab/lite/Person",
-          "roles": [
-            "http://bibfra.me/vocab/relation/author"
-          ]
-        },
-        {
-          "id": "-466724080127664871",
-          "label": "name-CREATOR-ORGANIZATION",
-          "type": "http://bibfra.me/vocab/lite/Organization"
-        },
-        {
-          "id": "8296435493593701280",
-          "label": "name-CREATOR-FAMILY",
-          "type": "http://bibfra.me/vocab/lite/Family"
-        },
-        {
-          "id": "5487607357549327916",
-          "label": "name-CREATOR-JURISDICTION",
-          "type": "http://bibfra.me/vocab/lite/Jurisdiction"
-        }
-      ],
-      "_contributorReference": [
-        {
-          "srsId": "dad61944-17d2-4ade-afc5-ad4ce318a70b",
-          "label": "name-CONTRIBUTOR-ORGANIZATION",
-          "type": "http://bibfra.me/vocab/lite/Organization",
-          "roles": [
-            "http://bibfra.me/vocab/relation/editor",
-            "http://bibfra.me/vocab/relation/assignee"
-          ]
-        },
-        {
-          "id": "3094995075578514480",
-          "label": "name-CONTRIBUTOR-FAMILY",
-          "type": "http://bibfra.me/vocab/lite/Family"
-        },
-        {
-          "id": "-6054989039809126250",
-          "label": "name-CONTRIBUTOR-PERSON",
-          "type": "http://bibfra.me/vocab/lite/Person"
-        },
-        {
-          "id": "-7286109411186266518",
-          "label": "name-CONTRIBUTOR-MEETING",
-          "type": "http://bibfra.me/vocab/lite/Meeting"
-        },
-        {
-          "id": "2250127472356730540",
-          "label": "name-CONTRIBUTOR-JURISDICTION",
-          "type": "http://bibfra.me/vocab/lite/Jurisdiction"
-        }
-      ],
       "http://bibfra.me/vocab/lite/dateStart": [
         "2024"
       ],

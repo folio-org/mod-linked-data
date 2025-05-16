@@ -6,16 +6,11 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
-import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
-import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
-import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
-import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -66,7 +61,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
@@ -99,7 +93,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
@@ -108,12 +101,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
@@ -224,16 +214,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toWork;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentTerm;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorId;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorIsPreferred;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorLabel;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorRoles;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorType;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorId;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorIsPreferred;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorLabel;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorRoles;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorType;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDateEnd;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDateStart;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDeweyEdition;
@@ -627,8 +607,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(64);
-    assertThat(resourceTestService.countEdges()).isEqualTo(66);
+    assertThat(resourceTestService.countResources()).isEqualTo(54);
+    assertThat(resourceTestService.countEdges()).isEqualTo(53);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -639,9 +619,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(63);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(47);
+    assertThat(resourceTestService.countEdges()).isEqualTo(34);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -651,8 +631,8 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(64);
-    assertThat(resourceTestService.countEdges()).isEqualTo(66);
+    assertThat(resourceTestService.countResources()).isEqualTo(54);
+    assertThat(resourceTestService.countEdges()).isEqualTo(53);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -663,7 +643,7 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(63);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(34);
     checkSearchIndexMessage(existed.getId(), DELETE);
@@ -843,22 +823,6 @@ abstract class ResourceControllerITBase extends ITBase {
         "-6468470931408362304")))
       .andExpect(jsonPath(toDissertationGrantingInstitutionLabels(workBase),
         containsInAnyOrder("granting institution 1", "granting institution 2")))
-      .andExpect(jsonPath(toWorkCreatorId(workBase), containsInAnyOrder("-603031702996824854", "4359679744172518150",
-        "-466724080127664871", "8296435493593701280", "5487607357549327916")))
-      .andExpect(jsonPath(toWorkCreatorLabel(workBase), containsInAnyOrder("name-CREATOR-MEETING",
-        "name-CREATOR-PERSON", "name-CREATOR-ORGANIZATION", "name-CREATOR-FAMILY", "name-CREATOR-JURISDICTION")))
-      .andExpect(jsonPath(toWorkCreatorType(workBase), containsInAnyOrder(MEETING.getUri(), PERSON.getUri(),
-        ORGANIZATION.getUri(), FAMILY.getUri(), JURISDICTION.getUri())))
-      .andExpect(jsonPath(toWorkCreatorRoles(workBase), equalTo(List.of(List.of(AUTHOR.getUri())))))
-      .andExpect(jsonPath(toWorkContributorId(workBase), containsInAnyOrder("-6054989039809126250",
-        "-7286109411186266518", "-4246830624125472784", "3094995075578514480", "2250127472356730540")))
-      .andExpect(jsonPath(toWorkContributorLabel(workBase), containsInAnyOrder("name-CONTRIBUTOR-ORGANIZATION",
-        "name-CONTRIBUTOR-FAMILY", "name-CONTRIBUTOR-PERSON", "name-CONTRIBUTOR-MEETING",
-        "name-CONTRIBUTOR-JURISDICTION")))
-      .andExpect(jsonPath(toWorkContributorType(workBase), containsInAnyOrder(ORGANIZATION.getUri(), FAMILY.getUri(),
-        PERSON.getUri(), MEETING.getUri(), JURISDICTION.getUri())))
-      .andExpect(jsonPath(toWorkContributorRoles(workBase), equalTo(List.of(List.of(EDITOR.getUri(),
-        ASSIGNEE.getUri())))))
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
@@ -888,8 +852,6 @@ abstract class ResourceControllerITBase extends ITBase {
 
   private void validateAuthorities(ResultActions resultActions, String workBase) throws Exception {
     resultActions
-      .andExpect(jsonPath(toWorkCreatorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
-      .andExpect(jsonPath(toWorkContributorIsPreferred(workBase), containsInAnyOrder(true, false, false, false, false)))
       .andExpect(jsonPath(toWorkGenreIsPreferred(workBase), containsInAnyOrder(true, false)));
   }
 
@@ -1311,24 +1273,10 @@ abstract class ResourceControllerITBase extends ITBase {
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
     validateLanguage(outgoingEdgeIterator.next(), work);
     validateDissertation(outgoingEdgeIterator.next(), work);
-    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CREATOR);
-    var editorEdge = outgoingEdgeIterator.next();
-    validateResourceEdge(editorEdge, work, editorEdge.getTarget(), EDITOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, ORGANIZATION, CONTRIBUTOR);
-    var assigneeEdge = outgoingEdgeIterator.next();
-    validateResourceEdge(assigneeEdge, work, assigneeEdge.getTarget(), ASSIGNEE.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CREATOR);
-    validateWorkContributor(outgoingEdgeIterator.next(), work, FAMILY, CONTRIBUTOR);
     validateDdcClassification(outgoingEdgeIterator.next(), work);
     validateLcClassification(outgoingEdgeIterator.next(), work);
     validatePrimaryTitle(outgoingEdgeIterator.next(), work);
-    var authorEdge = outgoingEdgeIterator.next();
-    validateResourceEdge(authorEdge, work, authorEdge.getTarget(), AUTHOR.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CREATOR);
     validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().getFirst());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, PERSON, CONTRIBUTOR);
-    validateWorkContributor(outgoingEdgeIterator.next(), work, JURISDICTION, CREATOR);
-    validateWorkContributor(outgoingEdgeIterator.next(), work, JURISDICTION, CONTRIBUTOR);
     validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1));
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().getFirst(), GENRE.getUri());
@@ -1338,8 +1286,6 @@ abstract class ResourceControllerITBase extends ITBase {
       GEOGRAPHIC_COVERAGE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().getFirst(),
       GEOGRAPHIC_COVERAGE.getUri());
-    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CREATOR);
-    validateWorkContributor(outgoingEdgeIterator.next(), work, MEETING, CONTRIBUTOR);
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
     if (validateFullInstance) {
       var incomingEdgeIterator = work.getIncomingEdges().iterator();
@@ -1410,22 +1356,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(categorySet, LINK.getValue(), "http://id.loc.gov/vocabulary/genreFormSchemes/rdacontent");
     validateLiteral(categorySet, LABEL.getValue(), "rdacontent");
     assertThat(categorySet.getLabel()).isEqualTo("rdacontent");
-  }
-
-  private void validateWorkContributor(ResourceEdge edge, Resource source, ResourceTypeDictionary type,
-                                       PredicateDictionary predicate) {
-    assertThat(edge.getId()).isNotNull();
-    assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(predicate.getUri());
-    var creator = edge.getTarget();
-    assertThat(creator.getId()).isEqualTo(hashService.hash(creator));
-    var types = creator.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
-    assertThat(types).contains(type.getUri());
-    assertThat(creator.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(creator.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("name-" + predicate + "-" + type);
-    assertThat(creator.getDoc().get(LCNAF_ID.getValue()).size()).isEqualTo(1);
-    assertThat(creator.getDoc().get(LCNAF_ID.getValue()).get(0).asText()).isEqualTo("2002801801-" + type);
-    assertThat(creator.getLabel()).isEqualTo("name-" + predicate + "-" + type);
   }
 
   private void validateWorkGovernmentPublication(ResourceEdge edge, Resource source) {
@@ -1543,28 +1473,6 @@ abstract class ResourceControllerITBase extends ITBase {
     var genre1 = saveResource(- 9064822434663187463L, "genre 1", FORM,
       "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}", "8138e88f-4278-45ba-838c-816b80544f82");
     var genre2 = saveResource(- 4816872480602594231L, "genre 2", "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}", FORM);
-    var creatorMeeting = saveResource(- 603031702996824854L, "name-CREATOR-MEETING", MEETING,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-MEETING\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}", "5f2220d5-ddf6-410a-a459-cd4b5e1b5ddb");
-    var creatorPerson = saveResource(4359679744172518150L, "name-CREATOR-PERSON",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}", PERSON);
-    var creatorOrganization = saveResource(- 466724080127664871L, "name-CREATOR-ORGANIZATION",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-ORGANIZATION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}", ORGANIZATION);
-    var creatorFamily = saveResource(8296435493593701280L, "name-CREATOR-FAMILY",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}", FAMILY);
-    var creatorJurisdiction = saveResource(5487607357549327916L, "name-CREATOR-JURISDICTION",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CREATOR-JURISDICTION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}", JURISDICTION);
-    var contributorMeeting = saveResource(- 7286109411186266518L, "name-CONTRIBUTOR-MEETING",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-MEETING\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-MEETING\"]}", MEETING);
-    var contributorPerson = saveResource(- 6054989039809126250L, "name-CONTRIBUTOR-PERSON",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-PERSON\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-PERSON\"]}", PERSON);
-    var contributorOrganization = saveResource(- 4246830624125472784L, "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION,
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-ORGANIZATION\"], "
-        + "\"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-ORGANIZATION\"]}", "dad61944-17d2-4ade-afc5-ad4ce318a70b");
-    var contributorFamily = saveResource(3094995075578514480L, "name-CONTRIBUTOR-FAMILY",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-FAMILY\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-FAMILY\"]}", FAMILY);
-    var contributorJurisdiction = saveResource(2250127472356730540L, "name-CONTRIBUTOR-JURISDICTION",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"name-CONTRIBUTOR-JURISDICTION\"], \"http://bibfra.me/vocab/marc/lcnafId\": [\"2002801801-JURISDICTION\"]}", JURISDICTION);
     var assigningAgency = saveResource(4932783899755316479L, "assigning agency", "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}", ORGANIZATION);
     var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", "{\"http://bibfra.me/vocab/lite/name\": [\"United States, Library of Congress\"]}", ORGANIZATION);
     var grantingInstitution1 = saveResource(5481852630377445080L, "granting institution 1", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 1\"]}", ORGANIZATION);
@@ -1573,8 +1481,7 @@ abstract class ResourceControllerITBase extends ITBase {
       List.of(subjectPerson, subjectForm),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
-      List.of(creatorMeeting, creatorPerson, creatorOrganization, creatorFamily, creatorJurisdiction,
-        contributorPerson, contributorMeeting, contributorOrganization, contributorFamily, contributorJurisdiction),
+      List.of(),
       List.of(assigningAgency, libraryOfCongress),
       List.of(grantingInstitution1, grantingInstitution2)
     );
