@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -70,7 +69,7 @@ class BookFormatIT extends PostResourceIT {
     assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/bookFormat"))
       .isEqualTo("non-standard-format");
 
-    var bookFormat = getTarget(instance, "http://bibfra.me/vocab/marc/bookFormat");
+    var bookFormat = getFirstTarget(instance, "http://bibfra.me/vocab/marc/bookFormat");
     assertThat(bookFormat.getId()).isEqualTo(expectedBookFormatId);
     assertThat(getProperty(bookFormat, "http://bibfra.me/vocab/marc/term")).isEqualTo("128mo");
     assertThat(getProperty(bookFormat, "http://bibfra.me/vocab/marc/code")).isEqualTo("128mo");
@@ -78,7 +77,7 @@ class BookFormatIT extends PostResourceIT {
       .isEqualTo("http://id.loc.gov/vocabulary/bookformat/128mo");
     assertThat(bookFormat.getLabel()).isEqualTo("128mo");
 
-    var categorySet = getTarget(bookFormat, "http://bibfra.me/vocab/lite/isDefinedBy");
+    var categorySet = getFirstTarget(bookFormat, "http://bibfra.me/vocab/lite/isDefinedBy");
     assertThat(categorySet.getId()).isEqualTo(expectedCategorySetId);
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/label")).isEqualTo("Book Format");
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/link"))
@@ -86,14 +85,7 @@ class BookFormatIT extends PostResourceIT {
     assertThat(categorySet.getLabel()).isEqualTo("Book Format");
   }
 
-  private String getProperty(Resource resource, String property) {
-    return resource.getDoc().get(property).get(0).asText();
-  }
-
-  private Resource getTarget(Resource resource, String predicate) {
-    return resource.getOutgoingEdges().stream()
-      .filter(edge -> edge.getPredicate().getUri().equals(predicate))
-      .map(ResourceEdge::getTarget)
-      .findFirst().orElseThrow();
+  private Resource getFirstTarget(Resource instance, String url) {
+    return getTargets(instance, url).getFirst();
   }
 }
