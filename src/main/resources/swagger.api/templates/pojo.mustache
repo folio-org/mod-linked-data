@@ -111,6 +111,17 @@ public class {{classname}}{{#parent}} extends {{{parent}}}{{/parent}}{{^parent}}
   }
   {{/hasRequired}}
   {{/generatedConstructorWithRequiredArgs}}
+
+  {{#vendorExtensions.x-from-string-field}}
+  {{^hasRequired}}
+  public {{classname}}() {}
+  {{/hasRequired}}
+
+  public {{classname}}(String value) {
+    this.{{.}} = List.of(value);
+  }
+  {{/vendorExtensions.x-from-string-field}}
+
   {{#vars}}
 
   {{! begin feature: fluent setter methods }}
