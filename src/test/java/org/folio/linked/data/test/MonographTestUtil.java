@@ -5,16 +5,11 @@ import static java.util.Map.entry;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
-import static org.folio.ld.dictionary.PredicateDictionary.ASSIGNEE;
-import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
-import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
-import static org.folio.ld.dictionary.PredicateDictionary.EDITOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -34,7 +29,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
-import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ACCOMPANYING_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
@@ -67,7 +61,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.LCNAF_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
@@ -101,7 +94,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
@@ -110,9 +102,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
@@ -376,108 +366,6 @@ public class MonographTestUtil {
   public static Resource getSampleWork(Resource linkedInstance) {
     var primaryTitle = createPrimaryTitle(null);
 
-    var creatorMeeting = createResource(
-      Map.of(
-        NAME, List.of("name-CREATOR-MEETING"),
-        LCNAF_ID, List.of("2002801801-MEETING")
-      ),
-      Set.of(MEETING),
-      emptyMap()
-    ).setLabel("name-CREATOR-MEETING")
-      .setId(-603031702996824854L);
-
-    var creatorPerson = createResource(
-      Map.of(
-        NAME, List.of("name-CREATOR-PERSON"),
-        LCNAF_ID, List.of("2002801801-PERSON"),
-        RESOURCE_PREFERRED, List.of("true")
-      ),
-      Set.of(PERSON),
-      emptyMap()
-    ).setLabel("name-CREATOR-PERSON")
-      .setId(4359679744172518150L);
-
-    var creatorOrganization = createResource(
-      Map.of(
-        NAME, List.of("name-CREATOR-ORGANIZATION"),
-        LCNAF_ID, List.of("2002801801-ORGANIZATION")
-      ),
-      Set.of(ORGANIZATION),
-      emptyMap()
-    ).setLabel("name-CREATOR-ORGANIZATION")
-      .setId(-466724080127664871L);
-
-    var creatorFamily = createResource(
-      Map.of(
-        NAME, List.of("name-CREATOR-FAMILY"),
-        LCNAF_ID, List.of("2002801801-FAMILY")
-      ),
-      Set.of(FAMILY),
-      emptyMap()
-    ).setLabel("name-CREATOR-FAMILY")
-      .setId(8296435493593701280L);
-
-    var creatorJurisdiction = createResource(
-      Map.of(
-        NAME, List.of("name-CREATOR-JURISDICTION"),
-        LCNAF_ID, List.of("2002801801-JURISDICTION")
-      ),
-      Set.of(JURISDICTION),
-      emptyMap()
-    ).setLabel("name-CREATOR-JURISDICTION")
-      .setId(5487607357549327916L);
-
-    var contributorPerson = createResource(
-      Map.of(
-        NAME, List.of("name-CONTRIBUTOR-PERSON"),
-        LCNAF_ID, List.of("2002801801-PERSON"),
-        RESOURCE_PREFERRED, List.of("true")
-      ),
-      Set.of(PERSON),
-      emptyMap()
-    ).setLabel("name-CONTRIBUTOR-PERSON")
-      .setId(-6054989039809126250L);
-
-    var contributorMeeting = createResource(
-      Map.of(
-        NAME, List.of("name-CONTRIBUTOR-MEETING"),
-        LCNAF_ID, List.of("2002801801-MEETING")
-      ),
-      Set.of(MEETING),
-      emptyMap()
-    ).setLabel("name-CONTRIBUTOR-MEETING")
-      .setId(-7286109411186266518L);
-
-    var contributorOrganization = createResource(
-      Map.of(
-        NAME, List.of("name-CONTRIBUTOR-ORGANIZATION"),
-        LCNAF_ID, List.of("2002801801-ORGANIZATION")
-      ),
-      Set.of(ORGANIZATION),
-      emptyMap()
-    ).setLabel("name-CONTRIBUTOR-ORGANIZATION")
-      .setId(-4246830624125472784L);
-
-    var contributorFamily = createResource(
-      Map.of(
-        NAME, List.of("name-CONTRIBUTOR-FAMILY"),
-        LCNAF_ID, List.of("2002801801-FAMILY")
-      ),
-      Set.of(FAMILY),
-      emptyMap()
-    ).setLabel("name-CONTRIBUTOR-FAMILY")
-      .setId(3094995075578514480L);
-
-    var contributorJurisdiction = createResource(
-      Map.of(
-        NAME, List.of("name-CONTRIBUTOR-JURISDICTION"),
-        LCNAF_ID, List.of("2002801801-JURISDICTION")
-      ),
-      Set.of(JURISDICTION),
-      emptyMap()
-    ).setLabel("name-CONTRIBUTOR-JURISDICTION")
-      .setId(2250127472356730540L);
-
     var unitedStates = createResource(
       Map.of(
         NAME, List.of("United States"),
@@ -552,13 +440,6 @@ public class MonographTestUtil {
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
-    pred2OutgoingResources.put(CREATOR, List.of(creatorPerson, creatorMeeting, creatorOrganization, creatorFamily,
-      creatorJurisdiction));
-    pred2OutgoingResources.put(AUTHOR, List.of(creatorPerson));
-    pred2OutgoingResources.put(CONTRIBUTOR, List.of(contributorPerson, contributorMeeting, contributorOrganization,
-      contributorFamily, contributorJurisdiction));
-    pred2OutgoingResources.put(EDITOR, List.of(contributorOrganization));
-    pred2OutgoingResources.put(ASSIGNEE, List.of(contributorOrganization));
     pred2OutgoingResources.put(CONTENT, List.of(createContent()));
     pred2OutgoingResources.put(SUBJECT, List.of(getSubjectPersonPreferred(), getSubjectFormNotPreferred()));
     pred2OutgoingResources.put(PredicateDictionary.GEOGRAPHIC_COVERAGE, List.of(unitedStates, europe));
@@ -566,7 +447,6 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
     pred2OutgoingResources.put(ORIGIN_PLACE, List.of(originPlace));
     pred2OutgoingResources.put(DISSERTATION, List.of(createDissertation()));
-    pred2OutgoingResources.put(TARGET_AUDIENCE, List.of(createTargetAudience()));
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
     pred2OutgoingResources.put(ILLUSTRATIONS, List.of(createIllustrations()));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(createSupplementaryContent()));
@@ -731,28 +611,6 @@ public class MonographTestUtil {
       Set.of(CATEGORY),
       pred2OutgoingResources
     ).setLabel("text");
-  }
-
-  private static Resource createTargetAudience() {
-    var categorySet = createResource(
-      Map.of(
-        LINK, List.of("http://id.loc.gov/vocabulary/maudience"),
-        LABEL, List.of("Target audience")
-      ),
-      Set.of(CATEGORY_SET),
-      emptyMap())
-      .setLabel("Target audience");
-    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
-    pred2OutgoingResources.put(IS_DEFINED_BY, List.of(categorySet));
-    return createResource(
-      Map.of(
-        TERM, List.of("Primary"),
-        LINK, List.of("http://id.loc.gov/vocabulary/maudience/pri"),
-        CODE, List.of("b")
-      ),
-      Set.of(CATEGORY),
-      pred2OutgoingResources
-    ).setLabel("Primary");
   }
 
   private static Resource createIllustrations() {
