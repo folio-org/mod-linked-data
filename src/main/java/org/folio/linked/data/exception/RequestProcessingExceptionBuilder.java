@@ -52,6 +52,10 @@ public class RequestProcessingExceptionBuilder {
     return requestProcessingException(errorResponseConfig.getFailedDependency(), message, reason);
   }
 
+  public RequestProcessingException badRequestException(String message, String reason) {
+    return requestProcessingException(errorResponseConfig.getGenericBadRequest(), message, reason);
+  }
+
   private RequestProcessingException requestProcessingException(ErrorResponseConfig.Error error, String... arguments) {
     var parameters = new HashMap<String, String>();
     for (int i = 0; i < arguments.length; i++) {

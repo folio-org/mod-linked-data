@@ -88,7 +88,7 @@ paths:
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
-         description: No resource is found by id
+          description: No resource is found by id
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
     delete:
@@ -313,10 +313,12 @@ paths:
         '200':
           description: Placeholder
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example: placeholder
+                type: array
+                items:
+                  type: integer
+                  format: int64
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':

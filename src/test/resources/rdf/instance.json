@@ -1,0 +1,45 @@
+[
+  {
+    "@id": "http://id.loc.gov/resources/instances/20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Instance"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/responsibilityStatement": [
+      {
+        "@value": "Instance responsibilityStatement 1"
+      },
+      {
+        "@value": "Instance responsibilityStatement 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/dimensions": [
+      {
+        "@value": "Instance dimensions 1"
+      },
+      {
+        "@value": "Instance dimensions 2"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/title": [
+      {
+        "@id": "_:b59iddOtlocdOtgovresourcesinstances20572081"
+      }
+    ]
+  },
+  {
+    "@id": "_:b59iddOtlocdOtgovresourcesinstances20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Title"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+      {
+        "@value": "Title mainTitle"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/subtitle": [
+      {
+        "@value": "Title subtitle"
+      }
+    ]
+  }
+]
