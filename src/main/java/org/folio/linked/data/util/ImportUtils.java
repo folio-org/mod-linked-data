@@ -5,6 +5,7 @@ import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,17 +37,17 @@ public class ImportUtils {
    * @see https://rdf4j.org/javadoc/latest/org/eclipse/rdf4j/rio/RDFFormat.html
    */
   public static String toRdfMediaType(String contentType) {
-    String finalType;
-    switch (contentType) {
-      case APPLICATION_JSON_VALUE:
-        finalType = APPLICATION_LD_JSON_VALUE;
-        break;
-      case TEXT_PLAIN_VALUE:
-        finalType = TEXT_TURTLE_VALUE; // Could also be text/n3, assuming ttl is more prevalent
-        break;
-      default:
-        finalType = contentType;
-        break;
+    String finalType = contentType;
+    if (contentType != null) {
+      switch (contentType) {
+        case APPLICATION_JSON_VALUE:
+          finalType = APPLICATION_LD_JSON_VALUE;
+          break;
+        case TEXT_PLAIN_VALUE:
+          finalType = TEXT_TURTLE_VALUE; // Could also be text/n3, assuming ttl is more prevalent
+          break;
+        default: // nothing to change if no match
+      }
     }
     return finalType;
   }
@@ -70,7 +71,7 @@ public class ImportUtils {
       private String failureReason;
     }
 
-    private List<ImportedResource> imports;
+    private List<ImportedResource> imports = new ArrayList<>();
 
     public boolean addImport(ImportedResource resource) {
       return this.imports.add(resource);
@@ -83,7 +84,11 @@ public class ImportUtils {
         .get();
       try (final CSVPrinter printer = new CSVPrinter(sw, format)) {
         for (ImportedResource resource : imports) {
-          printer.printRecord(resource.getId(), resource.getLabel(), resource.getStatus().value, resource.getFailureReason());
+          printer.printRecord(
+            resource.getId(),
+            resource.getLabel(),
+            resource.getStatus().value,
+            resource.getFailureReason());
         }
       }
       return sw.toString();
