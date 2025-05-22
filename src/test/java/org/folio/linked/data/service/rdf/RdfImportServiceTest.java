@@ -68,7 +68,7 @@ class RdfImportServiceTest {
     var result = rdfImportService.importFile(multipartFile);
 
     // then
-    assertThat(result).hasSize(1);
+    assertThat(result.getResources()).hasSize(1);
     verify(metadataService).ensure(entity);
     verify(applicationEventPublisher).publishEvent(any(ResourceCreatedEvent.class));
   }
@@ -89,7 +89,7 @@ class RdfImportServiceTest {
     var result = rdfImportService.importFile(multipartFile);
 
     // then
-    assertThat(result).isEmpty();
+    assertThat(result.getResources()).isEmpty();
     verify(resourceGraphService, never()).saveMergingGraph(any());
     verify(applicationEventPublisher, never()).publishEvent(any());
   }
