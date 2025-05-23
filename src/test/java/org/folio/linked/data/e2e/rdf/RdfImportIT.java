@@ -2,7 +2,10 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.contains;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -28,7 +31,7 @@ class RdfImportIT {
     // given
     var input = this.getClass().getResourceAsStream("/rdf/instance.json");
     var multipartFile = new MockMultipartFile("fileName", "instance.json",
-      "application/ld+json", input);
+      "application/json", input);
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
@@ -38,10 +41,10 @@ class RdfImportIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = resultActions
+    resultActions
       .andExpect(status().isOk())
-      .andReturn().getResponse().getContentAsString();
-    assertThat(response).isEqualTo("[" + expectedId + "]");
+      .andExpect(jsonPath("resources[0]", equalTo(expectedId)))
+      .andExpect(jsonPath("log", contains(expectedId)));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
   }
 
