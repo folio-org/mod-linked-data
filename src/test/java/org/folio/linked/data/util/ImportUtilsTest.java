@@ -30,15 +30,15 @@ class ImportUtilsTest {
     return Stream.of(
       Arguments.of(
         new ImportUtils.ImportedResource(1L, "", ImportUtils.Status.SUCCESS, ""),
-        "URI,LABEL,STATUS,FAILURE_REASON\r\n1,,Success,\r\n"
+        "ID,LABEL,STATUS,FAILURE_REASON\r\n1,,Success,\r\n"
       ),
       Arguments.of(
         new ImportUtils.ImportedResource(692094L, "Some complexity, isn't \"missing\"", ImportUtils.Status.SUCCESS, ""),
-        "URI,LABEL,STATUS,FAILURE_REASON\r\n692094,\"Some complexity, isn't \"\"missing\"\"\",Success,\r\n"
+        "ID,LABEL,STATUS,FAILURE_REASON\r\n692094,\"Some complexity, isn't \"\"missing\"\"\",Success,\r\n"
       ),
       Arguments.of(
         new ImportUtils.ImportedResource(5L, "No good", ImportUtils.Status.FAILURE, "Some, error"),
-        "URI,LABEL,STATUS,FAILURE_REASON\r\n5,No good,Failure,\"Some, error\"\r\n"
+        "ID,LABEL,STATUS,FAILURE_REASON\r\n5,No good,Failure,\"Some, error\"\r\n"
       )
     );
   }

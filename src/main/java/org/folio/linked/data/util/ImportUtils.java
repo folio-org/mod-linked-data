@@ -22,7 +22,7 @@ public class ImportUtils {
   public static final String TEXT_TURTLE_VALUE = "text/turtle";
 
   private enum ReportHeader {
-    URI,
+    ID,
     LABEL,
     STATUS,
     FAILURE_REASON;
