@@ -51,10 +51,10 @@ public class RdfImportServiceImpl implements RdfImportService {
         boolean exists = resourceRepo.existsById(r.getId());
         if (exists) {
           report.addImport(
-            new ImportUtils.ImportReport.ImportedResource(
+            new ImportUtils.ImportedResource(
               r.getId(),
               r.getLabel(),
-              ImportUtils.ImportReport.Status.FAILURE,
+              ImportUtils.Status.FAILURE,
               "Already exists in graph"));
         }
         return !exists;
@@ -64,10 +64,10 @@ public class RdfImportServiceImpl implements RdfImportService {
         var saved = resourceGraphService.saveMergingGraph(resource);
         applicationEventPublisher.publishEvent(new ResourceCreatedEvent(saved));
         report.addImport(
-          new ImportUtils.ImportReport.ImportedResource(
+          new ImportUtils.ImportedResource(
             saved.getId(),
             saved.getLabel(),
-            ImportUtils.ImportReport.Status.SUCCESS,
+            ImportUtils.Status.SUCCESS,
             ""));
         return resource.getId();
       })

@@ -52,25 +52,25 @@ public class ImportUtils {
     return finalType;
   }
 
+  @RequiredArgsConstructor
+  public enum Status {
+    SUCCESS("Success"),
+    FAILURE("Failure");
+
+    private final String value;
+  }
+
+  @Data
+  @AllArgsConstructor
+  public static class ImportedResource {
+    private Long id;
+    private String label;
+    private Status status;
+    private String failureReason;
+  }
+
   @Data
   public static class ImportReport {
-    @RequiredArgsConstructor
-    public enum Status {
-      SUCCESS("Success"),
-      FAILURE("Failure");
-
-      private final String value;
-    }
-
-    @Data
-    @AllArgsConstructor
-    public static class ImportedResource {
-      private Long id;
-      private String label;
-      private Status status;
-      private String failureReason;
-    }
-
     private List<ImportedResource> imports = new ArrayList<>();
 
     public boolean addImport(ImportedResource resource) {
@@ -79,7 +79,7 @@ public class ImportUtils {
 
     public String toCsv() throws IOException {
       StringWriter sw = new StringWriter();
-      CSVFormat format = CSVFormat.DEFAULT.builder()
+      CSVFormat format = CSVFormat.EXCEL.builder()
         .setHeader(ReportHeader.class)
         .get();
       try (final CSVPrinter printer = new CSVPrinter(sw, format)) {
