@@ -34,7 +34,8 @@ public class ImportUtils {
    * library understands. Map common generic MIME types the browser might 
    * guess to the appropriate rdf4j equivalent. rdf4j accepts application/xml
    * already, no map required.
-   * @see https://rdf4j.org/javadoc/latest/org/eclipse/rdf4j/rio/RDFFormat.html
+   *
+   * @see <a href="https://rdf4j.org/javadoc/latest/org/eclipse/rdf4j/rio/RDFFormat.html">rdf4j documentation</a>
    */
   public static String toRdfMediaType(String contentType) {
     String finalType = contentType;
@@ -82,7 +83,7 @@ public class ImportUtils {
       CSVFormat format = CSVFormat.EXCEL.builder()
         .setHeader(ReportHeader.class)
         .get();
-      try (final CSVPrinter printer = new CSVPrinter(sw, format)) {
+      try (CSVPrinter printer = new CSVPrinter(sw, format)) {
         for (ImportedResource resource : imports) {
           printer.printRecord(
             resource.getId(),
