@@ -44,7 +44,7 @@ class RdfImportIT {
     resultActions
       .andExpect(status().isOk())
       .andExpect(jsonPath("resources[0]", equalTo(expectedId)))
-      .andExpect(jsonPath("log", contains(expectedId)));
+      .andExpect(jsonPath("log", contains(Long.toString(expectedId))));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
   }
 
