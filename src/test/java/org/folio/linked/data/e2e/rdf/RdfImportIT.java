@@ -2,10 +2,10 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.contains;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.repo.ResourceRepository;
