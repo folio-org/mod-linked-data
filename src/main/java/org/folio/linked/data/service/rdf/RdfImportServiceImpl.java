@@ -14,10 +14,12 @@ import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Log4j2
 @Component
+@Transactional
 @RequiredArgsConstructor
 public class RdfImportServiceImpl implements RdfImportService {
 
