@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Profile metadata",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer",
+      "format": "int64",
+      "description": "ID of the profile"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of the profile"
+    },
+    "resourceType": {
+      "type": "string",
+      "description": "Type of the resource to which the profile applies"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "resourceType"
+  ]
+}

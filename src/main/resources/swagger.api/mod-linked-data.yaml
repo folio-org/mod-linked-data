@@ -211,6 +211,7 @@ paths:
 
   /linked-data/profile:
     get:
+      deprecated: true
       operationId: getProfile
       tags:
         - profile
@@ -228,7 +229,7 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /linked-data/profile/{profileId}:
+  /linked-data/profiles/{profileId}:
     get:
       operationId: getProfileById
       tags:
@@ -249,6 +250,30 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/profiles/metadata:
+    get:
+      operationId: getProfileMetadataByResourceType
+      tags:
+        - profile
+      description: Get profiles metadata for a resource type
+      parameters:
+        - name: resourceTypeUri
+          in: query
+          required: true
+          description: The type of resource for which metadata are requested
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Array of profile metadata for the specified resource type
+          content:
+            application/json:
+              schema:
+                $ref: "schema/profile/profileMetadataArray.json"
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
   /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById
@@ -354,7 +379,8 @@ components:
       required: true
       description: Linked Data bibframe profile id
       schema:
-        type: string
+        type: integer
+        format: int64
 
   schemas:
     errorResponse:
