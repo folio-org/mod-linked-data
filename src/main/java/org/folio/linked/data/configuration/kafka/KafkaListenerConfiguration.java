@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.folio.linked.data.domain.dto.InventoryDomainHoldingEvent;
+import org.folio.linked.data.domain.dto.InventoryDomainItemEvent;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.spring.tools.kafka.FolioKafkaProperties;
@@ -59,6 +61,30 @@ public class KafkaListenerConfiguration {
   @Bean
   public ConsumerFactory<String, InventoryInstanceEvent> inventoryInstanceEventConsumerFactory() {
     return errorHandlingConsumerFactory(InventoryInstanceEvent.class);
+  }
+
+  @Bean
+  public ConsumerFactory<String, InventoryDomainHoldingEvent> holdingEventConsumerFactory() {
+    return errorHandlingConsumerFactory(InventoryDomainHoldingEvent.class);
+  }
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, InventoryDomainHoldingEvent> holdingListenerFactory(
+    ConsumerFactory<String, InventoryDomainHoldingEvent> inventoryDomainEventConsumerFactory
+  ) {
+    return concurrentKafkaBatchListenerContainerFactory(inventoryDomainEventConsumerFactory);
+  }
+
+  @Bean
+  public ConsumerFactory<String, InventoryDomainItemEvent> itemEventConsumerFactory() {
+    return errorHandlingConsumerFactory(InventoryDomainItemEvent.class);
+  }
+
+  @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, InventoryDomainItemEvent> itemListenerFactory(
+    ConsumerFactory<String, InventoryDomainItemEvent> inventoryDomainEventConsumerFactory
+  ) {
+    return concurrentKafkaBatchListenerContainerFactory(inventoryDomainEventConsumerFactory);
   }
 
   private <K, V> ConcurrentKafkaListenerContainerFactory<K, V> concurrentKafkaBatchListenerContainerFactory(
