@@ -4,7 +4,7 @@
   "provides": [
     {
       "id": "linked-data",
-      "version": "1.1",
+      "version": "2.0",
       "handlers": [
         {
           "methods": [ "POST" ],
@@ -132,16 +132,6 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/linked-data/profile",
-          "permissionsRequired": [ "linked-data.profiles.get" ]
-        },
-        {
-          "methods": [ "GET" ],
-          "pathPattern": "/linked-data/profile/{id}",
-          "permissionsRequired": [ "linked-data.profiles.item.get" ]
-        },
-        {
-          "methods": [ "GET" ],
           "pathPattern": "/linked-data/resource/{id}/graph",
           "permissionsRequired": [ "linked-data.resources.graph.get" ],
           "modulePermissions": []
@@ -151,6 +141,27 @@
           "pathPattern": "/linked-data/import/file",
           "permissionsRequired": ["linked-data.import.file.post"],
           "modulePermissions": []
+        }
+      ]
+    },
+    {
+      "id": "linked-data-profiles",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profile",
+          "permissionsRequired": [ "linked-data.profiles.get" ]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profiles/{id}",
+          "permissionsRequired": [ "linked-data.profiles.item.get" ]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profiles/metadata",
+          "permissionsRequired": [ "linked-data.profiles.metadata.get" ]
         }
       ]
     },
@@ -252,8 +263,13 @@
     },
     {
       "permissionName": "linked-data.profiles.item.get",
-      "displayName": "Linked Data: Get the specified profile for performing CRUD operations on resources",
-      "description": "Get the specified profile for performing CRUD operations on linked-data resources"
+      "displayName": "Linked Data: Get the specified profile",
+      "description": "Get the specified profile"
+    },
+    {
+      "permissionName": "linked-data.profiles.metadata.get",
+      "displayName": "Linked Data: Get the metadata associated with profiles",
+      "description": "Get the metadata associated with profiles"
     },
     {
       "permissionName": "linked-data.authority-assignment-check.post",

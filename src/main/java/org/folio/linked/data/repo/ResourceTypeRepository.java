@@ -4,4 +4,5 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ResourceTypeRepository extends CrudRepository<ResourceTypeEntity, Long> {
+  ResourceTypeEntity findByUri(String uri);
 }
