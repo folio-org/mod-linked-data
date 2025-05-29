@@ -1,0 +1,14 @@
+{
+  "description": "Wrapper for search response",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "authorities": {
+      "type": "array",
+      "description": "Found authority items",
+      "items": {
+        "$ref": "authorityItem.json"
+      }
+    }
+  }
+}
