@@ -80,7 +80,7 @@ class ResourceMarcAuthorityServiceImplTest {
   private ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @Test
-  void fetchResourceOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsById() {
+  void fetchAuthorityOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsById() {
     // given
     var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findById(123L)).thenReturn(of(existingResource));
@@ -94,7 +94,7 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void fetchResourceOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsBySrsId() {
+  void fetchAuthorityOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsBySrsId() {
     // given
     var id = "123";
     var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
@@ -111,13 +111,13 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void fetchResourceOrCreateFromSrsRecord_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
+  void fetchAuthorityOrCreateFromSrsRecord_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
     // given
     var id = "123";
     var createdResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findById(123L)).thenReturn(empty());
     when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(empty());
-    when(srsClient.getSourceStorageRecordBySrsId(id))
+    when(srsClient.getAuthorityBySrsId(id))
       .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
 
     var dictionaryModelMock = mock(org.folio.ld.dictionary.model.Resource.class);
@@ -132,16 +132,8 @@ class ResourceMarcAuthorityServiceImplTest {
     assertThat(actualResource).isEqualTo(createdResource);
     verify(resourceRepo).findById(123L);
     verify(resourceRepo).findByFolioMetadataSrsId(id);
-    verify(srsClient).getSourceStorageRecordBySrsId(id);
+    verify(srsClient).getAuthorityBySrsId(id);
     verify(resourceGraphService).saveMergingGraph(createdResource);
-  }
-
-  private org.folio.rest.jaxrs.model.Record createRecord() {
-    var leader = "04809n   a2200865 i 4500";
-    leader = leader.substring(0, 6) + "am" + leader.substring(8);
-    var content = Map.of("leader", leader);
-    var parsedRecord = new ParsedRecord().withContent(content);
-    return new Record().withParsedRecord(parsedRecord);
   }
 
   @Test
@@ -150,7 +142,7 @@ class ResourceMarcAuthorityServiceImplTest {
     var id = "123";
     when(resourceRepo.findById(123L)).thenReturn(empty());
     when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(empty());
-    when(srsClient.getSourceStorageRecordBySrsId(id))
+    when(srsClient.getAuthorityBySrsId(id))
       .thenThrow(FeignException.NotFound.class);
     var agent = new Agent().id(id).srsId(id);
     when(exceptionBuilder.notFoundSourceRecordException(any(), any())).thenReturn(emptyRequestProcessingException());
@@ -158,6 +150,56 @@ class ResourceMarcAuthorityServiceImplTest {
     // then
     assertThatThrownBy(() -> resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(agent))
       .isInstanceOf(RequestProcessingException.class);
+  }
+
+  @Test
+  void fetchAuthorityOrCreateByInventoryId_shouldFetchAuthority_ifExistsByInventoryId() {
+    // given
+    var id = "123";
+    var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
+    when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(of(existingResource));
+
+    // when
+    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(id);
+
+    // then
+    assertThat(actualResource).isPresent().get().isEqualTo(existingResource);
+  }
+
+  @Test
+  void fetchAuthorityOrCreateByInventoryId_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
+    // given
+    var id = "123";
+    var createdResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
+    when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(empty());
+    when(srsClient.getAuthorityByInventoryId(id))
+      .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
+
+    var dictionaryModelMock = mock(org.folio.ld.dictionary.model.Resource.class);
+    when(marcAuthority2ldMapper.fromMarcJson(any())).thenReturn(List.of(dictionaryModelMock));
+    when(resourceModelMapper.toEntity(dictionaryModelMock)).thenReturn(createdResource);
+    doReturn(createdResource).when(resourceGraphService).saveMergingGraph(createdResource);
+
+    // when
+    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(id);
+
+    // then
+    assertThat(actualResource).isPresent().get().isEqualTo(createdResource);
+    verify(resourceRepo).findByFolioMetadataInventoryId(id);
+    verify(srsClient).getAuthorityByInventoryId(id);
+    verify(resourceGraphService).saveMergingGraph(createdResource);
+  }
+
+  @Test
+  void fetchAuthorityOrCreateByInventoryId_shouldReturnEmptyOptional_ifRecordNotExistsInSrs() {
+    // given
+    var id = "123";
+    when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(empty());
+    when(srsClient.getAuthorityByInventoryId(id)).thenThrow(FeignException.NotFound.class);
+
+    // then
+    var result = resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(id);
+    assertThat(result).isEmpty();
   }
 
   @Test
@@ -286,5 +328,13 @@ class ResourceMarcAuthorityServiceImplTest {
     assertThatThrownBy(() -> resourceMarcAuthorityService.saveMarcAuthority(model))
       .isInstanceOf(IllegalArgumentException.class)
       .hasMessage("Resource is not an authority");
+  }
+
+  private org.folio.rest.jaxrs.model.Record createRecord() {
+    var leader = "04809n   a2200865 i 4500";
+    leader = leader.substring(0, 6) + "am" + leader.substring(8);
+    var content = Map.of("leader", leader);
+    var parsedRecord = new ParsedRecord().withContent(content);
+    return new Record().withParsedRecord(parsedRecord);
   }
 }

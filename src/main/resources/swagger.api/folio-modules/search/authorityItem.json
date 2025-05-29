@@ -1,0 +1,15 @@
+{
+  "description": "Authority search result item",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Authority UUID"
+    },
+    "naturalId": {
+      "type": "string",
+      "description": "Authority Natural ID"
+    }
+  }
+}

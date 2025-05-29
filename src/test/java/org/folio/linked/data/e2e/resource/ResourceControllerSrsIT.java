@@ -46,7 +46,7 @@ class ResourceControllerSrsIT extends AbstractResourceControllerIT {
           .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
       );
 
-    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
+    when(srsClient.getAuthorityBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
       .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
 
     // when
@@ -73,7 +73,7 @@ class ResourceControllerSrsIT extends AbstractResourceControllerIT {
           .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
       );
 
-    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
+    when(srsClient.getAuthorityBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
       .thenReturn(new ResponseEntity<>(null, HttpStatusCode.valueOf(404)));
 
     // when
