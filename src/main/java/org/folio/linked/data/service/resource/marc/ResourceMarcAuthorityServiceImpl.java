@@ -118,6 +118,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
         .map(resourceGraphService::saveMergingGraph)
         .orElseThrow(() -> notFoundException(srsId));
     } catch (FeignException.NotFound e) {
+      log.error("Authority with srsId [{}] not found in SRS", srsId);
       throw notFoundException(srsId);
     }
   }
@@ -129,6 +130,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
         .flatMap(this::firstAuthorityToEntity)
         .map(resourceGraphService::saveMergingGraph);
     } catch (FeignException.NotFound e) {
+      log.error("Authority with inventoryId [{}] not found in SRS", inventoryId);
       return Optional.empty();
     }
   }
