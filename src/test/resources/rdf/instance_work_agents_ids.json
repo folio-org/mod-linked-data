@@ -1,0 +1,73 @@
+[
+  {
+    "@id": "http://id.loc.gov/resources/instances/20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Instance"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/title": [
+      {
+        "@id": "_:b59iddOtlocdOtgovresourcesinstances20572081"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/instanceOf": [
+      {
+        "@id": "http://id.loc.gov/resources/works/20572081"
+      }
+    ]
+  },
+  {
+    "@id": "_:b59iddOtlocdOtgovresourcesinstances20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Title"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+      {
+        "@value": "Instance Title"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/resources/works/20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Work"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/title": [
+      {
+        "@id": "_:b59iddOtlocdOtgovresourcesinstances20572082"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/contribution": [
+      {
+        "@id": "_:b101iddOtlocdOtgovresourcesinstances20572081"
+      }
+    ]
+  },
+  {
+    "@id": "_:b101iddOtlocdOtgovresourcesinstances20572081",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Contribution",
+      "http://id.loc.gov/ontologies/bibframe/PrimaryContribution"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/agent": [
+      {
+        "@id": "http://id.loc.gov/rwo/agents/n2021004098"
+      }
+    ],
+    "http://id.loc.gov/ontologies/bibframe/role": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/relators/aut"
+      }
+    ]
+  },
+  {
+    "@id": "_:b59iddOtlocdOtgovresourcesinstances20572082",
+    "@type": [
+      "http://id.loc.gov/ontologies/bibframe/Title"
+    ],
+    "http://id.loc.gov/ontologies/bibframe/mainTitle": [
+      {
+        "@value": "Work Title"
+      }
+    ]
+  }
+]
