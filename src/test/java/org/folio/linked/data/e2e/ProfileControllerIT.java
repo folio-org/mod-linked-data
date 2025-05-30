@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @IntegrationTest
 class ProfileControllerIT {
 
-  private static final String PROFILE_URL = "/linked-data/profiles";
+  private static final String PROFILE_URL = "/linked-data/profile";
 
   @Autowired
   private MockMvc mockMvc;
@@ -29,7 +29,7 @@ class ProfileControllerIT {
   @Test
   void getProfile_returnsProfile() throws Exception {
     //given
-    var requestBuilder = get("/linked-data/profile")
+    var requestBuilder = get(PROFILE_URL)
       .headers(defaultHeaders(env));
 
     //when

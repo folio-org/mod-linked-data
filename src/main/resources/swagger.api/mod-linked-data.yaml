@@ -229,7 +229,7 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /linked-data/profiles/{profileId}:
+  /linked-data/profile/{profileId}:
     get:
       operationId: getProfileById
       tags:
@@ -250,14 +250,14 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /linked-data/profiles/metadata:
+  /linked-data/profile/metadata:
     get:
       operationId: getProfileMetadataByResourceType
       tags:
         - profile
       description: Get profiles metadata for a resource type
       parameters:
-        - name: resourceTypeUri
+        - name: resourceType
           in: query
           required: true
           description: The type of resource for which metadata are requested
