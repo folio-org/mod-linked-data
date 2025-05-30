@@ -133,7 +133,6 @@ import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.assertResourceMetadata;
-import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
@@ -291,6 +290,7 @@ import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkResponseField;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
@@ -304,7 +304,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
 
-abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
+abstract class ResourceControllerITBase extends ITBase {
 
   static final String RESOURCE_URL = "/linked-data/resource";
   static final String WORK_ID_PLACEHOLDER = "%WORK_ID%";
@@ -320,7 +320,7 @@ abstract class ResourceControllerITBase extends AbstractResourceControllerIT {
   @BeforeEach
   @Override
   public void beforeEach() {
-    cleanResourceTables(jdbcTemplate);
+    super.beforeEach();
     lookupResources = saveLookupResources();
   }
 
