@@ -1,7 +1,6 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.linked.data.test.TestUtil.readTree;
@@ -45,9 +44,7 @@ class MergeResourcesIT {
 
   @BeforeEach
   void beforeEach() {
-    tenantScopedExecutionService.execute(TENANT_ID, () ->
-      cleanResourceTables(jdbcTemplate)
-    );
+    cleanResourceTables(jdbcTemplate);
   }
 
   @Test
