@@ -7,10 +7,12 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.service.DictionaryService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
+@Order(2)
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
 public class DictionaryWorker implements TenantServiceWorker {

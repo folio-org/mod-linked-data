@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Array of profile metadata",
+  "type": "array",
+  "items": {
+    "$ref": "profileMetadata.json"
+  }
+}
