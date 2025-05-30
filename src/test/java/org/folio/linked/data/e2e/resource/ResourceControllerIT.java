@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
 import org.folio.linked.data.integration.kafka.sender.search.WorkDeleteMessageSender;
 import org.folio.linked.data.model.entity.Resource;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-@IntegrationTest
+@IntegrationTestFolio
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class ResourceControllerIT extends ResourceControllerITBase {
 

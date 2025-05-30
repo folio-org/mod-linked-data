@@ -10,14 +10,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.linked.data.domain.dto.AssignmentCheckDto;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestStandalone;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
 
-@IntegrationTest
+@IntegrationTestStandalone
 class AuthorityAssignmentControllerIT {
 
   private static final String ASSIGNMENT_CHECK_ENDPOINT = "/linked-data/authority-assignment-check";

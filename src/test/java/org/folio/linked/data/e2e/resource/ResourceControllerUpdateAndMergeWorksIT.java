@@ -22,7 +22,7 @@ import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -42,7 +42,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
 
-@IntegrationTest
+@IntegrationTestFolio
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class ResourceControllerUpdateAndMergeWorksIT {
   @Autowired

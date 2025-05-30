@@ -1,7 +1,9 @@
 package org.folio.linked.data.e2e.resource;
 
+import static java.util.Arrays.asList;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
@@ -29,8 +31,12 @@ abstract class AbstractResourceControllerIT {
 
   @BeforeEach
   public void beforeEach() {
-    tenantScopedExecutionService.execute(TENANT_ID, () ->
-      cleanResourceTables(jdbcTemplate)
-    );
+    if (asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
+      cleanResourceTables(jdbcTemplate);
+    } else {
+      tenantScopedExecutionService.execute(TENANT_ID, () ->
+        cleanResourceTables(jdbcTemplate)
+      );
+    }
   }
 }

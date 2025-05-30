@@ -30,5 +30,5 @@ import org.springframework.test.context.ActiveProfiles;
 @ExtendWith(TenantInstallationExtension.class)
 @SpringBootTest(classes = {KafkaAdminService.class, KafkaAutoConfiguration.class,
   FolioKafkaProperties.class, LinkedDataTopicProperties.class, LinkedDataApplication.class})
-public @interface IntegrationTest {
+public @interface IntegrationTestFolio {
 }

@@ -29,13 +29,13 @@ import java.util.LinkedHashMap;
 import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.client.SpecClient;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestStandalone;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@IntegrationTest
+@IntegrationTestStandalone
 class ResourceControllerLccnPatternValidationIT extends AbstractResourceControllerIT {
 
   @MockitoBean

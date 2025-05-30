@@ -25,17 +25,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.LinkedHashMap;
 import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestStandalone;
 import org.folio.linked.data.service.SettingsService;
-import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-@IntegrationTest
-@SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
+@IntegrationTestStandalone
 class ResourceControllerLccnUniquenessValidationIT extends AbstractResourceControllerIT {
 
   private static final String LCCN_VALIDATION_NOT_AVAILABLE =

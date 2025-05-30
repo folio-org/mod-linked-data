@@ -11,10 +11,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestStandalone;
 import org.junit.jupiter.api.Test;
 
-@IntegrationTest
+@IntegrationTestStandalone
 class ResourceControllerMarcPreviewIT extends AbstractResourceControllerIT {
 
   @Test

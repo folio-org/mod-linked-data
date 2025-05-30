@@ -10,13 +10,13 @@ import lombok.SneakyThrows;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestStandalone;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@IntegrationTest
+@IntegrationTestStandalone
 class ResourceMarcAuthorityServiceIT {
   @Autowired
   private ResourceMarcAuthorityService resourceMarcAuthorityService;

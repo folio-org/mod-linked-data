@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.integration.kafka.listener.handler.SourceRecordDomainEventHandler;
 import org.folio.linked.data.test.TestUtil;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-@IntegrationTest
+@IntegrationTestFolio
 class SourceRecordDomainEventListenerIT {
 
   @Autowired

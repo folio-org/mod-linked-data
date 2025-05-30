@@ -1,28 +1,24 @@
 package org.folio.linked.data.e2e.mappings.bookformat;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestStandalone;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@IntegrationTest
-@ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
+@IntegrationTestStandalone
 class BookFormatIT {
   static final String RESOURCE_URL = "/linked-data/resource";
 
