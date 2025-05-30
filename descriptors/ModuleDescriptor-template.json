@@ -145,7 +145,7 @@
       ]
     },
     {
-      "id": "linked-data-profiles",
+      "id": "linked-data-profile",
       "version": "1.0",
       "handlers": [
         {
@@ -155,12 +155,12 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/linked-data/profiles/{id}",
+          "pathPattern": "/linked-data/profile/{id}",
           "permissionsRequired": [ "linked-data.profiles.item.get" ]
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/linked-data/profiles/metadata",
+          "pathPattern": "/linked-data/profile/metadata",
           "permissionsRequired": [ "linked-data.profiles.metadata.get" ]
         }
       ]
