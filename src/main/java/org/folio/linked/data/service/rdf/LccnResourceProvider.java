@@ -1,11 +1,16 @@
 package org.folio.linked.data.service.rdf;
 
+import static java.util.Optional.ofNullable;
+
+import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.domain.dto.AuthorityItem;
+import org.folio.linked.data.domain.dto.AuthoritySearchResponse;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Service;
@@ -25,11 +30,13 @@ public class LccnResourceProvider implements Function<String, Optional<Resource>
   }
 
   private Optional<String> searchForInventoryId(String lccn) {
-    return searchClient.searchAuthorities("lccn = " + lccn)
-      .getBody()
-      .getAuthorities()
+    return ofNullable(searchClient.searchAuthorities("lccn = " + lccn)
+        .getBody())
+      .map(AuthoritySearchResponse::getAuthorities)
       .stream()
+      .flatMap(Collection::stream)
       .map(AuthorityItem::getId)
+      .filter(Objects::nonNull)
       .findFirst();
   }
 }

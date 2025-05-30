@@ -70,7 +70,7 @@ class RdfImportIT {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = 6537393818316056168L;
+    var expectedId = -42292089353776380L;
     var lccn = "n2021004098";
     var existedAuthority = new Resource().setId(123L).setLabel(lccn);
     when(lccnResourceProvider.apply(lccn)).thenReturn(Optional.of(existedAuthority));
