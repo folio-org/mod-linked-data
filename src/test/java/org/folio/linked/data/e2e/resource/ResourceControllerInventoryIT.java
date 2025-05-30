@@ -12,11 +12,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
 @IntegrationTest
-class ResourceControllerInventoryIT extends AbstractResourceControllerIT {
+class ResourceControllerInventoryIT extends ITBase {
 
   @Test
   void getResourceIdByResourceInventoryId_shouldReturnResourceId() throws Exception {

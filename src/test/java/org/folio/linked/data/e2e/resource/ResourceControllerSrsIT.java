@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.folio.linked.data.client.SrsClient;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.test.TestUtil;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -27,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
-class ResourceControllerSrsIT extends AbstractResourceControllerIT {
+class ResourceControllerSrsIT extends ITBase {
 
   @MockitoBean
   private SrsClient srsClient;

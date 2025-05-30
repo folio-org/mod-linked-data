@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Set;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -38,21 +39,15 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
-import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.linked.data.test.resource.ResourceTestRepository;
-import org.folio.spring.tools.kafka.KafkaAdminService;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
-class AuthorityUpdateAndReadWorkIT {
+class AuthorityUpdateAndReadWorkIT extends ITBase {
 
   @Autowired
   private ResourceEdgeRepository resourceEdgeRepository;
@@ -61,32 +56,11 @@ class AuthorityUpdateAndReadWorkIT {
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
-  private KafkaSearchWorkIndexTopicListener kafkaSearchWorkIndexTopicListener;
-  @Autowired
   private ResourceTestRepository resourceTestRepository;
   @MockitoSpyBean
   @Autowired
   private ResourceMarcAuthorityService resourceMarcService;
-  @Autowired
-  private Environment env;
-  @Autowired
-  private MockMvc mockMvc;
 
-  @BeforeAll
-  static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
-    kafkaAdminService.createTopics(TENANT_ID);
-  }
-
-  @BeforeEach
-  public void clean() {
-    tenantScopedExecutionService.execute(TENANT_ID,
-      () -> {
-        resourceEdgeRepository.deleteAll();
-        resourceTestRepository.deleteAll();
-        kafkaSearchWorkIndexTopicListener.getMessages().clear();
-      }
-    );
-  }
 
   @Test
   void authorityUpdate_withNewFingerprint_shouldLinkItToPreviousAndReturnAsWorkActiveAuthority() throws Exception {

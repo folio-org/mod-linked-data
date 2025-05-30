@@ -14,43 +14,37 @@ import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.marc4ld.service.marc2ld.reader.MarcReaderProcessor;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.marc4j.marc.DataField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
-import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
-class ResourceControllerUpdateWorkIT {
+class ResourceControllerUpdateWorkIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
   private ObjectMapper objectMapper;
   @Autowired
-  private HashService hashService;
-  @Autowired
-  private Environment env;
-  @Autowired
-  private MockMvc mockMvc;
-  @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
   private MarcReaderProcessor marcReader;
 
-  @AfterEach
-  void clenUp() {
+  @BeforeEach
+  @Override
+  public void beforeEach() {
+    super.beforeEach();
     inventoryTopicListener.getMessages().clear();
   }
 

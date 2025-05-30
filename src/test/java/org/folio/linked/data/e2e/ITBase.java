@@ -1,7 +1,8 @@
-package org.folio.linked.data.e2e.resource;
+package org.folio.linked.data.e2e;
 
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
+import static org.folio.linked.data.test.TestUtil.isStandaloneTest;
 
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
@@ -12,7 +13,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
-abstract class AbstractResourceControllerIT {
+public abstract class ITBase {
 
   @Autowired
   protected MockMvc mockMvc;
@@ -29,8 +30,10 @@ abstract class AbstractResourceControllerIT {
 
   @BeforeEach
   public void beforeEach() {
-    tenantScopedExecutionService.execute(TENANT_ID, () ->
-      cleanResourceTables(jdbcTemplate)
-    );
+    if (isStandaloneTest(env)) {
+      cleanResourceTables(jdbcTemplate);
+    } else {
+      tenantScopedExecutionService.execute(TENANT_ID, () -> cleanResourceTables(jdbcTemplate));
+    }
   }
 }

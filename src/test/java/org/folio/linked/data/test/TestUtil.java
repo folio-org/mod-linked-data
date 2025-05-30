@@ -99,11 +99,15 @@ public class TestUtil {
   public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(APPLICATION_JSON);
-    if (!asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
+    if (!isStandaloneTest(env)) {
       httpHeaders.add(TENANT, TENANT_ID);
       httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
     }
     return httpHeaders;
+  }
+
+  public static boolean isStandaloneTest(Environment env) {
+    return asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE);
   }
 
   public static HttpHeaders defaultHeadersWithUserId(Environment env, String value) {

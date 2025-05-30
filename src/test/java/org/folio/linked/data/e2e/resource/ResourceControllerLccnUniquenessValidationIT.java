@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.LinkedHashMap;
 import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.service.SettingsService;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
@@ -36,7 +37,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
-class ResourceControllerLccnUniquenessValidationIT extends AbstractResourceControllerIT {
+class ResourceControllerLccnUniquenessValidationIT extends ITBase {
 
   private static final String LCCN_VALIDATION_NOT_AVAILABLE =
     "[Could not validate LCCN for duplicate] - reason: [Unable to reach search service]. Please try later.";
