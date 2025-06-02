@@ -3,6 +3,7 @@ package org.folio.linked.data.validation.entity;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
-class ResourcePrePersistValidationIT {
+class ResourcePrePersistValidationIT extends ITBase {
   @Autowired
   private ResourceRepository resourceRepository;
   @MockitoSpyBean
