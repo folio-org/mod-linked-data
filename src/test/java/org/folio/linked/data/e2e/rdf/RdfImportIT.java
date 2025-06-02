@@ -82,10 +82,10 @@ class RdfImportIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = resultActions
+    resultActions
       .andExpect(status().isOk())
-      .andReturn().getResponse().getContentAsString();
-    assertThat(response).isEqualTo("[" + expectedId + "]");
+      .andExpect(jsonPath("resources[0]", equalTo(expectedId)))
+      .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
     assertThat(resourceRepo.existsById(existedAuthority.getId())).isTrue();
     verify(eventListener).afterCreate(any());
