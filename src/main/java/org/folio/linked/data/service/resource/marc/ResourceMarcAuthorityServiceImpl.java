@@ -66,6 +66,12 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   @Override
+  public Optional<Resource> fetchAuthorityOrCreateByInventoryId(String inventoryId) {
+    return resourceRepo.findByFolioMetadataInventoryId(inventoryId)
+      .or(() -> createResourceFromSrsByInventoryId(inventoryId));
+  }
+
+  @Override
   public AssignmentCheckResponseDto validateAuthorityAssignment(String marc, AssignAuthorityTarget target) {
     if (!hasLccn(marc)) {
       return new AssignmentCheckResponseDto(false).invalidAssignmentReason(NO_LCCN);
@@ -76,6 +82,17 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       .findFirst()
       .map(authority -> checkCompatibilityWithTarget(authority, target))
       .orElseGet(() -> new AssignmentCheckResponseDto(false).invalidAssignmentReason(UNSUPPORTED_MARC));
+  }
+
+  @Override
+  public Long saveMarcAuthority(org.folio.ld.dictionary.model.Resource modelResource) {
+    var resource = resourceModelMapper.toEntity(modelResource);
+    validateResource(resource);
+
+    var srsId = resource.getFolioMetadata().getSrsId();
+    return getResourceIdBySrsId(srsId)
+      .map(existingResourceId -> replaceOrUpdate(resource, existingResourceId))
+      .orElseGet(() -> createAuthority(resource));
   }
 
   private AssignmentCheckResponseDto checkCompatibilityWithTarget(org.folio.ld.dictionary.model.Resource authority,
@@ -95,13 +112,26 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
 
   private Resource createResourceFromSrs(String srsId) {
     try {
-      return ofNullable(srsClient.getSourceStorageRecordBySrsId(srsId))
+      return ofNullable(srsClient.getAuthorityBySrsId(srsId))
         .flatMap(this::contentAsJsonString)
         .flatMap(this::firstAuthorityToEntity)
         .map(resourceGraphService::saveMergingGraph)
         .orElseThrow(() -> notFoundException(srsId));
     } catch (FeignException.NotFound e) {
+      log.error("Authority with srsId [{}] not found in SRS", srsId);
       throw notFoundException(srsId);
+    }
+  }
+
+  private Optional<Resource> createResourceFromSrsByInventoryId(String inventoryId) {
+    try {
+      return ofNullable(srsClient.getAuthorityByInventoryId(inventoryId))
+        .flatMap(this::contentAsJsonString)
+        .flatMap(this::firstAuthorityToEntity)
+        .map(resourceGraphService::saveMergingGraph);
+    } catch (FeignException.NotFound e) {
+      log.error("Authority with inventoryId [{}] not found in SRS", inventoryId);
+      return Optional.empty();
     }
   }
 
@@ -125,17 +155,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     return exceptionBuilder.notFoundSourceRecordException("srsId", srsId);
   }
 
-  @Override
-  public Long saveMarcAuthority(org.folio.ld.dictionary.model.Resource modelResource) {
-    var resource = resourceModelMapper.toEntity(modelResource);
-    validateResource(resource);
-
-    var srsId = resource.getFolioMetadata().getSrsId();
-    return getResourceIdBySrsId(srsId)
-      .map(existingResourceId -> replaceOrUpdate(resource, existingResourceId))
-      .orElseGet(() -> createAuthority(resource));
-  }
-
   private Long replaceOrUpdate(Resource incomingResource, Long existingResourceId) {
     if (existingResourceId.equals(incomingResource.getId())) {
       return updateAuthority(incomingResource);
@@ -143,7 +162,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     return replaceAuthority(incomingResource);
   }
 
-  private static void validateResource(Resource resource) {
+  private void validateResource(Resource resource) {
     if (!resource.isAuthority()) {
       logAndThrow("Resource is not an authority");
     }
@@ -153,7 +172,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     }
   }
 
-  private static void logAndThrow(String message) {
+  private void logAndThrow(String message) {
     log.error(message);
     throw new IllegalArgumentException(message);
   }

@@ -1,5 +1,6 @@
 package org.folio.linked.data.client;
 
+import org.folio.linked.data.domain.dto.AuthoritySearchResponse;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -11,4 +12,7 @@ public interface SearchClient {
 
   @GetMapping("/instances")
   ResponseEntity<SearchResponseTotalOnly> searchInstances(@RequestParam("query") String query);
+
+  @GetMapping("/authorities")
+  ResponseEntity<AuthoritySearchResponse> searchAuthorities(@RequestParam("query") String query);
 }
