@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 @UnitTest
 class ImportUtilsTest {
   @ParameterizedTest
-  @CsvSource(value={
+  @CsvSource(value = {
     "application/json,application/ld+json",
     "application/ld+json,application/ld+json",
     "text/plain,text/turtle",
@@ -22,7 +22,7 @@ class ImportUtilsTest {
     "image/png,image/png",
     "'',''",
     "null,null"
-  }, nullValues={"null"})
+  }, nullValues = {"null"})
   void toRdfMediaType_shouldReturnUpdatedMediaType(String original, String expected) {
     assertThat(ImportUtils.toRdfMediaType(original)).isEqualTo(expected);
   }
