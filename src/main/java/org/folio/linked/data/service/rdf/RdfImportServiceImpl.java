@@ -1,7 +1,6 @@
 package org.folio.linked.data.service.rdf;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -42,10 +41,9 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   private ImportFileResponseDto save(Set<org.folio.ld.dictionary.model.Resource> resources) {
-    ImportFileResponseDto response;
-    String reportCsv = "";
-    ImportUtils.ImportReport report = new ImportUtils.ImportReport();
-    List<Long> ids = resources.stream()
+    var reportCsv = "";
+    var report = new ImportUtils.ImportReport();
+    var ids = resources.stream()
       .map(resourceModelMapper::toEntity)
       .filter(r -> {
         boolean exists = resourceRepo.existsById(r.getId());
@@ -75,9 +73,8 @@ public class RdfImportServiceImpl implements RdfImportService {
     try {
       reportCsv = report.toCsv();
     } catch (IOException e) {
-      log.warn("I/O error while generating CSV report, returning empty report: {}", e);
+      log.warn("I/O error while generating CSV report, returning empty report", e);
     }
-    response = new ImportFileResponseDto(ids, reportCsv);
-    return response;
+    return new ImportFileResponseDto(ids, reportCsv);
   }
 }

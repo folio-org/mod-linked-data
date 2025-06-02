@@ -38,19 +38,14 @@ public class ImportUtils {
    * @see <a href="https://rdf4j.org/javadoc/latest/org/eclipse/rdf4j/rio/RDFFormat.html">rdf4j documentation</a>
    */
   public static String toRdfMediaType(String contentType) {
-    String finalType = contentType;
-    if (contentType != null) {
-      switch (contentType) {
-        case APPLICATION_JSON_VALUE:
-          finalType = APPLICATION_LD_JSON_VALUE;
-          break;
-        case TEXT_PLAIN_VALUE:
-          finalType = TEXT_TURTLE_VALUE; // Could also be text/n3, assuming ttl is more prevalent
-          break;
-        default: // nothing to change if no match
-      }
+    if (contentType == null) {
+      return null;
     }
-    return finalType;
+    return switch (contentType) {
+      case APPLICATION_JSON_VALUE -> APPLICATION_LD_JSON_VALUE;
+      case TEXT_PLAIN_VALUE -> TEXT_TURTLE_VALUE; // Could also be text/n3, assuming ttl is more prevalent
+      default -> contentType;
+    };
   }
 
   @RequiredArgsConstructor
