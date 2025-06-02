@@ -53,11 +53,11 @@
     <lib-linked-data-rdf4ld.version>1.0.0-SNAPSHOT</lib-linked-data-rdf4ld.version>
     <mod-source-record-storage-client.version>5.10.8</mod-source-record-storage-client.version>
     <mod-record-specifications-dto.version>2.0.1</mod-record-specifications-dto.version>
-    <maven-checkstyle-plugin.checkstyle.version>10.23.1</maven-checkstyle-plugin.checkstyle.version>
+    <maven-checkstyle-plugin.checkstyle.version>10.24.0</maven-checkstyle-plugin.checkstyle.version>
     <jayway-jsonpath.version>2.9.0</jayway-jsonpath.version>
 
     <!-- Test dependencies versions -->
-    <testcontainers.version>1.21.0</testcontainers.version>
+    <testcontainers.version>1.21.1</testcontainers.version>
     <wiremock.version>2.27.2</wiremock.version>
     <jsonassert.version>1.5.3</jsonassert.version>
     <easy-random.version>5.0.0</easy-random.version>
@@ -560,7 +560,6 @@
         <version>${maven-failsafe-plugin.version}</version>
         <configuration>
           <groups>integration</groups>
-          <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
 

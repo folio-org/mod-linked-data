@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.folio.linked.data.client.SrsClient;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.test.TestUtil;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -27,7 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTest
-class ResourceControllerSrsIT extends AbstractResourceControllerIT {
+class ResourceControllerSrsIT extends ITBase {
 
   @MockitoBean
   private SrsClient srsClient;
@@ -46,7 +47,7 @@ class ResourceControllerSrsIT extends AbstractResourceControllerIT {
           .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
       );
 
-    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
+    when(srsClient.getAuthorityBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
       .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
 
     // when
@@ -73,7 +74,7 @@ class ResourceControllerSrsIT extends AbstractResourceControllerIT {
           .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
       );
 
-    when(srsClient.getSourceStorageRecordBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
+    when(srsClient.getAuthorityBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
       .thenReturn(new ResponseEntity<>(null, HttpStatusCode.valueOf(404)));
 
     // when

@@ -11,11 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 
 @IntegrationTest
-class ResourceControllerMarcPreviewIT extends AbstractResourceControllerIT {
+class ResourceControllerMarcPreviewIT extends ITBase {
 
   @Test
   void getResourceViewById_shouldReturnInstance() throws Exception {

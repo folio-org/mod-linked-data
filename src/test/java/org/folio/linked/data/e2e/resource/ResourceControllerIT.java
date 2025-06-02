@@ -1,6 +1,5 @@
 package org.folio.linked.data.e2e.resource;
 
-import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,8 +17,6 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
-import org.folio.spring.tools.kafka.KafkaAdminService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -38,17 +35,12 @@ class ResourceControllerIT extends ResourceControllerITBase {
   @MockitoSpyBean
   private WorkDeleteMessageSender deleteEventProducer;
 
-  @BeforeAll
-  static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
-    kafkaAdminService.createTopics(TENANT_ID);
-  }
-
   @BeforeEach
   @Override
   public void beforeEach() {
+    super.beforeEach();
     searchIndexTopicListener.getMessages().clear();
     inventoryTopicListener.getMessages().clear();
-    tenantScopedExecutionService.execute(TENANT_ID, super::beforeEach);
   }
 
   @SneakyThrows

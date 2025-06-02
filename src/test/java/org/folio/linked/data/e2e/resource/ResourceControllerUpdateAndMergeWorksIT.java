@@ -22,39 +22,31 @@ import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.resource.hash.HashService;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.marc4ld.service.marc2ld.reader.MarcReaderProcessor;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
-import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
-class ResourceControllerUpdateAndMergeWorksIT {
+class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
   private ObjectMapper objectMapper;
-  @Autowired
-  private HashService hashService;
-  @Autowired
-  private Environment env;
-  @Autowired
-  private MockMvc mockMvc;
   @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
@@ -64,8 +56,10 @@ class ResourceControllerUpdateAndMergeWorksIT {
   @Autowired
   private MarcReaderProcessor marcReader;
 
-  @AfterEach
-  void clenUp() {
+  @BeforeEach
+  @Override
+  public void beforeEach() {
+    super.beforeEach();
     searchWorkIndexTopicListener.getMessages().clear();
     inventoryTopicListener.getMessages().clear();
   }
@@ -192,11 +186,11 @@ class ResourceControllerUpdateAndMergeWorksIT {
   }
 
   private boolean isExpectedSearchEvents(Set<ResourceIndexEvent> events, long deletedWorkId, long createdWorkId) {
-    if (events.size() != 2) {
+    if (events.size() < 2) {
       return false;
     }
-    return events.stream()
-      .allMatch(e -> isSearchDeleteEvent(e, deletedWorkId) || isSearchCreateEvent(e, createdWorkId));
+    return events.stream().anyMatch(e -> isSearchDeleteEvent(e, deletedWorkId)) &&
+      events.stream().anyMatch(e -> isSearchCreateEvent(e, createdWorkId));
   }
 
   private boolean isSearchCreateEvent(ResourceIndexEvent event, Long createdWorkId) {

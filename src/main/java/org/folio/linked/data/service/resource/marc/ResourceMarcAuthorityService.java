@@ -1,14 +1,17 @@
 package org.folio.linked.data.service.resource.marc;
 
-import org.folio.ld.dictionary.model.Resource;
+import java.util.Optional;
 import org.folio.linked.data.domain.dto.AssignmentCheckResponseDto;
 import org.folio.linked.data.model.dto.Identifiable;
+import org.folio.linked.data.model.entity.Resource;
 
 public interface ResourceMarcAuthorityService {
 
-  Long saveMarcAuthority(Resource modelResource);
+  Long saveMarcAuthority(org.folio.ld.dictionary.model.Resource modelResource);
 
-  org.folio.linked.data.model.entity.Resource fetchAuthorityOrCreateFromSrsRecord(Identifiable identifiable);
+  Resource fetchAuthorityOrCreateFromSrsRecord(Identifiable identifiable);
+
+  Optional<Resource> fetchAuthorityOrCreateByInventoryId(String  inventoryId);
 
   AssignmentCheckResponseDto validateAuthorityAssignment(String marc, AssignAuthorityTarget target);
 }

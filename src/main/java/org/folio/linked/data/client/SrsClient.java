@@ -13,5 +13,8 @@ public interface SrsClient {
   ResponseEntity<Record> getSourceStorageInstanceRecordById(@PathVariable("inventoryId") String inventoryId);
 
   @GetMapping(value = "/records/{srsId}/formatted?idType=SRS_RECORD")
-  ResponseEntity<Record> getSourceStorageRecordBySrsId(@PathVariable("srsId") String srsId);
+  ResponseEntity<Record> getAuthorityBySrsId(@PathVariable("srsId") String srsId);
+
+  @GetMapping(value = "/records/{inventoryId}/formatted?idType=AUTHORITY")
+  ResponseEntity<Record> getAuthorityByInventoryId(@PathVariable("inventoryId") String inventoryId);
 }
