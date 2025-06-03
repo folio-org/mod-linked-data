@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Optional;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.rdf.LccnResourceProvider;
@@ -22,7 +22,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-@IntegrationTest
+@IntegrationTestFolio
 class RdfImportIT {
   private static final String IMPORT_ENDPOINT = "/linked-data/import/file";
   @Autowired

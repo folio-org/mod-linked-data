@@ -26,14 +26,11 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.e2e.ITBase;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.model.entity.FolioMetadata;
-import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@IntegrationTest
-@SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
+@IntegrationTestFolio
 class ResourceControllerRetainOutgoingEdgesIT extends ITBase {
 
   @Test

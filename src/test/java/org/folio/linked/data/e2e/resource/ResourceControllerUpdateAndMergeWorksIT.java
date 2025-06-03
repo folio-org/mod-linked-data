@@ -23,12 +23,11 @@ import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.e2e.ITBase;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
-import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.marc4ld.service.marc2ld.reader.MarcReaderProcessor;
@@ -38,10 +37,8 @@ import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@IntegrationTest
-@SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
+@IntegrationTestFolio
 class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;

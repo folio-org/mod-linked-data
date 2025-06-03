@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -24,7 +24,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@IntegrationTest
+@IntegrationTestFolio
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ProfileControllerIT {
 

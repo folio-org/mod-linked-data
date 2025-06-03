@@ -13,10 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.UUID;
 import org.folio.linked.data.e2e.ITBase;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.junit.jupiter.api.Test;
 
-@IntegrationTest
+@IntegrationTestFolio
 class ResourceControllerInventoryIT extends ITBase {
 
   @Test

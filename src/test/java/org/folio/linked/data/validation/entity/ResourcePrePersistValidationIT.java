@@ -4,22 +4,18 @@ import static org.assertj.core.api.Assertions.assertThatException;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import org.folio.linked.data.e2e.ITBase;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestStandalone;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
-@IntegrationTest
+@IntegrationTestStandalone
 class ResourcePrePersistValidationIT extends ITBase {
   @Autowired
   private ResourceRepository resourceRepository;
-  @MockitoSpyBean
-  private KafkaAdminService kafkaAdminService;
 
   @Test
   void shouldNotPersistNonInstanceResourceHavingFolioMetadata() {

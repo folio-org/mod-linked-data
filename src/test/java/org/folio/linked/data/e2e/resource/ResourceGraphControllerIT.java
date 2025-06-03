@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.e2e.ITBase;
-import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.resource.ResourceTestService;
@@ -33,7 +33,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-@IntegrationTest
+@IntegrationTestFolio
 class ResourceGraphControllerIT extends ITBase {
 
   @Autowired
