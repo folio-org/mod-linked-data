@@ -57,7 +57,7 @@ class RdfImportIT {
     // then
     resultActions
       .andExpect(status().isOk())
-      .andExpect(jsonPath("resources[0]", equalTo(expectedId)))
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
       .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
     verify(eventListener).afterCreate(any());
@@ -84,7 +84,7 @@ class RdfImportIT {
     // then
     resultActions
       .andExpect(status().isOk())
-      .andExpect(jsonPath("resources[0]", equalTo(expectedId)))
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
       .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
     assertThat(resourceRepo.existsById(existedAuthority.getId())).isTrue();
