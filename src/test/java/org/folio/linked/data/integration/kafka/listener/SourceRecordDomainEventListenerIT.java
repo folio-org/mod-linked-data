@@ -33,7 +33,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 class SourceRecordDomainEventListenerIT {
 
   @Autowired
-  private KafkaTemplate<String, String> eventKafkaTemplate;
+  private KafkaTemplate<String, String> eventKafkaTempl\ate;
 
   @MockitoSpyBean
   private SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
