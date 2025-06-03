@@ -23,7 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 @EnableOkapi
 @EnableKafka
 @EnablePostgres
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @org.folio.spring.testing.type.IntegrationTest
