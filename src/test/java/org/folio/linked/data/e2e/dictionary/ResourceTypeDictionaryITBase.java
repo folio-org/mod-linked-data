@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.List;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 abstract class ResourceTypeDictionaryITBase {
@@ -28,8 +26,6 @@ abstract class ResourceTypeDictionaryITBase {
   private String schema;
   @Autowired
   private JdbcTemplate jdbcTemplate;
-  @MockitoSpyBean
-  private KafkaAdminService kafkaAdminService;
 
   @Test
   void countTypes_shouldSameAsLibTypes() {

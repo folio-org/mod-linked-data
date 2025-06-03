@@ -25,11 +25,9 @@ import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.resource.ResourceTestService;
-import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -46,8 +44,6 @@ class ResourceGraphControllerIT extends ITBase {
   private ObjectMapper objectMapper;
   @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
-  @MockitoSpyBean
-  private KafkaAdminService kafkaAdminService;
 
   @Test
   void getResourceGraphById_shouldReturnResourceGraph() throws Exception {

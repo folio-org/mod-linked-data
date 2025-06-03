@@ -14,14 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.folio.linked.data.e2e.base.IntegrationTestFolio;
 import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.repo.ProfileRepository;
-import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTestFolio
@@ -36,8 +34,6 @@ class ProfileControllerIT {
   private ProfileRepository profileRepository;
   @Autowired
   private Environment env;
-  @MockitoSpyBean
-  private KafkaAdminService kafkaAdminService;
 
   @BeforeEach
   void beforeEach() {

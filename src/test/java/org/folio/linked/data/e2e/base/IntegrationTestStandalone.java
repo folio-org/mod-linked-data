@@ -11,13 +11,11 @@ import org.folio.linked.data.LinkedDataApplication;
 import org.folio.spring.testing.extension.EnablePostgres;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @EnablePostgres
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @AutoConfigureMockMvc
 @org.folio.spring.testing.type.IntegrationTest
 @SpringBootTest(classes = {LinkedDataApplication.class})

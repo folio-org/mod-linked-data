@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -24,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 @EnableOkapi
 @EnableKafka
 @EnablePostgres
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @org.folio.spring.testing.type.IntegrationTest

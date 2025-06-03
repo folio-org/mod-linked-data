@@ -17,18 +17,14 @@ import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.domain.dto.Parameter;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTestFolio;
-import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTestFolio
 class ResourceControllerBaseValidationIT extends ITBase {
 
   @Autowired
   private ObjectMapper objectMapper;
-  @MockitoSpyBean
-  private KafkaAdminService kafkaAdminService;
 
   @Test
   void createEmptyInstance_shouldReturnBadRequest() throws Exception {
