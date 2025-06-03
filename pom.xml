@@ -52,7 +52,7 @@
     <lib-linked-data-rdf4ld.version>1.0.0-SNAPSHOT</lib-linked-data-rdf4ld.version>
     <mod-source-record-storage-client.version>5.10.8</mod-source-record-storage-client.version>
     <mod-record-specifications-dto.version>2.0.1</mod-record-specifications-dto.version>
-    <maven-checkstyle-plugin.checkstyle.version>10.24.0</maven-checkstyle-plugin.checkstyle.version>
+    <maven-checkstyle-plugin.checkstyle.version>10.25.0</maven-checkstyle-plugin.checkstyle.version>
     <jayway-jsonpath.version>2.9.0</jayway-jsonpath.version>
 
     <!-- Test dependencies versions -->
