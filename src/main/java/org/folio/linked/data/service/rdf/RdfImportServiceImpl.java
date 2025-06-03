@@ -69,7 +69,7 @@ public class RdfImportServiceImpl implements RdfImportService {
             saved.getLabel(),
             ImportUtils.Status.SUCCESS,
             ""));
-        return resource.getId();
+        return resource.getId().toString();
       })
       .toList();
     try {

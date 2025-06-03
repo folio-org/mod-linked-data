@@ -7,8 +7,7 @@
       "type": "array",
       "description": "A list of resource identifiers successfully imported",
       "items": {
-        "type": "integer",
-        "format": "int64"
+        "type": "string"
       }
     },
     "log": {
