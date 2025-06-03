@@ -31,9 +31,11 @@ import org.folio.linked.data.service.SettingsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @IntegrationTestFolio
+@DirtiesContext
 class ResourceControllerLccnUniquenessValidationIT extends ITBase {
 
   private static final String LCCN_VALIDATION_NOT_AVAILABLE =

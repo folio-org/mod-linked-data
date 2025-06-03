@@ -44,9 +44,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTestFolio
+@DirtiesContext
 class AuthorityUpdateAndReadWorkIT extends ITBase {
 
   @Autowired
