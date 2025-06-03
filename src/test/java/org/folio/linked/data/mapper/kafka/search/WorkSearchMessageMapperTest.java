@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -15,9 +16,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
-import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.FAMILY;
-import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.JURISDICTION;
-import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.MEETING;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.ORGANIZATION;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.PERSON;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
@@ -132,6 +130,10 @@ class WorkSearchMessageMapperTest {
     var work = getSampleWork(null);
     var wrongContributor = getContributor(ANNOTATION);
     var emptyContributor = new Resource();
+    var creatorPerson = getContributor(ResourceTypeDictionary.PERSON);
+    var contributorOrg = getContributor(ResourceTypeDictionary.ORGANIZATION);
+    work.addOutgoingEdge(new ResourceEdge(work, creatorPerson, CREATOR));
+    work.addOutgoingEdge(new ResourceEdge(work, contributorOrg, CONTRIBUTOR));
     work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
     work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
@@ -147,9 +149,17 @@ class WorkSearchMessageMapperTest {
       .extracting("_new")
       .isInstanceOf(LinkedDataWork.class);
     var linkedDataWork = (LinkedDataWork) result.getNew();
-    validateWork(linkedDataWork, work, wrongContributor, 2);
+    validateWork(linkedDataWork, work, 2);
+    assertContributor(linkedDataWork.getContributors().getFirst(), contributorName(creatorPerson), PERSON, true);
+    assertContributor(linkedDataWork.getContributors().get(1), contributorName(contributorOrg), ORGANIZATION, false);
+    assertContributor(linkedDataWork.getContributors().get(2), contributorName(wrongContributor), null, false);
+    assertThat(linkedDataWork.getContributors()).hasSize(3);
     validateInstance(linkedDataWork.getInstances().getFirst(), instance1);
     validateInstance(linkedDataWork.getInstances().get(1), instance2);
+  }
+
+  private static String contributorName(Resource contributor) {
+    return contributor.getDoc().get(NAME.getValue()).get(0).textValue();
   }
 
   private Resource getInstance(Long id, Resource work) {
@@ -181,7 +191,7 @@ class WorkSearchMessageMapperTest {
     return contributor;
   }
 
-  private void validateWork(LinkedDataWork result, Resource work, Resource wrongContributor, int instancesExpected) {
+  private void validateWork(LinkedDataWork result, Resource work, int instancesExpected) {
     assertThat(result.getId()).isEqualTo(work.getId().toString());
     assertTitle(result.getTitles().getFirst(), "Primary: mainTitle", MAIN);
     assertTitle(result.getTitles().get(1), "Primary: subTitle", SUB);
@@ -189,19 +199,6 @@ class WorkSearchMessageMapperTest {
     assertTitle(result.getTitles().get(3), "Parallel: subTitle", SUB_PARALLEL);
     assertTitle(result.getTitles().get(4), "Variant: mainTitle", MAIN_VARIANT);
     assertTitle(result.getTitles().get(5), "Variant: subTitle", SUB_VARIANT);
-    assertThat(result.getContributors()).hasSize(11);
-    assertContributor(result.getContributors().getFirst(), "name-CREATOR-PERSON", PERSON, true);
-    assertContributor(result.getContributors().get(1), "name-CREATOR-MEETING", MEETING, true);
-    assertContributor(result.getContributors().get(2), "name-CREATOR-ORGANIZATION", ORGANIZATION, true);
-    assertContributor(result.getContributors().get(3), "name-CREATOR-FAMILY", FAMILY, true);
-    assertContributor(result.getContributors().get(4), "name-CREATOR-JURISDICTION", JURISDICTION, true);
-    assertContributor(result.getContributors().get(5), "name-CONTRIBUTOR-PERSON", PERSON, false);
-    assertContributor(result.getContributors().get(6), "name-CONTRIBUTOR-MEETING", MEETING, false);
-    assertContributor(result.getContributors().get(7), "name-CONTRIBUTOR-ORGANIZATION", ORGANIZATION, false);
-    assertContributor(result.getContributors().get(8), "name-CONTRIBUTOR-FAMILY", FAMILY, false);
-    assertContributor(result.getContributors().get(9), "name-CONTRIBUTOR-JURISDICTION", JURISDICTION, false);
-    assertContributor(result.getContributors().get(10), wrongContributor.getDoc().get(NAME.getValue()).get(0).asText(),
-      null, false);
     assertThat(result.getLanguages()).hasSize(1);
     assertThat(result.getLanguages().getFirst()).isEqualTo("eng");
     assertThat(result.getClassifications()).hasSize(2);
