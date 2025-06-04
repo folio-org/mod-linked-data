@@ -336,14 +336,11 @@ paths:
                   format: binary
       responses:
         '200':
-          description: Placeholder
+          description: Returns a list of resource IDs and an import activity log
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: integer
-                  format: int64
+                $ref: schema/importFileResponseDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':

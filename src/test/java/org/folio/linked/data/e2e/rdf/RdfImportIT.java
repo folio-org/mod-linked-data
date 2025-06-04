@@ -2,9 +2,12 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Optional;
@@ -55,10 +58,10 @@ class RdfImportIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = resultActions
+    resultActions
       .andExpect(status().isOk())
-      .andReturn().getResponse().getContentAsString();
-    assertThat(response).isEqualTo("[" + expectedId + "]");
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
+      .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
     verify(eventListener).afterCreate(any());
   }
@@ -82,10 +85,10 @@ class RdfImportIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    var response = resultActions
+    resultActions
       .andExpect(status().isOk())
-      .andReturn().getResponse().getContentAsString();
-    assertThat(response).isEqualTo("[" + expectedId + "]");
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
+      .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
     assertThat(resourceRepo.existsById(existedAuthority.getId())).isTrue();
     verify(eventListener).afterCreate(any());

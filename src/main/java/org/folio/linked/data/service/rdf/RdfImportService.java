@@ -1,10 +1,10 @@
 package org.folio.linked.data.service.rdf;
 
-import java.util.List;
+import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface RdfImportService {
 
-  List<Long> importFile(MultipartFile multipartFile);
+  ImportFileResponseDto importFile(MultipartFile multipartFile);
 
 }
