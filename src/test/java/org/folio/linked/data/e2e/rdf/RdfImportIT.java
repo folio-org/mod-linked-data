@@ -13,8 +13,10 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.rdf.LccnResourceProvider;
+import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @IntegrationTest
+@SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class RdfImportIT {
   private static final String IMPORT_ENDPOINT = "/linked-data/import/file";
   @Autowired
