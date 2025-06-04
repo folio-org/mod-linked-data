@@ -274,6 +274,49 @@ paths:
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
+
+  /linked-data/profile/preferred:
+    get:
+      operationId: getPreferredProfileByResourceType
+      tags:
+        - profile
+      description: Get the preferred profile for a resource type for the current user
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-user-id-header'
+        - name: resourceType
+          in: query
+          required: false
+          description: The type of resource for which preferred profile is requested. If not specified, profiles for all resource types will be returned
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Preferred profile(s) for the current user and specified resource type
+          content:
+            application/json:
+              schema:
+                $ref: "schema/profile/profileMetadataArray.json"
+
+    post:
+      operationId: setPreferredProfile
+      tags:
+        - profile
+      description: Create or update the preferred profile for a resource type for the current user
+      parameters:
+        - $ref: '#/components/parameters/x-okapi-user-id-header'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: schema/profile/profileMetadata.json
+      responses:
+        '200':
+          description: Preferred profile created or updated successfully
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById
@@ -378,7 +421,13 @@ components:
       schema:
         type: integer
         format: int64
-
+    x-okapi-user-id-header:
+      name: x-okapi-user-id
+      in: header
+      description: X-Okapi-User-Id header value
+      schema:
+        type: string
+        format: uuid
   schemas:
     errorResponse:
       $ref: schema/error/errors.json
@@ -398,4 +447,3 @@ components:
           example: example/unknownError.sample
           schema:
             $ref: "#/components/schemas/errorResponse"
-
