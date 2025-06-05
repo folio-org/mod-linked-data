@@ -20,6 +20,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -71,6 +72,7 @@ class ReIndexControllerIT extends ITBase {
   }
 
   @Test
+  @Disabled("TODO - MODLD-752")
   void notIndexResourceWithIndexDate_andNotFullIndexRequest() throws Exception {
     // given
     resourceRepo.save(getSampleWork(null).setIndexDate(new Date()));

@@ -3,7 +3,7 @@ package org.folio.linked.data.service.tenant;
 import static org.folio.linked.data.util.Constants.Cache.MODULE_STATE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
-import java.util.Collection;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.job.CacheCleaningJob;
 import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 @Profile("!" + STANDALONE_PROFILE)
 public class LinkedDataTenantService extends TenantService {
 
-  private final Collection<TenantServiceWorker> workers;
+  private final List<TenantServiceWorker> workers;
   private final CacheCleaningJob cacheCleaningJob;
   private final TenantScopedExecutionService tenantScopedExecutionService;
 
@@ -33,7 +33,7 @@ public class LinkedDataTenantService extends TenantService {
     JdbcTemplate jdbcTemplate,
     FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase,
-    Collection<TenantServiceWorker> workers,
+    List<TenantServiceWorker> workers,
     CacheCleaningJob cacheCleaningJob,
     TenantScopedExecutionService tenantScopedExecutionService
   ) {
