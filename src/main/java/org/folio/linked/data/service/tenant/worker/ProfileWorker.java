@@ -34,17 +34,19 @@ public class ProfileWorker implements TenantServiceWorker {
 
     var profilesDirectory = getClass().getClassLoader().getResource(PROFILE_DIRECTORY);
     try (var files = Files.list(Paths.get(profilesDirectory.toURI()))) {
-      files.forEach(this::saveProfile);
-    } catch (IOException | URISyntaxException e) {
+      files
+        .filter(Files::isRegularFile)
+        .forEach(this::saveProfile);
+    } catch (IOException | URISyntaxException | UnsupportedOperationException e) {
       log.error("Failed to read profiles from directory: {}", PROFILE_DIRECTORY, e);
     }
   }
 
   private void saveProfile(Path file) {
-    try {
-      var profile = objectMapper.readValue(file.toFile(), Profile.class);
-      var jsonValue = objectMapper.writeValueAsString(profile.value());
-      profileService.saveProfile(profile.id(), profile.name(), profile.resourceType(), jsonValue);
+    try (var inputStream = Files.newInputStream(file)) {
+      var profile = objectMapper.readValue(inputStream, Profile.class);
+      var profileStr = objectMapper.writeValueAsString(profile.value());
+      profileService.saveProfile(profile.id(), profile.name(), profile.resourceType(), profileStr);
     } catch (IOException e) {
       log.error("Failed to process file: {}", file, e);
     }
