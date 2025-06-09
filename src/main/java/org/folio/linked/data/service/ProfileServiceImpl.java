@@ -40,9 +40,7 @@ public class ProfileServiceImpl implements ProfileService {
 
   @Override
   public String getProfile() {
-    return profileRepository.findById(ID)
-      .map(Profile::getValue)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(ID)));
+    return getProfileById(ID);
   }
 
   @Override

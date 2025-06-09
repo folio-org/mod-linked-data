@@ -3,6 +3,7 @@ package org.folio.linked.data.controller;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.PreferredProfileRequest;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.rest.resource.ProfileApi;
 import org.folio.linked.data.service.ProfileService;
@@ -31,8 +32,8 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
-  public ResponseEntity<Void> setPreferredProfile(UUID userId, ProfileMetadata profileMetadata) {
-    profileService.setPreferredProfile(userId, profileMetadata.getId(), profileMetadata.getResourceType());
+  public ResponseEntity<Void> setPreferredProfile(UUID userId, PreferredProfileRequest preferredProfile) {
+    profileService.setPreferredProfile(userId, preferredProfile.getId(), preferredProfile.getResourceType());
     return ResponseEntity.noContent().build();
   }
 
