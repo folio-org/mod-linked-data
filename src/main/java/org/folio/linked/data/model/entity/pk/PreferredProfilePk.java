@@ -23,5 +23,4 @@ public class PreferredProfilePk implements Serializable {
 
   @Column(name = "resource_type", nullable = false)
   private Long resourceType;
-
 }

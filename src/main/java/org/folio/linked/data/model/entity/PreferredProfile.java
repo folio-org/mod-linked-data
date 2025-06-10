@@ -21,12 +21,6 @@ public class PreferredProfile {
   private PreferredProfilePk id;
 
   @ManyToOne
-  @JoinColumn(name = "resource_type", nullable = false, insertable = false, updatable = false)
-  private ResourceTypeEntity resourceType;
-
-  @ManyToOne
   @JoinColumn(name = "profile_id", nullable = false)
   private Profile profile;
-
 }
-

@@ -39,6 +39,6 @@ public class ProfileController implements ProfileApi {
 
   @Override
   public ResponseEntity<List<ProfileMetadata>> getPreferredProfileByResourceType(UUID userId, String resourceTypeUri) {
-    return ResponseEntity.ok(profileService.getPreferredProfile(userId, resourceTypeUri));
+    return ResponseEntity.ok(profileService.getPreferredProfiles(userId, resourceTypeUri));
   }
 }
