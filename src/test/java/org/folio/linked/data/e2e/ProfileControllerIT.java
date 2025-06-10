@@ -41,7 +41,7 @@ class ProfileControllerIT {
       .andExpect(content().contentType(TEXT_PLAIN_VALUE + ";charset=UTF-8"))
       .andReturn().getResponse().getContentAsString();
 
-    assertTrue(profile.contains("\"id\": \"lc:RT:bf2:Monograph:Work\""));
+    assertTrue(profile.contains("\"id\": \"Monograph\""));
   }
 
   @Test
@@ -59,7 +59,7 @@ class ProfileControllerIT {
       .andExpect(content().contentType(TEXT_PLAIN_VALUE + ";charset=UTF-8"))
       .andReturn().getResponse().getContentAsString();
 
-    assertTrue(profile.contains("\"id\": \"lc:RT:bf2:Monograph:Work\""));
+    assertTrue(profile.contains("\"id\": \"Monograph\""));
   }
 
   @Test
