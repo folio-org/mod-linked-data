@@ -16,12 +16,14 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
+import org.folio.linked.data.repo.RawMarcRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
@@ -48,6 +50,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ApplicationEventPublisher applicationEventPublisher;
   private final FolioExecutionContext folioExecutionContext;
   private final ResourceCopyService resourceCopyService;
+  private final RawMarcRepository rawMarcRepository;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -145,7 +148,19 @@ public class ResourceServiceImpl implements ResourceService {
     resourceToSave.setVersion(old.getVersion() + 1);
     resourceToSave.setCreatedBy(old.getCreatedBy());
     resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
-    return resourceGraphService.saveMergingGraph(resourceToSave);
+    var saved = resourceGraphService.saveMergingGraph(resourceToSave);
+    this.copyUnmappedMarc(old, saved);
+    return saved;
+  }
+
+  private void copyUnmappedMarc(Resource from, Resource to) {
+    if (to.isOfType(INSTANCE)) {
+      rawMarcRepository.findById(from.getId())
+        .ifPresent(unmappedMarc -> {
+          var newUnmappedMarc = new RawMarc(to).setContent(unmappedMarc.getContent());
+          rawMarcRepository.save(newUnmappedMarc);
+        });
+    }
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {

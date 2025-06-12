@@ -19,6 +19,8 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.repo.RawMarcRepository;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -26,9 +28,13 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = SPRING)
 public abstract class ResourceModelMapper {
+
+  @Autowired
+  private RawMarcRepository rawMarcRepository;
 
   @NotForGeneration
   public Resource toEntity(org.folio.ld.dictionary.model.Resource model) {
@@ -37,8 +43,6 @@ public abstract class ResourceModelMapper {
 
   @Mapping(target = "folioMetadata",
     expression = "java(model.getFolioMetadata() != null ? mapFolioMetadata(model.getFolioMetadata(), resource) : null)")
-  @Mapping(target = "unmappedMarc",
-    expression = "java(model.getUnmappedMarc() != null ? mapUnmappedMarc(model.getUnmappedMarc(), resource) : null)")
   protected abstract Resource toEntity(org.folio.ld.dictionary.model.Resource model,
                                        @Context CyclicGraphContext cycleContext);
 
@@ -66,8 +70,13 @@ public abstract class ResourceModelMapper {
   protected abstract FolioMetadata mapFolioMetadata(org.folio.ld.dictionary.model.FolioMetadata folioMetadata,
                                                     Resource resource);
 
-  @Mapping(source = "resource", target = "resource")
-  protected abstract RawMarc mapUnmappedMarc(org.folio.ld.dictionary.model.RawMarc unmappedMarc, Resource resource);
+  @AfterMapping
+  protected void setUnmappedMarc(Resource entity, @MappingTarget org.folio.ld.dictionary.model.Resource model) {
+    rawMarcRepository.findById(entity.getId())
+      .map(RawMarc::getContent)
+      .map(content -> new org.folio.ld.dictionary.model.RawMarc().setContent(content))
+      .ifPresent(model::setUnmappedMarc);
+  }
 
   @Qualifier
   @Target(ElementType.METHOD)
