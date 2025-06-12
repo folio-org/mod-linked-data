@@ -1,5 +1,6 @@
 package org.folio.linked.data.e2e.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
@@ -9,14 +10,18 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.FolioMetadata;
+import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.repo.RawMarcRepository;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
@@ -28,6 +33,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ResourceControllerUpdateInstanceIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;
+  @Autowired
+  private RawMarcRepository rawMarcRepository;
   @Autowired
   private ObjectMapper objectMapper;
 
@@ -103,6 +110,49 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
     // Assert that the request is successful
     mockMvc.perform(updateRequest)
       .andExpect(status().isOk());
+  }
+
+  @Test
+  void update_should_retain_unmapped_marc_records() throws Exception {
+    // given
+    var instanceTitle = "simple_instance1";
+    var work = getWork("simple_work1", hashService);
+    var instance = getInstance(work, instanceTitle);
+    var savedInstance = resourceTestService.saveGraph(instance);
+    var unmappedMarc = "{\"800\": \"unmapped_marc_content\"}";
+    rawMarcRepository.save(new RawMarc(savedInstance).setContent(unmappedMarc));
+
+    // when
+    var updateRequestDto = getInstanceRequestDto(work.getId(), instanceTitle + "_updated");
+
+    var updateRequest = put(RESOURCE_URL + "/" + instance.getId())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(updateRequestDto);
+
+    var postResponse = mockMvc.perform(updateRequest)
+      .andExpect(status().isOk())
+      .andReturn()
+      .getResponse()
+      .getContentAsString();
+
+    var updatedInstanceId = getInstanceId(postResponse);
+
+    // then
+    var rawMarcOpt = rawMarcRepository.findById(updatedInstanceId);
+    assertThat(rawMarcOpt).isPresent();
+    assertThat(rawMarcOpt.get().getContent())
+      .isEqualTo(unmappedMarc);
+  }
+
+  @SneakyThrows
+  private long getInstanceId(String postResponse) {
+    JsonNode rootNode = objectMapper.readTree(postResponse);
+    return rootNode
+      .path("resource")
+      .path("http://bibfra.me/vocab/lite/Instance")
+      .path("id")
+      .asLong();
   }
 
   private Resource getInstance(Resource work, String titleStr) {

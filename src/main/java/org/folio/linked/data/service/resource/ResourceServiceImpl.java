@@ -6,6 +6,7 @@ import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,12 +17,14 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
+import org.folio.linked.data.repo.RawMarcRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
@@ -48,6 +51,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ApplicationEventPublisher applicationEventPublisher;
   private final FolioExecutionContext folioExecutionContext;
   private final ResourceCopyService resourceCopyService;
+  private final RawMarcRepository rawMarcRepository;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -141,11 +145,22 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource saveNewResource(Resource resourceToSave, Resource old) {
     resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
     metadataService.ensure(resourceToSave, old.getFolioMetadata());
-    resourceToSave.setCreatedDate(old.getCreatedDate());
-    resourceToSave.setVersion(old.getVersion() + 1);
-    resourceToSave.setCreatedBy(old.getCreatedBy());
-    resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
-    return resourceGraphService.saveMergingGraph(resourceToSave);
+    resourceToSave.setCreatedDate(old.getCreatedDate())
+      .setVersion(old.getVersion() + 1)
+      .setCreatedBy(old.getCreatedBy())
+      .setUpdatedBy(folioExecutionContext.getUserId());
+    var unmappedMarc = getUnmappedMarc(old).orElse(null);
+    var saved = resourceGraphService.saveMergingGraph(resourceToSave);
+    if (unmappedMarc != null) {
+      rawMarcRepository.save(new RawMarc(saved).setContent(unmappedMarc));
+    }
+    return saved;
+  }
+
+  private Optional<String> getUnmappedMarc(Resource resource) {
+    return resource.isOfType(INSTANCE)
+      ? rawMarcRepository.findById(resource.getId()).map(RawMarc::getContent)
+      : Optional.empty();
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {

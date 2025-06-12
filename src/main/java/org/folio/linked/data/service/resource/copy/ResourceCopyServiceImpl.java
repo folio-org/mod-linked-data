@@ -21,11 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.springframework.stereotype.Service;
@@ -57,18 +55,7 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
   @Override
   public void copyEdgesAndProperties(Resource old, Resource updated) {
     resourceEdgeService.copyOutgoingEdges(old, updated);
-    copyUnmappedMarc(old, updated);
     copyProperties(old, updated);
-  }
-
-  private void copyUnmappedMarc(Resource from, Resource to) {
-    if (to.isOfType(INSTANCE)) {
-      Optional.ofNullable(from.getUnmappedMarc())
-        .ifPresent(unmappedMarc -> {
-          var newUnmappedMarc = new RawMarc(to).setContent(unmappedMarc.getContent());
-          to.setUnmappedMarc(newUnmappedMarc);
-        });
-    }
   }
 
   @SneakyThrows
