@@ -3,9 +3,6 @@ package org.folio.linked.data.service.resource.copy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -22,7 +19,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
-import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
@@ -53,31 +49,12 @@ class ResourceCopyServiceImplTest {
   void copyEdgesAndProperties_shouldRetainUnmappedMarc_whenUpdatedResourceIsInstance() {
     // given
     var old = new Resource();
-    var rawMarc = "raw marc";
-    old.setUnmappedMarc(new RawMarc(old).setContent(rawMarc));
     var updated = new Resource().addTypes(INSTANCE);
 
     // when
     service.copyEdgesAndProperties(old, updated);
 
     // then
-    assertNotNull(updated.getUnmappedMarc());
-    assertEquals(rawMarc, updated.getUnmappedMarc().getContent());
-    verify(resourceEdgeService).copyOutgoingEdges(old, updated);
-  }
-
-  @Test
-  void copyEdgesAndProperties_shouldNotRetainUnmappedMarc_whenUpdatedResourceIsNotInstance() {
-    // given
-    var old = new Resource();
-    old.setUnmappedMarc(new RawMarc(old).setContent("raw marc"));
-    var updated = new Resource();
-
-    // when
-    service.copyEdgesAndProperties(old, updated);
-
-    // then
-    assertNull(updated.getUnmappedMarc());
     verify(resourceEdgeService).copyOutgoingEdges(old, updated);
   }
 

@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
+import org.folio.ld.dictionary.model.RawMarc;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
@@ -40,6 +41,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
+import org.folio.linked.data.repo.RawMarcRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
@@ -92,6 +94,8 @@ class ResourceMarcBibServiceImplTest {
   private RequestProcessingExceptionBuilder exceptionBuilder;
   @Mock
   private ResourceEdgeService resourceEdgeService;
+  @Mock
+  private RawMarcRepository rawMarcRepository;
 
   @Test
   void getResourceMarcView_shouldReturnExistedEntity() {
@@ -243,6 +247,7 @@ class ResourceMarcBibServiceImplTest {
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord('a', 'm');
     var marcJson = "";
+    var unmappedMarc = "{}";
     var resourceId = 1L;
     var srsId = UUID.randomUUID().toString();
     var resourceEntity = new Resource().setId(resourceId);
@@ -250,9 +255,12 @@ class ResourceMarcBibServiceImplTest {
       .setSrsId(srsId));
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(resourceId)
-      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId))
+      .setUnmappedMarc(new RawMarc().setContent(unmappedMarc));
     var resourceEventCaptor = ArgumentCaptor.forClass(ResourceEvent.class);
     var resourceModelCaptor = ArgumentCaptor.forClass(org.folio.ld.dictionary.model.Resource.class);
+    var unmappedMarcCaptor = ArgumentCaptor.forClass(org.folio.linked.data.model.entity.RawMarc.class);
+
 
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
@@ -267,6 +275,12 @@ class ResourceMarcBibServiceImplTest {
     var result = resourceMarcService.importMarcRecord(inventoryId);
 
     //then
+    verify(rawMarcRepository).save(unmappedMarcCaptor.capture());
+    assertThat(unmappedMarcCaptor.getValue())
+      .satisfies(rawMarc -> {
+        assertThat(rawMarc.getId()).isEqualTo(resourceId);
+        assertThat(rawMarc.getContent()).isEqualTo(unmappedMarc);
+      });
     verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
     assertThat(resourceEventCaptor.getValue())
       .satisfies(event -> {

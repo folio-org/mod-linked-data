@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.resource.marc;
 
 import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.model.ResourceSource.LINKED_DATA;
@@ -28,12 +29,14 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
+import org.folio.linked.data.repo.RawMarcRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
@@ -68,6 +71,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
+  private final RawMarcRepository rawMarcRepository;
 
   @Override
   @Transactional(readOnly = true)
@@ -208,10 +212,19 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     // resulting in a duplicate instance record in Inventory. By emitting a ResourceUpdatedEvent instead,
     // we send an "UPDATE_INSTANCE" event, switching the source of the existing instance
     // from "MARC" to "LINKED_DATA" in Inventory.
-    return saveAndPublishEvent(resourceModelMapper.toEntity(modelResource), ResourceUpdatedEvent::new);
+    var saved = saveAndPublishEvent(resourceModelMapper.toEntity(modelResource), ResourceUpdatedEvent::new);
+    saveUnmappedMarc(modelResource, saved);
+    return saved.getId();
   }
 
-  private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
+  private void saveUnmappedMarc(org.folio.ld.dictionary.model.Resource modelResource, Resource saved) {
+    ofNullable(modelResource.getUnmappedMarc())
+      .map(org.folio.ld.dictionary.model.RawMarc::getContent)
+      .map(unmappedMarc -> new RawMarc(saved).setContent(unmappedMarc))
+      .ifPresent(rawMarcRepository::save);
+  }
+
+  private Resource saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
     var newResource = resourceGraphService.saveMergingGraph(resource);
     refreshWork(newResource);
     var event = resourceEventSupplier.apply(newResource);
@@ -219,8 +232,9 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       resourceGraphService.breakEdgesAndDelete(rre.previous());
     }
     applicationEventPublisher.publishEvent(event);
-    return newResource.getId();
+    return newResource;
   }
+
 
   private void refreshWork(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
