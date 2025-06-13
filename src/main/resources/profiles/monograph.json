@@ -14,7 +14,6 @@
       "type": "block",
       "displayName": "Work",
       "bfid": "lc:RT:bf2:Monograph:Work",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Work",
       "uriBFLite": "http://bibfra.me/vocab/lite/Work",
       "children": [
         "Monograph:Work:CreatorOfWork",
@@ -38,7 +37,6 @@
     {
       "type": "group",
       "displayName": "Creator of Work",
-      "uri": "http://id.loc.gov/ontologies/bibframe/contribution",
       "uriBFLite": "_creatorReference",
       "constraints": {
         "repeatable": true,
@@ -59,7 +57,6 @@
       "bfid": "lc:RT:bf2:search:name",
       "type": "complex",
       "displayName": "Name",
-      "uri": "http://www.w3.org/2002/07/owl#sameAs",
       "uriBFLite": "_name",
       "constraints": {
         "repeatable": true,
@@ -76,7 +73,6 @@
     {
       "type": "dropdown",
       "displayName": "Subclass",
-      "uri": "http://id.loc.gov/ontologies/bibframe/agent",
       "uriBFLite": "_subclass",
       "constraints": {
         "repeatable": true,
@@ -102,7 +98,6 @@
       "type": "dropdownOption",
       "displayName": "Person",
       "bfid": "lc:RT:bf2:Agent:bfPerson:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Person",
       "uriBFLite": "http://bibfra.me/vocab/lite/Person",
       "children": [],
       "id": "Monograph:Work:CreatorOfWork:Subclass:Person"
@@ -111,7 +106,6 @@
       "type": "dropdownOption",
       "displayName": "Family",
       "bfid": "lc:RT:bf2:Agent:bfFamily:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Family",
       "uriBFLite": "http://bibfra.me/vocab/lite/Family",
       "children": [],
       "id": "Monograph:Work:CreatorOfWork:Subclass:Family"
@@ -120,7 +114,6 @@
       "type": "dropdownOption",
       "displayName": "Corporate Body",
       "bfid": "lc:RT:bf2:Agent:bfCorp:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Organization",
       "uriBFLite": "http://bibfra.me/vocab/lite/Organization",
       "children": [],
       "id": "Monograph:Work:CreatorOfWork:Subclass:CorporateBody"
@@ -129,7 +122,6 @@
       "type": "dropdownOption",
       "displayName": "Jurisdiction",
       "bfid": "lc:RT:bf2:Agent:bfJurisdiction:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Jurisdiction",
       "uriBFLite": "http://bibfra.me/vocab/lite/Jurisdiction",
       "children": [],
       "id": "Monograph:Work:CreatorOfWork:Subclass:Jurisdiction"
@@ -138,7 +130,6 @@
       "type": "dropdownOption",
       "displayName": "Conference",
       "bfid": "lc:RT:bf2:Agent:bfConf:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Meeting",
       "uriBFLite": "http://bibfra.me/vocab/lite/Meeting",
       "children": [],
       "id": "Monograph:Work:CreatorOfWork:Subclass:Conference"
@@ -146,7 +137,6 @@
     {
       "type": "simple",
       "displayName": "Relationship",
-      "uri": "roles",
       "uriBFLite": "roles",
       "constraints": {
         "repeatable": true,
@@ -161,7 +151,6 @@
     {
       "type": "dropdown",
       "displayName": "Title Information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/title",
       "uriBFLite": "http://bibfra.me/vocab/marc/title",
       "constraints": {
         "repeatable": true,
@@ -182,7 +171,6 @@
       "type": "dropdownOption",
       "displayName": "Work Title",
       "bfid": "lc:RT:bf2:WorkTitle",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Title",
       "uriBFLite": "http://bibfra.me/vocab/marc/Title",
       "children": [
         "Monograph:Work:TitleInformation:WorkTitle:NonSortCharacterCount",
@@ -195,7 +183,6 @@
     {
       "type": "literal",
       "displayName": "Non-sort character count",
-      "uri": "http://id.loc.gov/ontologies/bflc/nonSortNum",
       "uriBFLite": "http://bibfra.me/vocab/bflc/nonSortNum",
       "constraints": {
         "repeatable": true,
@@ -210,7 +197,6 @@
     {
       "type": "literal",
       "displayName": "Preferred Title for Work",
-      "uri": "http://id.loc.gov/ontologies/bibframe/mainTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
@@ -225,7 +211,6 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partNumber",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
@@ -240,7 +225,6 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partName",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
@@ -256,7 +240,6 @@
       "type": "dropdownOption",
       "displayName": "Variant Title",
       "bfid": "lc:RT:bf2:Title:VarTitle",
-      "uri": "http://id.loc.gov/ontologies/bibframe/VariantTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/VariantTitle",
       "children": [
         "Monograph:Work:TitleInformation:VariantTitle:VariantTitle",
@@ -272,7 +255,6 @@
     {
       "type": "literal",
       "displayName": "Variant Title",
-      "uri": "http://id.loc.gov/ontologies/bibframe/mainTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
@@ -287,7 +269,6 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partNumber",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
@@ -302,7 +283,6 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partName",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
@@ -317,7 +297,6 @@
     {
       "type": "literal",
       "displayName": "Other title information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/subtitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
         "repeatable": true,
@@ -332,7 +311,6 @@
     {
       "type": "literal",
       "displayName": "Date",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -347,7 +325,6 @@
     {
       "type": "literal",
       "displayName": "Variant title type",
-      "uri": "http://id.loc.gov/ontologies/bibframe/variantType",
       "uriBFLite": "http://bibfra.me/vocab/marc/variantType",
       "constraints": {
         "repeatable": true,
@@ -362,7 +339,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
         "repeatable": true,
@@ -378,7 +354,6 @@
       "type": "dropdownOption",
       "displayName": "Parallel Title",
       "bfid": "lc:RT:bf2:ParallelTitle",
-      "uri": "http://id.loc.gov/ontologies/bibframe/ParallelTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/ParallelTitle",
       "children": [
         "Monograph:Work:TitleInformation:ParallelTitle:ParallelTitle",
@@ -393,7 +368,6 @@
     {
       "type": "literal",
       "displayName": "Parallel Title",
-      "uri": "http://id.loc.gov/ontologies/bibframe/mainTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
@@ -408,7 +382,6 @@
     {
       "type": "literal",
       "displayName": "Other Title Information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/subtitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
         "repeatable": true,
@@ -423,7 +396,6 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partNumber",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
@@ -438,7 +410,6 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partName",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
@@ -453,7 +424,6 @@
     {
       "type": "literal",
       "displayName": "Date",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -468,7 +438,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
         "repeatable": true,
@@ -483,7 +452,6 @@
     {
       "type": "simple",
       "displayName": "Government publication",
-      "uri": "http://id.loc.gov/ontologies/bflc/governmentPubType",
       "uriBFLite": "http://bibfra.me/vocab/marc/governmentPublication",
       "constraints": {
         "repeatable": true,
@@ -498,7 +466,6 @@
     {
       "type": "literal",
       "displayName": "Date of Work",
-      "uri": "http://id.loc.gov/ontologies/bibframe/originDate",
       "uriBFLite": "http://bibfra.me/vocab/lite/dateStart",
       "constraints": {
         "repeatable": true,
@@ -513,7 +480,6 @@
     {
       "type": "simple",
       "displayName": "Place of Origin of the Work",
-      "uri": "http://id.loc.gov/ontologies/bibframe/originPlace",
       "uriBFLite": "http://bibfra.me/vocab/marc/originPlace",
       "constraints": {
         "repeatable": true,
@@ -528,7 +494,6 @@
     {
       "type": "group",
       "displayName": "Geographic Coverage",
-      "uri": "http://id.loc.gov/ontologies/bibframe/geographicCoverage",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -543,7 +508,6 @@
     {
       "type": "complex",
       "displayName": "Search LCNAF, LCSH or GAC",
-      "uri": "http://www.w3.org/2002/07/owl#sameAs",
       "uriBFLite": "_geographicCoverageReference",
       "constraints": {
         "repeatable": true,
@@ -558,7 +522,6 @@
     {
       "type": "simple",
       "displayName": "Intended Audience",
-      "uri": "http://id.loc.gov/ontologies/bibframe/intendedAudience",
       "uriBFLite": "http://bibfra.me/vocab/marc/targetAudience",
       "constraints": {
         "repeatable": true,
@@ -573,7 +536,6 @@
     {
       "type": "group",
       "displayName": "Other contributors",
-      "uri": "http://id.loc.gov/ontologies/bibframe/contribution",
       "uriBFLite": "_contributorReference",
       "constraints": {
         "repeatable": true,
@@ -594,7 +556,6 @@
       "bfid": "lc:RT:bf2:search:name",
       "type": "complex",
       "displayName": "Name",
-      "uri": "http://www.w3.org/2002/07/owl#sameAs",
       "uriBFLite": "_name",
       "constraints": {
         "repeatable": true,
@@ -611,11 +572,9 @@
     {
       "type": "dropdown",
       "displayName": "Subclass",
-      "uri": "http://id.loc.gov/ontologies/bibframe/agent",
       "uriBFLite": "_subclass",
       "constraints": { "repeatable": true, "editable": true, "mandatory": true, "defaults": [], "useValuesFrom": [] },
       "children": [
-        "Monograph:Work:OtherContributors:Subclass:",
         "Monograph:Work:OtherContributors:Subclass:Person",
         "Monograph:Work:OtherContributors:Subclass:Family",
         "Monograph:Work:OtherContributors:Subclass:CorporateBody",
@@ -631,7 +590,6 @@
       "type": "dropdownOption",
       "displayName": "Person",
       "bfid": "lc:RT:bf2:Agent:bfPerson:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Person",
       "uriBFLite": "http://bibfra.me/vocab/lite/Person",
       "children": [],
       "id": "Monograph:Work:OtherContributors:Subclass:Person"
@@ -640,7 +598,6 @@
       "type": "dropdownOption",
       "displayName": "Family",
       "bfid": "lc:RT:bf2:Agent:bfFamily:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Family",
       "uriBFLite": "http://bibfra.me/vocab/lite/Family",
       "children": [],
       "id": "Monograph:Work:OtherContributors:Subclass:Family"
@@ -649,7 +606,6 @@
       "type": "dropdownOption",
       "displayName": "Corporate Body",
       "bfid": "lc:RT:bf2:Agent:bfCorp:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Organization",
       "uriBFLite": "http://bibfra.me/vocab/lite/Organization",
       "children": [],
       "id": "Monograph:Work:OtherContributors:Subclass:CorporateBody"
@@ -658,7 +614,6 @@
       "type": "dropdownOption",
       "displayName": "Jurisdiction",
       "bfid": "lc:RT:bf2:Agent:bfJurisdiction:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Jurisdiction",
       "uriBFLite": "http://bibfra.me/vocab/lite/Jurisdiction",
       "children": [],
       "id": "Monograph:Work:OtherContributors:Subclass:Jurisdiction"
@@ -667,7 +622,6 @@
       "type": "dropdownOption",
       "displayName": "Conference",
       "bfid": "lc:RT:bf2:Agent:bfConf:v2",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Meeting",
       "uriBFLite": "http://bibfra.me/vocab/lite/Meeting",
       "children": [],
       "id": "Monograph:Work:OtherContributors:Subclass:Conference"
@@ -675,7 +629,6 @@
     {
       "type": "simple",
       "displayName": "Relationship",
-      "uri": "roles",
       "uriBFLite": "roles",
       "constraints": {
         "repeatable": true,
@@ -689,7 +642,6 @@
     {
       "type": "group",
       "displayName": "Notes about the Work",
-      "uri": "http://id.loc.gov/ontologies/bibframe/note",
       "uriBFLite": "_notes",
       "constraints": {
         "repeatable": true,
@@ -705,7 +657,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "value",
       "constraints": {
         "repeatable": true,
@@ -720,7 +671,6 @@
     {
       "type": "simple",
       "displayName": "Note type",
-      "uri": "http://id.loc.gov/ontologies/bibframe/noteType",
       "uriBFLite": "type",
       "constraints": {
         "repeatable": true,
@@ -736,7 +686,6 @@
       "type": "literal",
       "groupName": "Contents",
       "displayName": "Contents note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/marc/tableOfContents",
       "constraints": {
         "repeatable": true,
@@ -765,7 +714,6 @@
     {
       "type": "group",
       "displayName": "Subject of the Work",
-      "uri": "http://id.loc.gov/ontologies/bibframe/subject",
       "uriBFLite": "http://bibfra.me/vocab/lite/subject",
       "constraints": {
         "repeatable": true,
@@ -781,7 +729,6 @@
     {
       "type": "complex",
       "displayName": "Search LCSH/LCNAF",
-      "uri": "http://www.loc.gov/mads/rdf/v1#Topic",
       "uriBFLite": "label",
       "constraints": {
         "repeatable": true,
@@ -796,7 +743,6 @@
     {
       "type": "dropdown",
       "displayName": "Classification numbers",
-      "uri": "http://id.loc.gov/ontologies/bibframe/classification",
       "uriBFLite": "http://bibfra.me/vocab/lite/classification",
       "constraints": {
         "repeatable": true,
@@ -818,7 +764,6 @@
       "type": "dropdownOption",
       "displayName": "Library of Congress Classification",
       "bfid": "lc:RT:bf2:LCC",
-      "uri": "http://id.loc.gov/ontologies/bibframe/ClassificationLcc",
       "uriBFLite": "lc",
       "children": [
         "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:ClassificationNumber",
@@ -831,7 +776,6 @@
     {
       "type": "literal",
       "displayName": "Classification number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/classificationPortion",
       "uriBFLite": "http://bibfra.me/vocab/marc/code",
       "constraints": {
         "repeatable": true,
@@ -846,7 +790,6 @@
     {
       "type": "literal",
       "displayName": "Additional call number information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/itemPortion",
       "uriBFLite": "http://bibfra.me/vocab/marc/itemNumber",
       "constraints": {
         "repeatable": true,
@@ -861,7 +804,6 @@
     {
       "type": "complex",
       "displayName": "Assigning agency",
-      "uri": "http://id.loc.gov/ontologies/bibframe/assigner",
       "uriBFLite": "_assigningSourceReference",
       "constraints": {
         "repeatable": true,
@@ -876,7 +818,6 @@
     {
       "type": "simple",
       "displayName": "Used by assigning agency?",
-      "uri": "http://id.loc.gov/ontologies/bibframe/status",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
         "repeatable": true,
@@ -892,7 +833,6 @@
       "type": "dropdownOption",
       "displayName": "Dewey Decimal Classification",
       "bfid": "lc:RT:bf2:DDC",
-      "uri": "http://id.loc.gov/ontologies/bibframe/ClassificationDdc",
       "uriBFLite": "ddc",
       "children": [
         "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:ClassificationNumber",
@@ -906,7 +846,6 @@
     {
       "type": "literal",
       "displayName": "Classification number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/classificationPortion",
       "uriBFLite": "http://bibfra.me/vocab/marc/code",
       "constraints": {
         "repeatable": true,
@@ -921,7 +860,6 @@
     {
       "type": "literal",
       "displayName": "Additional call number information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/itemPortion",
       "uriBFLite": "http://bibfra.me/vocab/marc/itemNumber",
       "constraints": {
         "repeatable": true,
@@ -936,7 +874,6 @@
     {
       "type": "literal",
       "displayName": "Dewey Edition number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/code",
       "uriBFLite": "http://bibfra.me/vocab/marc/editionNumber",
       "constraints": {
         "repeatable": true,
@@ -951,7 +888,6 @@
     {
       "type": "literal",
       "displayName": "Dewey full or abridged?",
-      "uri": "http://id.loc.gov/ontologies/bibframe/edition",
       "uriBFLite": "http://bibfra.me/vocab/marc/edition",
       "constraints": {
         "repeatable": true,
@@ -966,7 +902,6 @@
     {
       "type": "complex",
       "displayName": "Assigner",
-      "uri": "http://id.loc.gov/ontologies/bibframe/assigner",
       "uriBFLite": "_assigningSourceReference",
       "constraints": {
         "repeatable": true,
@@ -981,7 +916,6 @@
     {
       "type": "simple",
       "displayName": "Content Type",
-      "uri": "http://id.loc.gov/ontologies/bibframe/content",
       "uriBFLite": "http://bibfra.me/vocab/marc/content",
       "constraints": {
         "repeatable": true,
@@ -997,7 +931,6 @@
       "type": "simple",
       "groupName": "Language",
       "displayName": "Language code",
-      "uri": "http://www.w3.org/2002/07/owl#sameAs",
       "uriBFLite": "http://bibfra.me/vocab/lite/language",
       "constraints": {
         "repeatable": true,
@@ -1013,7 +946,6 @@
       "type": "block",
       "displayName": "Instance",
       "bfid": "lc:RT:bf2:Monograph:Instance",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Instance",
       "uriBFLite": "http://bibfra.me/vocab/lite/Instance",
       "children": [
         "Monograph:Instance:TitleInformation",
@@ -1036,7 +968,6 @@
     {
       "type": "dropdown",
       "displayName": "Title Information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/title",
       "uriBFLite": "http://bibfra.me/vocab/marc/title",
       "constraints": {
         "repeatable": true,
@@ -1057,7 +988,6 @@
       "type": "dropdownOption",
       "displayName": "Instance Title",
       "bfid": "lc:RT:bf2:InstanceTitle",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Title",
       "uriBFLite": "http://bibfra.me/vocab/marc/Title",
       "children": [
         "Monograph:Instance:TitleInformation:InstanceTitle:NonSortCharacterCount",
@@ -1071,7 +1001,6 @@
     {
       "type": "literal",
       "displayName": "Non-sort character count",
-      "uri": "http://id.loc.gov/ontologies/bflc/nonSortNum",
       "uriBFLite": "http://bibfra.me/vocab/bflc/nonSortNum",
       "constraints": {
         "repeatable": true,
@@ -1086,7 +1015,6 @@
     {
       "type": "literal",
       "displayName": "Main Title",
-      "uri": "http://id.loc.gov/ontologies/bibframe/mainTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
@@ -1101,7 +1029,6 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partNumber",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
@@ -1116,7 +1043,6 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partName",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
@@ -1131,7 +1057,6 @@
     {
       "type": "literal",
       "displayName": "Other Title Information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/subtitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
         "repeatable": true,
@@ -1147,7 +1072,6 @@
       "type": "dropdownOption",
       "displayName": "Variant Title",
       "bfid": "lc:RT:bf2:Title:VarTitle",
-      "uri": "http://id.loc.gov/ontologies/bibframe/VariantTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/VariantTitle",
       "children": [
         "Monograph:Instance:TitleInformation:VariantTitle:VariantTitle",
@@ -1163,7 +1087,6 @@
     {
       "type": "literal",
       "displayName": "Variant Title",
-      "uri": "http://id.loc.gov/ontologies/bibframe/mainTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
@@ -1178,7 +1101,6 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partNumber",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
@@ -1193,7 +1115,6 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partName",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
@@ -1208,7 +1129,6 @@
     {
       "type": "literal",
       "displayName": "Other title information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/subtitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
         "repeatable": true,
@@ -1223,7 +1143,6 @@
     {
       "type": "literal",
       "displayName": "Date",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -1238,7 +1157,6 @@
     {
       "type": "literal",
       "displayName": "Variant title type",
-      "uri": "http://id.loc.gov/ontologies/bibframe/variantType",
       "uriBFLite": "http://bibfra.me/vocab/marc/variantType",
       "constraints": {
         "repeatable": true,
@@ -1253,7 +1171,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
         "repeatable": true,
@@ -1269,7 +1186,6 @@
       "type": "dropdownOption",
       "displayName": "Parallel Title",
       "bfid": "lc:RT:bf2:ParallelTitle",
-      "uri": "http://id.loc.gov/ontologies/bibframe/ParallelTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/ParallelTitle",
       "children": [
         "Monograph:Instance:TitleInformation:ParallelTitle:ParallelTitle",
@@ -1284,7 +1200,6 @@
     {
       "type": "literal",
       "displayName": "Parallel Title",
-      "uri": "http://id.loc.gov/ontologies/bibframe/mainTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
@@ -1299,7 +1214,6 @@
     {
       "type": "literal",
       "displayName": "Other Title Information",
-      "uri": "http://id.loc.gov/ontologies/bibframe/subtitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
         "repeatable": true,
@@ -1314,7 +1228,6 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partNumber",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
@@ -1329,7 +1242,6 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uri": "http://id.loc.gov/ontologies/bibframe/partName",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
@@ -1344,7 +1256,6 @@
     {
       "type": "literal",
       "displayName": "Date",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -1359,7 +1270,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
         "repeatable": true,
@@ -1374,7 +1284,6 @@
     {
       "type": "literal",
       "displayName": "Statement of Responsibility",
-      "uri": "http://id.loc.gov/ontologies/bibframe/responsibilityStatement",
       "uriBFLite": "http://bibfra.me/vocab/marc/statementOfResponsibility",
       "constraints": {
         "repeatable": true,
@@ -1389,7 +1298,6 @@
     {
       "type": "literal",
       "displayName": "Edition Statement",
-      "uri": "http://id.loc.gov/ontologies/bibframe/editionStatement",
       "uriBFLite": "http://bibfra.me/vocab/marc/edition",
       "constraints": {
         "repeatable": true,
@@ -1404,7 +1312,6 @@
     {
       "type": "dropdown",
       "displayName": "Provision Activity",
-      "uri": "http://id.loc.gov/ontologies/bibframe/provisionActivity",
       "uriBFLite": "https://bibfra.me/vocab/marc/provisionActivity",
       "constraints": {
         "repeatable": true,
@@ -1426,7 +1333,6 @@
       "type": "dropdownOption",
       "displayName": "Publication",
       "bfid": "lc:RT:bf2:PubInfoNew",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Publication",
       "uriBFLite": "http://bibfra.me/vocab/marc/publication",
       "children": [
         "Monograph:Instance:ProvisionActivity:Publication:EDTFDateToFrom008",
@@ -1440,7 +1346,6 @@
     {
       "type": "literal",
       "displayName": "EDTF Date (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -1455,7 +1360,6 @@
     {
       "type": "simple",
       "displayName": "Search place of publication (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/place",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -1470,7 +1374,6 @@
     {
       "type": "literal",
       "displayName": "Place (to/from 26X $a)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simplePlace",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -1485,7 +1388,6 @@
     {
       "type": "literal",
       "displayName": "Name (to/from 26X $b)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleAgent",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -1500,7 +1402,6 @@
     {
       "type": "literal",
       "displayName": "Date (to/from 26X $c)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleDate",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -1516,7 +1417,6 @@
       "type": "dropdownOption",
       "displayName": "Distribution",
       "bfid": "lc:RT:bf2:DistInfoNew",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Distribution",
       "uriBFLite": "http://bibfra.me/vocab/marc/distribution",
       "children": [
         "Monograph:Instance:ProvisionActivity:Distribution:EDTFDateToFrom008",
@@ -1530,7 +1430,6 @@
     {
       "type": "literal",
       "displayName": "EDTF Date (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -1545,7 +1444,6 @@
     {
       "type": "simple",
       "displayName": "Search place of publication (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/place",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -1560,7 +1458,6 @@
     {
       "type": "literal",
       "displayName": "Place (to/from 26X $a)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simplePlace",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -1575,7 +1472,6 @@
     {
       "type": "literal",
       "displayName": "Name (to/from 26X $b)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleAgent",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -1590,7 +1486,6 @@
     {
       "type": "literal",
       "displayName": "Date (to/from 26X $c)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleDate",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -1606,7 +1501,6 @@
       "type": "dropdownOption",
       "displayName": "Manufacture",
       "bfid": "lc:RT:bf2:ManuInfoNew",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Manufacture",
       "uriBFLite": "http://bibfra.me/vocab/marc/manufacture",
       "children": [
         "Monograph:Instance:ProvisionActivity:Manufacture:EDTFDateToFrom008",
@@ -1620,7 +1514,6 @@
     {
       "type": "literal",
       "displayName": "EDTF Date (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -1635,7 +1528,6 @@
     {
       "type": "simple",
       "displayName": "Search place of publication (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/place",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -1650,7 +1542,6 @@
     {
       "type": "literal",
       "displayName": "Place (to/from 26X $a)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simplePlace",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -1665,7 +1556,6 @@
     {
       "type": "literal",
       "displayName": "Name (to/from 26X $b)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleAgent",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -1680,7 +1570,6 @@
     {
       "type": "literal",
       "displayName": "Date (to/from 26X $c)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleDate",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -1696,7 +1585,6 @@
       "type": "dropdownOption",
       "displayName": "Production",
       "bfid": "lc:RT:bf2:ProdInfoNew",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Production",
       "uriBFLite": "http://bibfra.me/vocab/marc/production",
       "children": [
         "Monograph:Instance:ProvisionActivity:Production:EDTFDateToFrom008",
@@ -1710,7 +1598,6 @@
     {
       "type": "literal",
       "displayName": "EDTF Date (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -1725,7 +1612,6 @@
     {
       "type": "simple",
       "displayName": "Search place of publication (to/from 008)",
-      "uri": "http://id.loc.gov/ontologies/bibframe/place",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -1740,7 +1626,6 @@
     {
       "type": "literal",
       "displayName": "Place (to/from 26X $a)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simplePlace",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -1755,7 +1640,6 @@
     {
       "type": "literal",
       "displayName": "Name (to/from 26X $b)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleAgent",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -1770,7 +1654,6 @@
     {
       "type": "literal",
       "displayName": "Date (to/from 26X $c)",
-      "uri": "http://id.loc.gov/ontologies/bflc/simpleDate",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -1785,7 +1668,6 @@
     {
       "type": "literal",
       "displayName": "Copyright Date",
-      "uri": "http://id.loc.gov/ontologies/bibframe/copyrightDate",
       "uriBFLite": "http://bibfra.me/vocab/marc/copyright",
       "constraints": {
         "repeatable": true,
@@ -1800,7 +1682,6 @@
     {
       "type": "simple",
       "displayName": "Mode of Issuance",
-      "uri": "http://id.loc.gov/ontologies/bibframe/issuance",
       "uriBFLite": "http://bibfra.me/vocab/marc/issuance",
       "constraints": {
         "repeatable": true,
@@ -1815,7 +1696,6 @@
     {
       "type": "dropdown",
       "displayName": "Identifiers",
-      "uri": "http://id.loc.gov/ontologies/bibframe/identifiedBy",
       "uriBFLite": "http://library.link/vocab/map",
       "constraints": {
         "repeatable": true,
@@ -1832,7 +1712,6 @@
       "type": "dropdownOption",
       "displayName": "LCCN",
       "bfid": "lc:RT:bf2:Identifiers:LCCN",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Lccn",
       "uriBFLite": "http://library.link/identifier/LCCN",
       "children": ["Monograph:Instance:Identifiers:LCCN:LCCN", "Monograph:Instance:Identifiers:LCCN:InvalidCanceled"],
       "id": "Monograph:Instance:Identifiers:LCCN"
@@ -1840,7 +1719,6 @@
     {
       "type": "literal",
       "displayName": "LCCN",
-      "uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -1855,7 +1733,6 @@
     {
       "type": "simple",
       "displayName": "Invalid/Canceled?",
-      "uri": "http://id.loc.gov/ontologies/bibframe/status",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
         "repeatable": true,
@@ -1871,7 +1748,6 @@
       "type": "dropdownOption",
       "displayName": "ISBN",
       "bfid": "lc:RT:bf2:Identifiers:ISBN",
-      "uri": "http://id.loc.gov/ontologies/bibframe/Isbn",
       "uriBFLite": "http://library.link/identifier/ISBN",
       "children": [
         "Monograph:Instance:Identifiers:ISBN:ISBN",
@@ -1883,7 +1759,6 @@
     {
       "type": "literal",
       "displayName": "ISBN",
-      "uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -1898,7 +1773,6 @@
     {
       "type": "literal",
       "displayName": "Qualifier",
-      "uri": "http://id.loc.gov/ontologies/bibframe/qualifier",
       "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
       "constraints": {
         "repeatable": true,
@@ -1913,7 +1787,6 @@
     {
       "type": "simple",
       "displayName": "Incorrect, Invalid or Canceled?",
-      "uri": "http://id.loc.gov/ontologies/bibframe/status",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
         "repeatable": true,
@@ -1928,7 +1801,6 @@
     {
       "type": "group",
       "displayName": "Notes about the Instance",
-      "uri": "http://id.loc.gov/ontologies/bibframe/note",
       "uriBFLite": "_notes",
       "constraints": {
         "repeatable": true,
@@ -1944,7 +1816,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "value",
       "constraints": {
         "repeatable": true,
@@ -1959,7 +1830,6 @@
     {
       "type": "simple",
       "displayName": "Note type",
-      "uri": "http://id.loc.gov/ontologies/bibframe/noteType",
       "uriBFLite": "type",
       "constraints": {
         "repeatable": true,
@@ -1974,7 +1844,6 @@
     {
       "type": "group",
       "displayName": "Supplementary Content note",
-      "uri": "http://id.loc.gov/ontologies/bibframe/supplementaryContent",
       "uriBFLite": "http://bibfra.me/vocab/marc/supplementaryContent",
       "constraints": {
         "repeatable": true,
@@ -1993,7 +1862,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -2008,7 +1876,6 @@
     {
       "type": "literal",
       "displayName": "URL for Supplementary Content",
-      "uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
       "uriBFLite": "http://bibfra.me/vocab/lite/link",
       "constraints": {
         "repeatable": true,
@@ -2023,7 +1890,6 @@
     {
       "type": "simple",
       "displayName": "Media type",
-      "uri": "http://id.loc.gov/ontologies/bibframe/media",
       "uriBFLite": "http://bibfra.me/vocab/marc/media",
       "constraints": {
         "repeatable": true,
@@ -2039,7 +1905,6 @@
       "type": "literal",
       "groupName": "Extent",
       "displayName": "Extent",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/lite/extent",
       "constraints": {
         "repeatable": true,
@@ -2054,7 +1919,6 @@
     {
       "type": "literal",
       "displayName": "Dimensions",
-      "uri": "http://id.loc.gov/ontologies/bibframe/dimensions",
       "uriBFLite": "http://bibfra.me/vocab/marc/dimensions",
       "constraints": {
         "repeatable": true,
@@ -2069,7 +1933,6 @@
     {
       "type": "simple",
       "displayName": "Carrier type",
-      "uri": "http://id.loc.gov/ontologies/bibframe/carrier",
       "uriBFLite": "http://bibfra.me/vocab/marc/carrier",
       "constraints": {
         "repeatable": true,
@@ -2084,7 +1947,6 @@
     {
       "type": "group",
       "displayName": "URL of Instance",
-      "uri": "http://id.loc.gov/ontologies/bibframe/electronicLocator",
       "uriBFLite": "http://bibfra.me/vocab/marc/accessLocation",
       "constraints": {
         "repeatable": true,
@@ -2100,7 +1962,6 @@
     {
       "type": "literal",
       "displayName": "URL",
-      "uri": "http://www.w3.org/1999/02/22-rdf-syntax-ns#value",
       "uriBFLite": "http://bibfra.me/vocab/lite/link",
       "constraints": {
         "repeatable": true,
@@ -2115,7 +1976,6 @@
     {
       "type": "literal",
       "displayName": "Note",
-      "uri": "http://www.w3.org/2000/01/rdf-schema#label",
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
         "repeatable": true,
