@@ -162,6 +162,16 @@
           "methods": [ "GET" ],
           "pathPattern": "/linked-data/profile/metadata",
           "permissionsRequired": [ "linked-data.profiles.metadata.get" ]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profile/preferred",
+          "permissionsRequired": [ "linked-data.profiles.preferred.get" ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/profile/preferred",
+          "permissionsRequired": [ "linked-data.profiles.preferred.post" ]
         }
       ]
     },
@@ -257,6 +267,16 @@
       "description": "Create a bibliographic linked-data resource derived from MARC record"
     },
     {
+      "permissionName": "linked-data.authority-assignment-check.post",
+      "displayName": "Linked Data: Check an authority can be assigned on target type",
+      "description": "Check an authority can be assigned on work as type"
+    },
+    {
+      "permissionName": "linked-data.import.file.post",
+      "displayName": "Linked Data: Import a file containing resources into the graph",
+      "description": "Import a file containing resources into the graph"
+    },
+    {
       "permissionName": "linked-data.profiles.get",
       "displayName": "Linked Data: Get the profiles for performing CRUD operations on resources",
       "description": "Get the profiles for performing CRUD operations on linked-data resources"
@@ -272,14 +292,14 @@
       "description": "Get the metadata associated with profiles"
     },
     {
-      "permissionName": "linked-data.authority-assignment-check.post",
-      "displayName": "Linked Data: Check an authority can be assigned on target type",
-      "description": "Check an authority can be assigned on work as type"
+      "permissionName": "linked-data.profiles.preferred.get",
+      "displayName": "Linked Data: Get the preferred profile for a resource type for the current user",
+      "description": "Get the preferred profile for a resource type for the current user"
     },
     {
-      "permissionName": "linked-data.import.file.post",
-      "displayName": "Linked Data: Import a file containing resources into the graph",
-      "description": "Import a file containing resources into the graph"
+      "permissionName": "linked-data.profiles.preferred.post",
+      "displayName": "Linked Data: Create or update the preferred profile for a resource type for the current user",
+      "description": "Create or update the preferred profile for a resource type for the current user"
     }
   ],
   "launchDescriptor": {
