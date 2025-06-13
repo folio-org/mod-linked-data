@@ -4,4 +4,5 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
   <include file="tables/upgrade_profiles_table.sql" relativeToChangelogFile="true"/>
+  <include file="tables/upgrade_raw_marcs_on_delete_cascade.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

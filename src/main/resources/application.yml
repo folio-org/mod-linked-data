@@ -22,9 +22,7 @@ spring:
         event:
           merge:
             entity_copy_observer: allow
-        format_sql: true
     open-in-view: false
-    show-sql: true
   kafka:
     bootstrap-servers: ${KAFKA_HOST:kafka}:${KAFKA_PORT:9092}
     consumer:

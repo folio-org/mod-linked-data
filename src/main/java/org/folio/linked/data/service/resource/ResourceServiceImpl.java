@@ -6,6 +6,7 @@ import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -144,23 +145,22 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource saveNewResource(Resource resourceToSave, Resource old) {
     resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
     metadataService.ensure(resourceToSave, old.getFolioMetadata());
-    resourceToSave.setCreatedDate(old.getCreatedDate());
-    resourceToSave.setVersion(old.getVersion() + 1);
-    resourceToSave.setCreatedBy(old.getCreatedBy());
-    resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
+    resourceToSave.setCreatedDate(old.getCreatedDate())
+      .setVersion(old.getVersion() + 1)
+      .setCreatedBy(old.getCreatedBy())
+      .setUpdatedBy(folioExecutionContext.getUserId());
+    var unmappedMarc = getUnmappedMarc(old).orElse(null);
     var saved = resourceGraphService.saveMergingGraph(resourceToSave);
-    this.copyUnmappedMarc(old, saved);
+    if (unmappedMarc != null) {
+      rawMarcRepository.save(new RawMarc(saved).setContent(unmappedMarc));
+    }
     return saved;
   }
 
-  private void copyUnmappedMarc(Resource from, Resource to) {
-    if (to.isOfType(INSTANCE)) {
-      rawMarcRepository.findById(from.getId())
-        .ifPresent(unmappedMarc -> {
-          var newUnmappedMarc = new RawMarc(to).setContent(unmappedMarc.getContent());
-          rawMarcRepository.save(newUnmappedMarc);
-        });
-    }
+  private Optional<String> getUnmappedMarc(Resource resource) {
+    return resource.isOfType(INSTANCE)
+      ? rawMarcRepository.findById(resource.getId()).map(RawMarc::getContent)
+      : Optional.empty();
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {

@@ -235,7 +235,6 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     return newResource;
   }
 
-
   private void refreshWork(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
       extractWorkFromInstance(resource)
