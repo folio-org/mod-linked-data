@@ -6,14 +6,10 @@ import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 
@@ -33,14 +29,7 @@ public class RawMarc {
   @Type(JsonBinaryType.class)
   private String content;
 
-  @OneToOne
-  @MapsId
-  @JoinColumn(name = "resource_hash")
-  @ToString.Exclude
-  private Resource resource;
-
   public RawMarc(Resource resource) {
-    this.resource = resource;
     this.id = resource.getId();
   }
 }
