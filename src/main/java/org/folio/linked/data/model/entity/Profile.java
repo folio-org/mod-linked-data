@@ -19,7 +19,7 @@ import org.hibernate.annotations.Type;
 @Accessors(chain = true)
 public class Profile {
   @Id
-  private Long id;
+  private Integer id;
 
   @Column(nullable = false)
   private String name;
