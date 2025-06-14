@@ -23,14 +23,14 @@ import org.springframework.stereotype.Service;
 @Log4j2
 public class ProfileServiceImpl implements ProfileService {
 
-  private static final Long ID = 1L;
+  private static final Integer ID = 1;
   private final ProfileRepository profileRepository;
   private final PreferredProfileRepository preferredProfileRepository;
   private final ResourceTypeRepository typeRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
-  public Profile saveProfile(Long id, String name, String resourceTypeUri, String value) {
+  public Profile saveProfile(Integer id, String name, String resourceTypeUri, String value) {
     log.info("Creating / updating profile. ID: {}, name: {}, resourceType: {}.", id, name, resourceTypeUri);
     var resourceType = typeRepository.findByUri(resourceTypeUri);
     var profile = new Profile()
@@ -47,7 +47,7 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
-  public String getProfileById(Long id) {
+  public String getProfileById(Integer id) {
     return profileRepository.findById(id)
       .map(Profile::getValue)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(id)));
@@ -63,7 +63,7 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
-  public void setPreferredProfile(UUID userId, Long profileId, String resourceTypeUri) {
+  public void setPreferredProfile(UUID userId, Integer profileId, String resourceTypeUri) {
     var profile =  profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
     var resourceType = typeRepository.findByUri(resourceTypeUri);

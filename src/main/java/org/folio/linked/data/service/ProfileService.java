@@ -8,15 +8,15 @@ import org.folio.linked.data.model.entity.Profile;
 
 public interface ProfileService {
 
-  Profile saveProfile(Long id, String name, String resourceTypeUri, String value);
+  Profile saveProfile(Integer id, String name, String resourceTypeUri, String value);
 
   String getProfile();
 
-  String getProfileById(Long id);
+  String getProfileById(Integer id);
 
   List<ProfileMetadata> getMetadataByResourceType(String resourceTypeUri);
 
-  void setPreferredProfile(UUID userId, Long profileId, String resourceTypeUri);
+  void setPreferredProfile(UUID userId, Integer profileId, String resourceTypeUri);
 
   List<ProfileMetadata> getPreferredProfiles(UUID userId, @Nullable String resourceTypeUri);
 }

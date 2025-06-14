@@ -417,10 +417,10 @@ components:
       name: profileId
       in: path
       required: true
-      description: Linked Data bibframe profile id
+      description: ID of the profile
       schema:
         type: integer
-        format: int64
+        format: int16
     x-okapi-user-id-header:
       name: x-okapi-user-id
       in: header

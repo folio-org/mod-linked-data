@@ -22,7 +22,7 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
-  public ResponseEntity<String> getProfileById(Long profileId) {
+  public ResponseEntity<String> getProfileById(Integer profileId) {
     return ResponseEntity.ok(profileService.getProfileById(profileId));
   }
 
