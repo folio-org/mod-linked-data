@@ -33,7 +33,7 @@ class ProfileServiceImplTest {
   @Test
   void getProfile_shouldReturnProfile() {
     //given
-    var id = 1L;
+    var id = 1;
     var value = "[{\"key\": \"value\"}]";
     var profile = new Profile();
     profile.setId(id);
@@ -51,7 +51,7 @@ class ProfileServiceImplTest {
   @Test
   void getProfile_shouldThrowNotFoundException_ifNoProfileExists() {
     //given
-    when(profileRepository.findById(1L)).thenReturn(Optional.empty());
+    when(profileRepository.findById(1)).thenReturn(Optional.empty());
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
 
@@ -69,7 +69,7 @@ class ProfileServiceImplTest {
   @Test
   void getProfileById_shouldReturnProfileWithSpecifiedId() {
     //given
-    var id = 1L;
+    var id = 1;
     var value = "[{\"key\": \"value\"}]";
     var profile = new Profile();
     profile.setId(id);
@@ -87,7 +87,7 @@ class ProfileServiceImplTest {
   @Test
   void getProfileById_shouldThrowNotFoundException_ifNoProfileExistsWithSpecifiedId() {
     //given
-    var id = 3L;
+    var id = 3;
     when(profileRepository.findById(id)).thenReturn(Optional.empty());
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());

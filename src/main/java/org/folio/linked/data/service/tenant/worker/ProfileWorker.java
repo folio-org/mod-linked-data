@@ -52,5 +52,5 @@ public class ProfileWorker implements TenantServiceWorker {
     }
   }
 
-  record Profile(Long id, String name, String resourceType, JsonNode value) {}
+  record Profile(Integer id, String name, String resourceType, JsonNode value) {}
 }
