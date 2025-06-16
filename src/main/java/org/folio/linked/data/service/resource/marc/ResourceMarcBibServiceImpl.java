@@ -29,14 +29,12 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
-import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
-import org.folio.linked.data.repo.RawMarcRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
@@ -71,7 +69,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
-  private final RawMarcRepository rawMarcRepository;
+  private final RawMarcService rawMarcService;
 
   @Override
   @Transactional(readOnly = true)
@@ -220,8 +218,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private void saveUnmappedMarc(org.folio.ld.dictionary.model.Resource modelResource, Resource saved) {
     ofNullable(modelResource.getUnmappedMarc())
       .map(org.folio.ld.dictionary.model.RawMarc::getContent)
-      .map(unmappedMarc -> new RawMarc(saved).setContent(unmappedMarc))
-      .ifPresent(rawMarcRepository::save);
+      .ifPresent(unmappedMarc -> rawMarcService.saveRawMarc(saved, unmappedMarc));
   }
 
   private Resource saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {

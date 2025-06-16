@@ -2,7 +2,7 @@ package org.folio.linked.data.mapper;
 
 import org.folio.ld.dictionary.model.RawMarc;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.linked.data.repo.RawMarcRepository;
+import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 @Primary
 public class Ld2MarcMapperDecorator implements Ld2MarcMapper {
   private final Ld2MarcMapper delegate;
-  private final RawMarcRepository rawMarcRepository;
+  private final RawMarcService rawMarcService;
 
   public Ld2MarcMapperDecorator(@Qualifier("ld2MarcMapperImpl") Ld2MarcMapper delegate,
-                                RawMarcRepository rawMarcRepository) {
+                                RawMarcService rawMarcService) {
     this.delegate = delegate;
-    this.rawMarcRepository = rawMarcRepository;
+    this.rawMarcService = rawMarcService;
   }
 
   @Override
@@ -34,8 +34,7 @@ public class Ld2MarcMapperDecorator implements Ld2MarcMapper {
   }
 
   private void enrichWithRawMarc(Resource resource) {
-    rawMarcRepository.findById(resource.getId())
-      .map(org.folio.linked.data.model.entity.RawMarc::getContent)
+    rawMarcService.getRawMarc(resource.getId())
       .map(rawMarcStr -> new RawMarc().setContent(rawMarcStr))
       .ifPresent(resource::setUnmappedMarc);
   }

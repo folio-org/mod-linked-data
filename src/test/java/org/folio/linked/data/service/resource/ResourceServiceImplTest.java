@@ -31,7 +31,6 @@ import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
-import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -39,10 +38,10 @@ import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
-import org.folio.linked.data.repo.RawMarcRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
@@ -80,7 +79,7 @@ class ResourceServiceImplTest {
   @Mock
   private ResourceCopyService resourceCopyService;
   @Mock
-  private RawMarcRepository rawMarcRepository;
+  private RawMarcService rawMarcService;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
@@ -279,7 +278,7 @@ class ResourceServiceImplTest {
     );
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
-    when(rawMarcRepository.findById(oldId)).thenReturn(Optional.of(new RawMarc(oldInstance).setContent(unmappedMarc)));
+    when(rawMarcService.getRawMarc(oldInstance)).thenReturn(Optional.of(unmappedMarc));
 
     // when
     var result = resourceService.updateResource(oldId, instanceDto);
@@ -290,13 +289,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
-    var unmappedMarcCaptor = ArgumentCaptor.forClass(org.folio.linked.data.model.entity.RawMarc.class);
-    verify(rawMarcRepository).save(unmappedMarcCaptor.capture());
-    assertThat(unmappedMarcCaptor.getValue())
-      .satisfies(rawMarc -> {
-        assertThat(rawMarc.getId()).isEqualTo(newId);
-        assertThat(rawMarc.getContent()).isEqualTo(unmappedMarc);
-      });
+    verify(rawMarcService).saveRawMarc(persisted, unmappedMarc);
   }
 
   @Test
