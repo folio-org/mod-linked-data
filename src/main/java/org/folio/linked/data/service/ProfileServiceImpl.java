@@ -22,7 +22,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Log4j2
 public class ProfileServiceImpl implements ProfileService {
-  private static final Integer MONOGRAPH_PROFILE_ID = 1;
+
+  private static final Integer ID = 1;
   private final ProfileRepository profileRepository;
   private final PreferredProfileRepository preferredProfileRepository;
   private final ResourceTypeRepository typeRepository;
@@ -42,7 +43,7 @@ public class ProfileServiceImpl implements ProfileService {
 
   @Override
   public String getProfile() {
-    return getProfileById(MONOGRAPH_PROFILE_ID);
+    return getProfileById(ID);
   }
 
   @Override
@@ -69,8 +70,6 @@ public class ProfileServiceImpl implements ProfileService {
     var preferredProfile = new PreferredProfile()
       .setId(new PreferredProfilePk(userId, resourceType.getHash()))
       .setProfile(profile);
-    log.info("Setting preferred profile for user {}: profileId={}, resourceTypeUri={}", userId, profileId,
-      resourceTypeUri);
     preferredProfileRepository.save(preferredProfile);
   }
 
