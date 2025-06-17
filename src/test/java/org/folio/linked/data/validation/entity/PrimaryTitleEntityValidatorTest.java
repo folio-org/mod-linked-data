@@ -2,12 +2,13 @@ package org.folio.linked.data.validation.entity;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.SERIES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.createPrimaryTitle;
 
 import java.util.HashSet;
-import org.folio.linked.data.model.entity.PredicateEntity;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
@@ -58,10 +59,38 @@ class PrimaryTitleEntityValidatorTest {
   }
 
   @Test
+  void shouldReturnTrue_ifGivenResourceIsInstanceAndSeriesWithEmptyOutgoingEdges() {
+    // given
+    var resource = new Resource()
+      .addTypes(INSTANCE, SERIES)
+      .setOutgoingEdges(new HashSet<>());
+
+    // when
+    boolean result = validator.isValid(resource, null);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void shouldReturnTrue_ifGivenResourceIsWorkAndSeriesWithEmptyOutgoingEdges() {
+    // given
+    var resource = new Resource()
+      .addTypes(WORK, SERIES)
+      .setOutgoingEdges(new HashSet<>());
+
+    // when
+    boolean result = validator.isValid(resource, null);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
   void shouldReturnFalse_ifGivenResourceIsInstanceWithEdgesContainsNoPrimaryTitle() {
     // given
     var edges = new HashSet<ResourceEdge>();
-    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), new Resource(), new PredicateEntity())));
+    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), new Resource(), PredicateDictionary.TITLE)));
     var resource = new Resource()
       .addTypes(INSTANCE)
       .setOutgoingEdges(edges);
@@ -78,7 +107,7 @@ class PrimaryTitleEntityValidatorTest {
     // given
     var edges = new HashSet<ResourceEdge>();
     var title = new Resource().addTypes(TITLE);
-    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), title, new PredicateEntity())));
+    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), title, PredicateDictionary.TITLE)));
     var resource = new Resource()
       .addTypes(INSTANCE)
       .setOutgoingEdges(edges);
@@ -95,7 +124,7 @@ class PrimaryTitleEntityValidatorTest {
     // given
     var edges = new HashSet<ResourceEdge>();
     var title = createPrimaryTitle(1L);
-    edges.add(new ResourceEdge(new Resource(), title, new PredicateEntity()));
+    edges.add(new ResourceEdge(new Resource(), title, PredicateDictionary.TITLE));
     var resource = new Resource()
       .addTypes(INSTANCE)
       .setOutgoingEdges(edges);
@@ -138,7 +167,7 @@ class PrimaryTitleEntityValidatorTest {
   void shouldReturnFalse_ifGivenResourceIsWorkWithEdgesContainsNoPrimaryTitle() {
     // given
     var edges = new HashSet<ResourceEdge>();
-    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), new Resource(), new PredicateEntity())));
+    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), new Resource(), PredicateDictionary.TITLE)));
     var resource = new Resource()
       .addTypes(WORK)
       .setOutgoingEdges(edges);
@@ -155,7 +184,7 @@ class PrimaryTitleEntityValidatorTest {
     // given
     var edges = new HashSet<ResourceEdge>();
     var title = new Resource().addTypes(TITLE);
-    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), title, new PredicateEntity())));
+    edges.add(new ResourceEdge(new ResourceEdge(new Resource(), title, PredicateDictionary.TITLE)));
     var resource = new Resource()
       .addTypes(WORK)
       .setOutgoingEdges(edges);
@@ -172,7 +201,7 @@ class PrimaryTitleEntityValidatorTest {
     // given
     var edges = new HashSet<ResourceEdge>();
     var title = createPrimaryTitle(1L);
-    edges.add(new ResourceEdge(new Resource(), title, new PredicateEntity()));
+    edges.add(new ResourceEdge(new Resource(), title, PredicateDictionary.TITLE));
     var resource = new Resource()
       .addTypes(WORK)
       .setOutgoingEdges(edges);
