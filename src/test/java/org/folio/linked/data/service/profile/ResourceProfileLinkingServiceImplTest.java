@@ -42,7 +42,7 @@ class ResourceProfileLinkingServiceImplTest {
   private ResourceProfileLinkingServiceImpl resourceProfileLinkingService;
 
   @Test
-  void testLinkResourceToProfile() {
+  void shouldLinkResourceToProfile() {
     // given
     var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri())));
     var profileId = 2;
@@ -60,7 +60,7 @@ class ResourceProfileLinkingServiceImplTest {
   }
 
   @Test
-  void testLinkResourceToProfile_whenResourceIsNotInstance() {
+  void shouldLinkResourceToProfile_whenResourceIsNotInstance() {
     // given
     var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(WORK.getUri())));
 
@@ -72,7 +72,7 @@ class ResourceProfileLinkingServiceImplTest {
   }
 
   @Test
-  void resolveProfileId() {
+  void shouldResolveProfileId() {
     // given
     var profileId = 2;
     var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri())));
@@ -87,7 +87,7 @@ class ResourceProfileLinkingServiceImplTest {
   }
 
   @Test
-  void resolveProfile_shouldReturnUsersPreferredProfileId() {
+  void shouldResolveProfileId_returnUserPreferredProfile() {
     // given
     var profileId = 2;
     var userId = randomUUID();
@@ -105,7 +105,7 @@ class ResourceProfileLinkingServiceImplTest {
   }
 
   @Test
-  void testResolveProfile_shouldReturnMonographProfileIdId() {
+  void shouldResolveProfileId_returnMonographProfileId() {
     // given
     var userId = randomUUID();
     var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri()))).setId(1L);
