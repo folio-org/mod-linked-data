@@ -23,7 +23,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.ResourceProfileLinkingService;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
@@ -68,7 +68,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto getResourceById(Long id) {
     var resource = getResource(id);
     var dto = resourceDtoMapper.toDto(resource);
-    resourceProfileService.getLinkedProfile(resource)
+    resourceProfileService.resolveProfileId(resource)
       .ifPresent(dto::setProfileId);
     return dto;
   }

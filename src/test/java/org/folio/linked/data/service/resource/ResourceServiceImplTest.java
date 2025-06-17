@@ -39,7 +39,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.ResourceProfileLinkingService;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
@@ -180,7 +180,7 @@ class ResourceServiceImplTest {
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
     var expectedResponse = random(ResourceResponseDto.class);
     when(resourceDtoMapper.toDto(existedResource)).thenReturn(expectedResponse);
-    when(resourceProfileLinkingService.getLinkedProfile(existedResource)).thenReturn(Optional.of(profileId));
+    when(resourceProfileLinkingService.resolveProfileId(existedResource)).thenReturn(Optional.of(profileId));
 
     // when
     var result = resourceService.getResourceById(id);

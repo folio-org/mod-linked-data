@@ -1,4 +1,4 @@
-package org.folio.linked.data.service;
+package org.folio.linked.data.service.profile;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 
@@ -35,7 +35,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   }
 
   @Override
-  public Optional<Integer> getLinkedProfile(Resource resource) {
+  public Optional<Integer> resolveProfileId(Resource resource) {
     if (resource.isNotOfType(INSTANCE)) {
       return Optional.empty();
     }
