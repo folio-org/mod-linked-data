@@ -125,7 +125,9 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceIsWork() {
     // given
+    var profileId = 12;
     var request = new ResourceRequestDto();
+    request.setProfileId(profileId);
     var work = new Resource().addTypes(WORK).setId(444L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
@@ -141,6 +143,7 @@ class ResourceServiceImplTest {
     var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
     assertThat(work.getId()).isEqualTo(resourceCreateEventCaptor.getValue().resource().getId());
+    verify(resourceProfileLinkingService).linkResourceToProfile(work, profileId);
   }
 
   @Test
@@ -168,17 +171,20 @@ class ResourceServiceImplTest {
   @Test
   void getResourceById_shouldReturnExistedEntity() {
     // given
+    var profileId = 99;
     var id = randomLong();
     var existedResource = getSampleInstanceResource();
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
     var expectedResponse = random(ResourceResponseDto.class);
     when(resourceDtoMapper.toDto(existedResource)).thenReturn(expectedResponse);
+    when(resourceProfileLinkingService.getLinkedProfile(existedResource)).thenReturn(Optional.of(profileId));
 
     // when
     var result = resourceService.getResourceById(id);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
+    assertThat(result.getProfileId()).isEqualTo(profileId);
   }
 
   @Test
@@ -263,6 +269,7 @@ class ResourceServiceImplTest {
   @Test
   void update_shouldSaveUpdatedResourceAndSendReplaceEvent_forResourceWithDifferentId() {
     // given
+    var profileId = 125;
     var oldId = randomLong();
     var newId = randomLong();
     var oldInstance = new Resource().setId(oldId).addTypes(INSTANCE).setLabel("oldInstance");
@@ -270,6 +277,7 @@ class ResourceServiceImplTest {
     var mapped = new Resource().setId(newId).setLabel("mapped");
     var instanceDto =
       new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
+    instanceDto.setProfileId(profileId);
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
     var persisted = new Resource().setId(newId).setLabel("saved");
     var expectedDto = new ResourceResponseDto().resource(
@@ -287,6 +295,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
+    verify(resourceProfileLinkingService).linkResourceToProfile(persisted, profileId);
   }
 
   @Test

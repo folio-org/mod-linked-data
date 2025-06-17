@@ -18,7 +18,6 @@ public class ResourceProfile {
 
   @Id
   private Long resourceHash;
-
   private Integer profileId;
 
   public ResourceProfile(Long resourceHash, Integer profileId) {
