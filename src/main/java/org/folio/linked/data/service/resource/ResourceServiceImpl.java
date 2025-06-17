@@ -23,7 +23,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.ProfileService;
+import org.folio.linked.data.service.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
@@ -50,8 +50,8 @@ public class ResourceServiceImpl implements ResourceService {
   private final ApplicationEventPublisher applicationEventPublisher;
   private final FolioExecutionContext folioExecutionContext;
   private final ResourceCopyService resourceCopyService;
-  private final ProfileService profileService;
   private final RawMarcService rawMarcService;
+  private final ResourceProfileLinkingService resourceProfileService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -68,7 +68,7 @@ public class ResourceServiceImpl implements ResourceService {
   public ResourceResponseDto getResourceById(Long id) {
     var resource = getResource(id);
     var dto = resourceDtoMapper.toDto(resource);
-    profileService.getLinkedProfile(resource)
+    resourceProfileService.getLinkedProfile(resource)
       .ifPresent(dto::setProfileId);
     return dto;
   }
@@ -141,7 +141,7 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource createResourceAndPublishEvents(Resource resourceToSave, Integer profileId) {
     metadataService.ensure(resourceToSave);
     var persisted = resourceGraphService.saveMergingGraph(resourceToSave);
-    profileService.linkResourceToProfile(persisted, profileId);
+    resourceProfileService.linkResourceToProfile(persisted, profileId);
     applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
     return persisted;
   }
@@ -149,14 +149,12 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource updateResourceAndPublishEvents(Resource resourceToSave, Resource old, Integer profileId) {
     resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
     metadataService.ensure(resourceToSave, old.getFolioMetadata());
-    resourceToSave.setCreatedDate(old.getCreatedDate())
-      .setVersion(old.getVersion() + 1)
-      .setCreatedBy(old.getCreatedBy())
-      .setUpdatedBy(folioExecutionContext.getUserId());
-    var unmappedMarc = rawMarcService.getRawMarc(old).orElse(null);
+    resourceToSave.setCreatedDate(old.getCreatedDate());
+    resourceToSave.setVersion(old.getVersion() + 1);
+    resourceToSave.setCreatedBy(old.getCreatedBy());
+    resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
     var newResource = resourceGraphService.saveMergingGraph(resourceToSave);
-    rawMarcService.saveRawMarc(newResource, unmappedMarc);
-    profileService.linkResourceToProfile(newResource, profileId);
+    resourceProfileService.linkResourceToProfile(newResource, profileId);
     if (Objects.equals(old.getId(), newResource.getId())) {
       applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
     } else {
