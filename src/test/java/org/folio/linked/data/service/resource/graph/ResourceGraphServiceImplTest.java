@@ -11,7 +11,7 @@ import java.util.Optional;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.mapper.dto.ResourceGraphDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -34,7 +34,7 @@ class ResourceGraphServiceImplTest {
   @Mock
   private ResourceEdgeRepository edgeRepo;
   @Mock
-  private ResourceDtoMapper resourceDtoMapper;
+  private ResourceGraphDtoMapper resourceDtoMapper;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
 

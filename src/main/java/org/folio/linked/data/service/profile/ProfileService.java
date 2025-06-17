@@ -1,14 +1,12 @@
-package org.folio.linked.data.service;
+package org.folio.linked.data.service.profile;
 
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
-import org.folio.linked.data.model.entity.Profile;
 
 public interface ProfileService {
-
-  Profile saveProfile(Integer id, String name, String resourceTypeUri, String value);
+  void saveAllProfiles();
 
   String getProfile();
 

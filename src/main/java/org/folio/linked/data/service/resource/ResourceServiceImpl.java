@@ -4,7 +4,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
@@ -50,6 +50,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final FolioExecutionContext folioExecutionContext;
   private final ResourceCopyService resourceCopyService;
   private final RawMarcService rawMarcService;
+  private final ResourceProfileLinkingService resourceProfileService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -57,9 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     rejectDuplication(mapped);
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
-    metadataService.ensure(mapped);
-    var persisted = resourceGraphService.saveMergingGraph(mapped);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    var persisted = createResourceAndPublishEvents(mapped, getProfileId(resourceDto));
     return resourceDtoMapper.toDto(persisted);
   }
 
@@ -71,6 +70,7 @@ public class ResourceServiceImpl implements ResourceService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public ResourceIdDto getResourceIdByInventoryId(String inventoryId) {
     return folioMetadataRepo.findIdByInventoryId(inventoryId)
       .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
@@ -86,12 +86,7 @@ public class ResourceServiceImpl implements ResourceService {
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
-    var newResource = saveNewResource(mapped, oldResource);
-    if (Objects.equals(oldResource.getId(), newResource.getId())) {
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
-    } else {
-      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(oldResource, newResource.getId()));
-    }
+    var newResource = updateResourceAndPublishEvents(mapped, oldResource, getProfileId(resourceDto));
     return resourceDtoMapper.toDto(newResource);
   }
 
@@ -140,7 +135,15 @@ public class ResourceServiceImpl implements ResourceService {
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
   }
 
-  private Resource saveNewResource(Resource resourceToSave, Resource old) {
+  private Resource createResourceAndPublishEvents(Resource resourceToSave, Integer profileId) {
+    metadataService.ensure(resourceToSave);
+    var persisted = resourceGraphService.saveMergingGraph(resourceToSave);
+    resourceProfileService.linkResourceToProfile(persisted, profileId);
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    return persisted;
+  }
+
+  private Resource updateResourceAndPublishEvents(Resource resourceToSave, Resource old, Integer profileId) {
     resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
     metadataService.ensure(resourceToSave, old.getFolioMetadata());
     resourceToSave.setCreatedDate(old.getCreatedDate())
@@ -150,20 +153,28 @@ public class ResourceServiceImpl implements ResourceService {
     var unmappedMarc = rawMarcService.getRawMarc(old).orElse(null);
     var saved = resourceGraphService.saveMergingGraph(resourceToSave);
     rawMarcService.saveRawMarc(saved, unmappedMarc);
+    resourceProfileService.linkResourceToProfile(saved, profileId);
+    if (Objects.equals(old.getId(), saved.getId())) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(saved));
+    } else {
+      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(old, saved.getId()));
+    }
     return saved;
   }
 
-  private String toLogString(ResourceRequestDto resourceDto) {
-    String type = "-";
-    List<String> titles = List.of();
-    if (resourceDto.getResource() instanceof InstanceField instanceField) {
-      type = "Instance";
-      titles = getPrimaryMainTitles(instanceField.getInstance().getTitle());
-    } else if (resourceDto.getResource() instanceof WorkField workField) {
-      type = "Work";
-      titles = getPrimaryMainTitles(workField.getWork().getTitle());
-    }
-    return "Type: %s, Title: %s".formatted(type, titles);
+  private String toLogString(ResourceRequestDto requestDto) {
+    return switch (requestDto.getResource()) {
+      case InstanceField instance -> "Instance, Title: " + getPrimaryMainTitles(instance.getInstance().getTitle());
+      case WorkField work -> "Work, Title: " + getPrimaryMainTitles(work.getWork().getTitle());
+      default -> throw new IllegalArgumentException("Unexpected dto to get logString: " + requestDto);
+    };
   }
 
+  private Integer getProfileId(ResourceRequestDto requestDto) {
+    return switch (requestDto.getResource()) {
+      case InstanceField instance -> instance.getInstance().getProfileId();
+      case WorkField work -> work.getWork().getProfileId();
+      default -> throw new IllegalArgumentException("Unexpected dto to get profileId: " + requestDto);
+    };
+  }
 }

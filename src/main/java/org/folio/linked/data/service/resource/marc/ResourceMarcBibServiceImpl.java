@@ -29,6 +29,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
@@ -62,6 +63,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final MarcBib2ldMapper marcBib2ldMapper;
+  private final ResourceMarcViewDtoMapper resourceMarcViewDtoMapper;
   private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceEdgeService resourceEdgeService;
   private final ResourceModelMapper resourceModelMapper;
@@ -82,7 +84,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     validateMarcViewSupportedType(resource);
     var resourceModel = resourceModelMapper.toModel(resource);
     var marc = ld2MarcMapper.toMarcJson(resourceModel, UnmappedMarcHandling.APPEND);
-    return resourceDtoMapper.toMarcViewDto(resource, marc);
+    return resourceMarcViewDtoMapper.toMarcViewDto(resource, marc);
   }
 
   @Override
