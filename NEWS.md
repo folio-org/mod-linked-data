@@ -1,12 +1,6 @@
 ## 2.0.0 (IN PROGRESS)
 - Created new API GET /profile/{id} [MODLD-713](https://folio-org.atlassian.net/browse/MODLD-713)
 - Created new API POST /import/file [MODLD-729](https://folio-org.atlassian.net/browse/MODLD-729), [MODLD-740](https://folio-org.atlassian.net/browse/MODLD-740)
-<<<<<<< pjacob/MODLD-754
-- Insert simplified profile to the DB [MODLD-754](https://folio-org.atlassian.net/browse/MODLD-754)
-
-### Breaking changes
-=======
->>>>>>> master
 - Updated API to support Extent [MODLD-390](https://folio-org.atlassian.net/browse/MODLD-390)
 - Send Classification Number and Additional Classification Number to mod-search ([MODLD-677](https://folio-org.atlassian.net/browse/MODLD-677))
 - Update API to support Award, Admin history, Biog data, Physical & Accmat Notes ([MODLD-520](https://folio-org.atlassian.net/browse/MODLD-520))
@@ -17,6 +11,7 @@
 - New API to return profiles for a given resource type [MODLD-744](https://folio-org.atlassian.net/browse/MODLD-744)
 - New API to assign a preferred profile to a user [MODLD-745](https://folio-org.atlassian.net/browse/MODLD-745)
 - Make tests run fast - Reuse JVM when running Integration tests [MODLD-748](https://folio-org.atlassian.net/browse/MODLD-748)
+- Insert simplified profile to the DB [MODLD-754](https://folio-org.atlassian.net/browse/MODLD-754)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
