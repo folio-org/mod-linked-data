@@ -11,6 +11,7 @@
 - New API to return profiles for a given resource type [MODLD-744](https://folio-org.atlassian.net/browse/MODLD-744)
 - New API to assign a preferred profile to a user [MODLD-745](https://folio-org.atlassian.net/browse/MODLD-745)
 - Make tests run fast - Reuse JVM when running Integration tests [MODLD-748](https://folio-org.atlassian.net/browse/MODLD-748)
+- Insert simplified profile to the DB [MODLD-754](https://folio-org.atlassian.net/browse/MODLD-754)
 - Avoid unwanted join of raw_marcs table [MODLD-763](https://folio-org.atlassian.net/browse/MODLD-763)
 
 ## 1.0.4 (04-24-2025)
