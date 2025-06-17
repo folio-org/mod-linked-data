@@ -41,6 +41,7 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
@@ -77,6 +78,8 @@ class ResourceServiceImplTest {
   private FolioExecutionContext folioExecutionContext;
   @Mock
   private ResourceCopyService resourceCopyService;
+  @Mock
+  private RawMarcService rawMarcService;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
@@ -262,6 +265,7 @@ class ResourceServiceImplTest {
     // given
     var oldId = randomLong();
     var newId = randomLong();
+    String unmappedMarc = "{}";
     var oldInstance = new Resource().setId(oldId).addTypes(INSTANCE).setLabel("oldInstance");
     when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
     var mapped = new Resource().setId(newId).setLabel("mapped");
@@ -274,6 +278,7 @@ class ResourceServiceImplTest {
     );
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
+    when(rawMarcService.getRawMarc(oldInstance)).thenReturn(Optional.of(unmappedMarc));
 
     // when
     var result = resourceService.updateResource(oldId, instanceDto);
@@ -284,6 +289,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
+    verify(rawMarcService).saveRawMarc(persisted, unmappedMarc);
   }
 
   @Test

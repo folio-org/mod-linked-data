@@ -102,10 +102,6 @@ public class Resource implements Persistable<Long> {
   @PrimaryKeyJoinColumn
   private FolioMetadata folioMetadata;
 
-  @OneToOne(cascade = ALL, mappedBy = "resource", orphanRemoval = true)
-  @PrimaryKeyJoinColumn
-  private RawMarc unmappedMarc;
-
   @Column(name = "created_date", updatable = false, nullable = false)
   private Timestamp createdDate;
 
@@ -133,7 +129,6 @@ public class Resource implements Persistable<Long> {
     this.label = that.label;
     this.doc = (JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
     this.folioMetadata = that.folioMetadata;
-    this.unmappedMarc = that.unmappedMarc;
     this.indexDate = that.indexDate;
     this.types = new LinkedHashSet<>(that.getTypes());
     this.createdDate = that.createdDate;

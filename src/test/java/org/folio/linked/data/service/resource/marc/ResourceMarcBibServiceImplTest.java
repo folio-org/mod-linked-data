@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
+import org.folio.ld.dictionary.model.RawMarc;
 import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.linked.data.client.SrsClient;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
@@ -92,6 +93,8 @@ class ResourceMarcBibServiceImplTest {
   private RequestProcessingExceptionBuilder exceptionBuilder;
   @Mock
   private ResourceEdgeService resourceEdgeService;
+  @Mock
+  private RawMarcService rawMarcService;
 
   @Test
   void getResourceMarcView_shouldReturnExistedEntity() {
@@ -243,6 +246,7 @@ class ResourceMarcBibServiceImplTest {
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord('a', 'm');
     var marcJson = "";
+    var unmappedMarc = "{}";
     var resourceId = 1L;
     var srsId = UUID.randomUUID().toString();
     var resourceEntity = new Resource().setId(resourceId);
@@ -250,7 +254,8 @@ class ResourceMarcBibServiceImplTest {
       .setSrsId(srsId));
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(resourceId)
-      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId))
+      .setUnmappedMarc(new RawMarc().setContent(unmappedMarc));
     var resourceEventCaptor = ArgumentCaptor.forClass(ResourceEvent.class);
     var resourceModelCaptor = ArgumentCaptor.forClass(org.folio.ld.dictionary.model.Resource.class);
 
@@ -267,6 +272,7 @@ class ResourceMarcBibServiceImplTest {
     var result = resourceMarcService.importMarcRecord(inventoryId);
 
     //then
+    verify(rawMarcService).saveRawMarc(resourceEntity, unmappedMarc);
     verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
     assertThat(resourceEventCaptor.getValue())
       .satisfies(event -> {

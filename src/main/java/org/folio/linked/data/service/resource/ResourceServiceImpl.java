@@ -25,6 +25,7 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.linked.data.util.ResourceUtils;
 import org.folio.spring.FolioExecutionContext;
@@ -48,6 +49,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ApplicationEventPublisher applicationEventPublisher;
   private final FolioExecutionContext folioExecutionContext;
   private final ResourceCopyService resourceCopyService;
+  private final RawMarcService rawMarcService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -141,11 +143,14 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource saveNewResource(Resource resourceToSave, Resource old) {
     resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
     metadataService.ensure(resourceToSave, old.getFolioMetadata());
-    resourceToSave.setCreatedDate(old.getCreatedDate());
-    resourceToSave.setVersion(old.getVersion() + 1);
-    resourceToSave.setCreatedBy(old.getCreatedBy());
-    resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
-    return resourceGraphService.saveMergingGraph(resourceToSave);
+    resourceToSave.setCreatedDate(old.getCreatedDate())
+      .setVersion(old.getVersion() + 1)
+      .setCreatedBy(old.getCreatedBy())
+      .setUpdatedBy(folioExecutionContext.getUserId());
+    var unmappedMarc = rawMarcService.getRawMarc(old).orElse(null);
+    var saved = resourceGraphService.saveMergingGraph(resourceToSave);
+    rawMarcService.saveRawMarc(saved, unmappedMarc);
+    return saved;
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {
