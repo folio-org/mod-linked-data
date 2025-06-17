@@ -1,4 +1,4 @@
-package org.folio.linked.data.service;
+package org.folio.linked.data.service.profile;
 
 import java.util.Optional;
 import org.folio.linked.data.model.entity.Resource;

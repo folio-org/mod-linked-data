@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.PreferredProfileRequest;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.rest.resource.ProfileApi;
-import org.folio.linked.data.service.ProfileService;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
