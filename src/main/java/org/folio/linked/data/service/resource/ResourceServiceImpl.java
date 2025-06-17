@@ -23,6 +23,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.ProfileService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -48,6 +49,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ApplicationEventPublisher applicationEventPublisher;
   private final FolioExecutionContext folioExecutionContext;
   private final ResourceCopyService resourceCopyService;
+  private final ProfileService profileService;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -55,9 +57,7 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     rejectDuplication(mapped);
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
-    metadataService.ensure(mapped);
-    var persisted = resourceGraphService.saveMergingGraph(mapped);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    var persisted = createResourceAndPublishEvents(mapped, resourceDto.getProfileId());
     return resourceDtoMapper.toDto(persisted);
   }
 
@@ -65,7 +65,10 @@ public class ResourceServiceImpl implements ResourceService {
   @Transactional(readOnly = true)
   public ResourceResponseDto getResourceById(Long id) {
     var resource = getResource(id);
-    return resourceDtoMapper.toDto(resource);
+    var dto = resourceDtoMapper.toDto(resource);
+    profileService.getLinkedProfile(resource)
+      .ifPresent(dto::setProfileId);
+    return dto;
   }
 
   @Override
@@ -84,12 +87,7 @@ public class ResourceServiceImpl implements ResourceService {
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
-    var newResource = saveNewResource(mapped, oldResource);
-    if (Objects.equals(oldResource.getId(), newResource.getId())) {
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
-    } else {
-      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(oldResource, newResource.getId()));
-    }
+    var newResource = updateResourceAndPublishEvents(mapped, oldResource, resourceDto.getProfileId());
     return resourceDtoMapper.toDto(newResource);
   }
 
@@ -138,14 +136,29 @@ public class ResourceServiceImpl implements ResourceService {
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
   }
 
-  private Resource saveNewResource(Resource resourceToSave, Resource old) {
+  private Resource createResourceAndPublishEvents(Resource resourceToSave, Integer profileId) {
+    metadataService.ensure(resourceToSave);
+    var persisted = resourceGraphService.saveMergingGraph(resourceToSave);
+    profileService.linkResourceToProfile(persisted, profileId);
+    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
+    return persisted;
+  }
+
+  private Resource updateResourceAndPublishEvents(Resource resourceToSave, Resource old, Integer profileId) {
     resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
     metadataService.ensure(resourceToSave, old.getFolioMetadata());
     resourceToSave.setCreatedDate(old.getCreatedDate());
     resourceToSave.setVersion(old.getVersion() + 1);
     resourceToSave.setCreatedBy(old.getCreatedBy());
     resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
-    return resourceGraphService.saveMergingGraph(resourceToSave);
+    var newResource = resourceGraphService.saveMergingGraph(resourceToSave);
+    profileService.linkResourceToProfile(newResource, profileId);
+    if (Objects.equals(old.getId(), newResource.getId())) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
+    } else {
+      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(old, newResource.getId()));
+    }
+    return newResource;
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {

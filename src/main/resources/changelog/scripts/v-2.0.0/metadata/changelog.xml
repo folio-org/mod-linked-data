@@ -5,4 +5,5 @@
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
   <include file="tables/upgrade_profiles_table.sql" relativeToChangelogFile="true"/>
   <include file="tables/user_preferred_profile.sql" relativeToChangelogFile="true"/>
+  <include file="tables/create-resource_profile-table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
