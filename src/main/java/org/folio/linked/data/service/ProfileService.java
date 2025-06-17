@@ -1,12 +1,10 @@
 package org.folio.linked.data.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.model.entity.Profile;
-import org.folio.linked.data.model.entity.Resource;
 
 public interface ProfileService {
 
@@ -21,8 +19,4 @@ public interface ProfileService {
   void setPreferredProfile(UUID userId, Integer profileId, String resourceTypeUri);
 
   List<ProfileMetadata> getPreferredProfiles(UUID userId, @Nullable String resourceTypeUri);
-
-  void linkResourceToProfile(Resource resource, Integer profileId);
-
-  Optional<Integer> getLinkedProfile(Resource resource);
 }
