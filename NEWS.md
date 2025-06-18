@@ -13,6 +13,7 @@
 - Make tests run fast - Reuse JVM when running Integration tests [MODLD-748](https://folio-org.atlassian.net/browse/MODLD-748)
 - Insert simplified profile to the DB [MODLD-754](https://folio-org.atlassian.net/browse/MODLD-754)
 - Avoid unwanted join of raw_marcs table [MODLD-763](https://folio-org.atlassian.net/browse/MODLD-763)
+- Update Monograph Work profile to support Subject of Work [MODLD-764](https://folio-org.atlassian.net/browse/MODLD-764)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
