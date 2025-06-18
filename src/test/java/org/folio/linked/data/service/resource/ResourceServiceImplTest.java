@@ -275,6 +275,7 @@ class ResourceServiceImplTest {
     var profileId = 125;
     var oldId = randomLong();
     var newId = randomLong();
+    final var unmappedMarc = "{}";
     var oldInstance = new Resource().setId(oldId).addTypes(INSTANCE).setLabel("oldInstance");
     when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
     var mapped = new Resource().setId(newId).setLabel("mapped");
@@ -288,6 +289,7 @@ class ResourceServiceImplTest {
     );
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
+    when(rawMarcService.getRawMarc(oldInstance)).thenReturn(Optional.of(unmappedMarc));
 
     // when
     var result = resourceService.updateResource(oldId, instanceDto);
@@ -298,6 +300,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
+    verify(rawMarcService).saveRawMarc(persisted, unmappedMarc);
     verify(resourceProfileLinkingService).linkResourceToProfile(persisted, profileId);
   }
 

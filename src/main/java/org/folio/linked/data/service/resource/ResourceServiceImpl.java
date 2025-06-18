@@ -149,18 +149,20 @@ public class ResourceServiceImpl implements ResourceService {
   private Resource updateResourceAndPublishEvents(Resource resourceToSave, Resource old, Integer profileId) {
     resourceCopyService.copyEdgesAndProperties(old, resourceToSave);
     metadataService.ensure(resourceToSave, old.getFolioMetadata());
-    resourceToSave.setCreatedDate(old.getCreatedDate());
-    resourceToSave.setVersion(old.getVersion() + 1);
-    resourceToSave.setCreatedBy(old.getCreatedBy());
-    resourceToSave.setUpdatedBy(folioExecutionContext.getUserId());
-    var newResource = resourceGraphService.saveMergingGraph(resourceToSave);
-    resourceProfileService.linkResourceToProfile(newResource, profileId);
-    if (Objects.equals(old.getId(), newResource.getId())) {
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
+    resourceToSave.setCreatedDate(old.getCreatedDate())
+      .setVersion(old.getVersion() + 1)
+      .setCreatedBy(old.getCreatedBy())
+      .setUpdatedBy(folioExecutionContext.getUserId());
+    var unmappedMarc = rawMarcService.getRawMarc(old).orElse(null);
+    var saved = resourceGraphService.saveMergingGraph(resourceToSave);
+    rawMarcService.saveRawMarc(saved, unmappedMarc);
+    resourceProfileService.linkResourceToProfile(saved, profileId);
+    if (Objects.equals(old.getId(), saved.getId())) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(saved));
     } else {
-      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(old, newResource.getId()));
+      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(old, saved.getId()));
     }
-    return newResource;
+    return saved;
   }
 
   private String toLogString(ResourceRequestDto resourceDto) {
