@@ -165,7 +165,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
-    assertTrue(resourceMarcService.isSupportedByInventoryId(inventoryId));
+    assertThat(resourceMarcService.isSupportedByInventoryId(inventoryId)).isTrue();
   }
 
   @ParameterizedTest
@@ -186,7 +186,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
-    assertFalse(resourceMarcService.isSupportedByInventoryId(inventoryId));
+    assertThat(resourceMarcService.isSupportedByInventoryId(inventoryId)).isFalse();
   }
 
   @Test
@@ -223,7 +223,7 @@ class ResourceMarcBibServiceImplTest {
     var result = resourceMarcService.getResourcePreviewByInventoryId(inventoryId);
 
     //then
-    assertEquals(resourceDto, result);
+    assertThat(result).isEqualTo(resourceDto);
   }
 
   @Test
