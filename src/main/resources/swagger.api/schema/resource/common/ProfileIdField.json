@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Common fields on top of each resource",
+  "type": "object",
+  "properties": {
+    "profileId": {
+      "type": "integer",
+      "description": "ID of the profile"
+    }
+  }
+}

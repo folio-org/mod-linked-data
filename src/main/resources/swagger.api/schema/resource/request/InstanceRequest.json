@@ -3,6 +3,9 @@
   "description": "Instance request DTO",
   "allOf": [
     {
+      "$ref": "../common/ProfileIdField.json"
+    },
+    {
       "$ref": "title/TitleFieldRequest.json"
     },
     {
@@ -248,5 +251,6 @@
         }
       }
     }
-  ]
+  ],
+  "x-implements": "org.folio.linked.data.model.dto.HasProfile"
 }
