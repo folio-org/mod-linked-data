@@ -56,3 +56,7 @@ begin
   where
     s.depth <= $2;
 end $$ language plpgsql;
+
+comment on function resource_subgraph(int8, int) is 'Recursively export the graph starting from id, to the depth max_depth, with no cycles or repeats';
+
+--rollback drop function if exists resource_subgraph(int8, int);
