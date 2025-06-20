@@ -1,14 +1,12 @@
 package org.folio.linked.data.mapper.dto;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.ToLongFunction;
-import java.util.stream.Collectors;
 import org.folio.linked.data.domain.dto.ResourceEdgeDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.model.entity.Resource;
@@ -17,7 +15,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class, ResourceTypeEntity.class})
+@Mapper(componentModel = SPRING)
 public abstract class ResourceGraphDtoMapper {
 
   private static final int EDGES_LIMIT = 1000;
@@ -40,15 +38,12 @@ public abstract class ResourceGraphDtoMapper {
   }
 
   private ResourceEdgeDto getEdges(Set<ResourceEdge> edges, ToLongFunction<ResourceEdge> hashProvider) {
-    Map<String, List<Long>> edgesDtoMap = edges.stream()
+    var edgesDtoMap = edges.stream()
       .limit(EDGES_LIMIT)
-      .collect(Collectors.toMap(
+      .collect(groupingBy(
         re -> re.getPredicate().getUri(),
-        re -> new ArrayList<>(List.of(hashProvider.applyAsLong(re))),
-        (existing, additional) -> {
-          existing.addAll(additional);
-          return existing;
-        }));
+        mapping(hashProvider::applyAsLong, toList())
+      ));
 
     return new ResourceEdgeDto(edges.size(), edgesDtoMap);
   }

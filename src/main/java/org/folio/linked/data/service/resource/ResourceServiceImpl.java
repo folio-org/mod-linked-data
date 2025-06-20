@@ -182,12 +182,4 @@ public class ResourceServiceImpl implements ResourceService {
       default -> null;
     };
   }
-
-  private void setProfileId(ResourceResponseDto dto,  Integer integer) {
-    switch (dto.getResource()) {
-      case InstanceField instanceField -> instanceField.getInstance().setProfileId(integer);
-      case WorkField workField -> workField.getWork().setProfileId(integer);
-      default -> { }
-    }
-  }
 }
