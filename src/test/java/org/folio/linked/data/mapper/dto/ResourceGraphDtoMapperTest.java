@@ -11,25 +11,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.spring.testing.type.UnitTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceDtoMapperTest {
+class ResourceGraphDtoMapperTest {
 
-  @InjectMocks
-  private ResourceDtoMapperImpl resourceMapper;
-  @Mock
-  private SingleResourceMapper singleResourceMapper;
+  private ResourceGraphDtoMapper resourceMapper;
+
+  @BeforeEach
+  void setUp() {
+    resourceMapper = new ResourceGraphDtoMapperImpl();
+  }
 
   @Test
   void toResourceGraphDto_shouldReturnResourceGraphDto() {
