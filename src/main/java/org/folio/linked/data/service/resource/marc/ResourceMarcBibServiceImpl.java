@@ -159,10 +159,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   }
 
   private ResourceResponseDto toDto(Resource entity) {
-    var dto = resourceDtoMapper.toDto(entity);
-    resourceProfileService.resolveProfileId(entity)
-      .ifPresent(profileId -> setProfileId(dto, profileId));
-    return dto;
+    return resourceDtoMapper.toDto(entity);
   }
 
   private void validateMarcViewSupportedType(Resource resource) {

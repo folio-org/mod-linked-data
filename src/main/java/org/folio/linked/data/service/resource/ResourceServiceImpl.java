@@ -67,10 +67,7 @@ public class ResourceServiceImpl implements ResourceService {
   @Transactional(readOnly = true)
   public ResourceResponseDto getResourceById(Long id) {
     var resource = getResource(id);
-    var dto = resourceDtoMapper.toDto(resource);
-    resourceProfileService.resolveProfileId(resource)
-      .ifPresent(profileId -> setProfileId(dto, profileId));
-    return dto;
+    return resourceDtoMapper.toDto(resource);
   }
 
   @Override

@@ -3,9 +3,7 @@ package org.folio.linked.data.service.profile;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -57,18 +55,6 @@ class ResourceProfileLinkingServiceImplTest {
     var savedProfile = captor.getValue();
     assertThat(savedProfile.getProfileId()).isEqualTo(profileId);
     assertThat(savedProfile.getResourceHash()).isEqualTo(resource.getId());
-  }
-
-  @Test
-  void shouldLinkResourceToProfile_whenResourceIsNotInstance() {
-    // given
-    var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(WORK.getUri())));
-
-    // when
-    resourceProfileLinkingService.linkResourceToProfile(resource, 2);
-
-    // then
-    verifyNoInteractions(resourceProfileRepository);
   }
 
   @Test

@@ -11,6 +11,7 @@ import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
 import org.folio.linked.data.repo.ResourceProfileRepository;
+import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   private final ResourceProfileRepository resourceProfileRepository;
   private final ProfileService profileService;
   private final FolioExecutionContext executionContext;
+  private final ResourceRepository resourceRepository;
 
   @Override
   public void linkResourceToProfile(Resource resource, Integer profileId) {
@@ -39,6 +41,13 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
       .map(ResourceProfile::getProfileId)
       .or(() -> getPreferredProfile(resource))
       .or(() -> Optional.of(MONOGRAPH_PROFILE_ID));
+  }
+
+  @Override
+  public Optional<Integer> resolveProfileId(Long resourceId) {
+    return resourceRepository
+      .findById(resourceId)
+      .flatMap(this::resolveProfileId);
   }
 
   private Optional<Integer> getPreferredProfile(Resource resource) {

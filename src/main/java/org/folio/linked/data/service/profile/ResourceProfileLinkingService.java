@@ -7,4 +7,6 @@ public interface ResourceProfileLinkingService {
   void linkResourceToProfile(Resource resource, Integer profileId);
 
   Optional<Integer> resolveProfileId(Resource resource);
+
+  Optional<Integer> resolveProfileId(Long resourceId);
 }
