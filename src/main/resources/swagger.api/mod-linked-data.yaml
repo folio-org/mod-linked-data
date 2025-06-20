@@ -128,6 +128,26 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/resource/{id}/rdf:
+    get:
+      operationId: exportInstanceToRdf
+      tags:
+        - resource
+      description: Export Instance resource to RDF by id
+      parameters:
+        - $ref: '#/components/parameters/id'
+      responses:
+        '200':
+          description: Exported RDF resource as json string
+          content:
+            application/json:
+              schema:
+                $ref: schema/rdfResourceDto.json
+        '404':
+          description: No Instance is found by id
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/resource/metadata/{inventoryId}/id:
     get:
       operationId: getResourceIdByResourceInventoryId
