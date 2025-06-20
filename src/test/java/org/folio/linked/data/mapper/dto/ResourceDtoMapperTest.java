@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,26 +51,6 @@ class ResourceDtoMapperTest {
         .get(resource.getOutgoingEdges().iterator().next().getPredicate().getUri()).getFirst());
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(resource.getIndexDate()),
       resourceGraphDto.getIndexDate());
-  }
-
-  @Test
-  void toMarcViewDto_shouldReturnResourceMarcViewDto() {
-    //given
-    var expectedDocumentType = "MARC_BIB";
-    var resource = generateTestResource();
-    var marc = "{value: \"some marc json string\"";
-
-    //when
-    var resourceMarcViewDto = resourceMapper.toMarcViewDto(resource, marc);
-
-    //then
-    assertThat(resourceMarcViewDto)
-      .isNotNull()
-      .hasFieldOrPropertyWithValue("id", resource.getId().toString())
-      .hasFieldOrPropertyWithValue("recordType", expectedDocumentType)
-      .extracting("parsedRecord")
-      .isNotNull()
-      .hasFieldOrPropertyWithValue("content", marc);
   }
 
   private Resource generateTestResource() {

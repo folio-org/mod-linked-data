@@ -34,6 +34,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
@@ -74,6 +75,8 @@ class ResourceMarcBibServiceImplTest {
   @Mock
   private ResourceDtoMapper resourceDtoMapper;
   @Mock
+  private ResourceMarcViewDtoMapper resourceMarcViewDtoMapper;
+  @Mock
   private ResourceModelMapper resourceModelMapper;
   @Mock
   private Ld2MarcMapper ld2MarcMapper;
@@ -111,7 +114,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(expectedModelResource);
     when(ld2MarcMapper.toMarcJson(expectedModelResource, UnmappedMarcHandling.APPEND))
       .thenReturn(expectedMarcString);
-    when(resourceDtoMapper.toMarcViewDto(existedResource, expectedMarcString))
+    when(resourceMarcViewDtoMapper.toMarcViewDto(existedResource, expectedMarcString))
       .thenReturn(expectedResponse);
 
     // when

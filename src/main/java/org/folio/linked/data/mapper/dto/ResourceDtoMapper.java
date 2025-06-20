@@ -13,7 +13,6 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceEdgeDto;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
-import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
@@ -53,10 +52,6 @@ public abstract class ResourceDtoMapper {
   public ResourceResponseDto toDto(Resource resource) {
     return singleResourceMapper.toDto(resource, new ResourceResponseDto(), null, null);
   }
-
-  @Mapping(target = "recordType", constant = "MARC_BIB")
-  @Mapping(target = "parsedRecord.content", source = "marc")
-  public abstract ResourceMarcViewDto toMarcViewDto(Resource resource, String marc);
 
   @Mapping(target = "outgoingEdges", expression = "java(getOutgoingEdges(resource))")
   @Mapping(target = "incomingEdges", expression = "java(getIncomingEdges(resource))")
