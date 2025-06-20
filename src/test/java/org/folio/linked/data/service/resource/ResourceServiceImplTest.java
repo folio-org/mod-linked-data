@@ -87,7 +87,7 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
     // given
-    var request = new ResourceRequestDto();
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
     var mapped = new Resource().setId(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     var persisted = new Resource().setId(67890L);
@@ -107,7 +107,7 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceWithWork() {
     // given
-    var request = new ResourceRequestDto();
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
     var work = new Resource().addTypes(WORK).setId(555L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
@@ -129,8 +129,11 @@ class ResourceServiceImplTest {
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceIsWork() {
     // given
     var profileId = 12;
-    var request = new ResourceRequestDto();
-    request.setProfileId(profileId);
+    var request = new ResourceRequestDto().resource(
+      new WorkField().work(
+        new WorkRequest(List.of()).profileId(profileId)
+      )
+    );
     var work = new Resource().addTypes(WORK).setId(444L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
@@ -174,20 +177,16 @@ class ResourceServiceImplTest {
   @Test
   void getResourceById_shouldReturnExistedEntity() {
     // given
-    var profileId = 99;
     var id = randomLong();
     var existedResource = getSampleInstanceResource();
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
     var expectedResponse = random(ResourceResponseDto.class);
     when(resourceDtoMapper.toDto(existedResource)).thenReturn(expectedResponse);
-    when(resourceProfileLinkingService.resolveProfileId(existedResource)).thenReturn(Optional.of(profileId));
-
     // when
     var result = resourceService.getResourceById(id);
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
-    assertThat(result.getProfileId()).isEqualTo(profileId);
   }
 
   @Test
@@ -279,9 +278,11 @@ class ResourceServiceImplTest {
     var oldInstance = new Resource().setId(oldId).addTypes(INSTANCE).setLabel("oldInstance");
     when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
     var mapped = new Resource().setId(newId).setLabel("mapped");
-    var instanceDto =
-      new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
-    instanceDto.setProfileId(profileId);
+    var instanceDto = new ResourceRequestDto().resource(
+      new InstanceField().instance(
+        new InstanceRequest(List.of()).profileId(profileId)
+      )
+    );
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
     var persisted = new Resource().setId(newId).setLabel("saved");
     var expectedDto = new ResourceResponseDto().resource(

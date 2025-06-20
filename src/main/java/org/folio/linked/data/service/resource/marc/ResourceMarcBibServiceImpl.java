@@ -22,9 +22,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SrsClient;
+import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -157,7 +159,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private ResourceResponseDto toDto(Resource entity) {
     var dto = resourceDtoMapper.toDto(entity);
     resourceProfileService.resolveProfileId(entity)
-      .ifPresent(dto::setProfileId);
+      .ifPresent(profileId -> setProfileId(dto, profileId));
     return dto;
   }
 
@@ -256,5 +258,13 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private void addOutgoingEdges(Resource resource) {
     edgeRepo.findByIdSourceHash(resource.getId())
       .forEach(resource::addOutgoingEdge);
+  }
+
+  private void setProfileId(ResourceResponseDto dto,  Integer integer) {
+    switch (dto.getResource()) {
+      case InstanceField instanceField -> instanceField.getInstance().setProfileId(integer);
+      case WorkField workField -> workField.getWork().setProfileId(integer);
+      default -> { }
+    }
   }
 }

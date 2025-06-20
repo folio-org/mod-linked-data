@@ -3,6 +3,9 @@
   "description": "Work request DTO",
   "allOf": [
     {
+      "$ref": "../common/ProfileIdField.json"
+    },
+    {
       "$ref": "title/TitleFieldRequest.json"
     },
     {

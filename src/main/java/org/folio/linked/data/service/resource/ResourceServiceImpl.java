@@ -59,7 +59,7 @@ public class ResourceServiceImpl implements ResourceService {
     var mapped = resourceDtoMapper.toEntity(resourceDto);
     rejectDuplication(mapped);
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
-    var persisted = createResourceAndPublishEvents(mapped, resourceDto.getProfileId());
+    var persisted = createResourceAndPublishEvents(mapped, getProfileId(resourceDto));
     return resourceDtoMapper.toDto(persisted);
   }
 
@@ -69,7 +69,7 @@ public class ResourceServiceImpl implements ResourceService {
     var resource = getResource(id);
     var dto = resourceDtoMapper.toDto(resource);
     resourceProfileService.resolveProfileId(resource)
-      .ifPresent(dto::setProfileId);
+      .ifPresent(profileId -> setProfileId(dto, profileId));
     return dto;
   }
 
@@ -89,7 +89,7 @@ public class ResourceServiceImpl implements ResourceService {
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
-    var newResource = updateResourceAndPublishEvents(mapped, oldResource, resourceDto.getProfileId());
+    var newResource = updateResourceAndPublishEvents(mapped, oldResource, getProfileId(resourceDto));
     return resourceDtoMapper.toDto(newResource);
   }
 
@@ -178,4 +178,19 @@ public class ResourceServiceImpl implements ResourceService {
     return "Type: %s, Title: %s".formatted(type, titles);
   }
 
+  private Integer getProfileId(ResourceRequestDto resourceDto) {
+    return switch (resourceDto.getResource()) {
+      case InstanceField instanceField -> instanceField.getInstance().getProfileId();
+      case WorkField workField -> workField.getWork().getProfileId();
+      default -> null;
+    };
+  }
+
+  private void setProfileId(ResourceResponseDto dto,  Integer integer) {
+    switch (dto.getResource()) {
+      case InstanceField instanceField -> instanceField.getInstance().setProfileId(integer);
+      case WorkField workField -> workField.getWork().setProfileId(integer);
+      default -> { }
+    }
+  }
 }
