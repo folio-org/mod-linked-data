@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "RDF Resource DTO",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "ID of the resource"
+    },
+    "rdf": {
+      "type": "string",
+      "description": "JSON-LD representation of the RDF resource"
+    }
+  }
+}
