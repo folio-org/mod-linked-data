@@ -22,11 +22,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.client.SrsClient;
-import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -40,7 +38,6 @@ import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
@@ -66,15 +63,14 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final MarcBib2ldMapper marcBib2ldMapper;
-  private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceMarcViewDtoMapper resourceMarcViewDtoMapper;
+  private final ResourceDtoMapper resourceDtoMapper;
   private final ResourceEdgeService resourceEdgeService;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
-  private final ResourceProfileLinkingService resourceProfileService;
   private final RawMarcService rawMarcService;
 
   @Override
@@ -106,27 +102,26 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   public ResourceResponseDto getResourcePreviewByInventoryId(String inventoryId) {
     var resourceResponseDto = getResource(inventoryId)
       .map(resourceModelMapper::toEntity)
-      .map(this::toDto)
+      .map(resourceDtoMapper::toDto)
       .orElseThrow(() -> createSrNotFoundException(inventoryId));
     log.info("Returning resource preview for MARC BIB record with inventory ID: {}", inventoryId);
     return resourceResponseDto;
   }
 
   @Override
-  public ResourceIdDto importMarcRecord(String inventoryId, Integer profileId) {
-    var importedResource = getResource(inventoryId)
+  public ResourceIdDto importMarcRecord(String inventoryId) {
+    var resourceIdDto = getResource(inventoryId)
       .map(resource -> {
         resource.getFolioMetadata().setSource(LINKED_DATA);
         return resource;
       })
       .map(this::save)
+      .map(String::valueOf)
+      .map(id -> new ResourceIdDto().id(id))
       .orElseThrow(() -> createSrNotFoundException(inventoryId));
-
-    resourceProfileService.linkResourceToProfile(importedResource, profileId);
-
     log.info("MARC BIB record with inventory ID: {} is successfully imported to graph resource with ID: {}",
-      inventoryId, importedResource.getId());
-    return new ResourceIdDto().id(importedResource.getId().toString());
+      inventoryId, resourceIdDto.getId());
+    return resourceIdDto;
   }
 
   @Override
@@ -156,10 +151,6 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     var edgeId = resourceEdgeService.saveNewResourceEdge(idOptional.get().getId(), adminMetadataEdge);
     log.info("New AdminMetadata has been added and saved under id [{}]", edgeId);
     return true;
-  }
-
-  private ResourceResponseDto toDto(Resource entity) {
-    return resourceDtoMapper.toDto(entity);
   }
 
   private void validateMarcViewSupportedType(Resource resource) {
@@ -204,7 +195,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     return objectMapper.writeValueAsString(content);
   }
 
-  private Resource save(org.folio.ld.dictionary.model.Resource modelResource) {
+  private Long save(org.folio.ld.dictionary.model.Resource modelResource) {
     var id = modelResource.getId();
     if (resourceRepo.existsById(id)) {
       log.error("The same resource ID {} already exists", id);
@@ -223,7 +214,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     // from "MARC" to "LINKED_DATA" in Inventory.
     var saved = saveAndPublishEvent(resourceModelMapper.toEntity(modelResource), ResourceUpdatedEvent::new);
     saveUnmappedMarc(modelResource, saved);
-    return saved;
+    return saved.getId();
   }
 
   private void saveUnmappedMarc(org.folio.ld.dictionary.model.Resource modelResource, Resource saved) {
@@ -257,13 +248,5 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private void addOutgoingEdges(Resource resource) {
     edgeRepo.findByIdSourceHash(resource.getId())
       .forEach(resource::addOutgoingEdge);
-  }
-
-  private void setProfileId(ResourceResponseDto dto,  Integer integer) {
-    switch (dto.getResource()) {
-      case InstanceField instanceField -> instanceField.getInstance().setProfileId(integer);
-      case WorkField workField -> workField.getWork().setProfileId(integer);
-      default -> { }
-    }
   }
 }
