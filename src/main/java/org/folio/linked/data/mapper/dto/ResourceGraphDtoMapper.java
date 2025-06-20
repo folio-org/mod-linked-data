@@ -20,6 +20,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = SPRING, imports = {Collectors.class, Arrays.class, ResourceTypeEntity.class})
 public abstract class ResourceGraphDtoMapper {
 
+  private static final int EDGES_LIMIT = 1000;
+
   @Mapping(target = "outgoingEdges", expression = "java(getOutgoingEdges(resource))")
   @Mapping(target = "incomingEdges", expression = "java(getIncomingEdges(resource))")
   @Mapping(target = "indexDate", source = "indexDate", dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
@@ -39,12 +41,13 @@ public abstract class ResourceGraphDtoMapper {
 
   private ResourceEdgeDto getEdges(Set<ResourceEdge> edges, ToLongFunction<ResourceEdge> hashProvider) {
     Map<String, List<Long>> edgesDtoMap = edges.stream()
-      .limit(1000)
-      .collect(Collectors.toMap(re -> re.getPredicate().getUri(),
+      .limit(EDGES_LIMIT)
+      .collect(Collectors.toMap(
+        re -> re.getPredicate().getUri(),
         re -> new ArrayList<>(List.of(hashProvider.applyAsLong(re))),
-        (a, b) -> {
-          a.addAll(b);
-          return a;
+        (existing, additional) -> {
+          existing.addAll(additional);
+          return existing;
         }));
 
     return new ResourceEdgeDto(edges.size(), edgesDtoMap);

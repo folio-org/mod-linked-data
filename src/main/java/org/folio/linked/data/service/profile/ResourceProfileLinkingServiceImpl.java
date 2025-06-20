@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.profile;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -21,34 +22,44 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
 
   private final ResourceProfileRepository resourceProfileRepository;
   private final ProfileService profileService;
-  private final FolioExecutionContext folioExecutionContext;
+  private final FolioExecutionContext executionContext;
 
   @Override
   public void linkResourceToProfile(Resource resource, Integer profileId) {
-    if (resource.isNotOfType(INSTANCE)) {
+    if (profileId == null) {
       return;
     }
-    if (profileId != null) {
-      log.info("Linking resource {} to profile {}", resource.getId(), profileId);
-      resourceProfileRepository.save(new ResourceProfile(resource.getId(), profileId));
-    }
+    log.info("Linking resource {} to profile {}", resource.getId(), profileId);
+    resourceProfileRepository.save(new ResourceProfile(resource.getId(), profileId));
   }
 
   @Override
   public Optional<Integer> resolveProfileId(Resource resource) {
-    if (resource.isNotOfType(INSTANCE)) {
-      return Optional.empty();
-    }
     return resourceProfileRepository.findById(resource.getId())
       .map(ResourceProfile::getProfileId)
-      .or(() -> getPreferredProfileForUser(INSTANCE))
+      .or(() -> getPreferredProfile(resource))
       .or(() -> Optional.of(MONOGRAPH_PROFILE_ID));
   }
 
-  private Optional<Integer> getPreferredProfileForUser(ResourceType resourceType) {
-    return profileService.getPreferredProfiles(folioExecutionContext.getUserId(), resourceType.getUri())
-      .stream()
-      .findFirst()
+  private Optional<Integer> getPreferredProfile(Resource resource) {
+    return getTypeIfInstanceOrWork(resource)
+      .flatMap(this::getPreferredProfile)
       .map(ProfileMetadata::getId);
+  }
+
+  private Optional<ProfileMetadata> getPreferredProfile(ResourceType type) {
+    return profileService
+      .getPreferredProfiles(executionContext.getUserId(), type.getUri())
+      .stream()
+      .findFirst();
+  }
+
+  private static Optional<ResourceType> getTypeIfInstanceOrWork(Resource resource) {
+    if (resource.isOfType(INSTANCE)) {
+      return Optional.of(INSTANCE);
+    } else if (resource.isOfType(WORK)) {
+      return Optional.of(WORK);
+    }
+    return Optional.empty();
   }
 }
