@@ -13,6 +13,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class ResourceDtoMapperImpl implements ResourceDtoMapper {
   private final SingleResourceMapper singleResourceMapper;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ResourceProfileLinkingService resourceProfileService;
+  private final ProfileService profileService;
 
   public Resource toEntity(ResourceRequestDto dto) {
     try {
@@ -43,17 +45,16 @@ public class ResourceDtoMapperImpl implements ResourceDtoMapper {
   }
 
   private void setProfileIds(Resource resource, ResourceResponseDto dto) {
-    resourceProfileService.resolveProfileId(resource)
-      .ifPresent(profileId -> this.setProfileId(dto, profileId));
+    this.setProfileId(dto, resourceProfileService.resolveProfileId(resource));
 
     // If the Work has a single Instance, UI need to open that instance for viewing
     // Hence, set its profileId
     if (dto.getResource() instanceof WorkResponseField workField) {
       getSingleInstance(workField)
-        .ifPresent(instanceDto -> resourceProfileService
-          .resolveProfileId(Long.parseLong(instanceDto.getId()))
-          .ifPresent(instanceDto::setProfileId)
-        );
+        .ifPresent(instanceDto -> {
+          var profileId = resourceProfileService.resolveProfileId(Long.parseLong(instanceDto.getId()));
+          instanceDto.setProfileId(profileId);
+        });
     }
   }
 

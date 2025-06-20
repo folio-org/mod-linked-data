@@ -69,7 +69,7 @@ class ResourceProfileLinkingServiceImplTest {
     var result = resourceProfileLinkingService.resolveProfileId(resource);
 
     // then
-    assertThat(result).contains(profileId);
+    assertThat(result).isEqualTo(profileId);
   }
 
   @Test
@@ -87,7 +87,7 @@ class ResourceProfileLinkingServiceImplTest {
     var result = resourceProfileLinkingService.resolveProfileId(resource);
 
     // then
-    assertThat(result).contains(profileId);
+    assertThat(result).isEqualTo(profileId);
   }
 
   @Test
@@ -103,6 +103,6 @@ class ResourceProfileLinkingServiceImplTest {
     var result = resourceProfileLinkingService.resolveProfileId(resource);
 
     // then
-    assertThat(result).contains(1);
+    assertThat(result).isEqualTo(1);
   }
 }

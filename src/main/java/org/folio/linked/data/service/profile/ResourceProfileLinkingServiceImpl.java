@@ -36,39 +36,44 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   }
 
   @Override
-  public Optional<Integer> resolveProfileId(Resource resource) {
+  public Integer resolveProfileId(Resource resource) {
     return resourceProfileRepository.findById(resource.getId())
       .map(ResourceProfile::getProfileId)
-      .or(() -> getPreferredProfile(resource))
-      .or(() -> Optional.of(MONOGRAPH_PROFILE_ID));
+      .or(() -> getPreferredProfileId(resource))
+      .orElse(MONOGRAPH_PROFILE_ID);
   }
 
   @Override
-  public Optional<Integer> resolveProfileId(Long resourceId) {
-    return resourceRepository
-      .findById(resourceId)
-      .flatMap(this::resolveProfileId);
+  public Integer resolveProfileId(Long resourceId) {
+    return resourceProfileRepository.findById(resourceId)
+      .map(ResourceProfile::getProfileId)
+      .or(() -> getPreferredProfileId(resourceId))
+      .orElse(MONOGRAPH_PROFILE_ID);
   }
 
-  private Optional<Integer> getPreferredProfile(Resource resource) {
-    return getTypeIfInstanceOrWork(resource)
-      .flatMap(this::getPreferredProfile)
-      .map(ProfileMetadata::getId);
+  private Optional<Integer> getPreferredProfileId(Long resourceId) {
+    return resourceRepository.findById(resourceId)
+      .flatMap(this::getPreferredProfileId);
   }
 
-  private Optional<ProfileMetadata> getPreferredProfile(ResourceType type) {
+  private Optional<Integer> getPreferredProfileId(Resource resource) {
+    return getPreferredProfileId(getResourceType(resource));
+  }
+
+  private Optional<Integer> getPreferredProfileId(ResourceType type) {
     return profileService
       .getPreferredProfiles(executionContext.getUserId(), type.getUri())
       .stream()
-      .findFirst();
+      .findFirst()
+      .map(ProfileMetadata::getId);
   }
 
-  private static Optional<ResourceType> getTypeIfInstanceOrWork(Resource resource) {
+  private static ResourceType getResourceType(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
-      return Optional.of(INSTANCE);
+      return INSTANCE;
     } else if (resource.isOfType(WORK)) {
-      return Optional.of(WORK);
+      return WORK;
     }
-    return Optional.empty();
+    throw new IllegalArgumentException("Resource type do not support profiles: " + resource.getTypes());
   }
 }
