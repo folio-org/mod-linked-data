@@ -1,4 +1,4 @@
-package org.folio.linked.data.service;
+package org.folio.linked.data.service.profile;
 
 import static java.util.Optional.ofNullable;
 

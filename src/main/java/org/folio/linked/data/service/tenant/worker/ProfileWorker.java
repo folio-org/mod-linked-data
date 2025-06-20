@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.service.ProfileService;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;

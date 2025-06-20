@@ -1,4 +1,4 @@
-package org.folio.linked.data.service;
+package org.folio.linked.data.service.profile;
 
 import java.util.List;
 import java.util.UUID;
