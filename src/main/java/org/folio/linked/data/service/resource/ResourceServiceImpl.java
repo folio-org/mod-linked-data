@@ -175,11 +175,11 @@ public class ResourceServiceImpl implements ResourceService {
     return "Type: %s, Title: %s".formatted(type, titles);
   }
 
-  private Integer getProfileId(ResourceRequestDto resourceDto) {
-    return switch (resourceDto.getResource()) {
+  private Integer getProfileId(ResourceRequestDto requestDto) {
+    return switch (requestDto.getResource()) {
       case InstanceField instanceField -> instanceField.getInstance().getProfileId();
       case WorkField workField -> workField.getWork().getProfileId();
-      default -> null;
+      default -> throw new IllegalStateException("Unexpected value: " + requestDto);
     };
   }
 }

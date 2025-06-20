@@ -3,11 +3,10 @@ package org.folio.linked.data.mapper.dto;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceResponse;
+import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
@@ -65,8 +64,8 @@ public class ResourceDtoMapperImpl implements ResourceDtoMapper {
 
   private void setProfileId(ResourceResponseDto dto, Integer integer) {
     switch (dto.getResource()) {
-      case InstanceField instanceField -> instanceField.getInstance().setProfileId(integer);
-      case WorkField workField -> workField.getWork().setProfileId(integer);
+      case InstanceResponseField instanceField -> instanceField.getInstance().setProfileId(integer);
+      case WorkResponseField workField -> workField.getWork().setProfileId(integer);
       default -> throw new IllegalStateException("Unexpected value: " + dto);
     }
   }

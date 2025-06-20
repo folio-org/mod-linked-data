@@ -1,11 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Common fields on top of each resource",
+  "description": "Schema for the profile ID field used in request and response",
   "type": "object",
   "properties": {
     "profileId": {
       "type": "integer",
-      "description": "Hash / ID of the resource"
+      "format": "int16",
+      "description": "ID of the profile"
     }
   }
 }
