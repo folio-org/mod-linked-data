@@ -11,8 +11,10 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class RdfExportServiceImpl implements RdfExportService {
 
@@ -28,7 +30,8 @@ public class RdfExportServiceImpl implements RdfExportService {
         if (r.isOfType(INSTANCE)) {
           return r;
         } else {
-          throw exceptionBuilder.notFoundLdResourceByIdException(INSTANCE.name(), String.valueOf(id));
+          var message = "Resource with given id [" + id + "] is not an Instance";
+          throw exceptionBuilder.badRequestException(message, "Not an Instance");
         }
       })
       .map(resourceModelMapper::toModel)

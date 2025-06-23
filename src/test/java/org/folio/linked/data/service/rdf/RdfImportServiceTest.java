@@ -52,14 +52,14 @@ class RdfImportServiceTest {
   private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Test
-  void importFile_savesResourcesAndPublishesEvents_whenValidFileProvided() throws IOException {
+  void savesResourcesAndPublishesEvents_whenValidFileProvided() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     var inputStream = mock(InputStream.class);
     var resources = Set.of(mock(org.folio.ld.dictionary.model.Resource.class));
     var entity = mock(org.folio.linked.data.model.entity.Resource.class);
     when(multipartFile.getInputStream()).thenReturn(inputStream);
-    when(rdf4LdService.mapToLdInstance(inputStream, multipartFile.getContentType())).thenReturn(resources);
+    when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
     when(resourceRepo.existsById(anyLong())).thenReturn(false);
     when(resourceGraphService.saveMergingGraph(entity)).thenReturn(entity);
@@ -74,14 +74,14 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importFile_ignoresExistingResourceAndNotPublishEvent_whenResourceAlreadyExists() throws IOException {
+  void ignoresExistingResourceAndNotPublishEvent_whenResourceAlreadyExists() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     var inputStream = mock(InputStream.class);
     var resources = Set.of(mock(org.folio.ld.dictionary.model.Resource.class));
     var mappedEntity = mock(org.folio.linked.data.model.entity.Resource.class);
     when(multipartFile.getInputStream()).thenReturn(inputStream);
-    when(rdf4LdService.mapToLdInstance(inputStream, multipartFile.getContentType())).thenReturn(resources);
+    when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(mappedEntity);
     when(resourceRepo.existsById(anyLong())).thenReturn(true);
 
@@ -95,7 +95,7 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importFile_throwsException_whenFileCannotBeRead() throws IOException {
+  void throwsException_whenFileCannotBeRead() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     when(multipartFile.getInputStream()).thenThrow(IOException.class);

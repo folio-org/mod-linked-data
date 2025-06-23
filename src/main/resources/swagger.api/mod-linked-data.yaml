@@ -143,6 +143,8 @@ paths:
             application/json:
               schema:
                 $ref: schema/rdfResourceDto.json
+        '400':
+          description: Resource is found by id but it is not an Instance
         '404':
           description: No Instance is found by id
         '500':
