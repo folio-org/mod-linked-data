@@ -33,7 +33,7 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.mapper.dto.ResourceDtoMapperImpl;
+import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
@@ -72,7 +72,7 @@ class ResourceMarcBibServiceImplTest {
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
-  private ResourceDtoMapperImpl resourceDtoMapper;
+  private ResourceDtoMapper resourceDtoMapper;
   @Mock
   private ResourceMarcViewDtoMapper resourceMarcViewDtoMapper;
   @Mock

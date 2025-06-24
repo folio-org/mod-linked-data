@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.PreferredProfileRequest;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.rest.resource.ProfileApi;
+import org.folio.linked.data.service.profile.PreferredProfileService;
 import org.folio.linked.data.service.profile.ProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProfileController implements ProfileApi {
 
   private final ProfileService profileService;
+  private final PreferredProfileService preferredProfileService;
 
   @Override
   public ResponseEntity<String> getProfile() {
@@ -33,12 +35,12 @@ public class ProfileController implements ProfileApi {
 
   @Override
   public ResponseEntity<Void> setPreferredProfile(UUID userId, PreferredProfileRequest preferredProfile) {
-    profileService.setPreferredProfile(userId, preferredProfile.getId(), preferredProfile.getResourceType());
+    preferredProfileService.setPreferredProfile(userId, preferredProfile.getId(), preferredProfile.getResourceType());
     return ResponseEntity.noContent().build();
   }
 
   @Override
   public ResponseEntity<List<ProfileMetadata>> getPreferredProfileByResourceType(UUID userId, String resourceTypeUri) {
-    return ResponseEntity.ok(profileService.getPreferredProfiles(userId, resourceTypeUri));
+    return ResponseEntity.ok(preferredProfileService.getPreferredProfiles(userId, resourceTypeUri));
   }
 }

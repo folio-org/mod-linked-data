@@ -31,10 +31,10 @@ class ResourceProfileLinkingServiceImplTest {
   private ResourceProfileRepository resourceProfileRepository;
 
   @Mock
-  private ProfileService profileService;
+  private FolioExecutionContext folioExecutionContext;
 
   @Mock
-  private FolioExecutionContext folioExecutionContext;
+  private PreferredProfileService preferredProfileService;
 
   @InjectMocks
   private ResourceProfileLinkingServiceImpl resourceProfileLinkingService;
@@ -80,7 +80,7 @@ class ResourceProfileLinkingServiceImplTest {
     var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri()))).setId(1L);
     when(resourceProfileRepository.findProfileIdByResourceHash(resource.getId())).thenReturn(Optional.empty());
     when(folioExecutionContext.getUserId()).thenReturn(userId);
-    when(profileService.getPreferredProfiles(userId, INSTANCE.getUri()))
+    when(preferredProfileService.getPreferredProfiles(userId, INSTANCE.getUri()))
       .thenReturn(List.of(new ProfileMetadata(profileId, "", "")));
 
     // when
@@ -96,7 +96,7 @@ class ResourceProfileLinkingServiceImplTest {
     var userId = randomUUID();
     var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri()))).setId(1L);
     when(resourceProfileRepository.findProfileIdByResourceHash(resource.getId())).thenReturn(Optional.empty());
-    when(profileService.getPreferredProfiles(userId, INSTANCE.getUri())).thenReturn(List.of());
+    when(preferredProfileService.getPreferredProfiles(userId, INSTANCE.getUri())).thenReturn(List.of());
     when(folioExecutionContext.getUserId()).thenReturn(userId);
 
     // when

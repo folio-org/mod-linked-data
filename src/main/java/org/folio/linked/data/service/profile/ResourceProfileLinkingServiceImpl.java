@@ -25,12 +25,12 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   private static final Integer MONOGRAPH_PROFILE_ID = 1;
 
   private final ResourceProfileRepository resourceProfileRepository;
-  private final ProfileService profileService;
+  private final PreferredProfileService preferredProfileService;
   private final FolioExecutionContext executionContext;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
-  @Transactional
+  @Transactional()
   public void linkResourceToProfile(Resource resource, Integer profileId) {
     if (profileId == null) {
       return;
@@ -48,7 +48,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   }
 
   private Optional<Integer> getPreferredProfileId(ResourceType resourceType) {
-    return profileService
+    return preferredProfileService
       .getPreferredProfiles(executionContext.getUserId(), resourceType.getUri())
       .stream()
       .findFirst()

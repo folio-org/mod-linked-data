@@ -30,7 +30,7 @@ import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.mapper.dto.ResourceDtoMapperImpl;
+import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
@@ -66,7 +66,7 @@ class ResourceServiceImplTest {
   @Mock
   private ResourceRepository resourceRepo;
   @Mock
-  private ResourceDtoMapperImpl resourceDtoMapper;
+  private ResourceDtoMapper resourceDtoMapper;
   @Mock
   private ApplicationEventPublisher applicationEventPublisher;
   @Mock
