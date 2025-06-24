@@ -2,12 +2,14 @@ package org.folio.linked.data.service.profile;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.ResourceUtils.getTypes;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.ResourceType;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
 import org.folio.linked.data.repo.ResourceProfileRepository;
@@ -25,6 +27,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   private final ResourceProfileRepository resourceProfileRepository;
   private final ProfileService profileService;
   private final FolioExecutionContext executionContext;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
   @Transactional
@@ -52,13 +55,13 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
       .map(ProfileMetadata::getId);
   }
 
-  private static ResourceType getResourceType(Resource resource) {
+  private ResourceType getResourceType(Resource resource) {
     if (resource.isOfType(INSTANCE)) {
       return INSTANCE;
     }
     if (resource.isOfType(WORK)) {
       return WORK;
     }
-    throw new IllegalArgumentException("Unsupported resource type(s) for profile linking: " + resource.getTypes());
+    throw exceptionBuilder.notSupportedException(String.join(", ", getTypes(resource)), "Profile Linking");
   }
 }

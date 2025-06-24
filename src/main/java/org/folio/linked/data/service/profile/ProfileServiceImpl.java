@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@Transactional(readOnly = true)
+@Transactional
 public class ProfileServiceImpl implements ProfileService {
   private static final String PROFILE_DIRECTORY = "profiles";
   private static final Integer ID = 1;
@@ -42,7 +42,6 @@ public class ProfileServiceImpl implements ProfileService {
   private final ObjectMapper objectMapper;
 
   @Override
-  @Transactional()
   public void saveAllProfiles() {
     var profilesDirectory = getClass().getClassLoader().getResource(PROFILE_DIRECTORY);
     try (var files = Files.list(Paths.get(profilesDirectory.toURI()))) {
@@ -76,7 +75,6 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
-  @Transactional()
   public void setPreferredProfile(UUID userId, Integer profileId, String resourceTypeUri) {
     var profile =  profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
