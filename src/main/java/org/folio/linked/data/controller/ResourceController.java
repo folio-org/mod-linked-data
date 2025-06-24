@@ -7,7 +7,6 @@ import static org.springframework.http.HttpStatus.CREATED;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.RdfResourceDto;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
@@ -78,7 +77,7 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
-  public ResponseEntity<RdfResourceDto> exportInstanceToRdf(Long id) {
+  public ResponseEntity<String> exportInstanceToRdf(Long id) {
     return ResponseEntity.ok(rdfExportService.exportInstanceToRdf(id));
   }
 

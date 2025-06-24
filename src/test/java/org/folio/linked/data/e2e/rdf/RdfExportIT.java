@@ -26,7 +26,7 @@ class RdfExportIT {
   @Autowired
   private Environment env;
   @Autowired
-  protected ResourceTestService resourceTestService;
+  private ResourceTestService resourceTestService;
 
   @Test
   void rdfExport_shouldReturnExportedResultForExistedInstance() throws Exception {

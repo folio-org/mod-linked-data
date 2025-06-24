@@ -87,7 +87,6 @@ class RdfExportServiceTest {
     var result = rdfExportService.exportInstanceToRdf(id);
 
     // then
-    assertThat(result.getId()).isEqualTo(String.valueOf(id));
-    assertThat(result.getRdf()).isEqualTo(exportedValue);
+    assertThat(result).isEqualTo(exportedValue);
   }
 }
