@@ -46,34 +46,28 @@ public class ResourceDtoMapperImpl implements ResourceDtoMapper {
   }
 
   private void setProfileIds(Resource resource, ResourceResponseDto dto) {
-    this.setProfileId(dto, resourceProfileService.resolveProfileId(resource));
-
-    // If the Work has a single Instance, UI need to open that instance for viewing
-    // Hence, set its profileId
-    if (dto.getResource() instanceof WorkResponseField workField) {
-      setSingleInstanceProfileId(workField);
+    var profileId = resourceProfileService.resolveProfileId(resource);
+    switch (dto.getResource()) {
+      case InstanceResponseField instanceField -> instanceField.getInstance().setProfileId(profileId);
+      case WorkResponseField workField -> {
+        workField.getWork().setProfileId(profileId);
+        setProfileIdForSingleInstance(workField);
+      }
+      default -> throw exceptionBuilder.mappingException(dto.getClass().getSimpleName(), dto.toString());
     }
   }
 
-  private void setSingleInstanceProfileId(WorkResponseField workField) {
+  private void setProfileIdForSingleInstance(WorkResponseField workField) {
     var instances = workField.getWork().getInstanceReference();
     if (instances.size() != 1) {
       return;
     }
-    var instanceDto = instances.getFirst();
+    var singleInstanceDto = instances.getFirst();
     var tempInstance = new Resource()
-      .setId(parseLong(instanceDto.getId()))
+      .setId(parseLong(singleInstanceDto.getId()))
       .setTypes(Set.of(resourceTypeMapper.toEntity(ResourceTypeDictionary.INSTANCE)));
     var profileId = resourceProfileService.resolveProfileId(tempInstance);
 
-    instanceDto.setProfileId(profileId);
-  }
-
-  private void setProfileId(ResourceResponseDto dto, Integer integer) {
-    switch (dto.getResource()) {
-      case InstanceResponseField instanceField -> instanceField.getInstance().setProfileId(integer);
-      case WorkResponseField workField -> workField.getWork().setProfileId(integer);
-      default -> throw new IllegalArgumentException("Unexpected dto for getting profileId: " + dto);
-    }
+    singleInstanceDto.setProfileId(profileId);
   }
 }
