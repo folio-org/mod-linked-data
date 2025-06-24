@@ -197,10 +197,14 @@ begin
   return subgraph_doc;
 end $$ language plpgsql;
 
-comment on function resource_subgraph(int8, int) is 'Recursively export the graph starting from id, to the depth max_depth, with no cycles as a set';
 comment on type export_doc is 'Helper type to represent resource properties with literal values';
 comment on type export_triple is 'Helper type to represent resource properties with object values';
-comment on function export_resource_edges(int8, int, int, export_doc[], export_triple[]) is 'Recursive function to export as JSON a resource, its properties, and objects, calling itself on objects to a depth of max_depth';
+comment on function resource_subgraph(int8, int) is 'Recursively export the graph starting from id, to the depth max_depth, with no cycles, as a set';
+comment on function export_resource_edges(int8, int, int, int8[], export_doc[], export_triple[]) is 'Recursive function to export as JSON a resource, its properties, and objects, calling itself on objects to a depth of max_depth, with no cycles';
 comment on function export_subgraph(int8, int) is 'Export resource subgraph as an aggregated JSONB document';
 
+--rollback drop type if exists export_doc;
+--rollback drop type if exists export_triple;
 --rollback drop function if exists resource_subgraph(int8, int);
+--rollback drop function if exists export_resource_edges(int8, int, int, int8[], export_doc[], export_triple[]);
+--rollback drop function if exists export_subgraph(int8, int);
