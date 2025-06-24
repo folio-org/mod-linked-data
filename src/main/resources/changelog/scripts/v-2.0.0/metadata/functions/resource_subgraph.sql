@@ -75,13 +75,14 @@ create or replace function export_resource_edges(
   v_id int8,
   v_depth int,
   v_max_depth int,
+  v_path int8[],
   v_docs export_doc[],
   v_triples export_triple[]
 ) returns jsonb as $$
 declare
   local_doc jsonb;
 begin
-  if v_depth = v_max_depth
+  if v_depth = v_max_depth or v_id = any(v_path)
   then
     select
       jsonb_build_object('id', v_id::text) into local_doc;
@@ -95,6 +96,7 @@ begin
         o,
         v_depth + 1,
         v_max_depth,
+        v_id || v_path,
         v_docs,
         v_triples
       ), jsonb_build_object('id', o::text))) as expansion
@@ -185,6 +187,7 @@ begin
       v_id,
       1,
       v_max_depth,
+      array[]::int8[],
       array_agg(row(d.id, d.label, d.doc)::export_doc),
       array_agg(row(s.subject, s.predicate, s.objects, s.depth)::export_triple)
     ) into subgraph_doc
