@@ -2,16 +2,26 @@
 
 --changeset resource_subgraph dbms:postgresql
 
-create or replace function resource_subgraph(id int8, max_depth int)
-returns table (
+create type export_doc as (
+  id int8,
+  label text,
+  doc jsonb
+);
+
+create type export_triple as (
   subject int8,
   predicate text,
-  object int8,
+  objects int8[],
   depth int
-) as $$
+);
+
+create or replace function resource_subgraph(
+  v_id int8,
+  v_max_depth int
+) returns setof export_triple as $$
 begin
   return query
-  with recursive subgraph(subject, predicate, object, doc, depth, is_cycle, path) as (
+  with recursive subgraph(subject, predicate, object, depth, is_cycle, path) as (
     select
       resources.resource_hash,
       predicate_lookup.predicate,
@@ -26,7 +36,7 @@ begin
       inner join predicate_lookup
         on resource_edges.predicate_hash = predicate_lookup.predicate_hash
     where
-      resources.resource_hash = $1
+      resources.resource_hash = v_id
     union all
     select
       resources.resource_hash,
@@ -40,75 +50,102 @@ begin
       inner join resource_edges
         on resources.resource_hash = resource_edges.source_hash
       inner join predicate_lookup
-        on resource_edges.predicate_hash = predicate_lookup.predicate_hash,
+        on resource_edges.predicate_hash = predicate_lookup.predicate_hash
       inner join subgraph
         on resources.resource_hash = subgraph.object
     where
       not is_cycle
   )
   select
-    s.subject, s.predicate, s.object, s.depth
+    s.subject,
+    s.predicate,
+    array_agg(s.object) as objects,
+    s.depth
   from
     subgraph s
   where
-    s.depth <= $2;
+    s.depth <= v_max_depth
+  group by
+    s.subject,
+    s.predicate,
+    s.depth;
 end $$ language plpgsql;
 
-create type export_doc as (
-  id int8,
-  label text,
-  doc jsonb
-);
-
-create type export_triple as (
-  subject int8,
-  predicate text,
-  object int8,
-  depth int
-);
-
 create or replace function export_resource_edges(
-  id int8,
-  depth int,
-  max_depth int,
-  docs export_doc[],
-  triples export_triple[]
+  v_id int8,
+  v_depth int,
+  v_max_depth int,
+  v_docs export_doc[],
+  v_triples export_triple[]
 ) returns jsonb as $$
 declare
   local_doc jsonb;
 begin
-  if depth = max_depth
+  if v_depth = v_max_depth
   then
     select
-      to_jsonb(array[$1::text]) into local_doc;
+      jsonb_build_object('id', v_id::text) into local_doc;
   else
+  with expanded_objects as (
+    select
+      subject,
+      predicate,
+      depth,
+      array_agg(coalesce(export_resource_edges(
+        o,
+        v_depth + 1,
+        v_max_depth,
+        v_docs,
+        v_triples
+      ), jsonb_build_object('id', o::text))) as expansion
+    from
+      (
+        select
+          s.subject,
+          s.predicate,
+          s.depth,
+          o
+        from
+          unnest(v_triples) s
+            cross join lateral unnest(s.objects) as o
+        group by
+          s.subject,
+          s.predicate,
+          s.depth,
+          o
+        ) deduped
+    group by
+      subject,
+      predicate,
+      depth
+  )
   select
     jsonb_build_object(
       'id', d.id::text,
       'doc', d.doc,
       'label', d.label,
       'outgoingEdges', jsonb_object_agg(
-        s.predicate, array[coalesce(export_resource_edges(
-          s.object,
-          $2 + 1,
-          $3,
-          $4,
-          $5
-        ), to_jsonb(array[$1::text]))]
+        eos.predicate, eos.expansion
       )
     ) into local_doc
   from
-    unnest(docs) d,
-    unnest(triples) s
+    unnest(v_docs) d
+      inner join expanded_objects as eos
+      on d.id = eos.subject
   where
-    d.id = $1
-    and d.id = s.subject
-  group by d.id, d.label, d.doc;
+    d.id = v_id
+  group by
+    d.id,
+    d.label,
+    d.doc;
   end if;
   return local_doc;
 end $$ language plpgsql;
 
-create or replace function export_subgraph(id int8, max_depth int) returns jsonb as $$
+create or replace function export_subgraph(
+  v_id int8,
+  v_max_depth int
+) returns jsonb as $$
 declare
   subgraph_doc jsonb;
 begin
@@ -116,10 +153,10 @@ begin
     select
       subgraph.subject,
       subgraph.predicate,
-      subgraph.object,
+      subgraph.objects,
       subgraph.depth
     from
-      resource_subgraph($1, $2) as subgraph
+      resource_subgraph(v_id, v_max_depth) as subgraph
   ),
   docs_set as (
     select
@@ -145,11 +182,11 @@ begin
   )
   select
     export_resource_edges(
-      $1,
+      v_id,
       1,
-      $2,
+      v_max_depth,
       array_agg(row(d.id, d.label, d.doc)::export_doc),
-      array_agg(row(s.subject, s.predicate, s.object, s.depth)::export_triple)
+      array_agg(row(s.subject, s.predicate, s.objects, s.depth)::export_triple)
     ) into subgraph_doc
   from
     docs_set d,
