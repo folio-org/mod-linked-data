@@ -7,5 +7,5 @@
   <include file="tables/user_preferred_profile.sql" relativeToChangelogFile="true"/>
   <include file="tables/upgrade_raw_marcs_on_delete_cascade.sql" relativeToChangelogFile="true"/>
   <include file="functions/resource_subgraph.sql" relativeToChangelogFile="true"/>
-  <include file="tables/export_resource_view.sql" relativeToChangelogFile="true"/>
+  <include file="tables/resource_view.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>
