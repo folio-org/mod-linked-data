@@ -166,7 +166,8 @@ public class ResourceServiceImpl implements ResourceService {
     return switch (requestDto.getResource()) {
       case InstanceField instance -> "Instance, Title: " + getPrimaryMainTitles(instance.getInstance().getTitle());
       case WorkField work -> "Work, Title: " + getPrimaryMainTitles(work.getWork().getTitle());
-      default -> throw new IllegalArgumentException("Unexpected dto to get logString: " + requestDto);
+      default -> throw exceptionBuilder.badRequestException(
+        "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
   }
 
@@ -174,7 +175,8 @@ public class ResourceServiceImpl implements ResourceService {
     return switch (requestDto.getResource()) {
       case InstanceField instance -> instance.getInstance().getProfileId();
       case WorkField work -> work.getWork().getProfileId();
-      default -> throw new IllegalArgumentException("Unexpected dto to get profileId: " + requestDto);
+      default -> throw exceptionBuilder.badRequestException(
+        "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
   }
 }
