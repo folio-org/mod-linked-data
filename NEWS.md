@@ -16,6 +16,7 @@
 - Update Monograph Work profile to support Subject of Work [MODLD-764](https://folio-org.atlassian.net/browse/MODLD-764)
 - RDF Export: New API for getting RDF [MODLD-762](https://folio-org.atlassian.net/browse/MODLD-762)
 - Associate resource to profile [MODLD-746](https://folio-org.atlassian.net/browse/MODLD-746)
+- Remove unused API GET /linked-data/profile [MODLD-766](https://folio-org.atlassian.net/browse/MODLD-766)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

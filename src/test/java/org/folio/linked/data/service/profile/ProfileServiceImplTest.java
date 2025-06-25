@@ -31,42 +31,6 @@ class ProfileServiceImplTest {
   private RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Test
-  void getProfile_shouldReturnProfile() {
-    //given
-    var id = 1;
-    var value = "[{\"key\": \"value\"}]";
-    var profile = new Profile();
-    profile.setId(id);
-    profile.setValue(value);
-
-    when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
-
-    //when
-    var result = profileService.getProfile();
-
-    //then
-    assertEquals(value, result);
-  }
-
-  @Test
-  void getProfile_shouldThrowNotFoundException_ifNoProfileExists() {
-    //given
-    when(profileRepository.findById(1)).thenReturn(Optional.empty());
-    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
-      .thenReturn(emptyRequestProcessingException());
-
-    //when
-    var thrown = assertThrows(
-      RequestProcessingException.class,
-      () -> profileService.getProfile()
-    );
-
-    //then
-    assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
-    assertThat(thrown.getMessage()).isEmpty();
-  }
-
-  @Test
   void getProfileById_shouldReturnProfileWithSpecifiedId() {
     //given
     var id = 1;

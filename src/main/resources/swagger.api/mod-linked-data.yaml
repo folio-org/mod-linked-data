@@ -231,26 +231,6 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /linked-data/profile:
-    get:
-      deprecated: true
-      operationId: getProfile
-      tags:
-        - profile
-      description: Get profile
-      responses:
-        '200':
-          description: Profile
-          content:
-            text/plain;charset=utf-8:
-              schema:
-                type: string
-                example: example/profile.sample
-        '404':
-          description: No profile is found
-        '500':
-          $ref: '#/components/responses/internalServerErrorResponse'
-
   /linked-data/profile/{profileId}:
     get:
       operationId: getProfileById
