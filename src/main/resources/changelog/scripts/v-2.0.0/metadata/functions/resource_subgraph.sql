@@ -16,6 +16,12 @@ create type export_triple as (
   depth     integer
 );
 
+-- Iteratively retrieve triples from the resources and resource_edges tables
+-- to the specified depth. Avoid any cycles by tracking the path to each
+-- subject and stopping at either the appropriate depth or if a node is
+-- repeated. Triples sharing the same subject and predicate use an array to
+-- output a list of objects because Postgres JSONB aggregation does not merge
+-- on shared keys but replaces instead.
 create or replace function resource_subgraph(
   v_id bigint,
   v_max_depth integer
@@ -72,6 +78,12 @@ begin
     s.depth;
 end ' language plpgsql;
 
+-- Recursive function to expand triple objects into their own subgraph.
+-- Postgres does not support nested aggregate functions, so object arrays
+-- must be expanded and handled separately from the main query. Some
+-- nodes do not have any outgoing edges, so a coalesce filter is used to
+-- substitute an empty object for those cases, as the build object function
+-- does not allow null properties.
 create or replace function export_resource_edges(
   v_id bigint,
   v_depth integer,
@@ -149,6 +161,8 @@ begin
   return local_doc;
 end ' language plpgsql;
 
+-- Primary function exporting a JSON subgraph starting with the given
+-- subject to the specified depth.
 create or replace function export_subgraph(
   v_id bigint,
   v_max_depth integer
