@@ -12,6 +12,7 @@ import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.rest.resource.ResourceApi;
+import org.folio.linked.data.service.rdf.RdfExportService;
 import org.folio.linked.data.service.resource.ResourceService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcBibService;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResourceController implements ResourceApi {
 
   private final ResourceService resourceService;
+  private final RdfExportService rdfExportService;
   private final ResourceMarcBibService resourceMarcService;
 
   @Override
@@ -72,6 +74,11 @@ public class ResourceController implements ResourceApi {
   @Override
   public ResponseEntity<ResourceMarcViewDto> getResourceMarcViewById(Long id) {
     return ResponseEntity.ok(resourceMarcService.getResourceMarcView(id));
+  }
+
+  @Override
+  public ResponseEntity<String> exportInstanceToRdf(Long id) {
+    return ResponseEntity.ok(rdfExportService.exportInstanceToRdf(id));
   }
 
   @InitBinder

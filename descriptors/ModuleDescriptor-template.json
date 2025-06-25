@@ -52,6 +52,12 @@
           "modulePermissions": []
         },
         {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/resource/{id}/rdf",
+          "permissionsRequired": [ "linked-data.resources.rdf.get" ],
+          "modulePermissions": []
+        },
+        {
           "methods": [ "PUT" ],
           "pathPattern": "/linked-data/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.put" ],
@@ -300,6 +306,11 @@
       "permissionName": "linked-data.profiles.preferred.post",
       "displayName": "Linked Data: Create or update the preferred profile for a resource type for the current user",
       "description": "Create or update the preferred profile for a resource type for the current user"
+    },
+    {
+      "permissionName": "linked-data.resources.rdf.get",
+      "displayName": "Linked Data: Export an Instance to RDF JSON-LD",
+      "description": "Export an Instance to RDF JSON-LD"
     }
   ],
   "launchDescriptor": {
