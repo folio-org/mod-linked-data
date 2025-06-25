@@ -3,7 +3,6 @@ package org.folio.linked.data.mapper.kafka.search;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.ObjectUtils.allNull;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
@@ -33,6 +32,7 @@ import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_VARI
 import static org.folio.linked.data.util.Constants.MSG_UNKNOWN_TYPES;
 import static org.folio.linked.data.util.Constants.SEARCH_WORK_RESOURCE_NAME;
 import static org.folio.linked.data.util.ResourceUtils.cleanDate;
+import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -65,7 +65,6 @@ import org.folio.linked.data.mapper.dto.monograph.work.WorkMapperUnit;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +126,7 @@ public abstract class WorkSearchMessageMapper {
 
   @Nullable
   protected ResourceTypeDictionary getTitleType(Resource title) {
-    var typeUris = title.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    var typeUris = getTypeUris(title);
     if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.TITLE.getUri().equals(uri))) {
       return ResourceTypeDictionary.TITLE;
     } else if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.PARALLEL_TITLE.getUri().equals(uri))) {
@@ -269,7 +268,7 @@ public abstract class WorkSearchMessageMapper {
     return null;
   }
 
-  protected <E extends Enum<E>> E toType(Resource resource,
+  private  <E extends Enum<E>> E toType(Resource resource,
                                          Function<String, E> typeSupplier,
                                          Class<E> enumClass,
                                          Predicate predicate,
@@ -277,9 +276,9 @@ public abstract class WorkSearchMessageMapper {
     if (isNull(resource.getTypes())) {
       return null;
     }
-    return resource.getTypes()
+    var typeUris = getTypeUris(resource);
+    return typeUris
       .stream()
-      .map(ResourceTypeEntity::getUri)
       .filter(type -> singleResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
       .findFirst()
       .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
@@ -292,15 +291,13 @@ public abstract class WorkSearchMessageMapper {
       })
       .orElseGet(() -> {
         var enumNameWithParent = getTypeEnumNameWithParent(enumClass);
-        log.warn(MSG_UNKNOWN_TYPES,
-          resource.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", ")),
-          enumNameWithParent, resource.getId());
+        log.warn(MSG_UNKNOWN_TYPES, typeUris, enumNameWithParent, resource.getId());
         return null;
       });
   }
 
   @NonNull
-  protected <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
+  private  <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
     return enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
   }
 }

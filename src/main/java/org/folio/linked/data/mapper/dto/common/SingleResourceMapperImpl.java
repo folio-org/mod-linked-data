@@ -4,12 +4,12 @@ import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR;
 import static org.folio.linked.data.util.Constants.PREDICATE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
+import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -23,7 +23,6 @@ import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -68,7 +67,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
     return resourceMapper
       .map(mapper -> mapper.toDto(source, parentDto, parentResource))
       .orElseGet(() -> {
-        var types = source.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", "));
+        var types = String.join(", ", getTypeUris(source));
         log.debug(
           "Resource with types [" + types + IS_NOT_SUPPORTED_FOR
             + (nonNull(predicate) ? PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET + AND : EMPTY)

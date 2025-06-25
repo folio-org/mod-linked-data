@@ -154,7 +154,7 @@ public class ResourceUtils {
       .isPresent();
   }
 
-  public static List<String> getTypes(Resource resource) {
+  public static List<String> getTypeUris(Resource resource) {
     return resource.getTypes()
       .stream()
       .map(ResourceTypeEntity::getUri)
