@@ -2,24 +2,24 @@
 
 --changeset resource_subgraph dbms:postgresql
 
-create type %1$I.export_doc as (
+create type export_doc as (
   id       bigint,
   label    text,
   types    jsonb,
   doc      jsonb
 );
 
-create type %1$I.export_triple as (
+create type export_triple as (
   subject   bigint,
   predicate text,
   objects   bigint[],
   depth     integer
 );
 
-create or replace function %1$I.resource_subgraph(
+create or replace function resource_subgraph(
   v_id bigint,
   v_max_depth integer
-) returns setof %1$I.export_triple as $$
+) returns setof export_triple as $$
 begin
   return query
   with recursive subgraph(subject, predicate, object, depth, is_cycle, path) as (
@@ -31,10 +31,10 @@ begin
       false,
       array[resources.resource_hash]
     from
-      %1$I.resources
-      inner join %1$I.resource_edges
+      resources
+      inner join resource_edges
         on resources.resource_hash = resource_edges.source_hash
-      inner join %1$I.predicate_lookup
+      inner join predicate_lookup
         on resource_edges.predicate_hash = predicate_lookup.predicate_hash
     where
       resources.resource_hash = v_id
@@ -47,10 +47,10 @@ begin
       resources.resource_hash = any(path),
       path || resources.resource_hash
     from
-      %1$I.resources
-      inner join %1$I.resource_edges
+      resources
+      inner join resource_edges
         on resources.resource_hash = resource_edges.source_hash
-      inner join %1$I.predicate_lookup
+      inner join predicate_lookup
         on resource_edges.predicate_hash = predicate_lookup.predicate_hash
       inner join subgraph
         on resources.resource_hash = subgraph.object
@@ -72,13 +72,13 @@ begin
     s.depth;
 end $$ language plpgsql;
 
-create or replace function %1$I.export_resource_edges(
+create or replace function export_resource_edges(
   v_id bigint,
   v_depth integer,
   v_max_depth integer,
   v_path bigint[],
-  v_docs %1$I.export_doc[],
-  v_triples %1$I.export_triple[]
+  v_docs export_doc[],
+  v_triples export_triple[]
 ) returns jsonb as $$
 declare
   local_doc jsonb;
@@ -93,7 +93,7 @@ begin
       subject,
       predicate,
       depth,
-      array_agg(coalesce(%1$I.export_resource_edges(
+      array_agg(coalesce(export_resource_edges(
         o,
         v_depth + 1,
         v_max_depth,
@@ -149,7 +149,7 @@ begin
   return local_doc;
 end $$ language plpgsql;
 
-create or replace function %1$I.export_subgraph(
+create or replace function export_subgraph(
   v_id bigint,
   v_max_depth integer
 ) returns jsonb as $$
@@ -163,7 +163,7 @@ begin
       subgraph.objects,
       subgraph.depth
     from
-      %1$I.resource_subgraph(v_id, v_max_depth) as subgraph
+      resource_subgraph(v_id, v_max_depth) as subgraph
   ),
   docs_set as (
     select
@@ -172,10 +172,10 @@ begin
       r.label,
       jsonb_agg(type_lookup.type_uri) as types
     from
-      %1$I.resources r
-      inner join %1$I.resource_type_map as rtm
+      resources r
+      inner join resource_type_map as rtm
         on rtm.resource_hash = r.resource_hash
-      inner join %1$I.type_lookup
+      inner join type_lookup
         on rtm.type_hash = type_lookup.type_hash
     where
       r.resource_hash in (
@@ -188,13 +188,13 @@ begin
       r.resource_hash
   )
   select
-    %1$I.export_resource_edges(
+    export_resource_edges(
       v_id,
       1,
       v_max_depth,
       array[]::bigint[],
-      array_agg(row(d.id, d.label, d.types, d.doc)::%1$I.export_doc),
-      array_agg(row(s.subject, s.predicate, s.objects, s.depth)::%1$I.export_triple)
+      array_agg(row(d.id, d.label, d.types, d.doc)::export_doc),
+      array_agg(row(s.subject, s.predicate, s.objects, s.depth)::export_triple)
     ) into subgraph_doc
   from
     docs_set d,
