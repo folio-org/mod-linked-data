@@ -2,23 +2,24 @@
 
 --changeset resource_subgraph dbms:postgresql
 
-create type export_doc as (
-  id int8,
-  label text,
-  doc jsonb
+create type %1$I.export_doc as (
+  id       bigint,
+  label    text,
+  types    jsonb,
+  doc      jsonb
 );
 
-create type export_triple as (
-  subject int8,
+create type %1$I.export_triple as (
+  subject   bigint,
   predicate text,
-  objects int8[],
-  depth int
+  objects   bigint[],
+  depth     integer
 );
 
-create or replace function resource_subgraph(
-  v_id int8,
-  v_max_depth int
-) returns setof export_triple as $$
+create or replace function %1$I.resource_subgraph(
+  v_id bigint,
+  v_max_depth integer
+) returns setof %1$I.export_triple as $$
 begin
   return query
   with recursive subgraph(subject, predicate, object, depth, is_cycle, path) as (
@@ -28,12 +29,12 @@ begin
       resource_edges.target_hash,
       1,
       false,
-      array[resource_hash]
+      array[resources.resource_hash]
     from
-      resources
-      inner join resource_edges
+      %1$I.resources
+      inner join %1$I.resource_edges
         on resources.resource_hash = resource_edges.source_hash
-      inner join predicate_lookup
+      inner join %1$I.predicate_lookup
         on resource_edges.predicate_hash = predicate_lookup.predicate_hash
     where
       resources.resource_hash = v_id
@@ -46,10 +47,10 @@ begin
       resources.resource_hash = any(path),
       path || resources.resource_hash
     from
-      resources
-      inner join resource_edges
+      %1$I.resources
+      inner join %1$I.resource_edges
         on resources.resource_hash = resource_edges.source_hash
-      inner join predicate_lookup
+      inner join %1$I.predicate_lookup
         on resource_edges.predicate_hash = predicate_lookup.predicate_hash
       inner join subgraph
         on resources.resource_hash = subgraph.object
@@ -71,18 +72,18 @@ begin
     s.depth;
 end $$ language plpgsql;
 
-create or replace function export_resource_edges(
-  v_id int8,
-  v_depth int,
-  v_max_depth int,
-  v_path int8[],
-  v_docs export_doc[],
-  v_triples export_triple[]
+create or replace function %1$I.export_resource_edges(
+  v_id bigint,
+  v_depth integer,
+  v_max_depth integer,
+  v_path bigint[],
+  v_docs %1$I.export_doc[],
+  v_triples %1$I.export_triple[]
 ) returns jsonb as $$
 declare
   local_doc jsonb;
 begin
-  if v_depth = v_max_depth or v_id = any(v_path)
+  if v_depth = v_max_depth + 1 or v_id = any(v_path)
   then
     select
       jsonb_build_object('id', v_id::text) into local_doc;
@@ -92,7 +93,7 @@ begin
       subject,
       predicate,
       depth,
-      array_agg(coalesce(export_resource_edges(
+      array_agg(coalesce(%1$I.export_resource_edges(
         o,
         v_depth + 1,
         v_max_depth,
@@ -110,6 +111,8 @@ begin
         from
           unnest(v_triples) s
             cross join lateral unnest(s.objects) as o
+        where
+          s.subject = v_id
         group by
           s.subject,
           s.predicate,
@@ -126,6 +129,7 @@ begin
       'id', d.id::text,
       'doc', d.doc,
       'label', d.label,
+      'types', d.types,
       'outgoingEdges', jsonb_object_agg(
         eos.predicate, eos.expansion
       )
@@ -139,14 +143,15 @@ begin
   group by
     d.id,
     d.label,
+    d.types,
     d.doc;
   end if;
   return local_doc;
 end $$ language plpgsql;
 
-create or replace function export_subgraph(
-  v_id int8,
-  v_max_depth int
+create or replace function %1$I.export_subgraph(
+  v_id bigint,
+  v_max_depth integer
 ) returns jsonb as $$
 declare
   subgraph_doc jsonb;
@@ -158,7 +163,7 @@ begin
       subgraph.objects,
       subgraph.depth
     from
-      resource_subgraph(v_id, v_max_depth) as subgraph
+      %1$I.resource_subgraph(v_id, v_max_depth) as subgraph
   ),
   docs_set as (
     select
@@ -167,10 +172,10 @@ begin
       r.label,
       jsonb_agg(type_lookup.type_uri) as types
     from
-      resources r
-      inner join resource_type_map as rtm
+      %1$I.resources r
+      inner join %1$I.resource_type_map as rtm
         on rtm.resource_hash = r.resource_hash
-      inner join type_lookup
+      inner join %1$I.type_lookup
         on rtm.type_hash = type_lookup.type_hash
     where
       r.resource_hash in (
@@ -183,13 +188,13 @@ begin
       r.resource_hash
   )
   select
-    export_resource_edges(
+    %1$I.export_resource_edges(
       v_id,
       1,
       v_max_depth,
-      array[]::int8[],
-      array_agg(row(d.id, d.label, d.doc)::export_doc),
-      array_agg(row(s.subject, s.predicate, s.objects, s.depth)::export_triple)
+      array[]::bigint[],
+      array_agg(row(d.id, d.label, d.types, d.doc)::%1$I.export_doc),
+      array_agg(row(s.subject, s.predicate, s.objects, s.depth)::%1$I.export_triple)
     ) into subgraph_doc
   from
     docs_set d,
@@ -199,12 +204,12 @@ end $$ language plpgsql;
 
 comment on type export_doc is 'Helper type to represent resource properties with literal values';
 comment on type export_triple is 'Helper type to represent resource properties with object values';
-comment on function resource_subgraph(int8, int) is 'Recursively export the graph starting from id, to the depth max_depth, with no cycles, as a set';
-comment on function export_resource_edges(int8, int, int, int8[], export_doc[], export_triple[]) is 'Recursive function to export as JSON a resource, its properties, and objects, calling itself on objects to a depth of max_depth, with no cycles';
-comment on function export_subgraph(int8, int) is 'Export resource subgraph as an aggregated JSONB document';
+comment on function resource_subgraph(bigint, integer) is 'Recursively export the graph starting from id, to the depth max_depth, with no cycles, as a set';
+comment on function export_resource_edges(bigint, integer, integer, bigint[], export_doc[], export_triple[]) is 'Recursive function to export as JSON a resource, its properties, and objects, calling itself on objects to a depth of max_depth, with no cycles';
+comment on function export_subgraph(bigint, integer) is 'Export resource subgraph as an aggregated JSONB document';
 
 --rollback drop type if exists export_doc;
 --rollback drop type if exists export_triple;
---rollback drop function if exists resource_subgraph(int8, int);
---rollback drop function if exists export_resource_edges(int8, int, int, int8[], export_doc[], export_triple[]);
---rollback drop function if exists export_subgraph(int8, int);
+--rollback drop function if exists resource_subgraph(bigint, integer);
+--rollback drop function if exists export_resource_edges(bigint, integer, integer, bigint[], export_doc[], export_triple[]);
+--rollback drop function if exists export_subgraph(bigint, integer);
