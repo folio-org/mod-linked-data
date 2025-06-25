@@ -8,7 +8,6 @@ import static org.apache.commons.lang3.ObjectUtils.allNull;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
@@ -22,7 +21,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_PARALLEL;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VARIANT;
@@ -32,6 +30,7 @@ import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_VARI
 import static org.folio.linked.data.util.Constants.MSG_UNKNOWN_TYPES;
 import static org.folio.linked.data.util.Constants.SEARCH_WORK_RESOURCE_NAME;
 import static org.folio.linked.data.util.ResourceUtils.cleanDate;
+import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
@@ -63,6 +62,7 @@ import org.folio.linked.data.mapper.dto.monograph.work.WorkMapperUnit;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.util.ResourceUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,27 +206,35 @@ public abstract class WorkSearchMessageMapper {
   }
 
   protected List<LinkedDataInstanceOnly> extractInstances(Resource resource) {
-    var workStream = resource.isOfType(INSTANCE) ? resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(ResourceEdge::getTarget) : Stream.of(resource);
-    return workStream
-      .flatMap(work -> work.getIncomingEdges().stream()
-        .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-        .map(ResourceEdge::getSource))
-      .map(ir -> new LinkedDataInstanceOnly()
-        .id(String.valueOf(ir.getId()))
-        .titles(extractTitles(ir))
-        .identifiers(indexIdentifierMapper.extractIdentifiers(ir))
-        .notes(mapNotes(ir.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
-        .contributors(extractContributors(ir))
-        .publications(extractPublications(ir))
-        .suppress(extractSuppress(ir))
-        .editionStatements(getPropertyValues(ir.getDoc(), EDITION.getValue()).toList()))
-      .filter(bii -> isNotEmpty(bii.getTitles()) || isNotEmpty(bii.getIdentifiers())
-        || isNotEmpty(bii.getContributors()) || isNotEmpty(bii.getPublications())
-        || isNotEmpty(bii.getEditionStatements()))
+    var allInstances = extractWorkFromInstance(resource)
+      .map(ResourceUtils::extractInstancesFromWork)
+      .orElseGet(List::of);
+
+    return allInstances
+      .stream()
+      .map(this::toInstanceDto)
+      .flatMap(Optional::stream)
       .distinct()
       .toList();
+  }
+
+  private Optional<LinkedDataInstanceOnly> toInstanceDto(Resource instance) {
+    var instanceDto = new LinkedDataInstanceOnly()
+      .id(String.valueOf(instance.getId()))
+      .titles(extractTitles(instance))
+      .identifiers(indexIdentifierMapper.extractIdentifiers(instance))
+      .notes(mapNotes(instance.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
+      .contributors(extractContributors(instance))
+      .publications(extractPublications(instance))
+      .suppress(extractSuppress(instance))
+      .editionStatements(getPropertyValues(instance.getDoc(), EDITION.getValue()).toList());
+
+    if (isNotEmpty(instanceDto.getTitles()) || isNotEmpty(instanceDto.getIdentifiers())
+        || isNotEmpty(instanceDto.getContributors()) || isNotEmpty(instanceDto.getPublications())
+        || isNotEmpty(instanceDto.getEditionStatements())) {
+      return Optional.of(instanceDto);
+    }
+    return Optional.empty();
   }
 
   private LinkedDataInstanceOnlySuppress extractSuppress(Resource resource) {

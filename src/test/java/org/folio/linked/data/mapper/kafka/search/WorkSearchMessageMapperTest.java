@@ -4,12 +4,14 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.ORGANIZATION;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.PERSON;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
@@ -105,6 +107,10 @@ class WorkSearchMessageMapperTest {
     work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     final var instance2 = getInstance(2L, work);
+    final var emptyInstance = new Resource().setId(3L).addTypes(INSTANCE);
+    var edge = new ResourceEdge(emptyInstance, work, INSTANTIATES);
+    emptyInstance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
 
     // when
     var result = workSearchMessageMapper.toIndex(work);
