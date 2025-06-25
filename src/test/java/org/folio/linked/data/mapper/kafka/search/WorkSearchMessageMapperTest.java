@@ -1,7 +1,6 @@
 package org.folio.linked.data.mapper.kafka.search;
 
 import static java.util.Collections.emptyList;
-import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
@@ -11,11 +10,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.ORGANIZATION;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.PERSON;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
@@ -34,13 +28,9 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.LinkedDataContributor;
@@ -48,15 +38,12 @@ import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnly;
 import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -73,28 +60,8 @@ class WorkSearchMessageMapperTest {
 
   @Mock
   private NoteMapper noteMapper;
-  @Mock
-  private SingleResourceMapper singleResourceMapper;
   @Spy
   private IndexIdentifierMapper innerIndexIdentifierMapper = new IndexIdentifierMapperImpl();
-
-  @BeforeEach
-  public void setupMocks() {
-    Set.of(
-      ID_ISBN.getUri(),
-      ID_LCCN.getUri(),
-      ID_EAN.getUri(),
-      ID_LOCAL.getUri(),
-      ID_UNKNOWN.getUri(),
-      ResourceTypeDictionary.PERSON.getUri(),
-      ResourceTypeDictionary.MEETING.getUri(),
-      ResourceTypeDictionary.FAMILY.getUri(),
-      ResourceTypeDictionary.ORGANIZATION.getUri(),
-      ResourceTypeDictionary.JURISDICTION.getUri()
-    ).forEach(t ->
-      lenient().when(singleResourceMapper.getMapperUnit(eq(t), any(), any(), any())).thenReturn(of(genericMapper()))
-    );
-  }
 
   @Test
   void toIndex_shouldReturnCorrectlyMappedIndex_fromResourceWithIdOnly() {
@@ -254,24 +221,4 @@ class WorkSearchMessageMapperTest {
     assertThat(contributorInner.getType()).isEqualTo(type);
     assertThat(contributorInner.getIsCreator()).isEqualTo(isCreator);
   }
-
-  private SingleResourceMapperUnit genericMapper() {
-    return new SingleResourceMapperUnit() {
-      @Override
-      public Object toDto(Resource source, Object parentDto, Resource parentResource) {
-        return null;
-      }
-
-      @Override
-      public Set<Class<?>> supportedParents() {
-        return null;
-      }
-
-      @Override
-      public Resource toEntity(Object dto, Resource parentEntity) {
-        return null;
-      }
-    };
-  }
-
 }

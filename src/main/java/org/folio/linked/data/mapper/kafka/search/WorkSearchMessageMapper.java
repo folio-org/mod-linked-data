@@ -39,15 +39,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.LinkedDataContributor;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnly;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnlyPublicationsInner;
@@ -57,8 +57,6 @@ import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.LinkedDataWorkOnlyClassificationsInner;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
-import org.folio.linked.data.domain.dto.WorkResponse;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.monograph.instance.InstanceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.work.WorkMapperUnit;
@@ -68,7 +66,6 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 @Log4j2
@@ -82,8 +79,6 @@ public abstract class WorkSearchMessageMapper {
   protected NoteMapper noteMapper;
   @Autowired
   private IndexIdentifierMapper indexIdentifierMapper;
-  @Autowired
-  private SingleResourceMapper singleResourceMapper;
 
   @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "resourceName", constant = SEARCH_WORK_RESOURCE_NAME)
@@ -154,8 +149,7 @@ public abstract class WorkSearchMessageMapper {
         || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
       .map(re -> new LinkedDataContributor()
         .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
-        .type(toType(re.getTarget(), LinkedDataContributor.TypeEnum::fromValue,
-          LinkedDataContributor.TypeEnum.class, re.getPredicate(), WorkResponse.class))
+        .type(toContributorType(re.getTarget()).orElse(null))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> nonNull(ic.getName()))
@@ -268,36 +262,22 @@ public abstract class WorkSearchMessageMapper {
     return null;
   }
 
-  private  <E extends Enum<E>> E toType(Resource resource,
-                                         Function<String, E> typeSupplier,
-                                         Class<E> enumClass,
-                                         Predicate predicate,
-                                         Class<?> parentDto) {
-    if (isNull(resource.getTypes())) {
-      return null;
-    }
+  private Optional<LinkedDataContributor.TypeEnum> toContributorType(Resource resource) {
     var typeUris = getTypeUris(resource);
-    return typeUris
-      .stream()
-      .filter(type -> singleResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
-      .findFirst()
+    return typeUris.stream()
       .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
-      .map(typeUri -> {
+      .map(typeName -> {
         try {
-          return typeSupplier.apply(typeUri);
+          return LinkedDataContributor.TypeEnum.fromValue(typeName);
         } catch (IllegalArgumentException ignored) {
           return null;
         }
       })
-      .orElseGet(() -> {
-        var enumNameWithParent = getTypeEnumNameWithParent(enumClass);
-        log.warn(MSG_UNKNOWN_TYPES, typeUris, enumNameWithParent, resource.getId());
-        return null;
+      .filter(Objects::nonNull)
+      .findFirst()
+      .or(() -> {
+        log.warn(MSG_UNKNOWN_TYPES, typeUris, LinkedDataContributor.TypeEnum.class.getSimpleName(), resource.getId());
+        return Optional.empty();
       });
-  }
-
-  @NonNull
-  private  <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
-    return enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
   }
 }

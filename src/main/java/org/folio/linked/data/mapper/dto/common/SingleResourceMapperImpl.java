@@ -76,9 +76,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       });
   }
 
-
-  @Override
-  public Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentResponseDto,
+  private Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentResponseDto,
                                                           Class<?> requestDto) {
     return mapperUnits.stream()
       .filter(m -> isNull(parentResponseDto) || m.supportedParents().contains(parentResponseDto))
