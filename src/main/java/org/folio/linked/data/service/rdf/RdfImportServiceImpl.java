@@ -35,7 +35,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   @Override
   public ImportFileResponseDto importFile(MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
-      var resources = rdf4LdService.mapToLdInstance(is, ImportUtils.toRdfMediaType(multipartFile.getContentType()));
+      var resources = rdf4LdService.mapBibframe2RdfToLd(is, ImportUtils.toRdfMediaType(multipartFile.getContentType()));
       return save(resources);
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf import incoming file reading error", e.getMessage());
