@@ -19,7 +19,7 @@ create type export_triple as (
 create or replace function resource_subgraph(
   v_id bigint,
   v_max_depth integer
-) returns setof export_triple as $$
+) returns setof export_triple as '
 begin
   return query
   with recursive subgraph(subject, predicate, object, depth, is_cycle, path) as (
@@ -70,7 +70,7 @@ begin
     s.subject,
     s.predicate,
     s.depth;
-end $$ language plpgsql;
+end ' language plpgsql;
 
 create or replace function export_resource_edges(
   v_id bigint,
@@ -79,14 +79,14 @@ create or replace function export_resource_edges(
   v_path bigint[],
   v_docs export_doc[],
   v_triples export_triple[]
-) returns jsonb as $$
+) returns jsonb as '
 declare
   local_doc jsonb;
 begin
   if v_depth = v_max_depth + 1 or v_id = any(v_path)
   then
     select
-      jsonb_build_object('id', v_id::text) into local_doc;
+      jsonb_build_object(''id'', v_id::text) into local_doc;
   else
   with expanded_objects as (
     select
@@ -100,7 +100,7 @@ begin
         v_id || v_path,
         v_docs,
         v_triples
-      ), jsonb_build_object('id', o::text))) as expansion
+      ), jsonb_build_object(''id'', o::text))) as expansion
     from
       (
         select
@@ -126,11 +126,11 @@ begin
   )
   select
     jsonb_build_object(
-      'id', d.id::text,
-      'doc', d.doc,
-      'label', d.label,
-      'types', d.types,
-      'outgoingEdges', jsonb_object_agg(
+      ''id'', d.id::text,
+      ''doc'', d.doc,
+      ''label'', d.label,
+      ''types'', d.types,
+      ''outgoingEdges'', jsonb_object_agg(
         eos.predicate, eos.expansion
       )
     ) into local_doc
@@ -147,12 +147,12 @@ begin
     d.doc;
   end if;
   return local_doc;
-end $$ language plpgsql;
+end ' language plpgsql;
 
 create or replace function export_subgraph(
   v_id bigint,
   v_max_depth integer
-) returns jsonb as $$
+) returns jsonb as '
 declare
   subgraph_doc jsonb;
 begin
@@ -200,7 +200,7 @@ begin
     docs_set d,
     subgraph_set s;
   return subgraph_doc;
-end $$ language plpgsql;
+end ' language plpgsql;
 
 comment on type export_doc is 'Helper type to represent resource properties with literal values';
 comment on type export_triple is 'Helper type to represent resource properties with object values';
