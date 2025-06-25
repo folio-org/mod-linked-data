@@ -44,8 +44,8 @@ begin
       predicate_lookup.predicate,
       resource_edges.target_hash,
       subgraph.depth + 1,
-      resources.resource_hash = any(path),
-      path || resources.resource_hash
+      resources.resource_hash = any(subgraph.path),
+      subgraph.path || resources.resource_hash
     from
       resources
       inner join resource_edges
@@ -54,8 +54,7 @@ begin
         on resource_edges.predicate_hash = predicate_lookup.predicate_hash
       inner join subgraph
         on resources.resource_hash = subgraph.object
-    where
-      not is_cycle
+        and not subgraph.is_cycle
   )
   select
     s.subject,
@@ -66,6 +65,7 @@ begin
     subgraph s
   where
     s.depth <= v_max_depth
+    and not s.is_cycle
   group by
     s.subject,
     s.predicate,
@@ -130,13 +130,13 @@ begin
       ''doc'', d.doc,
       ''label'', d.label,
       ''types'', d.types,
-      ''outgoingEdges'', jsonb_object_agg(
+      ''outgoingEdges'', coalesce(jsonb_object_agg(
         eos.predicate, eos.expansion
-      )
+      ) filter (where eos.predicate is not null), ''{}'')
     ) into local_doc
   from
     unnest(v_docs) d
-      inner join expanded_objects as eos
+      left outer join expanded_objects as eos
       on d.id = eos.subject
   where
     d.id = v_id
@@ -183,22 +183,24 @@ begin
           distinct subject
         from
           subgraph_set
+        union
+        select
+          distinct unnest(objects)
+        from
+          subgraph_set
       )
     group by
       r.resource_hash
   )
   select
-    export_resource_edges(
+    jsonb_strip_nulls(export_resource_edges(
       v_id,
       1,
       v_max_depth,
       array[]::bigint[],
-      array_agg(row(d.id, d.label, d.types, d.doc)::export_doc),
-      array_agg(row(s.subject, s.predicate, s.objects, s.depth)::export_triple)
-    ) into subgraph_doc
-  from
-    docs_set d,
-    subgraph_set s;
+      (select array_agg(row(id, label, types, doc)::export_doc) from docs_set),
+      (select array_agg(row(subject, predicate, objects, depth)::export_triple) from subgraph_set)
+    )) into subgraph_doc;
   return subgraph_doc;
 end ' language plpgsql;
 
