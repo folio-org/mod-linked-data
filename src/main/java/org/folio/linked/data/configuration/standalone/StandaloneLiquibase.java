@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.service.DictionaryService;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -21,6 +22,7 @@ public class StandaloneLiquibase {
 
   private final FolioSpringLiquibase folioSpringLiquibase;
   private final DictionaryService dictionaryService;
+  private final ProfileService profileService;
 
   @Value("${mod-linked-data.default-schema}")
   private String defaultSchema;
@@ -32,5 +34,6 @@ public class StandaloneLiquibase {
     folioSpringLiquibase.setDefaultSchema(defaultSchema);
     folioSpringLiquibase.performLiquibaseUpdate();
     dictionaryService.init();
+    profileService.saveAllProfiles();
   }
 }

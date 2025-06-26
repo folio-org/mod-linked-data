@@ -39,6 +39,7 @@ import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
@@ -79,12 +80,14 @@ class ResourceServiceImplTest {
   @Mock
   private ResourceCopyService resourceCopyService;
   @Mock
+  private ResourceProfileLinkingService resourceProfileLinkingService;
+  @Mock
   private RawMarcService rawMarcService;
 
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
     // given
-    var request = new ResourceRequestDto();
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
     var mapped = new Resource().setId(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     var persisted = new Resource().setId(67890L);
@@ -104,7 +107,7 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceWithWork() {
     // given
-    var request = new ResourceRequestDto();
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
     var work = new Resource().addTypes(WORK).setId(555L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
@@ -125,7 +128,12 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceIsWork() {
     // given
-    var request = new ResourceRequestDto();
+    var profileId = 12;
+    var request = new ResourceRequestDto().resource(
+      new WorkField().work(
+        new WorkRequest(List.of()).profileId(profileId)
+      )
+    );
     var work = new Resource().addTypes(WORK).setId(444L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
@@ -141,12 +149,13 @@ class ResourceServiceImplTest {
     var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
     assertThat(work.getId()).isEqualTo(resourceCreateEventCaptor.getValue().resource().getId());
+    verify(resourceProfileLinkingService).linkResourceToProfile(work, profileId);
   }
 
   @Test
   void create_shouldNotPersistResourceAndThrowAlreadyExists_forExistedResource() {
     // given
-    var request = new ResourceRequestDto();
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
     var mapped = new Resource().setId(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
@@ -173,7 +182,6 @@ class ResourceServiceImplTest {
     when(resourceRepo.findById(id)).thenReturn(Optional.of(existedResource));
     var expectedResponse = random(ResourceResponseDto.class);
     when(resourceDtoMapper.toDto(existedResource)).thenReturn(expectedResponse);
-
     // when
     var result = resourceService.getResourceById(id);
 
@@ -263,14 +271,18 @@ class ResourceServiceImplTest {
   @Test
   void update_shouldSaveUpdatedResourceAndSendReplaceEvent_forResourceWithDifferentId() {
     // given
+    var profileId = 125;
     var oldId = randomLong();
     var newId = randomLong();
-    String unmappedMarc = "{}";
+    final var unmappedMarc = "{}";
     var oldInstance = new Resource().setId(oldId).addTypes(INSTANCE).setLabel("oldInstance");
     when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
     var mapped = new Resource().setId(newId).setLabel("mapped");
-    var instanceDto =
-      new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
+    var instanceDto = new ResourceRequestDto().resource(
+      new InstanceField().instance(
+        new InstanceRequest(List.of()).profileId(profileId)
+      )
+    );
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
     var persisted = new Resource().setId(newId).setLabel("saved");
     var expectedDto = new ResourceResponseDto().resource(
@@ -290,6 +302,7 @@ class ResourceServiceImplTest {
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
     verify(rawMarcService).saveRawMarc(persisted, unmappedMarc);
+    verify(resourceProfileLinkingService).linkResourceToProfile(persisted, profileId);
   }
 
   @Test

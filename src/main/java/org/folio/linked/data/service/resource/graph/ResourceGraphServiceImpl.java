@@ -11,39 +11,30 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.mapper.dto.ResourceGraphDtoMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.util.JsonUtils;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
-  private final ResourceDtoMapper resourceDtoMapper;
+  private final ResourceGraphDtoMapper resourceDtoMapper;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
-
-  public ResourceGraphServiceImpl(ResourceRepository resourceRepo,
-                                  ResourceEdgeRepository edgeRepo,
-                                  @Lazy ResourceDtoMapper resourceDtoMapper,
-                                  RequestProcessingExceptionBuilder exceptionBuilder) {
-    this.resourceRepo = resourceRepo;
-    this.edgeRepo = edgeRepo;
-    this.resourceDtoMapper = resourceDtoMapper;
-    this.exceptionBuilder = exceptionBuilder;
-  }
 
   @Override
   public ResourceGraphDto getResourceGraph(Long id) {

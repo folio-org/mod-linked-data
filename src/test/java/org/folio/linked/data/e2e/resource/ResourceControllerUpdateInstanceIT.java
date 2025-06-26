@@ -109,7 +109,8 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
     // then
     // Assert that the request is successful
     mockMvc.perform(updateRequest)
-      .andExpect(status().isOk());
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.resource['http://bibfra.me/vocab/lite/Instance'].profileId").value(1));
   }
 
   @Test
@@ -187,6 +188,7 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
       {
         "resource": {
           "http://bibfra.me/vocab/lite/Instance": {
+            "profileId":  1,
             "http://bibfra.me/vocab/marc/title": [
                 {
                   "http://bibfra.me/vocab/marc/Title": {

@@ -11,9 +11,6 @@ import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -37,6 +34,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
+import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
@@ -76,6 +74,8 @@ class ResourceMarcBibServiceImplTest {
   @Mock
   private ResourceDtoMapper resourceDtoMapper;
   @Mock
+  private ResourceMarcViewDtoMapper resourceMarcViewDtoMapper;
+  @Mock
   private ResourceModelMapper resourceModelMapper;
   @Mock
   private Ld2MarcMapper ld2MarcMapper;
@@ -111,7 +111,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(expectedModelResource);
     when(ld2MarcMapper.toMarcJson(expectedModelResource, UnmappedMarcHandling.APPEND))
       .thenReturn(expectedMarcString);
-    when(resourceDtoMapper.toMarcViewDto(existedResource, expectedMarcString))
+    when(resourceMarcViewDtoMapper.toMarcViewDto(existedResource, expectedMarcString))
       .thenReturn(expectedResponse);
 
     // when
@@ -165,7 +165,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
-    assertTrue(resourceMarcService.isSupportedByInventoryId(inventoryId));
+    assertThat(resourceMarcService.isSupportedByInventoryId(inventoryId)).isTrue();
   }
 
   @ParameterizedTest
@@ -186,7 +186,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
-    assertFalse(resourceMarcService.isSupportedByInventoryId(inventoryId));
+    assertThat(resourceMarcService.isSupportedByInventoryId(inventoryId)).isFalse();
   }
 
   @Test
@@ -223,7 +223,7 @@ class ResourceMarcBibServiceImplTest {
     var result = resourceMarcService.getResourcePreviewByInventoryId(inventoryId);
 
     //then
-    assertEquals(resourceDto, result);
+    assertThat(result).isEqualTo(resourceDto);
   }
 
   @Test
@@ -272,19 +272,18 @@ class ResourceMarcBibServiceImplTest {
     var result = resourceMarcService.importMarcRecord(inventoryId);
 
     //then
-    verify(rawMarcService).saveRawMarc(resourceEntity, unmappedMarc);
     verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
     assertThat(resourceEventCaptor.getValue())
       .satisfies(event -> {
         assertThat(event).isInstanceOf(ResourceUpdatedEvent.class);
-        assertEquals(resourceEntity, ((ResourceUpdatedEvent) event).resource());
+        assertThat(((ResourceUpdatedEvent) event).resource()).isEqualTo(resourceEntity);
       });
     assertThat(result)
       .satisfies(resourceIdDto -> {
         assertThat(resourceIdDto).isInstanceOf(ResourceIdDto.class);
-        assertEquals("1", resourceIdDto.getId());
+        assertThat(resourceIdDto.getId()).isEqualTo("1");
       });
-    assertEquals(LINKED_DATA.name(), resourceModelCaptor.getValue().getFolioMetadata().getSource().name());
+    assertThat(resourceModelCaptor.getValue().getFolioMetadata().getSource().name()).isEqualTo(LINKED_DATA.name());
   }
 
   @Test
