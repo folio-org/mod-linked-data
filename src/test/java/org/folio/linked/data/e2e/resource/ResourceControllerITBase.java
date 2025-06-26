@@ -327,6 +327,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().getFirst().getId();
+    assertThat(instanceResponse.getProfileId()).isEqualTo(1);
     checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
     checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);

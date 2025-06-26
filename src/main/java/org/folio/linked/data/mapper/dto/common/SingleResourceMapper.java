@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.dto.common;
 
-import java.util.Optional;
 import lombok.NonNull;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.model.entity.Resource;
@@ -11,7 +10,4 @@ public interface SingleResourceMapper {
 
   <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentRequestDto, Predicate predicate,
                         Resource parentEntity);
-
-  Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentResponseDto,
-                                                   Class<?> requestDto);
 }

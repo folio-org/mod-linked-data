@@ -203,7 +203,7 @@ class ResourceUtilsTest {
   @MethodSource("dataProvider")
   void getTypes_shouldReturn_resourceTypes(Resource resource, List<String> expectedTypes) {
     // expect
-    assertThat(ResourceUtils.getTypes(resource))
+    assertThat(ResourceUtils.getTypeUris(resource))
       .containsExactlyInAnyOrderElementsOf(expectedTypes);
   }
 

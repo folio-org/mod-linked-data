@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.dto;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,25 +11,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.spring.testing.type.UnitTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ResourceDtoMapperTest {
+class ResourceGraphDtoMapperTest {
 
-  @InjectMocks
-  private ResourceDtoMapperImpl resourceMapper;
-  @Mock
-  private SingleResourceMapper singleResourceMapper;
+  private ResourceGraphDtoMapper resourceMapper;
+
+  @BeforeEach
+  void setUp() {
+    resourceMapper = new ResourceGraphDtoMapperImpl();
+  }
 
   @Test
   void toResourceGraphDto_shouldReturnResourceGraphDto() {
@@ -52,26 +51,6 @@ class ResourceDtoMapperTest {
         .get(resource.getOutgoingEdges().iterator().next().getPredicate().getUri()).getFirst());
     assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(resource.getIndexDate()),
       resourceGraphDto.getIndexDate());
-  }
-
-  @Test
-  void toMarcViewDto_shouldReturnResourceMarcViewDto() {
-    //given
-    var expectedDocumentType = "MARC_BIB";
-    var resource = generateTestResource();
-    var marc = "{value: \"some marc json string\"";
-
-    //when
-    var resourceMarcViewDto = resourceMapper.toMarcViewDto(resource, marc);
-
-    //then
-    assertThat(resourceMarcViewDto)
-      .isNotNull()
-      .hasFieldOrPropertyWithValue("id", resource.getId().toString())
-      .hasFieldOrPropertyWithValue("recordType", expectedDocumentType)
-      .extracting("parsedRecord")
-      .isNotNull()
-      .hasFieldOrPropertyWithValue("content", marc);
   }
 
   private Resource generateTestResource() {
