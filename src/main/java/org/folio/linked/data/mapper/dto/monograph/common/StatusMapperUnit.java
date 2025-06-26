@@ -51,15 +51,12 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     var status = coreMapper.toDtoWithEdges(source, StatusResponse.class, false);
     status.setId(String.valueOf(source.getId()));
-    if (parentDto instanceof LccnResponse lccn) {
-      lccn.addStatusItem(status);
-    } else if (parentDto instanceof IsbnResponse isbn) {
-      isbn.addStatusItem(status);
-    } else if (parentDto instanceof ClassificationResponse classification) {
-      classification.addStatusItem(status);
-    } else {
-      throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
-        + IS_NOT_SUPPORTED_FOR_PREDICATE + PredicateDictionary.STATUS.getUri() + RIGHT_SQUARE_BRACKET);
+    switch (parentDto) {
+      case LccnResponse lccn -> lccn.addStatusItem(status);
+      case IsbnResponse isbn -> isbn.addStatusItem(status);
+      case ClassificationResponse classification -> classification.addStatusItem(status);
+      default -> throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
+          + IS_NOT_SUPPORTED_FOR_PREDICATE + PredicateDictionary.STATUS.getUri() + RIGHT_SQUARE_BRACKET);
     }
     return parentDto;
   }

@@ -9,6 +9,7 @@ import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
+import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import static org.folio.marc4ld.util.MarcUtil.isLanguageMaterial;
 import static org.folio.marc4ld.util.MarcUtil.isMonographicComponentPartOrItem;
 
@@ -17,7 +18,6 @@ import feign.FeignException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +31,6 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
@@ -157,9 +156,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     if (resource.isOfType(INSTANCE)) {
       return;
     }
-    var type = resource.getTypes().stream()
-      .map(ResourceTypeEntity::getUri)
-      .collect(Collectors.joining(", ", "[", "]"));
+    var type = String.join(", ", getTypeUris(resource));
     log.error("Resource is not supported for MARC view: {}", type);
     throw exceptionBuilder.notSupportedException(type, "MARC view");
   }
