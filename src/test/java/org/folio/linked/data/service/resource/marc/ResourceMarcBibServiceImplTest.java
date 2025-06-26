@@ -40,6 +40,7 @@ import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
@@ -95,6 +96,8 @@ class ResourceMarcBibServiceImplTest {
   private ResourceEdgeService resourceEdgeService;
   @Mock
   private RawMarcService rawMarcService;
+  @Mock
+  private ResourceProfileLinkingService resourceProfileLinkingService;
 
   @Test
   void getResourceMarcView_shouldReturnExistedEntity() {
@@ -250,6 +253,7 @@ class ResourceMarcBibServiceImplTest {
     var resourceId = 1L;
     var srsId = UUID.randomUUID().toString();
     var resourceEntity = new Resource().setId(resourceId);
+    final var profileId = random(Integer.class);
     resourceEntity.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(resourceEntity)
       .setSrsId(srsId));
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
@@ -269,10 +273,11 @@ class ResourceMarcBibServiceImplTest {
     when(resourceGraphService.saveMergingGraph(resourceEntity)).thenReturn(resourceEntity);
 
     //when
-    var result = resourceMarcService.importMarcRecord(inventoryId);
+    var result = resourceMarcService.importMarcRecord(inventoryId, profileId);
 
     //then
     verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
+    verify(resourceProfileLinkingService).linkResourceToProfile(resourceEntity, profileId);
     assertThat(resourceEventCaptor.getValue())
       .satisfies(event -> {
         assertThat(event).isInstanceOf(ResourceUpdatedEvent.class);
@@ -297,7 +302,7 @@ class ResourceMarcBibServiceImplTest {
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
-      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId, 1));
   }
 
   @Test
@@ -322,7 +327,7 @@ class ResourceMarcBibServiceImplTest {
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
-      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId, 2));
   }
 
   @Test
@@ -349,7 +354,7 @@ class ResourceMarcBibServiceImplTest {
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
-      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId));
+      .isThrownBy(() -> resourceMarcService.importMarcRecord(inventoryId, 3));
   }
 
   @Test

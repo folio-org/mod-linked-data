@@ -12,7 +12,7 @@ public interface ResourceMarcBibService {
 
   ResourceResponseDto getResourcePreviewByInventoryId(String inventoryId);
 
-  ResourceIdDto importMarcRecord(String inventoryId);
+  ResourceIdDto importMarcRecord(String inventoryId, Integer profileId);
 
   boolean saveAdminMetadata(org.folio.ld.dictionary.model.Resource modelResource);
 

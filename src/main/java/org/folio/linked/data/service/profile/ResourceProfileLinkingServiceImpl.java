@@ -2,7 +2,7 @@ package org.folio.linked.data.service.profile;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.ResourceUtils.getTypes;
+import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +62,6 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
     if (resource.isOfType(WORK)) {
       return WORK;
     }
-    throw exceptionBuilder.notSupportedException(String.join(", ", getTypes(resource)), "Profile Linking");
+    throw exceptionBuilder.notSupportedException(String.join(", ", getTypeUris(resource)), "Profile Linking");
   }
 }
