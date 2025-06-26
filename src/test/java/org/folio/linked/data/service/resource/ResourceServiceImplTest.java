@@ -253,7 +253,7 @@ class ResourceServiceImplTest {
 
     // then
     assertThat(expectedDto).isEqualTo(result);
-    verify(resourceGraphService).breakEdgesAndDelete(oldWork);
+    verify(resourceRepo).delete(oldWork);
     verify(resourceGraphService).saveMergingGraph(work);
     verify(folioExecutionContext).getUserId();
     verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work));
@@ -285,7 +285,7 @@ class ResourceServiceImplTest {
 
     // then
     assertThat(expectedDto).isEqualTo(result);
-    verify(resourceGraphService).breakEdgesAndDelete(oldInstance);
+    verify(resourceRepo).delete(oldInstance);
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
@@ -302,7 +302,7 @@ class ResourceServiceImplTest {
     resourceService.deleteResource(work.getId());
 
     // then
-    verify(resourceGraphService).breakEdgesAndDelete(work);
+    verify(resourceRepo).delete(work);
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
     assertThat(work).isEqualTo(resourceDeletedEventCaptor.getValue().resource());
@@ -326,7 +326,7 @@ class ResourceServiceImplTest {
     resourceService.deleteResource(instance.getId());
 
     // then
-    verify(resourceGraphService).breakEdgesAndDelete(instance);
+    verify(resourceRepo).delete(instance);
     var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
     verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
     assertThat(instance).isEqualTo(resourceDeletedEventCaptor.getValue().resource());

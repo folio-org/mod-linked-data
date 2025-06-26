@@ -10,7 +10,6 @@ import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
@@ -55,14 +54,6 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   @Override
   public Resource saveMergingGraph(Resource resource) {
     return saveMergingGraphSkippingAlreadySaved(resource, null);
-  }
-
-  @Override
-  public void breakEdgesAndDelete(Resource resource) {
-    resource.setActive(false);
-    resource.setFolioMetadata(null);
-    breakCircularEdges(resource);
-    resourceRepo.delete(resource);
   }
 
   private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
@@ -141,28 +132,5 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
       .map(ResourceEdge::getId)
       .map(id -> !edgeRepo.existsById(id))
       .orElse(false);
-  }
-
-  private void breakCircularEdges(Resource resource) {
-    breakOutgoingCircularEdges(resource);
-    breakIncomingCircularEdges(resource);
-  }
-
-  private void breakOutgoingCircularEdges(Resource resource) {
-    resource.getOutgoingEdges().forEach(edge -> {
-      var filtered = edge.getTarget().getIncomingEdges().stream()
-        .filter(e -> resource.equals(e.getSource()))
-        .collect(Collectors.toSet());
-      edge.getTarget().getIncomingEdges().removeAll(filtered);
-    });
-  }
-
-  private void breakIncomingCircularEdges(Resource resource) {
-    resource.getIncomingEdges().forEach(edge -> {
-      var filtered = edge.getSource().getOutgoingEdges().stream()
-        .filter(e -> resource.equals(e.getTarget()))
-        .collect(Collectors.toSet());
-      edge.getSource().getOutgoingEdges().removeAll(filtered);
-    });
   }
 }

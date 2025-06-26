@@ -226,7 +226,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     refreshWork(newResource);
     var event = resourceEventSupplier.apply(newResource);
     if (event instanceof ResourceReplacedEvent rre) {
-      resourceGraphService.breakEdgesAndDelete(rre.previous());
+      resourceRepo.delete(rre.previous());
     }
     applicationEventPublisher.publishEvent(event);
     return newResource;
