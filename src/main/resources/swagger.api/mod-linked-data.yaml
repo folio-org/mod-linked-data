@@ -217,6 +217,7 @@ paths:
       description: Create a Resource derived from MARC record
       parameters:
         - $ref: '#/components/parameters/inventoryId'
+        - $ref: '#/components/parameters/profileIdQuery'
       responses:
         '201':
           description: Json object with id of a resource
@@ -439,6 +440,14 @@ components:
       name: profileId
       in: path
       required: true
+      description: ID of the profile
+      schema:
+        type: integer
+        format: int16
+    profileIdQuery:
+      name: profileId
+      in: query
+      required: false
       description: ID of the profile
       schema:
         type: integer

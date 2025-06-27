@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
@@ -31,12 +30,11 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceDtoMapper;
 import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.event.ResourceEvent;
-import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
@@ -71,6 +69,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
   private final RawMarcService rawMarcService;
+  private final ResourceProfileLinkingService resourceProfileLinkingService;
 
   @Override
   @Transactional(readOnly = true)
@@ -108,19 +107,18 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   }
 
   @Override
-  public ResourceIdDto importMarcRecord(String inventoryId) {
-    var resourceIdDto = getResource(inventoryId)
-      .map(resource -> {
-        resource.getFolioMetadata().setSource(LINKED_DATA);
-        return resource;
-      })
-      .map(this::save)
-      .map(String::valueOf)
-      .map(id -> new ResourceIdDto().id(id))
+  public ResourceIdDto importMarcRecord(String inventoryId, Integer profileId) {
+    var resource = getResource(inventoryId)
       .orElseThrow(() -> createSrNotFoundException(inventoryId));
+
+    resource.getFolioMetadata().setSource(LINKED_DATA);
+    var savedResource = saveAndPublishEvents(resource);
+    resourceProfileLinkingService.linkResourceToProfile(savedResource, profileId);
+
     log.info("MARC BIB record with inventory ID: {} is successfully imported to graph resource with ID: {}",
-      inventoryId, resourceIdDto.getId());
-    return resourceIdDto;
+      inventoryId, savedResource.getId());
+
+    return new ResourceIdDto().id(savedResource.getId().toString());
   }
 
   @Override
@@ -192,7 +190,18 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     return objectMapper.writeValueAsString(content);
   }
 
-  private Long save(org.folio.ld.dictionary.model.Resource modelResource) {
+  private Resource saveAndPublishEvents(org.folio.ld.dictionary.model.Resource modelResource) {
+    ensureNotDuplicate(modelResource);
+
+    var resourceEntity = resourceModelMapper.toEntity(modelResource);
+    var newResource = resourceGraphService.saveMergingGraph(resourceEntity);
+    refreshWork(newResource);
+    saveUnmappedMarc(modelResource, newResource);
+    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
+    return newResource;
+  }
+
+  private void ensureNotDuplicate(org.folio.ld.dictionary.model.Resource modelResource) {
     var id = modelResource.getId();
     if (resourceRepo.existsById(id)) {
       log.error("The same resource ID {} already exists", id);
@@ -204,31 +213,12 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       log.error("MARC record having srsID: {} is already imported to data graph", srsId);
       throw exceptionBuilder.alreadyExistsException("srsId", srsId);
     }
-
-    // Emitting a ResourceCreatedEvent will send a "CREATE_INSTANCE" Kafka event to Inventory,
-    // resulting in a duplicate instance record in Inventory. By emitting a ResourceUpdatedEvent instead,
-    // we send an "UPDATE_INSTANCE" event, switching the source of the existing instance
-    // from "MARC" to "LINKED_DATA" in Inventory.
-    var saved = saveAndPublishEvent(resourceModelMapper.toEntity(modelResource), ResourceUpdatedEvent::new);
-    saveUnmappedMarc(modelResource, saved);
-    return saved.getId();
   }
 
   private void saveUnmappedMarc(org.folio.ld.dictionary.model.Resource modelResource, Resource saved) {
     ofNullable(modelResource.getUnmappedMarc())
       .map(org.folio.ld.dictionary.model.RawMarc::getContent)
       .ifPresent(unmappedMarc -> rawMarcService.saveRawMarc(saved, unmappedMarc));
-  }
-
-  private Resource saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
-    var newResource = resourceGraphService.saveMergingGraph(resource);
-    refreshWork(newResource);
-    var event = resourceEventSupplier.apply(newResource);
-    if (event instanceof ResourceReplacedEvent rre) {
-      resourceGraphService.breakEdgesAndDelete(rre.previous());
-    }
-    applicationEventPublisher.publishEvent(event);
-    return newResource;
   }
 
   private void refreshWork(Resource resource) {

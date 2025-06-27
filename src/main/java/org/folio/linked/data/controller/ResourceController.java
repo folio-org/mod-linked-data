@@ -54,10 +54,10 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
-  public ResponseEntity<ResourceIdDto> importMarcRecord(String inventoryId) {
+  public ResponseEntity<ResourceIdDto> importMarcRecord(String inventoryId, Integer profileId) {
     return ResponseEntity
       .status(CREATED)
-      .body(resourceMarcService.importMarcRecord(inventoryId));
+      .body(resourceMarcService.importMarcRecord(inventoryId, profileId));
   }
 
   @Override
