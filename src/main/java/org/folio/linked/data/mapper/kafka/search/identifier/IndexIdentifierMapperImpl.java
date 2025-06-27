@@ -1,12 +1,12 @@
 package org.folio.linked.data.mapper.kafka.search.identifier;
 
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.joining;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
+import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
@@ -19,7 +19,6 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -76,9 +75,8 @@ public class IndexIdentifierMapperImpl implements IndexIdentifierMapper {
     if (isNull(resource.getTypes())) {
       return Optional.empty();
     }
-    var type = resource.getTypes()
+    var type = getTypeUris(resource)
       .stream()
-      .map(ResourceTypeEntity::getUri)
       .filter(uri -> ObjectUtils.notEqual(uri, ResourceTypeDictionary.IDENTIFIER.getUri()))
       .findFirst()
       .map(this::normalizeUri)
@@ -103,7 +101,6 @@ public class IndexIdentifierMapperImpl implements IndexIdentifierMapper {
   }
 
   private void logError(Resource resource) {
-    log.warn(MSG_UNKNOWN_TYPES,
-      resource.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", ")), resource.getId());
+    log.warn(MSG_UNKNOWN_TYPES, String.join(", ", getTypeUris(resource)), resource.getId());
   }
 }

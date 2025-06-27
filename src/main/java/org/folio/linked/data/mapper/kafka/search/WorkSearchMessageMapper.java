@@ -3,13 +3,11 @@ package org.folio.linked.data.mapper.kafka.search;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.ObjectUtils.allNull;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
@@ -23,7 +21,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_PARALLEL;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VARIANT;
@@ -33,21 +30,23 @@ import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_VARI
 import static org.folio.linked.data.util.Constants.MSG_UNKNOWN_TYPES;
 import static org.folio.linked.data.util.Constants.SEARCH_WORK_RESOURCE_NAME;
 import static org.folio.linked.data.util.ResourceUtils.cleanDate;
+import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
+import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.LinkedDataContributor;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnly;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnlyPublicationsInner;
@@ -57,19 +56,16 @@ import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.LinkedDataWorkOnlyClassificationsInner;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
-import org.folio.linked.data.domain.dto.WorkResponse;
-import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.monograph.instance.InstanceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.work.WorkMapperUnit;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.util.ResourceUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 @Log4j2
@@ -83,8 +79,6 @@ public abstract class WorkSearchMessageMapper {
   protected NoteMapper noteMapper;
   @Autowired
   private IndexIdentifierMapper indexIdentifierMapper;
-  @Autowired
-  private SingleResourceMapper singleResourceMapper;
 
   @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "resourceName", constant = SEARCH_WORK_RESOURCE_NAME)
@@ -127,7 +121,7 @@ public abstract class WorkSearchMessageMapper {
 
   @Nullable
   protected ResourceTypeDictionary getTitleType(Resource title) {
-    var typeUris = title.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    var typeUris = getTypeUris(title);
     if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.TITLE.getUri().equals(uri))) {
       return ResourceTypeDictionary.TITLE;
     } else if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.PARALLEL_TITLE.getUri().equals(uri))) {
@@ -155,8 +149,7 @@ public abstract class WorkSearchMessageMapper {
         || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
       .map(re -> new LinkedDataContributor()
         .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
-        .type(toType(re.getTarget(), LinkedDataContributor.TypeEnum::fromValue,
-          LinkedDataContributor.TypeEnum.class, re.getPredicate(), WorkResponse.class))
+        .type(toContributorType(re.getTarget()).orElse(null))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> nonNull(ic.getName()))
@@ -213,27 +206,35 @@ public abstract class WorkSearchMessageMapper {
   }
 
   protected List<LinkedDataInstanceOnly> extractInstances(Resource resource) {
-    var workStream = resource.isOfType(INSTANCE) ? resource.getOutgoingEdges().stream()
-      .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-      .map(ResourceEdge::getTarget) : Stream.of(resource);
-    return workStream
-      .flatMap(work -> work.getIncomingEdges().stream()
-        .filter(re -> INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
-        .map(ResourceEdge::getSource))
-      .map(ir -> new LinkedDataInstanceOnly()
-        .id(String.valueOf(ir.getId()))
-        .titles(extractTitles(ir))
-        .identifiers(indexIdentifierMapper.extractIdentifiers(ir))
-        .notes(mapNotes(ir.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
-        .contributors(extractContributors(ir))
-        .publications(extractPublications(ir))
-        .suppress(extractSuppress(ir))
-        .editionStatements(getPropertyValues(ir.getDoc(), EDITION.getValue()).toList()))
-      .filter(bii -> isNotEmpty(bii.getTitles()) || isNotEmpty(bii.getIdentifiers())
-        || isNotEmpty(bii.getContributors()) || isNotEmpty(bii.getPublications())
-        || isNotEmpty(bii.getEditionStatements()))
+    var allInstances = extractWorkFromInstance(resource)
+      .map(ResourceUtils::extractInstancesFromWork)
+      .orElseGet(List::of);
+
+    return allInstances
+      .stream()
+      .map(this::toInstanceDto)
+      .flatMap(Optional::stream)
       .distinct()
       .toList();
+  }
+
+  private Optional<LinkedDataInstanceOnly> toInstanceDto(Resource instance) {
+    var instanceDto = new LinkedDataInstanceOnly()
+      .id(String.valueOf(instance.getId()))
+      .titles(extractTitles(instance))
+      .identifiers(indexIdentifierMapper.extractIdentifiers(instance))
+      .notes(mapNotes(instance.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
+      .contributors(extractContributors(instance))
+      .publications(extractPublications(instance))
+      .suppress(extractSuppress(instance))
+      .editionStatements(getPropertyValues(instance.getDoc(), EDITION.getValue()).toList());
+
+    if (isNotEmpty(instanceDto.getTitles()) || isNotEmpty(instanceDto.getIdentifiers())
+        || isNotEmpty(instanceDto.getContributors()) || isNotEmpty(instanceDto.getPublications())
+        || isNotEmpty(instanceDto.getEditionStatements())) {
+      return Optional.of(instanceDto);
+    }
+    return Optional.empty();
   }
 
   private LinkedDataInstanceOnlySuppress extractSuppress(Resource resource) {
@@ -269,38 +270,22 @@ public abstract class WorkSearchMessageMapper {
     return null;
   }
 
-  protected <E extends Enum<E>> E toType(Resource resource,
-                                         Function<String, E> typeSupplier,
-                                         Class<E> enumClass,
-                                         Predicate predicate,
-                                         Class<?> parentDto) {
-    if (isNull(resource.getTypes())) {
-      return null;
-    }
-    return resource.getTypes()
-      .stream()
-      .map(ResourceTypeEntity::getUri)
-      .filter(type -> singleResourceMapper.getMapperUnit(type, predicate, parentDto, null).isPresent())
-      .findFirst()
+  private Optional<LinkedDataContributor.TypeEnum> toContributorType(Resource resource) {
+    var typeUris = getTypeUris(resource);
+    return typeUris.stream()
       .map(typeUri -> typeUri.substring(typeUri.lastIndexOf("/") + 1))
-      .map(typeUri -> {
+      .map(typeName -> {
         try {
-          return typeSupplier.apply(typeUri);
+          return LinkedDataContributor.TypeEnum.fromValue(typeName);
         } catch (IllegalArgumentException ignored) {
           return null;
         }
       })
-      .orElseGet(() -> {
-        var enumNameWithParent = getTypeEnumNameWithParent(enumClass);
-        log.warn(MSG_UNKNOWN_TYPES,
-          resource.getTypes().stream().map(ResourceTypeEntity::getUri).collect(joining(", ")),
-          enumNameWithParent, resource.getId());
-        return null;
+      .filter(Objects::nonNull)
+      .findFirst()
+      .or(() -> {
+        log.warn(MSG_UNKNOWN_TYPES, typeUris, LinkedDataContributor.TypeEnum.class.getSimpleName(), resource.getId());
+        return Optional.empty();
       });
-  }
-
-  @NonNull
-  protected <E extends Enum<E>> String getTypeEnumNameWithParent(Class<E> enumClass) {
-    return enumClass.getName().substring(enumClass.getName().lastIndexOf(".") + 1);
   }
 }
