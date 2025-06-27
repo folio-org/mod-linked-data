@@ -30,7 +30,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
-  @Transactional()
+  @Transactional
   public void linkResourceToProfile(Resource resource, Integer profileId) {
     if (profileId == null) {
       return;

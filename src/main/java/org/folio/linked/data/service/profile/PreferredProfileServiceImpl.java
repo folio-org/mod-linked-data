@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-@Transactional()
+@Transactional
 public class PreferredProfileServiceImpl implements PreferredProfileService {
 
   private final PreferredProfileRepository preferredProfileRepository;

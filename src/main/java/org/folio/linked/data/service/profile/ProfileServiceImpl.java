@@ -33,7 +33,7 @@ public class ProfileServiceImpl implements ProfileService {
   private final ObjectMapper objectMapper;
 
   @Override
-  @Transactional()
+  @Transactional
   public void saveAllProfiles() {
     var profilesDirectory = getClass().getClassLoader().getResource(PROFILE_DIRECTORY);
     try (var files = Files.list(Paths.get(profilesDirectory.toURI()))) {

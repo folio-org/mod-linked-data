@@ -19,11 +19,6 @@ public class ProfileController implements ProfileApi {
   private final PreferredProfileService preferredProfileService;
 
   @Override
-  public ResponseEntity<String> getProfile() {
-    return ResponseEntity.ok(profileService.getProfile());
-  }
-
-  @Override
   public ResponseEntity<String> getProfileById(Integer profileId) {
     return ResponseEntity.ok(profileService.getProfileById(profileId));
   }

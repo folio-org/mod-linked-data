@@ -156,11 +156,6 @@
       "handlers": [
         {
           "methods": [ "GET" ],
-          "pathPattern": "/linked-data/profile",
-          "permissionsRequired": [ "linked-data.profiles.get" ]
-        },
-        {
-          "methods": [ "GET" ],
           "pathPattern": "/linked-data/profile/{id}",
           "permissionsRequired": [ "linked-data.profiles.item.get" ]
         },
@@ -281,11 +276,6 @@
       "permissionName": "linked-data.import.file.post",
       "displayName": "Linked Data: Import a file containing resources into the graph",
       "description": "Import a file containing resources into the graph"
-    },
-    {
-      "permissionName": "linked-data.profiles.get",
-      "displayName": "Linked Data: Get the profiles for performing CRUD operations on resources",
-      "description": "Get the profiles for performing CRUD operations on linked-data resources"
     },
     {
       "permissionName": "linked-data.profiles.item.get",

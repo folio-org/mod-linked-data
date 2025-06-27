@@ -27,24 +27,6 @@ class ProfileControllerIT {
   private Environment env;
 
   @Test
-  void getProfile_returnsProfile() throws Exception {
-    //given
-    var requestBuilder = get(PROFILE_URL)
-      .headers(defaultHeaders(env));
-
-    //when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    //then
-    var profile = resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(TEXT_PLAIN_VALUE + ";charset=UTF-8"))
-      .andReturn().getResponse().getContentAsString();
-
-    assertTrue(profile.contains("\"id\": \"Monograph\""));
-  }
-
-  @Test
   void getProfileById_returnsProfile() throws Exception {
     //given
     var requestBuilder = get(PROFILE_URL + "/1")
