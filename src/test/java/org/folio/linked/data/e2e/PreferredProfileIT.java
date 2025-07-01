@@ -38,7 +38,7 @@ class PreferredProfileIT {
       .headers(headers)
       .content("""
         {
-            "id": 1,
+            "id": 3,
             "resourceType": "http://bibfra.me/vocab/lite/Instance"
         }""");
     mockMvc.perform(postRequest)
@@ -71,7 +71,7 @@ class PreferredProfileIT {
     result
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("$[0].id", equalTo(1)))
+      .andExpect(jsonPath("$[0].id", equalTo(3)))
       .andExpect(jsonPath("$[0].name", equalTo("Monograph")))
       .andExpect(jsonPath("$[0].resourceType", equalTo("http://bibfra.me/vocab/lite/Instance")))
       .andExpect(jsonPath("$.length()", equalTo(1)));

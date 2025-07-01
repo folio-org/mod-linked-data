@@ -22,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinkingService {
-  private static final Integer MONOGRAPH_PROFILE_ID = 1;
+  private static final Integer WORK_PROFILE_ID = 2;
+  private static final Integer MONOGRAPH_PROFILE_ID = 3;
 
   private final ResourceProfileRepository resourceProfileRepository;
   private final PreferredProfileService preferredProfileService;
@@ -41,13 +42,21 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
 
   @Override
   public Integer resolveProfileId(Resource resource) {
+    var resourceType = getResourceType(resource);
     return resourceProfileRepository.findProfileIdByResourceHash(resource.getId())
       .map(ResourceProfileRepository.ProfileIdProjection::getProfileId)
-      .or(() -> getPreferredProfileId(getResourceType(resource)))
-      .orElse(MONOGRAPH_PROFILE_ID);
+      .or(() -> getUserPreferredProfileId(resourceType))
+      .orElseGet(() -> getDefaultProfileId(resourceType));
   }
 
-  private Optional<Integer> getPreferredProfileId(ResourceType resourceType) {
+  private Integer getDefaultProfileId(ResourceType resourceType) {
+    if (resourceType == WORK) {
+      return WORK_PROFILE_ID;
+    }
+    return MONOGRAPH_PROFILE_ID;
+  }
+
+  private Optional<Integer> getUserPreferredProfileId(ResourceType resourceType) {
     return preferredProfileService
       .getPreferredProfiles(executionContext.getUserId(), resourceType.getUri())
       .stream()

@@ -64,7 +64,7 @@ class ProfileControllerIT {
   @Test
   void getMetadataByResourceType_returnsMetadata() throws Exception {
     //given
-    var requestBuilder = get(PROFILE_URL + "/metadata?resourceType=http://bibfra.me/vocab/lite/Instance")
+    var requestBuilder = get(PROFILE_URL + "/metadata?resourceType=http://bibfra.me/vocab/lite/Work")
       .headers(defaultHeaders(env));
 
     //when
@@ -74,8 +74,8 @@ class ProfileControllerIT {
     resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("$[0].id", equalTo(1)))
-      .andExpect(jsonPath("$[0].name", equalTo("Monograph")))
-      .andExpect(jsonPath("$[0].resourceType", equalTo("http://bibfra.me/vocab/lite/Instance")));
+      .andExpect(jsonPath("$[0].id", equalTo(2)))
+      .andExpect(jsonPath("$[0].name", equalTo("Work")))
+      .andExpect(jsonPath("$[0].resourceType", equalTo("http://bibfra.me/vocab/lite/Work")));
   }
 }
