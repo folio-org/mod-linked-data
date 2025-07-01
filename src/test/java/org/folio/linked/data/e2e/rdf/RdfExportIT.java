@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.resource.ResourceTestService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
