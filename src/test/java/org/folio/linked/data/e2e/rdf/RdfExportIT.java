@@ -29,7 +29,6 @@ class RdfExportIT {
   @Autowired
   private ResourceTestService resourceTestService;
 
-  @Disabled("getSampleInstanceResource needs to be updated to match latest lib-linked-data-rdf4ld changes")
   @Test
   void rdfExport_shouldReturnExportedResultForExistedInstance() throws Exception {
     // given
