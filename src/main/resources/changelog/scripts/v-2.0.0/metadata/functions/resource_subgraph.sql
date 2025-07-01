@@ -83,8 +83,7 @@ do $do$
         s.predicate,
         s.depth;
     end $$
-    language plpgsql
-    set search_path=%1$I,public;
+    language plpgsql;
 
     -- Recursive function to expand triple objects into their own subgraph.
     -- Postgres does not support nested aggregate functions, so object arrays
@@ -168,8 +167,7 @@ do $do$
       end if;
       return local_doc;
     end $$
-    language plpgsql
-    set search_path=%1$I,public;
+    language plpgsql;
 
     -- Primary function exporting a JSON subgraph starting with the given
     -- subject to the specified depth.
@@ -227,8 +225,7 @@ do $do$
         )) into subgraph_doc;
       return subgraph_doc;
     end $$
-    language plpgsql
-    set search_path=%1$I,public;
+    language plpgsql;
 
     comment on function %1$I.resource_subgraph(bigint, integer) is 'Recursively export the graph starting from id, to the depth max_depth, with no cycles, as a set';
     comment on function %1$I.export_resource_edges(bigint, integer, integer, bigint[], %1$I.export_doc[], %1$I.export_triple[]) is 'Recursive function to export as JSON a resource, its properties, and objects, calling itself on objects to a depth of max_depth, with no cycles';
