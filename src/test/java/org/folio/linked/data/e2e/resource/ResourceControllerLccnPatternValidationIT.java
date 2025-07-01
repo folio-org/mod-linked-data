@@ -59,7 +59,7 @@ class ResourceControllerLccnPatternValidationIT extends ITBase {
       .headers(defaultHeaders(env))
       .content(INSTANCE_WITH_WORK_REF_SAMPLE
         .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+        .replace("http://id/lccn", "http://id.loc.gov/vocabulary/mstatus/current")
       );
     when(searchClient.searchInstances(any()))
       .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(0L), HttpStatus.OK));

@@ -58,7 +58,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
       .headers(defaultHeaders(env))
       .content(INSTANCE_WITH_WORK_REF_SAMPLE
         .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+        .replace("http://id/lccn", "http://id.loc.gov/vocabulary/mstatus/current")
         .replace("lccn value", "nn0123456789")
       );
     var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
@@ -125,7 +125,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
       .headers(defaultHeaders(env))
       .content(INSTANCE_WITH_WORK_REF_SAMPLE
         .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+        .replace("http://id/lccn", "http://id.loc.gov/vocabulary/mstatus/current")
         .replace("lccn value", "nn0123456789")
       );
     when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(false);
@@ -150,7 +150,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
       .headers(defaultHeaders(env))
       .content(INSTANCE_WITH_WORK_REF_SAMPLE
         .replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
-        .replace("lccn status link", "http://id.loc.gov/vocabulary/mstatus/current")
+        .replace("http://id/lccn", "http://id.loc.gov/vocabulary/mstatus/current")
         .replace("lccn value", "nn0123456789")
       );
     var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
