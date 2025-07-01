@@ -661,7 +661,7 @@ public class MonographTestUtil {
     return createResource(
       Map.of(
         LABEL, List.of(prefix + " status value"),
-        LINK, List.of("http://id.loc.gov/vocabulary/mstatus/" + prefix)
+        LINK, List.of(prefix + " status link")
       ),
       Set.of(ResourceTypeDictionary.STATUS),
       emptyMap()
