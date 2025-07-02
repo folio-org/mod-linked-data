@@ -186,7 +186,7 @@
                   "lccn status value"
                 ],
                 "http://bibfra.me/vocab/lite/link": [
-                  "lccn status link"
+                  "http://id/lccn"
                 ]
               }
             ]
@@ -206,7 +206,7 @@
                   "isbn status value"
                 ],
                 "http://bibfra.me/vocab/lite/link": [
-                  "isbn status link"
+                  "http://id/isbn"
                 ]
               }
             ]

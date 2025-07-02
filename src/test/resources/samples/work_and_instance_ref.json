@@ -161,7 +161,7 @@
                 "lc status value"
               ],
               "http://bibfra.me/vocab/lite/link": [
-                "lc status link"
+                "http://id/lc"
               ]
             }
           ],

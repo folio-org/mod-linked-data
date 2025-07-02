@@ -741,12 +741,12 @@ abstract class ResourceControllerITBase extends ITBase {
         .andExpect(jsonPath(toIsbnValue(), equalTo(List.of("isbn value"))))
         .andExpect(jsonPath(toIsbnQualifier(), equalTo(List.of("isbn qualifier"))))
         .andExpect(jsonPath(toIsbnStatusValue(), equalTo(List.of("isbn status value"))))
-        .andExpect(jsonPath(toIsbnStatusLink(), equalTo(List.of("isbn status link"))))
+        .andExpect(jsonPath(toIsbnStatusLink(), equalTo(List.of("http://id/isbn"))))
         .andExpect(jsonPath(toIssuance(), equalTo("single unit")))
         .andExpect(jsonPath(toStatementOfResponsibility(), equalTo("statement of responsibility")))
         .andExpect(jsonPath(toLccnValue(), equalTo(List.of("lccn value"))))
         .andExpect(jsonPath(toLccnStatusValue(), equalTo(List.of("lccn status value"))))
-        .andExpect(jsonPath(toLccnStatusLink(), equalTo(List.of("lccn status link"))))
+        .andExpect(jsonPath(toLccnStatusLink(), equalTo(List.of("http://id/lccn"))))
         .andExpect(jsonPath(toLocalIdValue(), equalTo(List.of("localId value"))))
         .andExpect(jsonPath(toLocalIdAssigner(), equalTo(List.of("localId assigner"))))
         .andExpect(jsonPath(toMediaCode(), equalTo("s")))
@@ -810,7 +810,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkDeweyEditionNumber(workBase), equalTo(List.of("edition number"))))
       .andExpect(jsonPath(toWorkDeweyEdition(workBase), equalTo(List.of("edition"))))
       .andExpect(jsonPath(toLcStatusValue(workBase), equalTo(List.of("lc status value"))))
-      .andExpect(jsonPath(toLcStatusLink(workBase), equalTo(List.of("lc status link"))))
+      .andExpect(jsonPath(toLcStatusLink(workBase), equalTo(List.of("http://id/lc"))))
       .andExpect(jsonPath(toClassificationAssigningSourceIds(workBase), containsInAnyOrder("4932783899755316479",
         "8752404686183471966")))
       .andExpect(jsonPath(toClassificationAssigningSourceLabels(workBase), containsInAnyOrder("assigning agency",
@@ -1130,7 +1130,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(status.getId()).isEqualTo(hashService.hash(status));
     assertThat(status.getDoc().size()).isEqualTo(2);
     assertThat(status.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(status.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(prefix + " status link");
+    assertThat(status.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("http://id/" + prefix);
     assertThat(status.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
     assertThat(status.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(prefix + " status value");
     assertThat(status.getOutgoingEdges()).isEmpty();
