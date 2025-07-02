@@ -18,6 +18,8 @@ import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -90,19 +92,25 @@ class ResourceProfileLinkingServiceImplTest {
     assertThat(result).isEqualTo(profileId);
   }
 
-  @Test
-  void shouldResolveProfileId_returnMonographProfileId() {
+  @ParameterizedTest
+  @CsvSource({
+    "'http://bibfra.me/vocab/lite/Work', 2",
+    "'http://bibfra.me/vocab/lite/Instance', 3"
+  })
+  void shouldResolveProfileId_returnDefaultProfileId(String resourceTypeUri, int expectedProfileId) {
     // given
     var userId = randomUUID();
-    var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri()))).setId(1L);
+    var resource = new Resource()
+      .setTypes(Set.of(new ResourceTypeEntity().setUri(resourceTypeUri)))
+      .setId(1L);
     when(resourceProfileRepository.findProfileIdByResourceHash(resource.getId())).thenReturn(Optional.empty());
-    when(preferredProfileService.getPreferredProfiles(userId, INSTANCE.getUri())).thenReturn(List.of());
+    when(preferredProfileService.getPreferredProfiles(userId, resourceTypeUri)).thenReturn(List.of());
     when(folioExecutionContext.getUserId()).thenReturn(userId);
 
     // when
     var result = resourceProfileLinkingService.resolveProfileId(resource);
 
     // then
-    assertThat(result).isEqualTo(1);
+    assertThat(result).isEqualTo(expectedProfileId);
   }
 }
