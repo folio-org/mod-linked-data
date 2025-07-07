@@ -1,5 +1,6 @@
 package org.folio.linked.data.e2e.mappings;
 
+import static java.util.stream.StreamSupport.stream;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
@@ -9,9 +10,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
@@ -89,7 +93,15 @@ public abstract class PostResourceIT extends ITBase {
   }
 
   protected String getProperty(Resource resource, String property) {
-    return resource.getDoc().get(property).get(0).asText();
+    return getProperties(resource, property).stream()
+      .findFirst()
+      .orElseThrow();
+  }
+
+  protected Set<String> getProperties(Resource resource, String property) {
+    return stream(resource.getDoc().get(property).spliterator(), false)
+      .map(JsonNode::asText)
+      .collect(Collectors.toSet());
   }
 
   protected List<Resource> getOutgoingResources(Resource resource, String predicate) {

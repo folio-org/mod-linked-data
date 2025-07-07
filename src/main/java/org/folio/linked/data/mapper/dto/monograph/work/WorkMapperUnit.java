@@ -17,6 +17,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.PropertyDictionary.AWARDS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
@@ -53,7 +54,8 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = WORK, requestDto = WorkField.class)
 public class WorkMapperUnit extends TopResourceMapperUnit {
 
-  public static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
+  public static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(AWARDS_NOTE, BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE,
+    NOTE);
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
