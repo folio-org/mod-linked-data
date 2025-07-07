@@ -32,16 +32,12 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
-import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
-import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
@@ -49,30 +45,21 @@ import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
-import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPECIFIED;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
-import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
-import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
@@ -80,9 +67,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
-import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
-import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
@@ -153,8 +138,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustratio
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsTerm;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstance;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceNotesTypes;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceNotesValues;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceReference;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnQualifier;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnStatusLink;
@@ -219,8 +202,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGeograp
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPublicationCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPublicationLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkGovPublicationTerm;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesTypes;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkNotesValues;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkReference;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSubjectLabel;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkSummary;
@@ -704,20 +685,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toVariantTitleNote(instanceBase), equalTo(List.of("Variant: noteLabel"))))
       .andExpect(jsonPath(toVariantTitleDate(instanceBase), equalTo(List.of("Variant: date"))))
       .andExpect(jsonPath(toVariantTitleSubtitle(instanceBase), equalTo(List.of("Variant: subTitle"))))
-      .andExpect(jsonPath(toVariantTitleType(instanceBase), equalTo(List.of("Variant: variantType"))))
-      .andExpect(
-        jsonPath(toInstanceNotesValues(instanceBase), containsInAnyOrder("additional physical form",
-          "computer data note", "description source note", "exhibitions note", "funding information", "issuance note",
-          "issuing body", "location of other archival material", "note", "original version note", "related parts",
-          "reproduction note", "type of report", "with note")))
-      .andExpect(jsonPath(toInstanceNotesTypes(instanceBase), containsInAnyOrder("http://bibfra.me/vocab/lite/note",
-        "http://bibfra.me/vocab/marc/withNote", "http://bibfra.me/vocab/marc/typeOfReport",
-        "http://bibfra.me/vocab/marc/issuanceNote", "http://bibfra.me/vocab/marc/computerDataNote",
-        "http://bibfra.me/vocab/marc/additionalPhysicalForm", "http://bibfra.me/vocab/marc/reproductionNote",
-        "http://bibfra.me/vocab/marc/originalVersionNote", "http://bibfra.me/vocab/marc/relatedParts",
-        "http://bibfra.me/vocab/marc/issuingBody", "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial",
-        "http://bibfra.me/vocab/marc/exhibitionsNote", "http://bibfra.me/vocab/marc/descriptionSourceNote",
-        "http://bibfra.me/vocab/marc/fundingInformation")));
+      .andExpect(jsonPath(toVariantTitleType(instanceBase), equalTo(List.of("Variant: variantType"))));
     if (instanceBase.equals(toInstance())) {
       resultActions
         .andExpect(jsonPath(toSupplementaryContentLink(), equalTo("supplementaryContent link")))
@@ -825,11 +793,6 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkSubjectLabel(workBase), containsInAnyOrder("subject person", "subject form")))
       .andExpect(jsonPath(toWorkSummary(workBase), equalTo("summary text")))
       .andExpect(jsonPath(toWorkTableOfContents(workBase), equalTo("table of contents")))
-      .andExpect(jsonPath(toWorkNotesValues(workBase),
-        containsInAnyOrder("language note", "bibliography note", "note", "another note", "another note")))
-      .andExpect(jsonPath(toWorkNotesTypes(workBase), containsInAnyOrder("http://bibfra.me/vocab/marc/languageNote",
-        "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote",
-        "http://bibfra.me/vocab/lite/note", "http://bibfra.me/vocab/lite/note")))
       .andExpect(jsonPath(toWorkGeographicCoverageLabel(workBase), containsInAnyOrder("United States", "Europe")))
       .andExpect(jsonPath(toWorkGenreLabel(workBase), equalTo(List.of("genre 1", "genre 2"))))
       .andExpect(jsonPath(toWorkDateStart(workBase), equalTo("2024")))
@@ -855,27 +818,13 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getDoc().size()).isEqualTo(20);
+    assertThat(instance.getDoc().size()).isEqualTo(6);
     validateLiteral(instance, PropertyDictionary.EXTENT.getValue(), "extent info");
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
     validateLiteral(instance, STATEMENT_OF_RESPONSIBILITY.getValue(), "statement of responsibility");
-    validateLiteral(instance, ADDITIONAL_PHYSICAL_FORM.getValue(), "additional physical form");
-    validateLiteral(instance, COMPUTER_DATA_NOTE.getValue(), "computer data note");
-    validateLiteral(instance, DESCRIPTION_SOURCE_NOTE.getValue(), "description source note");
-    validateLiteral(instance, EXHIBITIONS_NOTE.getValue(), "exhibitions note");
-    validateLiteral(instance, FUNDING_INFORMATION.getValue(), "funding information");
-    validateLiteral(instance, ISSUANCE_NOTE.getValue(), "issuance note");
-    validateLiteral(instance, ISSUING_BODY.getValue(), "issuing body");
-    validateLiteral(instance, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL.getValue(), "location of other archival material");
-    validateLiteral(instance, NOTE.getValue(), "note");
-    validateLiteral(instance, ORIGINAL_VERSION_NOTE.getValue(), "original version note");
-    validateLiteral(instance, RELATED_PARTS.getValue(), "related parts");
-    validateLiteral(instance, REPRODUCTION_NOTE.getValue(), "reproduction note");
-    validateLiteral(instance, TYPE_OF_REPORT.getValue(), "type of report");
-    validateLiteral(instance, WITH_NOTE.getValue(), "with note");
     assertThat(instance.getOutgoingEdges()).hasSize(19);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
@@ -1242,14 +1191,11 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(work.getId()).isEqualTo(hashService.hash(work));
     assertThat(work.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
-    assertThat(work.getDoc().size()).isEqualTo(7);
+    assertThat(work.getDoc().size()).isEqualTo(4);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
     validateLiterals(work, DATE_END.getValue(), List.of("2025"));
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
-    validateLiteral(work, BIBLIOGRAPHY_NOTE.getValue(), "bibliography note");
-    validateLiterals(work, LANGUAGE_NOTE.getValue(), List.of("language note", "another note"));
-    validateLiterals(work, NOTE.getValue(), List.of("note", "another note"));
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
     validateParallelTitle(outgoingEdgeIterator.next(), work);
     validateWorkContentType(outgoingEdgeIterator.next(), work);
@@ -1472,7 +1418,6 @@ abstract class ResourceControllerITBase extends ITBase {
       List.of(subjectPerson, subjectForm),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
-      List.of(),
       List.of(assigningAgency, libraryOfCongress),
       List.of(grantingInstitution1, grantingInstitution2)
     );
@@ -1504,7 +1449,6 @@ abstract class ResourceControllerITBase extends ITBase {
     List<Resource> subjects,
     List<Resource> geographicCoverages,
     List<Resource> genres,
-    List<Resource> creators,
     List<Resource> assigningSources,
     List<Resource> grantingInstitutions
   ) {

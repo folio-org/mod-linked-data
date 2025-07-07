@@ -71,17 +71,11 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 @UtilityClass
 public class ResourceJsonPath {
 
-  private static final String ROLES_PROPERTY = "roles";
-  private static final String NOTES_PROPERTY = "_notes";
   private static final String ID_PROPERTY = "id";
   private static final String LABEL_PROPERTY = "label";
   private static final String IS_PREFERRED_PROPERTY = "isPreferred";
-  private static final String VALUE_PROPERTY = "value";
-  private static final String TYPE_PROPERTY = "type";
   private static final String INSTANCE_REF = "_instanceReference";
   private static final String WORK_REF = "_workReference";
-  private static final String CREATOR_REF = "_creatorReference";
-  private static final String CONTRIBUTOR_REF = "_contributorReference";
   private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
   private static final String GENRE_REF = "_genreReference";
   private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
@@ -184,14 +178,6 @@ public class ResourceJsonPath {
 
   public static String toStatementOfResponsibility() {
     return join(".", toInstance(), arrayPath(STATEMENT_OF_RESPONSIBILITY.getValue()));
-  }
-
-  public static String toInstanceNotesValues(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
-  }
-
-  public static String toInstanceNotesTypes(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
   public static String toParallelTitlePartName(String instanceBase) {
@@ -391,14 +377,6 @@ public class ResourceJsonPath {
 
   public static String toMediaTerm() {
     return join(".", toInstance(), arrayPath(MEDIA.getUri()), arrayPath(TERM.getValue()));
-  }
-
-  public static String toWorkNotesValues(String workBase) {
-    return join(".", workBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(VALUE_PROPERTY));
-  }
-
-  public static String toWorkNotesTypes(String workBase) {
-    return join(".", workBase, dynamicArrayPath(NOTES_PROPERTY), arrayPath(TYPE_PROPERTY));
   }
 
   public static String toWorkTableOfContents(String workBase) {

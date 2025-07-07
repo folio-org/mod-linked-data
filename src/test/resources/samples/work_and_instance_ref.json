@@ -82,41 +82,6 @@
           ]
         }
       ],
-      "_notes": [
-        {
-          "value": [
-            "bibliography note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/bibliographyNote"
-          ]
-        },
-        {
-          "value": [
-            "language note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/marc/languageNote"
-          ]
-        },
-        {
-          "value": [
-            "note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/lite/note"
-          ]
-        },
-        {
-          "value": [
-            "another note"
-          ],
-          "type": [
-            "http://bibfra.me/vocab/lite/note",
-            "http://bibfra.me/vocab/marc/languageNote"
-          ]
-        }
-      ],
       "http://bibfra.me/vocab/lite/subject": [
         {
           "id": "-3951421359442339069"

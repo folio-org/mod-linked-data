@@ -32,31 +32,15 @@ public class WorkNotesIT extends PostResourceIT {
                  }
                ],
                "_notes":[
+                  { "type":[ "http://bibfra.me/vocab/lite/note" ], "value":[ "Note1" ] },
+                  { "type":[ "http://bibfra.me/vocab/marc/awardsNote" ], "value":[ "Note2" ] },
                   {
-                     "value":[ "Note1" ],
-                     "type":[
-                        "http://bibfra.me/vocab/lite/note"
-                     ]
+                    "type":[ "http://bibfra.me/vocab/marc/awardsNote", "http://bibfra.me/vocab/marc/bibliographyNote" ],
+                    "value":[ "Note3" ]
                   },
                   {
-                     "value":[ "Note2" ],
-                     "type":[
-                        "http://bibfra.me/vocab/marc/awardsNote"
-                     ]
-                  },
-                  {
-                     "value":[ "Note3" ],
-                     "type":[
-                        "http://bibfra.me/vocab/marc/awardsNote",
-                        "http://bibfra.me/vocab/marc/bibliographyNote"
-                     ]
-                  },
-                  {
-                     "value":[ "Note4" ],
-                     "type":[
-                        "http://bibfra.me/vocab/marc/languageNote",
-                        "http://bibfra.me/vocab/marc/bibliographyNote"
-                     ]
+                    "type":[ "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote" ],
+                    "value":[ "Note4" ]
                   }
                ]
             }
@@ -82,7 +66,7 @@ public class WorkNotesIT extends PostResourceIT {
 
     Map<String, Set<String>> actualNotes = new HashMap<>();
     notes.forEach(note -> {
-      String value = note.path("value").get(0).asText();
+      var value = note.path("value").get(0).asText();
       note.path("type").forEach(typeNode ->
         actualNotes.computeIfAbsent(value, k -> new HashSet<>()).add(typeNode.asText())
       );
