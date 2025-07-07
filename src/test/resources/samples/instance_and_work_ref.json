@@ -327,18 +327,6 @@
       "http://bibfra.me/vocab/marc/statementOfResponsibility": [
         "statement of responsibility"
       ],
-      "http://bibfra.me/vocab/marc/adminhist": [
-        "historical data"
-      ],
-      "http://bibfra.me/vocab/marc/biogdata": [
-        "biographical data"
-      ],
-      "http://bibfra.me/vocab/marc/physicalDescription": [
-        "physical description"
-      ],
-      "http://bibfra.me/vocab/marc/accompanyingMaterial": [
-        "accompanying material"
-      ],
       "_notes": [
         {
           "value": [

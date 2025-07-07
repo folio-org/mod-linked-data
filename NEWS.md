@@ -3,7 +3,6 @@
 - Created new API POST /import/file [MODLD-729](https://folio-org.atlassian.net/browse/MODLD-729), [MODLD-740](https://folio-org.atlassian.net/browse/MODLD-740)
 - Updated API to support Extent [MODLD-390](https://folio-org.atlassian.net/browse/MODLD-390)
 - Send Classification Number and Additional Classification Number to mod-search ([MODLD-677](https://folio-org.atlassian.net/browse/MODLD-677))
-- Update API to support Award, Admin history, Biog data, Physical & Accmat Notes ([MODLD-520](https://folio-org.atlassian.net/browse/MODLD-520))
 - Solve loop that appears while updating a Person to a Person, Concept ([MODLD-682](https://folio-org.atlassian.net/browse/MODLD-682))
 - Create an intermediate Concept resource for Subject Headings at Work entity [MODLD-696](https://folio-org.atlassian.net/browse/MODLD-696)
 - Update API to support Book Format [MODLD-726](https://folio-org.atlassian.net/browse/MODLD-726)

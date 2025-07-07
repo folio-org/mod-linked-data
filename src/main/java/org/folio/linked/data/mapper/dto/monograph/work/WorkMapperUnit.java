@@ -17,7 +17,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TARGET_AUDIENCE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.AWARDS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
@@ -105,7 +104,6 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());
     putProperty(map, DATE_START, dto.getDateStart());
     putProperty(map, DATE_END, dto.getDateEnd());
-    putProperty(map, AWARDS_NOTE, dto.getAwardsNote());
     noteMapper.putNotes(dto.getNotes(), map);
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
