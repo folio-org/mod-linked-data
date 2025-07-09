@@ -63,13 +63,14 @@ class BookFormatIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource instance) {
-    var expectedBookFormatId = 1710735011707999802L;
-    var expectedCategorySetId = -5037749211942465056L;
+    final var expectedBookFormatId = 1710735011707999802L;
+    final var expectedCategorySetId = -5037749211942465056L;
     assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/bookFormat"))
       .isEqualTo("non-standard-format");
 
     var bookFormat = getFirstOutgoingResource(instance, "http://bibfra.me/vocab/marc/bookFormat");
     assertThat(bookFormat.getId()).isEqualTo(expectedBookFormatId);
+    validateResourceType(bookFormat, "http://bibfra.me/vocab/lite/Category");
     assertThat(getProperty(bookFormat, "http://bibfra.me/vocab/marc/term")).isEqualTo("128mo");
     assertThat(getProperty(bookFormat, "http://bibfra.me/vocab/marc/code")).isEqualTo("128mo");
     assertThat(getProperty(bookFormat, "http://bibfra.me/vocab/lite/link"))
@@ -78,6 +79,7 @@ class BookFormatIT extends PostResourceIT {
 
     var categorySet = getFirstOutgoingResource(bookFormat, "http://bibfra.me/vocab/lite/isDefinedBy");
     assertThat(categorySet.getId()).isEqualTo(expectedCategorySetId);
+    validateResourceType(categorySet, "http://bibfra.me/vocab/lite/CategorySet");
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/label")).isEqualTo("Book Format");
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/link"))
       .isEqualTo("http://id.loc.gov/vocabulary/bookformat");

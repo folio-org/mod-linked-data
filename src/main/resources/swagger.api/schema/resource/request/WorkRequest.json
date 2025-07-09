@@ -161,6 +161,14 @@
             "$ref": "../common/Category.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/supplementaryContent"
+        },
+        "partOfSeries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/PartOfSeries.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/relation/isPartOf"
         }
       }
     }

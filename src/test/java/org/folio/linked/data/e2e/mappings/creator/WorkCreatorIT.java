@@ -65,6 +65,7 @@ class WorkCreatorIT extends PostResourceIT {
   @Override
   protected void validateGraph(Resource work) {
     var creator = getFirstOutgoingResource(work, "http://bibfra.me/vocab/lite/creator");
+    validateResourceType(creator, "http://bibfra.me/vocab/lite/Person");
     assertThat(creator.getId()).isEqualTo(1L);
     assertThat(creator.getLabel()).isEqualTo("John Doe");
 
