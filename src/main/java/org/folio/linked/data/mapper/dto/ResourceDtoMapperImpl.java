@@ -1,6 +1,8 @@
 package org.folio.linked.data.mapper.dto;
 
 import static java.lang.Long.parseLong;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +50,10 @@ public class ResourceDtoMapperImpl implements ResourceDtoMapper {
   private void setProfileIds(Resource resource, ResourceResponseDto dto) {
     var profileId = resourceProfileService.resolveProfileId(resource);
     switch (dto.getResource()) {
-      case InstanceResponseField instanceField -> instanceField.getInstance().setProfileId(profileId);
+      case InstanceResponseField instanceField -> {
+        instanceField.getInstance().setProfileId(profileId);
+        setProfileIdForParentWork(instanceField);
+      }
       case WorkResponseField workField -> {
         workField.getWork().setProfileId(profileId);
         setProfileIdForSingleInstance(workField);
@@ -57,17 +62,28 @@ public class ResourceDtoMapperImpl implements ResourceDtoMapper {
     }
   }
 
+  private void setProfileIdForParentWork(InstanceResponseField instanceField) {
+    instanceField.getInstance().getWorkReference()
+      .forEach(work -> {
+        var profileId = getProfileId(work.getId(), WORK);
+        work.setProfileId(profileId);
+      });
+  }
+
   private void setProfileIdForSingleInstance(WorkResponseField workField) {
     var instances = workField.getWork().getInstanceReference();
     if (instances.size() != 1) {
       return;
     }
     var singleInstanceDto = instances.getFirst();
-    var tempInstance = new Resource()
-      .setId(parseLong(singleInstanceDto.getId()))
-      .setTypes(Set.of(resourceTypeMapper.toEntity(ResourceTypeDictionary.INSTANCE)));
-    var profileId = resourceProfileService.resolveProfileId(tempInstance);
-
+    var profileId = getProfileId(singleInstanceDto.getId(), INSTANCE);
     singleInstanceDto.setProfileId(profileId);
+  }
+
+  private Integer getProfileId(String resourceId, ResourceTypeDictionary type) {
+    var tempResource = new Resource()
+      .setId(parseLong(resourceId))
+      .setTypes(Set.of(resourceTypeMapper.toEntity(type)));
+    return resourceProfileService.resolveProfileId(tempResource);
   }
 }

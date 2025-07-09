@@ -279,6 +279,7 @@ abstract class ResourceControllerITBase extends ITBase {
   @Test
   void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
     // given
+    final var defaultWorkProfileId = 2;
     var work = getSampleWork(null);
     setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
@@ -304,6 +305,7 @@ abstract class ResourceControllerITBase extends ITBase {
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().getFirst().getId();
     assertThat(instanceResponse.getProfileId()).isEqualTo(1);
+    assertThat(instanceResponse.getWorkReference().getFirst().getProfileId()).isEqualTo(defaultWorkProfileId);
     checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
     checkIndexDate(workId);
     checkInventoryMessage(instanceResource.getId(), CREATE_INSTANCE);
