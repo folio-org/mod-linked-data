@@ -30,19 +30,12 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ACCOMPANYING_MATERIAL;
-import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
-import static org.folio.ld.dictionary.PropertyDictionary.AWARDS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.BIBLIOGRAPHY_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.BIOGRAPHICAL_DATA;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
-import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
-import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
@@ -50,34 +43,23 @@ import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.EXHIBITIONS_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.FUNDING_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_AREA_CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
-import static org.folio.ld.dictionary.PropertyDictionary.HISTORICAL_DATA;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
-import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.ISSUING_BODY;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
-import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_OTHER_ARCHIVAL_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPECIFIED;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NON_SORT_NUM;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.ORIGINAL_VERSION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.PHYSICAL_DESCRIPTION;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
-import static org.folio.ld.dictionary.PropertyDictionary.RELATED_PARTS;
-import static org.folio.ld.dictionary.PropertyDictionary.REPRODUCTION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
@@ -86,9 +68,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
-import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
-import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
@@ -270,25 +250,7 @@ public class MonographTestUtil {
         entry(EDITION, List.of("edition statement")),
         entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),
         entry(ISSUANCE, List.of("single unit")),
-        entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility")),
-        entry(ADDITIONAL_PHYSICAL_FORM, List.of("additional physical form")),
-        entry(COMPUTER_DATA_NOTE, List.of("computer data note")),
-        entry(DESCRIPTION_SOURCE_NOTE, List.of("description source note")),
-        entry(EXHIBITIONS_NOTE, List.of("exhibitions note")),
-        entry(FUNDING_INFORMATION, List.of("funding information")),
-        entry(ISSUANCE_NOTE, List.of("issuance note")),
-        entry(ISSUING_BODY, List.of("issuing body")),
-        entry(LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, List.of("location of other archival material")),
-        entry(NOTE, List.of("note")),
-        entry(ORIGINAL_VERSION_NOTE, List.of("original version note")),
-        entry(RELATED_PARTS, List.of("related parts")),
-        entry(REPRODUCTION_NOTE, List.of("reproduction note")),
-        entry(TYPE_OF_REPORT, List.of("type of report")),
-        entry(WITH_NOTE, List.of("with note")),
-        entry(HISTORICAL_DATA, List.of("historical data")),
-        entry(BIOGRAPHICAL_DATA, List.of("biographical data")),
-        entry(PHYSICAL_DESCRIPTION, List.of("physical description")),
-        entry(ACCOMPANYING_MATERIAL, List.of("accompanying material"))
+        entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility"))
       ),
       Set.of(INSTANCE),
       pred2OutgoingResources
@@ -455,12 +417,8 @@ public class MonographTestUtil {
       Map.ofEntries(
         entry(SUMMARY, List.of("summary text")),
         entry(TABLE_OF_CONTENTS, List.of("table of contents")),
-        entry(BIBLIOGRAPHY_NOTE, List.of("bibliography note")),
-        entry(LANGUAGE_NOTE, List.of("language note", "another note")),
-        entry(NOTE, List.of("note", "another note")),
         entry(DATE_START, List.of("2024")),
-        entry(DATE_END, List.of("2025")),
-        entry(AWARDS_NOTE, List.of("awards note"))
+        entry(DATE_END, List.of("2025"))
       ),
       Set.of(WORK),
       pred2OutgoingResources

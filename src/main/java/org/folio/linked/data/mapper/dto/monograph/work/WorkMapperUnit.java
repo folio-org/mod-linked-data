@@ -54,7 +54,8 @@ import org.springframework.stereotype.Component;
 @MapperUnit(type = WORK, requestDto = WorkField.class)
 public class WorkMapperUnit extends TopResourceMapperUnit {
 
-  public static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE, NOTE);
+  public static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(AWARDS_NOTE, BIBLIOGRAPHY_NOTE, LANGUAGE_NOTE,
+    NOTE);
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
@@ -105,7 +106,6 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     putProperty(map, TABLE_OF_CONTENTS, dto.getTableOfContents());
     putProperty(map, DATE_START, dto.getDateStart());
     putProperty(map, DATE_END, dto.getDateEnd());
-    putProperty(map, AWARDS_NOTE, dto.getAwardsNote());
     noteMapper.putNotes(dto.getNotes(), map);
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
