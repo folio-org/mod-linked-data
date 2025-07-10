@@ -18,6 +18,7 @@
 - Remove unused API GET /linked-data/profile [MODLD-766](https://folio-org.atlassian.net/browse/MODLD-766)
 - Insert new profiles for Work and Instance-Monograph into database [MODLD-772](https://folio-org.atlassian.net/browse/MODLD-772)
 - Update API to support Award, Admin history, Biog data, Physical & Accmat Notes ([MODLD-520](https://folio-org.atlassian.net/browse/MODLD-520))
+- *BREAKING* Update okapiInterfaces for Split Search & Browse APIs. [MODLD-778](https://folio-org.atlassian.net/browse/MODLD-778)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
