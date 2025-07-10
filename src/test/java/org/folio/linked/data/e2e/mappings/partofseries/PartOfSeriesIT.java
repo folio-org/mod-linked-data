@@ -53,7 +53,7 @@ class PartOfSeriesIT extends PostResourceIT {
     final var expectedWorkSeriesId = 540189686654989479L;
     final var expectedSeriesId = -2005579814488946952L;
     final var expectedIssnId = -8106115103629407198L;
-    final var expectedInstanceId = -9140089661914221986L;
+    final var expectedInstanceId = 5340315565831391363L;
 
     var workSeries = getFirstOutgoingResource(work, "http://bibfra.me/vocab/relation/isPartOf");
     assertThat(workSeries.getId()).isEqualTo(expectedWorkSeriesId);

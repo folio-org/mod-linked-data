@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "AccessLocation",
+  "description": "Schema for a 'part of series' object which indicates if a work is part of a series.",
   "allOf": [
     {
       "type": "object",

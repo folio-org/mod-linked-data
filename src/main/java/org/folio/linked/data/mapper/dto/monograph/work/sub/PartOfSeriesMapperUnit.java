@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static java.lang.String.join;
+import static java.util.Arrays.stream;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -60,11 +61,11 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
       WORK, SERIES
     );
     var instance = createResource(
-      getInstanceDoc(partOfSeries),
+      getInstanceOrSeriesDoc(partOfSeries),
       getFirstValue(partOfSeries::getName),
       INSTANCE, SERIES
     );
-    var series = createResource(getSeriesDoc(partOfSeries), getFirstValue(partOfSeries::getName), SERIES);
+    var series = createResource(getInstanceOrSeriesDoc(partOfSeries), getFirstValue(partOfSeries::getName), SERIES);
     var issn = createResource(getIssnDoc(partOfSeries), getFirstValue(partOfSeries::getIssn), IDENTIFIER, ID_ISSN);
 
     connectResources(work, series, IS_PART_OF);
@@ -72,22 +73,27 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
     connectResources(instance, series, INSTANTIATES);
     connectResources(instance, issn, MAP);
 
+    setResourceIds(work, instance, series, issn);
+
     return work;
   }
 
   private Resource createResource(JsonNode doc, String label, ResourceTypeDictionary... types) {
-    var resource = new Resource()
+    return new Resource()
       .addTypes(types)
       .setDoc(doc)
       .setLabel(label);
-    resource.setId(hashService.hash(resource));
-    return resource;
   }
 
   private void connectResources(Resource source, Resource target, PredicateDictionary connectionType) {
     var edge = new ResourceEdge(source, target, connectionType);
     source.addOutgoingEdge(edge);
     target.addIncomingEdge(edge);
+  }
+
+  private void setResourceIds(Resource... resources) {
+    stream(resources)
+      .forEach(resource -> resource.setId(hashService.hash(resource)));
   }
 
   private JsonNode getIssnDoc(PartOfSeries dto) {
@@ -97,16 +103,12 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
-  private JsonNode getSeriesDoc(PartOfSeries dto) {
+  private JsonNode getInstanceOrSeriesDoc(PartOfSeries dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getName());
     putProperty(map, ISSN, dto.getIssn());
     putProperty(map, LABEL, dto.getName());
     return map.isEmpty() ? null : coreMapper.toJson(map);
-  }
-
-  private JsonNode getInstanceDoc(PartOfSeries dto) {
-    return getSeriesDoc(dto);
   }
 
   private JsonNode getWorkSeriesDoc(PartOfSeries dto) {
