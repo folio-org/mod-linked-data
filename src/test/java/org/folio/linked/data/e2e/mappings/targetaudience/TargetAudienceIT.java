@@ -36,10 +36,11 @@ class TargetAudienceIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource work) {
-    var expectedId = 7128309939039775870L;
-    var expectedCategorySetId = 5919470580343311333L;
-    var targetAudience = getFirstOutgoingResource(work, "http://bibfra.me/vocab/marc/targetAudience");
+    final var expectedId = 7128309939039775870L;
+    final var expectedCategorySetId = 5919470580343311333L;
+    final var targetAudience = getFirstOutgoingResource(work, "http://bibfra.me/vocab/marc/targetAudience");
     assertThat(targetAudience.getId()).isEqualTo(expectedId);
+    validateResourceType(targetAudience, "http://bibfra.me/vocab/lite/Category");
     assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/marc/term")).isEqualTo("Primary");
     assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/marc/code")).isEqualTo("b");
     assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/lite/link"))
@@ -47,6 +48,7 @@ class TargetAudienceIT extends PostResourceIT {
     assertThat(targetAudience.getLabel()).isEqualTo("Primary");
 
     var categorySet = getFirstOutgoingResource(targetAudience, "http://bibfra.me/vocab/lite/isDefinedBy");
+    validateResourceType(categorySet, "http://bibfra.me/vocab/lite/CategorySet");
     assertThat(categorySet.getId()).isEqualTo(expectedCategorySetId);
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/label")).isEqualTo("Target audience");
     assertThat(getProperty(categorySet, "http://bibfra.me/vocab/lite/link"))

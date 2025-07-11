@@ -19,6 +19,7 @@
 - Insert new profiles for Work and Instance-Monograph into database [MODLD-772](https://folio-org.atlassian.net/browse/MODLD-772)
 - Update API to support Award, Admin history, Biog data, Physical & Accmat Notes ([MODLD-520](https://folio-org.atlassian.net/browse/MODLD-520))
 - *BREAKING* Update okapiInterfaces for Split Search & Browse APIs. [MODLD-778](https://folio-org.atlassian.net/browse/MODLD-778)
+- Update API to support 'Series Statement' (MARC 490) [MODLD-777](https://folio-org.atlassian.net/browse/MODLD-777)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

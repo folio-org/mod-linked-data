@@ -1,6 +1,8 @@
 package org.folio.linked.data.e2e.mappings;
 
+import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
@@ -15,11 +17,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,10 @@ import org.springframework.test.web.servlet.ResultActions;
 @IntegrationTest
 @ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
 public abstract class PostResourceIT extends ITBase {
-  static final String RESOURCE_URL = "/linked-data/resource";
+
+  private static final int RESOURCE_FETCH_DEPTH = 4;
+  private static final String RESOURCE_URL = "/linked-data/resource";
+
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -63,11 +68,11 @@ public abstract class PostResourceIT extends ITBase {
     // then
     postResponse.andExpect(status().isOk());
     validateApiResponse(postResponse);
-    var instanceId = getResourceId(postResponse);
-    var instance = resourceService.getResourceById(instanceId, 3);
-    validateGraph(instance);
+    var resourceId = getResourceId(postResponse);
+    var resource = resourceService.getResourceById(resourceId, RESOURCE_FETCH_DEPTH);
+    validateGraph(resource);
 
-    var getRequest = get(RESOURCE_URL + "/" + instanceId)
+    var getRequest = get(RESOURCE_URL + "/" + resourceId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
     var getResponse = mockMvc.perform(getRequest);
@@ -101,7 +106,7 @@ public abstract class PostResourceIT extends ITBase {
   protected Set<String> getProperties(Resource resource, String property) {
     return stream(resource.getDoc().get(property).spliterator(), false)
       .map(JsonNode::asText)
-      .collect(Collectors.toSet());
+      .collect(toSet());
   }
 
   protected List<Resource> getOutgoingResources(Resource resource, String predicate) {
@@ -109,5 +114,13 @@ public abstract class PostResourceIT extends ITBase {
       .filter(edge -> edge.getPredicate().getUri().equals(predicate))
       .map(ResourceEdge::getTarget)
       .toList();
+  }
+
+  protected void validateResourceType(Resource resource, String... expectedTypes) {
+    var actualTypes = resource.getTypes().stream()
+      .map(ResourceTypeEntity::getUri)
+      .collect(toSet());
+
+    assertThat(actualTypes).isEqualTo(Set.of(expectedTypes));
   }
 }

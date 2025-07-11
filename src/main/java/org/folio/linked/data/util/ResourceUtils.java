@@ -5,6 +5,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.StreamSupport.stream;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
@@ -146,12 +147,9 @@ public class ResourceUtils {
   }
 
   public static boolean isPreferred(Resource resource) {
-    return ofNullable(resource.getDoc())
-      .flatMap(doc -> JsonUtils.getProperty(doc, RESOURCE_PREFERRED.getValue()))
-      .filter(JsonNode::isArray)
-      .map(value -> value.get(0).asText())
-      .filter(value -> value.equals("true"))
-      .isPresent();
+    return getPropertyValues(resource, RESOURCE_PREFERRED)
+      .stream()
+      .anyMatch(Boolean::parseBoolean);
   }
 
   public static List<String> getTypeUris(Resource resource) {
@@ -171,5 +169,12 @@ public class ResourceUtils {
         return copiedDoc;
       })
       .orElse(null);
+  }
+
+  public static List<String> getPropertyValues(Resource resource, PropertyDictionary property) {
+    return ofNullable(resource.getDoc())
+      .map(doc -> doc.get(property.getValue()))
+      .map(node -> stream(node.spliterator(), false).map(JsonNode::asText).toList())
+      .orElse(List.of());
   }
 }
