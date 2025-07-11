@@ -35,7 +35,7 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var localId = coreMapper.toDtoWithEdges(source, LocalIdResponse.class, false);
+      var localId = coreMapper.toDtoWithEdges(source, LocalIdResponse.class);
       localId.setId(String.valueOf(source.getId()));
       instance.addMapItem(new LocalIdFieldResponse().localId(localId));
     }

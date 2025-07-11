@@ -35,7 +35,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var otherId = coreMapper.toDtoWithEdges(source, OtherIdResponse.class, false);
+      var otherId = coreMapper.toDtoWithEdges(source, OtherIdResponse.class);
       otherId.setId(String.valueOf(source.getId()));
       instance.addMapItem(new OtherIdFieldResponse().identifier(otherId));
     }

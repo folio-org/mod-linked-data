@@ -85,7 +85,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
-      var instance = coreMapper.toDtoWithEdges(source, InstanceResponse.class, false);
+      var instance = coreMapper.toDtoWithEdges(source, InstanceResponse.class);
       instance.setId(String.valueOf(source.getId()));
       ofNullable(source.getFolioMetadata())
         .map(folioMetadataMapper::toDto)

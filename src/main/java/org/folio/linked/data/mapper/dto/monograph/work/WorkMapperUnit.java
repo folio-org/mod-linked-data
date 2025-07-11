@@ -26,6 +26,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.ResourceUtils.extractInstancesFromWork;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
@@ -45,6 +46,7 @@ import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
+import org.folio.linked.data.mapper.dto.monograph.instance.InstanceReferenceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -60,11 +62,14 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
   private final HashService hashService;
+  private final InstanceReferenceMapperUnit instanceReferenceMapper;
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
-      var work = coreMapper.toDtoWithEdges(source, WorkResponse.class, true);
+      var work = coreMapper.toDtoWithEdges(source, WorkResponse.class);
+      extractInstancesFromWork(source)
+        .forEach(instance -> instanceReferenceMapper.toDto(instance, work, source));
       work.setId(String.valueOf(source.getId()));
       ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.setResource(new WorkResponseField().work(work));

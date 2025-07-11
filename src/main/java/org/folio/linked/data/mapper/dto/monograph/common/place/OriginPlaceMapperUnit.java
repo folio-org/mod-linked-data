@@ -42,7 +42,7 @@ public class OriginPlaceMapperUnit extends PlaceMapperUnit {
   }
 
   private PlaceResponse getPlace(Resource source) {
-    var place = coreMapper.toDtoWithEdges(source, PlaceResponse.class, false);
+    var place = coreMapper.toDtoWithEdges(source, PlaceResponse.class);
     place.setId(String.valueOf(source.getId()));
     return place;
   }

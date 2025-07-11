@@ -28,7 +28,7 @@ public class ProviderPlaceMapperUnit extends PlaceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof ProviderEventResponse providerEvent) {
-      var place = coreMapper.toDtoWithEdges(source, PlaceResponse.class, false);
+      var place = coreMapper.toDtoWithEdges(source, PlaceResponse.class);
       place.setId(String.valueOf(source.getId()));
       providerEvent.addProviderPlaceItem(place);
     } else {

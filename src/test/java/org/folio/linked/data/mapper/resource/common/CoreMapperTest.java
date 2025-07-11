@@ -58,7 +58,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.toDtoWithEdges(resource, InstanceResponse.class, false));
+      () -> coreMapper.toDtoWithEdges(resource, InstanceResponse.class));
 
     // then
     assertThat(thrown.getMessage(), is("resource is marked non-null but is null"));
@@ -71,7 +71,7 @@ class CoreMapperTest {
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.toDtoWithEdges(resource, dtoClass, false));
+      () -> coreMapper.toDtoWithEdges(resource, dtoClass));
 
     // then
     assertThat(thrown.getMessage(), is("dtoClass is marked non-null but is null"));

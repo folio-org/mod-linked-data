@@ -37,7 +37,7 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitleResponse.class, false);
+    var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitleResponse.class);
     parallelTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof InstanceResponse instance) {
       instance.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));

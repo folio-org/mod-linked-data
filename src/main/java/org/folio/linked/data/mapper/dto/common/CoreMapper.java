@@ -9,7 +9,7 @@ import org.folio.linked.data.model.entity.Resource;
 
 public interface CoreMapper {
 
-  <D> D toDtoWithEdges(@NonNull Resource resource, @NonNull Class<D> dtoClass, boolean mapIncomingEdges);
+  <D> D toDtoWithEdges(@NonNull Resource resource, @NonNull Class<D> dtoClass);
 
   <T, P> void addOutgoingEdges(@NonNull Resource parentEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
                                @NonNull Predicate predicate);

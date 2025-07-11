@@ -39,7 +39,7 @@ public class InstanceReferenceMapperUnit implements SingleResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof WorkResponse work) {
-      var instanceResponse = coreMapper.toDtoWithEdges(source, InstanceResponse.class, false);
+      var instanceResponse = coreMapper.toDtoWithEdges(source, InstanceResponse.class);
       instanceResponse.setId(String.valueOf(source.getId()));
       ofNullable(source.getDoc())
         .ifPresent(doc -> instanceResponse.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));

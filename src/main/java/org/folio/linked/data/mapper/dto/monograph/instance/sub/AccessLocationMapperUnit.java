@@ -31,7 +31,7 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var accessLocation = coreMapper.toDtoWithEdges(source, AccessLocationResponse.class, false);
+      var accessLocation = coreMapper.toDtoWithEdges(source, AccessLocationResponse.class);
       accessLocation.setId(String.valueOf(source.getId()));
       instance.addAccessLocationItem(accessLocation);
     }

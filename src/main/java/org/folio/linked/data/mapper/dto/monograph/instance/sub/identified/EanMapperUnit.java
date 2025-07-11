@@ -35,7 +35,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var ean = coreMapper.toDtoWithEdges(source, EanResponse.class, false);
+      var ean = coreMapper.toDtoWithEdges(source, EanResponse.class);
       ean.setId(String.valueOf(source.getId()));
       instance.addMapItem(new EanFieldResponse().ean(ean));
     }

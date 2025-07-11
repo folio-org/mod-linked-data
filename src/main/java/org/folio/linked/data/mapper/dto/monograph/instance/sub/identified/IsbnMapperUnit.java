@@ -36,7 +36,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var isbn = coreMapper.toDtoWithEdges(source, IsbnResponse.class, false);
+      var isbn = coreMapper.toDtoWithEdges(source, IsbnResponse.class);
       isbn.setId(String.valueOf(source.getId()));
       instance.addMapItem(new IsbnFieldResponse().isbn(isbn));
     }

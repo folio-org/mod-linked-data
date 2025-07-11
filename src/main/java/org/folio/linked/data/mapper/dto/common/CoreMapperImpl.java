@@ -36,14 +36,10 @@ public class CoreMapperImpl implements CoreMapper {
     this.exceptionBuilder = exceptionBuilder;
   }
 
-  public <D> D toDtoWithEdges(@NonNull Resource resource, @NonNull Class<D> dtoClass, boolean mapIncomingEdges) {
+  public <D> D toDtoWithEdges(@NonNull Resource resource, @NonNull Class<D> dtoClass) {
     D dto = readResourceDoc(resource, dtoClass);
     resource.getOutgoingEdges()
       .forEach(re -> singleResourceMapper.toDto(re.getTarget(), dto, resource, re.getPredicate()));
-    if (mapIncomingEdges) {
-      resource.getIncomingEdges()
-        .forEach(re -> singleResourceMapper.toDto(re.getSource(), dto, resource, re.getPredicate()));
-    }
     return dto;
   }
 

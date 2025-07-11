@@ -36,7 +36,7 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitleResponse.class, false);
+    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitleResponse.class);
     primaryTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof InstanceResponse instance) {
       instance.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));

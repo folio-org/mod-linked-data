@@ -49,7 +49,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var status = coreMapper.toDtoWithEdges(source, StatusResponse.class, false);
+    var status = coreMapper.toDtoWithEdges(source, StatusResponse.class);
     status.setId(String.valueOf(source.getId()));
     switch (parentDto) {
       case LccnResponse lccn -> lccn.addStatusItem(status);

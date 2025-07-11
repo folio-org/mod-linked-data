@@ -35,7 +35,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var lccn = coreMapper.toDtoWithEdges(source, LccnResponse.class, false);
+      var lccn = coreMapper.toDtoWithEdges(source, LccnResponse.class);
       lccn.setId(String.valueOf(source.getId()));
       instance.addMapItem(new LccnFieldResponse().lccn(lccn));
     }

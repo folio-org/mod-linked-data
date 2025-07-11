@@ -38,7 +38,7 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitleResponse.class, false);
+    var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitleResponse.class);
     variantTitle.setId(String.valueOf(source.getId()));
     if (parentDto instanceof InstanceResponse instance) {
       instance.addTitleItem(new VariantTitleFieldResponse().variantTitle(variantTitle));

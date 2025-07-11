@@ -39,7 +39,7 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var workResponse = coreMapper.toDtoWithEdges(source, WorkResponse.class, false);
+      var workResponse = coreMapper.toDtoWithEdges(source, WorkResponse.class);
       workResponse.setId(String.valueOf(source.getId()));
       ofNullable(source.getDoc()).ifPresent(doc -> workResponse.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       instance.addWorkReferenceItem(workResponse);

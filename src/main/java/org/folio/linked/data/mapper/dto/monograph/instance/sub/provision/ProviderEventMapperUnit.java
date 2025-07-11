@@ -35,7 +35,7 @@ public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapp
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var providerEvent = coreMapper.toDtoWithEdges(source, ProviderEventResponse.class, false);
+      var providerEvent = coreMapper.toDtoWithEdges(source, ProviderEventResponse.class);
       providerEventConsumer.apply(providerEvent, instance);
     }
     return parentDto;

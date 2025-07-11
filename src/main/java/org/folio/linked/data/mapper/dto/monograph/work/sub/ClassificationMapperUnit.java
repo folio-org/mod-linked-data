@@ -36,7 +36,7 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var classification = coreMapper.toDtoWithEdges(source, ClassificationResponse.class, false);
+    var classification = coreMapper.toDtoWithEdges(source, ClassificationResponse.class);
     classification.setId(String.valueOf(source.getId()));
     if (parentDto instanceof WorkResponse work) {
       work.addClassificationItem(classification);

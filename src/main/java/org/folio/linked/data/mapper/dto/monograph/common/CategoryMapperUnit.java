@@ -45,7 +45,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
 
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var category = coreMapper.toDtoWithEdges(source, CategoryResponse.class, false);
+    var category = coreMapper.toDtoWithEdges(source, CategoryResponse.class);
     category.setId(String.valueOf(source.getId()));
     addToParent(category, parentDto);
     return parentDto;

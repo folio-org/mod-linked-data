@@ -31,7 +31,7 @@ public class InstanceSupplementaryContentMapperUnit implements InstanceSubResour
   @Override
   public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
     if (parentDto instanceof InstanceResponse instance) {
-      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContentResponse.class, false);
+      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContentResponse.class);
       supplementaryContent.setId(String.valueOf(source.getId()));
       instance.addSupplementaryContentItem(supplementaryContent);
     }
