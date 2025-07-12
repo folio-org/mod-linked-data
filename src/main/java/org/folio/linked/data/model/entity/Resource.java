@@ -140,10 +140,7 @@ public class Resource implements Persistable<Long> {
       .map(outEdges -> outEdges.stream().map(ResourceEdge::new).collect(Collectors.toSet()))
       .orElse(null);
     this.incomingEdges = ofNullable(that.getIncomingEdges())
-      .map(inEdges -> inEdges.stream()
-        .map(
-          ie -> this.getOutgoingEdges().stream().filter(oe -> oe.equals(ie)).findFirst().orElse(new ResourceEdge(ie)))
-        .collect(Collectors.toSet()))
+      .map(inEdges -> inEdges.stream().map(ResourceEdge::new).collect(Collectors.toSet()))
       .orElse(null);
   }
 
