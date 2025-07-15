@@ -1,17 +1,17 @@
-package org.folio.linked.data.mapper.dto.monograph.work.sub.creator;
+package org.folio.linked.data.mapper.dto.monograph.work.sub.agent;
 
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Component;
 
-@Component("creatorPersonMapperUnit")
-@MapperUnit(type = PERSON, requestDto = Agent.class, predicate = CREATOR)
-public class PersonMapperUnit extends CreatorMapperUnit {
+@Component("contributorPersonMapperUnit")
+@MapperUnit(type = PERSON, requestDto = Agent.class, predicate = {CREATOR, CONTRIBUTOR})
+public class PersonMapperUnit extends AgentMapperUnit {
 
   public PersonMapperUnit(AgentRoleAssigner agentRoleAssigner,
                           ResourceMarcAuthorityService resourceMarcAuthorityService) {

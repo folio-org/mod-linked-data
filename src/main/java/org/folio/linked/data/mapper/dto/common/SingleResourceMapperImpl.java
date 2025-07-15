@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.dto.common;
 
+import static java.util.Arrays.stream;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -83,9 +84,11 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       .filter(m -> isNull(parentResponseDto) || m.supportedParents().contains(parentResponseDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
-        return (isNull(typeUri) || typeUri.equals(annotation.type().getUri()))
-          && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
-          && (isNull(requestDto) || requestDto.equals(annotation.requestDto()));
+        var typeMatches = isNull(typeUri) || typeUri.equals(annotation.type().getUri());
+        var predicateMatches = isNull(pred) || stream(annotation.predicate())
+          .anyMatch(dict -> pred.getHash().equals(dict.getHash()));
+        var requestDtoMatches = isNull(requestDto) || requestDto.equals(annotation.requestDto());
+        return typeMatches && predicateMatches && requestDtoMatches;
       })
       .min(comparing(o -> o.getClass().getSimpleName()));
   }
