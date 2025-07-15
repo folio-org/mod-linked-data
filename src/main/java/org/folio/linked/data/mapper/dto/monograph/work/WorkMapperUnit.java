@@ -63,11 +63,11 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
-      var work = coreMapper.toDtoWithEdges(source, WorkResponse.class, true);
-      work.setId(String.valueOf(source.getId()));
-      ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      var work = coreMapper.toDtoWithEdges(resourceToConvert, WorkResponse.class, true);
+      work.setId(String.valueOf(resourceToConvert.getId()));
+      ofNullable(resourceToConvert.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.setResource(new WorkResponseField().work(work));
     }
     return parentDto;

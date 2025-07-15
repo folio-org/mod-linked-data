@@ -28,10 +28,10 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var extent = coreMapper.toDtoWithEdges(source, ExtentResponse.class, false);
-      extent.setId(String.valueOf(source.getId()));
+      var extent = coreMapper.toDtoWithEdges(resourceToConvert, ExtentResponse.class, false);
+      extent.setId(String.valueOf(resourceToConvert.getId()));
       instance.addExtentV2Item(extent);
     }
     return parentDto;

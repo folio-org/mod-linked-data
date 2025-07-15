@@ -33,10 +33,10 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var otherId = coreMapper.toDtoWithEdges(source, OtherIdResponse.class, false);
-      otherId.setId(String.valueOf(source.getId()));
+      var otherId = coreMapper.toDtoWithEdges(resourceToConvert, OtherIdResponse.class, false);
+      otherId.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new OtherIdFieldResponse().identifier(otherId));
     }
     return parentDto;

@@ -42,10 +42,10 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof WorkResponse workResponse) {
-      var partOfSeries = coreMapper.toDtoWithEdges(source, PartOfSeries.class, false);
-      getSeriesNode(source).ifPresent(series -> partOfSeries.setIssn(getPropertyValues(series, ISSN)));
+      var partOfSeries = coreMapper.toDtoWithEdges(resourceToConvert, PartOfSeries.class, false);
+      getSeriesNode(resourceToConvert).ifPresent(series -> partOfSeries.setIssn(getPropertyValues(series, ISSN)));
       workResponse.addPartOfSeriesItem(partOfSeries);
     }
     return parentDto;

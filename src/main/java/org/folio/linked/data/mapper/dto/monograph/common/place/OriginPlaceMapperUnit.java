@@ -26,9 +26,9 @@ public class OriginPlaceMapperUnit extends PlaceMapperUnit {
   }
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof WorkResponse work) {
-      work.addOriginPlaceItem(getPlace(source));
+      work.addOriginPlaceItem(getPlace(resourceToConvert));
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
         + IS_NOT_SUPPORTED_FOR_PREDICATE + ORIGIN_PLACE.getUri() + RIGHT_SQUARE_BRACKET);

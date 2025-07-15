@@ -20,14 +20,14 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
   private final ResourceMarcAuthorityService resourceMarcAuthorityService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    source = ensureLatestReplaced(source);
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    resourceToConvert = ensureLatestReplaced(resourceToConvert);
     var agent = new Agent()
-      .id(String.valueOf(source.getId()))
-      .label(source.getLabel())
-      .type(source.getTypes().iterator().next().getUri())
-      .isPreferred(isPreferred(source));
-    agentRoleAssigner.assignRoles(agent, parentResource);
+      .id(String.valueOf(resourceToConvert.getId()))
+      .label(resourceToConvert.getLabel())
+      .type(resourceToConvert.getTypes().iterator().next().getUri())
+      .isPreferred(isPreferred(resourceToConvert));
+    agentRoleAssigner.assignRoles(agent, context.source());
     agentConsumer.accept(parentDto, agent);
     return parentDto;
   }

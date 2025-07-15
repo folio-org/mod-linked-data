@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit.ResourceMappingContext;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR;
 import static org.folio.linked.data.util.Constants.PREDICATE;
@@ -65,7 +66,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       .findFirst();
 
     return resourceMapper
-      .map(mapper -> mapper.toDto(source, parentDto, parentResource))
+      .map(mapper -> mapper.toDto(source, parentDto, new ResourceMappingContext(parentResource, predicate)))
       .orElseGet(() -> {
         var types = String.join(", ", getTypeUris(source));
         log.debug(

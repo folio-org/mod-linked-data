@@ -34,10 +34,10 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var isbn = coreMapper.toDtoWithEdges(source, IsbnResponse.class, false);
-      isbn.setId(String.valueOf(source.getId()));
+      var isbn = coreMapper.toDtoWithEdges(resourceToConvert, IsbnResponse.class, false);
+      isbn.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new IsbnFieldResponse().isbn(isbn));
     }
     return parentDto;
