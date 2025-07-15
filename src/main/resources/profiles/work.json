@@ -23,7 +23,8 @@
         "Monograph:Work:SubjectOfTheWork",
         "Monograph:Work:ClassificationNumbers",
         "Monograph:Work:ContentType",
-        "Monograph:Work:LanguageCode"
+        "Monograph:Work:LanguageCode",
+        "Monograph:Work:PartOfSeries"
       ],
       "id": "Monograph:Work"
     },
@@ -987,6 +988,67 @@
         "valueDataType": { "remark": "", "dataTypeURI": "" }
       },
       "id": "Monograph:Work:LanguageCode"
+    },
+    {
+      "type": "group",
+      "displayName": "Input transcribed series (Part of)",
+      "uriBFLite": "http://bibfra.me/vocab/relation/isPartOf",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Monograph:Work:PartOfSeries:Title",
+        "Monograph:Work:PartOfSeries:ISSN",
+        "Monograph:Work:PartOfSeries:SeriesEnumeration"
+      ],
+      "id": "Monograph:Work:PartOfSeries"
+    },
+    {
+      "type": "literal",
+      "displayName": "Title",
+      "uriBFLite": "http://bibfra.me/vocab/lite/name",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Monograph:Work:PartOfSeries:Title"
+    },
+    {
+      "type": "literal",
+      "displayName": "ISSN",
+      "uriBFLite": "http://bibfra.me/vocab/marc/issn",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Monograph:Work:PartOfSeries:ISSN"
+    },
+    {
+      "type": "literal",
+      "displayName": "Series enumeration",
+      "uriBFLite": "http://bibfra.me/vocab/marc/volume",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Monograph:Work:PartOfSeries:SeriesEnumeration"
     }
   ]
 }
