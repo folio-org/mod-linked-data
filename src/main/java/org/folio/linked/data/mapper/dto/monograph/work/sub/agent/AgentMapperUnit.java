@@ -1,6 +1,8 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub.agent;
 
 import static java.util.Optional.ofNullable;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.linked.data.util.ResourceUtils.ensureLatestReplaced;
 import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 
@@ -29,11 +31,13 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
         .type(resourceToConvert.getTypes().iterator().next().getUri())
         .isPreferred(isPreferred(resourceToConvert));
       agentRoleAssigner.assignRoles(agent, context.source());
-      if (context.predicate().equals(PredicateDictionary.CREATOR)) {
+
+      if (context.predicate().getUri().equals(CREATOR.getUri())) {
         workResponse.addCreatorReferenceItem(agent);
-      } else if (context.predicate().equals(PredicateDictionary.CONTRIBUTOR)) {
+      } else if (context.predicate().getUri().equals(CONTRIBUTOR.getUri())) {
         workResponse.addContributorReferenceItem(agent);
       }
+
     }
 
     return parentDto;

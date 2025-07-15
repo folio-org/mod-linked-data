@@ -9,7 +9,7 @@ import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Component;
 
-@Component("contributorMeetingMapperUnit")
+@Component
 @MapperUnit(type = MEETING, requestDto = Agent.class, predicate = {CREATOR, CONTRIBUTOR})
 public class MeetingMapperUnit extends AgentMapperUnit {
 

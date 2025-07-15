@@ -18,7 +18,7 @@ class AgentRoleAssignerTest {
   private static AgentRoleAssigner agentRoleAssigner;
 
   @BeforeAll
-  public static void setup() {
+  static void setup() {
     agentRoleAssigner = new AgentRoleAssigner();
   }
 

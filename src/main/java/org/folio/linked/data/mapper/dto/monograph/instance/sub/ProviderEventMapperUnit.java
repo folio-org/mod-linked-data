@@ -45,12 +45,15 @@ public class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
       var providerEvent = coreMapper.toDtoWithEdges(resourceToConvert, ProviderEventResponse.class, false);
-      switch (context.predicate()) {
-        case PE_DISTRIBUTION -> instance.addDistributionItem(providerEvent);
-        case PE_MANUFACTURE -> instance.addManufactureItem(providerEvent);
-        case PE_PRODUCTION -> instance.addProductionItem(providerEvent);
-        case PE_PUBLICATION -> instance.addPublicationItem(providerEvent);
-        default -> throw new IllegalStateException("Unexpected value: " + context.predicate());
+      var predicateUri = context.predicate().getUri();
+      if (PE_DISTRIBUTION.getUri().equals(predicateUri)) {
+        instance.addDistributionItem(providerEvent);
+      } else if (PE_MANUFACTURE.getUri().equals(predicateUri)) {
+        instance.addManufactureItem(providerEvent);
+      } else if (PE_PRODUCTION.getUri().equals(predicateUri)) {
+        instance.addProductionItem(providerEvent);
+      } else if (PE_PUBLICATION.getUri().equals(predicateUri)) {
+        instance.addPublicationItem(providerEvent);
       }
     }
     return parentDto;
