@@ -984,7 +984,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -998,7 +998,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
