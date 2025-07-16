@@ -30,7 +30,7 @@ public abstract class AgentMapperUnit implements WorkSubResourceMapperUnit {
         .label(resourceToConvert.getLabel())
         .type(resourceToConvert.getTypes().iterator().next().getUri())
         .isPreferred(isPreferred(resourceToConvert));
-      agentRoleAssigner.assignRoles(agent, context.source());
+      agentRoleAssigner.assignRoles(agent, context.parentResource());
 
       if (context.predicate().getUri().equals(CREATOR.getUri())) {
         workResponse.addCreatorReferenceItem(agent);
