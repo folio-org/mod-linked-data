@@ -32,11 +32,16 @@ import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
@@ -97,6 +102,8 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getIllustrations(), ILLUSTRATIONS);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getPartOfSeries(), IS_PART_OF);
+    groupLanguagesByType(workDto.getLanguages())
+      .forEach((type, languages) -> coreMapper.addOutgoingEdges(work, WorkRequest.class, languages, type));
 
     work.setId(hashService.hash(work));
     return work;
@@ -112,4 +119,15 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
+  public Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<Language> languageDtos) {
+    Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
+    for (var lang : languageDtos) {
+      for (var type : lang.getTypes()) {
+        var predicate = PredicateDictionary.fromUri(type)
+          .orElseThrow(() -> new IllegalArgumentException("Unsupported language type: " + type));
+        result.computeIfAbsent(predicate, k -> new ArrayList<>()).add(lang);
+      }
+    }
+    return result;
+  }
 }

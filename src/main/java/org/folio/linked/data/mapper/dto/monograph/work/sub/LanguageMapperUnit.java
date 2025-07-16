@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = LANGUAGE_CATEGORY, predicate = LANGUAGE, requestDto = Category.class)
+@Deprecated(forRemoval = true)
 public class LanguageMapperUnit extends CategoryMapperUnit {
 
   private static final String LANGUAGE_LINK_PREFIX = "http://id.loc.gov/vocabulary/languages";
