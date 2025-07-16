@@ -72,10 +72,10 @@ public class LanguageIT extends PostResourceIT {
         .findFirst()
         .orElseThrow(() -> new AssertionError("Language with id " + id + " not found"));
 
-      assert actualLanguage.getLink().contains(expectedLanguage.link);
-      assert actualLanguage.getCode().contains(expectedLanguage.code);
-      assert actualLanguage.getTerm().contains(expectedLanguage.term);
-      assert actualLanguage.getTypes().containsAll(expectedLanguage.types);
+      assertThat(actualLanguage.getLink()).contains(expectedLanguage.link);
+      assertThat(actualLanguage.getCode()).contains(expectedLanguage.code);
+      assertThat(actualLanguage.getTerm()).contains(expectedLanguage.term);
+      assertThat(actualLanguage.getTypes()).containsAll(expectedLanguage.types);
     });
   }
 

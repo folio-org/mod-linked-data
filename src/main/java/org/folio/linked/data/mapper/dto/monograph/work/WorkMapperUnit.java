@@ -47,6 +47,7 @@ import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.domain.dto.WorkResponseField;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
@@ -66,6 +67,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
   private final HashService hashService;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -120,12 +122,12 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
-  public Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<Language> languageDtos) {
+  private Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<Language> languageDtos) {
     Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
     for (var lang : languageDtos) {
       for (var type : lang.getTypes()) {
         var predicate = PredicateDictionary.fromUri(type)
-          .orElseThrow(() -> new IllegalArgumentException("Unsupported language type: " + type));
+          .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + type, "Bad request"));
         result.computeIfAbsent(predicate, k -> new ArrayList<>()).add(lang);
       }
     }
