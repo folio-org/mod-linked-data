@@ -44,7 +44,7 @@
           },
           "x-json-property": "http://bibfra.me/vocab/lite/language",
           "deprecated": true,
-          "deprecationMessage": "Use '_languages' instead"
+          "deprecationMessage": "MODLD-783: Use '_languages' field instead."
         },
         "_languages": {
           "type": "array",

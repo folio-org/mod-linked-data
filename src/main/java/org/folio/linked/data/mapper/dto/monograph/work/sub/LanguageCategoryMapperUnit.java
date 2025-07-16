@@ -67,7 +67,7 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
           () -> workDto.addLanguagesItem(createLanguageDto(languageResource, mappingContext.predicate().getUri()))
         );
 
-      // Temporary code
+      // TODO (MODLD-783) - Remove the following temporary code after UI is updated to use new "_languages" property
       if (mappingContext.predicate().getUri().equals(LANGUAGE.getUri())) {
         var category = coreMapper.toDtoWithEdges(languageResource, CategoryResponse.class, false);
         category.setId(String.valueOf(languageResource.getId()));
