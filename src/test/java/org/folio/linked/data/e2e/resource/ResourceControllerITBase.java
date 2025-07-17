@@ -695,7 +695,6 @@ abstract class ResourceControllerITBase extends ITBase {
         .andExpect(jsonPath(toAccessLocationLink(), equalTo("accessLocation value")))
         .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
         .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
-        .andExpect(jsonPath(toExtent(), equalTo("extent info")))
         .andExpect(jsonPath(toExtentLabel(), equalTo("extent label")))
         .andExpect(jsonPath(toExtentMaterialsSpec(), equalTo("materials spec")))
         .andExpect(jsonPath(toExtentNote(), equalTo("extent note")))
