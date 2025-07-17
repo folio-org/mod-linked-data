@@ -129,7 +129,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertatio
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanQualifier;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEditionStatement;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtent;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentLabel;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentMaterialsSpec;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentNote;
