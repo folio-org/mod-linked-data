@@ -1903,8 +1903,7 @@
       "id": "Monograph:Instance:MediaType"
     },
     {
-      "type": "literal",
-      "groupName": "Extent",
+      "type": "group",
       "displayName": "Extent",
       "uriBFLite": "http://bibfra.me/vocab/lite/extent",
       "constraints": {
@@ -1915,7 +1914,39 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
+      "children": [
+        "Monograph:Instance:Extent:Extent",
+        "Monograph:Instance:Extent:AppliesTo"
+      ],
       "id": "Monograph:Instance:Extent"
+    },
+    {
+      "type": "literal",
+      "displayName": "Extent",
+      "uriBFLite": "http://bibfra.me/vocab/lite/label",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Monograph:Instance:Extent:Extent"
+    },
+    {
+      "type": "literal",
+      "displayName": "Applies to",
+      "uriBFLite": "http://bibfra.me/vocab/marc/materialsSpecified",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Monograph:Instance:Extent:AppliesTo"
     },
     {
       "type": "literal",
