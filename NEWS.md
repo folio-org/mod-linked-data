@@ -21,8 +21,8 @@
 - *BREAKING* Update okapiInterfaces for Split Search & Browse APIs. [MODLD-778](https://folio-org.atlassian.net/browse/MODLD-778)
 - Update API to support 'Series Statement' (MARC 490) [MODLD-777](https://folio-org.atlassian.net/browse/MODLD-777)
 - Add `on delete cascade` constraint to folio_metadata table. Remove method `ResourceGraphService -> breakEdgesAndDelete` [MODLD-780](https://folio-org.atlassian.net/browse/MODLD-780)
-- Update profiles for series. [UILD-594](https://folio-org.atlassian.net/browse/UILD-594)
-- Update to use extent object property exclusively, removing extent literal property. Update profiles to match. [UILD-557](https://folio-org.atlassian.net/browse/UILD-557)
+- Update profiles for series. [MODLD-777](https://folio-org.atlassian.net/browse/MODLD-777)
+- Update to use extent object property exclusively, removing extent literal property. Update profiles to match. [MODLD-388](https://folio-org.atlassian.net/browse/MODLD-388)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
