@@ -117,7 +117,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCarrier(), CARRIER);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getCopyright(), COPYRIGHT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
-    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getExtentV2(), EXTENT);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getExtent(), EXTENT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, standardBookFormats(instanceDto), BOOK_FORMAT);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));
@@ -126,7 +126,6 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
 
   private JsonNode getDoc(InstanceRequest dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, PropertyDictionary.EXTENT, dto.getExtent());
     putProperty(map, DIMENSIONS, dto.getDimensions());
     putProperty(map, EDITION, dto.getEdition());
     putProperty(map, PROJECTED_PROVISION_DATE, dto.getProjectProvisionDate());
