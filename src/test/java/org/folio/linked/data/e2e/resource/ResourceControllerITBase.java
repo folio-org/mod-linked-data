@@ -819,8 +819,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getDoc().size()).isEqualTo(6);
-    validateLiteral(instance, PropertyDictionary.EXTENT.getValue(), "extent info");
+    assertThat(instance.getDoc().size()).isEqualTo(5);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
