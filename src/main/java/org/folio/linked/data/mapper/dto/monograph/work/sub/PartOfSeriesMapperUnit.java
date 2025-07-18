@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
 import static java.lang.String.join;
 import static java.util.Arrays.stream;
+import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -21,6 +22,7 @@ import static org.folio.linked.data.util.ResourceUtils.putProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -66,14 +68,19 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
       INSTANCE, SERIES
     );
     var series = createResource(getInstanceOrSeriesDoc(partOfSeries), getFirstValue(partOfSeries::getName), SERIES);
-    var issn = createResource(getIssnDoc(partOfSeries), getFirstValue(partOfSeries::getIssn), IDENTIFIER, ID_ISSN);
+    var issnOpt = ofNullable(partOfSeries.getIssn())
+      .filter(issn -> !issn.isEmpty())
+      .map(issn -> createResource(getIssnDoc(partOfSeries), getFirstValue(partOfSeries::getIssn), IDENTIFIER, ID_ISSN));
 
     connectResources(work, series, IS_PART_OF);
-    connectResources(series, issn, MAP);
     connectResources(instance, series, INSTANTIATES);
-    connectResources(instance, issn, MAP);
 
-    setResourceIds(work, instance, series, issn);
+    issnOpt.ifPresent(issn -> {
+      connectResources(series, issn, MAP);
+      connectResources(instance, issn, MAP);
+    });
+
+    setResourceIds(work, instance, series, issnOpt.orElse(null));
 
     return work;
   }
@@ -93,6 +100,7 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
 
   private void setResourceIds(Resource... resources) {
     stream(resources)
+      .filter(Objects::nonNull)
       .forEach(resource -> resource.setId(hashService.hash(resource)));
   }
 
