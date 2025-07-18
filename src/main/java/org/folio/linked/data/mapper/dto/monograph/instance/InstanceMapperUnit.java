@@ -83,14 +83,14 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
-      var instance = coreMapper.toDtoWithEdges(source, InstanceResponse.class, false);
-      instance.setId(String.valueOf(source.getId()));
-      ofNullable(source.getFolioMetadata())
+      var instance = coreMapper.toDtoWithEdges(resourceToConvert, InstanceResponse.class, false);
+      instance.setId(String.valueOf(resourceToConvert.getId()));
+      ofNullable(resourceToConvert.getFolioMetadata())
         .map(folioMetadataMapper::toDto)
         .ifPresent(instance::setFolioMetadata);
-      ofNullable(source.getDoc())
+      ofNullable(resourceToConvert.getDoc())
         .ifPresent(doc -> instance.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.resource(new InstanceResponseField().instance(instance));
     }

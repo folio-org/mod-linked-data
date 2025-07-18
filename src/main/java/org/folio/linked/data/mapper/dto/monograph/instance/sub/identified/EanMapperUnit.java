@@ -33,10 +33,10 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var ean = coreMapper.toDtoWithEdges(source, EanResponse.class, false);
-      ean.setId(String.valueOf(source.getId()));
+      var ean = coreMapper.toDtoWithEdges(resourceToConvert, EanResponse.class, false);
+      ean.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new EanFieldResponse().ean(ean));
     }
     return parentDto;

@@ -29,10 +29,10 @@ public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var accessLocation = coreMapper.toDtoWithEdges(source, AccessLocationResponse.class, false);
-      accessLocation.setId(String.valueOf(source.getId()));
+      var accessLocation = coreMapper.toDtoWithEdges(resourceToConvert, AccessLocationResponse.class, false);
+      accessLocation.setId(String.valueOf(resourceToConvert.getId()));
       instance.addAccessLocationItem(accessLocation);
     }
     return parentDto;

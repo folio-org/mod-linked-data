@@ -48,9 +48,9 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var status = coreMapper.toDtoWithEdges(source, StatusResponse.class, false);
-    status.setId(String.valueOf(source.getId()));
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    var status = coreMapper.toDtoWithEdges(resourceToConvert, StatusResponse.class, false);
+    status.setId(String.valueOf(resourceToConvert.getId()));
     switch (parentDto) {
       case LccnResponse lccn -> lccn.addStatusItem(status);
       case IsbnResponse isbn -> isbn.addStatusItem(status);

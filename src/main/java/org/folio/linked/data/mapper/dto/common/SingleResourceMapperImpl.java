@@ -1,10 +1,12 @@
 package org.folio.linked.data.mapper.dto.common;
 
+import static java.util.Arrays.stream;
 import static java.util.Comparator.comparing;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.linked.data.mapper.dto.common.SingleResourceMapperUnit.ResourceMappingContext;
 import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR;
 import static org.folio.linked.data.util.Constants.PREDICATE;
@@ -65,7 +67,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       .findFirst();
 
     return resourceMapper
-      .map(mapper -> mapper.toDto(source, parentDto, parentResource))
+      .map(mapper -> mapper.toDto(source, parentDto, new ResourceMappingContext(parentResource, predicate)))
       .orElseGet(() -> {
         var types = String.join(", ", getTypeUris(source));
         log.debug(
@@ -82,9 +84,11 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       .filter(m -> isNull(parentResponseDto) || m.supportedParents().contains(parentResponseDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
-        return (isNull(typeUri) || typeUri.equals(annotation.type().getUri()))
-          && (isNull(pred) || pred.getHash().equals(annotation.predicate().getHash()))
-          && (isNull(requestDto) || requestDto.equals(annotation.requestDto()));
+        var typeMatches = isNull(typeUri) || typeUri.equals(annotation.type().getUri());
+        var predicateMatches = isNull(pred) || stream(annotation.predicate())
+          .anyMatch(dict -> pred.getHash().equals(dict.getHash()));
+        var requestDtoMatches = isNull(requestDto) || requestDto.equals(annotation.requestDto());
+        return typeMatches && predicateMatches && requestDtoMatches;
       })
       .min(comparing(o -> o.getClass().getSimpleName()));
   }

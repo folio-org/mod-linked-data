@@ -42,7 +42,17 @@
             "type": "object",
             "$ref": "CategoryResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/language"
+          "x-json-property": "http://bibfra.me/vocab/lite/language",
+          "deprecated": true,
+          "deprecationMessage": "MODLD-783: Use '_languages' field instead."
+        },
+        "_languages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Language.json"
+          },
+          "x-json-property": "_languages"
         },
         "_notes": {
           "type": "array",
