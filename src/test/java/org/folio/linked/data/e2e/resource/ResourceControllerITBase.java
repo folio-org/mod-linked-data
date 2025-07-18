@@ -129,7 +129,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertatio
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanQualifier;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEditionStatement;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtent;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentLabel;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentMaterialsSpec;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentNote;
@@ -695,7 +694,6 @@ abstract class ResourceControllerITBase extends ITBase {
         .andExpect(jsonPath(toAccessLocationLink(), equalTo("accessLocation value")))
         .andExpect(jsonPath(toAccessLocationNote(), equalTo("accessLocation note")))
         .andExpect(jsonPath(toCopyrightDate(), equalTo("copyright date value")))
-        .andExpect(jsonPath(toExtent(), equalTo("extent info")))
         .andExpect(jsonPath(toExtentLabel(), equalTo("extent label")))
         .andExpect(jsonPath(toExtentMaterialsSpec(), equalTo("materials spec")))
         .andExpect(jsonPath(toExtentNote(), equalTo("extent note")))
@@ -820,8 +818,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getDoc().size()).isEqualTo(6);
-    validateLiteral(instance, PropertyDictionary.EXTENT.getValue(), "extent info");
+    assertThat(instance.getDoc().size()).isEqualTo(5);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
