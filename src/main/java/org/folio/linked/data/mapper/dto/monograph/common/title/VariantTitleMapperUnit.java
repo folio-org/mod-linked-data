@@ -37,9 +37,9 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var variantTitle = coreMapper.toDtoWithEdges(source, VariantTitleResponse.class, false);
-    variantTitle.setId(String.valueOf(source.getId()));
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    var variantTitle = coreMapper.toDtoWithEdges(resourceToConvert, VariantTitleResponse.class, false);
+    variantTitle.setId(String.valueOf(resourceToConvert.getId()));
     if (parentDto instanceof InstanceResponse instance) {
       instance.addTitleItem(new VariantTitleFieldResponse().variantTitle(variantTitle));
     } else if (parentDto instanceof WorkResponse work) {

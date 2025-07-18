@@ -1,11 +1,10 @@
-package org.folio.linked.data.mapper.resource.monograph.work;
+package org.folio.linked.data.mapper.dto.monograph.work.sub.agent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
 import org.folio.linked.data.domain.dto.Agent;
-import org.folio.linked.data.mapper.dto.monograph.work.sub.AgentRoleAssigner;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -19,7 +18,7 @@ class AgentRoleAssignerTest {
   private static AgentRoleAssigner agentRoleAssigner;
 
   @BeforeAll
-  public static void setup() {
+  static void setup() {
     agentRoleAssigner = new AgentRoleAssigner();
   }
 

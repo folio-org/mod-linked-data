@@ -16,12 +16,12 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
   private final ResourceMarcAuthorityService resourceMarcAuthorityService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    source = ensureLatestReplaced(source);
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    resourceToConvert = ensureLatestReplaced(resourceToConvert);
     var reference = new Reference()
-      .id(String.valueOf(source.getId()))
-      .label(source.getLabel())
-      .isPreferred(isPreferred(source));
+      .id(String.valueOf(resourceToConvert.getId()))
+      .label(resourceToConvert.getLabel())
+      .isPreferred(isPreferred(resourceToConvert));
     referenceConsumer.accept(reference, parentDto);
     return parentDto;
   }

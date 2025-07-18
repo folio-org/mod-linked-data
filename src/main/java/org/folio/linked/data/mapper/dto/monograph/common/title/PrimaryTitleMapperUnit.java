@@ -35,9 +35,9 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var primaryTitle = coreMapper.toDtoWithEdges(source, PrimaryTitleResponse.class, false);
-    primaryTitle.setId(String.valueOf(source.getId()));
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    var primaryTitle = coreMapper.toDtoWithEdges(resourceToConvert, PrimaryTitleResponse.class, false);
+    primaryTitle.setId(String.valueOf(resourceToConvert.getId()));
     if (parentDto instanceof InstanceResponse instance) {
       instance.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
     } else if (parentDto instanceof WorkResponse work) {

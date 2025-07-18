@@ -13,7 +13,7 @@ public @interface MapperUnit {
 
   ResourceTypeDictionary type();
 
-  PredicateDictionary predicate() default PredicateDictionary.NULL;
+  PredicateDictionary[] predicate() default { PredicateDictionary.NULL };
 
   Class<?> requestDto() default Object.class;
 

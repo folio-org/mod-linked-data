@@ -36,9 +36,9 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
-    var parallelTitle = coreMapper.toDtoWithEdges(source, ParallelTitleResponse.class, false);
-    parallelTitle.setId(String.valueOf(source.getId()));
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    var parallelTitle = coreMapper.toDtoWithEdges(resourceToConvert, ParallelTitleResponse.class, false);
+    parallelTitle.setId(String.valueOf(resourceToConvert.getId()));
     if (parentDto instanceof InstanceResponse instance) {
       instance.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));
     } else if (parentDto instanceof WorkResponse work) {

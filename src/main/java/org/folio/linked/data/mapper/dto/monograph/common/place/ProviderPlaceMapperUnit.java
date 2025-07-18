@@ -26,10 +26,10 @@ public class ProviderPlaceMapperUnit extends PlaceMapperUnit {
   }
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof ProviderEventResponse providerEvent) {
-      var place = coreMapper.toDtoWithEdges(source, PlaceResponse.class, false);
-      place.setId(String.valueOf(source.getId()));
+      var place = coreMapper.toDtoWithEdges(resourceToConvert, PlaceResponse.class, false);
+      place.setId(String.valueOf(resourceToConvert.getId()));
       providerEvent.addProviderPlaceItem(place);
     } else {
       throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = LANGUAGE_CATEGORY, predicate = LANGUAGE, requestDto = Category.class)
+@Deprecated(forRemoval = true)
+// TODO (MODLD-783) - Remove this class after UI is updated to use new "_languages" property
 public class LanguageMapperUnit extends CategoryMapperUnit {
 
   private static final String LANGUAGE_LINK_PREFIX = "http://id.loc.gov/vocabulary/languages";
