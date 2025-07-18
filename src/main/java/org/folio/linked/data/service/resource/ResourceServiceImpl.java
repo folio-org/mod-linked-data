@@ -1,10 +1,12 @@
 package org.folio.linked.data.service.resource;
 
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,13 +23,13 @@ import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
+import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
-import org.folio.linked.data.util.ResourceUtils;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
@@ -51,6 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceCopyService resourceCopyService;
   private final RawMarcService rawMarcService;
   private final ResourceProfileLinkingService resourceProfileService;
+  private final ResourceEdgeRepository resourceEdgeRepository;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -119,9 +122,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     var incomingInstanceWorkId = extractWorkFromInstance(resourceToSave)
       .map(Resource::getId);
-    var existedInstanceWorkId = resourceRepo.findById(resourceToSave.getId())
-      .flatMap(ResourceUtils::extractWorkFromInstance)
-      .map(Resource::getId);
+    var existedInstanceWorkId = findWorkIdByInstanceId(resourceToSave.getId());
 
     if (existedInstanceWorkId.isPresent() && !existedInstanceWorkId.equals(incomingInstanceWorkId)) {
       log.error("Instance {} is already connected to work {}. Connecting the instance to another work {} "
@@ -178,5 +179,11 @@ public class ResourceServiceImpl implements ResourceService {
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
+  }
+
+  private Optional<Long> findWorkIdByInstanceId(Long instanceId) {
+    return resourceEdgeRepository.findTargetHashes(instanceId, INSTANTIATES.getHash())
+      .stream()
+      .findFirst();
   }
 }
