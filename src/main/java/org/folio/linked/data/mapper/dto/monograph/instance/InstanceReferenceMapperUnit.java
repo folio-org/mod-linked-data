@@ -37,11 +37,11 @@ public class InstanceReferenceMapperUnit implements SingleResourceMapperUnit {
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof WorkResponse work) {
-      var instanceResponse = coreMapper.toDtoWithEdges(source, InstanceResponse.class, false);
-      instanceResponse.setId(String.valueOf(source.getId()));
-      ofNullable(source.getDoc())
+      var instanceResponse = coreMapper.toDtoWithEdges(resourceToConvert, InstanceResponse.class, false);
+      instanceResponse.setId(String.valueOf(resourceToConvert.getId()));
+      ofNullable(resourceToConvert.getDoc())
         .ifPresent(doc -> instanceResponse.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       work.addInstanceReferenceItem(instanceResponse);
     }

@@ -33,10 +33,10 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var lccn = coreMapper.toDtoWithEdges(source, LccnResponse.class, false);
-      lccn.setId(String.valueOf(source.getId()));
+      var lccn = coreMapper.toDtoWithEdges(resourceToConvert, LccnResponse.class, false);
+      lccn.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new LccnFieldResponse().lccn(lccn));
     }
     return parentDto;

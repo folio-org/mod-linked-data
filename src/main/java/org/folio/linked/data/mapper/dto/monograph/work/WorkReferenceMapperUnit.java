@@ -37,11 +37,12 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var workResponse = coreMapper.toDtoWithEdges(source, WorkResponse.class, false);
-      workResponse.setId(String.valueOf(source.getId()));
-      ofNullable(source.getDoc()).ifPresent(doc -> workResponse.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      var workResponse = coreMapper.toDtoWithEdges(resourceToConvert, WorkResponse.class, false);
+      workResponse.setId(String.valueOf(resourceToConvert.getId()));
+      ofNullable(resourceToConvert.getDoc())
+        .ifPresent(doc -> workResponse.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       instance.addWorkReferenceItem(workResponse);
     }
     return parentDto;

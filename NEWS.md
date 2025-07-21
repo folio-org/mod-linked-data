@@ -21,6 +21,10 @@
 - *BREAKING* Update okapiInterfaces for Split Search & Browse APIs. [MODLD-778](https://folio-org.atlassian.net/browse/MODLD-778)
 - Update API to support 'Series Statement' (MARC 490) [MODLD-777](https://folio-org.atlassian.net/browse/MODLD-777)
 - Add `on delete cascade` constraint to folio_metadata table. Remove method `ResourceGraphService -> breakEdgesAndDelete` [MODLD-780](https://folio-org.atlassian.net/browse/MODLD-780)
+- Update API to support type of Language (Marc 041) [MODLD-362](https://folio-org.atlassian.net/browse/MODLD-362)
+- Update profiles for series. [MODLD-777](https://folio-org.atlassian.net/browse/MODLD-777)
+- Update to use extent object property exclusively, removing extent literal property. Update profiles to match. [MODLD-388](https://folio-org.atlassian.net/browse/MODLD-388)
+- Restore method `ResourceGraphService -> breakEdgesAndDelete` back to the codebase [MODLD-790](https://folio-org.atlassian.net/browse/MODLD-790)
 - Add validation for series title [MODLD-786](https://folio-org.atlassian.net/browse/MODLD-786)
 
 ## 1.0.4 (04-24-2025)

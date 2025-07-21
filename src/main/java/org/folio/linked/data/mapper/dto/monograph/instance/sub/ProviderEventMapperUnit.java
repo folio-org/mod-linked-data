@@ -1,7 +1,11 @@
-package org.folio.linked.data.mapper.dto.monograph.instance.sub.provision;
+package org.folio.linked.data.mapper.dto.monograph.instance.sub;
 
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
+import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
@@ -15,28 +19,42 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.ProviderEventRequest;
 import org.folio.linked.data.domain.dto.ProviderEventResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
-import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-public abstract class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
+@MapperUnit(
+  type = PROVIDER_EVENT,
+  predicate = {PE_DISTRIBUTION, PE_MANUFACTURE, PE_PUBLICATION, PE_PRODUCTION},
+  requestDto = ProviderEventRequest.class
+)
+@Component
+public class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
-  private final BiFunction<ProviderEventResponse, InstanceResponse, InstanceResponse> providerEventConsumer;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var providerEvent = coreMapper.toDtoWithEdges(source, ProviderEventResponse.class, false);
-      providerEventConsumer.apply(providerEvent, instance);
+      var providerEvent = coreMapper.toDtoWithEdges(resourceToConvert, ProviderEventResponse.class, false);
+      var predicateUri = context.predicate().getUri();
+      if (PE_DISTRIBUTION.getUri().equals(predicateUri)) {
+        instance.addDistributionItem(providerEvent);
+      } else if (PE_MANUFACTURE.getUri().equals(predicateUri)) {
+        instance.addManufactureItem(providerEvent);
+      } else if (PE_PRODUCTION.getUri().equals(predicateUri)) {
+        instance.addProductionItem(providerEvent);
+      } else if (PE_PUBLICATION.getUri().equals(predicateUri)) {
+        instance.addPublicationItem(providerEvent);
+      }
     }
     return parentDto;
   }

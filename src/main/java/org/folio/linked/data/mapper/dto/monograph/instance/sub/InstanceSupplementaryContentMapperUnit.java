@@ -29,10 +29,10 @@ public class InstanceSupplementaryContentMapperUnit implements InstanceSubResour
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resource, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var supplementaryContent = coreMapper.toDtoWithEdges(source, SupplementaryContentResponse.class, false);
-      supplementaryContent.setId(String.valueOf(source.getId()));
+      var supplementaryContent = coreMapper.toDtoWithEdges(resource, SupplementaryContentResponse.class, false);
+      supplementaryContent.setId(String.valueOf(resource.getId()));
       instance.addSupplementaryContentItem(supplementaryContent);
     }
     return parentDto;

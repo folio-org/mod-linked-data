@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.monograph.work.sub;
+package org.folio.linked.data.mapper.dto.monograph.work.sub.agent;
 
 import static org.folio.linked.data.util.Constants.RELATION_PREDICATE_PREFIX;
 

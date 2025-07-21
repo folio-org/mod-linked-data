@@ -33,10 +33,10 @@ public class LocalIdMapperUnit implements InstanceSubResourceMapperUnit {
   private final HashService hashService;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var localId = coreMapper.toDtoWithEdges(source, LocalIdResponse.class, false);
-      localId.setId(String.valueOf(source.getId()));
+      var localId = coreMapper.toDtoWithEdges(resourceToConvert, LocalIdResponse.class, false);
+      localId.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new LocalIdFieldResponse().localId(localId));
     }
     return parentDto;

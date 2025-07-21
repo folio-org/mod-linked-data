@@ -9,4 +9,6 @@ public interface ResourceGraphService {
 
   Resource saveMergingGraph(Resource resource);
 
+  void breakEdgesAndDelete(Resource resource);
+
 }

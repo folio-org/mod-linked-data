@@ -32,16 +32,22 @@ import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.domain.dto.WorkResponseField;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
@@ -61,13 +67,14 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;
   private final HashService hashService;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
-  public <P> P toDto(Resource source, P parentDto, Resource parentResource) {
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof ResourceResponseDto resourceDto) {
-      var work = coreMapper.toDtoWithEdges(source, WorkResponse.class, true);
-      work.setId(String.valueOf(source.getId()));
-      ofNullable(source.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      var work = coreMapper.toDtoWithEdges(resourceToConvert, WorkResponse.class, true);
+      work.setId(String.valueOf(resourceToConvert.getId()));
+      ofNullable(resourceToConvert.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
       resourceDto.setResource(new WorkResponseField().work(work));
     }
     return parentDto;
@@ -92,11 +99,14 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getOriginPlace(), ORIGIN_PLACE);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getDissertation(), DISSERTATION);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTargetAudience(), TARGET_AUDIENCE);
+    // TODO (MODLD-783) - Remove the following line after UI is updated to use new "_languages" property
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getLanguage(), LANGUAGE);
     coreMapper.addIncomingEdges(work, WorkRequest.class, workDto.getInstanceReference(), INSTANTIATES);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getIllustrations(), ILLUSTRATIONS);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getPartOfSeries(), IS_PART_OF);
+    groupLanguagesByType(workDto.getLanguages())
+      .forEach((type, languages) -> coreMapper.addOutgoingEdges(work, WorkRequest.class, languages, type));
 
     work.setId(hashService.hash(work));
     return work;
@@ -112,4 +122,15 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
+  private Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<Language> languageDtos) {
+    Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
+    for (var lang : languageDtos) {
+      for (var type : lang.getTypes()) {
+        var predicate = PredicateDictionary.fromUri(type)
+          .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + type, "Bad request"));
+        result.computeIfAbsent(predicate, k -> new ArrayList<>()).add(lang);
+      }
+    }
+    return result;
+  }
 }

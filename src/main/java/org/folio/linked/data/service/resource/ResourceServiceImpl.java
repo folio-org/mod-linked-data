@@ -85,7 +85,7 @@ public class ResourceServiceImpl implements ResourceService {
     rejectInstanceOfAnotherWork(id, mapped);
     var existed = getResource(id);
     var oldResource = new Resource(existed);
-    resourceRepo.delete(existed);
+    resourceGraphService.breakEdgesAndDelete(existed);
     var newResource = updateResourceAndPublishEvents(mapped, oldResource, getProfileId(resourceDto));
     return resourceDtoMapper.toDto(newResource);
   }
@@ -94,7 +94,7 @@ public class ResourceServiceImpl implements ResourceService {
   public void deleteResource(Long id) {
     log.info("deleteResource [{}]", id);
     resourceRepo.findById(id).ifPresent(resource -> {
-      resourceRepo.delete(resource);
+      resourceGraphService.breakEdgesAndDelete(resource);
       applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
     });
   }
