@@ -17,7 +17,6 @@ import static org.folio.spring.integration.XOkapiHeaders.USER_ID;
 import static org.jeasy.random.FieldPredicates.named;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
@@ -98,7 +97,6 @@ public class TestUtil {
 
   public static HttpHeaders defaultHeaders(Environment env) {
     var httpHeaders = new HttpHeaders();
-    httpHeaders.setContentType(APPLICATION_JSON);
     if (!isStandaloneTest(env)) {
       httpHeaders.add(TENANT, TENANT_ID);
       httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
