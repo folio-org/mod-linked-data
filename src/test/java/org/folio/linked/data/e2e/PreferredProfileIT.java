@@ -1,7 +1,7 @@
 package org.folio.linked.data.e2e;
 
 import static java.util.UUID.randomUUID;
-import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,8 +30,8 @@ class PreferredProfileIT {
   @Test
   void shouldSetPreferredProfile() throws Exception {
     // given
-    var headers = defaultHeaders(env);
-    headers.add("x-okapi-user-id", randomUUID().toString());
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
+    headers.setContentType(APPLICATION_JSON);
 
     // when
     var postRequest = post(PREFERRED_PROFILE_URL)
@@ -60,8 +60,7 @@ class PreferredProfileIT {
   @Test
   void shouldReturnEmptyPreferredProfile() throws Exception {
     // given
-    var headers = defaultHeaders(env);
-    headers.add("x-okapi-user-id", randomUUID().toString());
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
 
     // when
     validateEmptyPreferredProfile(mockMvc.perform(get(PREFERRED_PROFILE_URL).headers(headers)));
