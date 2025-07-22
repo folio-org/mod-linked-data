@@ -22,14 +22,7 @@ public class PartOfSeriesTitleDtoValidator implements
     }
 
     return series.stream()
-      .filter(this::seriesIsNotEmpty)
       .allMatch(this::titleIsNotEmpty);
-  }
-
-  private boolean seriesIsNotEmpty(PartOfSeries series) {
-    return !series.getName().isEmpty()
-            || !series.getIssn().isEmpty()
-            || !series.getVolume().isEmpty();
   }
 
   private boolean titleIsNotEmpty(PartOfSeries series) {

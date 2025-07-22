@@ -25,20 +25,6 @@ class PartOfSeriesTitleDtoValidatorTest {
   }
 
   @Test
-  void shouldReturnTrue_ifAllSeriesAreEmpty() {
-    // given
-    var series = new ArrayList<PartOfSeries>();
-    series.add(new PartOfSeries());
-    series.add(new PartOfSeries());
-
-    // when
-    boolean result = validator.isValid(series, null);
-
-    // then
-    assertThat(result).isTrue();    
-  }
-
-  @Test
   void shouldReturnTrue_ifOneSeriesWithOneTitle() {
     // given
     var series = new ArrayList<PartOfSeries>();
@@ -66,7 +52,21 @@ class PartOfSeriesTitleDtoValidatorTest {
   }
 
   @Test
-  void shouldReturnTrue_ifOneSeriesWithTitleOneSeriesEmpty() {
+  void shouldReturnFalse_ifAllSeriesAreEmpty() {
+    // given
+    var series = new ArrayList<PartOfSeries>();
+    series.add(new PartOfSeries());
+    series.add(new PartOfSeries());
+
+    // when
+    boolean result = validator.isValid(series, null);
+
+    // then
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  void shouldReturnFalse_ifOneSeriesWithTitleOneSeriesEmpty() {
     // given
     var series = new ArrayList<PartOfSeries>();
     series.add(new PartOfSeries());
@@ -76,7 +76,7 @@ class PartOfSeriesTitleDtoValidatorTest {
     boolean result = validator.isValid(series, null);
 
     // then
-    assertThat(result).isTrue();    
+    assertThat(result).isFalse();
   }
 
   @Test
@@ -90,7 +90,7 @@ class PartOfSeriesTitleDtoValidatorTest {
     boolean result = validator.isValid(series, null);
 
     // then
-    assertThat(result).isFalse();    
+    assertThat(result).isFalse();
   }
 
   @Test
