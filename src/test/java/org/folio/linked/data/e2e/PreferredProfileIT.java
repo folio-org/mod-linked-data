@@ -4,6 +4,7 @@ import static java.util.UUID.randomUUID;
 import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -64,6 +65,34 @@ class PreferredProfileIT {
 
     // when
     validateEmptyPreferredProfile(mockMvc.perform(get(PREFERRED_PROFILE_URL).headers(headers)));
+  }
+
+  @Test
+  void shouldDeletePreferredProfile() throws Exception {
+    // given
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
+    headers.setContentType(APPLICATION_JSON);
+
+    var postRequest = post(PREFERRED_PROFILE_URL)
+      .headers(headers)
+      .content("""
+        {
+            "id": 3,
+            "resourceType": "http://bibfra.me/vocab/lite/Instance"
+        }""");
+    mockMvc.perform(postRequest)
+      .andExpect(status().isNoContent());
+
+    var urlWithResourceType = PREFERRED_PROFILE_URL + "?resourceType=http://bibfra.me/vocab/lite/Instance";
+    validatePreferredProfile(mockMvc.perform(get(urlWithResourceType).headers(headers)));
+
+    // when
+    mockMvc.perform(delete(urlWithResourceType)
+      .headers(headers))
+      .andExpect(status().isNoContent());
+
+    // then
+    validateEmptyPreferredProfile(mockMvc.perform(get(urlWithResourceType).headers(headers)));
   }
 
   private void validatePreferredProfile(ResultActions result) throws Exception {

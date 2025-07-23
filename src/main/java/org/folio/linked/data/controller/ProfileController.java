@@ -37,4 +37,10 @@ public class ProfileController implements ProfileApi {
   public ResponseEntity<List<ProfileMetadata>> getPreferredProfileByResourceType(String resourceTypeUri) {
     return ResponseEntity.ok(preferredProfileService.getPreferredProfiles(resourceTypeUri));
   }
+
+  @Override
+  public ResponseEntity<Void> deletePreferredProfile(String resourceTypeUri) {
+    preferredProfileService.deletePreferredProfile(resourceTypeUri);
+    return ResponseEntity.noContent().build();
+  }
 }

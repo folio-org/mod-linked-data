@@ -8,4 +8,6 @@ public interface PreferredProfileService {
   void setPreferredProfile(Integer profileId, String resourceTypeUri);
 
   List<ProfileMetadata> getPreferredProfiles(@Nullable String resourceTypeUri);
+
+  void deletePreferredProfile(String resourceTypeUri);
 }
