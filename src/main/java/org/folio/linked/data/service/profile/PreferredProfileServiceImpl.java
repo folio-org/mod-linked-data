@@ -14,6 +14,7 @@ import org.folio.linked.data.model.entity.pk.PreferredProfilePk;
 import org.folio.linked.data.repo.PreferredProfileRepository;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ResourceTypeRepository;
+import org.folio.spring.FolioExecutionContext;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,21 +29,23 @@ public class PreferredProfileServiceImpl implements PreferredProfileService {
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ResourceTypeRepository typeRepository;
   private final ProfileRepository profileRepository;
+  private final FolioExecutionContext executionContext;
 
   @Override
-  public void setPreferredProfile(UUID userId, Integer profileId, String resourceTypeUri) {
+  public void setPreferredProfile(Integer profileId, String resourceTypeUri) {
     var profile =  profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
     var resourceType = typeRepository.findByUri(resourceTypeUri);
     var preferredProfile = new PreferredProfile()
-      .setId(new PreferredProfilePk(userId, resourceType.getHash()))
+      .setId(new PreferredProfilePk(executionContext.getUserId(), resourceType.getHash()))
       .setProfile(profile);
     preferredProfileRepository.save(preferredProfile);
   }
 
   @Override
   @Transactional(readOnly = true)
-  public List<ProfileMetadata> getPreferredProfiles(UUID userId, @Nullable String resourceTypeUri) {
+  public List<ProfileMetadata> getPreferredProfiles(@Nullable String resourceTypeUri) {
+    var userId = executionContext.getUserId();
     var preferredProfiles = ofNullable(resourceTypeUri)
       .map(uri -> getPreferredProfile(userId, uri).stream().toList())
       .orElseGet(() -> getPreferredProfiles(userId));

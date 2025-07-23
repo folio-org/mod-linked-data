@@ -285,7 +285,6 @@ paths:
         - profile
       description: Get the preferred profile for a resource type for the current user
       parameters:
-        - $ref: '#/components/parameters/x-okapi-user-id-header'
         - name: resourceType
           in: query
           required: false
@@ -305,8 +304,6 @@ paths:
       tags:
         - profile
       description: Create or update the preferred profile for a resource type for the current user
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-user-id-header'
       requestBody:
         content:
           application/json:
@@ -432,13 +429,6 @@ components:
       schema:
         type: integer
         format: int16
-    x-okapi-user-id-header:
-      name: x-okapi-user-id
-      in: header
-      description: X-Okapi-User-Id header value
-      schema:
-        type: string
-        format: uuid
   schemas:
     errorResponse:
       $ref: schema/error/errors.json
