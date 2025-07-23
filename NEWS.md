@@ -25,6 +25,7 @@
 - Update profiles for series. [MODLD-777](https://folio-org.atlassian.net/browse/MODLD-777)
 - Update to use extent object property exclusively, removing extent literal property. Update profiles to match. [MODLD-388](https://folio-org.atlassian.net/browse/MODLD-388)
 - Restore method `ResourceGraphService -> breakEdgesAndDelete` back to the codebase [MODLD-790](https://folio-org.atlassian.net/browse/MODLD-790)
+- Add validation for series title [MODLD-786](https://folio-org.atlassian.net/browse/MODLD-786)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
