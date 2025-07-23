@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
+import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
@@ -30,7 +31,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
-import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
@@ -102,7 +102,7 @@ public class ResourceJsonPath {
   }
 
   public static String toExtent() {
-    return String.join(".", toInstance(), arrayPath(EXTENT.getValue()));
+    return String.join(".", toInstance(), arrayPath(EXTENT.getUri()));
   }
 
   public static String toDimensions() {
@@ -122,16 +122,16 @@ public class ResourceJsonPath {
   }
 
   public static String toExtentLabel() {
-    return join(".", toInstance(), arrayPath(EXTENT.getValue()), arrayPath(LABEL.getValue()));
+    return join(".", toInstance(), arrayPath(EXTENT.getUri()), arrayPath(LABEL.getValue()));
   }
 
   public static String toExtentMaterialsSpec() {
-    return join(".", toInstance(), arrayPath(EXTENT.getValue()),
+    return join(".", toInstance(), arrayPath(EXTENT.getUri()),
       arrayPath(MATERIALS_SPECIFIED.getValue()));
   }
 
   public static String toExtentNote() {
-    return join(".", toInstance(), arrayPath(EXTENT.getValue()), arrayPath(NOTE.getValue()));
+    return join(".", toInstance(), arrayPath(EXTENT.getUri()), arrayPath(NOTE.getValue()));
   }
 
   public static String toAccessLocationLink() {
