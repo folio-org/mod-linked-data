@@ -2,7 +2,6 @@ package org.folio.linked.data.mapper.resource.monograph.common;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
-import static org.folio.ld.dictionary.PropertyDictionary.EXTENT;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
@@ -104,14 +103,12 @@ class NoteMapperTest {
 
   private static JsonNode createDocWithoutNotes() {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, EXTENT, List.of("extent"));
     putProperty(map, DIMENSIONS, List.of("dimensions"));
     return OBJECT_MAPPER.convertValue(map, JsonNode.class);
   }
 
   private static JsonNode createDocWithNotes() {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, EXTENT, List.of("extent"));
     putProperty(map, DIMENSIONS, List.of("dimensions"));
     putProperty(map, NOTE, List.of("general note"));
     putProperty(map, ISSUANCE_NOTE, List.of("issuance note", "another issuance note"));
