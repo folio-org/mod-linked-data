@@ -285,7 +285,6 @@ paths:
         - profile
       description: Get the preferred profile for a resource type for the current user
       parameters:
-        - $ref: '#/components/parameters/x-okapi-user-id-header'
         - name: resourceType
           in: query
           required: false
@@ -305,21 +304,38 @@ paths:
       tags:
         - profile
       description: Create or update the preferred profile for a resource type for the current user
-      parameters:
-        - $ref: '#/components/parameters/x-okapi-user-id-header'
       requestBody:
         content:
           application/json:
             schema:
               $ref: "schema/profile/preferredProfileRequest.json"
       responses:
-        '200':
+        '204':
           description: Preferred profile created or updated successfully
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+    delete:
+      operationId: deletePreferredProfile
+      tags:
+        - profile
+      description: Delete preferred profile for current user
+      parameters:
+        - name: resourceType
+          in: query
+          required: true
+          description: The type of resource for which preferred profile has to be deleted.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Preferred profile deleted successfully
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
   /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById
@@ -432,13 +448,6 @@ components:
       schema:
         type: integer
         format: int16
-    x-okapi-user-id-header:
-      name: x-okapi-user-id
-      in: header
-      description: X-Okapi-User-Id header value
-      schema:
-        type: string
-        format: uuid
   schemas:
     errorResponse:
       $ref: schema/error/errors.json

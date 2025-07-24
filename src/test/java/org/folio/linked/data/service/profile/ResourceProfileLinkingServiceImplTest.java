@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.profile;
 
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.mockito.Mockito.verify;
@@ -14,7 +13,6 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceProfileRepository;
-import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,9 +29,6 @@ class ResourceProfileLinkingServiceImplTest {
 
   @Mock
   private ResourceProfileRepository resourceProfileRepository;
-
-  @Mock
-  private FolioExecutionContext folioExecutionContext;
 
   @Mock
   private PreferredProfileService preferredProfileService;
@@ -78,11 +73,9 @@ class ResourceProfileLinkingServiceImplTest {
   void shouldResolveProfileId_returnUserPreferredProfile() {
     // given
     var profileId = 2;
-    var userId = randomUUID();
     var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri()))).setId(1L);
     when(resourceProfileRepository.findProfileIdByResourceHash(resource.getId())).thenReturn(Optional.empty());
-    when(folioExecutionContext.getUserId()).thenReturn(userId);
-    when(preferredProfileService.getPreferredProfiles(userId, INSTANCE.getUri()))
+    when(preferredProfileService.getPreferredProfiles(INSTANCE.getUri()))
       .thenReturn(List.of(new ProfileMetadata(profileId, "", "")));
 
     // when
@@ -99,13 +92,11 @@ class ResourceProfileLinkingServiceImplTest {
   })
   void shouldResolveProfileId_returnDefaultProfileId(String resourceTypeUri, int expectedProfileId) {
     // given
-    var userId = randomUUID();
     var resource = new Resource()
       .setTypes(Set.of(new ResourceTypeEntity().setUri(resourceTypeUri)))
       .setId(1L);
     when(resourceProfileRepository.findProfileIdByResourceHash(resource.getId())).thenReturn(Optional.empty());
-    when(preferredProfileService.getPreferredProfiles(userId, resourceTypeUri)).thenReturn(List.of());
-    when(folioExecutionContext.getUserId()).thenReturn(userId);
+    when(preferredProfileService.getPreferredProfiles(resourceTypeUri)).thenReturn(List.of());
 
     // when
     var result = resourceProfileLinkingService.resolveProfileId(resource);

@@ -13,7 +13,6 @@ import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
 import org.folio.linked.data.repo.ResourceProfileRepository;
-import org.folio.spring.FolioExecutionContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +26,6 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
 
   private final ResourceProfileRepository resourceProfileRepository;
   private final PreferredProfileService preferredProfileService;
-  private final FolioExecutionContext executionContext;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
@@ -58,7 +56,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
 
   private Optional<Integer> getUserPreferredProfileId(ResourceType resourceType) {
     return preferredProfileService
-      .getPreferredProfiles(executionContext.getUserId(), resourceType.getUri())
+      .getPreferredProfiles(resourceType.getUri())
       .stream()
       .findFirst()
       .map(ProfileMetadata::getId);

@@ -173,6 +173,11 @@
           "methods": [ "POST" ],
           "pathPattern": "/linked-data/profile/preferred",
           "permissionsRequired": [ "linked-data.profiles.preferred.post" ]
+        },
+        {
+          "methods": [ "DELETE" ],
+          "pathPattern": "/linked-data/profile/preferred",
+          "permissionsRequired": [ "linked-data.profiles.preferred.delete" ]
         }
       ]
     },
@@ -300,6 +305,11 @@
       "permissionName": "linked-data.profiles.preferred.post",
       "displayName": "Linked Data: Create or update the preferred profile for a resource type for the current user",
       "description": "Create or update the preferred profile for a resource type for the current user"
+    },
+    {
+      "permissionName": "linked-data.profiles.preferred.delete",
+      "displayName": "Linked Data: Delete the preferred profile for a resource type for the current user",
+      "description": "Delete the preferred profile for a resource type for the current user"
     },
     {
       "permissionName": "linked-data.resources.rdf.get",
