@@ -182,6 +182,14 @@
             "$ref": "../common/PartOfSeries.json"
           },
           "x-json-property": "http://bibfra.me/vocab/relation/isPartOf"
+        },
+        "characteristic": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "CategoryResponse.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/characteristic"
         }
       }
     }

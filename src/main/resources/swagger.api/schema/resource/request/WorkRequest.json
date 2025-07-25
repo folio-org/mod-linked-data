@@ -180,6 +180,14 @@
           },
           "x-json-property": "http://bibfra.me/vocab/relation/isPartOf",
           "x-field-extra-annotation": "@org.folio.linked.data.validation.PartOfSeriesTitleConstraint"
+        },
+        "characteristic": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Category.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/characteristic"
         }
       }
     }
