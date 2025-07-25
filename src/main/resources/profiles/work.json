@@ -995,7 +995,7 @@
     {
       "type": "simple",
       "displayName": "Language",
-      "uriBFLite": "_code",
+      "uriBFLite": "_codes",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -1007,7 +1007,7 @@
       "id": "Monograph:Work:LanguageCode:Language"
     },
     {
-      "type": "dropdown",
+      "type": "enumerated",
       "displayName": "Language relationship",
       "uriBFLite": "_types",
       "constraints": {
