@@ -29,6 +29,7 @@
 - New API to delete preferred profile for a user [MODLD-795](https://folio-org.atlassian.net/browse/MODLD-795)
 - Update API to support DATES_OF_PUBLICATION_NOTE [MODLD-808](https://folio-org.atlassian.net/browse/MODLD-808)
 - Enhance API to support characteristic edge of Work [MODLD-800](https://folio-org.atlassian.net/browse/MODLD-800)
+- Enhance `GET import-supported` API to check if MARC record is a Serial [MODLD-809](https://folio-org.atlassian.net/browse/MODLD-809)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

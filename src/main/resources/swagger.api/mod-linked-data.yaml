@@ -170,15 +170,15 @@ paths:
 
   /linked-data/inventory-instance/{inventoryId}/import-supported:
     get:
-      operationId: isSupportedByInventoryId
+      operationId: checkMarcBibImportableToGraph
       tags:
         - resource
-      description: Check if marc to bib conversion is supported
+      description: Check if marc bibliographic record can be imported into linked data graph.
       parameters:
         - $ref: '#/components/parameters/inventoryId'
       responses:
         '200':
-          description: true if marc to bib conversion is supported and false if not supported
+          description: true if marc bibliographic record can be imported into linked data graph, false otherwise.
           content:
             text/plain:
               schema:
@@ -422,7 +422,7 @@ components:
       name: inventoryId
       in: path
       required: true
-      description: Linked Data resource inventory id
+      description: Inventory ID (999 $i) of the MARC record in SRS
       schema:
         type: string
     full:
