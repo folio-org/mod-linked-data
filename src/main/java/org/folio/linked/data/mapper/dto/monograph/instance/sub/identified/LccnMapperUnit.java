@@ -12,10 +12,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.domain.dto.LccnFieldResponse;
-import org.folio.linked.data.domain.dto.LccnRequest;
 import org.folio.linked.data.domain.dto.LccnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -49,12 +49,12 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(lccn::getValue));
     resource.addTypes(IDENTIFIER, ID_LCCN);
     resource.setDoc(getDoc(lccn));
-    coreMapper.addOutgoingEdges(resource, LccnRequest.class, lccn.getStatus(), STATUS);
+    coreMapper.addOutgoingEdges(resource, IdentifierRequest.class, lccn.getStatus(), STATUS);
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(LccnRequest dto) {
+  private JsonNode getDoc(IdentifierRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getValue());
     return map.isEmpty() ? null : coreMapper.toJson(map);

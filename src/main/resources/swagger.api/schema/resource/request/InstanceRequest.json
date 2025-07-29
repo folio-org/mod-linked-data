@@ -54,7 +54,7 @@
                 "properties": {
                   "Lccn": {
                     "type": "object",
-                    "$ref": "identifier/LccnRequest.json",
+                    "$ref": "identifier/IdentifierRequest.json",
                     "x-json-property": "http://library.link/identifier/LCCN",
                     "x-field-extra-annotation": "@org.folio.linked.data.validation.LccnPatternConstraint"
                   }

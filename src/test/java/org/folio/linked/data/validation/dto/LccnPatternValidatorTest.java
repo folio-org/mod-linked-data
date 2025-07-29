@@ -8,7 +8,7 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
 import java.util.stream.Stream;
-import org.folio.linked.data.domain.dto.LccnRequest;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.preprocessing.lccn.LccnNormalizer;
 import org.folio.linked.data.validation.spec.SpecProvider;
@@ -109,8 +109,8 @@ class LccnPatternValidatorTest {
       arguments("n-0123456789", "http://id.loc.gov/vocabulary/mstatus/current", createSpecRules(true)));
   }
 
-  private LccnRequest createLccnRequest(String value, String link) {
-    return new LccnRequest()
+  private IdentifierRequest createLccnRequest(String value, String link) {
+    return new IdentifierRequest()
       .value(List.of(value))
       .status(link == null ? emptyList() : List.of(new Status().link(List.of(link))));
   }
