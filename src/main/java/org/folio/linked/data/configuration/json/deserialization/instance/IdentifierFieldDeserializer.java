@@ -22,7 +22,7 @@ import org.folio.linked.data.util.DtoDeserializer;
 
 public class IdentifierFieldDeserializer extends JsonDeserializer<IdentifierField> {
 
-  private static final Map<String, Class<? extends IdentifierField>> IDENDTITY_MAP = Map.of(
+  private static final Map<String, Class<? extends IdentifierField>> IDENTITY_MAP = Map.of(
     ID_LCCN.getUri(), LccnField.class,
     ID_ISBN.getUri(), IsbnField.class,
     ID_EAN.getUri(), EanField.class,
@@ -32,7 +32,7 @@ public class IdentifierFieldDeserializer extends JsonDeserializer<IdentifierFiel
   private final DtoDeserializer<IdentifierField> dtoDeserializer;
 
   public IdentifierFieldDeserializer(RequestProcessingExceptionBuilder exceptionBuilder) {
-    dtoDeserializer = new DtoDeserializer<>(IdentifierField.class, IDENDTITY_MAP, exceptionBuilder);
+    dtoDeserializer = new DtoDeserializer<>(IdentifierField.class, IDENTITY_MAP, exceptionBuilder);
   }
 
   @Override

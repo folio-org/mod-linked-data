@@ -49,6 +49,7 @@
         "map": {
           "type": "array",
           "items": {
+            "title": "IdentifierFieldResponse",
             "oneOf": [
               {
                 "type": "object",
