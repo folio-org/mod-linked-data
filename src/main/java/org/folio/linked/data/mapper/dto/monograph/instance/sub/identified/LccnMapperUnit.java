@@ -13,10 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.domain.dto.LccnFieldResponse;
-import org.folio.linked.data.domain.dto.LccnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -35,7 +35,7 @@ public class LccnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var lccn = coreMapper.toDtoWithEdges(resourceToConvert, LccnResponse.class, false);
+      var lccn = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierResponse.class, false);
       lccn.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new LccnFieldResponse().lccn(lccn));
     }

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "LCCN Info",
+  "description": "Identifier response DTO",
   "allOf": [
     {
       "$ref": "../../common/IdField.json"

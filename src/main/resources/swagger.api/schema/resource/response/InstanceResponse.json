@@ -57,7 +57,7 @@
                 "properties": {
                   "Lccn": {
                     "type": "object",
-                    "$ref": "identifier/LccnResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://library.link/identifier/LCCN"
                   }
                 }

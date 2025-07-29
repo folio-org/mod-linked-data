@@ -18,9 +18,9 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.ClassificationResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.IsbnRequest;
 import org.folio.linked.data.domain.dto.IsbnResponse;
-import org.folio.linked.data.domain.dto.LccnResponse;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.domain.dto.StatusResponse;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -38,7 +38,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
     IdentifierRequest.class,
-    LccnResponse.class,
+    IdentifierResponse.class,
     IsbnRequest.class,
     IsbnResponse.class,
     Classification.class,
@@ -52,7 +52,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
     var status = coreMapper.toDtoWithEdges(resourceToConvert, StatusResponse.class, false);
     status.setId(String.valueOf(resourceToConvert.getId()));
     switch (parentDto) {
-      case LccnResponse lccn -> lccn.addStatusItem(status);
+      case IdentifierResponse lccn -> lccn.addStatusItem(status);
       case IsbnResponse isbn -> isbn.addStatusItem(status);
       case ClassificationResponse classification -> classification.addStatusItem(status);
       default -> throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
