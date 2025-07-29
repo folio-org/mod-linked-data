@@ -1,22 +1,9 @@
-  {
+{
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "ISBN Info",
+  "description": "ISBN request DTO",
   "allOf": [
     {
-      "$ref": "../../common/identifier/IdentifierName.json"
-    },
-    {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "../../common/Status.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/marc/status"
-        }
-      }
+      "$ref": "IdentifierRequest.json"
     },
     {
       "type": "object",
