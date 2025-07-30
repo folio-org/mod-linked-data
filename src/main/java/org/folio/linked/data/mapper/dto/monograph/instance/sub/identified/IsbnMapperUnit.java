@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierWithQualifierResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.IsbnFieldResponse;
-import org.folio.linked.data.domain.dto.IsbnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -36,7 +36,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var isbn = coreMapper.toDtoWithEdges(resourceToConvert, IsbnResponse.class, false);
+      var isbn = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierWithQualifierResponse.class, false);
       isbn.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new IsbnFieldResponse().isbn(isbn));
     }

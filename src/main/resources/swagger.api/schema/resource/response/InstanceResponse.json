@@ -68,7 +68,7 @@
                 "properties": {
                   "Isbn": {
                     "type": "object",
-                    "$ref": "identifier/IsbnResponse.json",
+                    "$ref": "identifier/IdentifierWithQualifierResponse.json",
                     "x-json-property": "http://library.link/identifier/ISBN"
                   }
                 }
