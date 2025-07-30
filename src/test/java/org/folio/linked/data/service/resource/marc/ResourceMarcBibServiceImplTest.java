@@ -158,9 +158,10 @@ class ResourceMarcBibServiceImplTest {
   @ParameterizedTest
   @CsvSource({
     "a, a",
-    "a, m"
+    "a, m",
+    "a, s",
   })
-  void isSupportedByInventoryId_shouldReturnTrue(char type, char level) {
+  void checkMarcBibImportableToGraph_shouldReturnTrue(char type, char level) {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord(type, level);
@@ -168,7 +169,7 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
-    assertThat(resourceMarcService.isSupportedByInventoryId(inventoryId)).isTrue();
+    assertThat(resourceMarcService.checkMarcBibImportableToGraph(inventoryId)).isTrue();
   }
 
   @ParameterizedTest
@@ -177,11 +178,10 @@ class ResourceMarcBibServiceImplTest {
     "' ',  a",
     "' ',  m",
     "a, ' '",
-    "a, s",
     "o, a",
     "o, m",
   })
-  void isSupportedByInventoryId_shouldReturnFalse(char type, char level) {
+  void checkMarcBibImportableToGraph_shouldReturnFalse(char type, char level) {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord(type, level);
@@ -189,11 +189,11 @@ class ResourceMarcBibServiceImplTest {
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
 
     //expect
-    assertThat(resourceMarcService.isSupportedByInventoryId(inventoryId)).isFalse();
+    assertThat(resourceMarcService.checkMarcBibImportableToGraph(inventoryId)).isFalse();
   }
 
   @Test
-  void isSupportedByInventoryId_shouldThrowRequestProcessingException() {
+  void checkMarcBibImportableToGraph_shouldThrowRequestProcessingException() {
     //given
     var inventoryId = UUID.randomUUID().toString();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
@@ -203,7 +203,7 @@ class ResourceMarcBibServiceImplTest {
 
     //expect
     assertThatExceptionOfType(RequestProcessingException.class)
-      .isThrownBy(() -> resourceMarcService.isSupportedByInventoryId(inventoryId));
+      .isThrownBy(() -> resourceMarcService.checkMarcBibImportableToGraph(inventoryId));
   }
 
   @Test
@@ -278,6 +278,7 @@ class ResourceMarcBibServiceImplTest {
     //then
     verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
     verify(resourceProfileLinkingService).linkResourceToProfile(resourceEntity, profileId);
+    verify(rawMarcService).saveRawMarc(resourceEntity, unmappedMarc);
     assertThat(resourceEventCaptor.getValue())
       .satisfies(event -> {
         assertThat(event).isInstanceOf(ResourceUpdatedEvent.class);

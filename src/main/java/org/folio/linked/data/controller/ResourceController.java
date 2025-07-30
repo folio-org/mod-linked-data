@@ -44,8 +44,8 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
-  public ResponseEntity<String> isSupportedByInventoryId(String inventoryId) {
-    return ResponseEntity.ok(resourceMarcService.isSupportedByInventoryId(inventoryId).toString());
+  public ResponseEntity<String> checkMarcBibImportableToGraph(String inventoryId) {
+    return ResponseEntity.ok(Boolean.toString(resourceMarcService.checkMarcBibImportableToGraph(inventoryId)));
   }
 
   @Override
