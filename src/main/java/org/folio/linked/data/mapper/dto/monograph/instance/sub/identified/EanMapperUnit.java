@@ -12,10 +12,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.Ean;
 import org.folio.linked.data.domain.dto.EanField;
 import org.folio.linked.data.domain.dto.EanFieldResponse;
 import org.folio.linked.data.domain.dto.EanResponse;
+import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -53,7 +53,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
     return resource;
   }
 
-  private JsonNode getDoc(Ean dto) {
+  private JsonNode getDoc(IdentifierWithQualifierRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, EAN_VALUE, dto.getValue());
     putProperty(map, QUALIFIER, dto.getQualifier());
