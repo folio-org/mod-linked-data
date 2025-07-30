@@ -3,11 +3,15 @@
   "description": "Identifier request DTO",
   "allOf": [
     {
-      "$ref": "../common/identifier/IdentifierName.json"
-    },
-    {
       "type": "object",
       "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/name"
+        },
         "status": {
           "type": "array",
           "items": {
@@ -15,12 +19,7 @@
             "$ref": "../common/Status.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/status"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
+        },
         "qualifier": {
           "type": "array",
           "items": {

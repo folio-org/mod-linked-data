@@ -6,11 +6,15 @@
       "$ref": "../../common/IdField.json"
     },
     {
-      "$ref": "../../common/identifier/IdentifierName.json"
-    },
-    {
       "type": "object",
       "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/name"
+        },
         "status": {
           "type": "array",
           "items": {
@@ -18,12 +22,7 @@
             "$ref": "../StatusResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/status"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
+        },
         "qualifier": {
           "type": "array",
           "items": {
