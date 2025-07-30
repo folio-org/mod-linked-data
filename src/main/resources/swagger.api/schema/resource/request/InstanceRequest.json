@@ -6,7 +6,7 @@
       "$ref": "../common/ProfileIdField.json"
     },
     {
-      "$ref": "title/TitleFieldRequest.json"
+      "$ref": "TitleFieldRequest.json"
     },
     {
       "type": "object",
@@ -54,7 +54,7 @@
                 "properties": {
                   "Lccn": {
                     "type": "object",
-                    "$ref": "identifier/IdentifierRequest.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://library.link/identifier/LCCN",
                     "x-field-extra-annotation": "@org.folio.linked.data.validation.LccnPatternConstraint"
                   }
@@ -66,7 +66,7 @@
                 "properties": {
                   "Isbn": {
                     "type": "object",
-                    "$ref": "identifier/IdentifierWithQualifierRequest.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://library.link/identifier/ISBN"
                   }
                 }
@@ -88,7 +88,7 @@
                 "properties": {
                   "Ean": {
                     "type": "object",
-                    "$ref": "identifier/IdentifierWithQualifierRequest.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
                   }
                 }

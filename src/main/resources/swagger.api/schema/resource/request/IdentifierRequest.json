@@ -3,7 +3,7 @@
   "description": "Identifier request DTO",
   "allOf": [
     {
-      "$ref": "../../common/identifier/IdentifierName.json"
+      "$ref": "../common/identifier/IdentifierName.json"
     },
     {
       "type": "object",
@@ -12,9 +12,21 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../../common/Status.json"
+            "$ref": "../common/Status.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/status"
+        }
+      }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "qualifier": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
         }
       }
     }

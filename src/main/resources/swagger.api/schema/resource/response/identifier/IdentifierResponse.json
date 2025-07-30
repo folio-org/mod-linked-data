@@ -20,6 +20,18 @@
           "x-json-property": "http://bibfra.me/vocab/marc/status"
         }
       }
+    },
+    {
+      "type": "object",
+      "properties": {
+        "qualifier": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
+        }
+      }
     }
   ]
 }

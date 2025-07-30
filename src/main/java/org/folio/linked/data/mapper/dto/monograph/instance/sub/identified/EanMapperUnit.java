@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
+import static org.folio.linked.data.util.ResourceUtils.getPropertyValues;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,8 +15,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.EanField;
 import org.folio.linked.data.domain.dto.EanFieldResponse;
-import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
-import org.folio.linked.data.domain.dto.IdentifierWithQualifierResponse;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -35,7 +36,8 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var ean = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierWithQualifierResponse.class, false);
+      var ean = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierResponse.class, false);
+      ean.setValue(getPropertyValues(resourceToConvert, EAN_VALUE));
       ean.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new EanFieldResponse().ean(ean));
     }
@@ -53,7 +55,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
     return resource;
   }
 
-  private JsonNode getDoc(IdentifierWithQualifierRequest dto) {
+  private JsonNode getDoc(IdentifierRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, EAN_VALUE, dto.getValue());
     putProperty(map, QUALIFIER, dto.getQualifier());

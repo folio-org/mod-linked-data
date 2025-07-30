@@ -68,7 +68,7 @@
                 "properties": {
                   "Isbn": {
                     "type": "object",
-                    "$ref": "identifier/IdentifierWithQualifierResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://library.link/identifier/ISBN"
                   }
                 }
@@ -90,7 +90,7 @@
                 "properties": {
                   "Ean": {
                     "type": "object",
-                    "$ref": "identifier/IdentifierWithQualifierResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
                   }
                 }

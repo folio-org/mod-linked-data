@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
-import org.folio.linked.data.domain.dto.IdentifierWithQualifierResponse;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.IsbnFieldResponse;
@@ -36,7 +36,7 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var isbn = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierWithQualifierResponse.class, false);
+      var isbn = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierResponse.class, false);
       isbn.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new IsbnFieldResponse().isbn(isbn));
     }
@@ -50,12 +50,12 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(isbn::getValue));
     resource.addTypes(IDENTIFIER, ID_ISBN);
     resource.setDoc(getDoc(isbn));
-    coreMapper.addOutgoingEdges(resource, IdentifierWithQualifierRequest.class, isbn.getStatus(), STATUS);
+    coreMapper.addOutgoingEdges(resource, IdentifierRequest.class, isbn.getStatus(), STATUS);
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(IdentifierWithQualifierRequest dto) {
+  private JsonNode getDoc(IdentifierRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getValue());
     putProperty(map, QUALIFIER, dto.getQualifier());

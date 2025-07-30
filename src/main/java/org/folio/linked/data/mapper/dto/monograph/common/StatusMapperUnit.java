@@ -19,8 +19,6 @@ import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.ClassificationResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
-import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
-import org.folio.linked.data.domain.dto.IdentifierWithQualifierResponse;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.domain.dto.StatusResponse;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -39,8 +37,6 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
     IdentifierRequest.class,
     IdentifierResponse.class,
-    IdentifierWithQualifierRequest.class,
-    IdentifierWithQualifierResponse.class,
     Classification.class,
     ClassificationResponse.class
   );
@@ -53,7 +49,6 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
     status.setId(String.valueOf(resourceToConvert.getId()));
     switch (parentDto) {
       case IdentifierResponse ir -> ir.addStatusItem(status);
-      case IdentifierWithQualifierResponse iqr -> iqr.addStatusItem(status);
       case ClassificationResponse classification -> classification.addStatusItem(status);
       default -> throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
           + IS_NOT_SUPPORTED_FOR_PREDICATE + PredicateDictionary.STATUS.getUri() + RIGHT_SQUARE_BRACKET);

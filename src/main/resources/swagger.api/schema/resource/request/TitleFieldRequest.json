@@ -14,7 +14,7 @@
             "properties": {
               "PrimaryTitle": {
                 "type": "object",
-                "$ref": "../../common/title/PrimaryTitle.json",
+                "$ref": "../common/title/PrimaryTitle.json",
                 "x-json-property": "http://bibfra.me/vocab/marc/Title",
                 "description": "The primary title of the work or instance"
               }
@@ -26,7 +26,7 @@
             "properties": {
               "VariantTitle": {
                 "type": "object",
-                "$ref": "../../common/title/VariantTitle.json",
+                "$ref": "../common/title/VariantTitle.json",
                 "x-json-property": "http://bibfra.me/vocab/marc/VariantTitle",
                 "description": "The variant title of the work or instance"
               }
@@ -38,7 +38,7 @@
             "properties": {
               "ParallelTitle": {
                 "type": "object",
-                "$ref": "../../common/title/ParallelTitle.json",
+                "$ref": "../common/title/ParallelTitle.json",
                 "x-json-property": "http://bibfra.me/vocab/marc/ParallelTitle",
                 "description": "The parallel title of the work or instance"
               }
