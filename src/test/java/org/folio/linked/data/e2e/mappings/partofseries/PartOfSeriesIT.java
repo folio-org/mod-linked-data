@@ -52,7 +52,7 @@ class PartOfSeriesIT extends PostResourceIT {
   protected void validateGraph(Resource work) {
     final var expectedWorkSeriesId = 540189686654989479L;
     final var expectedSeriesId = -5475253270349310944L;
-    final var expectedIssnId = -8106115103629407198L;
+    final var expectedIssnId = -1770271650159630429L;
     final var expectedInstanceId = 5340315565831391363L;
 
     var workSeries = getFirstOutgoingResource(work, "http://bibfra.me/vocab/relation/isPartOf");
