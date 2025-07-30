@@ -13,10 +13,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.IsbnFieldResponse;
-import org.folio.linked.data.domain.dto.IsbnRequest;
 import org.folio.linked.data.domain.dto.IsbnResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -50,12 +50,12 @@ public class IsbnMapperUnit implements InstanceSubResourceMapperUnit {
     resource.setLabel(getFirstValue(isbn::getValue));
     resource.addTypes(IDENTIFIER, ID_ISBN);
     resource.setDoc(getDoc(isbn));
-    coreMapper.addOutgoingEdges(resource, IsbnRequest.class, isbn.getStatus(), STATUS);
+    coreMapper.addOutgoingEdges(resource, IdentifierWithQualifierRequest.class, isbn.getStatus(), STATUS);
     resource.setId(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(IsbnRequest dto) {
+  private JsonNode getDoc(IdentifierWithQualifierRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getValue());
     putProperty(map, QUALIFIER, dto.getQualifier());

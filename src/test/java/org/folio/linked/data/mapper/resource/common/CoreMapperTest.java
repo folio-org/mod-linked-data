@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Predicate;
+import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
-import org.folio.linked.data.domain.dto.IsbnRequest;
 import org.folio.linked.data.mapper.dto.common.CoreMapperImpl;
 import org.folio.linked.data.mapper.dto.common.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -175,8 +175,8 @@ class CoreMapperTest {
   @Test
   void addOutgoingEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmpty() {
     // given
-    var dto1 = new IsbnRequest().value(List.of(randomLong().toString()));
-    var dto2 = new IsbnRequest().value(List.of(randomLong().toString()));
+    var dto1 = new IdentifierWithQualifierRequest().value(List.of(randomLong().toString()));
+    var dto2 = new IdentifierWithQualifierRequest().value(List.of(randomLong().toString()));
     var predicate = PredicateDictionary.MAP;
     var parent = InstanceResponse.class;
     var source = new Resource();

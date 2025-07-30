@@ -19,7 +19,7 @@ import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.ClassificationResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
-import org.folio.linked.data.domain.dto.IsbnRequest;
+import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
 import org.folio.linked.data.domain.dto.IsbnResponse;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.domain.dto.StatusResponse;
@@ -39,7 +39,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
     IdentifierRequest.class,
     IdentifierResponse.class,
-    IsbnRequest.class,
+    IdentifierWithQualifierRequest.class,
     IsbnResponse.class,
     Classification.class,
     ClassificationResponse.class
