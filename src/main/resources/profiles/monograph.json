@@ -1024,7 +1024,8 @@
         "Monograph:Instance:Extent",
         "Monograph:Instance:Dimensions",
         "Monograph:Instance:CarrierType",
-        "Monograph:Instance:URLOfInstance"
+        "Monograph:Instance:URLOfInstance",
+        "Monograph:Instance:BookFormat"
       ],
       "id": "Monograph:Instance"
     },
@@ -2080,6 +2081,22 @@
         "valueDataType": {}
       },
       "id": "Monograph:Instance:URLOfInstance:Note"
+    },
+    {
+      "type": "simple",
+      "displayName": "Book Format",
+      "uriBFLite": "http://bibfra.me/vocab/marc/bookFormat",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/bookformat"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/BookFormat"
+        }
+      },
+      "id": "Monograph:Instance:BookFormat"
     }
   ]
 }
