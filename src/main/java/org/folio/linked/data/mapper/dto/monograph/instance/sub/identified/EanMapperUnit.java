@@ -14,8 +14,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.EanField;
 import org.folio.linked.data.domain.dto.EanFieldResponse;
-import org.folio.linked.data.domain.dto.EanResponse;
 import org.folio.linked.data.domain.dto.IdentifierWithQualifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierWithQualifierResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -35,7 +35,7 @@ public class EanMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var ean = coreMapper.toDtoWithEdges(resourceToConvert, EanResponse.class, false);
+      var ean = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierWithQualifierResponse.class, false);
       ean.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new EanFieldResponse().ean(ean));
     }

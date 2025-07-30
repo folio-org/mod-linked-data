@@ -90,7 +90,7 @@
                 "properties": {
                   "Ean": {
                     "type": "object",
-                    "$ref": "identifier/EanResponse.json",
+                    "$ref": "identifier/IdentifierWithQualifierResponse.json",
                     "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
                   }
                 }
