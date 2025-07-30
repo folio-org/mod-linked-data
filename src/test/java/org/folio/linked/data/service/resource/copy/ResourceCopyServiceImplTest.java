@@ -112,7 +112,6 @@ class ResourceCopyServiceImplTest {
   private static HashMap<String, List<String>> getUpdatedInstanceDoc() {
     var doc = new HashMap<String, List<String>>();
     doc.put("http://bibfra.me/vocab/marc/publicationFrequency", List.of("publicationFrequency"));
-    doc.put("http://bibfra.me/vocab/marc/datesOfPublicationNote", List.of("datesOfPublicationNote"));
     doc.put("http://bibfra.me/vocab/marc/governingAccessNote", List.of("governingAccessNote"));
     doc.put("http://bibfra.me/vocab/marc/creditsNote", List.of("creditsNote"));
     doc.put("http://bibfra.me/vocab/marc/participantNote", List.of("participantNote"));

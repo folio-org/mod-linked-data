@@ -48,7 +48,8 @@ public class InstanceNotesIT extends PostResourceIT {
                  { "type":[ "http://bibfra.me/vocab/marc/accompanyingMaterial" ], "value":[ "Note15" ] },
                  { "type":[ "http://bibfra.me/vocab/marc/biogdata" ], "value":[ "Note16" ] },
                  { "type":[ "http://bibfra.me/vocab/marc/adminhist" ], "value":[ "Note17" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/physicalDescription" ], "value":[ "Note18" ] }
+                 { "type":[ "http://bibfra.me/vocab/marc/physicalDescription" ], "value":[ "Note18" ] },
+                 { "type":[ "http://bibfra.me/vocab/marc/datesOfPublicationNote" ], "value":[ "Note19" ] }
                ]
             }
          }
@@ -83,7 +84,8 @@ public class InstanceNotesIT extends PostResourceIT {
       Map.entry("http://bibfra.me/vocab/marc/accompanyingMaterial", "Note15"),
       Map.entry("http://bibfra.me/vocab/marc/biogdata", "Note16"),
       Map.entry("http://bibfra.me/vocab/marc/adminhist", "Note17"),
-      Map.entry("http://bibfra.me/vocab/marc/physicalDescription", "Note18")
+      Map.entry("http://bibfra.me/vocab/marc/physicalDescription", "Note18"),
+      Map.entry("http://bibfra.me/vocab/marc/datesOfPublicationNote", "Note19")
     );
 
     var actualNotes = new HashMap<>();
@@ -116,5 +118,6 @@ public class InstanceNotesIT extends PostResourceIT {
     assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/biogdata")).isEqualTo("Note16");
     assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/adminhist")).isEqualTo("Note17");
     assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/physicalDescription")).isEqualTo("Note18");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/datesOfPublicationNote")).isEqualTo("Note19");
   }
 }

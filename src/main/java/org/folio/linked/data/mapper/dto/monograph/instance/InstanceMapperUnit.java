@@ -19,6 +19,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.ACCOMPANYING_MATERIAL;
 import static org.folio.ld.dictionary.PropertyDictionary.ADDITIONAL_PHYSICAL_FORM;
 import static org.folio.ld.dictionary.PropertyDictionary.BIOGRAPHICAL_DATA;
 import static org.folio.ld.dictionary.PropertyDictionary.COMPUTER_DATA_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.DATES_OF_PUBLICATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DESCRIPTION_SOURCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
@@ -73,9 +74,10 @@ import org.springframework.stereotype.Component;
 public class InstanceMapperUnit extends TopResourceMapperUnit {
 
   public static final Set<PropertyDictionary> SUPPORTED_NOTES = Set.of(ACCOMPANYING_MATERIAL, ADDITIONAL_PHYSICAL_FORM,
-    BIOGRAPHICAL_DATA, COMPUTER_DATA_NOTE, DESCRIPTION_SOURCE_NOTE, EXHIBITIONS_NOTE, FUNDING_INFORMATION,
-    HISTORICAL_DATA, ISSUANCE_NOTE, ISSUING_BODY, LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE,
-    PHYSICAL_DESCRIPTION, RELATED_PARTS, REPRODUCTION_NOTE, TYPE_OF_REPORT, WITH_NOTE);
+    BIOGRAPHICAL_DATA, COMPUTER_DATA_NOTE, DATES_OF_PUBLICATION_NOTE, DESCRIPTION_SOURCE_NOTE,
+    EXHIBITIONS_NOTE, FUNDING_INFORMATION, HISTORICAL_DATA, ISSUANCE_NOTE, ISSUING_BODY,
+    LOCATION_OF_OTHER_ARCHIVAL_MATERIAL, NOTE, ORIGINAL_VERSION_NOTE, PHYSICAL_DESCRIPTION, RELATED_PARTS,
+    REPRODUCTION_NOTE, TYPE_OF_REPORT, WITH_NOTE);
 
   private final CoreMapper coreMapper;
   private final NoteMapper noteMapper;

@@ -10,8 +10,8 @@ import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
-import static org.folio.marc4ld.util.MarcUtil.isLanguageMaterial;
-import static org.folio.marc4ld.util.MarcUtil.isMonographicComponentPartOrItem;
+import static org.folio.marc4ld.util.MarcUtil.isMonograph;
+import static org.folio.marc4ld.util.MarcUtil.isSerial;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
@@ -86,13 +86,13 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   }
 
   @Override
-  public Boolean isSupportedByInventoryId(String inventoryId) {
+  public boolean checkMarcBibImportableToGraph(String inventoryId) {
     return getRecord(inventoryId)
       .map(HttpEntity::getBody)
       .map(Record::getParsedRecord)
       .map(parsedRecord -> (Map<?, ?>) parsedRecord.getContent())
       .map(content -> (String) content.get("leader"))
-      .map(this::isMonograph)
+      .map(this::isMarcBibImportable)
       .orElseThrow(() -> createSrNotFoundException(inventoryId));
   }
 
@@ -172,8 +172,10 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     }
   }
 
-  private boolean isMonograph(String leader) {
-    return isLanguageMaterial(leader.charAt(6)) && isMonographicComponentPartOrItem(leader.charAt(7));
+  private boolean isMarcBibImportable(String leader) {
+    char typeOfRecord = leader.charAt(6);
+    char bibliographicLevel = leader.charAt(7);
+    return isMonograph(typeOfRecord, bibliographicLevel) || isSerial(bibliographicLevel);
   }
 
   private Optional<org.folio.ld.dictionary.model.Resource> getResource(String inventoryId) {
