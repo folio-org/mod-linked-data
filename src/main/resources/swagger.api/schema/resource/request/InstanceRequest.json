@@ -99,7 +99,7 @@
                 "properties": {
                   "Identifier": {
                     "type": "object",
-                    "$ref": "../common/identifier/OtherId.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://library.link/identifier/UNKNOWN"
                   }
                 }

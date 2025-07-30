@@ -12,11 +12,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
-import org.folio.linked.data.domain.dto.OtherId;
 import org.folio.linked.data.domain.dto.OtherIdField;
 import org.folio.linked.data.domain.dto.OtherIdFieldResponse;
-import org.folio.linked.data.domain.dto.OtherIdResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.instance.sub.InstanceSubResourceMapperUnit;
@@ -35,7 +35,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
-      var otherId = coreMapper.toDtoWithEdges(resourceToConvert, OtherIdResponse.class, false);
+      var otherId = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierResponse.class, false);
       otherId.setId(String.valueOf(resourceToConvert.getId()));
       instance.addMapItem(new OtherIdFieldResponse().identifier(otherId));
     }
@@ -53,7 +53,7 @@ public class OtherIdMapperUnit implements InstanceSubResourceMapperUnit {
     return resource;
   }
 
-  private JsonNode getDoc(OtherId dto) {
+  private JsonNode getDoc(IdentifierRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getValue());
     putProperty(map, QUALIFIER, dto.getQualifier());

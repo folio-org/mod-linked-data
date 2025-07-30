@@ -101,7 +101,7 @@
                 "properties": {
                   "Identifier": {
                     "type": "object",
-                    "$ref": "identifier/OtherIdResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://library.link/identifier/UNKNOWN"
                   }
                 }
