@@ -3,6 +3,7 @@ package org.folio.linked.data.e2e.resource;
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
@@ -69,6 +70,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
@@ -231,6 +233,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -438,7 +441,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var updatedWork = resourceTestService.getResourceById(id, 1);
     assertThat(updatedWork.getId()).isNotNull();
     assertThat(updatedWork.getLabel()).isEqualTo(originalWork.getLabel());
-    assertThat(updatedWork.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
+    assertThat(updatedWork.getTypes().stream().map(ResourceTypeEntity::getUri).collect(toSet()))
+      .isEqualTo(Set.of(WORK, BOOKS).stream().map(ResourceTypeDictionary::getUri).collect(toSet()));
     assertThat(
       updatedWork.getOutgoingEdges()
         .stream()
@@ -831,7 +835,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
     validateCategory(edgeIterator.next(), instance, MEDIA, "http://id.loc.gov/vocabulary/mediaTypes/s", "s");
     validateLccn(edgeIterator.next(), instance);
-    validateExtent(edgeIterator.next(), instance);
     var edge = edgeIterator.next();
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(instance);
@@ -840,6 +843,7 @@ abstract class ResourceControllerITBase extends ITBase {
     if (validateFullWork) {
       validateWork(work, false);
     }
+    validateExtent(edgeIterator.next(), instance);
     validateAccessLocation(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE, "as", "American Samoa");
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION, "dz", "Algeria");
@@ -1189,7 +1193,8 @@ abstract class ResourceControllerITBase extends ITBase {
   private void validateWork(Resource work, boolean validateFullInstance) {
     assertThat(work.getId()).isEqualTo(hashService.hash(work));
     assertThat(work.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
-    assertThat(work.getTypes().iterator().next().getUri()).isEqualTo(WORK.getUri());
+    assertThat(work.getTypes().stream().map(ResourceTypeEntity::getUri).collect(toSet()))
+      .isEqualTo(Set.of(WORK, BOOKS).stream().map(ResourceTypeDictionary::getUri).collect(toSet()));
     assertThat(work.getDoc().size()).isEqualTo(4);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
     validateLiterals(work, DATE_END.getValue(), List.of("2025"));

@@ -70,6 +70,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
@@ -419,7 +420,7 @@ public class MonographTestUtil {
         entry(DATE_START, List.of("2024")),
         entry(DATE_END, List.of("2025"))
       ),
-      Set.of(WORK),
+      Set.of(WORK, BOOKS),
       pred2OutgoingResources
     );
     if (nonNull(linkedInstance)) {
@@ -693,7 +694,7 @@ public class MonographTestUtil {
       .setDoc(readTree(titleDoc))
       .setLabel(titleStr);
     var work = new Resource()
-      .addTypes(ResourceTypeDictionary.WORK)
+      .addTypes(WORK, BOOKS)
       .setDoc(readTree(workDoc))
       .setLabel(titleStr);
 

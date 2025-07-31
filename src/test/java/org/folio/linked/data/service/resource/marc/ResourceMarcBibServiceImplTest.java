@@ -178,6 +178,7 @@ class ResourceMarcBibServiceImplTest {
     "' ',  a",
     "' ',  m",
     "a, ' '",
+    "a, f",
     "o, a",
     "o, m",
   })

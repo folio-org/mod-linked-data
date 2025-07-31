@@ -5,6 +5,7 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.AUTHOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -145,7 +146,7 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
   }
 
   private Resource createWorkAndLinkToAuthority(Resource authority) {
-    var work = MonographTestUtil.createResource(new EnumMap<>(PropertyDictionary.class), Set.of(WORK),
+    var work = MonographTestUtil.createResource(new EnumMap<>(PropertyDictionary.class), Set.of(WORK, BOOKS),
       new EnumMap<>(PredicateDictionary.class));
     var title = MonographTestUtil.createPrimaryTitle(null);
     var reTitle = new ResourceEdge(work, title, PredicateDictionary.TITLE);
