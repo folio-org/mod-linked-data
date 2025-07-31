@@ -374,7 +374,7 @@
     {
       "type": "dropdown",
       "displayName": "Provision Activity",
-      "uriBFLite": "https://bibfra.me/vocab/marc/provisionActivity",
+      "uriBFLite": "http://bibfra.me/vocab/marc/provisionActivity",
       "constraints": {
         "repeatable": true,
         "editable": false,
