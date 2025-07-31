@@ -62,6 +62,17 @@
               },
               {
                 "type": "object",
+                "title": "IssnField",
+                "properties": {
+                  "Issn": {
+                    "type": "object",
+                    "$ref": "IdentifierRequest.json",
+                    "x-json-property": "http://library.link/identifier/ISSN"
+                  }
+                }
+              },
+              {
+                "type": "object",
                 "title": "IsbnField",
                 "properties": {
                   "Isbn": {
