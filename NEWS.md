@@ -31,6 +31,7 @@
 - Enhance API to support characteristic edge of Work [MODLD-800](https://folio-org.atlassian.net/browse/MODLD-800)
 - Update profiles to support book format handling [MODLD-726](https://folio-org.atlassian.net/browse/MODLD-726)
 - Enhance `GET import-supported` API to check if MARC record is a Serial [MODLD-809](https://folio-org.atlassian.net/browse/MODLD-809)
+- Conversion rules from MARC to Graph - adaptation [MODLD-805](https://folio-org.atlassian.net/browse/MODLD-805)
 
 
 ## 1.0.4 (04-24-2025)

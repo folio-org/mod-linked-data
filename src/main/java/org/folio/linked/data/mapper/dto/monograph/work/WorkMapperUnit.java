@@ -27,6 +27,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
@@ -85,7 +86,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var workDto = ((WorkField) dto).getWork();
     var work = new Resource();
-    work.addTypes(WORK);
+    work.addTypes(WORK, BOOKS);
     work.setDoc(getDoc(workDto));
     work.setLabel(getFirstValue(() -> getPrimaryMainTitles(workDto.getTitle())));
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTitle(), TITLE);

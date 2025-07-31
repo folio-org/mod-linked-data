@@ -10,8 +10,6 @@ import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
-import static org.folio.marc4ld.util.MarcUtil.isMonograph;
-import static org.folio.marc4ld.util.MarcUtil.isSerial;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
@@ -40,6 +38,7 @@ import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
+import org.folio.marc4ld.util.TypeUtil;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
 import org.springframework.context.ApplicationEventPublisher;
@@ -92,7 +91,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       .map(Record::getParsedRecord)
       .map(parsedRecord -> (Map<?, ?>) parsedRecord.getContent())
       .map(content -> (String) content.get("leader"))
-      .map(this::isMarcBibImportable)
+      .map(TypeUtil::isSupported)
       .orElseThrow(() -> createSrNotFoundException(inventoryId));
   }
 
@@ -170,12 +169,6 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     } catch (FeignException.NotFound e) {
       return Optional.empty();
     }
-  }
-
-  private boolean isMarcBibImportable(String leader) {
-    char typeOfRecord = leader.charAt(6);
-    char bibliographicLevel = leader.charAt(7);
-    return isMonograph(typeOfRecord, bibliographicLevel) || isSerial(bibliographicLevel);
   }
 
   private Optional<org.folio.ld.dictionary.model.Resource> getResource(String inventoryId) {
