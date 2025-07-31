@@ -214,7 +214,7 @@
         },
         {
           "http://bibfra.me/vocab/identifier/Ean": {
-            "http://bibfra.me/vocab/marc/ean": [
+            "http://bibfra.me/vocab/lite/name": [
               "ean value"
             ],
             "http://bibfra.me/vocab/marc/qualifier": [

@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.LccnField;
-import org.folio.linked.data.domain.dto.LccnRequest;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
@@ -94,12 +94,12 @@ public class LccnUniquenessValidator implements ConstraintValidator<LccnUniqueCo
   private List<String> getLccnValues(InstanceField instance) {
     return getLccnRequest(instance)
       .filter(LccnUtils::isCurrent)
-      .map(LccnRequest::getValue)
+      .map(IdentifierRequest::getValue)
       .flatMap(Collection::stream)
       .toList();
   }
 
-  private Stream<LccnRequest> getLccnRequest(InstanceField instance) {
+  private Stream<IdentifierRequest> getLccnRequest(InstanceField instance) {
     return instance.getInstance()
       .getMap()
       .stream()

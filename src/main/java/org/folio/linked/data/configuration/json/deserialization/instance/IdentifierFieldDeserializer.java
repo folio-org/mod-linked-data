@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.EanField;
-import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
+import org.folio.linked.data.domain.dto.IdentifierField;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.domain.dto.LocalIdField;
@@ -20,23 +20,23 @@ import org.folio.linked.data.domain.dto.OtherIdField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.util.DtoDeserializer;
 
-public class InstanceRequestAllOfMapDeserializer extends JsonDeserializer<InstanceRequestAllOfMap> {
+public class IdentifierFieldDeserializer extends JsonDeserializer<IdentifierField> {
 
-  private static final Map<String, Class<? extends InstanceRequestAllOfMap>> IDENDTITY_MAP = Map.of(
+  private static final Map<String, Class<? extends IdentifierField>> IDENTITY_MAP = Map.of(
     ID_LCCN.getUri(), LccnField.class,
     ID_ISBN.getUri(), IsbnField.class,
     ID_EAN.getUri(), EanField.class,
     ID_LOCAL.getUri(), LocalIdField.class,
     ID_UNKNOWN.getUri(), OtherIdField.class
   );
-  private final DtoDeserializer<InstanceRequestAllOfMap> dtoDeserializer;
+  private final DtoDeserializer<IdentifierField> dtoDeserializer;
 
-  public InstanceRequestAllOfMapDeserializer(RequestProcessingExceptionBuilder exceptionBuilder) {
-    dtoDeserializer = new DtoDeserializer<>(InstanceRequestAllOfMap.class, IDENDTITY_MAP, exceptionBuilder);
+  public IdentifierFieldDeserializer(RequestProcessingExceptionBuilder exceptionBuilder) {
+    dtoDeserializer = new DtoDeserializer<>(IdentifierField.class, IDENTITY_MAP, exceptionBuilder);
   }
 
   @Override
-  public InstanceRequestAllOfMap deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
+  public IdentifierField deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
     return dtoDeserializer.deserialize(jp);
   }
 }

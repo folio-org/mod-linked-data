@@ -13,27 +13,27 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.EanFieldResponse;
-import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
+import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
 import org.folio.linked.data.domain.dto.IsbnFieldResponse;
 import org.folio.linked.data.domain.dto.LccnFieldResponse;
 import org.folio.linked.data.domain.dto.LocalIdFieldResponse;
 import org.folio.linked.data.domain.dto.OtherIdFieldResponse;
 import org.folio.linked.data.util.DtoDeserializer;
 
-public class InstanceResponseAllOfMapDeserializer extends JsonDeserializer<InstanceResponseAllOfMap> {
+public class IdentifierFieldResponseDeserializer extends JsonDeserializer<IdentifierFieldResponse> {
 
-  private static final Map<String, Class<? extends InstanceResponseAllOfMap>> IDENDTITY_MAP = Map.of(
+  private static final Map<String, Class<? extends IdentifierFieldResponse>> IDENDTITY_MAP = Map.of(
     ID_LCCN.getUri(), LccnFieldResponse.class,
     ID_ISBN.getUri(), IsbnFieldResponse.class,
     ID_EAN.getUri(), EanFieldResponse.class,
     ID_LOCAL.getUri(), LocalIdFieldResponse.class,
     ID_UNKNOWN.getUri(), OtherIdFieldResponse.class
   );
-  private final DtoDeserializer<InstanceResponseAllOfMap> dtoDeserializer =
-    new DtoDeserializer<>(InstanceResponseAllOfMap.class, IDENDTITY_MAP, EMPTY_EXCEPTION_BUILDER);
+  private final DtoDeserializer<IdentifierFieldResponse> dtoDeserializer =
+    new DtoDeserializer<>(IdentifierFieldResponse.class, IDENDTITY_MAP, EMPTY_EXCEPTION_BUILDER);
 
   @Override
-  public InstanceResponseAllOfMap deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
+  public IdentifierFieldResponse deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
     return dtoDeserializer.deserialize(jp);
   }
 

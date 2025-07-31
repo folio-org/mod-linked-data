@@ -17,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Classification;
 import org.folio.linked.data.domain.dto.ClassificationResponse;
-import org.folio.linked.data.domain.dto.IsbnRequest;
-import org.folio.linked.data.domain.dto.IsbnResponse;
-import org.folio.linked.data.domain.dto.LccnRequest;
-import org.folio.linked.data.domain.dto.LccnResponse;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
+import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.Status;
 import org.folio.linked.data.domain.dto.StatusResponse;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -37,10 +35,8 @@ import org.springframework.stereotype.Component;
 public class StatusMapperUnit implements SingleResourceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
-    LccnRequest.class,
-    LccnResponse.class,
-    IsbnRequest.class,
-    IsbnResponse.class,
+    IdentifierRequest.class,
+    IdentifierResponse.class,
     Classification.class,
     ClassificationResponse.class
   );
@@ -52,8 +48,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
     var status = coreMapper.toDtoWithEdges(resourceToConvert, StatusResponse.class, false);
     status.setId(String.valueOf(resourceToConvert.getId()));
     switch (parentDto) {
-      case LccnResponse lccn -> lccn.addStatusItem(status);
-      case IsbnResponse isbn -> isbn.addStatusItem(status);
+      case IdentifierResponse ir -> ir.addStatusItem(status);
       case ClassificationResponse classification -> classification.addStatusItem(status);
       default -> throw new NotSupportedException(RESOURCE_TYPE + parentDto.getClass().getSimpleName()
           + IS_NOT_SUPPORTED_FOR_PREDICATE + PredicateDictionary.STATUS.getUri() + RIGHT_SQUARE_BRACKET);

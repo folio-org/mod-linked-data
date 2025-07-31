@@ -9,10 +9,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.LccnField;
-import org.folio.linked.data.domain.dto.LccnRequest;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.domain.dto.Status;
@@ -196,7 +196,7 @@ class LccnUniquenessValidatorTest {
     verify(settingsService).isSettingEnabled(any(), any(), any());
   }
 
-  private InstanceRequest createInstanceRequest(LccnRequest lccnRequest) {
+  private InstanceRequest createInstanceRequest(IdentifierRequest lccnRequest) {
     return new InstanceRequest(List.of())
       .addMapItem(new LccnField().lccn(lccnRequest));
   }
@@ -205,8 +205,8 @@ class LccnUniquenessValidatorTest {
     return new InstanceRequest(List.of());
   }
 
-  private LccnRequest createLccnRequest() {
-    return new LccnRequest()
+  private IdentifierRequest createLccnRequest() {
+    return new IdentifierRequest()
       .value(List.of("n-0123456789"))
       .status(List.of(new Status().link(List.of("http://id.loc.gov/vocabulary/mstatus/current"))));
   }

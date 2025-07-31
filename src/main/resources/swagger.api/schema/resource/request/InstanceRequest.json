@@ -6,7 +6,7 @@
       "$ref": "../common/ProfileIdField.json"
     },
     {
-      "$ref": "title/TitleFieldRequest.json"
+      "$ref": "TitleFieldRequest.json"
     },
     {
       "type": "object",
@@ -46,6 +46,7 @@
         "map": {
           "type": "array",
           "items": {
+            "title": "IdentifierField",
             "oneOf": [
               {
                 "type": "object",
@@ -53,7 +54,7 @@
                 "properties": {
                   "Lccn": {
                     "type": "object",
-                    "$ref": "identifier/LccnRequest.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://library.link/identifier/LCCN",
                     "x-field-extra-annotation": "@org.folio.linked.data.validation.LccnPatternConstraint"
                   }
@@ -65,7 +66,7 @@
                 "properties": {
                   "Isbn": {
                     "type": "object",
-                    "$ref": "identifier/IsbnRequest.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://library.link/identifier/ISBN"
                   }
                 }
@@ -87,7 +88,7 @@
                 "properties": {
                   "Ean": {
                     "type": "object",
-                    "$ref": "../common/identifier/Ean.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
                   }
                 }
@@ -98,7 +99,7 @@
                 "properties": {
                   "Identifier": {
                     "type": "object",
-                    "$ref": "../common/identifier/OtherId.json",
+                    "$ref": "IdentifierRequest.json",
                     "x-json-property": "http://library.link/identifier/UNKNOWN"
                   }
                 }

@@ -1,26 +1,25 @@
-  {
+{
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "ISBN Info",
+  "description": "Identifier request DTO",
   "allOf": [
-    {
-      "$ref": "../../common/identifier/IdentifierName.json"
-    },
     {
       "type": "object",
       "properties": {
+        "value": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/name"
+        },
         "status": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../../common/Status.json"
+            "$ref": "../common/Status.json"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/status"
-        }
-      }
-    },
-    {
-      "type": "object",
-      "properties": {
+        },
         "qualifier": {
           "type": "array",
           "items": {
