@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.LccnRequest;
+import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.preprocessing.lccn.LccnNormalizer;
 import org.folio.linked.data.validation.LccnPatternConstraint;
 import org.folio.linked.data.validation.spec.SpecProvider;
@@ -15,7 +15,7 @@ import org.folio.rspec.domain.dto.SpecificationRuleDto;
 
 @RequiredArgsConstructor
 @SuppressWarnings("javaarchitecture:S7091")
-public class LccnPatternValidator implements ConstraintValidator<LccnPatternConstraint, LccnRequest> {
+public class LccnPatternValidator implements ConstraintValidator<LccnPatternConstraint, IdentifierRequest> {
 
   public static final String CODE = "invalidLccnSubfieldValue";
 
@@ -26,7 +26,7 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
   private final List<LccnNormalizer> lccnNormalizers;
 
   @Override
-  public boolean isValid(LccnRequest lccnRequest, ConstraintValidatorContext constraintValidatorContext) {
+  public boolean isValid(IdentifierRequest lccnRequest, ConstraintValidatorContext constraintValidatorContext) {
     if (isCurrent(lccnRequest) && isLccnFormatValidationEnabled()) {
       setNormalizedLccn(lccnRequest);
       return lccnRequest.getValue()
@@ -46,7 +46,7 @@ public class LccnPatternValidator implements ConstraintValidator<LccnPatternCons
       .orElse(false);
   }
 
-  private void setNormalizedLccn(LccnRequest lccnRequest) {
+  private void setNormalizedLccn(IdentifierRequest lccnRequest) {
     var normalizedLccn = lccnRequest.getValue()
       .stream()
       .map(this::normalize)

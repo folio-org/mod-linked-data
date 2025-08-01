@@ -28,7 +28,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
-import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
@@ -310,7 +309,7 @@ public class ResourceJsonPath {
 
   public static String toEanValue() {
     return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_EAN.getUri()),
-      arrayPath(EAN_VALUE.getValue()));
+      arrayPath(NAME.getValue()));
   }
 
   public static String toEanQualifier() {

@@ -49,6 +49,7 @@
         "map": {
           "type": "array",
           "items": {
+            "title": "IdentifierFieldResponse",
             "oneOf": [
               {
                 "type": "object",
@@ -56,7 +57,7 @@
                 "properties": {
                   "Lccn": {
                     "type": "object",
-                    "$ref": "identifier/LccnResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://library.link/identifier/LCCN"
                   }
                 }
@@ -67,7 +68,7 @@
                 "properties": {
                   "Isbn": {
                     "type": "object",
-                    "$ref": "identifier/IsbnResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://library.link/identifier/ISBN"
                   }
                 }
@@ -89,7 +90,7 @@
                 "properties": {
                   "Ean": {
                     "type": "object",
-                    "$ref": "identifier/EanResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
                   }
                 }
@@ -100,7 +101,7 @@
                 "properties": {
                   "Identifier": {
                     "type": "object",
-                    "$ref": "identifier/OtherIdResponse.json",
+                    "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://library.link/identifier/UNKNOWN"
                   }
                 }

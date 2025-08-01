@@ -7,10 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.SourceRecordDomainEventDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.InstanceRequestAllOfMapDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.IdentifierFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.title.TitleFieldRequestDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
-import org.folio.linked.data.domain.dto.InstanceRequestAllOfMap;
+import org.folio.linked.data.domain.dto.IdentifierField;
 import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
@@ -39,7 +39,7 @@ public class ObjectMapperConfig {
     return new SimpleModule()
       .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer(exceptionBuilder))
       .addDeserializer(TitleFieldRequestTitleInner.class, new TitleFieldRequestDeserializer(exceptionBuilder))
-      .addDeserializer(InstanceRequestAllOfMap.class, new InstanceRequestAllOfMapDeserializer(exceptionBuilder))
+      .addDeserializer(IdentifierField.class, new IdentifierFieldDeserializer(exceptionBuilder))
       .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer(objectMapper));
   }
 

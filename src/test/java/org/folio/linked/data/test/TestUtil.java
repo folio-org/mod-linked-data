@@ -39,13 +39,13 @@ import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.configuration.ErrorResponseConfig;
 import org.folio.linked.data.configuration.json.ObjectMapperConfig;
-import org.folio.linked.data.domain.dto.InstanceResponseAllOfMap;
+import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.test.json.InstanceResponseAllOfMapDeserializer;
+import org.folio.linked.data.test.json.IdentifierFieldResponseDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
 import org.folio.linked.data.test.json.TitleFieldResponseDeserializer;
 import org.jeasy.random.EasyRandom;
@@ -78,7 +78,7 @@ public class TestUtil {
     OBJECT_MAPPER.registerModule(new SimpleModule()
       .addDeserializer(ResourceResponseField.class, new ResourceResponseFieldDeserializer())
       .addDeserializer(TitleFieldResponseTitleInner.class, new TitleFieldResponseDeserializer())
-      .addDeserializer(InstanceResponseAllOfMap.class, new InstanceResponseAllOfMapDeserializer())
+      .addDeserializer(IdentifierFieldResponse.class, new IdentifierFieldResponseDeserializer())
     );
     PARAMETERS.excludeField(named("id"));
     PARAMETERS.randomizationDepth(3);
