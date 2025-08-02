@@ -35,10 +35,8 @@ import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -56,6 +54,8 @@ import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -109,7 +109,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getPartOfSeries(), IS_PART_OF);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getCharacteristic(), CHARACTERISTIC);
     groupLanguagesByType(workDto.getLanguages())
-      .forEach((type, languages) -> coreMapper.addOutgoingEdges(work, WorkRequest.class, languages, type));
+      .forEach(pair -> coreMapper.addOutgoingEdges(work, WorkRequest.class, pair.getSecond(), pair.getFirst()));
 
     work.setId(hashService.hash(work));
     return work;
@@ -125,13 +125,18 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
-  private Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<Language> languageDtos) {
-    Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
+  private List<Pair<PredicateDictionary, List<Language>>> groupLanguagesByType(List<Language> languageDtos) {
+    List<Pair<PredicateDictionary, List<Language>>> result = new ArrayList<>();
     for (var lang : languageDtos) {
       for (var type : lang.getTypes()) {
         var predicate = PredicateDictionary.fromUri(type)
           .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + type, "Bad request"));
-        result.computeIfAbsent(predicate, k -> new ArrayList<>()).add(lang);
+        for (var code : lang.getCodes()) {
+          var langCopy = new Language();
+          BeanUtils.copyProperties(lang, langCopy);
+          langCopy.setCodes(List.of(code));
+          result.add(Pair.of(predicate, List.of(langCopy)));
+        }
       }
     }
     return result;
