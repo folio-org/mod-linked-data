@@ -2,55 +2,34 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Language object",
   "type": "object",
-  "properties": {
-    "types": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Language relationship predicates",
-      "x-json-property": "_types"
+  "allOf": [
+    {
+      "$ref": "IdField.json"
     },
-    "codes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "IdField.json"
+    {
+      "properties": {
+        "code": {
+          "type": "array",
+          "items": {
+            "type": "string"
           },
-          {
-            "properties": {
-              "code": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Language code",
-                "x-json-property": "http://bibfra.me/vocab/marc/code"
-              },
-              "term": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Language term",
-                "x-json-property": "http://bibfra.me/vocab/marc/term"
-              },
-              "link": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "Language link",
-                "x-json-property": "http://bibfra.me/vocab/lite/link"
-              }
-            }
-          }
-        ]
-      },
-      "description": "Language objects",
-      "x-json-property": "_codes"
+          "x-json-property": "http://bibfra.me/vocab/marc/code"
+        },
+        "term": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/term"
+        },
+        "link": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/link"
+        }
+      }
     }
-  }
+  ]
 }

@@ -32,6 +32,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Language;
+import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
@@ -56,8 +58,6 @@ import org.folio.linked.data.mapper.dto.monograph.TopResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -110,7 +110,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getPartOfSeries(), IS_PART_OF);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getCharacteristic(), CHARACTERISTIC);
-    groupLanguagesByType(splitLanguages(workDto.getLanguages()))
+    groupLanguagesByType(workDto.getLanguages())
       .forEach((type, languages) -> coreMapper.addOutgoingEdges(work, WorkRequest.class, languages, type));
 
     work.setId(hashService.hash(work));
@@ -127,30 +127,21 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
-  private List<Pair<PredicateDictionary, List<Language>>> splitLanguages(List<Language> languageDtos) {
-    List<Pair<PredicateDictionary, List<Language>>> result = new ArrayList<>();
-    for (var lang : languageDtos) {
-      for (var type : lang.getTypes()) {
-        var predicate = PredicateDictionary.fromUri(type)
-          .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + type, "Bad request"));
-        for (var code : lang.getCodes()) {
-          var langCopy = new Language();
-          BeanUtils.copyProperties(lang, langCopy);
-          langCopy.setCodes(List.of(code));
-          result.add(Pair.of(predicate, List.of(langCopy)));
-        }
-      }
+  private Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<LanguageWithType> languageWithTypeList) {
+    if (isEmpty(languageWithTypeList)) {
+      return Map.of();
     }
-    return result;
-  }
 
-  private Map<PredicateDictionary, List<Language>>
-    groupLanguagesByType(List<Pair<PredicateDictionary, List<Language>>> languageDtoTypes) {
     Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
-    for (var pair : languageDtoTypes) {
-      var predicate = pair.getFirst();
-      var lang = pair.getSecond();
-      result.computeIfAbsent(predicate, k -> new ArrayList<>()).add(lang.getFirst());
+    for (LanguageWithType languageWithType : languageWithTypeList) {
+      if (isEmpty(languageWithType.getCodes())) {
+        continue;
+      }
+      for (String typeUri : languageWithType.getTypes()) {
+        PredicateDictionary type = PredicateDictionary.fromUri(typeUri)
+          .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + typeUri, "Bad request"));
+        result.computeIfAbsent(type, k -> new ArrayList<>()).addAll(languageWithType.getCodes());
+      }
     }
     return result;
   }

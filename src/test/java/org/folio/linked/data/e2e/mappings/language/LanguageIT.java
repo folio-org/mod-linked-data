@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.SneakyThrows;
-import org.folio.linked.data.domain.dto.Language;
+import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class LanguageIT extends PostResourceIT {
             assertThat(actualCode.getLink()).contains(expectedLanguage.link);
             assertThat(actualCode.getCode()).contains(expectedLanguage.code);
             assertThat(actualCode.getTerm()).contains(expectedLanguage.term);
-            assertThat(actualLanguage.getTypes()).containsAll(expectedLanguage.types);
+            assertThat(expectedLanguage.types).containsAll(actualLanguage.getTypes());
             break outer;
           }
         }
@@ -136,7 +136,7 @@ public class LanguageIT extends PostResourceIT {
   }
 
   @SneakyThrows
-  private List<Language> getActualLanguages(ResultActions apiResponse) {
+  private List<LanguageWithType> getActualLanguages(ResultActions apiResponse) {
     var responseStr = apiResponse.andReturn().getResponse().getContentAsString();
     var languagesNode = mapper.readTree(responseStr)
       .path("resource")
@@ -145,7 +145,7 @@ public class LanguageIT extends PostResourceIT {
 
     return mapper.convertValue(
       languagesNode,
-      mapper.getTypeFactory().constructCollectionType(List.class, Language.class)
+      mapper.getTypeFactory().constructCollectionType(List.class, LanguageWithType.class)
     );
   }
 
