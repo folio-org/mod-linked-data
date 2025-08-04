@@ -35,8 +35,10 @@ import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -108,8 +110,8 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getPartOfSeries(), IS_PART_OF);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getCharacteristic(), CHARACTERISTIC);
-    groupLanguagesByType(workDto.getLanguages())
-      .forEach(pair -> coreMapper.addOutgoingEdges(work, WorkRequest.class, pair.getSecond(), pair.getFirst()));
+    groupLanguagesByType(splitLanguages(workDto.getLanguages()))
+      .forEach((type, languages) -> coreMapper.addOutgoingEdges(work, WorkRequest.class, languages, type));
 
     work.setId(hashService.hash(work));
     return work;
@@ -125,7 +127,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
-  private List<Pair<PredicateDictionary, List<Language>>> groupLanguagesByType(List<Language> languageDtos) {
+  private List<Pair<PredicateDictionary, List<Language>>> splitLanguages(List<Language> languageDtos) {
     List<Pair<PredicateDictionary, List<Language>>> result = new ArrayList<>();
     for (var lang : languageDtos) {
       for (var type : lang.getTypes()) {
@@ -138,6 +140,17 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
           result.add(Pair.of(predicate, List.of(langCopy)));
         }
       }
+    }
+    return result;
+  }
+
+  private Map<PredicateDictionary, List<Language>>
+    groupLanguagesByType(List<Pair<PredicateDictionary, List<Language>>> languageDtoTypes) {
+    Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
+    for (var pair : languageDtoTypes) {
+      var predicate = pair.getFirst();
+      var lang = pair.getSecond();
+      result.computeIfAbsent(predicate, k -> new ArrayList<>()).add(lang.getFirst());
     }
     return result;
   }
