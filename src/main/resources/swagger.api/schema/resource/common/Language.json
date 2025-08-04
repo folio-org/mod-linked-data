@@ -8,6 +8,7 @@
       "items": {
         "type": "string"
       },
+      "description": "Language relationship predicates",
       "x-json-property": "_types"
     },
     "codes": {
@@ -25,6 +26,7 @@
                 "items": {
                   "type": "string"
                 },
+                "description": "Language code",
                 "x-json-property": "http://bibfra.me/vocab/marc/code"
               },
               "term": {
@@ -32,6 +34,7 @@
                 "items": {
                   "type": "string"
                 },
+                "description": "Language term",
                 "x-json-property": "http://bibfra.me/vocab/marc/term"
               },
               "link": {
@@ -39,12 +42,14 @@
                 "items": {
                   "type": "string"
                 },
+                "description": "Language link",
                 "x-json-property": "http://bibfra.me/vocab/lite/link"
               }
             }
           }
         ]
       },
+      "description": "Language objects",
       "x-json-property": "_codes"
     }
   }
