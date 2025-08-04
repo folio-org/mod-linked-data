@@ -29,7 +29,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.CategoryResponse;
 import org.folio.linked.data.domain.dto.Language;
-import org.folio.linked.data.domain.dto.LanguageCodesInner;
+import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -48,7 +48,7 @@ import org.springframework.stereotype.Component;
     ORIGINAL_LANGUAGE, ORIGINAL_LIBRETTO_LANGUAGE, SUBTITLES_OR_CAPTIONS_LANGUAGE, SUMMARY_LANGUAGE,
     SUNG_OR_SPOKEN_TEXT_LANGUAGE, TABLE_OF_CONTENTS_LANGUAGE
   },
-  requestDto = LanguageCodesInner.class
+  requestDto = Language.class
 )
 @RequiredArgsConstructor
 public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, MarcCodeProvider {
@@ -73,7 +73,7 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var languageCategory = (LanguageCodesInner) dto;
+    var languageCategory = (Language) dto;
     var resource = new Resource()
             .setLabel(getFirstValue(() -> getMarcCodes(languageCategory.getLink())))
             .addTypes(LANGUAGE_CATEGORY)
@@ -87,15 +87,15 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
     return LANGUAGE_LINK_PREFIX;
   }
 
-  private Language createLanguageDto(Resource languageResource, String type) {
-    return new Language()
+  private LanguageWithType createLanguageDto(Resource languageResource, String type) {
+    return new LanguageWithType()
       .addCodesItem(coreMapper
-        .toDtoWithEdges(languageResource, LanguageCodesInner.class, false)
+        .toDtoWithEdges(languageResource, Language.class, false)
         .id(String.valueOf(languageResource.getId())))
       .types(List.of(type));
   }
 
-  private JsonNode getDoc(LanguageCodesInner dto) {
+  private JsonNode getDoc(Language dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, CODE, getMarcCodes(dto.getLink()));
     putProperty(map, TERM, dto.getTerm());

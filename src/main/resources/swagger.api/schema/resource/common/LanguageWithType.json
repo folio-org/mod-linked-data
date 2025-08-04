@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Language object",
+  "type": "object",
+  "properties": {
+    "types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "x-json-property": "_types",
+      "description": "The list of language types"
+    },
+    "codes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "Language.json"
+      },
+      "x-json-property": "_codes",
+      "description": "List of language objects corresponding to the specified types."
+    }
+  }
+}

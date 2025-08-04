@@ -47,7 +47,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Language.json"
+            "$ref": "../common/LanguageWithType.json"
           },
           "x-json-property": "_languages"
         },

@@ -45,7 +45,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Language;
-import org.folio.linked.data.domain.dto.LanguageCodesInner;
+import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
@@ -127,20 +127,20 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
-  private Map<PredicateDictionary, List<LanguageCodesInner>> groupLanguagesByType(List<Language> languageDtos) {
-    if (isEmpty(languageDtos)) {
+  private Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<LanguageWithType> languageWithTypeList) {
+    if (isEmpty(languageWithTypeList)) {
       return Map.of();
     }
 
-    Map<PredicateDictionary, List<LanguageCodesInner>> result = new EnumMap<>(PredicateDictionary.class);
-    for (Language language : languageDtos) {
-      if (isEmpty(language.getCodes())) {
+    Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
+    for (LanguageWithType languageWithType : languageWithTypeList) {
+      if (isEmpty(languageWithType.getCodes())) {
         continue;
       }
-      for (String typeUri : language.getTypes()) {
+      for (String typeUri : languageWithType.getTypes()) {
         PredicateDictionary type = PredicateDictionary.fromUri(typeUri)
           .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + typeUri, "Bad request"));
-        result.computeIfAbsent(type, k -> new ArrayList<>()).addAll(language.getCodes());
+        result.computeIfAbsent(type, k -> new ArrayList<>()).addAll(languageWithType.getCodes());
       }
     }
     return result;
