@@ -48,7 +48,7 @@ import org.springframework.stereotype.Component;
     ORIGINAL_LANGUAGE, ORIGINAL_LIBRETTO_LANGUAGE, SUBTITLES_OR_CAPTIONS_LANGUAGE, SUMMARY_LANGUAGE,
     SUNG_OR_SPOKEN_TEXT_LANGUAGE, TABLE_OF_CONTENTS_LANGUAGE
   },
-  requestDto = Language.class
+  requestDto = LanguageCodesInner.class
 )
 @RequiredArgsConstructor
 public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, MarcCodeProvider {
@@ -73,12 +73,11 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var languageCategory = (Language) dto;
-    var languageCode = languageCategory.getCodes().getFirst();
+    var languageCategory = (LanguageCodesInner) dto;
     var resource = new Resource()
-            .setLabel(getFirstValue(() -> getMarcCodes(languageCode.getLink())))
+            .setLabel(getFirstValue(() -> getMarcCodes(languageCategory.getLink())))
             .addTypes(LANGUAGE_CATEGORY)
-            .setDoc(getDoc(languageCode));
+            .setDoc(getDoc(languageCategory));
     resource.setId(hashService.hash(resource));
     return resource;
   }

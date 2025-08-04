@@ -85,7 +85,7 @@ public class LanguageIT extends PostResourceIT {
             assertThat(actualCode.getLink()).contains(expectedLanguage.link);
             assertThat(actualCode.getCode()).contains(expectedLanguage.code);
             assertThat(actualCode.getTerm()).contains(expectedLanguage.term);
-            assertThat(actualLanguage.getTypes()).containsAll(expectedLanguage.types);
+            assertThat(expectedLanguage.types).containsAll(actualLanguage.getTypes());
             break outer;
           }
         }
