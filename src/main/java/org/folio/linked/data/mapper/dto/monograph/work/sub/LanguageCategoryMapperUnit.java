@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.CategoryResponse;
 import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.WorkResponse;
@@ -60,13 +59,6 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
   public <P> P toDto(Resource languageResource, P parentWorkDto, ResourceMappingContext mappingContext) {
     if (parentWorkDto instanceof WorkResponse workDto) {
       workDto.addLanguagesItem(createLanguageDto(languageResource, mappingContext.predicate().getUri()));
-
-      // TODO (MODLD-783) - Remove the following temporary code after UI is updated to use new "_languages" property
-      if (mappingContext.predicate().getUri().equals(LANGUAGE.getUri())) {
-        var category = coreMapper.toDtoWithEdges(languageResource, CategoryResponse.class, false);
-        category.setId(String.valueOf(languageResource.getId()));
-        workDto.addLanguageItem(category);
-      }
     }
     return parentWorkDto;
   }
