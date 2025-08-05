@@ -10,7 +10,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
-import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
@@ -389,15 +388,18 @@ public class ResourceJsonPath {
   }
 
   public static String toLanguageCode(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY), arrayPath(CODE.getValue()));
+    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY),
+      arrayPath(CODE.getValue()));
   }
 
   public static String toLanguageTerm(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY), arrayPath(TERM.getValue()));
+    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY),
+      arrayPath(TERM.getValue()));
   }
 
   public static String toLanguageLink(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY), arrayPath(LINK.getValue()));
+    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY),
+      arrayPath(LINK.getValue()));
   }
 
   public static String toLanguageRelationship(String workBase) {
