@@ -159,10 +159,6 @@ public class LanguageIT extends PostResourceIT {
     assertThat(language.getLabel()).isEqualTo(expected.code);
   }
 
-  private Resource getFirstOutgoingResource(Resource work, String url) {
-    return getOutgoingResources(work, url).getFirst();
-  }
-
   private record LanguageCategory(
     String link,
     String code,

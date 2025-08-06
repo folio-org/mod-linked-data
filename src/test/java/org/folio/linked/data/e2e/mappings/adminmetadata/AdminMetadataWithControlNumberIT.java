@@ -73,8 +73,4 @@ public class AdminMetadataWithControlNumberIT extends PostResourceIT {
     assertThat(getProperties(adminMetadata, "http://bibfra.me/vocab/marc/modifyingAgency"))
       .isEqualTo(Set.of("Agency 3", "Agency 4"));
   }
-
-  private Resource getFirstOutgoingResource(Resource instance, String url) {
-    return getOutgoingResources(instance, url).getFirst();
-  }
 }

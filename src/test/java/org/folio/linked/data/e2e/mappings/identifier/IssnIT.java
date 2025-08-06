@@ -82,8 +82,4 @@ public class IssnIT extends PostResourceIT {
       .isEqualTo("http://id.loc.gov/vocabulary/mstatus/current");
     assertThat(status.getLabel()).isEqualTo("current");
   }
-
-  private Resource getFirstOutgoingResource(Resource work, String url) {
-    return getOutgoingResources(work, url).getFirst();
-  }
 }

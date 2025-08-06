@@ -123,8 +123,4 @@ class WorkCreatorIT extends PostResourceIT {
     resource.setFolioMetadata(new FolioMetadata(resource).setSrsId(srsId));
     resourceTestService.saveGraph(resource);
   }
-
-  private Resource getFirstOutgoingResource(Resource work, String url) {
-    return getOutgoingResources(work, url).getFirst();
-  }
 }
