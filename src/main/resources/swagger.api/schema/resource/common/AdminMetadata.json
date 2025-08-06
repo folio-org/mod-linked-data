@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Administrative metadata for an Instance",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "transcribingAgency": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/transcribingAgency"
+        },
+        "catalogingAgency": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/catalogingAgency"
+        },
+        "modifyingAgency": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/modifyingAgency"
+        },
+        "createdDate": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/createdDate"
+        },
+        "controlNumber": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/controlNumber"
+        }
+      }
+    }
+  ]
+}
