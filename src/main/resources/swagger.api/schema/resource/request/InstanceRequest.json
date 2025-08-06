@@ -211,6 +211,14 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/bookFormat"
         },
+        "adminMetadata": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/AdminMetadata.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/adminMetadata"
+        },
         "_notes": {
           "type": "array",
           "items": {

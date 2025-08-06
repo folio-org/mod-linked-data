@@ -2,6 +2,7 @@ package org.folio.linked.data.mapper.dto.monograph.instance;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
@@ -121,6 +122,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getExtent(), EXTENT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, standardBookFormats(instanceDto), BOOK_FORMAT);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getAdminMetadata(), ADMIN_METADATA);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));
     return instance;
