@@ -34,7 +34,7 @@
 - Conversion rules from MARC to Graph - adaptation [MODLD-805](https://folio-org.atlassian.net/browse/MODLD-805)
 - Standardized all Identifier requests/responses to IdentifierRequest.json and IdentifierResponse.json; removed redundant schemas. [MODLD-799](https://folio-org.atlassian.net/browse/MODLD-799)
 - Update API to support ISSN [MODLD-799](https://folio-org.atlassian.net/browse/MODLD-799)
-- Update profiles to support revised language handling [MODLD-362](https://folio-org.atlassian.net/browse/MODLD-362)
+- Update profiles to support revised language handling [MODLD-820](https://folio-org.atlassian.net/browse/MODLD-820) and remove deprecated, previous language handling [MODLD-783](https://folio-org.atlassian.net/browse/MODLD-783)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
