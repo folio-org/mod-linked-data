@@ -77,10 +77,6 @@ class PartOfSeriesNoIssnIT extends PostResourceIT {
     assertThat(hasNoIssnOutgoingEdge(instanceSeries)).isTrue();
   }
 
-  private Resource getFirstOutgoingResource(Resource instance, String predicate) {
-    return getOutgoingResources(instance, predicate).getFirst();
-  }
-
   private Resource getFirstIncomingResource(Resource resource, String predicate) {
     return resource.getIncomingEdges().stream()
       .filter(edge -> edge.getPredicate().getUri().equals(predicate))

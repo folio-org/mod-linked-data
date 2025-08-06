@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = ANNOTATION, predicate = ADMIN_METADATA, requestDto = AdminMetadata.class)
-public class AdminMetadataMapperUnit  implements InstanceSubResourceMapperUnit {
+public class AdminMetadataMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

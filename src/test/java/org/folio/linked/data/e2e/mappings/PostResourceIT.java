@@ -109,6 +109,10 @@ public abstract class PostResourceIT extends ITBase {
       .collect(toSet());
   }
 
+  protected Resource getFirstOutgoingResource(Resource instance, String url) {
+    return getOutgoingResources(instance, url).getFirst();
+  }
+
   protected List<Resource> getOutgoingResources(Resource resource, String predicate) {
     return resource.getOutgoingEdges().stream()
       .filter(edge -> edge.getPredicate().getUri().equals(predicate))

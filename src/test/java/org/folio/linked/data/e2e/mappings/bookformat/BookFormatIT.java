@@ -85,8 +85,4 @@ class BookFormatIT extends PostResourceIT {
       .isEqualTo("http://id.loc.gov/vocabulary/bookformat");
     assertThat(categorySet.getLabel()).isEqualTo("Book Format");
   }
-
-  private Resource getFirstOutgoingResource(Resource instance, String url) {
-    return getOutgoingResources(instance, url).getFirst();
-  }
 }

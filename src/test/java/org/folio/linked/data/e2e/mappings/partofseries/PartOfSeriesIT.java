@@ -89,10 +89,6 @@ class PartOfSeriesIT extends PostResourceIT {
     assertThat(instanceIssn).isEqualTo(issn);
   }
 
-  private Resource getFirstOutgoingResource(Resource instance, String url) {
-    return getOutgoingResources(instance, url).getFirst();
-  }
-
   private Resource getFirstIncomingResource(Resource resource, String predicate) {
     return resource.getIncomingEdges().stream()
       .filter(edge -> edge.getPredicate().getUri().equals(predicate))

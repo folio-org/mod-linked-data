@@ -138,10 +138,6 @@ class CharacteristicIT extends PostResourceIT {
     assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
   }
 
-  private Resource getFirstOutgoingResource(Resource instance, String url) {
-    return getOutgoingResources(instance, url).getFirst();
-  }
-
   private Map<Long, Map<String, List<String>>> getExpectedCharacteristics() {
     return Map.ofEntries(
       Map.entry(DATABASE_ID, Map.of(
