@@ -44,6 +44,11 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   }
 
   @Override
+  public long deleteEdgesHavingPredicate(Long resourceId, PredicateDictionary predicateToDelete) {
+    return resourceEdgeRepository.deleteByIdSourceHashAndIdPredicateHash(resourceId, predicateToDelete.getHash());
+  }
+
+  @Override
   public ResourceEdgePk saveNewResourceEdge(Long sourceId, org.folio.ld.dictionary.model.ResourceEdge edgeModel) {
     var sourceRef = new Resource().setId(sourceId);
     var target = resourceModelMapper.toEntity(edgeModel.getTarget());

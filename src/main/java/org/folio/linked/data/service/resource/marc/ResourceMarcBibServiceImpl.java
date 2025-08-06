@@ -144,7 +144,9 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       log.info("Resource doesn't exist by Inventory ID [{}]", inventoryId);
       return false;
     }
-    var edgeId = resourceEdgeService.saveNewResourceEdge(idOptional.get().getId(), adminMetadataEdge);
+    var resourceId = idOptional.get().getId();
+    removeExistingAdminMetadataIfAny(resourceId);
+    var edgeId = resourceEdgeService.saveNewResourceEdge(resourceId, adminMetadataEdge);
     log.info("New AdminMetadata has been added and saved under id [{}]", edgeId);
     return true;
   }
@@ -230,5 +232,12 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private void addOutgoingEdges(Resource resource) {
     edgeRepo.findByIdSourceHash(resource.getId())
       .forEach(resource::addOutgoingEdge);
+  }
+
+  private void removeExistingAdminMetadataIfAny(Long resourceId) {
+    var removedEdgesCount = resourceEdgeService.deleteEdgesHavingPredicate(resourceId, ADMIN_METADATA);
+    if (removedEdgesCount > 0) {
+      log.info("Removed existing adminMetadata edge for resource {}. Count: {}", resourceId, removedEdgesCount);
+    }
   }
 }
