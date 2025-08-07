@@ -4,7 +4,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
-import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
@@ -29,7 +28,7 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
 
   private static final Map<ResourceTypeDictionary, Set<PredicateDictionary>> EDGES_TO_BE_COPIED = Map.of(
     INSTANCE, Set.of(ADMIN_METADATA),
-    WORK, Set.of(ILLUSTRATIONS, SUPPLEMENTARY_CONTENT, DISSERTATION, GENRE)
+    WORK, Set.of(ILLUSTRATIONS, DISSERTATION, GENRE)
   );
   private final ResourceRepository resourceRepository;
   private final ResourceModelMapper resourceModelMapper;
