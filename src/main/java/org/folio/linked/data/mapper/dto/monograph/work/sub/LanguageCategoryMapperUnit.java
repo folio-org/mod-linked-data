@@ -1,6 +1,5 @@
 package org.folio.linked.data.mapper.dto.monograph.work.sub;
 
-import static java.util.List.copyOf;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESSIBLE_AUDIO_LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESSIBLE_VISUAL_MATERIAL_LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCOMPANYING_MATERIAL_LANGUAGE;
@@ -25,13 +24,11 @@ import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.CategoryResponse;
 import org.folio.linked.data.domain.dto.Language;
+import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
@@ -61,18 +58,7 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
   @Override
   public <P> P toDto(Resource languageResource, P parentWorkDto, ResourceMappingContext mappingContext) {
     if (parentWorkDto instanceof WorkResponse workDto) {
-      findExistingLanguageDto(workDto, languageResource.getId())
-        .ifPresentOrElse(
-          languageDto -> addTypeToLanguage(languageDto, mappingContext.predicate().getUri()),
-          () -> workDto.addLanguagesItem(createLanguageDto(languageResource, mappingContext.predicate().getUri()))
-        );
-
-      // TODO (MODLD-783) - Remove the following temporary code after UI is updated to use new "_languages" property
-      if (mappingContext.predicate().getUri().equals(LANGUAGE.getUri())) {
-        var category = coreMapper.toDtoWithEdges(languageResource, CategoryResponse.class, false);
-        category.setId(String.valueOf(languageResource.getId()));
-        workDto.addLanguageItem(category);
-      }
+      workDto.addLanguagesItem(createLanguageDto(languageResource, mappingContext.predicate().getUri()));
     }
     return parentWorkDto;
   }
@@ -93,23 +79,12 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
     return LANGUAGE_LINK_PREFIX;
   }
 
-  private void addTypeToLanguage(Language languageDto, String typeUri) {
-    var currentTypes = new ArrayList<>(languageDto.getTypes());
-    currentTypes.add(typeUri);
-    languageDto.types(copyOf(currentTypes));
-  }
-
-  private Language createLanguageDto(Resource languageResource, String type) {
-    return coreMapper.toDtoWithEdges(languageResource, Language.class, false)
-      .id(String.valueOf(languageResource.getId()))
+  private LanguageWithType createLanguageDto(Resource languageResource, String type) {
+    return new LanguageWithType()
+      .addCodesItem(coreMapper
+        .toDtoWithEdges(languageResource, Language.class, false)
+        .id(String.valueOf(languageResource.getId())))
       .types(List.of(type));
-  }
-
-  private Optional<Language> findExistingLanguageDto(WorkResponse workDto, Long languageId) {
-    return workDto.getLanguages()
-      .stream()
-      .filter(languageDto -> languageDto.getId().equals(String.valueOf(languageId)))
-      .findFirst();
   }
 
   private JsonNode getDoc(Language dto) {
