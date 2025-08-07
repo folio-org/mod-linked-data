@@ -130,12 +130,12 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     }
 
     Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
-    for (LanguageWithType languageWithType : languageWithTypeList) {
+    for (var languageWithType : languageWithTypeList) {
       if (isEmpty(languageWithType.getCodes())) {
         continue;
       }
-      for (String typeUri : languageWithType.getTypes()) {
-        PredicateDictionary type = PredicateDictionary.fromUri(typeUri)
+      for (var typeUri : languageWithType.getTypes()) {
+        var type = PredicateDictionary.fromUri(typeUri)
           .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + typeUri, "Bad request"));
         result.computeIfAbsent(type, k -> new ArrayList<>()).addAll(languageWithType.getCodes());
       }
