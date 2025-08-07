@@ -20,6 +20,7 @@
         "Monograph:Work:TitleInformation",
         "Monograph:Work:IllustrativeContent",
         "Monograph:Work:GovernmentPublication",
+        "Monograph:Work:SupplementaryContent",
         "Monograph:Work:DateOfWork",
         "Monograph:Work:PlaceOfOriginOfTheWork",
         "Monograph:Work:GeographicCoverage",
@@ -482,6 +483,21 @@
       "id": "Monograph:Work:GovernmentPublication"
     },
     {
+      "type": "simple",
+      "displayName": "Supplementary content",
+      "uriBFLite": "http://bibfra.me/vocab/marc/supplementaryContent",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/msupplcont"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent"
+        }
+      },
+      "id": "Monograph:Work:SupplementaryContent"
+    },    {
       "type": "literal",
       "displayName": "Date of Work",
       "uriBFLite": "http://bibfra.me/vocab/lite/dateStart",
