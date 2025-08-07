@@ -90,7 +90,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum;
 import static org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
@@ -147,6 +146,7 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIssuance;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLanguageCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLanguageLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toLanguageRelationship;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLanguageTerm;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLcStatusLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLcStatusValue;
@@ -237,9 +237,9 @@ import java.util.Set;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.client.SpecClient;
+import org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -412,10 +412,13 @@ abstract class ResourceControllerITBase extends ITBase {
     resourceTestService.saveGraph(originalWork);
     var updateDto = getSampleWorkDtoMap();
     var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
-    workMap.put(PropertyDictionary.LANGUAGE.getValue(),
+    workMap.put("_languages",
       Map.of(
-        LINK.getValue(), List.of("http://id.loc.gov/vocabulary/languages/rus"),
-        TERM.getValue(), List.of("Russian")
+        "_codes", Map.of(
+          LINK.getValue(), List.of("http://id.loc.gov/vocabulary/languages/rus"),
+          TERM.getValue(), List.of("Russian")
+        ),
+        "_types", List.of(LANGUAGE.getUri())
       ));
 
     var updateRequest = put(RESOURCE_URL + "/" + originalWork.getId())
@@ -484,10 +487,13 @@ abstract class ResourceControllerITBase extends ITBase {
 
     var updateDto = getSampleWorkDtoMap();
     var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
-    workMap.put(PropertyDictionary.LANGUAGE.getValue(),
+    workMap.put("_languages",
       Map.of(
-        LINK.getValue(), List.of("http://id.loc.gov/vocabulary/languages/eng"),
-        TERM.getValue(), List.of("English")
+        "_codes", Map.of(
+          LINK.getValue(), List.of("http://id.loc.gov/vocabulary/languages/eng"),
+          TERM.getValue(), List.of("English")
+        ),
+        "_types", List.of(LANGUAGE.getUri())
       ));
     var updatedById = UUID.randomUUID();
 
@@ -770,6 +776,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toLanguageCode(workBase), equalTo("eng")))
       .andExpect(jsonPath(toLanguageTerm(workBase), equalTo("English")))
       .andExpect(jsonPath(toLanguageLink(workBase), equalTo("http://id.loc.gov/vocabulary/languages/eng")))
+      .andExpect(jsonPath(toLanguageRelationship(workBase), equalTo(LANGUAGE.getUri())))
       .andExpect(jsonPath(toClassificationCodes(workBase), containsInAnyOrder("ddc code", "lc code")))
       .andExpect(jsonPath(toClassificationSources(workBase), containsInAnyOrder("ddc", "lc")))
       .andExpect(jsonPath(toClassificationItemNumbers(workBase), containsInAnyOrder("ddc item number",

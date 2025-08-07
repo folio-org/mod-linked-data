@@ -13,7 +13,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
-import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.ORIGIN_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
@@ -32,6 +31,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -44,6 +44,7 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Language;
+import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.domain.dto.WorkRequest;
@@ -101,8 +102,6 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getOriginPlace(), ORIGIN_PLACE);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getDissertation(), DISSERTATION);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTargetAudience(), TARGET_AUDIENCE);
-    // TODO (MODLD-783) - Remove the following line after UI is updated to use new "_languages" property
-    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getLanguage(), LANGUAGE);
     coreMapper.addIncomingEdges(work, WorkRequest.class, workDto.getInstanceReference(), INSTANTIATES);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getIllustrations(), ILLUSTRATIONS);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
@@ -125,13 +124,20 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
-  private Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<Language> languageDtos) {
+  private Map<PredicateDictionary, List<Language>> groupLanguagesByType(List<LanguageWithType> languageWithTypeList) {
+    if (isEmpty(languageWithTypeList)) {
+      return Map.of();
+    }
+
     Map<PredicateDictionary, List<Language>> result = new EnumMap<>(PredicateDictionary.class);
-    for (var lang : languageDtos) {
-      for (var type : lang.getTypes()) {
-        var predicate = PredicateDictionary.fromUri(type)
-          .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + type, "Bad request"));
-        result.computeIfAbsent(predicate, k -> new ArrayList<>()).add(lang);
+    for (var languageWithType : languageWithTypeList) {
+      if (isEmpty(languageWithType.getCodes())) {
+        continue;
+      }
+      for (var typeUri : languageWithType.getTypes()) {
+        var type = PredicateDictionary.fromUri(typeUri)
+          .orElseThrow(() -> exceptionBuilder.badRequestException("Invalid language type: " + typeUri, "Bad request"));
+        result.computeIfAbsent(type, k -> new ArrayList<>()).addAll(languageWithType.getCodes());
       }
     }
     return result;

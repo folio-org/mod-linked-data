@@ -10,7 +10,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
-import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PredicateDictionary.MEDIA;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
@@ -79,6 +78,9 @@ public class ResourceJsonPath {
   private static final String GENRE_REF = "_genreReference";
   private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
   private static final String GRANTING_INSTITUTION_REF = "_grantingInstitutionReference";
+  private static final String LANGUAGES_PROPERTY = "_languages";
+  private static final String LANGUAGE_CODES_PROPERTY = "_codes";
+  private static final String LANGUAGE_TYPES_PROPERTY = "_types";
 
   public static String toInstance() {
     return join(".", "$", path("resource"), path(INSTANCE.getUri()));
@@ -386,15 +388,22 @@ public class ResourceJsonPath {
   }
 
   public static String toLanguageCode(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(CODE.getValue()));
+    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY),
+      arrayPath(CODE.getValue()));
   }
 
   public static String toLanguageTerm(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(TERM.getValue()));
+    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY),
+      arrayPath(TERM.getValue()));
   }
 
   public static String toLanguageLink(String workBase) {
-    return join(".", workBase, arrayPath(LANGUAGE.getUri()), arrayPath(LINK.getValue()));
+    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_CODES_PROPERTY),
+      arrayPath(LINK.getValue()));
+  }
+
+  public static String toLanguageRelationship(String workBase) {
+    return join(".", workBase, arrayPath(LANGUAGES_PROPERTY), arrayPath(LANGUAGE_TYPES_PROPERTY));
   }
 
   public static String toClassificationSources(String workBase) {

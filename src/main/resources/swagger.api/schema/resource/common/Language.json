@@ -1,12 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Language object",
+  "type": "object",
   "allOf": [
     {
       "$ref": "IdField.json"
     },
     {
-      "type": "object",
       "properties": {
         "code": {
           "type": "array",
@@ -28,13 +28,6 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/link"
-        },
-        "types": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-json-property": "_types"
         }
       }
     }

@@ -963,10 +963,27 @@
       "id": "Monograph:Work:ContentType"
     },
     {
-      "type": "simple",
-      "groupName": "Language",
+      "type": "group",
       "displayName": "Language code",
-      "uriBFLite": "http://bibfra.me/vocab/lite/language",
+      "uriBFLite": "_languages",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Monograph:Work:LanguageCode:Language",
+        "Monograph:Work:LanguageCode:Relationship"
+      ],
+      "id": "Monograph:Work:LanguageCode"
+    },
+    {
+      "type": "simple",
+      "displayName": "Language",
+      "uriBFLite": "_codes",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -975,7 +992,151 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
         "valueDataType": { "remark": "", "dataTypeURI": "" }
       },
-      "id": "Monograph:Work:LanguageCode"
+      "id": "Monograph:Work:LanguageCode:Language"
+    },
+    {
+      "type": "enumerated",
+      "displayName": "Language relationship",
+      "uriBFLite": "_types",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Monograph:Work:LanguageCode:Relationship:PrimarySource",
+        "Monograph:Work:LanguageCode:Relationship:SummaryOrAbstract",
+        "Monograph:Work:LanguageCode:Relationship:SungOrSpokenText",
+        "Monograph:Work:LanguageCode:Relationship:Libretto",
+        "Monograph:Work:LanguageCode:Relationship:TableOfContents",
+        "Monograph:Work:LanguageCode:Relationship:AccompanyingMaterial",
+        "Monograph:Work:LanguageCode:Relationship:Original",
+        "Monograph:Work:LanguageCode:Relationship:Intertitles",
+        "Monograph:Work:LanguageCode:Relationship:Subtitles",
+        "Monograph:Work:LanguageCode:Relationship:IntermediateTranslation",
+        "Monograph:Work:LanguageCode:Relationship:OriginalAccompanyingMaterials",
+        "Monograph:Work:LanguageCode:Relationship:OriginalLibretto",
+        "Monograph:Work:LanguageCode:Relationship:Captions",
+        "Monograph:Work:LanguageCode:Relationship:AccessibleAudio",
+        "Monograph:Work:LanguageCode:Relationship:AccessibleVisualMaterial",
+        "Monograph:Work:LanguageCode:Relationship:AccompanyingTranscripts"
+      ],
+      "id": "Monograph:Work:LanguageCode:Relationship"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Primary source language",
+      "uriBFLite": "http://bibfra.me/vocab/lite/language",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:PrimarySource"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Summary or abstract",
+      "uriBFLite": "http://bibfra.me/vocab/lite/summaryLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:SummaryOrAbstract"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Sung or spoken text",
+      "uriBFLite": "http://bibfra.me/vocab/lite/sungOrSpokenTextLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:SungOrSpokenText"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Librettos",
+      "uriBFLite": "http://bibfra.me/vocab/lite/librettoLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:Libretto"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Table of contents",
+      "uriBFLite": "http://bibfra.me/vocab/lite/tableOfContentsLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:TableOfContents"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Accompanying material other than librettos and transcripts",
+      "uriBFLite": "http://bibfra.me/vocab/lite/accompanyingMaterialLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:AccompanyingMaterial"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Original language",
+      "uriBFLite": "http://bibfra.me/vocab/lite/originalLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:Original"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Intertitles ",
+      "uriBFLite": "http://bibfra.me/vocab/lite/intertitlesLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:Intertitles"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Subtitles",
+      "uriBFLite": "http://bibfra.me/vocab/lite/subtitlesOrCaptionsLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:Subtitles"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Intermediate translation",
+      "uriBFLite": "http://bibfra.me/vocab/lite/intermediateTranslationsLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:IntermediateTranslation"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Original accompanying materials other than librettos",
+      "uriBFLite": "http://bibfra.me/vocab/lite/originalAccompanyingMaterialsLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:OriginalAccompanyingMaterials"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Original libretto",
+      "uriBFLite": "http://bibfra.me/vocab/lite/originalLibrettoLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:OriginalLibretto"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Captions",
+      "uriBFLite": "http://bibfra.me/vocab/lite/captionsLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:Captions"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Accessible audio",
+      "uriBFLite": "http://bibfra.me/vocab/lite/accessibleAudioLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:AccessibleAudio"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Accessible visual language (non-textual)",
+      "uriBFLite": "http://bibfra.me/vocab/lite/accessibleVisualMaterialLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:AccessibleVisualMaterial"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Accompanying transcripts for audiovisual material",
+      "uriBFLite": "http://bibfra.me/vocab/lite/accompanyingTranscriptsLanguage",
+      "children": [],
+      "id": "Monograph:Work:LanguageCode:Relationship:AccompanyingTranscripts"
     },
     {
       "type": "group",

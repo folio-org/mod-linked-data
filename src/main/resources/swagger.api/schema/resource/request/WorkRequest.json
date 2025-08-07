@@ -33,21 +33,11 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/summary"
         },
-        "language": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "../common/Category.json"
-          },
-          "x-json-property": "http://bibfra.me/vocab/lite/language",
-          "deprecated": true,
-          "deprecationMessage": "MODLD-783: Use '_languages' field instead."
-        },
         "_languages": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Language.json"
+            "$ref": "../common/LanguageWithType.json"
           },
           "x-json-property": "_languages"
         },

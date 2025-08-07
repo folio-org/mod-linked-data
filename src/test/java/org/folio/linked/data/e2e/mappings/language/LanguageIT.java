@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.SneakyThrows;
-import org.folio.linked.data.domain.dto.Language;
+import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,24 +33,30 @@ public class LanguageIT extends PostResourceIT {
            ],
            "_languages":[
             {
-             "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/eng" ],
-             "http://bibfra.me/vocab/marc/term":[ "English" ],
+             "_codes":[{
+              "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/eng" ],
+              "http://bibfra.me/vocab/marc/term":[ "English" ]
+             }],
              "_types":[
               "http://bibfra.me/vocab/lite/language",
               "http://bibfra.me/vocab/lite/accompanyingMaterialLanguage"
              ]
             },
             {
-             "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/jpn" ],
-             "http://bibfra.me/vocab/marc/term":[ "Japanese" ],
+             "_codes":[{
+              "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/jpn" ],
+              "http://bibfra.me/vocab/marc/term":[ "Japanese" ]
+             }],
              "_types":[
               "http://bibfra.me/vocab/lite/accompanyingMaterialLanguage",
               "http://bibfra.me/vocab/lite/originalLanguage"
              ]
             },
             {
-             "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/spa" ],
-             "http://bibfra.me/vocab/marc/term":[ "Spanish" ],
+             "_codes":[{
+              "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/spa" ],
+              "http://bibfra.me/vocab/marc/term":[ "Spanish" ]
+             }],
              "_types":[ "http://bibfra.me/vocab/lite/tableOfContentsLanguage" ]
             }
            ]
@@ -67,15 +73,26 @@ public class LanguageIT extends PostResourceIT {
     var actualLanguages = getActualLanguages(apiResponse);
 
     expectedLanguages.forEach((id, expectedLanguage) -> {
-      var actualLanguage = actualLanguages.stream()
-        .filter(lang -> lang.getId().equals(String.valueOf(id)))
-        .findFirst()
-        .orElseThrow(() -> new AssertionError("Language with id " + id + " not found"));
+      boolean found = false;
+      outer:
+      for (var language : actualLanguages) {
+        for (var code : language.getCodes()) {
+          if (code.getId().equals(String.valueOf(id))) {
+            found = true;
+            var actualLanguage = language;
+            var actualCode = code;
 
-      assertThat(actualLanguage.getLink()).contains(expectedLanguage.link);
-      assertThat(actualLanguage.getCode()).contains(expectedLanguage.code);
-      assertThat(actualLanguage.getTerm()).contains(expectedLanguage.term);
-      assertThat(actualLanguage.getTypes()).containsAll(expectedLanguage.types);
+            assertThat(actualCode.getLink()).contains(expectedLanguage.link);
+            assertThat(actualCode.getCode()).contains(expectedLanguage.code);
+            assertThat(actualCode.getTerm()).contains(expectedLanguage.term);
+            assertThat(expectedLanguage.types).containsAll(actualLanguage.getTypes());
+            break outer;
+          }
+        }
+      }
+      if (!found) {
+        throw new AssertionError("Language with id " + id + " not found");
+      }
     });
   }
 
@@ -119,7 +136,7 @@ public class LanguageIT extends PostResourceIT {
   }
 
   @SneakyThrows
-  private List<Language> getActualLanguages(ResultActions apiResponse) {
+  private List<LanguageWithType> getActualLanguages(ResultActions apiResponse) {
     var responseStr = apiResponse.andReturn().getResponse().getContentAsString();
     var languagesNode = mapper.readTree(responseStr)
       .path("resource")
@@ -128,7 +145,7 @@ public class LanguageIT extends PostResourceIT {
 
     return mapper.convertValue(
       languagesNode,
-      mapper.getTypeFactory().constructCollectionType(List.class, Language.class)
+      mapper.getTypeFactory().constructCollectionType(List.class, LanguageWithType.class)
     );
   }
 
