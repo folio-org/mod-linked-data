@@ -5,7 +5,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
-import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,7 +71,7 @@ class ResourceEdgeServiceTest {
   static Stream<Arguments> dataProvider() {
     return Stream.of(
       Arguments.of(getInstance(), getEmptyInstance(), List.of(ADMIN_METADATA.getUri())),
-      Arguments.of(getWork(), getEmptyWork(), List.of(ILLUSTRATIONS.getUri(), SUPPLEMENTARY_CONTENT.getUri(),
+      Arguments.of(getWork(), getEmptyWork(), List.of(ILLUSTRATIONS.getUri(),
         DISSERTATION.getUri(), GENRE.getUri())),
       Arguments.of(getInstance(), getEmptyWork(), List.of()),
       Arguments.of(getWork(), getEmptyInstance(), List.of())
@@ -119,7 +118,6 @@ class ResourceEdgeServiceTest {
     var work = getEmptyWork();
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), ILLUSTRATIONS));
-    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), SUPPLEMENTARY_CONTENT));
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), DISSERTATION));
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), GENRE));
     return work;
