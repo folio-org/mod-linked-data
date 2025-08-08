@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.dto.monograph.instance.sub;
 
 import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+import static org.folio.ld.dictionary.PredicateDictionary.CATALOGING_LANGUAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.CATALOGING_AGENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
@@ -41,11 +42,13 @@ public class AdminMetadataMapperUnit implements InstanceSubResourceMapperUnit {
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var adminMetadata = (AdminMetadata) dto;
+    var metadata = (AdminMetadata) dto;
     var resource = new Resource()
       .addTypes(ANNOTATION)
-      .setLabel(getLabel(adminMetadata, parentEntity))
-      .setDoc(getDoc(adminMetadata));
+      .setLabel(getLabel(metadata, parentEntity))
+      .setDoc(getDoc(metadata));
+
+    coreMapper.addOutgoingEdges(resource, AdminMetadata.class, metadata.getCatalogingLanguage(), CATALOGING_LANGUAGE);
 
     resource.setId(hashService.hash(resource));
     return resource;

@@ -39,6 +39,14 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/marc/controlNumber"
+        },
+        "catalogingLanguage": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "Language.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/catalogingLanguage"
         }
       }
     }
