@@ -38,6 +38,7 @@
 - Update profiles to support supplementary content [MODLD-821](https://folio-org.atlassian.net/browse/MODLD-821)
 - Update profiles to support illustrative content [MODLD-822](https://folio-org.atlassian.net/browse/MODLD-822)
 - Update profiles to support characteristic / serial publication type [MODLD-831](https://folio-org.atlassian.net/browse/MODLD-831)
+- Update API to support Administrative Metadata [MODLD-819](https://folio-org.atlassian.net/browse/MODLD-819)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
