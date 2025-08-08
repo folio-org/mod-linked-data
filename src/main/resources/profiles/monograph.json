@@ -18,6 +18,7 @@
       "children": [
         "Monograph:Work:CreatorOfWork",
         "Monograph:Work:TitleInformation",
+        "Monograph:Work:IllustrativeContent",
         "Monograph:Work:GovernmentPublication",
         "Monograph:Work:SupplementaryContent",
         "Monograph:Work:DateOfWork",
@@ -451,6 +452,22 @@
         "valueDataType": {}
       },
       "id": "Monograph:Work:TitleInformation:ParallelTitle:Note"
+    },
+    {
+      "type": "simple",
+      "displayName": "Illustrative content",
+      "uriBFLite": "http://bibfra.me/vocab/marc/illustrations",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/millus"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/illustrativeContent"
+        }
+      },
+      "id": "Monograph:Work:IllustrativeContent"
     },
     {
       "type": "simple",
