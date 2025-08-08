@@ -16,23 +16,15 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUBTITLES_OR_CAPTIONS_
 import static org.folio.ld.dictionary.PredicateDictionary.SUMMARY_LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.SUNG_OR_SPOKEN_TEXT_LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.TABLE_OF_CONTENTS_LANGUAGE;
-import static org.folio.ld.dictionary.PropertyDictionary.CODE;
-import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
-import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import java.util.HashMap;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.common.CoreMapper;
 import org.folio.linked.data.mapper.dto.common.MapperUnit;
-import org.folio.linked.data.mapper.dto.monograph.common.MarcCodeProvider;
+import org.folio.linked.data.mapper.dto.monograph.common.AbstractLanguageMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -49,11 +41,11 @@ import org.springframework.stereotype.Component;
   },
   requestDto = Language.class
 )
-@RequiredArgsConstructor
-public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, MarcCodeProvider {
-  private static final String LANGUAGE_LINK_PREFIX = "http://id.loc.gov/vocabulary/languages";
-  private final CoreMapper coreMapper;
-  private final HashService hashService;
+public class WorkLanguageMapperUnit extends AbstractLanguageMapperUnit implements WorkSubResourceMapperUnit {
+
+  public WorkLanguageMapperUnit(CoreMapper coreMapper, HashService hashService) {
+    super(coreMapper, hashService);
+  }
 
   @Override
   public <P> P toDto(Resource languageResource, P parentWorkDto, ResourceMappingContext mappingContext) {
@@ -63,35 +55,9 @@ public class LanguageCategoryMapperUnit implements WorkSubResourceMapperUnit, Ma
     return parentWorkDto;
   }
 
-  @Override
-  public Resource toEntity(Object dto, Resource parentEntity) {
-    var languageCategory = (Language) dto;
-    var resource = new Resource()
-            .setLabel(getFirstValue(() -> getMarcCodes(languageCategory.getLink())))
-            .addTypes(LANGUAGE_CATEGORY)
-            .setDoc(getDoc(languageCategory));
-    resource.setId(hashService.hash(resource));
-    return resource;
-  }
-
-  @Override
-  public String getLinkPrefix() {
-    return LANGUAGE_LINK_PREFIX;
-  }
-
   private LanguageWithType createLanguageDto(Resource languageResource, String type) {
     return new LanguageWithType()
-      .addCodesItem(coreMapper
-        .toDtoWithEdges(languageResource, Language.class, false)
-        .id(String.valueOf(languageResource.getId())))
+      .addCodesItem(convertToLanguageDto(languageResource))
       .types(List.of(type));
-  }
-
-  private JsonNode getDoc(Language dto) {
-    var map = new HashMap<String, List<String>>();
-    putProperty(map, CODE, getMarcCodes(dto.getLink()));
-    putProperty(map, TERM, dto.getTerm());
-    putProperty(map, LINK, dto.getLink());
-    return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 }
