@@ -36,6 +36,7 @@
 - Update API to support ISSN [MODLD-799](https://folio-org.atlassian.net/browse/MODLD-799)
 - Update profiles to support revised language handling [MODLD-820](https://folio-org.atlassian.net/browse/MODLD-820) and remove deprecated, previous language handling [MODLD-783](https://folio-org.atlassian.net/browse/MODLD-783)
 - Update profiles to support supplementary content [MODLD-821](https://folio-org.atlassian.net/browse/MODLD-821)
+- Add profile support for illustrative content [MODLD-822](https://folio-org.atlassian.net/browse/MODLD-822)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
