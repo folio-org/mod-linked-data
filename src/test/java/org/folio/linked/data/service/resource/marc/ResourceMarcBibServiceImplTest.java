@@ -443,6 +443,7 @@ class ResourceMarcBibServiceImplTest {
     // then
     assertThat(result).isTrue();
     verify(resourceEdgeService).saveNewResourceEdge(id, edgeModel);
+    verify(resourceEdgeService).deleteEdgesHavingPredicate(id, ADMIN_METADATA);
   }
 
   private org.folio.rest.jaxrs.model.Record createRecord(char type, char level) {
