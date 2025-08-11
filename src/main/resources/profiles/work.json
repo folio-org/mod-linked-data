@@ -26,7 +26,8 @@
         "Monograph:Work:ClassificationNumbers",
         "Monograph:Work:ContentType",
         "Monograph:Work:LanguageCode",
-        "Monograph:Work:PartOfSeries"
+        "Monograph:Work:PartOfSeries",
+        "Monograph:Work:TypeOfContinuingResource"
       ],
       "id": "Monograph:Work"
     },
@@ -1244,6 +1245,22 @@
         "valueDataType": {}
       },
       "id": "Monograph:Work:PartOfSeries:SeriesEnumeration"
+    },
+    {
+      "type": "simple",
+      "displayName": "Type of continuing resource",
+      "uriBFLite": "http://bibfra.me/vocab/marc/characteristic",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/mserialpubtype"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bflc/SerialPubType"
+        }
+      },
+      "id": "Monograph:Work:TypeOfContinuingResource"
     }
   ]
 }
