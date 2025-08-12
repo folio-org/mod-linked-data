@@ -159,7 +159,7 @@ class SourceRecordDomainEventHandlerIT {
     assertThat(adminMetadataDoc.get(CONTROL_NUMBER.getValue()).get(0).asText()).isEqualTo("#880524405##");
     assertThat(adminMetadataDoc.has(CREATED_DATE.getValue())).isTrue();
     assertThat(adminMetadataDoc.get(CREATED_DATE.getValue())).hasSize(1);
-    assertThat(adminMetadataDoc.get(CREATED_DATE.getValue()).get(0).asText()).isEqualTo("190607");
+    assertThat(adminMetadataDoc.get(CREATED_DATE.getValue()).get(0).asText()).isEqualTo("2019-06-07");
     verifyNoInteractions(instanceIngressMessageProducer);
   }
 
