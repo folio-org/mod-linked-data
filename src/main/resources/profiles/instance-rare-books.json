@@ -1,6 +1,6 @@
 {
-  "id": 3,
-  "name": "Monograph",
+  "id": 4,
+  "name": "Rare Books",
   "resourceType": "http://bibfra.me/vocab/lite/Instance",
   "value": [
     {
@@ -22,7 +22,7 @@
         "Profile:Instance:Extent",
         "Profile:Instance:Dimensions",
         "Profile:Instance:CarrierType",
-        "Profile:Instance:URLOfInstance"
+        "Profile:Instance:BookFormat"
       ],
       "id": "Profile:Instance"
     },
@@ -1062,52 +1062,6 @@
         }
       },
       "id": "Profile:Instance:CarrierType"
-    },
-    {
-      "type": "group",
-      "displayName": "URL of Instance",
-      "uriBFLite": "http://bibfra.me/vocab/marc/accessLocation",
-      "constraints": {
-        "repeatable": true,
-        "editable": false,
-        "mandatory": true,
-        "defaults": [],
-        "useValuesFrom": [],
-        "valueDataType": {}
-      },
-      "children": [
-        "Profile:Instance:URLOfInstance:URL",
-        "Profile:Instance:URLOfInstance:Note"
-      ],
-      "id": "Profile:Instance:URLOfInstance"
-    },
-    {
-      "type": "literal",
-      "displayName": "URL",
-      "uriBFLite": "http://bibfra.me/vocab/lite/link",
-      "constraints": {
-        "repeatable": true,
-        "editable": false,
-        "mandatory": true,
-        "defaults": [],
-        "useValuesFrom": [],
-        "valueDataType": {}
-      },
-      "id": "Profile:Instance:URLOfInstance:URL"
-    },
-    {
-      "type": "literal",
-      "displayName": "Note",
-      "uriBFLite": "http://bibfra.me/vocab/lite/note",
-      "constraints": {
-        "repeatable": true,
-        "editable": false,
-        "mandatory": true,
-        "defaults": [],
-        "useValuesFrom": [],
-        "valueDataType": {}
-      },
-      "id": "Profile:Instance:URLOfInstance:Note"
     },
     {
       "type": "simple",

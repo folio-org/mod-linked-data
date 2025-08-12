@@ -38,6 +38,9 @@
 - Update profiles to support supplementary content [MODLD-821](https://folio-org.atlassian.net/browse/MODLD-821)
 - Update profiles to support illustrative content [MODLD-822](https://folio-org.atlassian.net/browse/MODLD-822)
 - Update profiles to support characteristic / serial publication type [MODLD-831](https://folio-org.atlassian.net/browse/MODLD-831)
+- Define Serials profile for Instance [MODLD-823](https://folio-org.atlassian.net/browse/MODLD-823)
+- Define Rare Books profile for Instance [MODLD-824](https://folio-org.atlassian.net/browse/MODLD-824)
+- Define Monograph profile for Instance [MODLD-825](https://folio-org.atlassian.net/browse/MODLD-825)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
