@@ -97,12 +97,12 @@
               },
               {
                 "type": "object",
-                "title": "EanFieldResponse",
+                "title": "IanFieldResponse",
                 "properties": {
                   "Ean": {
                     "type": "object",
                     "$ref": "identifier/IdentifierResponse.json",
-                    "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
+                    "x-json-property": "http://library.link/identifier/IAN"
                   }
                 }
               },

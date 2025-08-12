@@ -1,6 +1,6 @@
 package org.folio.linked.data.configuration.json.deserialization.instance;
 
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISSN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 import java.util.Map;
-import org.folio.linked.data.domain.dto.EanField;
+import org.folio.linked.data.domain.dto.IanField;
 import org.folio.linked.data.domain.dto.IdentifierField;
 import org.folio.linked.data.domain.dto.IsbnField;
 import org.folio.linked.data.domain.dto.IssnField;
@@ -28,7 +28,7 @@ public class IdentifierFieldDeserializer extends JsonDeserializer<IdentifierFiel
     ID_LCCN.getUri(), LccnField.class,
     ID_ISSN.getUri(), IssnField.class,
     ID_ISBN.getUri(), IsbnField.class,
-    ID_EAN.getUri(), EanField.class,
+    ID_IAN.getUri(), IanField.class,
     ID_LOCAL.getUri(), LocalIdField.class,
     ID_UNKNOWN.getUri(), OtherIdField.class
   );

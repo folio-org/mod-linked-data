@@ -2,7 +2,6 @@ package org.folio.linked.data.mapper.kafka.search.identifier;
 
 import static java.util.Objects.isNull;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
@@ -31,7 +30,6 @@ public class IndexIdentifierMapperImpl implements IndexIdentifierMapper {
 
   private static final Collection<String> IDENTIFIER_PROPERTY_VALUES = List.of(
     NAME.getValue(),
-    EAN_VALUE.getValue(),
     LOCAL_ID_VALUE.getValue()
   );
 
