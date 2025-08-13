@@ -99,7 +99,7 @@
                 "type": "object",
                 "title": "IanFieldResponse",
                 "properties": {
-                  "Ean": {
+                  "Ian": {
                     "type": "object",
                     "$ref": "identifier/IdentifierResponse.json",
                     "x-json-property": "http://library.link/identifier/IAN"

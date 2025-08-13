@@ -24,12 +24,12 @@ public class IanMapperUnit extends AbstractIdentifierMapperUnit {
 
   @Override
   protected IdentifierFieldResponse toFieldResponse(IdentifierResponse identifierResponse) {
-    return new IanFieldResponse().ean(identifierResponse);
+    return new IanFieldResponse().ian(identifierResponse);
   }
 
   @Override
   protected IdentifierRequest toIdentifierRequest(Object dto) {
-    return ((IanField) dto).getEan();
+    return ((IanField) dto).getIan();
   }
 
   @Override
