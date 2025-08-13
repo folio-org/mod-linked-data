@@ -162,14 +162,14 @@ public class MonographTestUtil {
       Map.of(STATUS, List.of(status("isbn")))
     ).setLabel("isbn value");
 
-    var ean = createResource(
+    var ian = createResource(
       Map.of(
-        NAME, List.of("ean value"),
-        QUALIFIER, List.of("ean qualifier")
+        NAME, List.of("ian value"),
+        QUALIFIER, List.of("ian qualifier")
       ),
       Set.of(IDENTIFIER, ID_IAN),
       emptyMap()
-    ).setLabel("ean value");
+    ).setLabel("ian value");
 
     var localId = createResource(
       Map.of(
@@ -237,7 +237,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(PE_MANUFACTURE, List.of(manufacture));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(supplementaryContent));
     pred2OutgoingResources.put(ACCESS_LOCATION, List.of(accessLocation));
-    pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ean, localId, otherId));
+    pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ian, localId, otherId));
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
