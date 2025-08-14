@@ -41,6 +41,7 @@
 - Define Serials profile for Instance [MODLD-823](https://folio-org.atlassian.net/browse/MODLD-823)
 - Define Rare Books profile for Instance [MODLD-824](https://folio-org.atlassian.net/browse/MODLD-824)
 - Define Monograph profile for Instance [MODLD-825](https://folio-org.atlassian.net/browse/MODLD-825)
+- Update admin metadata created date handling [MODLD-827](https://folio-org.atlassian.net/browse/MODLD-827)
 - Replace ID_EAN with ID_IAN. Remove property EAN_VALUE [MODLD-810](https://folio-org.atlassian.net/browse/MODLD-810)
 
 ## 1.0.4 (04-24-2025)
