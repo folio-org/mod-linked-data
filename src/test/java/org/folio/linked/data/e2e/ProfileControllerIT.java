@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,10 +28,16 @@ class ProfileControllerIT {
   @Autowired
   private Environment env;
 
-  @Test
-  void getProfileById_returnsProfile() throws Exception {
+  @ParameterizedTest
+  @CsvSource({
+    "2, lde:Profile:Work,     http://bibfra.me/vocab/lite/Work",
+    "3, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
+    "4, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
+    "5, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
+  })
+  void getProfileById_returnsProfile(long id, String expectedId, String expectedResourceType) throws Exception {
     //given
-    var requestBuilder = get(PROFILE_URL + "/1")
+    var requestBuilder = get(PROFILE_URL + "/" + id)
       .headers(defaultHeaders(env));
 
     //when
@@ -41,13 +49,14 @@ class ProfileControllerIT {
       .andExpect(content().contentType(TEXT_PLAIN_VALUE + ";charset=UTF-8"))
       .andReturn().getResponse().getContentAsString();
 
-    assertTrue(profile.contains("\"id\": \"Monograph\""));
+    assertTrue(profile.contains("\"bfid\": \"" + expectedId + "\""));
+    assertTrue(profile.contains("\"uriBFLite\": \"" + expectedResourceType + "\""));
   }
 
   @Test
   void getProfileById_returnsNotFound() throws Exception {
     //given
-    var nonExistingProfileId = 0L;
+    var nonExistingProfileId = 1L;
     var requestBuilder = get(PROFILE_URL + "/" + nonExistingProfileId)
       .headers(defaultHeaders(env));
 

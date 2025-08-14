@@ -95,12 +95,12 @@
               },
               {
                 "type": "object",
-                "title": "EanField",
+                "title": "IanField",
                 "properties": {
-                  "Ean": {
+                  "Ian": {
                     "type": "object",
                     "$ref": "IdentifierRequest.json",
-                    "x-json-property": "http://bibfra.me/vocab/identifier/Ean"
+                    "x-json-property": "http://library.link/identifier/IAN"
                   }
                 }
               },

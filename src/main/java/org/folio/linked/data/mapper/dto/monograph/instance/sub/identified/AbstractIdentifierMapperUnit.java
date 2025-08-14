@@ -56,13 +56,13 @@ abstract class AbstractIdentifierMapperUnit implements InstanceSubResourceMapper
     return resource;
   }
 
-  protected IdentifierResponse getResponseDto(Resource resourceToConvert) {
+  private IdentifierResponse getResponseDto(Resource resourceToConvert) {
     var identifierResponse = coreMapper.toDtoWithEdges(resourceToConvert, IdentifierResponse.class, false);
     identifierResponse.setId(String.valueOf(resourceToConvert.getId()));
     return identifierResponse;
   }
 
-  protected JsonNode getDoc(IdentifierRequest dto) {
+  private JsonNode getDoc(IdentifierRequest dto) {
     var properties = new HashMap<String, List<String>>();
     putProperty(properties, NAME, dto.getValue());
     putProperty(properties, QUALIFIER, dto.getQualifier());

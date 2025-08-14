@@ -38,6 +38,11 @@
 - Update profiles to support supplementary content [MODLD-821](https://folio-org.atlassian.net/browse/MODLD-821)
 - Update profiles to support illustrative content [MODLD-822](https://folio-org.atlassian.net/browse/MODLD-822)
 - Update profiles to support characteristic / serial publication type [MODLD-831](https://folio-org.atlassian.net/browse/MODLD-831)
+- Define Serials profile for Instance [MODLD-823](https://folio-org.atlassian.net/browse/MODLD-823)
+- Define Rare Books profile for Instance [MODLD-824](https://folio-org.atlassian.net/browse/MODLD-824)
+- Define Monograph profile for Instance [MODLD-825](https://folio-org.atlassian.net/browse/MODLD-825)
+- Update admin metadata created date handling [MODLD-827](https://folio-org.atlassian.net/browse/MODLD-827)
+- Replace ID_EAN with ID_IAN. Remove property EAN_VALUE [MODLD-810](https://folio-org.atlassian.net/browse/MODLD-810)
 - Update API to support Administrative Metadata [MODLD-819](https://folio-org.atlassian.net/browse/MODLD-819)
 
 ## 1.0.4 (04-24-2025)

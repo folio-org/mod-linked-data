@@ -6,30 +6,30 @@
     {
       "type": "block",
       "displayName": "Work",
-      "bfid": "lc:RT:bf2:Monograph:Work",
+      "bfid": "lde:Profile:Work",
       "uriBFLite": "http://bibfra.me/vocab/lite/Work",
       "children": [
-        "Monograph:Work:CreatorOfWork",
-        "Monograph:Work:TitleInformation",
-        "Monograph:Work:IllustrativeContent",
-        "Monograph:Work:GovernmentPublication",
-        "Monograph:Work:SupplementaryContent",
-        "Monograph:Work:DateOfWork",
-        "Monograph:Work:PlaceOfOriginOfTheWork",
-        "Monograph:Work:GeographicCoverage",
-        "Monograph:Work:IntendedAudience",
-        "Monograph:Work:OtherContributors",
-        "Monograph:Work:NotesAboutTheWork",
-        "Monograph:Work:ContentsNote",
-        "Monograph:Work:SummaryNote",
-        "Monograph:Work:SubjectOfTheWork",
-        "Monograph:Work:ClassificationNumbers",
-        "Monograph:Work:ContentType",
-        "Monograph:Work:LanguageCode",
-        "Monograph:Work:PartOfSeries",
-        "Monograph:Work:TypeOfContinuingResource"
+        "Profile:Work:CreatorOfWork",
+        "Profile:Work:TitleInformation",
+        "Profile:Work:IllustrativeContent",
+        "Profile:Work:GovernmentPublication",
+        "Profile:Work:SupplementaryContent",
+        "Profile:Work:DateOfWork",
+        "Profile:Work:PlaceOfOriginOfTheWork",
+        "Profile:Work:GeographicCoverage",
+        "Profile:Work:IntendedAudience",
+        "Profile:Work:OtherContributors",
+        "Profile:Work:NotesAboutTheWork",
+        "Profile:Work:ContentsNote",
+        "Profile:Work:SummaryNote",
+        "Profile:Work:SubjectOfTheWork",
+        "Profile:Work:ClassificationNumbers",
+        "Profile:Work:ContentType",
+        "Profile:Work:LanguageCode",
+        "Profile:Work:PartOfSeries",
+        "Profile:Work:TypeOfContinuingResource"
       ],
-      "id": "Monograph:Work"
+      "id": "Profile:Work"
     },
     {
       "type": "group",
@@ -46,11 +46,11 @@
         }
       },
       "children": [
-        "Monograph:Work:CreatorOfWork:Name",
-        "Monograph:Work:CreatorOfWork:Subclass",
-        "Monograph:Work:CreatorOfWork:Relationship"
+        "Profile:Work:CreatorOfWork:Name",
+        "Profile:Work:CreatorOfWork:Subclass",
+        "Profile:Work:CreatorOfWork:Relationship"
       ],
-      "id": "Monograph:Work:CreatorOfWork"
+      "id": "Profile:Work:CreatorOfWork"
     },
     {
       "bfid": "lc:RT:bf2:search:name",
@@ -70,8 +70,8 @@
         "isNew": true,
         "baseLabelType": "creator"
       },
-      "linkedEntry": { "dependent": "Monograph:Work:CreatorOfWork:Subclass" },
-      "id": "Monograph:Work:CreatorOfWork:Name"
+      "linkedEntry": { "dependent": "Profile:Work:CreatorOfWork:Subclass" },
+      "id": "Profile:Work:CreatorOfWork:Name"
     },
     {
       "type": "dropdown",
@@ -88,16 +88,16 @@
         }
       },
       "children": [
-        "Monograph:Work:CreatorOfWork:Subclass:Person",
-        "Monograph:Work:CreatorOfWork:Subclass:Family",
-        "Monograph:Work:CreatorOfWork:Subclass:CorporateBody",
-        "Monograph:Work:CreatorOfWork:Subclass:Jurisdiction",
-        "Monograph:Work:CreatorOfWork:Subclass:Conference"
+        "Profile:Work:CreatorOfWork:Subclass:Person",
+        "Profile:Work:CreatorOfWork:Subclass:Family",
+        "Profile:Work:CreatorOfWork:Subclass:CorporateBody",
+        "Profile:Work:CreatorOfWork:Subclass:Jurisdiction",
+        "Profile:Work:CreatorOfWork:Subclass:Conference"
       ],
       "layout": { "readOnly": true },
       "dependsOn": "lc:RT:bf2:search:name",
-      "linkedEntry": { "controlledBy": "Monograph:Work:CreatorOfWork:Name" },
-      "id": "Monograph:Work:CreatorOfWork:Subclass"
+      "linkedEntry": { "controlledBy": "Profile:Work:CreatorOfWork:Name" },
+      "id": "Profile:Work:CreatorOfWork:Subclass"
     },
     {
       "type": "dropdownOption",
@@ -105,7 +105,7 @@
       "bfid": "lc:RT:bf2:Agent:bfPerson:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Person",
       "children": [],
-      "id": "Monograph:Work:CreatorOfWork:Subclass:Person"
+      "id": "Profile:Work:CreatorOfWork:Subclass:Person"
     },
     {
       "type": "dropdownOption",
@@ -113,7 +113,7 @@
       "bfid": "lc:RT:bf2:Agent:bfFamily:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Family",
       "children": [],
-      "id": "Monograph:Work:CreatorOfWork:Subclass:Family"
+      "id": "Profile:Work:CreatorOfWork:Subclass:Family"
     },
     {
       "type": "dropdownOption",
@@ -121,7 +121,7 @@
       "bfid": "lc:RT:bf2:Agent:bfCorp:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Organization",
       "children": [],
-      "id": "Monograph:Work:CreatorOfWork:Subclass:CorporateBody"
+      "id": "Profile:Work:CreatorOfWork:Subclass:CorporateBody"
     },
     {
       "type": "dropdownOption",
@@ -129,7 +129,7 @@
       "bfid": "lc:RT:bf2:Agent:bfJurisdiction:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Jurisdiction",
       "children": [],
-      "id": "Monograph:Work:CreatorOfWork:Subclass:Jurisdiction"
+      "id": "Profile:Work:CreatorOfWork:Subclass:Jurisdiction"
     },
     {
       "type": "dropdownOption",
@@ -137,7 +137,7 @@
       "bfid": "lc:RT:bf2:Agent:bfConf:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Meeting",
       "children": [],
-      "id": "Monograph:Work:CreatorOfWork:Subclass:Conference"
+      "id": "Profile:Work:CreatorOfWork:Subclass:Conference"
     },
     {
       "type": "simple",
@@ -156,7 +156,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Role"
         }
       },
-      "id": "Monograph:Work:CreatorOfWork:Relationship"
+      "id": "Profile:Work:CreatorOfWork:Relationship"
     },
     {
       "type": "dropdown",
@@ -171,11 +171,11 @@
         "valueDataType": {}
       },
       "children": [
-        "Monograph:Work:TitleInformation:WorkTitle",
-        "Monograph:Work:TitleInformation:VariantTitle",
-        "Monograph:Work:TitleInformation:ParallelTitle"
+        "Profile:Work:TitleInformation:WorkTitle",
+        "Profile:Work:TitleInformation:VariantTitle",
+        "Profile:Work:TitleInformation:ParallelTitle"
       ],
-      "id": "Monograph:Work:TitleInformation"
+      "id": "Profile:Work:TitleInformation"
     },
     {
       "type": "dropdownOption",
@@ -183,12 +183,12 @@
       "bfid": "lc:RT:bf2:WorkTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/Title",
       "children": [
-        "Monograph:Work:TitleInformation:WorkTitle:NonSortCharacterCount",
-        "Monograph:Work:TitleInformation:WorkTitle:PreferredTitleForWork",
-        "Monograph:Work:TitleInformation:WorkTitle:PartNumber",
-        "Monograph:Work:TitleInformation:WorkTitle:PartName"
+        "Profile:Work:TitleInformation:WorkTitle:NonSortCharacterCount",
+        "Profile:Work:TitleInformation:WorkTitle:PreferredTitleForWork",
+        "Profile:Work:TitleInformation:WorkTitle:PartNumber",
+        "Profile:Work:TitleInformation:WorkTitle:PartName"
       ],
-      "id": "Monograph:Work:TitleInformation:WorkTitle"
+      "id": "Profile:Work:TitleInformation:WorkTitle"
     },
     {
       "type": "literal",
@@ -202,7 +202,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:WorkTitle:NonSortCharacterCount"
+      "id": "Profile:Work:TitleInformation:WorkTitle:NonSortCharacterCount"
     },
     {
       "type": "literal",
@@ -216,7 +216,7 @@
         "useValuesFrom": [],
         "valueDataType": { "dataTypeURI": "" }
       },
-      "id": "Monograph:Work:TitleInformation:WorkTitle:PreferredTitleForWork"
+      "id": "Profile:Work:TitleInformation:WorkTitle:PreferredTitleForWork"
     },
     {
       "type": "literal",
@@ -230,7 +230,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:WorkTitle:PartNumber"
+      "id": "Profile:Work:TitleInformation:WorkTitle:PartNumber"
     },
     {
       "type": "literal",
@@ -244,7 +244,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:WorkTitle:PartName"
+      "id": "Profile:Work:TitleInformation:WorkTitle:PartName"
     },
     {
       "type": "dropdownOption",
@@ -252,15 +252,15 @@
       "bfid": "lc:RT:bf2:Title:VarTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/VariantTitle",
       "children": [
-        "Monograph:Work:TitleInformation:VariantTitle:VariantTitle",
-        "Monograph:Work:TitleInformation:VariantTitle:PartNumber",
-        "Monograph:Work:TitleInformation:VariantTitle:PartName",
-        "Monograph:Work:TitleInformation:VariantTitle:OtherTitleInformation",
-        "Monograph:Work:TitleInformation:VariantTitle:Date",
-        "Monograph:Work:TitleInformation:VariantTitle:VariantTitleType",
-        "Monograph:Work:TitleInformation:VariantTitle:Note"
+        "Profile:Work:TitleInformation:VariantTitle:VariantTitle",
+        "Profile:Work:TitleInformation:VariantTitle:PartNumber",
+        "Profile:Work:TitleInformation:VariantTitle:PartName",
+        "Profile:Work:TitleInformation:VariantTitle:OtherTitleInformation",
+        "Profile:Work:TitleInformation:VariantTitle:Date",
+        "Profile:Work:TitleInformation:VariantTitle:VariantTitleType",
+        "Profile:Work:TitleInformation:VariantTitle:Note"
       ],
-      "id": "Monograph:Work:TitleInformation:VariantTitle"
+      "id": "Profile:Work:TitleInformation:VariantTitle"
     },
     {
       "type": "literal",
@@ -274,7 +274,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:VariantTitle:VariantTitle"
+      "id": "Profile:Work:TitleInformation:VariantTitle:VariantTitle"
     },
     {
       "type": "literal",
@@ -288,7 +288,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:VariantTitle:PartNumber"
+      "id": "Profile:Work:TitleInformation:VariantTitle:PartNumber"
     },
     {
       "type": "literal",
@@ -302,7 +302,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:VariantTitle:PartName"
+      "id": "Profile:Work:TitleInformation:VariantTitle:PartName"
     },
     {
       "type": "literal",
@@ -316,7 +316,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:VariantTitle:OtherTitleInformation"
+      "id": "Profile:Work:TitleInformation:VariantTitle:OtherTitleInformation"
     },
     {
       "type": "literal",
@@ -330,7 +330,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:VariantTitle:Date"
+      "id": "Profile:Work:TitleInformation:VariantTitle:Date"
     },
     {
       "type": "literal",
@@ -344,7 +344,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:VariantTitle:VariantTitleType"
+      "id": "Profile:Work:TitleInformation:VariantTitle:VariantTitleType"
     },
     {
       "type": "literal",
@@ -358,7 +358,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:VariantTitle:Note"
+      "id": "Profile:Work:TitleInformation:VariantTitle:Note"
     },
     {
       "type": "dropdownOption",
@@ -366,14 +366,14 @@
       "bfid": "lc:RT:bf2:ParallelTitle",
       "uriBFLite": "http://bibfra.me/vocab/marc/ParallelTitle",
       "children": [
-        "Monograph:Work:TitleInformation:ParallelTitle:ParallelTitle",
-        "Monograph:Work:TitleInformation:ParallelTitle:OtherTitleInformation",
-        "Monograph:Work:TitleInformation:ParallelTitle:PartNumber",
-        "Monograph:Work:TitleInformation:ParallelTitle:PartName",
-        "Monograph:Work:TitleInformation:ParallelTitle:Date",
-        "Monograph:Work:TitleInformation:ParallelTitle:Note"
+        "Profile:Work:TitleInformation:ParallelTitle:ParallelTitle",
+        "Profile:Work:TitleInformation:ParallelTitle:OtherTitleInformation",
+        "Profile:Work:TitleInformation:ParallelTitle:PartNumber",
+        "Profile:Work:TitleInformation:ParallelTitle:PartName",
+        "Profile:Work:TitleInformation:ParallelTitle:Date",
+        "Profile:Work:TitleInformation:ParallelTitle:Note"
       ],
-      "id": "Monograph:Work:TitleInformation:ParallelTitle"
+      "id": "Profile:Work:TitleInformation:ParallelTitle"
     },
     {
       "type": "literal",
@@ -387,7 +387,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:ParallelTitle:ParallelTitle"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:ParallelTitle"
     },
     {
       "type": "literal",
@@ -401,7 +401,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:ParallelTitle:OtherTitleInformation"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:OtherTitleInformation"
     },
     {
       "type": "literal",
@@ -415,7 +415,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:ParallelTitle:PartNumber"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:PartNumber"
     },
     {
       "type": "literal",
@@ -429,7 +429,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:ParallelTitle:PartName"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:PartName"
     },
     {
       "type": "literal",
@@ -443,7 +443,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:ParallelTitle:Date"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:Date"
     },
     {
       "type": "literal",
@@ -457,7 +457,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:TitleInformation:ParallelTitle:Note"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:Note"
     },
     {
       "type": "simple",
@@ -473,7 +473,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/illustrativeContent"
         }
       },
-      "id": "Monograph:Work:IllustrativeContent"
+      "id": "Profile:Work:IllustrativeContent"
     },
     {
       "type": "simple",
@@ -489,7 +489,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bflc/GovernmentPubType"
         }
       },
-      "id": "Monograph:Work:GovernmentPublication"
+      "id": "Profile:Work:GovernmentPublication"
     },
     {
       "type": "simple",
@@ -505,7 +505,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent"
         }
       },
-      "id": "Monograph:Work:SupplementaryContent"
+      "id": "Profile:Work:SupplementaryContent"
     },
     {
       "type": "literal",
@@ -519,7 +519,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:DateOfWork"
+      "id": "Profile:Work:DateOfWork"
     },
     {
       "type": "simple",
@@ -535,7 +535,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Place"
         }
       },
-      "id": "Monograph:Work:PlaceOfOriginOfTheWork"
+      "id": "Profile:Work:PlaceOfOriginOfTheWork"
     },
     {
       "type": "group",
@@ -548,8 +548,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "children": ["Monograph:Work:GeographicCoverage:SearchLCNAFLCSHOrGAC"],
-      "id": "Monograph:Work:GeographicCoverage"
+      "children": ["Profile:Work:GeographicCoverage:SearchLCNAFLCSHOrGAC"],
+      "id": "Profile:Work:GeographicCoverage"
     },
     {
       "type": "complex",
@@ -563,7 +563,7 @@
         "useValuesFrom": ["http://id.loc.gov/authorities/geographics"],
         "valueDataType": { "remark": "", "dataTypeURI": "" }
       },
-      "id": "Monograph:Work:GeographicCoverage:SearchLCNAFLCSHOrGAC"
+      "id": "Profile:Work:GeographicCoverage:SearchLCNAFLCSHOrGAC"
     },
     {
       "type": "simple",
@@ -579,7 +579,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/IntendedAudience"
         }
       },
-      "id": "Monograph:Work:IntendedAudience"
+      "id": "Profile:Work:IntendedAudience"
     },
     {
       "type": "group",
@@ -596,11 +596,11 @@
         }
       },
       "children": [
-        "Monograph:Work:OtherContributors:Name",
-        "Monograph:Work:OtherContributors:Subclass",
-        "Monograph:Work:OtherContributors:Relationship"
+        "Profile:Work:OtherContributors:Name",
+        "Profile:Work:OtherContributors:Subclass",
+        "Profile:Work:OtherContributors:Relationship"
       ],
-      "id": "Monograph:Work:OtherContributors"
+      "id": "Profile:Work:OtherContributors"
     },
     {
       "bfid": "lc:RT:bf2:search:name",
@@ -620,8 +620,8 @@
         "isNew": true,
         "baseLabelType": "contributor"
       },
-      "linkedEntry": { "dependent": "Monograph:Work:OtherContributors:Subclass" },
-      "id": "Monograph:Work:OtherContributors:Name"
+      "linkedEntry": { "dependent": "Profile:Work:OtherContributors:Subclass" },
+      "id": "Profile:Work:OtherContributors:Name"
     },
     {
       "type": "dropdown",
@@ -635,16 +635,16 @@
         "useValuesFrom": []
       },
       "children": [
-        "Monograph:Work:OtherContributors:Subclass:Person",
-        "Monograph:Work:OtherContributors:Subclass:Family",
-        "Monograph:Work:OtherContributors:Subclass:CorporateBody",
-        "Monograph:Work:OtherContributors:Subclass:Jurisdiction",
-        "Monograph:Work:OtherContributors:Subclass:Conference"
+        "Profile:Work:OtherContributors:Subclass:Person",
+        "Profile:Work:OtherContributors:Subclass:Family",
+        "Profile:Work:OtherContributors:Subclass:CorporateBody",
+        "Profile:Work:OtherContributors:Subclass:Jurisdiction",
+        "Profile:Work:OtherContributors:Subclass:Conference"
       ],
       "layout": { "readOnly": true },
       "dependsOn": "lc:RT:bf2:search:name",
-      "linkedEntry": { "controlledBy": "Monograph:Work:OtherContributors:Name" },
-      "id": "Monograph:Work:OtherContributors:Subclass"
+      "linkedEntry": { "controlledBy": "Profile:Work:OtherContributors:Name" },
+      "id": "Profile:Work:OtherContributors:Subclass"
     },
     {
       "type": "dropdownOption",
@@ -652,7 +652,7 @@
       "bfid": "lc:RT:bf2:Agent:bfPerson:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Person",
       "children": [],
-      "id": "Monograph:Work:OtherContributors:Subclass:Person"
+      "id": "Profile:Work:OtherContributors:Subclass:Person"
     },
     {
       "type": "dropdownOption",
@@ -660,7 +660,7 @@
       "bfid": "lc:RT:bf2:Agent:bfFamily:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Family",
       "children": [],
-      "id": "Monograph:Work:OtherContributors:Subclass:Family"
+      "id": "Profile:Work:OtherContributors:Subclass:Family"
     },
     {
       "type": "dropdownOption",
@@ -668,7 +668,7 @@
       "bfid": "lc:RT:bf2:Agent:bfCorp:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Organization",
       "children": [],
-      "id": "Monograph:Work:OtherContributors:Subclass:CorporateBody"
+      "id": "Profile:Work:OtherContributors:Subclass:CorporateBody"
     },
     {
       "type": "dropdownOption",
@@ -676,7 +676,7 @@
       "bfid": "lc:RT:bf2:Agent:bfJurisdiction:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Jurisdiction",
       "children": [],
-      "id": "Monograph:Work:OtherContributors:Subclass:Jurisdiction"
+      "id": "Profile:Work:OtherContributors:Subclass:Jurisdiction"
     },
     {
       "type": "dropdownOption",
@@ -684,7 +684,7 @@
       "bfid": "lc:RT:bf2:Agent:bfConf:v2",
       "uriBFLite": "http://bibfra.me/vocab/lite/Meeting",
       "children": [],
-      "id": "Monograph:Work:OtherContributors:Subclass:Conference"
+      "id": "Profile:Work:OtherContributors:Subclass:Conference"
     },
     {
       "type": "simple",
@@ -700,7 +700,7 @@
           "https://id.loc.gov/vocabulary/rbmsrel"
         ]
       },
-      "id": "Monograph:Work:OtherContributors:Relationship"
+      "id": "Profile:Work:OtherContributors:Relationship"
     },
     {
       "type": "group",
@@ -715,10 +715,10 @@
         "valueDataType": {}
       },
       "children": [
-        "Monograph:Work:NotesAboutTheWork:Note",
-        "Monograph:Work:NotesAboutTheWork:NoteType"
+        "Profile:Work:NotesAboutTheWork:Note",
+        "Profile:Work:NotesAboutTheWork:NoteType"
       ],
-      "id": "Monograph:Work:NotesAboutTheWork"
+      "id": "Profile:Work:NotesAboutTheWork"
     },
     {
       "type": "literal",
@@ -732,7 +732,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:NotesAboutTheWork:Note"
+      "id": "Profile:Work:NotesAboutTheWork:Note"
     },
     {
       "type": "simple",
@@ -746,7 +746,7 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:NotesAboutTheWork:NoteType"
+      "id": "Profile:Work:NotesAboutTheWork:NoteType"
     },
     {
       "type": "literal",
@@ -761,7 +761,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:ContentsNote"
+      "id": "Profile:Work:ContentsNote"
     },
     {
       "type": "literal",
@@ -775,7 +775,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:SummaryNote"
+      "id": "Profile:Work:SummaryNote"
     },
     {
       "type": "group",
@@ -789,8 +789,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "children": ["Monograph:Work:SubjectOfTheWork:SearchLCSHLCNAF"],
-      "id": "Monograph:Work:SubjectOfTheWork"
+      "children": ["Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF"],
+      "id": "Profile:Work:SubjectOfTheWork"
     },
     {
       "type": "complex",
@@ -812,7 +812,7 @@
         "isNew": true,
         "baseLabelType": "subject"
       },
-      "id": "Monograph:Work:SubjectOfTheWork:SearchLCSHLCNAF"
+      "id": "Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF"
     },
     {
       "type": "dropdown",
@@ -827,12 +827,12 @@
         "valueDataType": {}
       },
       "children": [
-        "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification",
-        "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification"
+        "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification",
+        "Profile:Work:ClassificationNumbers:DeweyDecimalClassification"
       ],
       "deletable": true,
       "cloneIndex": 0,
-      "id": "Monograph:Work:ClassificationNumbers"
+      "id": "Profile:Work:ClassificationNumbers"
     },
     {
       "type": "dropdownOption",
@@ -840,12 +840,12 @@
       "bfid": "lc:RT:bf2:LCC",
       "uriBFLite": "lc",
       "children": [
-        "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:ClassificationNumber",
-        "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:AdditionalCallNumberInformation",
-        "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:AssigningAgency",
-        "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:UsedByAssigningAgency"
+        "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:ClassificationNumber",
+        "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AdditionalCallNumberInformation",
+        "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AssigningAgency",
+        "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:UsedByAssigningAgency"
       ],
-      "id": "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification"
     },
     {
       "type": "literal",
@@ -859,7 +859,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:ClassificationNumber"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:ClassificationNumber"
     },
     {
       "type": "literal",
@@ -873,7 +873,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:AdditionalCallNumberInformation"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AdditionalCallNumberInformation"
     },
     {
       "type": "complex",
@@ -889,7 +889,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }
       },
-      "id": "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:AssigningAgency"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AssigningAgency"
     },
     {
       "type": "simple",
@@ -905,7 +905,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
       },
-      "id": "Monograph:Work:ClassificationNumbers:LibraryOfCongressClassification:UsedByAssigningAgency"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:UsedByAssigningAgency"
     },
     {
       "type": "dropdownOption",
@@ -913,13 +913,13 @@
       "bfid": "lc:RT:bf2:DDC",
       "uriBFLite": "ddc",
       "children": [
-        "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:ClassificationNumber",
-        "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:AdditionalCallNumberInformation",
-        "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyEditionNumber",
-        "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged",
-        "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner"
+        "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:ClassificationNumber",
+        "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:AdditionalCallNumberInformation",
+        "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyEditionNumber",
+        "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged",
+        "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner"
       ],
-      "id": "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification"
     },
     {
       "type": "literal",
@@ -933,7 +933,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:ClassificationNumber"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:ClassificationNumber"
     },
     {
       "type": "literal",
@@ -947,7 +947,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:AdditionalCallNumberInformation"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:AdditionalCallNumberInformation"
     },
     {
       "type": "literal",
@@ -961,7 +961,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyEditionNumber"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyEditionNumber"
     },
     {
       "type": "literal",
@@ -975,7 +975,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged"
     },
     {
       "type": "complex",
@@ -991,7 +991,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }
       },
-      "id": "Monograph:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner"
     },
     {
       "type": "simple",
@@ -1007,7 +1007,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Content"
         }
       },
-      "id": "Monograph:Work:ContentType"
+      "id": "Profile:Work:ContentType"
     },
     {
       "type": "group",
@@ -1022,10 +1022,10 @@
         "valueDataType": {}
       },
       "children": [
-        "Monograph:Work:LanguageCode:Language",
-        "Monograph:Work:LanguageCode:Relationship"
+        "Profile:Work:LanguageCode:Language",
+        "Profile:Work:LanguageCode:Relationship"
       ],
-      "id": "Monograph:Work:LanguageCode"
+      "id": "Profile:Work:LanguageCode"
     },
     {
       "type": "simple",
@@ -1039,7 +1039,7 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
         "valueDataType": { "remark": "", "dataTypeURI": "" }
       },
-      "id": "Monograph:Work:LanguageCode:Language"
+      "id": "Profile:Work:LanguageCode:Language"
     },
     {
       "type": "enumerated",
@@ -1054,136 +1054,136 @@
         "valueDataType": {}
       },
       "children": [
-        "Monograph:Work:LanguageCode:Relationship:PrimarySource",
-        "Monograph:Work:LanguageCode:Relationship:SummaryOrAbstract",
-        "Monograph:Work:LanguageCode:Relationship:SungOrSpokenText",
-        "Monograph:Work:LanguageCode:Relationship:Libretto",
-        "Monograph:Work:LanguageCode:Relationship:TableOfContents",
-        "Monograph:Work:LanguageCode:Relationship:AccompanyingMaterial",
-        "Monograph:Work:LanguageCode:Relationship:Original",
-        "Monograph:Work:LanguageCode:Relationship:Intertitles",
-        "Monograph:Work:LanguageCode:Relationship:Subtitles",
-        "Monograph:Work:LanguageCode:Relationship:IntermediateTranslation",
-        "Monograph:Work:LanguageCode:Relationship:OriginalAccompanyingMaterials",
-        "Monograph:Work:LanguageCode:Relationship:OriginalLibretto",
-        "Monograph:Work:LanguageCode:Relationship:Captions",
-        "Monograph:Work:LanguageCode:Relationship:AccessibleAudio",
-        "Monograph:Work:LanguageCode:Relationship:AccessibleVisualMaterial",
-        "Monograph:Work:LanguageCode:Relationship:AccompanyingTranscripts"
+        "Profile:Work:LanguageCode:Relationship:PrimarySource",
+        "Profile:Work:LanguageCode:Relationship:SummaryOrAbstract",
+        "Profile:Work:LanguageCode:Relationship:SungOrSpokenText",
+        "Profile:Work:LanguageCode:Relationship:Libretto",
+        "Profile:Work:LanguageCode:Relationship:TableOfContents",
+        "Profile:Work:LanguageCode:Relationship:AccompanyingMaterial",
+        "Profile:Work:LanguageCode:Relationship:Original",
+        "Profile:Work:LanguageCode:Relationship:Intertitles",
+        "Profile:Work:LanguageCode:Relationship:Subtitles",
+        "Profile:Work:LanguageCode:Relationship:IntermediateTranslation",
+        "Profile:Work:LanguageCode:Relationship:OriginalAccompanyingMaterials",
+        "Profile:Work:LanguageCode:Relationship:OriginalLibretto",
+        "Profile:Work:LanguageCode:Relationship:Captions",
+        "Profile:Work:LanguageCode:Relationship:AccessibleAudio",
+        "Profile:Work:LanguageCode:Relationship:AccessibleVisualMaterial",
+        "Profile:Work:LanguageCode:Relationship:AccompanyingTranscripts"
       ],
-      "id": "Monograph:Work:LanguageCode:Relationship"
+      "id": "Profile:Work:LanguageCode:Relationship"
     },
     {
       "type": "dropdownOption",
       "displayName": "Primary source language",
       "uriBFLite": "http://bibfra.me/vocab/lite/language",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:PrimarySource"
+      "id": "Profile:Work:LanguageCode:Relationship:PrimarySource"
     },
     {
       "type": "dropdownOption",
       "displayName": "Summary or abstract",
       "uriBFLite": "http://bibfra.me/vocab/lite/summaryLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:SummaryOrAbstract"
+      "id": "Profile:Work:LanguageCode:Relationship:SummaryOrAbstract"
     },
     {
       "type": "dropdownOption",
       "displayName": "Sung or spoken text",
       "uriBFLite": "http://bibfra.me/vocab/lite/sungOrSpokenTextLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:SungOrSpokenText"
+      "id": "Profile:Work:LanguageCode:Relationship:SungOrSpokenText"
     },
     {
       "type": "dropdownOption",
       "displayName": "Librettos",
       "uriBFLite": "http://bibfra.me/vocab/lite/librettoLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:Libretto"
+      "id": "Profile:Work:LanguageCode:Relationship:Libretto"
     },
     {
       "type": "dropdownOption",
       "displayName": "Table of contents",
       "uriBFLite": "http://bibfra.me/vocab/lite/tableOfContentsLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:TableOfContents"
+      "id": "Profile:Work:LanguageCode:Relationship:TableOfContents"
     },
     {
       "type": "dropdownOption",
       "displayName": "Accompanying material other than librettos and transcripts",
       "uriBFLite": "http://bibfra.me/vocab/lite/accompanyingMaterialLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:AccompanyingMaterial"
+      "id": "Profile:Work:LanguageCode:Relationship:AccompanyingMaterial"
     },
     {
       "type": "dropdownOption",
       "displayName": "Original language",
       "uriBFLite": "http://bibfra.me/vocab/lite/originalLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:Original"
+      "id": "Profile:Work:LanguageCode:Relationship:Original"
     },
     {
       "type": "dropdownOption",
       "displayName": "Intertitles ",
       "uriBFLite": "http://bibfra.me/vocab/lite/intertitlesLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:Intertitles"
+      "id": "Profile:Work:LanguageCode:Relationship:Intertitles"
     },
     {
       "type": "dropdownOption",
       "displayName": "Subtitles",
       "uriBFLite": "http://bibfra.me/vocab/lite/subtitlesOrCaptionsLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:Subtitles"
+      "id": "Profile:Work:LanguageCode:Relationship:Subtitles"
     },
     {
       "type": "dropdownOption",
       "displayName": "Intermediate translation",
       "uriBFLite": "http://bibfra.me/vocab/lite/intermediateTranslationsLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:IntermediateTranslation"
+      "id": "Profile:Work:LanguageCode:Relationship:IntermediateTranslation"
     },
     {
       "type": "dropdownOption",
       "displayName": "Original accompanying materials other than librettos",
       "uriBFLite": "http://bibfra.me/vocab/lite/originalAccompanyingMaterialsLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:OriginalAccompanyingMaterials"
+      "id": "Profile:Work:LanguageCode:Relationship:OriginalAccompanyingMaterials"
     },
     {
       "type": "dropdownOption",
       "displayName": "Original libretto",
       "uriBFLite": "http://bibfra.me/vocab/lite/originalLibrettoLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:OriginalLibretto"
+      "id": "Profile:Work:LanguageCode:Relationship:OriginalLibretto"
     },
     {
       "type": "dropdownOption",
       "displayName": "Captions",
       "uriBFLite": "http://bibfra.me/vocab/lite/captionsLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:Captions"
+      "id": "Profile:Work:LanguageCode:Relationship:Captions"
     },
     {
       "type": "dropdownOption",
       "displayName": "Accessible audio",
       "uriBFLite": "http://bibfra.me/vocab/lite/accessibleAudioLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:AccessibleAudio"
+      "id": "Profile:Work:LanguageCode:Relationship:AccessibleAudio"
     },
     {
       "type": "dropdownOption",
       "displayName": "Accessible visual language (non-textual)",
       "uriBFLite": "http://bibfra.me/vocab/lite/accessibleVisualMaterialLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:AccessibleVisualMaterial"
+      "id": "Profile:Work:LanguageCode:Relationship:AccessibleVisualMaterial"
     },
     {
       "type": "dropdownOption",
       "displayName": "Accompanying transcripts for audiovisual material",
       "uriBFLite": "http://bibfra.me/vocab/lite/accompanyingTranscriptsLanguage",
       "children": [],
-      "id": "Monograph:Work:LanguageCode:Relationship:AccompanyingTranscripts"
+      "id": "Profile:Work:LanguageCode:Relationship:AccompanyingTranscripts"
     },
     {
       "type": "group",
@@ -1198,11 +1198,11 @@
         "valueDataType": {}
       },
       "children": [
-        "Monograph:Work:PartOfSeries:Title",
-        "Monograph:Work:PartOfSeries:ISSN",
-        "Monograph:Work:PartOfSeries:SeriesEnumeration"
+        "Profile:Work:PartOfSeries:Title",
+        "Profile:Work:PartOfSeries:ISSN",
+        "Profile:Work:PartOfSeries:SeriesEnumeration"
       ],
-      "id": "Monograph:Work:PartOfSeries"
+      "id": "Profile:Work:PartOfSeries"
     },
     {
       "type": "literal",
@@ -1216,7 +1216,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:PartOfSeries:Title"
+      "id": "Profile:Work:PartOfSeries:Title"
     },
     {
       "type": "literal",
@@ -1230,7 +1230,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:PartOfSeries:ISSN"
+      "id": "Profile:Work:PartOfSeries:ISSN"
     },
     {
       "type": "literal",
@@ -1244,7 +1244,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Monograph:Work:PartOfSeries:SeriesEnumeration"
+      "id": "Profile:Work:PartOfSeries:SeriesEnumeration"
     },
     {
       "type": "simple",
@@ -1260,7 +1260,7 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bflc/SerialPubType"
         }
       },
-      "id": "Monograph:Work:TypeOfContinuingResource"
+      "id": "Profile:Work:TypeOfContinuingResource"
     }
   ]
 }

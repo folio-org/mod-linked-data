@@ -15,7 +15,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.ORGANIZATION;
 import static org.folio.linked.data.domain.dto.LinkedDataContributor.TypeEnum.PERSON;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
-import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.EAN;
+import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.IAN;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.ISBN;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.LCCN;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum.LOCAL_ID;
@@ -198,7 +198,7 @@ class WorkSearchMessageMapperTest {
     assertThat(instanceIndex.getIdentifiers()).hasSize(6);
     assertId(instanceIndex.getIdentifiers().getFirst(), "lccn value", LCCN);
     assertId(instanceIndex.getIdentifiers().get(1), "isbn value", ISBN);
-    assertId(instanceIndex.getIdentifiers().get(2), "ean value", EAN);
+    assertId(instanceIndex.getIdentifiers().get(2), "ian value", IAN);
     assertId(instanceIndex.getIdentifiers().get(3), "localId value", LOCAL_ID);
     assertId(instanceIndex.getIdentifiers().get(4), "otherId value", UNKNOWN);
     assertId(instanceIndex.getIdentifiers().get(5), "wrongId", null);

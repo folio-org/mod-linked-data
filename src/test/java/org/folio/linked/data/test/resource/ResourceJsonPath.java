@@ -52,7 +52,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
@@ -310,12 +310,12 @@ public class ResourceJsonPath {
   }
 
   public static String toEanValue() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_EAN.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_IAN.getUri()),
       arrayPath(NAME.getValue()));
   }
 
   public static String toEanQualifier() {
-    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_EAN.getUri()),
+    return join(".", toInstance(), dynamicArrayPath(MAP.getUri()), path(ID_IAN.getUri()),
       arrayPath(QUALIFIER.getValue()));
   }
 

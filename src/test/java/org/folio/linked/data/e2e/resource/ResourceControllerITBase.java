@@ -43,7 +43,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
-import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
@@ -77,7 +76,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
@@ -282,6 +281,7 @@ abstract class ResourceControllerITBase extends ITBase {
   void createInstanceWithWorkRef_shouldSaveEntityCorrectly() throws Exception {
     // given
     final var defaultWorkProfileId = 2;
+    final var instanceMonographProfileId = 3;
     var work = getSampleWork(null);
     setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
@@ -306,7 +306,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().getFirst().getId();
-    assertThat(instanceResponse.getProfileId()).isEqualTo(1);
+    assertThat(instanceResponse.getProfileId()).isEqualTo(instanceMonographProfileId);
     assertThat(instanceResponse.getWorkReference().getFirst().getProfileId()).isEqualTo(defaultWorkProfileId);
     checkSearchIndexMessage(Long.valueOf(workId), UPDATE);
     checkIndexDate(workId);
@@ -708,8 +708,8 @@ abstract class ResourceControllerITBase extends ITBase {
         .andExpect(jsonPath(toExtentMaterialsSpec(), equalTo("materials spec")))
         .andExpect(jsonPath(toExtentNote(), equalTo("extent note")))
         .andExpect(jsonPath(toDimensions(), equalTo("20 cm")))
-        .andExpect(jsonPath(toEanValue(), equalTo(List.of("ean value"))))
-        .andExpect(jsonPath(toEanQualifier(), equalTo(List.of("ean qualifier"))))
+        .andExpect(jsonPath(toEanValue(), equalTo(List.of("ian value"))))
+        .andExpect(jsonPath(toEanQualifier(), equalTo(List.of("ian qualifier"))))
         .andExpect(jsonPath(toEditionStatement(), equalTo("edition statement")))
         .andExpect(jsonPath(toIsbnValue(), equalTo(List.of("isbn value"))))
         .andExpect(jsonPath(toIsbnQualifier(), equalTo(List.of("isbn qualifier"))))
@@ -852,12 +852,12 @@ abstract class ResourceControllerITBase extends ITBase {
     }
     validateExtent(edgeIterator.next(), instance);
     validateAccessLocation(edgeIterator.next(), instance);
+    validateIan(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE, "as", "American Samoa");
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION, "dz", "Algeria");
     validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION, "af", "Afghanistan");
     validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION, "al", "Albania");
     validateOtherId(edgeIterator.next(), instance);
-    validateEan(edgeIterator.next(), instance);
     validatePrimaryTitle(edgeIterator.next(), instance);
     validateSupplementaryContent(edgeIterator.next(), instance);
     validateIsbn(edgeIterator.next(), instance);
@@ -1013,23 +1013,23 @@ abstract class ResourceControllerITBase extends ITBase {
     validateStatus(isbn.getOutgoingEdges().iterator().next(), isbn, "isbn");
   }
 
-  private void validateEan(ResourceEdge edge, Resource source) {
+  private void validateIan(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
-    var ean = edge.getTarget();
-    assertThat(ean.getLabel()).isEqualTo("ean value");
-    var typesIterator = ean.getTypes().iterator();
-    assertThat(typesIterator.next().getUri()).isEqualTo(ID_EAN.getUri());
+    var ian = edge.getTarget();
+    assertThat(ian.getLabel()).isEqualTo("ian value");
+    var typesIterator = ian.getTypes().iterator();
+    assertThat(typesIterator.next().getUri()).isEqualTo(ID_IAN.getUri());
     assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
     assertThat(typesIterator.hasNext()).isFalse();
-    assertThat(ean.getId()).isEqualTo(hashService.hash(ean));
-    assertThat(ean.getDoc().size()).isEqualTo(2);
-    assertThat(ean.getDoc().get(EAN_VALUE.getValue()).size()).isEqualTo(1);
-    assertThat(ean.getDoc().get(EAN_VALUE.getValue()).get(0).asText()).isEqualTo("ean value");
-    assertThat(ean.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
-    assertThat(ean.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("ean qualifier");
-    assertThat(ean.getOutgoingEdges()).isEmpty();
+    assertThat(ian.getId()).isEqualTo(hashService.hash(ian));
+    assertThat(ian.getDoc().size()).isEqualTo(2);
+    assertThat(ian.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
+    assertThat(ian.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("ian value");
+    assertThat(ian.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
+    assertThat(ian.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("ian qualifier");
+    assertThat(ian.getOutgoingEdges()).isEmpty();
   }
 
   private void validateLocalId(ResourceEdge edge, Resource source) {

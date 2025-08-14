@@ -9,7 +9,7 @@
     "type": {
       "type": "string",
       "enum": [
-        "Ean",
+        "IAN",
         "ISBN",
         "LCCN",
         "LocalId",

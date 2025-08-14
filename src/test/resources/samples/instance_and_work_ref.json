@@ -1,7 +1,7 @@
 {
   "resource": {
     "http://bibfra.me/vocab/lite/Instance": {
-      "profileId": 1,
+      "profileId": 3,
       "http://bibfra.me/vocab/marc/title": [
         {
           "http://bibfra.me/vocab/marc/Title": {
@@ -213,12 +213,12 @@
           }
         },
         {
-          "http://bibfra.me/vocab/identifier/Ean": {
+          "http://library.link/identifier/IAN": {
             "http://bibfra.me/vocab/lite/name": [
-              "ean value"
+              "ian value"
             ],
             "http://bibfra.me/vocab/marc/qualifier": [
-              "ean qualifier"
+              "ian qualifier"
             ]
           }
         },

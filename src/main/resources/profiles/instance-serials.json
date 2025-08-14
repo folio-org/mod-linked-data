@@ -1,6 +1,6 @@
 {
-  "id": 3,
-  "name": "Monograph",
+  "id": 5,
+  "name": "Serials",
   "resourceType": "http://bibfra.me/vocab/lite/Instance",
   "value": [
     {
@@ -1108,22 +1108,6 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:URLOfInstance:Note"
-    },
-    {
-      "type": "simple",
-      "displayName": "Book Format",
-      "uriBFLite": "http://bibfra.me/vocab/marc/bookFormat",
-      "constraints": {
-        "repeatable": true,
-        "editable": true,
-        "mandatory": true,
-        "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/bookformat"],
-        "valueDataType": {
-          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/BookFormat"
-        }
-      },
-      "id": "Profile:Instance:BookFormat"
     }
   ]
 }
