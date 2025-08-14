@@ -778,7 +778,10 @@
       },
       "children": [
         "Profile:Instance:Identifiers:LCCN",
-        "Profile:Instance:Identifiers:ISBN"
+        "Profile:Instance:Identifiers:ISBN",
+        "Profile:Instance:Identifiers:ISSN",
+        "Profile:Instance:Identifiers:IAN",
+        "Profile:Instance:Identifiers:OtherIdentifier"
       ],
       "id": "Profile:Instance:Identifiers"
     },
@@ -878,6 +881,159 @@
         }
       },
       "id": "Profile:Instance:Identifiers:ISBN:IncorrectInvalidOrCanceled"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "ISSN",
+      "bfid": "lc:RT:bf2:Identifiers:ISSN",
+      "uriBFLite": "http://library.link/identifier/ISSN",
+      "children": [
+        "Profile:Instance:Identifiers:ISSN:ISSN",
+        "Profile:Instance:Identifiers:ISSN:IncorrectInvalidOrCanceled"
+      ],
+      "id": "Profile:Instance:Identifiers:ISSN"
+    },
+    {
+      "type": "literal",
+      "displayName": "ISSN",
+      "uriBFLite": "http://bibfra.me/vocab/lite/name",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:Identifiers:ISSN:ISSN"
+    },
+    {
+      "type": "simple",
+      "displayName": "Incorrect, Invalid, or Canceled?",
+      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
+        }
+      },
+      "id": "Profile:Instance:Identifiers:ISSN:IncorrectInvalidOrCanceled"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "IAN",
+      "bfid": "lc:RT:bf2:Identifiers:IAN",
+      "uriBFLite": "http://library.link/identifier/IAN",
+      "children": [
+        "Profile:Instance:Identifiers:IAN:IAN",
+        "Profile:Instance:Identifiers:IAN:Qualifier",
+        "Profile:Instance:Identifiers:IAN:InvalidCanceled"
+      ],
+      "id": "Profile:Instance:Identifiers:IAN"
+    },
+    {
+      "type": "literal",
+      "displayName": "IAN",
+      "uriBFLite": "http://bibfra.me/vocab/lite/name",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:Identifiers:IAN:IAN"
+    },
+    {
+      "type": "literal",
+      "displayName": "Qualifier",
+      "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:Identifiers:IAN:Qualifier"
+    },
+    {
+      "type": "simple",
+      "displayName": "Invalid/Canceled?",
+      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
+        }
+      },
+      "id": "Profile:Instance:Identifiers:IAN:InvalidCanceled"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Other Identifier",
+      "bfid": "lc:RT:bf2:Identifiers:OtherIdentifier",
+      "uriBFLite": "http://library.link/identifier/UNKNOWN",
+      "children": [
+        "Profile:Instance:Identifiers:OtherIdentifier:OtherIdentifier",
+        "Profile:Instance:Identifiers:OtherIdentifier:Qualifier",
+        "Profile:Instance:Identifiers:OtherIdentifier:InvalidCanceled"
+      ],
+      "id": "Profile:Instance:Identifiers:OtherIdentifier"
+    },
+    {
+      "type": "literal",
+      "displayName": "Other Identifier",
+      "uriBFLite": "http://bibfra.me/vocab/lite/name",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:Identifiers:OtherIdentifier:OtherIdentifier"
+    },
+    {
+      "type": "literal",
+      "displayName": "Qualifier",
+      "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:Identifiers:OtherIdentifier:Qualifier"
+    },
+    {
+      "type": "simple",
+      "displayName": "Invalid/Canceled?",
+      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
+        }
+      },
+      "id": "Profile:Instance:Identifiers:OtherIdentifier:InvalidCanceled"
     },
     {
       "type": "group",
