@@ -40,7 +40,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
-import static org.folio.ld.dictionary.PropertyDictionary.EAN_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_AREA_CODE;
@@ -77,7 +76,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_EAN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
@@ -163,14 +162,14 @@ public class MonographTestUtil {
       Map.of(STATUS, List.of(status("isbn")))
     ).setLabel("isbn value");
 
-    var ean = createResource(
+    var ian = createResource(
       Map.of(
-        EAN_VALUE, List.of("ean value"),
-        QUALIFIER, List.of("ean qualifier")
+        NAME, List.of("ian value"),
+        QUALIFIER, List.of("ian qualifier")
       ),
-      Set.of(IDENTIFIER, ID_EAN),
+      Set.of(IDENTIFIER, ID_IAN),
       emptyMap()
-    ).setLabel("ean value");
+    ).setLabel("ian value");
 
     var localId = createResource(
       Map.of(
@@ -238,7 +237,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(PE_MANUFACTURE, List.of(manufacture));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(supplementaryContent));
     pred2OutgoingResources.put(ACCESS_LOCATION, List.of(accessLocation));
-    pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ean, localId, otherId));
+    pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ian, localId, otherId));
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
