@@ -10,4 +10,6 @@ public interface ResourceEdgeRepository extends JpaRepository<ResourceEdge, Reso
   List<ResourceEdge> findByIdSourceHash(Long hash);
 
   List<ResourceEdge> findByIdTargetHash(Long hash);
+
+  long deleteByIdSourceHashAndIdPredicateHash(Long sourceHash, Long predicateHash);
 }

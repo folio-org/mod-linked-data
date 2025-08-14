@@ -66,8 +66,4 @@ class TargetAudienceIT extends PostResourceIT {
       .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/lite/link'][0]")
         .value("http://id.loc.gov/vocabulary/maudience/pri"));
   }
-
-  private Resource getFirstOutgoingResource(Resource instance, String url) {
-    return getOutgoingResources(instance, url).getFirst();
-  }
 }
