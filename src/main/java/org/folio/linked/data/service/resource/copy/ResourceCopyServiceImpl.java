@@ -8,7 +8,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
 import static org.folio.ld.dictionary.PropertyDictionary.OTHER_EVENT_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -33,7 +32,6 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
 
   private static final Map<String, Set<String>> PROPERTIES_TO_BE_COPIED = Map.of(
     INSTANCE.getUri(), Set.of(
-      PUBLICATION_FREQUENCY.getValue(),
       GOVERNING_ACCESS_NOTE.getValue(),
       CREDITS_NOTE.getValue(),
       PARTICIPANT_NOTE.getValue(),
