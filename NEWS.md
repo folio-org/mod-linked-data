@@ -45,6 +45,7 @@
 - Replace ID_EAN with ID_IAN. Remove property EAN_VALUE [MODLD-810](https://folio-org.atlassian.net/browse/MODLD-810)
 - Update API to support Administrative Metadata [MODLD-819](https://folio-org.atlassian.net/browse/MODLD-819)
 - Update profiles to support ISSN, IAN, and other identifier [MODLD-839](https://folio-org.atlassian.net/browse/MODLD-839)
+- Publication frequency property removed [MODLD-817](https://folio-org.atlassian.net/browse/MODLD-817)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
