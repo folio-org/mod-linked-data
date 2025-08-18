@@ -1316,6 +1316,20 @@
     },
     {
       "type": "literal",
+      "displayName": "Transcribing agency",
+      "uriBFLite": "http://bibfra.me/vocab/marc/transcribingAgency",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:AdminMetadata:TranscribingAgency"
+    },
+    {
+      "type": "literal",
       "displayName": "Modifying agency",
       "uriBFLite": "http://bibfra.me/vocab/marc/modifyingAgency",
       "constraints": {
@@ -1327,20 +1341,6 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:AdminMetadata:ModifyingAgency"
-    },
-    {
-      "type": "literal",
-      "displayName": "Transcribing agency",
-      "uriBFLite": "http://bibfra.me/vocab/marc/transcribingAgency",
-      "constraints": {
-        "repeatable": true,
-        "editable": true,
-        "mandatory": true,
-        "defaults": [],
-        "useValuesFrom": [],
-        "valueDataType": {}
-      },
-      "id": "Profile:Instance:AdminMetadata:TranscribingAgency"
     }
   ]
 }
