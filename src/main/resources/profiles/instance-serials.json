@@ -22,7 +22,8 @@
         "Profile:Instance:Extent",
         "Profile:Instance:Dimensions",
         "Profile:Instance:CarrierType",
-        "Profile:Instance:URLOfInstance"
+        "Profile:Instance:URLOfInstance",
+        "Profile:Instance:AdminMetadata"
       ],
       "id": "Profile:Instance"
     },
@@ -1264,6 +1265,112 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:URLOfInstance:Note"
+    },
+    {
+      "type": "group",
+      "displayName": "Admin Metadata",
+      "uriBFLite": "http://bibfra.me/vocab/marc/adminMetadata",
+      "constraints": {
+        "repeatable": false,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Profile:Instance:AdminMetadata:DateOfCreation",
+        "Profile:Instance:AdminMetadata:LocalResourceIDNumber",
+        "Profile:Instance:AdminMetadata:CatalogingAgency",
+        "Profile:Instance:AdminMetadata:Language",
+        "Profile:Instance:AdminMetadata:TranscribingAgency",
+        "Profile:Instance:AdminMetadata:ModifyingAgency"
+      ],
+      "id": "Profile:Instance:AdminMetadata"
+    },
+    {
+      "type": "literal",
+      "displayName": "Date of creation",
+      "uriBFLite": "http://bibfra.me/vocab/lite/createdDate",
+      "constraints": {
+        "repeatable": false,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:AdminMetadata:DateOfCreation"
+    },
+    {
+      "type": "literal",
+      "displayName": "Local resource ID number",
+      "uriBFLite": "http://bibfra.me/vocab/marc/controlNumber",
+      "constraints": {
+        "repeatable": false,
+        "editable": false,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:AdminMetadata:LocalResourceIDNumber"
+    },
+    {
+      "type": "literal",
+      "displayName": "Cataloging agency",
+      "uriBFLite": "http://bibfra.me/vocab/marc/catalogingAgency",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:AdminMetadata:CatalogingAgency"
+    },
+    {
+      "type": "simple",
+      "displayName": "Language",
+      "uriBFLite": "http://bibfra.me/vocab/lite/catalogingLanguage",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
+        "valueDataType": { "remark": "", "dataTypeURI": ""}
+      },
+      "id": "Profile:Instance:AdminMetadata:Language"
+    },
+    {
+      "type": "literal",
+      "displayName": "Transcribing agency",
+      "uriBFLite": "http://bibfra.me/vocab/marc/transcribingAgency",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:AdminMetadata:TranscribingAgency"
+    },
+    {
+      "type": "literal",
+      "displayName": "Modifying agency",
+      "uriBFLite": "http://bibfra.me/vocab/marc/modifyingAgency",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Instance:AdminMetadata:ModifyingAgency"
     }
   ]
 }
