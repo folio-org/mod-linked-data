@@ -1299,8 +1299,8 @@
         "Profile:Instance:AdminMetadata:LocalResourceIDNumber",
         "Profile:Instance:AdminMetadata:CatalogingAgency",
         "Profile:Instance:AdminMetadata:Language",
-        "Profile:Instance:AdminMetadata:ModifyingAgency",
-        "Profile:Instance:AdminMetadata:TranscribingAgency"
+        "Profile:Instance:AdminMetadata:TranscribingAgency",
+        "Profile:Instance:AdminMetadata:ModifyingAgency"
       ],
       "id": "Profile:Instance:AdminMetadata"
     },
