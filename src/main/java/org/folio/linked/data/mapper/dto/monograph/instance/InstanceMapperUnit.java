@@ -14,6 +14,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.PUBLICATION_FREQUENCY;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.ACCOMPANYING_MATERIAL;
@@ -122,6 +123,8 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getWorkReference(), INSTANTIATES);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getExtent(), EXTENT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, standardBookFormats(instanceDto), BOOK_FORMAT);
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getPublicationFrequency(),
+      PUBLICATION_FREQUENCY);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getAdminMetadata(), ADMIN_METADATA);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setId(hashService.hash(instance));

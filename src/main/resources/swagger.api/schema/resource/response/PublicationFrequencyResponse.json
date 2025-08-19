@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Publication frequency DTO",
+  "allOf": [
+    {
+      "$ref": "../common/IdField.json"
+    },
+    {
+      "$ref": "../common/PublicationFrequency.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/code"
+        }
+      }
+    }
+  ]
+}
