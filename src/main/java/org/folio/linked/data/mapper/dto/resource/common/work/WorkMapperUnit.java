@@ -26,7 +26,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
@@ -56,6 +55,7 @@ import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
@@ -71,6 +71,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final NoteMapper noteMapper;
   private final HashService hashService;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ProfileService profileService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -87,7 +88,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var workDto = ((WorkField) dto).getWork();
     var work = new Resource();
-    work.addTypes(WORK, BOOKS);
+    assignTypes(work, workDto.getProfileId());
     work.setDoc(getDoc(workDto));
     work.setLabel(getFirstValue(() -> getPrimaryMainTitles(workDto.getTitle())));
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTitle(), TITLE);
@@ -112,6 +113,14 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
 
     work.setId(hashService.hash(work));
     return work;
+  }
+
+  private void assignTypes(Resource work, Integer profileId) {
+    work.addTypes(WORK);
+    ofNullable(profileId)
+      .map(profileService::getProfileById)
+      .flatMap(profile -> ofNullable(profile.getAdditionalResourceType()))
+      .ifPresent(work::addType);
   }
 
   private JsonNode getDoc(WorkRequest dto) {

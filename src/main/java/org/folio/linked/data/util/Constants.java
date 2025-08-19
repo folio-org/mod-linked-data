@@ -27,5 +27,6 @@ public class Constants {
     public static final String SPEC_RULES = "spec-rules";
     public static final String SETTINGS_ENTRIES = "settings-entries";
     public static final String MODULE_STATE = "module-state";
+    public static final String PROFILES = "profiles";
   }
 }

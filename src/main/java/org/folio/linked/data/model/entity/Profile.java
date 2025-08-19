@@ -26,6 +26,10 @@ public class Profile {
   @JoinColumn(name = "resource_type", nullable = false)
   private ResourceTypeEntity resourceType;
 
+  @ManyToOne
+  @JoinColumn(name = "additional_resource_type")
+  private ResourceTypeEntity additionalResourceType;
+
   @Type(JsonBinaryType.class)
   private String value;
 }
