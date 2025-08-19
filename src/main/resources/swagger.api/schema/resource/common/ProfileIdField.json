@@ -8,5 +8,8 @@
       "format": "int16",
       "description": "ID of the profile"
     }
-  }
+  },
+  "required": [
+    "profileId"
+  ]
 }
