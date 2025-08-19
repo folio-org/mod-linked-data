@@ -74,17 +74,17 @@ public class ProfileServiceImpl implements ProfileService {
     }
   }
 
-  private Profile toProfileEntity(ProfileDto profile) throws JsonProcessingException {
-    var resourceType = typeRepository.findByUri(profile.resourceType());
-    var profileContent = objectMapper.writeValueAsString(profile.value());
+  private Profile toProfileEntity(ProfileDto profileDto) throws JsonProcessingException {
+    var resourceType = typeRepository.findByUri(profileDto.resourceType());
+    var profileContent = objectMapper.writeValueAsString(profileDto.value());
 
     var profileEntity = new Profile()
-      .setId(profile.id())
-      .setName(profile.name())
+      .setId(profileDto.id())
+      .setName(profileDto.name())
       .setResourceType(resourceType)
       .setValue(profileContent);
 
-    ofNullable(profile.additionalResourceType())
+    ofNullable(profileDto.additionalResourceType())
       .map(typeRepository::findByUri)
       .ifPresent(profileEntity::setAdditionalResourceType);
 

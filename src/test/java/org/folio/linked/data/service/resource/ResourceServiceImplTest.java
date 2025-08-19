@@ -87,12 +87,12 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
     // given
-    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
     var mapped = new Resource().setId(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     var persisted = new Resource().setId(67890L);
     var expectedResponse = new ResourceResponseDto();
-    expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse().id("123")));
+    expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedResponse);
     when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
 
@@ -107,11 +107,11 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceWithWork() {
     // given
-    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
     var work = new Resource().addTypes(WORK).setId(555L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
-    expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse().id("123")));
+    expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedResponse);
     when(resourceGraphService.saveMergingGraph(work)).thenReturn(work);
 
@@ -131,13 +131,13 @@ class ResourceServiceImplTest {
     var profileId = 12;
     var request = new ResourceRequestDto().resource(
       new WorkField().work(
-        new WorkRequest(List.of()).profileId(profileId)
+        new WorkRequest(2, List.of()).profileId(profileId)
       )
     );
     var work = new Resource().addTypes(WORK).setId(444L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
-    expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse().id("123")));
+    expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedResponse);
     when(resourceGraphService.saveMergingGraph(work)).thenReturn(work);
 
@@ -155,7 +155,7 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldNotPersistResourceAndThrowAlreadyExists_forExistedResource() {
     // given
-    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(List.of())));
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
     var mapped = new Resource().setId(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
@@ -244,13 +244,13 @@ class ResourceServiceImplTest {
   void update_shouldSaveUpdatedResourceAndSendResourceUpdatedEvent_forResourceWithSameId() {
     // given
     var id = randomLong();
-    var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest(List.of())));
+    var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest(2, List.of())));
     var oldWork = new Resource().setId(id).addTypes(WORK).setLabel("oldWork");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldWork));
     var work = new Resource().setId(id).setLabel("saved").addTypes(WORK);
     when(resourceDtoMapper.toEntity(workDto)).thenReturn(work);
     var expectedDto = new ResourceResponseDto().resource(
-      new WorkResponseField().work(new WorkResponse().id(id.toString()))
+      new WorkResponseField().work(new WorkResponse(2).id(id.toString()))
     );
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(work)).thenReturn(work);
@@ -280,13 +280,13 @@ class ResourceServiceImplTest {
     var mapped = new Resource().setId(newId).setLabel("mapped");
     var instanceDto = new ResourceRequestDto().resource(
       new InstanceField().instance(
-        new InstanceRequest(List.of()).profileId(profileId)
+        new InstanceRequest(3, List.of()).profileId(profileId)
       )
     );
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
     var persisted = new Resource().setId(newId).setLabel("saved");
     var expectedDto = new ResourceResponseDto().resource(
-      new InstanceResponseField().instance(new InstanceResponse().id(newId.toString()))
+      new InstanceResponseField().instance(new InstanceResponse(3).id(newId.toString()))
     );
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
     when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);

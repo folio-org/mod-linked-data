@@ -53,6 +53,7 @@
 - Update profile constraints [MODLD-852](https://folio-org.atlassian.net/browse/MODLD-852)
 - Get Illustration Code using Illustration Dictionary [MODLD-841](https://folio-org.atlassian.net/browse/MODLD-841)
 - Temporarily remove local identifier handling [MODLD-851](https://folio-org.atlassian.net/browse/MODLD-851)
+- Detect BOOKS or CONTINUING_RESOURCE type based on profile ID [MODLD-803](https://folio-org.atlassian.net/browse/MODLD-803)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

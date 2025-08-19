@@ -117,9 +117,8 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
 
   private void assignTypes(Resource work, Integer profileId) {
     work.addTypes(WORK);
-    ofNullable(profileId)
-      .map(profileService::getProfileById)
-      .flatMap(profile -> ofNullable(profile.getAdditionalResourceType()))
+    var profile = profileService.getProfileById(profileId);
+    ofNullable(profile.getAdditionalResourceType())
       .ifPresent(work::addType);
   }
 
