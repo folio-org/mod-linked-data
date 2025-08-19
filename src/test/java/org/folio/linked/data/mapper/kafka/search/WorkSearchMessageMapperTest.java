@@ -40,7 +40,7 @@ import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
 import org.folio.linked.data.domain.dto.LinkedDataInstanceOnly;
 import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
-import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
+import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapperImpl;
 import org.folio.linked.data.model.entity.Resource;

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.Note;
-import org.folio.linked.data.mapper.dto.monograph.common.NoteMapper;
+import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
