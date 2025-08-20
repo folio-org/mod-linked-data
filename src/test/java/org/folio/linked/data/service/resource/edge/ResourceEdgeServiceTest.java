@@ -1,7 +1,6 @@
 package org.folio.linked.data.service.resource.edge;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -69,7 +68,6 @@ class ResourceEdgeServiceTest {
 
   static Stream<Arguments> dataProvider() {
     return Stream.of(
-      Arguments.of(getInstance(), getEmptyInstance(), List.of(ADMIN_METADATA.getUri())),
       Arguments.of(getWork(), getEmptyWork(), List.of(DISSERTATION.getUri(),
         GENRE.getUri())),
       Arguments.of(getInstance(), getEmptyWork(), List.of()),
@@ -103,7 +101,6 @@ class ResourceEdgeServiceTest {
   private static Resource getInstance() {
     var instance = getEmptyInstance();
     instance.addOutgoingEdge(new ResourceEdge(instance, new Resource(), TITLE));
-    instance.addOutgoingEdge(new ResourceEdge(instance, new Resource(), ADMIN_METADATA));
     return instance;
   }
 
