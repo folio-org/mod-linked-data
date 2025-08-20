@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PublicationFrequencyDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponse;
@@ -66,6 +65,6 @@ public class PublicationFrequencyMapperUnit implements InstanceSubResourceMapper
     return links.stream()
       .map(PublicationFrequencyDictionary::getCode)
       .flatMap(Optional::stream)
-      .collect(Collectors.toList());
+      .toList();
   }
 }

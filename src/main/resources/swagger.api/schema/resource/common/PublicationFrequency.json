@@ -8,6 +8,7 @@
       "items": {
         "type": "string"
       },
+      "description": "Publication frequency label",
       "x-json-property": "http://bibfra.me/vocab/lite/label"
     },
     "link": {
@@ -15,6 +16,7 @@
       "items": {
         "type": "string"
       },
+      "description": "Publication frequency link",
       "x-json-property": "http://bibfra.me/vocab/lite/link"
     }
   }
