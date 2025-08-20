@@ -1,6 +1,6 @@
 package org.folio.linked.data.service.profile;
 
-import static java.util.Optional.ofNullable;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Profile;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ResourceTypeRepository;
 import org.springframework.cache.annotation.Cacheable;
@@ -77,19 +78,23 @@ public class ProfileServiceImpl implements ProfileService {
   private Profile toProfileEntity(ProfileDto profileDto) throws JsonProcessingException {
     var resourceType = typeRepository.findByUri(profileDto.resourceType());
     var profileContent = objectMapper.writeValueAsString(profileDto.value());
+    var additionalTypes = isEmpty(profileDto.additionalResourceTypes())
+      ? List.<ResourceTypeEntity>of()
+      : profileDto.additionalResourceTypes().stream().map(typeRepository::findByUri).toList();
 
-    var profileEntity = new Profile()
+    return new Profile()
       .setId(profileDto.id())
       .setName(profileDto.name())
       .setResourceType(resourceType)
-      .setValue(profileContent);
-
-    ofNullable(profileDto.additionalResourceType())
-      .map(typeRepository::findByUri)
-      .ifPresent(profileEntity::setAdditionalResourceType);
-
-    return profileEntity;
+      .setValue(profileContent)
+      .setAdditionalResourceTypes(additionalTypes);
   }
 
-  record ProfileDto(Integer id, String name, String resourceType, String additionalResourceType, JsonNode value) {}
+  record ProfileDto(
+    Integer id,
+    String name,
+    String resourceType,
+    List<String> additionalResourceTypes,
+    JsonNode value) {
+  }
 }
