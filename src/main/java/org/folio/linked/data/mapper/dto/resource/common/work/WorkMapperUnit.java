@@ -118,8 +118,8 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private void assignTypes(Resource work, Integer profileId) {
     work.addTypes(WORK);
     var profile = profileService.getProfileById(profileId);
-    ofNullable(profile.getAdditionalResourceType())
-      .ifPresent(work::addType);
+    profile.getAdditionalResourceTypes()
+      .forEach(work::addType);
   }
 
   private JsonNode getDoc(WorkRequest dto) {
