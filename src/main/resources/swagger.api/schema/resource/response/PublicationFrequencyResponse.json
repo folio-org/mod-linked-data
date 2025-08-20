@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Publication frequency DTO",
+  "x-from-string-field": "label",
   "allOf": [
     {
       "$ref": "../common/IdField.json"
