@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Publication frequency DTO",
+  "type": "object",
+  "properties": {
+    "label": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Publication frequency label",
+      "x-json-property": "http://bibfra.me/vocab/lite/label"
+    },
+    "link": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Publication frequency link",
+      "x-json-property": "http://bibfra.me/vocab/lite/link"
+    }
+  }
+}

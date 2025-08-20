@@ -213,6 +213,14 @@
           },
           "x-json-property": "http://bibfra.me/vocab/marc/bookFormat"
         },
+        "publicationFrequency": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "PublicationFrequencyResponse.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/marc/publicationFrequency"
+        },
         "adminMetadata": {
           "type": "array",
           "items": {
