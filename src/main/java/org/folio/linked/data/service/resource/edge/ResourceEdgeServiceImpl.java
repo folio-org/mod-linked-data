@@ -1,9 +1,7 @@
 package org.folio.linked.data.service.resource.edge;
 
-import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.util.Map;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 public class ResourceEdgeServiceImpl implements ResourceEdgeService {
 
   private static final Map<ResourceTypeDictionary, Set<PredicateDictionary>> EDGES_TO_BE_COPIED = Map.of(
-    INSTANCE, Set.of(ADMIN_METADATA),
     WORK, Set.of(DISSERTATION, GENRE)
   );
   private final ResourceRepository resourceRepository;
