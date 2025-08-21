@@ -1,5 +1,6 @@
 package org.folio.linked.data.service.profile;
 
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES;
 
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
@@ -79,8 +81,8 @@ public class ProfileServiceImpl implements ProfileService {
     var resourceType = typeRepository.findByUri(profileDto.resourceType());
     var profileContent = objectMapper.writeValueAsString(profileDto.value());
     var additionalTypes = isEmpty(profileDto.additionalResourceTypes())
-      ? List.<ResourceTypeEntity>of()
-      : profileDto.additionalResourceTypes().stream().map(typeRepository::findByUri).toList();
+      ? Set.<ResourceTypeEntity>of()
+      : profileDto.additionalResourceTypes().stream().map(typeRepository::findByUri).collect(toSet());
 
     return new Profile()
       .setId(profileDto.id())
@@ -90,11 +92,10 @@ public class ProfileServiceImpl implements ProfileService {
       .setAdditionalResourceTypes(additionalTypes);
   }
 
-  record ProfileDto(
+  private record ProfileDto(
     Integer id,
     String name,
     String resourceType,
-    List<String> additionalResourceTypes,
-    JsonNode value) {
-  }
+    Set<String> additionalResourceTypes,
+    JsonNode value) { }
 }

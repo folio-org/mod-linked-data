@@ -8,8 +8,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import java.util.List;
+import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
@@ -29,13 +30,14 @@ public class Profile {
   @JoinColumn(name = "resource_type", nullable = false)
   private ResourceTypeEntity resourceType;
 
+  @OrderBy
   @ManyToMany
   @JoinTable(
     name = "profile_additional_resource_types",
     joinColumns = @JoinColumn(name = "profile_id"),
     inverseJoinColumns = @JoinColumn(name = "type_hash")
   )
-  private List<ResourceTypeEntity> additionalResourceTypes;
+  private Set<ResourceTypeEntity> additionalResourceTypes;
 
   @Type(JsonBinaryType.class)
   private String value;
