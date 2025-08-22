@@ -23,6 +23,7 @@
         "Profile:Instance:Dimensions",
         "Profile:Instance:CarrierType",
         "Profile:Instance:URLOfInstance",
+        "Profile:Instance:Frequency",
         "Profile:Instance:AdminMetadata"
       ],
       "id": "Profile:Instance"
@@ -1265,6 +1266,22 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:URLOfInstance:Note"
+    },
+    {
+      "type": "simple",
+      "displayName": "Frequency",
+      "uriBFLite": "http://bibfra.me/vocab/marc/publicationFrequency",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/frequencies"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Frequency"
+        }
+      },
+      "id": "Profile:Instance:Frequency"
     },
     {
       "type": "group",
