@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.folio.ld.dictionary.PublicationFrequencyDictionary;
+import org.folio.ld.dictionary.specific.PublicationFrequencyDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.PublicationFrequency;
 import org.folio.linked.data.domain.dto.PublicationFrequencyResponse;
@@ -65,6 +65,7 @@ public class PublicationFrequencyMapperUnit implements InstanceSubResourceMapper
     return links.stream()
       .map(PublicationFrequencyDictionary::getCode)
       .flatMap(Optional::stream)
+      .map(String::valueOf)
       .toList();
   }
 }

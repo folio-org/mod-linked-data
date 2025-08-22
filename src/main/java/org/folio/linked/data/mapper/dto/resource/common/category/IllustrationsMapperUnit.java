@@ -1,8 +1,11 @@
 package org.folio.linked.data.mapper.dto.resource.common.category;
 
+import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 
-import org.folio.ld.dictionary.PredicateDictionary;
+import java.util.List;
+import java.util.Optional;
+import org.folio.ld.dictionary.specific.IllustrationDictionary;
 import org.folio.linked.data.domain.dto.Category;
 import org.folio.linked.data.domain.dto.CategoryResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
@@ -12,7 +15,7 @@ import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = CATEGORY, predicate = PredicateDictionary.ILLUSTRATIONS, requestDto = Category.class)
+@MapperUnit(type = CATEGORY, predicate = ILLUSTRATIONS, requestDto = Category.class)
 public class IllustrationsMapperUnit extends CategoryMapperUnit {
 
   private static final String LABEL = "Illustrative Content";
@@ -43,5 +46,14 @@ public class IllustrationsMapperUnit extends CategoryMapperUnit {
   @Override
   public String getLinkPrefix() {
     return LINK_PREFIX;
+  }
+
+  @Override
+  public List<String> getMarcCodes(List<String> links) {
+    return links.stream()
+      .map(IllustrationDictionary::getCode)
+      .flatMap(Optional::stream)
+      .map(String::valueOf)
+      .toList();
   }
 }

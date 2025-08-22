@@ -214,13 +214,13 @@
       "http://bibfra.me/vocab/marc/illustrations": [
         {
           "http://bibfra.me/vocab/lite/link": [
-              "http://id.loc.gov/vocabulary/millus/code"
+              "http://id.loc.gov/vocabulary/millus/ill"
           ],
           "http://bibfra.me/vocab/marc/term": [
-              "illustrations term"
+              "Illustrations"
           ],
           "http://bibfra.me/vocab/marc/code": [
-              "code"
+              "a"
           ]
         }
       ],
