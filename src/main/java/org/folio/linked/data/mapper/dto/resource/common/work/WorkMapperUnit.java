@@ -38,6 +38,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -118,6 +119,10 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private void assignTypes(Resource work, Integer profileId) {
     work.addTypes(WORK);
     var profile = profileService.getProfileById(profileId);
+    if (!Objects.equals(WORK.getUri(), profile.getResourceType().getUri())) {
+      throw exceptionBuilder
+        .badRequestException("Profile with id=" + profileId + " is not a work profile", "Bad request");
+    }
     profile.getAdditionalResourceTypes()
       .forEach(work::addType);
   }
