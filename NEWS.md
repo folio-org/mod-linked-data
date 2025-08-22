@@ -48,6 +48,7 @@
 - Publication frequency property removed [MODLD-817](https://folio-org.atlassian.net/browse/MODLD-817)
 - Update profiles to support Instance admin metadata [MODLD-843](https://folio-org.atlassian.net/browse/MODLD-843)
 - API for Publication Frequency (Serials) [MODLD-826](https://folio-org.atlassian.net/browse/MODLD-826)
+- Update serials profile to include Publication Frequency [MODLD-823](https://folio-org.atlassian.net/browse/MODLD-823)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
