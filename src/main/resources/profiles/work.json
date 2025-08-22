@@ -5,7 +5,7 @@
   "value": [
     {
       "type": "block",
-      "displayName": "Work",
+      "displayName": "Work components",
       "bfid": "lde:Profile:Work",
       "uriBFLite": "http://bibfra.me/vocab/lite/Work",
       "children": [

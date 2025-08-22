@@ -5,7 +5,7 @@
   "value": [
     {
       "type": "block",
-      "displayName": "Instance",
+      "displayName": "Instance components - Rare Books",
       "bfid": "lde:Profile:Instance",
       "uriBFLite": "http://bibfra.me/vocab/lite/Instance",
       "children": [

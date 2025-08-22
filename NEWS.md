@@ -49,6 +49,7 @@
 - Update profiles to support Instance admin metadata [MODLD-843](https://folio-org.atlassian.net/browse/MODLD-843)
 - API for Publication Frequency (Serials) [MODLD-826](https://folio-org.atlassian.net/browse/MODLD-826)
 - Update serials profile to include Publication Frequency [MODLD-823](https://folio-org.atlassian.net/browse/MODLD-823)
+- Update profiles to include profile name in base display name [MODLD-848](https://folio-org.atlassian.net/browse/MODLD-848)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
