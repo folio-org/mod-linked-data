@@ -20,6 +20,7 @@ public class IssnIT extends PostResourceIT {
       {
          "resource":{
             "http://bibfra.me/vocab/lite/Instance":{
+               "profileId": 3,
                "http://bibfra.me/vocab/marc/title":[
                   {
                      "http://bibfra.me/vocab/marc/Title":{

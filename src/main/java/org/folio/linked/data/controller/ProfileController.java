@@ -19,7 +19,7 @@ public class ProfileController implements ProfileApi {
 
   @Override
   public ResponseEntity<String> getProfileById(Integer profileId) {
-    return ResponseEntity.ok(profileService.getProfileById(profileId));
+    return ResponseEntity.ok(profileService.getProfileById(profileId).getValue());
   }
 
   @Override

@@ -99,7 +99,7 @@ class SubjectMapperUnitTest {
 
 
     // when
-    var result = subjectMapperUnit.toDto(resource, new WorkResponse(), null);
+    var result = subjectMapperUnit.toDto(resource, new WorkResponse(2), null);
 
     // then
     assertThat(result.getSubjects()).hasSize(1);
@@ -138,7 +138,7 @@ class SubjectMapperUnitTest {
     conceptWithSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithSubFocus, subFocus, SUB_FOCUS));
 
     // when
-    var result = subjectMapperUnit.toDto(conceptWithSubFocus, new WorkResponse(), null);
+    var result = subjectMapperUnit.toDto(conceptWithSubFocus, new WorkResponse(2), null);
 
     // then
     assertThat(result.getSubjects()).hasSize(1);
@@ -165,7 +165,7 @@ class SubjectMapperUnitTest {
     conceptWithoutSubFocus.addOutgoingEdge(new ResourceEdge(conceptWithoutSubFocus, focus, FOCUS));
 
     // when
-    var result = subjectMapperUnit.toDto(conceptWithoutSubFocus, new WorkResponse(), null);
+    var result = subjectMapperUnit.toDto(conceptWithoutSubFocus, new WorkResponse(2), null);
 
     // then
     assertThat(result.getSubjects()).hasSize(1);
@@ -187,7 +187,7 @@ class SubjectMapperUnitTest {
     concept.addOutgoingEdge(new ResourceEdge(concept, focusWithNoPreferredFlag, FOCUS));
 
     // when
-    var result = subjectMapperUnit.toDto(concept, new WorkResponse(), null);
+    var result = subjectMapperUnit.toDto(concept, new WorkResponse(2), null);
 
     // then
     assertThat(result.getSubjects()).hasSize(1);

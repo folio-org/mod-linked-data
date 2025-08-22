@@ -1,5 +1,9 @@
 package org.folio.linked.data.service.profile;
 
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.folio.linked.data.util.Constants.Cache.PROFILES;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,13 +13,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Profile;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ResourceTypeRepository;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ProfileServiceImpl implements ProfileService {
   private static final String PROFILE_DIRECTORY = "profiles";
-  private static final Integer ID = 1;
 
   private final ProfileRepository profileRepository;
   private final ResourceTypeRepository typeRepository;
@@ -46,14 +52,9 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
-  public String getProfile() {
-    return getProfileById(ID);
-  }
-
-  @Override
-  public String getProfileById(Integer id) {
+  @Cacheable(value = PROFILES, key = "#id")
+  public Profile getProfileById(Integer id) {
     return profileRepository.findById(id)
-      .map(Profile::getValue)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(id)));
   }
 
@@ -76,15 +77,25 @@ public class ProfileServiceImpl implements ProfileService {
     }
   }
 
-  private Profile toProfileEntity(ProfileDto profile) throws JsonProcessingException {
-    var resourceType = typeRepository.findByUri(profile.resourceType());
-    var profileContent = objectMapper.writeValueAsString(profile.value());
+  private Profile toProfileEntity(ProfileDto profileDto) throws JsonProcessingException {
+    var resourceType = typeRepository.findByUri(profileDto.resourceType());
+    var profileContent = objectMapper.writeValueAsString(profileDto.value());
+    var additionalTypes = isEmpty(profileDto.additionalResourceTypes())
+      ? Set.<ResourceTypeEntity>of()
+      : profileDto.additionalResourceTypes().stream().map(typeRepository::findByUri).collect(toSet());
+
     return new Profile()
-      .setId(profile.id())
-      .setName(profile.name())
+      .setId(profileDto.id())
+      .setName(profileDto.name())
       .setResourceType(resourceType)
-      .setValue(profileContent);
+      .setValue(profileContent)
+      .setAdditionalResourceTypes(additionalTypes);
   }
 
-  record ProfileDto(Integer id, String name, String resourceType, JsonNode value) {}
+  private record ProfileDto(
+    Integer id,
+    String name,
+    String resourceType,
+    Set<String> additionalResourceTypes,
+    JsonNode value) { }
 }

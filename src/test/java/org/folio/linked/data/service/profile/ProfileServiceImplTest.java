@@ -42,7 +42,7 @@ class ProfileServiceImplTest {
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
 
     //when
-    var result = profileService.getProfileById(id);
+    var result = profileService.getProfileById(id).getValue();
 
     //then
     assertEquals(value, result);

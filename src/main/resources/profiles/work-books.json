@@ -2,6 +2,7 @@
   "id": 2,
   "name": "Work",
   "resourceType": "http://bibfra.me/vocab/lite/Work",
+  "additionalResourceTypes": ["http://bibfra.me/vocab/marc/Books"],
   "value": [
     {
       "type": "block",
