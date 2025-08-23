@@ -86,17 +86,6 @@
               },
               {
                 "type": "object",
-                "title": "LocalIdFieldResponse",
-                "properties": {
-                  "LocalId": {
-                    "type": "object",
-                    "$ref": "identifier/LocalIdResponse.json",
-                    "x-json-property": "http://bibfra.me/vocab/lite/LocalId"
-                  }
-                }
-              },
-              {
-                "type": "object",
                 "title": "IanFieldResponse",
                 "properties": {
                   "Ian": {

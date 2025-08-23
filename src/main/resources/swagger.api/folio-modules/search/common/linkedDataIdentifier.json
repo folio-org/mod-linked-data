@@ -12,7 +12,6 @@
         "IAN",
         "ISBN",
         "LCCN",
-        "LocalId",
         "UNKNOWN"
       ],
       "description": "Type of Identifier"

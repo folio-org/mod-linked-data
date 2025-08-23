@@ -223,16 +223,6 @@
           }
         },
         {
-          "http://bibfra.me/vocab/lite/LocalId": {
-            "http://bibfra.me/vocab/marc/localId": [
-              "localId value"
-            ],
-            "http://bibfra.me/vocab/marc/localIdAssigningSource": [
-              "localId assigner"
-            ]
-          }
-        },
-        {
           "http://library.link/identifier/UNKNOWN": {
             "http://bibfra.me/vocab/lite/name": [
               "otherId value"
