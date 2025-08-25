@@ -51,6 +51,7 @@
 - Update serials profile to include Publication Frequency [MODLD-823](https://folio-org.atlassian.net/browse/MODLD-823)
 - Update profiles to include profile name in base display name [MODLD-848](https://folio-org.atlassian.net/browse/MODLD-848)
 - Update profile constraints [MODLD-852](https://folio-org.atlassian.net/browse/MODLD-852)
+- Get Illustration Code using Illustration Dictionary [MODLD-841](https://folio-org.atlassian.net/browse/MODLD-841)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
