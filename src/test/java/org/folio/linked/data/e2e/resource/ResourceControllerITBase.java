@@ -33,7 +33,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
@@ -49,7 +48,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPECIFIED;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
@@ -79,7 +77,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
@@ -152,8 +149,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toLcStatusVal
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLccnStatusLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLccnStatusValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toLccnValue;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toLocalIdAssigner;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toLocalIdValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaTerm;
@@ -595,8 +590,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(54);
-    assertThat(resourceTestService.countEdges()).isEqualTo(53);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
+    assertThat(resourceTestService.countEdges()).isEqualTo(52);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -607,7 +602,7 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
+    assertThat(resourceTestService.countResources()).isEqualTo(52);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(34);
     checkSearchIndexMessage(work.getId(), UPDATE);
@@ -619,8 +614,8 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(54);
-    assertThat(resourceTestService.countEdges()).isEqualTo(53);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
+    assertThat(resourceTestService.countEdges()).isEqualTo(52);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -631,9 +626,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
+    assertThat(resourceTestService.countResources()).isEqualTo(52);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(34);
+    assertThat(resourceTestService.countEdges()).isEqualTo(33);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -720,8 +715,6 @@ abstract class ResourceControllerITBase extends ITBase {
         .andExpect(jsonPath(toLccnValue(), equalTo(List.of("lccn value"))))
         .andExpect(jsonPath(toLccnStatusValue(), equalTo(List.of("lccn status value"))))
         .andExpect(jsonPath(toLccnStatusLink(), equalTo(List.of("http://id/lccn"))))
-        .andExpect(jsonPath(toLocalIdValue(), equalTo(List.of("localId value"))))
-        .andExpect(jsonPath(toLocalIdAssigner(), equalTo(List.of("localId assigner"))))
         .andExpect(jsonPath(toMediaCode(), equalTo("s")))
         .andExpect(jsonPath(toMediaLink(), equalTo("http://id.loc.gov/vocabulary/mediaTypes/s")))
         .andExpect(jsonPath(toMediaTerm(), equalTo("media term")))
@@ -835,7 +828,7 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
     validateLiteral(instance, STATEMENT_OF_RESPONSIBILITY.getValue(), "statement of responsibility");
-    assertThat(instance.getOutgoingEdges()).hasSize(19);
+    assertThat(instance.getOutgoingEdges()).hasSize(18);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateParallelTitle(edgeIterator.next(), instance);
@@ -861,7 +854,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validatePrimaryTitle(edgeIterator.next(), instance);
     validateSupplementaryContent(edgeIterator.next(), instance);
     validateIsbn(edgeIterator.next(), instance);
-    validateLocalId(edgeIterator.next(), instance);
     validateVariantTitle(edgeIterator.next(), instance);
     validateCopyrightDate(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
@@ -1030,25 +1022,6 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(ian.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
     assertThat(ian.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("ian qualifier");
     assertThat(ian.getOutgoingEdges()).isEmpty();
-  }
-
-  private void validateLocalId(ResourceEdge edge, Resource source) {
-    assertThat(edge.getId()).isNotNull();
-    assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(MAP.getUri());
-    var localId = edge.getTarget();
-    assertThat(localId.getLabel()).isEqualTo("localId value");
-    var typesIterator = localId.getTypes().iterator();
-    assertThat(typesIterator.next().getUri()).isEqualTo(ID_LOCAL.getUri());
-    assertThat(typesIterator.next().getUri()).isEqualTo(IDENTIFIER.getUri());
-    assertThat(typesIterator.hasNext()).isFalse();
-    assertThat(localId.getId()).isEqualTo(hashService.hash(localId));
-    assertThat(localId.getDoc().size()).isEqualTo(2);
-    assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).size()).isEqualTo(1);
-    assertThat(localId.getDoc().get(LOCAL_ID_VALUE.getValue()).get(0).asText()).isEqualTo("localId value");
-    assertThat(localId.getDoc().get(ASSIGNING_SOURCE.getValue()).size()).isEqualTo(1);
-    assertThat(localId.getDoc().get(ASSIGNING_SOURCE.getValue()).get(0).asText()).isEqualTo("localId assigner");
-    assertThat(localId.getOutgoingEdges()).isEmpty();
   }
 
   private void validateOtherId(ResourceEdge edge, Resource source) {

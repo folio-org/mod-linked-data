@@ -30,7 +30,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.ASSIGNING_SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
@@ -48,7 +47,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
 import static org.folio.ld.dictionary.PropertyDictionary.ITEM_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
-import static org.folio.ld.dictionary.PropertyDictionary.LOCAL_ID_VALUE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MATERIALS_SPECIFIED;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
@@ -79,7 +77,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LOCAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
@@ -171,15 +168,6 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("ian value");
 
-    var localId = createResource(
-      Map.of(
-        LOCAL_ID_VALUE, List.of("localId value"),
-        ASSIGNING_SOURCE, List.of("localId assigner")
-      ),
-      Set.of(IDENTIFIER, ID_LOCAL),
-      emptyMap()
-    ).setLabel("localId value");
-
     var otherId = createResource(
       Map.of(
         NAME, List.of("otherId value"),
@@ -237,7 +225,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(PE_MANUFACTURE, List.of(manufacture));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(supplementaryContent));
     pred2OutgoingResources.put(ACCESS_LOCATION, List.of(accessLocation));
-    pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ian, localId, otherId));
+    pred2OutgoingResources.put(MAP, List.of(lccn, isbn, ian, otherId));
     pred2OutgoingResources.put(MEDIA, List.of(media));
     pred2OutgoingResources.put(CARRIER, List.of(carrier));
     pred2OutgoingResources.put(COPYRIGHT, List.of(copyrightEvent));
