@@ -48,6 +48,9 @@
 - Publication frequency property removed [MODLD-817](https://folio-org.atlassian.net/browse/MODLD-817)
 - Update profiles to support Instance admin metadata [MODLD-843](https://folio-org.atlassian.net/browse/MODLD-843)
 - API for Publication Frequency (Serials) [MODLD-826](https://folio-org.atlassian.net/browse/MODLD-826)
+- Update serials profile to include Publication Frequency [MODLD-823](https://folio-org.atlassian.net/browse/MODLD-823)
+- Update profiles to include profile name in base display name [MODLD-848](https://folio-org.atlassian.net/browse/MODLD-848)
+- Update profile constraints [MODLD-852](https://folio-org.atlassian.net/browse/MODLD-852)
 - Temporarily remove local identifier handling [MODLD-851](https://folio-org.atlassian.net/browse/MODLD-851)
 
 ## 1.0.4 (04-24-2025)
