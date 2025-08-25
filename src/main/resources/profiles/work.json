@@ -5,7 +5,7 @@
   "value": [
     {
       "type": "block",
-      "displayName": "Work",
+      "displayName": "Work components",
       "bfid": "lde:Profile:Work",
       "uriBFLite": "http://bibfra.me/vocab/lite/Work",
       "children": [
@@ -59,7 +59,7 @@
       "uriBFLite": "_name",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://preprod.id.loc.gov/authorities/names"],
@@ -164,7 +164,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/title",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -196,7 +196,7 @@
       "uriBFLite": "http://bibfra.me/vocab/bflc/nonSortNum",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -210,7 +210,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -224,7 +224,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -238,7 +238,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -268,7 +268,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -282,7 +282,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -296,7 +296,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -310,7 +310,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -324,7 +324,7 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -338,7 +338,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/variantType",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -352,7 +352,7 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -381,7 +381,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -395,7 +395,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -409,7 +409,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -423,7 +423,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -437,7 +437,7 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -451,7 +451,7 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -465,7 +465,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/illustrations",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/millus"],
@@ -481,7 +481,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/governmentPublication",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mgovtpubtype"],
@@ -497,7 +497,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/supplementaryContent",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/msupplcont"],
@@ -513,7 +513,7 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/dateStart",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -571,7 +571,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/targetAudience",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/maudience"],
@@ -609,7 +609,7 @@
       "uriBFLite": "_name",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://preprod.id.loc.gov/authorities/names"],
@@ -708,7 +708,7 @@
       "uriBFLite": "_notes",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -740,7 +740,7 @@
       "uriBFLite": "type",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
@@ -755,7 +755,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/tableOfContents",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -769,7 +769,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/summary",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -820,7 +820,7 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/classification",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -853,7 +853,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/code",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -867,7 +867,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/itemNumber",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -881,7 +881,7 @@
       "uriBFLite": "_assigningSourceReference",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/organizations"],
@@ -897,7 +897,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
@@ -927,7 +927,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/code",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -941,7 +941,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/itemNumber",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -955,7 +955,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/editionNumber",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -969,7 +969,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/edition",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -983,7 +983,7 @@
       "uriBFLite": "_assigningSourceReference",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/organizations"],
@@ -1015,7 +1015,7 @@
       "uriBFLite": "_languages",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -1191,7 +1191,7 @@
       "uriBFLite": "http://bibfra.me/vocab/relation/isPartOf",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": [],
@@ -1252,7 +1252,7 @@
       "uriBFLite": "http://bibfra.me/vocab/marc/characteristic",
       "constraints": {
         "repeatable": true,
-        "editable": false,
+        "editable": true,
         "mandatory": true,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mserialpubtype"],
