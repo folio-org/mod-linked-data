@@ -804,9 +804,9 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkGovPublicationCode(workBase), equalTo("a")))
       .andExpect(jsonPath(toWorkGovPublicationTerm(workBase), equalTo("Autonomous")))
       .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
-      .andExpect(jsonPath(toIllustrationsCode(workBase), equalTo("code")))
-      .andExpect(jsonPath(toIllustrationsLink(workBase), equalTo("http://id.loc.gov/vocabulary/millus/code")))
-      .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("illustrations term")));
+      .andExpect(jsonPath(toIllustrationsCode(workBase), equalTo("a")))
+      .andExpect(jsonPath(toIllustrationsLink(workBase), equalTo("http://id.loc.gov/vocabulary/millus/ill")))
+      .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("Illustrations")));
     if (workBase.equals(toWork())) {
       resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
@@ -1187,8 +1187,8 @@ abstract class ResourceControllerITBase extends ITBase {
       Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/msupplcont/code", CODE.getValue(), "code"),
       "Supplementary Content"
     );
-    validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "illustrations term",
-      Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/code", CODE.getValue(), "code"),
+    validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "Illustrations",
+      Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/ill", CODE.getValue(), "a"),
       "Illustrative Content"
     );
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);

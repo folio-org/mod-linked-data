@@ -571,13 +571,13 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(IS_DEFINED_BY, List.of(categorySet));
     return createResource(
       Map.of(
-        CODE, List.of("code"),
-        TERM, List.of("illustrations term"),
-        LINK, List.of("http://id.loc.gov/vocabulary/millus/code")
+        CODE, List.of("a"),
+        TERM, List.of("Illustrations"),
+        LINK, List.of("http://id.loc.gov/vocabulary/millus/ill")
       ),
       Set.of(CATEGORY),
       pred2OutgoingResources
-    ).setLabel("illustrations term");
+    ).setLabel("Illustrations");
   }
 
   private static Resource createSupplementaryContent() {
