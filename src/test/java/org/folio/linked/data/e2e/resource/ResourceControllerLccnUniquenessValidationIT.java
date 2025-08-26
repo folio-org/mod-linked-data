@@ -23,10 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.LinkedHashMap;
-import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.integration.client.SearchClient;
 import org.folio.linked.data.service.SettingsService;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.junit.jupiter.api.Test;

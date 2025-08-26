@@ -1,7 +1,7 @@
 package org.folio.linked.data.integration;
 
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.client.ConfigurationClient;
+import org.folio.linked.data.integration.client.ConfigurationClient;
 import org.folio.linked.data.integration.model.Config;
 import org.springframework.stereotype.Service;
 

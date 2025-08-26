@@ -1,4 +1,4 @@
-package org.folio.linked.data.client;
+package org.folio.linked.data.integration.client;
 
 import static org.folio.linked.data.util.Constants.Cache.SETTINGS_ENTRIES;
 

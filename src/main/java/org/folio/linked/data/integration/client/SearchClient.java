@@ -1,4 +1,4 @@
-package org.folio.linked.data.client;
+package org.folio.linked.data.integration.client;
 
 import org.folio.linked.data.domain.dto.AuthoritySearchResponse;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;

@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import feign.FeignException;
 import java.util.List;
-import org.folio.linked.data.client.SpecClient;
+import org.folio.linked.data.integration.client.SpecClient;
 import org.folio.rspec.domain.dto.SpecificationDto;
 import org.folio.rspec.domain.dto.SpecificationDtoCollection;
 import org.folio.rspec.domain.dto.SpecificationRuleDto;
