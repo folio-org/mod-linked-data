@@ -55,6 +55,7 @@
 - Temporarily remove local identifier handling [MODLD-851](https://folio-org.atlassian.net/browse/MODLD-851)
 - Detect BOOKS or CONTINUING_RESOURCE type based on profile ID [MODLD-803](https://folio-org.atlassian.net/browse/MODLD-803)
 - Update profile repeatable constraints [MODLD-855](https://folio-org.atlassian.net/browse/MODLD-855)
+- Show the actual domain for the graph in the export file [MODLD-782](https://folio-org.atlassian.net/browse/MODLD-782)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
