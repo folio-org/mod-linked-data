@@ -53,6 +53,7 @@
 - Update profile editable constraints [MODLD-852](https://folio-org.atlassian.net/browse/MODLD-852)
 - Get Illustration Code using Illustration Dictionary [MODLD-841](https://folio-org.atlassian.net/browse/MODLD-841)
 - Temporarily remove local identifier handling [MODLD-851](https://folio-org.atlassian.net/browse/MODLD-851)
+- Detect BOOKS or CONTINUING_RESOURCE type based on profile ID [MODLD-803](https://folio-org.atlassian.net/browse/MODLD-803)
 - Update profile repeatable constraints [MODLD-855](https://folio-org.atlassian.net/browse/MODLD-855)
 
 ## 1.0.4 (04-24-2025)
