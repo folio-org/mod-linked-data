@@ -64,6 +64,8 @@ public class TestUtil {
   public static final String TENANT_ID = "test_tenant";
   public static final String RECORD_DOMAIN_EVENT_TOPIC = "srs.source_records";
   public static final String INVENTORY_INSTANCE_EVENT_TOPIC = "inventory.instance";
+  public static final String INVENTORY_DOMAIN_EVENT_ITEM_TOPIC = "inventory.item";
+  public static final String INVENTORY_DOMAIN_EVENT_HOLDING_TOPIC = "inventory.holdings-record";
   public static final RequestProcessingExceptionBuilder EMPTY_EXCEPTION_BUILDER
     = new RequestProcessingExceptionBuilder(new ErrorResponseConfig());
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper(EMPTY_EXCEPTION_BUILDER);

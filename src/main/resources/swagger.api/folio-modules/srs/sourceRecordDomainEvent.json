@@ -1,7 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Source record domain event data model",
-  "javaType": "org.folio.rest.jaxrs.model.SourceRecordDomainEvent",
   "type": "object",
   "additionalProperties": false,
   "properties": {

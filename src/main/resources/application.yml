@@ -65,6 +65,14 @@ folio:
         concurrency: ${KAFKA_INVENTORY_INSTANCE_EVENT_CONCURRENCY:1}
         topic-pattern: ${KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)inventory.instance}
         group-id: ${folio.environment}-linked-data-inventory-instance-event-group
+      inventory-item-domain-event:
+        concurrency: ${KAFKA_INVENTORY_ITEM_DOMAIN_EVENT_CONCURRENCY:1}
+        topic-pattern: ${KAFKA_INVENTORY_ITEM_DOMAIN_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)inventory.item}
+        group-id: ${folio.environment}-linked-data-inventory-item-domain-event-group
+      inventory-holding-domain-event:
+        concurrency: ${KAFKA_INVENTORY_HOLDING_DOMAIN_EVENT_CONCURRENCY:1}
+        topic-pattern: ${KAFKA_INVENTORY_HOLDING_DOMAIN_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)inventory.holdings-record}
+        group-id: ${folio.environment}-linked-data-inventory-holding-domain-event-group
     retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
     retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:6}
     topics:

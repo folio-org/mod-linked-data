@@ -46,7 +46,7 @@
     "metadata": {
       "description": "Metadata provided by the server",
       "type": "object",
-      "$ref": "sourceRecordMetadata.json",
+      "$ref": "../../common/recordMetadata.json",
       "readonly": true
     }
   },

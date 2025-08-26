@@ -28,3 +28,7 @@ components:
       $ref: folio-modules/srs/sourceRecordDomainEvent.json
     inventoryInstanceEvent:
       $ref: folio-modules/inventory/inventoryInstanceEvent.json
+    inventoryDomainHoldingEvent:
+      $ref: folio-modules/inventory/storage/inventoryDomainHoldingEvent.json
+    inventoryDomainItemEvent:
+      $ref: folio-modules/inventory/storage/inventoryDomainItemEvent.json

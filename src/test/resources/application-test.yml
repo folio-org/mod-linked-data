@@ -18,6 +18,10 @@ folio:
         num-partitions: 1
       - name: inventory.instance
         num-partitions: 1
+      - name: inventory.item
+        num-partitions: 1
+      - name: inventory.holdings-record
+        num-partitions: 1
 
 mod-linked-data:
   reindex:
