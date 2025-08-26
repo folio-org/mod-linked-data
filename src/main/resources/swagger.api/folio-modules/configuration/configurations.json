@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "mod-configuration DTO for multiple configurations",
+  "properties": {
+    "configs": {
+      "description": "configurationData",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "config.json"
+      }
+    },
+    "totalRecords": {
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "configs",
+    "totalRecords"
+  ]
+}

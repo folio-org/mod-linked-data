@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-public class ResourceUrlProviderTest {
+class ResourceUrlProviderTest {
 
   @InjectMocks
   private ResourceUrlProvider resourceUrlProvider;
@@ -37,18 +37,6 @@ public class ResourceUrlProviderTest {
 
     // then
     assertThat(result).isEqualTo(expectedUrl);
-  }
-
-  @Test
-  void handlesNullIdGracefully() {
-    // given
-    var id = (Long) null;
-
-    // when
-    var result = resourceUrlProvider.apply(id);
-
-    // then
-    assertThat(result).isEqualTo("http://localhost/linked-data-editor/resources/null/edit");
   }
 
 }

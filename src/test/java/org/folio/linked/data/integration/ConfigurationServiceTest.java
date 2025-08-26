@@ -5,9 +5,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import org.folio.linked.data.domain.dto.Config;
+import org.folio.linked.data.domain.dto.Configurations;
 import org.folio.linked.data.integration.client.ConfigurationClient;
-import org.folio.linked.data.integration.model.Config;
-import org.folio.linked.data.integration.model.Configurations;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
