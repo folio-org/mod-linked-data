@@ -5,8 +5,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import java.util.Set;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
@@ -25,6 +29,15 @@ public class Profile {
   @ManyToOne
   @JoinColumn(name = "resource_type", nullable = false)
   private ResourceTypeEntity resourceType;
+
+  @OrderBy
+  @ManyToMany
+  @JoinTable(
+    name = "profile_additional_resource_types",
+    joinColumns = @JoinColumn(name = "profile_id"),
+    inverseJoinColumns = @JoinColumn(name = "type_hash")
+  )
+  private Set<ResourceTypeEntity> additionalResourceTypes;
 
   @Type(JsonBinaryType.class)
   private String value;

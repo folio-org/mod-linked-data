@@ -10,4 +10,5 @@
   <include file="functions/resource_subgraph.sql" relativeToChangelogFile="true"/>
   <include file="tables/export_resources.sql" relativeToChangelogFile="true"/>
   <include file="tables/upgrade_folio_metadata_on_delete_cascade.sql" relativeToChangelogFile="true"/>
+  <include file="tables/create-profile_additional_resource_types-table.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

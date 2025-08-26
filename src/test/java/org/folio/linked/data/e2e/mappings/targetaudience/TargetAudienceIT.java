@@ -15,6 +15,7 @@ class TargetAudienceIT extends PostResourceIT {
       {
          "resource":{
             "http://bibfra.me/vocab/lite/Work":{
+               "profileId": 2,
                "http://bibfra.me/vocab/marc/title":[
                   {
                      "http://bibfra.me/vocab/marc/Title":{

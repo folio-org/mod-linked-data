@@ -26,7 +26,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
@@ -39,6 +38,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -56,6 +56,7 @@ import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
@@ -71,6 +72,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final NoteMapper noteMapper;
   private final HashService hashService;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ProfileService profileService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -87,7 +89,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var workDto = ((WorkField) dto).getWork();
     var work = new Resource();
-    work.addTypes(WORK, BOOKS);
+    assignTypes(work, workDto.getProfileId());
     work.setDoc(getDoc(workDto));
     work.setLabel(getFirstValue(() -> getPrimaryMainTitles(workDto.getTitle())));
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTitle(), TITLE);
@@ -112,6 +114,17 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
 
     work.setId(hashService.hash(work));
     return work;
+  }
+
+  private void assignTypes(Resource work, Integer profileId) {
+    work.addTypes(WORK);
+    var profile = profileService.getProfileById(profileId);
+    if (!Objects.equals(WORK.getUri(), profile.getResourceType().getUri())) {
+      throw exceptionBuilder
+        .badRequestException("Profile with id=" + profileId + " is not a work profile", "Bad request");
+    }
+    profile.getAdditionalResourceTypes()
+      .forEach(work::addType);
   }
 
   private JsonNode getDoc(WorkRequest dto) {
