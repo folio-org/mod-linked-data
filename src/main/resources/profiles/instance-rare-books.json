@@ -65,7 +65,7 @@
       "displayName": "Non-sort character count",
       "uriBFLite": "http://bibfra.me/vocab/bflc/nonSortNum",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -79,7 +79,7 @@
       "displayName": "Main Title",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -93,7 +93,7 @@
       "displayName": "Part number",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -107,7 +107,7 @@
       "displayName": "Part name",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -121,7 +121,7 @@
       "displayName": "Other Title Information",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -151,7 +151,7 @@
       "displayName": "Variant Title",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -165,7 +165,7 @@
       "displayName": "Part number",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -179,7 +179,7 @@
       "displayName": "Part name",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -193,7 +193,7 @@
       "displayName": "Other title information",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -207,7 +207,7 @@
       "displayName": "Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -221,7 +221,7 @@
       "displayName": "Variant title type",
       "uriBFLite": "http://bibfra.me/vocab/marc/variantType",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -235,7 +235,7 @@
       "displayName": "Note",
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -264,7 +264,7 @@
       "displayName": "Parallel Title",
       "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -278,7 +278,7 @@
       "displayName": "Other Title Information",
       "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -292,7 +292,7 @@
       "displayName": "Part number",
       "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -306,7 +306,7 @@
       "displayName": "Part name",
       "uriBFLite": "http://bibfra.me/vocab/marc/partName",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -320,7 +320,7 @@
       "displayName": "Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -334,7 +334,7 @@
       "displayName": "Note",
       "uriBFLite": "http://bibfra.me/vocab/lite/note",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -802,7 +802,7 @@
       "displayName": "LCCN",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -844,7 +844,7 @@
       "displayName": "ISBN",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -858,7 +858,7 @@
       "displayName": "Qualifier",
       "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -899,7 +899,7 @@
       "displayName": "ISSN",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -941,7 +941,7 @@
       "displayName": "IAN",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -955,7 +955,7 @@
       "displayName": "Qualifier",
       "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -997,7 +997,7 @@
       "displayName": "Other Identifier",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -1011,7 +1011,7 @@
       "displayName": "Qualifier",
       "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -1059,7 +1059,7 @@
       "displayName": "Note",
       "uriBFLite": "value",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -1073,7 +1073,7 @@
       "displayName": "Note type",
       "uriBFLite": "type",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -1105,7 +1105,7 @@
       "displayName": "Note",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -1119,7 +1119,7 @@
       "displayName": "URL for Supplementary Content",
       "uriBFLite": "http://bibfra.me/vocab/lite/link",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
