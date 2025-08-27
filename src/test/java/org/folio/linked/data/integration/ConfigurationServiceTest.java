@@ -29,7 +29,7 @@ class ConfigurationServiceTest {
     // given
     var folioHost = "http://example.com";
     var configurations = getConfigurations("FOLIO_HOST", folioHost);
-    when(configurationClient.lookupConfigByModuleName("USERSBL")).thenReturn(configurations);
+    when(configurationClient.lookupConfig("USERSBL", "FOLIO_HOST")).thenReturn(configurations);
 
     // when
     var result = configurationService.getFolioHost();
@@ -40,24 +40,11 @@ class ConfigurationServiceTest {
 
   @Test
   void getFolioHost_returnsDefaultFolioHostWhenConfigsAreEmpty() {
-    when(configurationClient.lookupConfigByModuleName("USERSBL"))
+    when(configurationClient.lookupConfig("USERSBL", "FOLIO_HOST"))
       .thenReturn(getConfigurations(null, null));
 
     var result = configurationService.getFolioHost();
 
-    assertThat(result).isEqualTo("http://localhost:8081");
-  }
-
-  @Test
-  void returnsDefaultFolioHostWhenConfigsDoNotContainFolioHostKey() {
-    // given
-    when(configurationClient.lookupConfigByModuleName("USERSBL"))
-      .thenReturn(getConfigurations("OTHER_KEY", "http://example.com"));
-
-    // when
-    var result = configurationService.getFolioHost();
-
-    // then
     assertThat(result).isEqualTo("http://localhost:8081");
   }
 

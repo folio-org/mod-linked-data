@@ -30,7 +30,7 @@ class ResourceUrlProviderTest {
   void returnsCorrectUrlForValidId() {
     // given
     var id = 123L;
-    var expectedUrl = "http://localhost/linked-data-editor/resources/123/edit";
+    var expectedUrl = "http://localhost/linked-data-editor/resources/123";
 
     // when
     var result = resourceUrlProvider.apply(id);

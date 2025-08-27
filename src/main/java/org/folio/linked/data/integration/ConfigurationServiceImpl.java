@@ -15,10 +15,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
   @Override
   public String getFolioHost() {
-    return configurationClient.lookupConfigByModuleName(MODULE_NAME)
+    return configurationClient.lookupConfig(MODULE_NAME, FOLIO_HOST_CONFIG_KEY)
       .getConfigs()
       .stream()
-      .filter(c -> FOLIO_HOST_CONFIG_KEY.equals(c.getCode()))
       .map(Config::getValue)
       .findFirst()
       .orElse(FOLIO_HOST_DEFAULT);

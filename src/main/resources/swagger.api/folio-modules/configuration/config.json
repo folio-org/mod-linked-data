@@ -8,43 +8,17 @@
       "description": "ID of the configuration record",
       "pattern": "^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$"
     },
-    "module": {
-      "type": "string",
-      "description": "Module name"
-    },
-    "configName": {
-      "type": "string",
-      "description": "Configuration name"
-    },
     "code": {
       "type": "string",
       "description": "Configuration code (key)"
     },
-    "description": {
-      "type": "string",
-      "description": "Description of the configuration"
-    },
-    "default": {
-      "type": "boolean",
-      "description": "Indicates if this configuration is a default one"
-    },
-    "enabled": {
-      "type": "boolean",
-      "description": "Indicates if this configuration is enabled"
-    },
     "value": {
       "type": "string",
       "description": "Configuration value"
-    },
-    "userId": {
-      "type": "string",
-      "description": "ID of the user who created or modified the configuration"
     }
   },
   "additionalProperties": false,
   "required": [
-    "module",
-    "configName",
     "code",
     "value"
   ]

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ResourceUrlProvider implements LongFunction<String> {
 
-  private static final String URL_PATTERN = "%s/linked-data-editor/resources/%s/edit";
+  private static final String URL_PATTERN = "%s/linked-data-editor/resources/%s";
   private final ConfigurationService configurationService;
 
 

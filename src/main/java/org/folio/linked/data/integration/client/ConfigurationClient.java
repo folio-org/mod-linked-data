@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface ConfigurationClient {
 
   @SuppressWarnings("java:S7180")
-  @Cacheable(cacheNames = SETTINGS_ENTRIES, key = "#moduleName")
-  @GetMapping("${config.client.path:/entries}?query=module=={moduleName}")
-  Configurations lookupConfigByModuleName(@PathVariable("moduleName") String moduleName);
+  @Cacheable(cacheNames = SETTINGS_ENTRIES, key = "#code")
+  @GetMapping("${config.client.path:/entries}?query=module=={moduleName} and code=={code}")
+  Configurations lookupConfig(@PathVariable("moduleName") String moduleName,
+                              @PathVariable("code") String code);
 
 }
