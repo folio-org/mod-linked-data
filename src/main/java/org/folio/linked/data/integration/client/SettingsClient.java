@@ -1,4 +1,4 @@
-package org.folio.linked.data.client;
+package org.folio.linked.data.integration.client;
 
 import static org.folio.linked.data.util.Constants.Cache.SETTINGS_ENTRIES;
 
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient("settings")
 public interface SettingsClient {
 
+  @SuppressWarnings("java:S7180")
   @Cacheable(cacheNames = SETTINGS_ENTRIES, key = "#query")
   @GetMapping("/entries")
   ResponseEntity<SettingsSearchResponse> getEntries(@RequestParam("query") String query);

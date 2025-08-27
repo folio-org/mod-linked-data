@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.client.SpecClient;
+import org.folio.linked.data.integration.client.SpecClient;
 import org.folio.linked.data.validation.spec.SpecProvider;
 import org.folio.rspec.domain.dto.SpecificationDto;
 import org.folio.rspec.domain.dto.SpecificationDtoCollection;

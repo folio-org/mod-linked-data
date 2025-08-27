@@ -6,9 +6,9 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
-import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.domain.dto.AuthorityItem;
 import org.folio.linked.data.domain.dto.AuthoritySearchResponse;
+import org.folio.linked.data.integration.client.SearchClient;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;

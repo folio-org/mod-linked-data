@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/configurations/entries?query=module==USERSBL%20and%20code==FOLIO_HOST"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n    \"configs\": [\n        {\n            \"id\": \"bad0361b-7918-42fe-9bc0-e8901cf2a4f3\",\n            \"module\": \"USERSBL\",\n            \"configName\": \"FOLIO host\",\n            \"code\": \"FOLIO_HOST\",\n            \"description\": \"FOLIO host address for password reset\",\n            \"default\": true,\n            \"enabled\": true,\n            \"value\": \"https://folio-etesting-snapshot-diku.ci.folio.org\",\n            \"metadata\": {\n                \"createdDate\": \"2025-08-25T03:22:38.750+00:00\",\n                \"updatedDate\": \"2025-08-25T03:22:38.750+00:00\"\n            }\n        }\n    ],\n    \"totalRecords\": 1,\n    \"resultInfo\": {\n        \"totalRecords\": 1,\n        \"facets\": [],\n        \"diagnostics\": []\n    }\n}"
+      }
+    }
+  ]
+}

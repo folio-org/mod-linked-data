@@ -7,9 +7,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.stream.Stream;
-import org.folio.linked.data.client.SettingsClient;
 import org.folio.linked.data.domain.dto.SettingsItem;
 import org.folio.linked.data.domain.dto.SettingsSearchResponse;
+import org.folio.linked.data.integration.client.SettingsClient;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

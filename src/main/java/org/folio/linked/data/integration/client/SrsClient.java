@@ -1,4 +1,4 @@
-package org.folio.linked.data.client;
+package org.folio.linked.data.integration.client;
 
 import org.folio.rest.jaxrs.model.Record;
 import org.springframework.cloud.openfeign.FeignClient;

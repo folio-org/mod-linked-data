@@ -6,8 +6,8 @@ import static java.util.stream.Collectors.joining;
 import java.util.Collection;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.client.SearchClient;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
+import org.folio.linked.data.integration.client.SearchClient;
 import org.springframework.stereotype.Service;
 
 @Service

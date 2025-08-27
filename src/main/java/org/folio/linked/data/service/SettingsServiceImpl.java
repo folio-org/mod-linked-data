@@ -4,8 +4,8 @@ import static java.util.Optional.ofNullable;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.client.SettingsClient;
 import org.folio.linked.data.domain.dto.SettingsItem;
+import org.folio.linked.data.integration.client.SettingsClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

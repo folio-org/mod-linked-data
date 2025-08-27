@@ -1,4 +1,4 @@
-package org.folio.linked.data.client;
+package org.folio.linked.data.integration.client;
 
 import static org.folio.linked.data.util.Constants.Cache.SPEC_RULES;
 
@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+@SuppressWarnings("java:S7180")
 @FeignClient(name = "specification-storage")
 public interface SpecClient {
 
