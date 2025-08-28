@@ -56,7 +56,7 @@
     <lombok.mapstruct-binding.version>0.2.0</lombok.mapstruct-binding.version>
     <hypersistence-utils-hibernate>3.10.3</hypersistence-utils-hibernate>
     <mod-source-record-storage-client.version>5.10.10</mod-source-record-storage-client.version>
-    <mod-record-specifications-dto.version>2.0.1</mod-record-specifications-dto.version>
+    <mod-record-specifications-dto.version>2.0.2</mod-record-specifications-dto.version>
     <maven-checkstyle-plugin.checkstyle.version>11.0.0</maven-checkstyle-plugin.checkstyle.version>
     <jayway-jsonpath.version>2.9.0</jayway-jsonpath.version>
 
