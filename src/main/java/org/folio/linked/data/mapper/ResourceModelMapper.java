@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper;
 
+import static java.util.Objects.isNull;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.lang.annotation.ElementType;
@@ -7,6 +8,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
@@ -31,22 +33,22 @@ public abstract class ResourceModelMapper {
 
   @NotForGeneration
   public Resource toEntity(org.folio.ld.dictionary.model.Resource model) {
-    return toEntity(model, new CyclicGraphContext());
+    return toEntity(model, new ModelToEntityCyclicGraphContext());
   }
 
   @Mapping(target = "folioMetadata",
     expression = "java(model.getFolioMetadata() != null ? mapFolioMetadata(model.getFolioMetadata(), resource) : null)")
   protected abstract Resource toEntity(org.folio.ld.dictionary.model.Resource model,
-                                       @Context CyclicGraphContext cycleContext);
+                                       @Context ModelToEntityCyclicGraphContext cycleContext);
 
   @NotForGeneration
   public org.folio.ld.dictionary.model.Resource toModel(Resource entity) {
-    return toModel(entity, new CyclicGraphContext());
+    return toModel(entity, new EntityToModelCyclicGraphContext());
   }
 
   @Mapping(ignore = true, target = "incomingEdges")
   protected abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity,
-                                                                    @Context CyclicGraphContext cycleContext);
+                                                                    @Context EntityToModelCyclicGraphContext context);
 
   protected Set<ResourceTypeDictionary> map(Set<ResourceTypeEntity> typeEntities) {
     return typeEntities.stream()
@@ -69,31 +71,37 @@ public abstract class ResourceModelMapper {
   protected @interface NotForGeneration {
   }
 
-  protected static class CyclicGraphContext {
-    private final Map<Resource, org.folio.ld.dictionary.model.Resource> convertedModels = new HashMap<>();
-    private final Map<org.folio.ld.dictionary.model.Resource, Resource> convertedEntities = new HashMap<>();
+  protected static class EntityToModelCyclicGraphContext {
+    private final Map<Resource, org.folio.ld.dictionary.model.Resource> modelsNoId = new IdentityHashMap<>();
+    private final Map<Resource, org.folio.ld.dictionary.model.Resource> modelsWithId = new HashMap<>();
 
     @BeforeMapping
+    @SuppressWarnings("java:S2583")
     protected org.folio.ld.dictionary.model.Resource getMappedModel(
       Resource source, @TargetType Class<org.folio.ld.dictionary.model.Resource> target) {
-      return convertedModels.get(source);
+      return isNull(source.getId()) ? modelsNoId.get(source) : modelsWithId.get(source);
     }
 
     @BeforeMapping
+    @SuppressWarnings("java:S2583")
     protected void storeMappedModel(Resource source, @MappingTarget org.folio.ld.dictionary.model.Resource target) {
-      convertedModels.put(source, target);
+      (isNull(source.getId()) ? modelsNoId : modelsWithId).put(source, target);
     }
+  }
+
+  protected static class ModelToEntityCyclicGraphContext {
+    private final Map<org.folio.ld.dictionary.model.Resource, Resource> entitiesNoId = new IdentityHashMap<>();
+    private final Map<org.folio.ld.dictionary.model.Resource, Resource> entitiesWithId = new HashMap<>();
 
     @BeforeMapping
     protected Resource getMappedEntity(org.folio.ld.dictionary.model.Resource source,
                                        @TargetType Class<Resource> target) {
-      return convertedEntities.get(source);
+      return isNull(source.getId()) ? entitiesNoId.get(source) : entitiesWithId.get(source);
     }
 
     @BeforeMapping
     protected void storeMappedEntity(org.folio.ld.dictionary.model.Resource source, @MappingTarget Resource target) {
-      convertedEntities.put(source, target);
+      (isNull(source.getId()) ? entitiesNoId : entitiesWithId).put(source, target);
     }
   }
-
 }
