@@ -3,7 +3,9 @@ package org.folio.linked.data.service.resource.marc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+import static org.folio.ld.dictionary.PredicateDictionary.CATALOGING_LANGUAGE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
@@ -427,13 +429,17 @@ class ResourceMarcBibServiceImplTest {
     // given
     var id = randomLong();
     var adminMetadata = new org.folio.ld.dictionary.model.Resource()
+      .setId(1L)
       .addType(ANNOTATION);
+    var language = new org.folio.ld.dictionary.model.Resource()
+      .addType(LANGUAGE_CATEGORY);
+    adminMetadata.addOutgoingEdge(new ResourceEdge(adminMetadata, language, CATALOGING_LANGUAGE));
     var folioMetadata = new FolioMetadata().setInventoryId(UUID.randomUUID().toString());
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
       .setFolioMetadata(folioMetadata);
-    var edgeModel = new ResourceEdge(resourceModel, adminMetadata, ADMIN_METADATA);
-    resourceModel.addOutgoingEdge(edgeModel);
+    var adminEdge = new ResourceEdge(resourceModel, adminMetadata, ADMIN_METADATA);
+    resourceModel.addOutgoingEdge(adminEdge);
     doReturn(Optional.of((FolioMetadataRepository.IdOnly) () -> id))
       .when(folioMetadataRepo).findIdByInventoryId(folioMetadata.getInventoryId());
 
@@ -442,7 +448,8 @@ class ResourceMarcBibServiceImplTest {
 
     // then
     assertThat(result).isTrue();
-    verify(resourceEdgeService).saveNewResourceEdge(id, edgeModel);
+    verify(resourceEdgeService).saveNewResourceEdge(id, adminEdge.getPredicate(), adminEdge.getTarget());
+    verify(resourceEdgeService).saveNewResourceEdge(adminMetadata.getId(), CATALOGING_LANGUAGE, language);
     verify(resourceEdgeService).deleteEdgesHavingPredicate(id, ADMIN_METADATA);
   }
 

@@ -58,7 +58,7 @@ class ResourceEdgeServiceTest {
       .thenAnswer(i -> i.getArguments()[0]);
 
     // when
-    var result = resourceEdgeService.saveNewResourceEdge(sourceId, edgeModel);
+    var result = resourceEdgeService.saveNewResourceEdge(sourceId, edgeModel.getPredicate(), edgeModel.getTarget());
 
     // then
     assertThat(result.getSourceHash()).isEqualTo(edgeModel.getSource().getId());
