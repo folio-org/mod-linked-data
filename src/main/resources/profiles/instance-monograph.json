@@ -1,6 +1,6 @@
 {
   "id": 3,
-  "name": "Monograph",
+  "name": "Monograph Instance",
   "resourceType": "http://bibfra.me/vocab/lite/Instance",
   "value": [
     {
