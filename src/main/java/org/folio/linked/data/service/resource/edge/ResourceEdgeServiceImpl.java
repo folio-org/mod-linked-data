@@ -46,11 +46,13 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   }
 
   @Override
-  public ResourceEdgePk saveNewResourceEdge(Long sourceId, org.folio.ld.dictionary.model.ResourceEdge edgeModel) {
+  public ResourceEdgePk saveNewResourceEdge(Long sourceId,
+                                            PredicateDictionary predicate,
+                                            org.folio.ld.dictionary.model.Resource target) {
     var sourceRef = new Resource().setId(sourceId);
-    var target = resourceModelMapper.toEntity(edgeModel.getTarget());
-    var savedTarget = resourceRepository.save(target);
-    var edge = new ResourceEdge(sourceRef, savedTarget, new PredicateEntity(edgeModel.getPredicate()));
+    var targetEntity = resourceModelMapper.toEntity(target);
+    var savedTarget = resourceRepository.save(targetEntity);
+    var edge = new ResourceEdge(sourceRef, savedTarget, new PredicateEntity(predicate));
     edge.computeId();
     return resourceEdgeRepository.save(edge).getId();
   }

@@ -131,11 +131,11 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       log.info("Incoming Resource with id [{}] doesn't contain Inventory ID", modelResource.getId());
       return false;
     }
-    var adminMetadataEdge = modelResource.getOutgoingEdges().stream()
+    var adminEdge = modelResource.getOutgoingEdges().stream()
       .filter(re -> ADMIN_METADATA.equals(re.getPredicate()))
       .findFirst()
       .orElse(null);
-    if (isNull(adminMetadataEdge)) {
+    if (isNull(adminEdge)) {
       log.info("Incoming Resource with id [{}] doesn't contain AdminMetadata", modelResource.getId());
       return false;
     }
@@ -146,7 +146,12 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     }
     var resourceId = idOptional.get().getId();
     removeExistingAdminMetadataIfAny(resourceId);
-    var edgeId = resourceEdgeService.saveNewResourceEdge(resourceId, adminMetadataEdge);
+    var edgeId = resourceEdgeService.saveNewResourceEdge(resourceId, adminEdge.getPredicate(), adminEdge.getTarget());
+    adminEdge.getTarget()
+      .getOutgoingEdges()
+      .forEach(
+        e -> resourceEdgeService.saveNewResourceEdge(e.getSource().getId(), e.getPredicate(), e.getTarget())
+      );
     log.info("New AdminMetadata has been added and saved under id [{}]", edgeId);
     return true;
   }
