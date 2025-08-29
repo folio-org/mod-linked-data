@@ -1,6 +1,6 @@
 {
   "id": 5,
-  "name": "Serials",
+  "name": "Serial Instance",
   "resourceType": "http://bibfra.me/vocab/lite/Instance",
   "value": [
     {

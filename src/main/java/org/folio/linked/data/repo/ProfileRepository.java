@@ -5,5 +5,5 @@ import org.folio.linked.data.model.entity.Profile;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ProfileRepository extends CrudRepository<Profile, Integer> {
-  List<Profile> findByResourceTypeUri(String resourceTypeUri);
+  List<Profile> findByResourceTypeUriOrderByIdAsc(String resourceTypeUri);
 }
