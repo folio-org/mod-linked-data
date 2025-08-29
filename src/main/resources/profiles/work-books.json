@@ -897,7 +897,7 @@
       "displayName": "Used by assigning agency?",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
