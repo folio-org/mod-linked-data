@@ -1,12 +1,12 @@
 {
-  "id": 2,
-  "name": "Monograph Work",
+  "id": 6,
+  "name": "Serial Work",
   "resourceType": "http://bibfra.me/vocab/lite/Work",
-  "additionalResourceTypes": ["http://bibfra.me/vocab/marc/Books"],
+  "additionalResourceTypes": ["http://bibfra.me/vocab/marc/ContinuingResources"],
   "value": [
     {
       "type": "block",
-      "displayName": "Work components - Books",
+      "displayName": "Work components - Serials",
       "bfid": "lde:Profile:Work",
       "uriBFLite": "http://bibfra.me/vocab/lite/Work",
       "children": [
@@ -27,7 +27,8 @@
         "Profile:Work:ClassificationNumbers",
         "Profile:Work:ContentType",
         "Profile:Work:LanguageCode",
-        "Profile:Work:PartOfSeries"
+        "Profile:Work:PartOfSeries",
+        "Profile:Work:TypeOfContinuingResource"
       ],
       "id": "Profile:Work"
     },
@@ -1245,6 +1246,22 @@
         "valueDataType": {}
       },
       "id": "Profile:Work:PartOfSeries:SeriesEnumeration"
+    },
+    {
+      "type": "simple",
+      "displayName": "Type of continuing resource",
+      "uriBFLite": "http://bibfra.me/vocab/marc/characteristic",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/mserialpubtype"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bflc/SerialPubType"
+        }
+      },
+      "id": "Profile:Work:TypeOfContinuingResource"
     }
   ]
 }

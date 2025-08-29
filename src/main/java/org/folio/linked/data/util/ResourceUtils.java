@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
@@ -176,5 +177,10 @@ public class ResourceUtils {
       .map(doc -> doc.get(property.getValue()))
       .map(node -> stream(node.spliterator(), false).map(JsonNode::asText).toList())
       .orElse(List.of());
+  }
+
+  public static boolean hasEdge(Resource resource, PredicateDictionary predicate) {
+    return resource.getOutgoingEdges().stream()
+      .anyMatch(re -> predicate.getUri().equals(re.getPredicate().getUri()));
   }
 }

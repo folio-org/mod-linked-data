@@ -100,7 +100,7 @@ class PreferredProfileIT {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("$[0].id", equalTo(3)))
-      .andExpect(jsonPath("$[0].name", equalTo("Monograph")))
+      .andExpect(jsonPath("$[0].name", equalTo("Monograph Instance")))
       .andExpect(jsonPath("$[0].resourceType", equalTo("http://bibfra.me/vocab/lite/Instance")))
       .andExpect(jsonPath("$.length()", equalTo(1)));
   }
