@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 @Mapper(componentModel = SPRING)
 public abstract class EntityNotFoundExceptionMapper {
 
+  private static final Pattern ID_PATTERN = Pattern.compile("id (\\S+)");
   @Autowired
   private ErrorResponseConfig errorResponseConfig;
 
@@ -49,8 +50,7 @@ public abstract class EntityNotFoundExceptionMapper {
   }
 
   private String parseId(String message) {
-    var pattern = Pattern.compile("id (\\S+)");
-    var matcher = pattern.matcher(message);
+    var matcher = ID_PATTERN.matcher(message);
     if (matcher.find()) {
       return matcher.group(1);
     }

@@ -92,7 +92,7 @@ class SourceRecordDomainEventHandlerIT {
   }
 
   @BeforeEach
-  public void clean() {
+  void clean() {
     tenantScopedExecutionService.execute(TENANT_ID,
       () -> {
         cleanResourceTables(jdbcTemplate);
