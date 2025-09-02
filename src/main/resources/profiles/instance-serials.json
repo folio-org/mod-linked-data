@@ -15,6 +15,7 @@
         "Profile:Instance:ProvisionActivity",
         "Profile:Instance:CopyrightDate",
         "Profile:Instance:ModeOfIssuance",
+        "Profile:Instance:Frequency",
         "Profile:Instance:Identifiers",
         "Profile:Instance:NotesAboutTheInstance",
         "Profile:Instance:SupplementaryContentNote",
@@ -23,7 +24,6 @@
         "Profile:Instance:Dimensions",
         "Profile:Instance:CarrierType",
         "Profile:Instance:URLOfInstance",
-        "Profile:Instance:Frequency",
         "Profile:Instance:AdminMetadata"
       ],
       "id": "Profile:Instance"
