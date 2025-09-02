@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.profile;
 
 import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -47,27 +48,20 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
 
   @Override
   public Integer resolveProfileId(Resource resource) {
-    var resourceType = getResourceType(resource);
     return resourceProfileRepository.findProfileIdByResourceHash(resource.getId())
       .map(ResourceProfileRepository.ProfileIdProjection::getProfileId)
-      .or(() -> getUserPreferredProfileId(resourceType))
-      .orElseGet(() -> getDefaultProfileId(resource));
+      .orElseGet(() -> selectAppropriateProfile(resource));
   }
 
-  private Optional<Integer> getUserPreferredProfileId(ResourceType resourceType) {
-    return preferredProfileService
-      .getPreferredProfiles(resourceType.getUri())
-      .stream()
-      .findFirst()
-      .map(ProfileMetadata::getId);
-  }
-
-  private Integer getDefaultProfileId(Resource resource) {
+  private Integer selectAppropriateProfile(Resource resource) {
     if (resource.isOfType(WORK)) {
       if (resource.isOfType(CONTINUING_RESOURCES)) {
         return WORK_SERIAL_PROFILE_ID;
       }
-      return WORK_MONOGRAPH_PROFILE_ID;
+      if (resource.isOfType(BOOKS)) {
+        return WORK_MONOGRAPH_PROFILE_ID;
+      }
+      return getUserPreferredProfileId(resource).orElse(WORK_MONOGRAPH_PROFILE_ID);
     }
     if (resource.isOfType(INSTANCE)) {
       if (hasEdge(resource, BOOK_FORMAT)) {
@@ -77,9 +71,17 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
         .stream()
         .anyMatch(pw -> pw.isOfType(CONTINUING_RESOURCES))
         ? INSTANCE_SERIAL_PROFILE_ID
-        : INSTANCE_MONOGRAPH_PROFILE_ID;
+        : getUserPreferredProfileId(resource).orElse(INSTANCE_MONOGRAPH_PROFILE_ID);
     }
     throw exceptionBuilder.notSupportedException(String.join(", ", getTypeUris(resource)), "Profile Linking");
+  }
+
+  private Optional<Integer> getUserPreferredProfileId(Resource resource) {
+    return preferredProfileService
+      .getPreferredProfiles(getResourceType(resource).getUri())
+      .stream()
+      .findFirst()
+      .map(ProfileMetadata::getId);
   }
 
   private ResourceType getResourceType(Resource resource) {

@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCE
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -100,7 +101,7 @@ class ResourceProfileLinkingServiceImplTest {
   void shouldResolveProfileId_returnDefaultProfileId(int expectedProfileId, Resource resource) {
     // given
     when(resourceProfileRepository.findProfileIdByResourceHash(resource.getId())).thenReturn(Optional.empty());
-    when(preferredProfileService.getPreferredProfiles(any())).thenReturn(List.of());
+    lenient().when(preferredProfileService.getPreferredProfiles(any())).thenReturn(List.of());
 
     // when
     var result = resourceProfileLinkingService.resolveProfileId(resource);

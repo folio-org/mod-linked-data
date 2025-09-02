@@ -1,6 +1,6 @@
 {
   "id": 6,
-  "name": "Serial Work",
+  "name": "Serials Work",
   "resourceType": "http://bibfra.me/vocab/lite/Work",
   "additionalResourceTypes": ["http://bibfra.me/vocab/marc/ContinuingResources"],
   "value": [

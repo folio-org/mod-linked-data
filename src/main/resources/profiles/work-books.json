@@ -1,6 +1,6 @@
 {
   "id": 2,
-  "name": "Monograph Work",
+  "name": "Books",
   "resourceType": "http://bibfra.me/vocab/lite/Work",
   "additionalResourceTypes": ["http://bibfra.me/vocab/marc/Books"],
   "value": [
