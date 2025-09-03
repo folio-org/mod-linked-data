@@ -34,6 +34,7 @@ class ProfileControllerIT {
     "3, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
     "4, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
     "5, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
+    "6, lde:Profile:Work,     http://bibfra.me/vocab/lite/Work",
   })
   void getProfileById_returnsProfile(long id, String expectedId, String expectedResourceType) throws Exception {
     //given
@@ -84,7 +85,10 @@ class ProfileControllerIT {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("$[0].id", equalTo(2)))
-      .andExpect(jsonPath("$[0].name", equalTo("Work")))
-      .andExpect(jsonPath("$[0].resourceType", equalTo("http://bibfra.me/vocab/lite/Work")));
+      .andExpect(jsonPath("$[0].name", equalTo("Books")))
+      .andExpect(jsonPath("$[0].resourceType", equalTo("http://bibfra.me/vocab/lite/Work")))
+      .andExpect(jsonPath("$[1].id", equalTo(6)))
+      .andExpect(jsonPath("$[1].name", equalTo("Serials Work")))
+      .andExpect(jsonPath("$[1].resourceType", equalTo("http://bibfra.me/vocab/lite/Work")));
   }
 }

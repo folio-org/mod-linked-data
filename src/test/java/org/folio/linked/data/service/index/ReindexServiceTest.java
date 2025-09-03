@@ -38,7 +38,7 @@ class ReindexServiceTest {
   private BatchIndexService batchIndexService;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     ReflectionTestUtils.setField(reindexService, "reindexPageSize", 100);
   }
 

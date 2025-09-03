@@ -75,7 +75,7 @@ class WorkCreatorIT extends PostResourceIT {
     assertThat(creator).isEqualTo(author).isEqualTo(editor);
 
     var contributors = getOutgoingResources(work, "http://bibfra.me/vocab/lite/contributor");
-    assertThat(contributors.size()).isEqualTo(2);
+    assertThat(contributors).hasSize(2);
     assertThat(contributors)
       .extracting(Resource::getId, Resource::getLabel)
       .containsExactlyInAnyOrder(
