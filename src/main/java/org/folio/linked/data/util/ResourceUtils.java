@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
@@ -38,7 +40,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 @UtilityClass
 public class ResourceUtils {
 
-  private static final String DATE_CLEAN_PATTERN = "[^0-9T:\\-+.]";
+  private static final Pattern DATE_CLEAN_PATTERN = Pattern.compile("[^0-9T:\\-+.]");
   private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
     .appendOptional(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -67,7 +69,7 @@ public class ResourceUtils {
 
   public static String cleanDate(String initialValue) {
     return ofNullable(initialValue)
-      .map(iv -> iv.replaceAll(DATE_CLEAN_PATTERN, ""))
+      .map(iv -> DATE_CLEAN_PATTERN.matcher(iv).replaceAll(""))
       .filter(StringUtils::isNotEmpty)
       .map(cleanedValue -> {
         try {
@@ -176,5 +178,10 @@ public class ResourceUtils {
       .map(doc -> doc.get(property.getValue()))
       .map(node -> stream(node.spliterator(), false).map(JsonNode::asText).toList())
       .orElse(List.of());
+  }
+
+  public static boolean hasEdge(Resource resource, PredicateDictionary predicate) {
+    return resource.getOutgoingEdges().stream()
+      .anyMatch(re -> predicate.getUri().equals(re.getPredicate().getUri()));
   }
 }

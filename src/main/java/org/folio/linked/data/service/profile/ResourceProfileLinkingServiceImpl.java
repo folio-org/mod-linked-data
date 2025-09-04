@@ -1,8 +1,13 @@
 package org.folio.linked.data.service.profile;
 
+import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
+import static org.folio.linked.data.util.ResourceUtils.hasEdge;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinkingService {
-  private static final Integer WORK_PROFILE_ID = 2;
-  private static final Integer MONOGRAPH_PROFILE_ID = 3;
+  private static final Integer WORK_MONOGRAPH_PROFILE_ID = 2;
+  private static final Integer WORK_SERIAL_PROFILE_ID = 6;
+  private static final Integer INSTANCE_MONOGRAPH_PROFILE_ID = 3;
+  private static final Integer INSTANCE_RARE_BOOKS_PROFILE_ID = 4;
+  private static final Integer INSTANCE_SERIAL_PROFILE_ID = 5;
 
   private final ResourceProfileRepository resourceProfileRepository;
   private final PreferredProfileService preferredProfileService;
@@ -40,23 +48,37 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
 
   @Override
   public Integer resolveProfileId(Resource resource) {
-    var resourceType = getResourceType(resource);
     return resourceProfileRepository.findProfileIdByResourceHash(resource.getId())
       .map(ResourceProfileRepository.ProfileIdProjection::getProfileId)
-      .or(() -> getUserPreferredProfileId(resourceType))
-      .orElseGet(() -> getDefaultProfileId(resourceType));
+      .orElseGet(() -> selectAppropriateProfile(resource));
   }
 
-  private Integer getDefaultProfileId(ResourceType resourceType) {
-    if (resourceType == WORK) {
-      return WORK_PROFILE_ID;
+  private Integer selectAppropriateProfile(Resource resource) {
+    if (resource.isOfType(WORK)) {
+      if (resource.isOfType(CONTINUING_RESOURCES)) {
+        return WORK_SERIAL_PROFILE_ID;
+      }
+      if (resource.isOfType(BOOKS)) {
+        return WORK_MONOGRAPH_PROFILE_ID;
+      }
+      return getUserPreferredProfileId(resource).orElse(WORK_MONOGRAPH_PROFILE_ID);
     }
-    return MONOGRAPH_PROFILE_ID;
+    if (resource.isOfType(INSTANCE)) {
+      if (hasEdge(resource, BOOK_FORMAT)) {
+        return INSTANCE_RARE_BOOKS_PROFILE_ID;
+      }
+      return extractWorkFromInstance(resource)
+        .stream()
+        .anyMatch(pw -> pw.isOfType(CONTINUING_RESOURCES))
+        ? INSTANCE_SERIAL_PROFILE_ID
+        : getUserPreferredProfileId(resource).orElse(INSTANCE_MONOGRAPH_PROFILE_ID);
+    }
+    throw exceptionBuilder.notSupportedException(String.join(", ", getTypeUris(resource)), "Profile Linking");
   }
 
-  private Optional<Integer> getUserPreferredProfileId(ResourceType resourceType) {
+  private Optional<Integer> getUserPreferredProfileId(Resource resource) {
     return preferredProfileService
-      .getPreferredProfiles(resourceType.getUri())
+      .getPreferredProfiles(getResourceType(resource).getUri())
       .stream()
       .findFirst()
       .map(ProfileMetadata::getId);

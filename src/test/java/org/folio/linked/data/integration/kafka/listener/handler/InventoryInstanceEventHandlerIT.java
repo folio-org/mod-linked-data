@@ -35,7 +35,7 @@ class InventoryInstanceEventHandlerIT {
   private FolioMetadataRepository folioMetadataRepository;
 
   @BeforeEach
-  public void clean() {
+  void clean() {
     tenantScopedExecutionService.execute(TENANT_ID,
       () -> {
         kafkaSearchWorkIndexTopicListener.getMessages().clear();
