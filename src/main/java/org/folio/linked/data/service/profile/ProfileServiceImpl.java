@@ -61,7 +61,7 @@ public class ProfileServiceImpl implements ProfileService {
   @Override
   public List<ProfileMetadata> getMetadataByResourceType(String resourceTypeUri) {
     return profileRepository
-      .findByResourceTypeUri(resourceTypeUri)
+      .findByResourceTypeUriOrderByIdAsc(resourceTypeUri)
       .stream()
       .map(profile -> new ProfileMetadata(profile.getId(), profile.getName(), profile.getResourceType().getUri()))
       .toList();
