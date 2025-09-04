@@ -19,8 +19,6 @@ abstract class DatabaseITBase {
             WHERE table_type = 'BASE TABLE' AND table_schema = ?
     """;
 
-  @Value("${spring.application.name}")
-  private String appName;
   @Value("${spring.jpa.properties.hibernate.default_schema}")
   private String schema;
 
