@@ -817,7 +817,7 @@
       "displayName": "Invalid/Canceled?",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -873,7 +873,7 @@
       "displayName": "Incorrect, Invalid or Canceled?",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -914,7 +914,7 @@
       "displayName": "Incorrect, Invalid, or Canceled?",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -970,7 +970,7 @@
       "displayName": "Invalid/Canceled?",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -1026,7 +1026,7 @@
       "displayName": "Invalid/Canceled?",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": true,
         "defaults": [],
