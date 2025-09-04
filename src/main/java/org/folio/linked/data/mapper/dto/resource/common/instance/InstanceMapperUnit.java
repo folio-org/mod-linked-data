@@ -67,6 +67,7 @@ import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
@@ -85,6 +86,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
   private final NoteMapper noteMapper;
   private final FolioMetadataMapper folioMetadataMapper;
   private final HashService hashService;
+  private final ResourceProfileLinkingService resourceProfileService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -96,6 +98,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
         .ifPresent(instance::setFolioMetadata);
       ofNullable(resourceToConvert.getDoc())
         .ifPresent(doc -> instance.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      instance.setProfileId(resourceProfileService.resolveProfileId(resourceToConvert));
       resourceDto.resource(new InstanceResponseField().instance(instance));
     }
     return parentDto;

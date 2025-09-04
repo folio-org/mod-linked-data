@@ -57,6 +57,7 @@ import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.profile.ProfileService;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
@@ -73,6 +74,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final HashService hashService;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ProfileService profileService;
+  private final ResourceProfileLinkingService resourceProfileService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -80,6 +82,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
       var work = coreMapper.toDtoWithEdges(resourceToConvert, WorkResponse.class, true);
       work.setId(String.valueOf(resourceToConvert.getId()));
       ofNullable(resourceToConvert.getDoc()).ifPresent(doc -> work.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      work.setProfileId(resourceProfileService.resolveProfileId(resourceToConvert));
       resourceDto.setResource(new WorkResponseField().work(work));
     }
     return parentDto;
