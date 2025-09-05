@@ -165,6 +165,7 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitl
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitlePartName;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitlePartNumber;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitleSubtitle;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toProfileId;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toProjectedProvisionDate;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventDate;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEventName;
@@ -671,6 +672,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(instanceBase, notNullValue()))
       .andExpect(jsonPath(toId(instanceBase), notNullValue()))
+      .andExpect(jsonPath(toProfileId(instanceBase), notNullValue()))
       .andExpect(jsonPath(toCarrierCode(instanceBase), equalTo("ha")))
       .andExpect(jsonPath(toCarrierLink(instanceBase), equalTo("http://id.loc.gov/vocabulary/carriers/ha")))
       .andExpect(jsonPath(toCarrierTerm(instanceBase), equalTo("carrier term")))
@@ -761,6 +763,7 @@ abstract class ResourceControllerITBase extends ITBase {
   private void validateWorkResponse(ResultActions resultActions, String workBase) throws Exception {
     resultActions
       .andExpect(jsonPath(toId(workBase), notNullValue()))
+      .andExpect(jsonPath(toProfileId(workBase), notNullValue()))
       .andExpect(jsonPath(toPrimaryTitlePartName(workBase), equalTo(List.of("Primary: partName"))))
       .andExpect(jsonPath(toPrimaryTitlePartNumber(workBase), equalTo(List.of("Primary: partNumber"))))
       .andExpect(jsonPath(toPrimaryTitleMain(workBase), equalTo(List.of("Primary: mainTitle"))))

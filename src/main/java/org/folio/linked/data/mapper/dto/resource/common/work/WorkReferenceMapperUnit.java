@@ -19,6 +19,7 @@ import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,6 +36,7 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
   private final NoteMapper noteMapper;
   private final ResourceRepository resourceRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ResourceProfileLinkingService resourceProfileService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -43,6 +45,7 @@ public class WorkReferenceMapperUnit implements SingleResourceMapperUnit {
       workResponse.setId(String.valueOf(resourceToConvert.getId()));
       ofNullable(resourceToConvert.getDoc())
         .ifPresent(doc -> workResponse.setNotes(noteMapper.toNotes(doc, SUPPORTED_NOTES)));
+      workResponse.setProfileId(resourceProfileService.resolveProfileId(resourceToConvert));
       instance.addWorkReferenceItem(workResponse);
     }
     return parentDto;
