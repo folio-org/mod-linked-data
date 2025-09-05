@@ -58,6 +58,7 @@
 - Show the actual domain for the graph in the export file [MODLD-782](https://folio-org.atlassian.net/browse/MODLD-782)
 - Computing default profile ID for Work and Instance [MODLD-854](https://folio-org.atlassian.net/browse/MODLD-854)
 - Update simple type field repeatability in profiles [MODLD-862](https://folio-org.atlassian.net/browse/MODLD-862)
+- Update export view to include inventory ID column [MODLD-860](https://folio-org.atlassian.net/browse/MODLD-860)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
