@@ -38,8 +38,8 @@ class PreferredProfileServiceTest {
   @Test
   void setPreferredProfile_shouldUpdateExistedRecord() {
     // given
-    var newPrefferedProfile = new Profile().setId(2);
-    doReturn(Optional.of(newPrefferedProfile)).when(profileRepository).findById(newPrefferedProfile.getId());
+    var newPreferredProfile = new Profile().setId(2);
+    doReturn(Optional.of(newPreferredProfile)).when(profileRepository).findById(newPreferredProfile.getId());
     var resourceTypeEntity = new ResourceTypeEntity(INSTANCE.getHash(), INSTANCE.getUri(), null);
     doReturn(resourceTypeEntity).when(typeRepository).findByUri(resourceTypeEntity.getUri());
     var userId = UUID.randomUUID();
@@ -51,11 +51,11 @@ class PreferredProfileServiceTest {
     doReturn(Optional.of(existedRecord)).when(preferredProfileRepository).findById(ppId);
 
     // when
-    service.setPreferredProfile(newPrefferedProfile.getId(), resourceTypeEntity.getUri());
+    service.setPreferredProfile(newPreferredProfile.getId(), resourceTypeEntity.getUri());
 
     // then
     verify(preferredProfileRepository).findById(ppId);
-    verify(preferredProfileRepository).save(existedRecord.setProfile(newPrefferedProfile));
+    verify(preferredProfileRepository).save(existedRecord.setProfile(newPreferredProfile));
   }
 
 }
