@@ -5,10 +5,13 @@
 create or replace view export_resources as
   select
     r.resource_hash,
-    export_subgraph(r.resource_hash, 4) as resource_subgraph
+    fm.inventory_id,
+    export_subgraph(r.resource_hash, 7) as resource_subgraph
   from
-    resources r;
+    resources r
+      left outer join folio_metadata as fm
+      on r.resource_hash = fm.resource_hash;
 
-comment on view export_resources is 'Export JSON for resources to a depth of 4: select * from resource_view where resource_hash = :resource_id';
+comment on view export_resources is 'Export JSON for resources to a depth of 7: select * from resource_view where resource_hash = :resource_id';
 
 --rollback drop view if exists export_resources;

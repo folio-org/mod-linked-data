@@ -80,7 +80,7 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
       connectResources(instance, issn, MAP);
     });
 
-    setResourceIds(work, instance, series, issnOpt.orElse(null));
+    setResourceIds(issnOpt.orElse(null), series, work, instance);
 
     return work;
   }

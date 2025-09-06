@@ -519,6 +519,10 @@ public class ResourceJsonPath {
     return join(".", base, path("id"));
   }
 
+  public static String toProfileId(String base) {
+    return join(".", base, path("profileId"));
+  }
+
   public static String path(String path) {
     return "['%s']".formatted(path);
   }
