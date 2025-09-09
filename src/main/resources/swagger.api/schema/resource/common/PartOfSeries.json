@@ -17,14 +17,14 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/issn"
+          "x-json-property": "http://bibfra.me/vocab/library/issn"
         },
         "volume": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/volume"
+          "x-json-property": "http://bibfra.me/vocab/library/volume"
         }
       }
     }

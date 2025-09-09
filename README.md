@@ -83,27 +83,27 @@ curl --location '{{ base-uri }}/linked-data/resource' \
 --data '{
     "resource": {
     "http://bibfra.me/vocab/lite/Work":{
-      "http://bibfra.me/vocab/marc/title":[
+      "http://bibfra.me/vocab/library/title":[
         {
-          "http://bibfra.me/vocab/marc/Title":{
+          "http://bibfra.me/vocab/library/Title":{
             "http://bibfra.me/vocab/bflc/nonSortNum":[
               "4"
             ],
-            "http://bibfra.me/vocab/marc/mainTitle":[
+            "http://bibfra.me/vocab/library/mainTitle":[
               "The main title"
             ],
-            "http://bibfra.me/vocab/marc/partNumber":[
+            "http://bibfra.me/vocab/library/partNumber":[
               "1"
             ],
-            "http://bibfra.me/vocab/marc/partName":[
+            "http://bibfra.me/vocab/library/partName":[
               "part 1"
             ]
           }
         }
       ],
-      "http://bibfra.me/vocab/marc/governmentPublication":[
+      "http://bibfra.me/vocab/library/governmentPublication":[
         {
-          "http://bibfra.me/vocab/marc/term":[
+          "http://bibfra.me/vocab/library/term":[
             "Government"
           ],
           "http://bibfra.me/vocab/lite/link":[
@@ -114,7 +114,7 @@ curl --location '{{ base-uri }}/linked-data/resource' \
       "http://bibfra.me/vocab/lite/dateStart":[
         "2024"
       ],
-      "http://bibfra.me/vocab/marc/originPlace":[
+      "http://bibfra.me/vocab/library/originPlace":[
         {
           "http://bibfra.me/vocab/lite/label":[
             "United States"
@@ -127,9 +127,9 @@ curl --location '{{ base-uri }}/linked-data/resource' \
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/targetAudience":[
+      "http://bibfra.me/vocab/library/targetAudience":[
         {
-          "http://bibfra.me/vocab/marc/term":[
+          "http://bibfra.me/vocab/library/term":[
             "Preschool"
           ],
           "http://bibfra.me/vocab/lite/link":[
@@ -137,24 +137,24 @@ curl --location '{{ base-uri }}/linked-data/resource' \
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/tableOfContents":[
+      "http://bibfra.me/vocab/library/tableOfContents":[
         "Table of contents"
       ],
-      "http://bibfra.me/vocab/marc/summary":[
+      "http://bibfra.me/vocab/library/summary":[
         "Summary note"
       ],
       "http://bibfra.me/vocab/lite/classification":[
         {
-          "http://bibfra.me/vocab/marc/code":[
+          "http://bibfra.me/vocab/library/code":[
             "Lib-Congress-number"
           ],
-          "http://bibfra.me/vocab/marc/source":[
+          "http://bibfra.me/vocab/library/source":[
             "lc"
           ],
-          "http://bibfra.me/vocab/marc/itemNumber": [
+          "http://bibfra.me/vocab/library/itemNumber": [
             "Lib-Congress-number-item"
           ],
-          "http://bibfra.me/vocab/marc/status": [
+          "http://bibfra.me/vocab/library/status": [
             {
               "http://bibfra.me/vocab/lite/label": [
                 "used by assigner"
@@ -166,26 +166,26 @@ curl --location '{{ base-uri }}/linked-data/resource' \
           ]
         },
         {
-          "http://bibfra.me/vocab/marc/code":[
+          "http://bibfra.me/vocab/library/code":[
             "Dewey-number"
           ],
-          "http://bibfra.me/vocab/marc/source":[
+          "http://bibfra.me/vocab/library/source":[
             "ddc"
           ],
-          "http://bibfra.me/vocab/marc/itemNumber": [
+          "http://bibfra.me/vocab/library/itemNumber": [
             "Dewey-number-item"
           ],
-          "http://bibfra.me/vocab/marc/editionNumber": [
+          "http://bibfra.me/vocab/library/editionNumber": [
             "Dewey-number-editionNumber"
           ],
-          "http://bibfra.me/vocab/marc/edition": [
+          "http://bibfra.me/vocab/library/edition": [
             "Dewey-number-edition"
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/content":[
+      "http://bibfra.me/vocab/library/content":[
         {
-          "http://bibfra.me/vocab/marc/term":[
+          "http://bibfra.me/vocab/library/term":[
             "cartographic image"
           ],
           "http://bibfra.me/vocab/lite/link":[
@@ -195,7 +195,7 @@ curl --location '{{ base-uri }}/linked-data/resource' \
       ],
       "http://bibfra.me/vocab/lite/language":[
         {
-          "http://bibfra.me/vocab/marc/term": [
+          "http://bibfra.me/vocab/library/term": [
             "English"
           ],
           "http://bibfra.me/vocab/lite/link": [
@@ -206,7 +206,7 @@ curl --location '{{ base-uri }}/linked-data/resource' \
       "_notes":[
         {
           "type":[
-            "http://bibfra.me/vocab/marc/bibliographyNote"
+            "http://bibfra.me/vocab/library/bibliographyNote"
           ],
           "value":[
             "Bib note"
@@ -214,7 +214,7 @@ curl --location '{{ base-uri }}/linked-data/resource' \
         },
         {
           "type":[
-            "http://bibfra.me/vocab/marc/languageNote"
+            "http://bibfra.me/vocab/library/languageNote"
           ],
           "value":[
             "Language note"
@@ -234,16 +234,16 @@ curl --location '{{ base-uri }}/linked-data/resource' \
           "http://bibfra.me/vocab/lite/label": [
             "label"
           ],
-          "http://bibfra.me/vocab/marc/degree": [
+          "http://bibfra.me/vocab/library/degree": [
             "degree"
           ],
-          "http://bibfra.me/vocab/marc/dissertationYear": [
+          "http://bibfra.me/vocab/library/dissertationYear": [
             "dissertation year"
           ],
-          "http://bibfra.me/vocab/marc/dissertationNote": [
+          "http://bibfra.me/vocab/library/dissertationNote": [
             "dissertation note"
           ],
-          "http://bibfra.me/vocab/marc/dissertationID": [
+          "http://bibfra.me/vocab/library/dissertationID": [
             "dissertation id"
           ]
         }

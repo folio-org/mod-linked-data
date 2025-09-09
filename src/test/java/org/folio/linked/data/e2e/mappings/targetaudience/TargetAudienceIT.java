@@ -16,16 +16,16 @@ class TargetAudienceIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Work":{
                "profileId": 2,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                   {
-                     "http://bibfra.me/vocab/marc/Title":{
-                        "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                     "http://bibfra.me/vocab/library/Title":{
+                        "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                      }
                   }
                ],
-               "http://bibfra.me/vocab/marc/targetAudience":[
+               "http://bibfra.me/vocab/library/targetAudience":[
                   {
-                     "http://bibfra.me/vocab/marc/term":[ "Primary" ],
+                     "http://bibfra.me/vocab/library/term":[ "Primary" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/maudience/pri" ]
                   }
                ]
@@ -37,13 +37,13 @@ class TargetAudienceIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource work) {
-    final var expectedId = 7128309939039775870L;
+    final var expectedId = -5142627795633505421L;
     final var expectedCategorySetId = 5919470580343311333L;
-    final var targetAudience = getFirstOutgoingResource(work, "http://bibfra.me/vocab/marc/targetAudience");
+    final var targetAudience = getFirstOutgoingResource(work, "http://bibfra.me/vocab/library/targetAudience");
     assertThat(targetAudience.getId()).isEqualTo(expectedId);
     validateResourceType(targetAudience, "http://bibfra.me/vocab/lite/Category");
-    assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/marc/term")).isEqualTo("Primary");
-    assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/marc/code")).isEqualTo("b");
+    assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/library/term")).isEqualTo("Primary");
+    assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/library/code")).isEqualTo("b");
     assertThat(getProperty(targetAudience, "http://bibfra.me/vocab/lite/link"))
       .isEqualTo("http://id.loc.gov/vocabulary/maudience/pri");
     assertThat(targetAudience.getLabel()).isEqualTo("Primary");
@@ -60,10 +60,10 @@ class TargetAudienceIT extends PostResourceIT {
   @Override
   @SneakyThrows
   protected void validateApiResponse(ResultActions apiResponse) {
-    var audiencePath = "$.resource['http://bibfra.me/vocab/lite/Work']['http://bibfra.me/vocab/marc/targetAudience']";
+    var audiencePath = "$.resource['http://bibfra.me/vocab/lite/Work']['http://bibfra.me/vocab/library/targetAudience']";
     apiResponse
-      .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/marc/term'][0]").value("Primary"))
-      .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/marc/code'][0]").value("b"))
+      .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/library/term'][0]").value("Primary"))
+      .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/library/code'][0]").value("b"))
       .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/lite/link'][0]")
         .value("http://id.loc.gov/vocabulary/maudience/pri"));
   }
