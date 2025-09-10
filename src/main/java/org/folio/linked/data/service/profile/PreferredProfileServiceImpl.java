@@ -34,12 +34,13 @@ public class PreferredProfileServiceImpl implements PreferredProfileService {
 
   @Override
   public void setPreferredProfile(Integer profileId, String resourceTypeUri) {
-    var profile =  profileRepository.findById(profileId)
+    var profile = profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
     var resourceType = getResourceTypeByUri(resourceTypeUri);
-    var preferredProfile = new PreferredProfile()
-      .setId(new PreferredProfilePk(executionContext.getUserId(), resourceType.getHash()))
-      .setProfile(profile);
+    var id = new PreferredProfilePk(executionContext.getUserId(), resourceType.getHash());
+    var preferredProfile = preferredProfileRepository.findById(id)
+      .map(pp -> pp.setProfile(profile))
+      .orElse(new PreferredProfile().setId(id).setProfile(profile));
     preferredProfileRepository.save(preferredProfile);
   }
 
