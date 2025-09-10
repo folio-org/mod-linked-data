@@ -134,7 +134,7 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
     awaitAndAssert(() -> verify(resourceMarcService)
       .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
     return tenantScopedExecutionService.execute(TENANT_ID,
-      () -> resourceTestRepository.findById(- 6897633277634168127L)
+      () -> resourceTestRepository.findById(-8375314089049692014L)
         .stream()
         .findFirst()
         .orElseThrow()

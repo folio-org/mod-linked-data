@@ -23,18 +23,18 @@ public class AdminMetadataWithoutControlNumberIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Instance":{
                "profileId": 3,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                   {
-                     "http://bibfra.me/vocab/marc/Title":{
-                        "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                     "http://bibfra.me/vocab/library/Title":{
+                        "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                      }
                   }
                ],
-               "http://bibfra.me/vocab/marc/adminMetadata":[
+               "http://bibfra.me/vocab/library/adminMetadata":[
                   {
-                     "http://bibfra.me/vocab/marc/catalogingAgency": ["Agency 1"],
-                     "http://bibfra.me/vocab/marc/transcribingAgency": ["Agency 2"],
-                     "http://bibfra.me/vocab/marc/modifyingAgency": ["Agency 3", "Agency 4"]
+                     "http://bibfra.me/vocab/library/catalogingAgency": ["Agency 1"],
+                     "http://bibfra.me/vocab/library/transcribingAgency": ["Agency 2"],
+                     "http://bibfra.me/vocab/library/modifyingAgency": ["Agency 3", "Agency 4"]
                   }
                ]
             }
@@ -46,27 +46,27 @@ public class AdminMetadataWithoutControlNumberIT extends PostResourceIT {
   @Override
   @SneakyThrows
   protected void validateApiResponse(ResultActions apiResponse) {
-    var path = "$.resource['http://bibfra.me/vocab/lite/Instance']['http://bibfra.me/vocab/marc/adminMetadata'][0]";
+    var path = "$.resource['http://bibfra.me/vocab/lite/Instance']['http://bibfra.me/vocab/library/adminMetadata'][0]";
     apiResponse
-      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/marc/catalogingAgency'][0]").value("Agency 1"))
-      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/marc/transcribingAgency'][0]").value("Agency 2"))
-      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/marc/modifyingAgency'][0]").value("Agency 3"))
-      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/marc/modifyingAgency'][1]").value("Agency 4"));
+      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/library/catalogingAgency'][0]").value("Agency 1"))
+      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/library/transcribingAgency'][0]").value("Agency 2"))
+      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/library/modifyingAgency'][0]").value("Agency 3"))
+      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/library/modifyingAgency'][1]").value("Agency 4"));
   }
 
   @Override
   protected void validateGraph(Resource instance) {
-    var expectedId = -5991148978725842140L;
-    var adminMetadata = getFirstOutgoingResource(instance, "http://bibfra.me/vocab/marc/adminMetadata");
+    var expectedId = -4419558946094780336L;
+    var adminMetadata = getFirstOutgoingResource(instance, "http://bibfra.me/vocab/library/adminMetadata");
 
     validateResourceType(adminMetadata, "http://bibfra.me/vocab/lite/Annotation");
     assertThat(adminMetadata.getId()).isEqualTo(expectedId);
     assertThat(adminMetadata.getLabel())
       .isEqualTo("TEST: AdminMetadataWithoutControlNumberIT - Administrative Metadata");
 
-    assertThat(getProperty(adminMetadata, "http://bibfra.me/vocab/marc/catalogingAgency")).isEqualTo("Agency 1");
-    assertThat(getProperty(adminMetadata, "http://bibfra.me/vocab/marc/transcribingAgency")).isEqualTo("Agency 2");
-    assertThat(getProperties(adminMetadata, "http://bibfra.me/vocab/marc/modifyingAgency"))
+    assertThat(getProperty(adminMetadata, "http://bibfra.me/vocab/library/catalogingAgency")).isEqualTo("Agency 1");
+    assertThat(getProperty(adminMetadata, "http://bibfra.me/vocab/library/transcribingAgency")).isEqualTo("Agency 2");
+    assertThat(getProperties(adminMetadata, "http://bibfra.me/vocab/library/modifyingAgency"))
       .isEqualTo(Set.of("Agency 3", "Agency 4"));
   }
 }

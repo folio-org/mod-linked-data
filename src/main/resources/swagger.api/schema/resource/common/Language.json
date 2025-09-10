@@ -13,14 +13,14 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/code"
+          "x-json-property": "http://bibfra.me/vocab/library/code"
         },
         "term": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/term"
+          "x-json-property": "http://bibfra.me/vocab/library/term"
         },
         "link": {
           "type": "array",

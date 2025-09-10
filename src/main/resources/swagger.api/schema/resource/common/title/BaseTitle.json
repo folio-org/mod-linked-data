@@ -10,28 +10,28 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/partName"
+          "x-json-property": "http://bibfra.me/vocab/library/partName"
         },
         "partNumber": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/partNumber"
+          "x-json-property": "http://bibfra.me/vocab/library/partNumber"
         },
         "mainTitle": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/mainTitle"
+          "x-json-property": "http://bibfra.me/vocab/library/mainTitle"
         },
         "subTitle": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/subTitle"
+          "x-json-property": "http://bibfra.me/vocab/library/subTitle"
         }
       }
     }

@@ -25,22 +25,22 @@ public class WorkNotesIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Work":{
                "profileId": 2,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                  {
-                  "http://bibfra.me/vocab/marc/Title":{
-                     "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                  "http://bibfra.me/vocab/library/Title":{
+                     "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                   }
                  }
                ],
                "_notes":[
                   { "type":[ "http://bibfra.me/vocab/lite/note" ], "value":[ "Note1" ] },
-                  { "type":[ "http://bibfra.me/vocab/marc/awardsNote" ], "value":[ "Note2" ] },
+                  { "type":[ "http://bibfra.me/vocab/library/awardsNote" ], "value":[ "Note2" ] },
                   {
-                    "type":[ "http://bibfra.me/vocab/marc/awardsNote", "http://bibfra.me/vocab/marc/bibliographyNote" ],
+                    "type":[ "http://bibfra.me/vocab/library/awardsNote", "http://bibfra.me/vocab/library/bibliographyNote" ],
                     "value":[ "Note3" ]
                   },
                   {
-                    "type":[ "http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote" ],
+                    "type":[ "http://bibfra.me/vocab/library/languageNote", "http://bibfra.me/vocab/library/bibliographyNote" ],
                     "value":[ "Note4" ]
                   }
                ]
@@ -54,9 +54,9 @@ public class WorkNotesIT extends PostResourceIT {
   protected void validateApiResponse(ResultActions apiResponse) {
     var expectedNotes = Map.of(
       "Note1", Set.of("http://bibfra.me/vocab/lite/note"),
-      "Note2", Set.of("http://bibfra.me/vocab/marc/awardsNote"),
-      "Note3", Set.of("http://bibfra.me/vocab/marc/awardsNote", "http://bibfra.me/vocab/marc/bibliographyNote"),
-      "Note4", Set.of("http://bibfra.me/vocab/marc/languageNote", "http://bibfra.me/vocab/marc/bibliographyNote")
+      "Note2", Set.of("http://bibfra.me/vocab/library/awardsNote"),
+      "Note3", Set.of("http://bibfra.me/vocab/library/awardsNote", "http://bibfra.me/vocab/library/bibliographyNote"),
+      "Note4", Set.of("http://bibfra.me/vocab/library/languageNote", "http://bibfra.me/vocab/library/bibliographyNote")
     );
 
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
@@ -80,11 +80,11 @@ public class WorkNotesIT extends PostResourceIT {
   protected void validateGraph(Resource work) {
     assertThat(getProperty(work, "http://bibfra.me/vocab/lite/note"))
       .isEqualTo("Note1");
-    assertThat(getProperties(work, "http://bibfra.me/vocab/marc/awardsNote"))
+    assertThat(getProperties(work, "http://bibfra.me/vocab/library/awardsNote"))
       .isEqualTo(Set.of("Note2", "Note3"));
-    assertThat(getProperties(work, "http://bibfra.me/vocab/marc/bibliographyNote"))
+    assertThat(getProperties(work, "http://bibfra.me/vocab/library/bibliographyNote"))
       .isEqualTo(Set.of("Note3", "Note4"));
-    assertThat(getProperty(work, "http://bibfra.me/vocab/marc/languageNote"))
+    assertThat(getProperty(work, "http://bibfra.me/vocab/library/languageNote"))
       .isEqualTo("Note4");
   }
 }

@@ -15,18 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 class CharacteristicIT extends PostResourceIT {
-  private static final long BLOG_ID = -492632525131150790L;
-  private static final long DATABASE_ID = 2562238976785385516L;
-  private static final long DIRECTORY_ID = 4694033788951143155L;
-  private static final long JOURNAL_ID = -9000160195959219379L;
-  private static final long LOOSE_LEAF_ID = 4320429253815391128L;
-  private static final long MAGAZINE_ID = 74601223165450105L;
-  private static final long MONOGRAPHIC_SERIES_ID = -2059167851655679697L;
-  private static final long NEWSLETTER_ID = 7185589474425460277L;
-  private static final long NEWSPAPER_ID = -1589748036134422574L;
-  private static final long PERIODICAL_ID = -3375966241897949570L;
-  private static final long REPOSITORY_ID = 5143091759469462576L;
-  private static final long WEBSITE_ID = -6047417131795452612L;
+  private static final long BLOG_ID = 4634629703061696745L;
+  private static final long DATABASE_ID = -1376966138356251815L;
+  private static final long DIRECTORY_ID = -5644652921552477832L;
+  private static final long JOURNAL_ID = -9109000455196759282L;
+  private static final long LOOSE_LEAF_ID = -8131776622473217017L;
+  private static final long MAGAZINE_ID = 5630319398424717907L;
+  private static final long MONOGRAPHIC_SERIES_ID = 5959324705494798474L;
+  private static final long NEWSLETTER_ID = 2451413445742678900L;
+  private static final long NEWSPAPER_ID = -2662813991778205265L;
+  private static final long PERIODICAL_ID = 2688342640394376770L;
+  private static final long REPOSITORY_ID = -4707533701123454052L;
+  private static final long WEBSITE_ID = 2549344889486893314L;
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -38,49 +38,49 @@ class CharacteristicIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Work":{
                "profileId": 2,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                   {
-                     "http://bibfra.me/vocab/marc/Title":{
-                        "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                     "http://bibfra.me/vocab/library/Title":{
+                        "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                      }
                   }
                ],
-               "http://bibfra.me/vocab/marc/characteristic":[
+               "http://bibfra.me/vocab/library/characteristic":[
                   {
-                     "http://bibfra.me/vocab/marc/term":[ "database" ],
+                     "http://bibfra.me/vocab/library/term":[ "database" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/database" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "magazine" ],
+                     "http://bibfra.me/vocab/library/term":[ "magazine" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/mag" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "blog" ],
+                     "http://bibfra.me/vocab/library/term":[ "blog" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/blog" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "journal" ],
+                     "http://bibfra.me/vocab/library/term":[ "journal" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/journal" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "loose leaf" ],
+                     "http://bibfra.me/vocab/library/term":[ "loose leaf" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/looseleaf" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "monographic series" ],
+                     "http://bibfra.me/vocab/library/term":[ "monographic series" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/monoseries" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "newspaper" ],
+                     "http://bibfra.me/vocab/library/term":[ "newspaper" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/newspaper" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "periodical" ],
+                     "http://bibfra.me/vocab/library/term":[ "periodical" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/periodical" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "repository" ],
+                     "http://bibfra.me/vocab/library/term":[ "repository" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/repo" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "newsletter" ],
+                     "http://bibfra.me/vocab/library/term":[ "newsletter" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/newsletter" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "directory" ],
+                     "http://bibfra.me/vocab/library/term":[ "directory" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/direct" ]
                   }, {
-                     "http://bibfra.me/vocab/marc/term":[ "web site" ],
+                     "http://bibfra.me/vocab/library/term":[ "web site" ],
                      "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mserialpubtype/web" ]
                   }
                ]
@@ -92,7 +92,7 @@ class CharacteristicIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource work) {
-    var characteristicResources = getOutgoingResources(work, "http://bibfra.me/vocab/marc/characteristic");
+    var characteristicResources = getOutgoingResources(work, "http://bibfra.me/vocab/library/characteristic");
     var expectedCharacteristics = getExpectedCharacteristics();
 
     for (var resource : characteristicResources) {
@@ -132,7 +132,7 @@ class CharacteristicIT extends PostResourceIT {
     var characteristicsNode = objectMapper.readTree(responseJson)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
-      .path("http://bibfra.me/vocab/marc/characteristic");
+      .path("http://bibfra.me/vocab/library/characteristic");
 
     var actual = objectMapper.convertValue(characteristicsNode, new TypeReference<List<Map<String, Object>>>() {});
 
@@ -142,63 +142,63 @@ class CharacteristicIT extends PostResourceIT {
   private Map<Long, Map<String, List<String>>> getExpectedCharacteristics() {
     return Map.ofEntries(
       Map.entry(DATABASE_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("database"),
-        "http://bibfra.me/vocab/marc/code", List.of("d"),
+        "http://bibfra.me/vocab/library/term", List.of("database"),
+        "http://bibfra.me/vocab/library/code", List.of("d"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/database")
       )),
       Map.entry(MAGAZINE_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("magazine"),
-        "http://bibfra.me/vocab/marc/code", List.of("g"),
+        "http://bibfra.me/vocab/library/term", List.of("magazine"),
+        "http://bibfra.me/vocab/library/code", List.of("g"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/mag")
       )),
       Map.entry(NEWSPAPER_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("newspaper"),
-        "http://bibfra.me/vocab/marc/code", List.of("n"),
+        "http://bibfra.me/vocab/library/term", List.of("newspaper"),
+        "http://bibfra.me/vocab/library/code", List.of("n"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/newspaper")
       )),
       Map.entry(JOURNAL_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("journal"),
-        "http://bibfra.me/vocab/marc/code", List.of("j"),
+        "http://bibfra.me/vocab/library/term", List.of("journal"),
+        "http://bibfra.me/vocab/library/code", List.of("j"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/journal")
       )),
       Map.entry(BLOG_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("blog"),
-        "http://bibfra.me/vocab/marc/code", List.of("h"),
+        "http://bibfra.me/vocab/library/term", List.of("blog"),
+        "http://bibfra.me/vocab/library/code", List.of("h"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/blog")
       )),
       Map.entry(PERIODICAL_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("periodical"),
-        "http://bibfra.me/vocab/marc/code", List.of("p"),
+        "http://bibfra.me/vocab/library/term", List.of("periodical"),
+        "http://bibfra.me/vocab/library/code", List.of("p"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/periodical")
       )),
       Map.entry(LOOSE_LEAF_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("loose leaf"),
-        "http://bibfra.me/vocab/marc/code", List.of("l"),
+        "http://bibfra.me/vocab/library/term", List.of("loose leaf"),
+        "http://bibfra.me/vocab/library/code", List.of("l"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/looseleaf")
       )),
       Map.entry(MONOGRAPHIC_SERIES_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("monographic series"),
-        "http://bibfra.me/vocab/marc/code", List.of("m"),
+        "http://bibfra.me/vocab/library/term", List.of("monographic series"),
+        "http://bibfra.me/vocab/library/code", List.of("m"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/monoseries")
       )),
       Map.entry(NEWSLETTER_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("newsletter"),
-        "http://bibfra.me/vocab/marc/code", List.of("s"),
+        "http://bibfra.me/vocab/library/term", List.of("newsletter"),
+        "http://bibfra.me/vocab/library/code", List.of("s"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/newsletter")
       )),
       Map.entry(DIRECTORY_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("directory"),
-        "http://bibfra.me/vocab/marc/code", List.of("t"),
+        "http://bibfra.me/vocab/library/term", List.of("directory"),
+        "http://bibfra.me/vocab/library/code", List.of("t"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/direct")
       )),
       Map.entry(REPOSITORY_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("repository"),
-        "http://bibfra.me/vocab/marc/code", List.of("r"),
+        "http://bibfra.me/vocab/library/term", List.of("repository"),
+        "http://bibfra.me/vocab/library/code", List.of("r"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/repo")
       )),
       Map.entry(WEBSITE_ID, Map.of(
-        "http://bibfra.me/vocab/marc/term", List.of("web site"),
-        "http://bibfra.me/vocab/marc/code", List.of("w"),
+        "http://bibfra.me/vocab/library/term", List.of("web site"),
+        "http://bibfra.me/vocab/library/code", List.of("w"),
         "http://bibfra.me/vocab/lite/link", List.of("http://id.loc.gov/vocabulary/mserialpubtype/web")
       ))
     );

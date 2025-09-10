@@ -17,28 +17,28 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/degree"
+          "x-json-property": "http://bibfra.me/vocab/library/degree"
         },
         "dissertationYear": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/dissertationYear"
+          "x-json-property": "http://bibfra.me/vocab/library/dissertationYear"
         },
         "dissertationNote": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/dissertationNote"
+          "x-json-property": "http://bibfra.me/vocab/library/dissertationNote"
         },
         "dissertationID": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/dissertationID"
+          "x-json-property": "http://bibfra.me/vocab/library/dissertationID"
         },
         "_grantingInstitutionReference": {
           "type": "array",

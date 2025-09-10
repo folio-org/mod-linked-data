@@ -81,10 +81,10 @@ class ResourceControllerUpdateWorkIT extends ITBase {
         "resource": {
           "http://bibfra.me/vocab/lite/Work": {
             "profileId": 2,
-            "http://bibfra.me/vocab/marc/title": [
+            "http://bibfra.me/vocab/library/title": [
                 {
-                  "http://bibfra.me/vocab/marc/Title": {
-                      "http://bibfra.me/vocab/marc/mainTitle": [ "simple_work" ]
+                  "http://bibfra.me/vocab/library/Title": {
+                      "http://bibfra.me/vocab/library/mainTitle": [ "simple_work" ]
                   }
                 }
             ],
@@ -103,7 +103,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       .addTypes(ResourceTypeDictionary.TITLE)
       .setDoc(readTree("""
         {
-          "http://bibfra.me/vocab/marc/mainTitle": ["simple_work"]
+          "http://bibfra.me/vocab/library/mainTitle": ["simple_work"]
         }
         """))
       .setLabel("simple_work");
@@ -125,7 +125,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       .addTypes(ResourceTypeDictionary.TITLE)
       .setDoc(readTree("""
         {
-          "http://bibfra.me/vocab/marc/mainTitle": ["simple_instance"]
+          "http://bibfra.me/vocab/library/mainTitle": ["simple_instance"]
         }
         """))
       .setLabel("simple_instance");

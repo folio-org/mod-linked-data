@@ -10,21 +10,21 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/transcribingAgency"
+          "x-json-property": "http://bibfra.me/vocab/library/transcribingAgency"
         },
         "catalogingAgency": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/catalogingAgency"
+          "x-json-property": "http://bibfra.me/vocab/library/catalogingAgency"
         },
         "modifyingAgency": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/modifyingAgency"
+          "x-json-property": "http://bibfra.me/vocab/library/modifyingAgency"
         },
         "createdDate": {
           "type": "array",
@@ -38,7 +38,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/controlNumber"
+          "x-json-property": "http://bibfra.me/vocab/library/controlNumber"
         },
         "catalogingLanguage": {
           "type": "array",

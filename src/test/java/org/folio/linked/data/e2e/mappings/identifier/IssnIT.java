@@ -21,10 +21,10 @@ public class IssnIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Instance":{
                "profileId": 3,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                   {
-                     "http://bibfra.me/vocab/marc/Title":{
-                        "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                     "http://bibfra.me/vocab/library/Title":{
+                        "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                      }
                   }
                ],
@@ -32,7 +32,7 @@ public class IssnIT extends PostResourceIT {
                   {
                      "http://library.link/identifier/ISSN":{
                         "http://bibfra.me/vocab/lite/name":[ "1234567890" ],
-                        "http://bibfra.me/vocab/marc/status":[
+                        "http://bibfra.me/vocab/library/status":[
                            {
                               "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/mstatus/current" ],
                               "http://bibfra.me/vocab/lite/label":[ "current" ]
@@ -61,7 +61,7 @@ public class IssnIT extends PostResourceIT {
     var issnValueNode = issnNode.path("http://bibfra.me/vocab/lite/name").get(0);
     assertThat(issnValueNode.asText()).isEqualTo("1234567890");
 
-    var statusNode = issnNode.path("http://bibfra.me/vocab/marc/status").get(0);
+    var statusNode = issnNode.path("http://bibfra.me/vocab/library/status").get(0);
     var statusLink = statusNode.path("http://bibfra.me/vocab/lite/link").get(0);
     var statusLabel = statusNode.path("http://bibfra.me/vocab/lite/label").get(0);
     assertThat(statusLink.asText()).isEqualTo("http://id.loc.gov/vocabulary/mstatus/current");
@@ -76,8 +76,8 @@ public class IssnIT extends PostResourceIT {
     assertThat(getProperty(issn, "http://bibfra.me/vocab/lite/name")).isEqualTo("1234567890");
     assertThat(issn.getLabel()).isEqualTo("1234567890");
 
-    var status = getFirstOutgoingResource(issn, "http://bibfra.me/vocab/marc/status");
-    validateResourceType(status, "http://bibfra.me/vocab/marc/Status");
+    var status = getFirstOutgoingResource(issn, "http://bibfra.me/vocab/library/status");
+    validateResourceType(status, "http://bibfra.me/vocab/library/Status");
     assertThat(getProperty(status, "http://bibfra.me/vocab/lite/label")).isEqualTo("current");
     assertThat(getProperty(status, "http://bibfra.me/vocab/lite/link"))
       .isEqualTo("http://id.loc.gov/vocabulary/mstatus/current");

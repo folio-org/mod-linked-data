@@ -17,7 +17,7 @@
             "type": "object",
             "$ref": "StatusResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/status"
+          "x-json-property": "http://bibfra.me/vocab/library/status"
         },
         "_assigningSourceReference": {
           "type": "array",

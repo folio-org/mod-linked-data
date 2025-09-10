@@ -18,17 +18,17 @@ class PartOfSeriesNoIssnIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Work":{
                "profileId": 2,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                  {
-                  "http://bibfra.me/vocab/marc/Title":{
-                     "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                  "http://bibfra.me/vocab/library/Title":{
+                     "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                   }
                  }
                ],
                "http://bibfra.me/vocab/relation/isPartOf":[
                   {
                     "http://bibfra.me/vocab/lite/name":[ "Title 1" ],
-                    "http://bibfra.me/vocab/marc/volume":[ "Volume 1" ]
+                    "http://bibfra.me/vocab/library/volume":[ "Volume 1" ]
                   }
                ]
             }
@@ -44,12 +44,12 @@ class PartOfSeriesNoIssnIT extends PostResourceIT {
     apiResponse
       .andExpect(status().isOk())
       .andExpect(jsonPath(path + "['http://bibfra.me/vocab/lite/name'][0]").value("Title 1"))
-      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/marc/volume'][0]").value("Volume 1"));
+      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/library/volume'][0]").value("Volume 1"));
   }
 
   @Override
   protected void validateGraph(Resource work) {
-    final var expectedWorkSeriesId = 540189686654989479L;
+    final var expectedWorkSeriesId = 2682672826857410386L;
     final var expectedSeriesId = -2005579814488946952L;
     final var expectedInstanceId = -9140089661914221986L;
 
@@ -58,7 +58,7 @@ class PartOfSeriesNoIssnIT extends PostResourceIT {
     validateResourceType(workSeries,
       "http://bibfra.me/vocab/lite/Work", "http://bibfra.me/vocab/lite/Series");
     assertThat(getProperty(workSeries, "http://bibfra.me/vocab/lite/name")).isEqualTo("Title 1");
-    assertThat(getProperty(workSeries, "http://bibfra.me/vocab/marc/volume")).isEqualTo("Volume 1");
+    assertThat(getProperty(workSeries, "http://bibfra.me/vocab/library/volume")).isEqualTo("Volume 1");
     assertThat(getProperty(workSeries, "http://bibfra.me/vocab/lite/label"))
       .isEqualTo("Title 1 Volume 1");
 

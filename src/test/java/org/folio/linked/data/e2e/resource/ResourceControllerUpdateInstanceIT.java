@@ -159,7 +159,7 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
   private Resource getInstance(Resource work, String titleStr) {
     var titleDoc = """
       {
-        "http://bibfra.me/vocab/marc/mainTitle": ["%TITLE%"]
+        "http://bibfra.me/vocab/library/mainTitle": ["%TITLE%"]
       }
       """
       .replace("%TITLE%", titleStr);
@@ -189,14 +189,14 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
         "resource": {
           "http://bibfra.me/vocab/lite/Instance": {
             "profileId":  3,
-            "http://bibfra.me/vocab/marc/title": [
+            "http://bibfra.me/vocab/library/title": [
                 {
-                  "http://bibfra.me/vocab/marc/Title": {
-                      "http://bibfra.me/vocab/marc/mainTitle": [ "%TITLE%" ]
+                  "http://bibfra.me/vocab/library/Title": {
+                      "http://bibfra.me/vocab/library/mainTitle": [ "%TITLE%" ]
                   }
                 }
             ],
-            "http://bibfra.me/vocab/marc/summary": ["new summary"],
+            "http://bibfra.me/vocab/library/summary": ["new summary"],
             "_workReference": [ { "id": "%WORK_ID%"} ]
           }
         }
