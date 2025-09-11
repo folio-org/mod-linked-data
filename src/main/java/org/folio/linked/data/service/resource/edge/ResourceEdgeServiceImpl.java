@@ -51,7 +51,8 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
                                             org.folio.ld.dictionary.model.Resource target) {
     var sourceRef = new Resource().setId(sourceId);
     var targetEntity = resourceModelMapper.toEntity(target);
-    var savedTarget = resourceRepository.save(targetEntity);
+    var savedTarget = resourceRepository.findById(targetEntity.getId())
+      .orElse(resourceRepository.save(targetEntity));
     var edge = new ResourceEdge(sourceRef, savedTarget, new PredicateEntity(predicate));
     edge.computeId();
     return resourceEdgeRepository.save(edge).getId();
