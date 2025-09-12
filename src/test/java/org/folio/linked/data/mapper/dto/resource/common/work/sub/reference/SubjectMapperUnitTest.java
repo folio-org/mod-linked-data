@@ -6,12 +6,14 @@ import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import java.util.List;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.model.entity.Resource;
@@ -95,8 +97,8 @@ class SubjectMapperUnitTest {
         }
         """))
       .setLabel(label)
-      .setId(id);
-
+      .setId(id)
+      .addTypes(CONCEPT, PLACE);
 
     // when
     var result = subjectMapperUnit.toDto(resource, new WorkResponse(2), null);
@@ -107,6 +109,7 @@ class SubjectMapperUnitTest {
     assertThat(subject.getIsPreferred()).isTrue();
     assertThat(subject.getLabel()).isEqualTo(label);
     assertThat(subject.getId()).isEqualTo(id + "");
+    assertThat(subject.getTypes()).isEqualTo(List.of(CONCEPT.getUri(), PLACE.getUri()));
   }
 
   @Test
