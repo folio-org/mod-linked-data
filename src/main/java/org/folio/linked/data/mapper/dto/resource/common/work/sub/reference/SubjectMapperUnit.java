@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = CONCEPT, predicate = SUBJECT, requestDto = Reference.class)
-public class SubjectMapperUnit extends ReferenceMapperUnit {
+public class SubjectMapperUnit extends ReferenceResponseMapperUnit {
 
   private final HashService hashService;
 
