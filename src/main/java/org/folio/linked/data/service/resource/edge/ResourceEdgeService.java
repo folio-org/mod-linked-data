@@ -12,6 +12,6 @@ public interface ResourceEdgeService {
 
   ResourceEdgePk saveNewResourceEdge(Long sourceId,
                                      PredicateDictionary predicate,
-                                     org.folio.ld.dictionary.model.Resource target);
+                                     org.folio.ld.dictionary.model.Resource targetModel);
 
 }

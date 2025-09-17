@@ -16,7 +16,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.pk.ResourceEdgePk;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,9 +26,9 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   private static final Map<ResourceTypeDictionary, Set<PredicateDictionary>> EDGES_TO_BE_COPIED = Map.of(
     WORK, Set.of(DISSERTATION, GENRE)
   );
-  private final ResourceRepository resourceRepository;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceEdgeRepository resourceEdgeRepository;
+  private final ResourceGraphService resourceGraphService;
 
   @Override
   public void copyOutgoingEdges(Resource from, Resource to) {
@@ -48,11 +48,10 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   @Override
   public ResourceEdgePk saveNewResourceEdge(Long sourceId,
                                             PredicateDictionary predicate,
-                                            org.folio.ld.dictionary.model.Resource target) {
+                                            org.folio.ld.dictionary.model.Resource targetModel) {
     var sourceRef = new Resource().setId(sourceId);
-    var targetEntity = resourceModelMapper.toEntity(target);
-    var savedTarget = resourceRepository.findById(targetEntity.getId())
-      .orElse(resourceRepository.save(targetEntity));
+    var target = resourceModelMapper.toEntity(targetModel);
+    var savedTarget = resourceGraphService.saveMergingGraph(target);
     var edge = new ResourceEdge(sourceRef, savedTarget, new PredicateEntity(predicate));
     edge.computeId();
     return resourceEdgeRepository.save(edge).getId();
