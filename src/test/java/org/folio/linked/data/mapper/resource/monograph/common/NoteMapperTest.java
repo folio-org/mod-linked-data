@@ -36,9 +36,9 @@ class NoteMapperTest {
       Arguments.of(
         createDocWithNotes(),
         List.of(
-          createNote(List.of(NOTE.getValue()), "general note"),
           createNote(List.of(ISSUANCE_NOTE.getValue()), "issuance note"),
-          createNote(List.of(ISSUANCE_NOTE.getValue()), "another issuance note"))
+          createNote(List.of(ISSUANCE_NOTE.getValue()), "another issuance note"),
+          createNote(List.of(NOTE.getValue()), "general note"))
       ),
       Arguments.of(
         OBJECT_MAPPER.convertValue(Map.of(), JsonNode.class),

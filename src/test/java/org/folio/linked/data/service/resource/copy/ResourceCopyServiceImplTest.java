@@ -111,11 +111,11 @@ class ResourceCopyServiceImplTest {
 
   private static HashMap<String, List<String>> getUpdatedInstanceDoc() {
     var doc = new HashMap<String, List<String>>();
-    doc.put("http://bibfra.me/vocab/marc/governingAccessNote", List.of("governingAccessNote"));
-    doc.put("http://bibfra.me/vocab/marc/creditsNote", List.of("creditsNote"));
-    doc.put("http://bibfra.me/vocab/marc/participantNote", List.of("participantNote"));
-    doc.put("http://bibfra.me/vocab/marc/citationCoverage", List.of("citationCoverage"));
-    doc.put("http://bibfra.me/vocab/marc/locationOfOriginalsDuplicates", List.of("locationOfOriginalsDuplicates"));
+    doc.put("http://bibfra.me/vocab/library/governingAccessNote", List.of("governingAccessNote"));
+    doc.put("http://bibfra.me/vocab/library/creditsNote", List.of("creditsNote"));
+    doc.put("http://bibfra.me/vocab/library/participantNote", List.of("participantNote"));
+    doc.put("http://bibfra.me/vocab/library/citationCoverage", List.of("citationCoverage"));
+    doc.put("http://bibfra.me/vocab/library/locationOfOriginalsDuplicates", List.of("locationOfOriginalsDuplicates"));
     return doc;
   }
 
@@ -127,9 +127,9 @@ class ResourceCopyServiceImplTest {
 
   private static HashMap<String, List<String>> getUpdatedWorkDoc() {
     var doc = new HashMap<String, List<String>>();
-    doc.put("http://bibfra.me/vocab/marc/references", List.of("references"));
-    doc.put("http://bibfra.me/vocab/marc/otherEventInformation", List.of("otherEventInformation"));
-    doc.put("http://bibfra.me/vocab/marc/geographicCoverage", List.of("geographicCoverage"));
+    doc.put("http://bibfra.me/vocab/library/references", List.of("references"));
+    doc.put("http://bibfra.me/vocab/library/otherEventInformation", List.of("otherEventInformation"));
+    doc.put("http://bibfra.me/vocab/library/geographicCoverage", List.of("geographicCoverage"));
     return doc;
   }
 }

@@ -138,14 +138,14 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
         "resource": {
           "http://bibfra.me/vocab/lite/Work": {
             "profileId": 2,
-            "http://bibfra.me/vocab/marc/title": [
+            "http://bibfra.me/vocab/library/title": [
                 {
-                  "http://bibfra.me/vocab/marc/Title": {
-                      "http://bibfra.me/vocab/marc/mainTitle": [ "%TITLE%" ]
+                  "http://bibfra.me/vocab/library/Title": {
+                      "http://bibfra.me/vocab/library/mainTitle": [ "%TITLE%" ]
                   }
                 }
             ],
-            "http://bibfra.me/vocab/marc/summary": ["new summary"],
+            "http://bibfra.me/vocab/library/summary": ["new summary"],
             "_instanceReference": [ { "id": "%INSTANCE_ID%"} ]
           }
         }
@@ -159,7 +159,7 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
     var titleStr = work.getLabel() + "_instance";
     var titleDoc = """
       {
-        "http://bibfra.me/vocab/marc/mainTitle": ["%TITLE%"]
+        "http://bibfra.me/vocab/library/mainTitle": ["%TITLE%"]
       }
       """
       .replace("%TITLE%", titleStr);

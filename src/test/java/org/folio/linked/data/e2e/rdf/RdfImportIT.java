@@ -1,6 +1,6 @@
 package org.folio.linked.data.e2e.rdf;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -52,7 +52,7 @@ class RdfImportIT {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = 2413788589667169533L;
+    var expectedId = -6100541528157108314L;
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -76,7 +76,7 @@ class RdfImportIT {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = -42292089353776380L;
+    var expectedId = -2124728439381748732L;
     var lccn = "n2021004098";
     var existedAuthority = new Resource().setId(123L).setLabel(lccn);
     when(lccnResourceProvider.apply(lccn)).thenReturn(Optional.of(existedAuthority));
