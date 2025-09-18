@@ -442,7 +442,7 @@ class ResourceMarcBibServiceImplTest {
 
     // then
     assertThat(result).isTrue();
-    verify(resourceEdgeService).saveNewResourceEdge(id, edgeModel);
+    verify(resourceEdgeService).saveNewResourceEdge(id, edgeModel.getPredicate(), edgeModel.getTarget());
     verify(resourceEdgeService).deleteEdgesHavingPredicate(id, ADMIN_METADATA);
   }
 
