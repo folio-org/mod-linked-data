@@ -56,7 +56,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Reference.json"
+            "$ref": "ReferenceResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/lite/subject"
         },
@@ -101,14 +101,14 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Reference.json"
+            "$ref": "ReferenceResponse.json"
           }
         },
         "_genreReference": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Reference.json"
+            "$ref": "ReferenceResponse.json"
           }
         },
         "dateStart": {

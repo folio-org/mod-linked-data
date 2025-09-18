@@ -6,7 +6,19 @@
       "$ref": "../common/IdField.json"
     },
     {
-      "$ref": "../common/Dissertation.json"
+      "$ref": "../common/DissertationBase.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "_grantingInstitutionReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "ReferenceResponse.json"
+          }
+        }
+      }
     }
   ]
 }
