@@ -71,7 +71,8 @@
         "baseLabelType": "creator"
       },
       "linkedEntry": { "dependent": "Profile:Work:CreatorOfWork:Subclass" },
-      "id": "Profile:Work:CreatorOfWork:Name"
+      "id": "Profile:Work:CreatorOfWork:Name",
+      "marc": "Creator of Work: Main responsibility"
     },
     {
       "type": "dropdown",
@@ -97,7 +98,8 @@
       "layout": { "readOnly": true },
       "dependsOn": "lc:RT:bf2:search:name",
       "linkedEntry": { "controlledBy": "Profile:Work:CreatorOfWork:Name" },
-      "id": "Profile:Work:CreatorOfWork:Subclass"
+      "id": "Profile:Work:CreatorOfWork:Subclass",
+      "marc": "100, 11X"
     },
     {
       "type": "dropdownOption",
@@ -156,7 +158,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Role"
         }
       },
-      "id": "Profile:Work:CreatorOfWork:Relationship"
+      "id": "Profile:Work:CreatorOfWork:Relationship",
+      "marc": "100/110 $e $4, 111 $j $4"
     },
     {
       "type": "dropdown",
@@ -188,7 +191,8 @@
         "Profile:Work:TitleInformation:WorkTitle:PartNumber",
         "Profile:Work:TitleInformation:WorkTitle:PartName"
       ],
-      "id": "Profile:Work:TitleInformation:WorkTitle"
+      "id": "Profile:Work:TitleInformation:WorkTitle",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -202,7 +206,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:WorkTitle:NonSortCharacterCount"
+      "id": "Profile:Work:TitleInformation:WorkTitle:NonSortCharacterCount",
+      "marc": "245 _X"
     },
     {
       "type": "literal",
@@ -216,7 +221,8 @@
         "useValuesFrom": [],
         "valueDataType": { "dataTypeURI": "" }
       },
-      "id": "Profile:Work:TitleInformation:WorkTitle:PreferredTitleForWork"
+      "id": "Profile:Work:TitleInformation:WorkTitle:PreferredTitleForWork",
+      "marc": "245 $a"
     },
     {
       "type": "literal",
@@ -230,7 +236,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:WorkTitle:PartNumber"
+      "id": "Profile:Work:TitleInformation:WorkTitle:PartNumber",
+      "marc": "245 $n"
     },
     {
       "type": "literal",
@@ -244,7 +251,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:WorkTitle:PartName"
+      "id": "Profile:Work:TitleInformation:WorkTitle:PartName",
+      "marc": "245 $p"
     },
     {
       "type": "dropdownOption",
@@ -260,7 +268,8 @@
         "Profile:Work:TitleInformation:VariantTitle:VariantTitleType",
         "Profile:Work:TitleInformation:VariantTitle:Note"
       ],
-      "id": "Profile:Work:TitleInformation:VariantTitle"
+      "id": "Profile:Work:TitleInformation:VariantTitle",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -274,7 +283,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:VariantTitle:VariantTitle"
+      "id": "Profile:Work:TitleInformation:VariantTitle:VariantTitle",
+      "marc": "246 $a"
     },
     {
       "type": "literal",
@@ -288,7 +298,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:VariantTitle:PartNumber"
+      "id": "Profile:Work:TitleInformation:VariantTitle:PartNumber",
+      "marc": "246 $n"
     },
     {
       "type": "literal",
@@ -302,7 +313,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:VariantTitle:PartName"
+      "id": "Profile:Work:TitleInformation:VariantTitle:PartName",
+      "marc": "246 $p"
     },
     {
       "type": "literal",
@@ -316,7 +328,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:VariantTitle:OtherTitleInformation"
+      "id": "Profile:Work:TitleInformation:VariantTitle:OtherTitleInformation",
+      "marc": "246 $b"
     },
     {
       "type": "literal",
@@ -330,7 +343,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:VariantTitle:Date"
+      "id": "Profile:Work:TitleInformation:VariantTitle:Date",
+      "marc": "246 $f"
     },
     {
       "type": "literal",
@@ -344,7 +358,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:VariantTitle:VariantTitleType"
+      "id": "Profile:Work:TitleInformation:VariantTitle:VariantTitleType",
+      "marc": "246 _X"
     },
     {
       "type": "literal",
@@ -358,7 +373,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:VariantTitle:Note"
+      "id": "Profile:Work:TitleInformation:VariantTitle:Note",
+      "marc": "246 $i"
     },
     {
       "type": "dropdownOption",
@@ -373,7 +389,8 @@
         "Profile:Work:TitleInformation:ParallelTitle:Date",
         "Profile:Work:TitleInformation:ParallelTitle:Note"
       ],
-      "id": "Profile:Work:TitleInformation:ParallelTitle"
+      "id": "Profile:Work:TitleInformation:ParallelTitle",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -387,7 +404,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:ParallelTitle:ParallelTitle"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:ParallelTitle",
+      "marc": "246 $a"
     },
     {
       "type": "literal",
@@ -401,7 +419,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:ParallelTitle:OtherTitleInformation"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:OtherTitleInformation",
+      "marc": "246 $b"
     },
     {
       "type": "literal",
@@ -415,7 +434,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:ParallelTitle:PartNumber"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:PartNumber",
+      "marc": "246 $n"
     },
     {
       "type": "literal",
@@ -429,7 +449,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:ParallelTitle:PartName"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:PartName",
+      "marc": "246 $p"
     },
     {
       "type": "literal",
@@ -443,7 +464,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:ParallelTitle:Date"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:Date",
+      "marc": "246 $f"
     },
     {
       "type": "literal",
@@ -457,7 +479,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:TitleInformation:ParallelTitle:Note"
+      "id": "Profile:Work:TitleInformation:ParallelTitle:Note",
+      "marc": "246 $i"
     },
     {
       "type": "simple",
@@ -489,7 +512,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bflc/GovernmentPubType"
         }
       },
-      "id": "Profile:Work:GovernmentPublication"
+      "id": "Profile:Work:GovernmentPublication",
+      "marc": "008/28"
     },
     {
       "type": "simple",
@@ -519,7 +543,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:DateOfWork"
+      "id": "Profile:Work:DateOfWork",
+      "marc": "046 $k, $l"
     },
     {
       "type": "simple",
@@ -535,7 +560,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Place"
         }
       },
-      "id": "Profile:Work:PlaceOfOriginOfTheWork"
+      "id": "Profile:Work:PlaceOfOriginOfTheWork",
+      "marc": "008/15-17"
     },
     {
       "type": "group",
@@ -563,7 +589,8 @@
         "useValuesFrom": ["http://id.loc.gov/authorities/geographics"],
         "valueDataType": { "remark": "", "dataTypeURI": "" }
       },
-      "id": "Profile:Work:GeographicCoverage:SearchLCNAFLCSHOrGAC"
+      "id": "Profile:Work:GeographicCoverage:SearchLCNAFLCSHOrGAC",
+      "marc": "522 $a"
     },
     {
       "type": "simple",
@@ -579,7 +606,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/IntendedAudience"
         }
       },
-      "id": "Profile:Work:IntendedAudience"
+      "id": "Profile:Work:IntendedAudience",
+      "marc": "008/22"
     },
     {
       "type": "group",
@@ -621,7 +649,8 @@
         "baseLabelType": "contributor"
       },
       "linkedEntry": { "dependent": "Profile:Work:OtherContributors:Subclass" },
-      "id": "Profile:Work:OtherContributors:Name"
+      "id": "Profile:Work:OtherContributors:Name",
+      "marc": "700, 710, 71X"
     },
     {
       "type": "dropdown",
@@ -644,7 +673,8 @@
       "layout": { "readOnly": true },
       "dependsOn": "lc:RT:bf2:search:name",
       "linkedEntry": { "controlledBy": "Profile:Work:OtherContributors:Name" },
-      "id": "Profile:Work:OtherContributors:Subclass"
+      "id": "Profile:Work:OtherContributors:Subclass",
+      "marc": "N/A"
     },
     {
       "type": "dropdownOption",
@@ -700,7 +730,8 @@
           "https://id.loc.gov/vocabulary/rbmsrel"
         ]
       },
-      "id": "Profile:Work:OtherContributors:Relationship"
+      "id": "Profile:Work:OtherContributors:Relationship",
+      "marc": "N/A"
     },
     {
       "type": "group",
@@ -732,7 +763,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:NotesAboutTheWork:Note"
+      "id": "Profile:Work:NotesAboutTheWork:Note",
+      "marc": "5XX"
     },
     {
       "type": "simple",
@@ -746,7 +778,8 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
         "valueDataType": {}
       },
-      "id": "Profile:Work:NotesAboutTheWork:NoteType"
+      "id": "Profile:Work:NotesAboutTheWork:NoteType",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -761,7 +794,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:ContentsNote"
+      "id": "Profile:Work:ContentsNote",
+      "marc": "505 $a"
     },
     {
       "type": "literal",
@@ -775,7 +809,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:SummaryNote"
+      "id": "Profile:Work:SummaryNote",
+      "marc": "520 $a"
     },
     {
       "type": "group",
@@ -812,7 +847,8 @@
         "isNew": true,
         "baseLabelType": "subject"
       },
-      "id": "Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF"
+      "id": "Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF",
+      "marc": "6XX, 61X, 65X"
     },
     {
       "type": "dropdown",
@@ -832,7 +868,8 @@
       ],
       "deletable": true,
       "cloneIndex": 0,
-      "id": "Profile:Work:ClassificationNumbers"
+      "id": "Profile:Work:ClassificationNumbers",
+      "marc": "N/A"
     },
     {
       "type": "dropdownOption",
@@ -859,7 +896,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:ClassificationNumber"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:ClassificationNumber",
+      "marc": "050 $a"
     },
     {
       "type": "literal",
@@ -873,7 +911,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AdditionalCallNumberInformation"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AdditionalCallNumberInformation",
+      "marc": "050 $b"
     },
     {
       "type": "complex",
@@ -889,14 +928,15 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }
       },
-      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AssigningAgency"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:AssigningAgency",
+      "marc": "050 _0"
     },
     {
       "type": "simple",
       "displayName": "Used by assigning agency?",
       "uriBFLite": "http://bibfra.me/vocab/marc/status",
       "constraints": {
-        "repeatable": false,
+        "repeatable": true,
         "editable": true,
         "mandatory": true,
         "defaults": [],
@@ -905,7 +945,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
       },
-      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:UsedByAssigningAgency"
+      "id": "Profile:Work:ClassificationNumbers:LibraryOfCongressClassification:UsedByAssigningAgency",
+      "marc": "050 X_"
     },
     {
       "type": "dropdownOption",
@@ -919,7 +960,8 @@
         "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged",
         "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner"
       ],
-      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -933,7 +975,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:ClassificationNumber"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:ClassificationNumber",
+      "marc": "082 $a"
     },
     {
       "type": "literal",
@@ -947,7 +990,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:AdditionalCallNumberInformation"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:AdditionalCallNumberInformation",
+      "marc": "082 $b"
     },
     {
       "type": "literal",
@@ -961,7 +1005,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyEditionNumber"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyEditionNumber",
+      "marc": "082 $2"
     },
     {
       "type": "literal",
@@ -975,7 +1020,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged",
+      "marc": "082 X_"
     },
     {
       "type": "complex",
@@ -991,7 +1037,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }
       },
-      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner",
+      "marc": "082 _X"
     },
     {
       "type": "simple",
@@ -1007,7 +1054,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Content"
         }
       },
-      "id": "Profile:Work:ContentType"
+      "id": "Profile:Work:ContentType",
+      "marc": "336 $a ($b)"
     },
     {
       "type": "group",
@@ -1025,7 +1073,8 @@
         "Profile:Work:LanguageCode:Language",
         "Profile:Work:LanguageCode:Relationship"
       ],
-      "id": "Profile:Work:LanguageCode"
+      "id": "Profile:Work:LanguageCode",
+      "marc": "008/35-37"
     },
     {
       "type": "simple",
