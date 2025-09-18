@@ -61,6 +61,7 @@
 - Update export view to include inventory ID column [MODLD-860](https://folio-org.atlassian.net/browse/MODLD-860)
 - Include subject types in work response [MODLD-853](https://folio-org.atlassian.net/browse/MODLD-853)
 - Save outgoing edges of admin metadata [MODLD-863](https://folio-org.atlassian.net/browse/MODLD-863)
+- Update profiles to include MARC labels [MODLD-871](https://folio-org.atlassian.net/browse/MODLD-871)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
