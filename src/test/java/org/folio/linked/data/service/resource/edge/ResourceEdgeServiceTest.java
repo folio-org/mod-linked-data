@@ -19,7 +19,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ class ResourceEdgeServiceTest {
   private ResourceEdgeServiceImpl resourceEdgeService;
 
   @Mock
-  private ResourceRepository resourceRepository;
+  private ResourceGraphService resourceGraphService;
   @Mock
   private ResourceModelMapper resourceModelMapper;
   @Mock
@@ -53,12 +53,12 @@ class ResourceEdgeServiceTest {
       new org.folio.ld.dictionary.model.Resource().setId(randomLong()), TITLE);
     var mappedEdgeResource = new org.folio.linked.data.model.entity.Resource().setId(edgeModel.getTarget().getId());
     doReturn(mappedEdgeResource).when(resourceModelMapper).toEntity(edgeModel.getTarget());
-    doReturn(mappedEdgeResource).when(resourceRepository).save(mappedEdgeResource);
+    doReturn(mappedEdgeResource).when(resourceGraphService).saveMergingGraph(mappedEdgeResource);
     when(resourceEdgeRepository.save(any(org.folio.linked.data.model.entity.ResourceEdge.class)))
       .thenAnswer(i -> i.getArguments()[0]);
 
     // when
-    var result = resourceEdgeService.saveNewResourceEdge(sourceId, edgeModel);
+    var result = resourceEdgeService.saveNewResourceEdge(sourceId, edgeModel.getPredicate(), edgeModel.getTarget());
 
     // then
     assertThat(result.getSourceHash()).isEqualTo(edgeModel.getSource().getId());

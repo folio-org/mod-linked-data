@@ -23,7 +23,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Reference.json"
+            "$ref": "ReferenceResponse.json"
           }
         }
       }

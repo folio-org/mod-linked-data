@@ -1,21 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Dissertation object",
+  "description": "Reference response object",
   "allOf": [
     {
-      "$ref": "DissertationBase.json"
+      "$ref": "../common/Reference.json"
     },
     {
       "type": "object",
       "properties": {
-        "_grantingInstitutionReference": {
+        "types": {
           "type": "array",
           "items": {
-            "type": "object",
-            "$ref": "Reference.json"
+            "type": "string"
           }
         }
       }
     }
-  ]
+  ],
+  "x-implements": "org.folio.linked.data.model.dto.Identifiable"
 }

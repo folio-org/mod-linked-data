@@ -59,7 +59,8 @@
         "Profile:Instance:TitleInformation:InstanceTitle:PartName",
         "Profile:Instance:TitleInformation:InstanceTitle:OtherTitleInformation"
       ],
-      "id": "Profile:Instance:TitleInformation:InstanceTitle"
+      "id": "Profile:Instance:TitleInformation:InstanceTitle",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -73,7 +74,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:InstanceTitle:NonSortCharacterCount"
+      "id": "Profile:Instance:TitleInformation:InstanceTitle:NonSortCharacterCount",
+      "marc": "245 _X"
     },
     {
       "type": "literal",
@@ -87,7 +89,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:InstanceTitle:MainTitle"
+      "id": "Profile:Instance:TitleInformation:InstanceTitle:MainTitle",
+      "marc": "245 $a"
     },
     {
       "type": "literal",
@@ -101,7 +104,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:InstanceTitle:PartNumber"
+      "id": "Profile:Instance:TitleInformation:InstanceTitle:PartNumber",
+      "marc": "245 $n"
     },
     {
       "type": "literal",
@@ -115,7 +119,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:InstanceTitle:PartName"
+      "id": "Profile:Instance:TitleInformation:InstanceTitle:PartName",
+      "marc": "245 $p"
     },
     {
       "type": "literal",
@@ -129,7 +134,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:InstanceTitle:OtherTitleInformation"
+      "id": "Profile:Instance:TitleInformation:InstanceTitle:OtherTitleInformation",
+      "marc": "245 $b"
     },
     {
       "type": "dropdownOption",
@@ -145,7 +151,8 @@
         "Profile:Instance:TitleInformation:VariantTitle:VariantTitleType",
         "Profile:Instance:TitleInformation:VariantTitle:Note"
       ],
-      "id": "Profile:Instance:TitleInformation:VariantTitle"
+      "id": "Profile:Instance:TitleInformation:VariantTitle",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -159,7 +166,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:VariantTitle:VariantTitle"
+      "id": "Profile:Instance:TitleInformation:VariantTitle:VariantTitle",
+      "marc": "246 _X $a"
     },
     {
       "type": "literal",
@@ -173,7 +181,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:VariantTitle:PartNumber"
+      "id": "Profile:Instance:TitleInformation:VariantTitle:PartNumber",
+      "marc": "246 $n"
     },
     {
       "type": "literal",
@@ -187,7 +196,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:VariantTitle:PartName"
+      "id": "Profile:Instance:TitleInformation:VariantTitle:PartName",
+      "marc": "246 $p"
     },
     {
       "type": "literal",
@@ -201,7 +211,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:VariantTitle:OtherTitleInformation"
+      "id": "Profile:Instance:TitleInformation:VariantTitle:OtherTitleInformation",
+      "marc": "246 $b"
     },
     {
       "type": "literal",
@@ -215,7 +226,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:VariantTitle:Date"
+      "id": "Profile:Instance:TitleInformation:VariantTitle:Date",
+      "marc": "246 $f"
     },
     {
       "type": "literal",
@@ -229,7 +241,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:VariantTitle:VariantTitleType"
+      "id": "Profile:Instance:TitleInformation:VariantTitle:VariantTitleType",
+      "marc": "246 _X"
     },
     {
       "type": "literal",
@@ -243,7 +256,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:VariantTitle:Note"
+      "id": "Profile:Instance:TitleInformation:VariantTitle:Note",
+      "marc": "246 $i"
     },
     {
       "type": "dropdownOption",
@@ -258,7 +272,8 @@
         "Profile:Instance:TitleInformation:ParallelTitle:Date",
         "Profile:Instance:TitleInformation:ParallelTitle:Note"
       ],
-      "id": "Profile:Instance:TitleInformation:ParallelTitle"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -272,7 +287,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:ParallelTitle:ParallelTitle"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle:ParallelTitle",
+      "marc": "246 _1 $a"
     },
     {
       "type": "literal",
@@ -286,7 +302,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:ParallelTitle:OtherTitleInformation"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle:OtherTitleInformation",
+      "marc": "246 $b"
     },
     {
       "type": "literal",
@@ -300,7 +317,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:ParallelTitle:PartNumber"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle:PartNumber",
+      "marc": "246 $n"
     },
     {
       "type": "literal",
@@ -314,7 +332,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:ParallelTitle:PartName"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle:PartName",
+      "marc": "246 $p"
     },
     {
       "type": "literal",
@@ -328,7 +347,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:ParallelTitle:Date"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle:Date",
+      "marc": "246 $f"
     },
     {
       "type": "literal",
@@ -342,7 +362,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:TitleInformation:ParallelTitle:Note"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle:Note",
+      "marc": "246 $i"
     },
     {
       "type": "literal",
@@ -356,7 +377,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:StatementOfResponsibility"
+      "id": "Profile:Instance:StatementOfResponsibility",
+      "marc": "245 $c"
     },
     {
       "type": "literal",
@@ -370,7 +392,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:EditionStatement"
+      "id": "Profile:Instance:EditionStatement",
+      "marc": "250 $a, $b"
     },
     {
       "type": "dropdown",
@@ -390,7 +413,8 @@
         "Profile:Instance:ProvisionActivity:Manufacture",
         "Profile:Instance:ProvisionActivity:Production"
       ],
-      "id": "Profile:Instance:ProvisionActivity"
+      "id": "Profile:Instance:ProvisionActivity",
+      "marc": "264 _X"
     },
     {
       "type": "dropdownOption",
@@ -418,7 +442,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Publication:EDTFDateToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Publication:EDTFDateToFrom008",
+      "marc": "008/7-10"
     },
     {
       "type": "simple",
@@ -434,7 +459,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Place"
         }
       },
-      "id": "Profile:Instance:ProvisionActivity:Publication:SearchPlaceOfPublicationToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Publication:SearchPlaceOfPublicationToFrom008",
+      "marc": "008/15-17"
     },
     {
       "type": "literal",
@@ -448,7 +474,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Publication:PlaceToFrom26XA"
+      "id": "Profile:Instance:ProvisionActivity:Publication:PlaceToFrom26XA",
+      "marc": "26X $a"
     },
     {
       "type": "literal",
@@ -462,7 +489,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Publication:NameToFrom26XB"
+      "id": "Profile:Instance:ProvisionActivity:Publication:NameToFrom26XB",
+      "marc": "26X $b"
     },
     {
       "type": "literal",
@@ -476,7 +504,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Publication:DateToFrom26XC"
+      "id": "Profile:Instance:ProvisionActivity:Publication:DateToFrom26XC",
+      "marc": "26X $c"
     },
     {
       "type": "dropdownOption",
@@ -504,7 +533,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Distribution:EDTFDateToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Distribution:EDTFDateToFrom008",
+      "marc": "008/7-10"
     },
     {
       "type": "simple",
@@ -520,7 +550,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Place"
         }
       },
-      "id": "Profile:Instance:ProvisionActivity:Distribution:SearchPlaceOfPublicationToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Distribution:SearchPlaceOfPublicationToFrom008",
+      "marc": "008/15-17"
     },
     {
       "type": "literal",
@@ -534,7 +565,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Distribution:PlaceToFrom26XA"
+      "id": "Profile:Instance:ProvisionActivity:Distribution:PlaceToFrom26XA",
+      "marc": "26X $a"
     },
     {
       "type": "literal",
@@ -548,7 +580,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Distribution:NameToFrom26XB"
+      "id": "Profile:Instance:ProvisionActivity:Distribution:NameToFrom26XB",
+      "marc": "26X $b"
     },
     {
       "type": "literal",
@@ -562,7 +595,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Distribution:DateToFrom26XC"
+      "id": "Profile:Instance:ProvisionActivity:Distribution:DateToFrom26XC",
+      "marc": "26X $c"
     },
     {
       "type": "dropdownOption",
@@ -590,7 +624,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Manufacture:EDTFDateToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Manufacture:EDTFDateToFrom008",
+      "marc": "008/7-10"
     },
     {
       "type": "simple",
@@ -606,7 +641,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Place"
         }
       },
-      "id": "Profile:Instance:ProvisionActivity:Manufacture:SearchPlaceOfPublicationToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Manufacture:SearchPlaceOfPublicationToFrom008",
+      "marc": "008/15-17"
     },
     {
       "type": "literal",
@@ -620,7 +656,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Manufacture:PlaceToFrom26XA"
+      "id": "Profile:Instance:ProvisionActivity:Manufacture:PlaceToFrom26XA",
+      "marc": "26X $a"
     },
     {
       "type": "literal",
@@ -634,7 +671,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Manufacture:NameToFrom26XB"
+      "id": "Profile:Instance:ProvisionActivity:Manufacture:NameToFrom26XB",
+      "marc": "26X $b"
     },
     {
       "type": "literal",
@@ -648,7 +686,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Manufacture:DateToFrom26XC"
+      "id": "Profile:Instance:ProvisionActivity:Manufacture:DateToFrom26XC",
+      "marc": "26X $c"
     },
     {
       "type": "dropdownOption",
@@ -676,7 +715,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Production:EDTFDateToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Production:EDTFDateToFrom008",
+      "marc": "008/7-10"
     },
     {
       "type": "simple",
@@ -692,7 +732,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Place"
         }
       },
-      "id": "Profile:Instance:ProvisionActivity:Production:SearchPlaceOfPublicationToFrom008"
+      "id": "Profile:Instance:ProvisionActivity:Production:SearchPlaceOfPublicationToFrom008",
+      "marc": "008/15-17"
     },
     {
       "type": "literal",
@@ -706,7 +747,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Production:PlaceToFrom26XA"
+      "id": "Profile:Instance:ProvisionActivity:Production:PlaceToFrom26XA",
+      "marc": "26X $a"
     },
     {
       "type": "literal",
@@ -720,7 +762,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Production:NameToFrom26XB"
+      "id": "Profile:Instance:ProvisionActivity:Production:NameToFrom26XB",
+      "marc": "26X $b"
     },
     {
       "type": "literal",
@@ -734,7 +777,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:ProvisionActivity:Production:DateToFrom26XC"
+      "id": "Profile:Instance:ProvisionActivity:Production:DateToFrom26XC",
+      "marc": "26X $c"
     },
     {
       "type": "literal",
@@ -748,7 +792,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:CopyrightDate"
+      "id": "Profile:Instance:CopyrightDate",
+      "marc": "264 _4 $c"
     },
     {
       "type": "simple",
@@ -764,7 +809,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Issuance"
         }
       },
-      "id": "Profile:Instance:ModeOfIssuance"
+      "id": "Profile:Instance:ModeOfIssuance",
+      "marc": "334 $a"
     },
     {
       "type": "dropdown",
@@ -796,7 +842,8 @@
         "Profile:Instance:Identifiers:LCCN:LCCN",
         "Profile:Instance:Identifiers:LCCN:InvalidCanceled"
       ],
-      "id": "Profile:Instance:Identifiers:LCCN"
+      "id": "Profile:Instance:Identifiers:LCCN",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -810,7 +857,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:LCCN:LCCN"
+      "id": "Profile:Instance:Identifiers:LCCN:LCCN",
+      "marc": "010 $a"
     },
     {
       "type": "simple",
@@ -826,7 +874,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
       },
-      "id": "Profile:Instance:Identifiers:LCCN:InvalidCanceled"
+      "id": "Profile:Instance:Identifiers:LCCN:InvalidCanceled",
+      "marc": "010 $z"
     },
     {
       "type": "dropdownOption",
@@ -838,7 +887,8 @@
         "Profile:Instance:Identifiers:ISBN:Qualifier",
         "Profile:Instance:Identifiers:ISBN:IncorrectInvalidOrCanceled"
       ],
-      "id": "Profile:Instance:Identifiers:ISBN"
+      "id": "Profile:Instance:Identifiers:ISBN",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -852,7 +902,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:ISBN:ISBN"
+      "id": "Profile:Instance:Identifiers:ISBN:ISBN",
+      "marc": "020 $a"
     },
     {
       "type": "literal",
@@ -866,7 +917,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:ISBN:Qualifier"
+      "id": "Profile:Instance:Identifiers:ISBN:Qualifier",
+      "marc": "020 $q"
     },
     {
       "type": "simple",
@@ -882,7 +934,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
       },
-      "id": "Profile:Instance:Identifiers:ISBN:IncorrectInvalidOrCanceled"
+      "id": "Profile:Instance:Identifiers:ISBN:IncorrectInvalidOrCanceled",
+      "marc": "020 $z"
     },
     {
       "type": "dropdownOption",
@@ -893,7 +946,8 @@
         "Profile:Instance:Identifiers:ISSN:ISSN",
         "Profile:Instance:Identifiers:ISSN:IncorrectInvalidOrCanceled"
       ],
-      "id": "Profile:Instance:Identifiers:ISSN"
+      "id": "Profile:Instance:Identifiers:ISSN",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -923,7 +977,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
       },
-      "id": "Profile:Instance:Identifiers:ISSN:IncorrectInvalidOrCanceled"
+      "id": "Profile:Instance:Identifiers:ISSN:IncorrectInvalidOrCanceled",
+      "marc": "020 $z"
     },
     {
       "type": "dropdownOption",
@@ -935,7 +990,8 @@
         "Profile:Instance:Identifiers:IAN:Qualifier",
         "Profile:Instance:Identifiers:IAN:InvalidCanceled"
       ],
-      "id": "Profile:Instance:Identifiers:IAN"
+      "id": "Profile:Instance:Identifiers:IAN",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -963,7 +1019,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:IAN:Qualifier"
+      "id": "Profile:Instance:Identifiers:IAN:Qualifier",
+      "marc": "020 $q"
     },
     {
       "type": "simple",
@@ -979,7 +1036,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
       },
-      "id": "Profile:Instance:Identifiers:IAN:InvalidCanceled"
+      "id": "Profile:Instance:Identifiers:IAN:InvalidCanceled",
+      "marc": "020 $z"
     },
     {
       "type": "dropdownOption",
@@ -991,7 +1049,8 @@
         "Profile:Instance:Identifiers:OtherIdentifier:Qualifier",
         "Profile:Instance:Identifiers:OtherIdentifier:InvalidCanceled"
       ],
-      "id": "Profile:Instance:Identifiers:OtherIdentifier"
+      "id": "Profile:Instance:Identifiers:OtherIdentifier",
+      "marc": "N/A"
     },
     {
       "type": "literal",
@@ -1019,7 +1078,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:OtherIdentifier:Qualifier"
+      "id": "Profile:Instance:Identifiers:OtherIdentifier:Qualifier",
+      "marc": "020 $q"
     },
     {
       "type": "simple",
@@ -1035,7 +1095,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
       },
-      "id": "Profile:Instance:Identifiers:OtherIdentifier:InvalidCanceled"
+      "id": "Profile:Instance:Identifiers:OtherIdentifier:InvalidCanceled",
+      "marc": "020 $z"
     },
     {
       "type": "group",
@@ -1067,7 +1128,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:NotesAboutTheInstance:Note"
+      "id": "Profile:Instance:NotesAboutTheInstance:Note",
+      "marc": "5XX"
     },
     {
       "type": "simple",
@@ -1081,7 +1143,8 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:NotesAboutTheInstance:NoteType"
+      "id": "Profile:Instance:NotesAboutTheInstance:NoteType",
+      "marc": "N/A"
     },
     {
       "type": "group",
@@ -1113,7 +1176,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:SupplementaryContentNote:Note"
+      "id": "Profile:Instance:SupplementaryContentNote:Note",
+      "marc": "353 $a"
     },
     {
       "type": "literal",
@@ -1127,7 +1191,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:SupplementaryContentNote:URLForSupplementaryContent"
+      "id": "Profile:Instance:SupplementaryContentNote:URLForSupplementaryContent",
+      "marc": "353 $b"
     },
     {
       "type": "simple",
@@ -1143,7 +1208,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Media"
         }
       },
-      "id": "Profile:Instance:MediaType"
+      "id": "Profile:Instance:MediaType",
+      "marc": "337 $a ($b)"
     },
     {
       "type": "group",
@@ -1175,7 +1241,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Extent:Extent"
+      "id": "Profile:Instance:Extent:Extent",
+      "marc": "300 $a"
     },
     {
       "type": "literal",
@@ -1203,7 +1270,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Dimensions"
+      "id": "Profile:Instance:Dimensions",
+      "marc": "300 $c"
     },
     {
       "type": "simple",
@@ -1219,7 +1287,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Carrier"
         }
       },
-      "id": "Profile:Instance:CarrierType"
+      "id": "Profile:Instance:CarrierType",
+      "marc": "338 $a ($b)"
     },
     {
       "type": "group",
@@ -1251,7 +1320,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:URLOfInstance:URL"
+      "id": "Profile:Instance:URLOfInstance:URL",
+      "marc": "856 $u"
     },
     {
       "type": "literal",
@@ -1265,7 +1335,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:URLOfInstance:Note"
+      "id": "Profile:Instance:URLOfInstance:Note",
+      "marc": "856 $x"
     },
     {
       "type": "simple",
