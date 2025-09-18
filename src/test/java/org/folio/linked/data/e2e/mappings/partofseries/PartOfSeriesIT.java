@@ -51,7 +51,7 @@ class PartOfSeriesIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource work) {
-    final var expectedWorkSeriesId = 3219976296937183812L;
+    final var expectedWorkSeriesId = 687055746085690020L;
     final var expectedSeriesId = 8151798709976991138L;
     final var expectedIssnId = -1770271650159630429L;
     final var expectedInstanceId = -6685214456917734615L;
