@@ -17,6 +17,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.HAS_EXPRESSION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
@@ -73,6 +74,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -129,6 +131,9 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toEditionStat
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentLabel;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentMaterialsSpec;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toExtentNote;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toHubLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toHubLink;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toHubRelation;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toId;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsLink;
@@ -591,8 +596,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var work = getSampleWork(null);
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(54);
+    assertThat(resourceTestService.countEdges()).isEqualTo(53);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -603,9 +608,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(34);
+    assertThat(resourceTestService.countEdges()).isEqualTo(35);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -615,8 +620,8 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(54);
+    assertThat(resourceTestService.countEdges()).isEqualTo(53);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -627,7 +632,7 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(53);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(33);
     checkSearchIndexMessage(existed.getId(), DELETE);
@@ -761,6 +766,7 @@ abstract class ResourceControllerITBase extends ITBase {
   }
 
   private void validateWorkResponse(ResultActions resultActions, String workBase) throws Exception {
+    System.out.println(resultActions.toString());
     resultActions
       .andExpect(jsonPath(toId(workBase), notNullValue()))
       .andExpect(jsonPath(toProfileId(workBase), notNullValue()))
@@ -809,7 +815,10 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
       .andExpect(jsonPath(toIllustrationsCode(workBase), equalTo("a")))
       .andExpect(jsonPath(toIllustrationsLink(workBase), equalTo("http://id.loc.gov/vocabulary/millus/ill")))
-      .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("Illustrations")));
+      .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("Illustrations")))
+      .andExpect(jsonPath(toHubLabel(workBase), equalTo("hub label")))
+      .andExpect(jsonPath(toHubLink(workBase), equalTo("hub link")))
+      .andExpect(jsonPath(toHubRelation(workBase), equalTo("http://bibfra.me/vocab/lite/hasExpression")));
     if (workBase.equals(toWork())) {
       resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
@@ -1210,6 +1219,7 @@ abstract class ResourceControllerITBase extends ITBase {
       GEOGRAPHIC_COVERAGE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().getFirst(),
       GEOGRAPHIC_COVERAGE.getUri());
+    validateHub(outgoingEdgeIterator.next(), work);
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
     if (validateFullInstance) {
       var incomingEdgeIterator = work.getIncomingEdges().iterator();
@@ -1383,6 +1393,18 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(subjectConcept.getOutgoingEdges()).hasSize(1);
     var subjectEdge = subjectConcept.getOutgoingEdges().iterator().next();
     validateResourceEdge(subjectEdge, subjectConcept, expectedSubject, FOCUS.getUri());
+  }
+
+  private void validateHub(ResourceEdge edge, Resource source) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(HAS_EXPRESSION.getUri());
+    var hub = edge.getTarget();
+    var types = hub.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
+    assertThat(types).containsOnly(HUB.getUri());
+    assertThat(hub.getDoc()).hasSize(2);
+    validateLiterals(hub, LABEL.getValue(), List.of("hub label"));
+    validateLiterals(hub, LINK.getValue(), List.of("hub link"));
   }
 
   private LookupResources saveLookupResources() {

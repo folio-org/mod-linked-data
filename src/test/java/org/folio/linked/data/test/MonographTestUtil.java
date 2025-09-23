@@ -15,6 +15,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
+import static org.folio.ld.dictionary.PredicateDictionary.HAS_EXPRESSION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
@@ -73,6 +74,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -386,6 +388,15 @@ public class MonographTestUtil {
       emptyMap()
     ).setLabel("eng");
 
+    var hub = createResource(
+      Map.of(
+        LABEL, List.of("hub label"),
+        LINK, List.of("hub link")
+      ),
+      Set.of(HUB),
+      emptyMap()
+    ).setLabel("hub label");
+
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
     pred2OutgoingResources.put(CLASSIFICATION, List.of(createLcClassification(), createDeweyClassification()));
@@ -399,6 +410,7 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
     pred2OutgoingResources.put(ILLUSTRATIONS, List.of(createIllustrations()));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(createSupplementaryContent()));
+    pred2OutgoingResources.put(HAS_EXPRESSION, List.of(hub));
 
     var work = createResource(
       Map.ofEntries(

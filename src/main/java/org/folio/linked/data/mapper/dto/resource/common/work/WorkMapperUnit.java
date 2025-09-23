@@ -10,6 +10,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
+import static org.folio.ld.dictionary.PredicateDictionary.HAS_EXPRESSION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
@@ -39,10 +40,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.linked.data.domain.dto.Hub;
 import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -112,8 +115,15 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getSupplementaryContent(), SUPPLEMENTARY_CONTENT);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getPartOfSeries(), IS_PART_OF);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getCharacteristic(), CHARACTERISTIC);
+    coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getHubs(), HAS_EXPRESSION);
     groupLanguagesByType(workDto.getLanguages())
       .forEach((type, languages) -> coreMapper.addOutgoingEdges(work, WorkRequest.class, languages, type));
+    workDto.getHubs()
+      .stream()
+      .filter(hub -> getHubPredicate(hub).isPresent())
+      .forEach(hub ->
+        coreMapper.addOutgoingEdges(work, WorkRequest.class, List.of(hub), getHubPredicate(hub).get())
+      );
 
     work.setId(hashService.hash(work));
     return work;
@@ -157,5 +167,9 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
       }
     }
     return result;
+  }
+
+  private static Optional<PredicateDictionary> getHubPredicate(Hub hub) {
+    return PredicateDictionary.fromUri(hub.getRelation());
   }
 }

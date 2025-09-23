@@ -78,6 +78,9 @@ public class ResourceJsonPath {
   private static final String LANGUAGES_PROPERTY = "_languages";
   private static final String LANGUAGE_CODES_PROPERTY = "_codes";
   private static final String LANGUAGE_TYPES_PROPERTY = "_types";
+  private static final String HUBS_PROPERTY = "_hubs";
+  private static final String HUB_PROPERTY = "_hub";
+  private static final String HUB_RELATION_PROPERTY = "_relation";
 
   public static String toInstance() {
     return join(".", "$", path("resource"), path(INSTANCE.getUri()));
@@ -513,6 +516,18 @@ public class ResourceJsonPath {
 
   public static String toWorkContentLink(String workBase) {
     return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(LINK.getValue()));
+  }
+
+  public static String toHubLabel(String workBase) {
+    return join(".", workBase, arrayPath(HUBS_PROPERTY), path(HUB_PROPERTY), arrayPath(LABEL.getValue()));
+  }
+
+  public static String toHubLink(String workBase) {
+    return join(".", workBase, arrayPath(HUBS_PROPERTY), path(HUB_PROPERTY), arrayPath(LINK.getValue()));
+  }
+
+  public static String toHubRelation(String workBase) {
+    return join(".", workBase, arrayPath(HUBS_PROPERTY), path(HUB_RELATION_PROPERTY));
   }
 
   public static String toId(String base) {
