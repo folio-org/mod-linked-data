@@ -20,21 +20,21 @@
             "type": "object",
             "$ref": "CategoryResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/targetAudience"
+          "x-json-property": "http://bibfra.me/vocab/library/targetAudience"
         },
         "tableOfContents": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/tableOfContents"
+          "x-json-property": "http://bibfra.me/vocab/library/tableOfContents"
         },
         "summary": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/summary"
+          "x-json-property": "http://bibfra.me/vocab/library/summary"
         },
         "_languages": {
           "type": "array",
@@ -88,7 +88,7 @@
             "type": "object",
             "$ref": "CategoryResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/content"
+          "x-json-property": "http://bibfra.me/vocab/library/content"
         },
         "_instanceReference": {
           "type": "array",
@@ -131,7 +131,7 @@
             "type": "object",
             "$ref": "CategoryResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/governmentPublication"
+          "x-json-property": "http://bibfra.me/vocab/library/governmentPublication"
         },
         "originPlace": {
           "type": "array",
@@ -139,7 +139,7 @@
             "type": "object",
             "$ref": "PlaceResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/originPlace"
+          "x-json-property": "http://bibfra.me/vocab/library/originPlace"
         },
         "dissertation": {
           "type": "array",
@@ -155,7 +155,7 @@
             "type": "object",
             "$ref": "CategoryResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/illustrations"
+          "x-json-property": "http://bibfra.me/vocab/library/illustrations"
         },
         "supplementaryContent": {
           "type": "array",
@@ -163,7 +163,7 @@
             "type": "object",
             "$ref": "CategoryResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/supplementaryContent"
+          "x-json-property": "http://bibfra.me/vocab/library/supplementaryContent"
         },
         "partOfSeries": {
           "type": "array",
@@ -179,7 +179,7 @@
             "type": "object",
             "$ref": "CategoryResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/characteristic"
+          "x-json-property": "http://bibfra.me/vocab/library/characteristic"
         }
       }
     }

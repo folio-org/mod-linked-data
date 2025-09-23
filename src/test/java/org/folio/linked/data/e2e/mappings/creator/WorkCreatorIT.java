@@ -37,10 +37,10 @@ class WorkCreatorIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Work":{
                "profileId": 2,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                   {
-                     "http://bibfra.me/vocab/marc/Title":{
-                        "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                     "http://bibfra.me/vocab/library/Title":{
+                        "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                      }
                   }
                ],

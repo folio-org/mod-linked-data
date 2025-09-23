@@ -17,7 +17,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/code"
+          "x-json-property": "http://bibfra.me/vocab/library/code"
         },
         "label": {
           "type": "array",

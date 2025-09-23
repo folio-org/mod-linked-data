@@ -25,10 +25,10 @@ public class LanguageIT extends PostResourceIT {
        "resource":{
           "http://bibfra.me/vocab/lite/Work":{
            "profileId": 2,
-           "http://bibfra.me/vocab/marc/title":[
+           "http://bibfra.me/vocab/library/title":[
             {
-             "http://bibfra.me/vocab/marc/Title":{
-              "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+             "http://bibfra.me/vocab/library/Title":{
+              "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
              }
             }
            ],
@@ -36,7 +36,7 @@ public class LanguageIT extends PostResourceIT {
             {
              "_codes":[{
               "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/eng" ],
-              "http://bibfra.me/vocab/marc/term":[ "English" ]
+              "http://bibfra.me/vocab/library/term":[ "English" ]
              }],
              "_types":[
               "http://bibfra.me/vocab/lite/language",
@@ -46,7 +46,7 @@ public class LanguageIT extends PostResourceIT {
             {
              "_codes":[{
               "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/jpn" ],
-              "http://bibfra.me/vocab/marc/term":[ "Japanese" ]
+              "http://bibfra.me/vocab/library/term":[ "Japanese" ]
              }],
              "_types":[
               "http://bibfra.me/vocab/lite/accompanyingMaterialLanguage",
@@ -56,7 +56,7 @@ public class LanguageIT extends PostResourceIT {
             {
              "_codes":[{
               "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/spa" ],
-              "http://bibfra.me/vocab/marc/term":[ "Spanish" ]
+              "http://bibfra.me/vocab/library/term":[ "Spanish" ]
              }],
              "_types":[ "http://bibfra.me/vocab/lite/tableOfContentsLanguage" ]
             }
@@ -114,21 +114,21 @@ public class LanguageIT extends PostResourceIT {
 
   private static Map<Long, LanguageCategory> getExpectedLanguages() {
     return Map.of(
-      6136110693438399146L, new LanguageCategory(
+      -878606130574011566L, new LanguageCategory(
         "http://id.loc.gov/vocabulary/languages/eng",
         "eng",
         "English",
         Set.of("http://bibfra.me/vocab/lite/language", "http://bibfra.me/vocab/lite/accompanyingMaterialLanguage")
       ),
 
-      -8414775996109135490L, new LanguageCategory(
+      6324522887932472337L, new LanguageCategory(
         "http://id.loc.gov/vocabulary/languages/jpn",
         "jpn",
         "Japanese",
         Set.of("http://bibfra.me/vocab/lite/accompanyingMaterialLanguage",
           "http://bibfra.me/vocab/lite/originalLanguage")),
 
-      -2319052759516826290L, new LanguageCategory(
+      1401439082767327526L, new LanguageCategory(
         "http://id.loc.gov/vocabulary/languages/spa",
         "spa",
         "Spanish",
@@ -155,8 +155,8 @@ public class LanguageIT extends PostResourceIT {
 
     var expected = getExpectedLanguages().get(language.getId());
     assertThat(getProperty(language, "http://bibfra.me/vocab/lite/link")).isEqualTo(expected.link);
-    assertThat(getProperty(language, "http://bibfra.me/vocab/marc/term")).isEqualTo(expected.term);
-    assertThat(getProperty(language, "http://bibfra.me/vocab/marc/code")).isEqualTo(expected.code);
+    assertThat(getProperty(language, "http://bibfra.me/vocab/library/term")).isEqualTo(expected.term);
+    assertThat(getProperty(language, "http://bibfra.me/vocab/library/code")).isEqualTo(expected.code);
     assertThat(language.getLabel()).isEqualTo(expected.code);
   }
 

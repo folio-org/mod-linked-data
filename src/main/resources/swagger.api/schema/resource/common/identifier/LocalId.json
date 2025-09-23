@@ -10,14 +10,14 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/localId"
+          "x-json-property": "http://bibfra.me/vocab/library/localId"
         },
         "assigner": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/localIdAssigningSource"
+          "x-json-property": "http://bibfra.me/vocab/library/localIdAssigningSource"
         }
       }
     }

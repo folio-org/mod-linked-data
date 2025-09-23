@@ -22,10 +22,10 @@ public class InstanceNotesIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Instance":{
                "profileId": 3,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                   {
-                     "http://bibfra.me/vocab/marc/Title":{
-                        "http://bibfra.me/vocab/marc/mainTitle":[
+                     "http://bibfra.me/vocab/library/Title":{
+                        "http://bibfra.me/vocab/library/mainTitle":[
                            "%s"
                         ]
                      }
@@ -33,24 +33,24 @@ public class InstanceNotesIT extends PostResourceIT {
                ],
                "_notes":[
                  { "type":[ "http://bibfra.me/vocab/lite/note" ], "value":[ "Note1" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/additionalPhysicalForm" ], "value":[ "Note2" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/descriptionSourceNote" ], "value":[ "Note3" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/exhibitionsNote" ], "value":[ "Note4" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial" ], "value":[ "Note5" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/fundingInformation" ], "value":[ "Note6" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/issuanceNote" ], "value":[ "Note7" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/issuingBody" ], "value":[ "Note8" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/originalVersionNote" ], "value":[ "Note9" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/relatedParts" ], "value":[ "Note10" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/typeOfReport" ], "value":[ "Note11" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/reproductionNote" ], "value":[ "Note12" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/computerDataNote" ], "value":[ "Note13" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/withNote" ], "value":[ "Note14" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/accompanyingMaterial" ], "value":[ "Note15" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/biogdata" ], "value":[ "Note16" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/adminhist" ], "value":[ "Note17" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/physicalDescription" ], "value":[ "Note18" ] },
-                 { "type":[ "http://bibfra.me/vocab/marc/datesOfPublicationNote" ], "value":[ "Note19" ] }
+                 { "type":[ "http://bibfra.me/vocab/library/additionalPhysicalForm" ], "value":[ "Note2" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/descriptionSourceNote" ], "value":[ "Note3" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/exhibitionsNote" ], "value":[ "Note4" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/locationOfOtherArchivalMaterial" ], "value":[ "Note5" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/fundingInformation" ], "value":[ "Note6" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/issuanceNote" ], "value":[ "Note7" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/issuingBody" ], "value":[ "Note8" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/originalVersionNote" ], "value":[ "Note9" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/relatedParts" ], "value":[ "Note10" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/typeOfReport" ], "value":[ "Note11" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/reproductionNote" ], "value":[ "Note12" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/computerDataNote" ], "value":[ "Note13" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/withNote" ], "value":[ "Note14" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/accompanyingMaterial" ], "value":[ "Note15" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/biogdata" ], "value":[ "Note16" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/adminhist" ], "value":[ "Note17" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/physicalDescription" ], "value":[ "Note18" ] },
+                 { "type":[ "http://bibfra.me/vocab/library/datesOfPublicationNote" ], "value":[ "Note19" ] }
                ]
             }
          }
@@ -69,24 +69,24 @@ public class InstanceNotesIT extends PostResourceIT {
 
     var expectedNotes = Map.ofEntries(
       Map.entry("http://bibfra.me/vocab/lite/note", "Note1"),
-      Map.entry("http://bibfra.me/vocab/marc/additionalPhysicalForm", "Note2"),
-      Map.entry("http://bibfra.me/vocab/marc/descriptionSourceNote", "Note3"),
-      Map.entry("http://bibfra.me/vocab/marc/exhibitionsNote", "Note4"),
-      Map.entry("http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial", "Note5"),
-      Map.entry("http://bibfra.me/vocab/marc/fundingInformation", "Note6"),
-      Map.entry("http://bibfra.me/vocab/marc/issuanceNote", "Note7"),
-      Map.entry("http://bibfra.me/vocab/marc/issuingBody", "Note8"),
-      Map.entry("http://bibfra.me/vocab/marc/originalVersionNote", "Note9"),
-      Map.entry("http://bibfra.me/vocab/marc/relatedParts", "Note10"),
-      Map.entry("http://bibfra.me/vocab/marc/typeOfReport", "Note11"),
-      Map.entry("http://bibfra.me/vocab/marc/reproductionNote", "Note12"),
-      Map.entry("http://bibfra.me/vocab/marc/computerDataNote", "Note13"),
-      Map.entry("http://bibfra.me/vocab/marc/withNote", "Note14"),
-      Map.entry("http://bibfra.me/vocab/marc/accompanyingMaterial", "Note15"),
-      Map.entry("http://bibfra.me/vocab/marc/biogdata", "Note16"),
-      Map.entry("http://bibfra.me/vocab/marc/adminhist", "Note17"),
-      Map.entry("http://bibfra.me/vocab/marc/physicalDescription", "Note18"),
-      Map.entry("http://bibfra.me/vocab/marc/datesOfPublicationNote", "Note19")
+      Map.entry("http://bibfra.me/vocab/library/additionalPhysicalForm", "Note2"),
+      Map.entry("http://bibfra.me/vocab/library/descriptionSourceNote", "Note3"),
+      Map.entry("http://bibfra.me/vocab/library/exhibitionsNote", "Note4"),
+      Map.entry("http://bibfra.me/vocab/library/locationOfOtherArchivalMaterial", "Note5"),
+      Map.entry("http://bibfra.me/vocab/library/fundingInformation", "Note6"),
+      Map.entry("http://bibfra.me/vocab/library/issuanceNote", "Note7"),
+      Map.entry("http://bibfra.me/vocab/library/issuingBody", "Note8"),
+      Map.entry("http://bibfra.me/vocab/library/originalVersionNote", "Note9"),
+      Map.entry("http://bibfra.me/vocab/library/relatedParts", "Note10"),
+      Map.entry("http://bibfra.me/vocab/library/typeOfReport", "Note11"),
+      Map.entry("http://bibfra.me/vocab/library/reproductionNote", "Note12"),
+      Map.entry("http://bibfra.me/vocab/library/computerDataNote", "Note13"),
+      Map.entry("http://bibfra.me/vocab/library/withNote", "Note14"),
+      Map.entry("http://bibfra.me/vocab/library/accompanyingMaterial", "Note15"),
+      Map.entry("http://bibfra.me/vocab/library/biogdata", "Note16"),
+      Map.entry("http://bibfra.me/vocab/library/adminhist", "Note17"),
+      Map.entry("http://bibfra.me/vocab/library/physicalDescription", "Note18"),
+      Map.entry("http://bibfra.me/vocab/library/datesOfPublicationNote", "Note19")
     );
 
     var actualNotes = new HashMap<>();
@@ -102,23 +102,23 @@ public class InstanceNotesIT extends PostResourceIT {
   @Override
   protected void validateGraph(Resource instance) {
     assertThat(getProperty(instance, "http://bibfra.me/vocab/lite/note")).isEqualTo("Note1");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/additionalPhysicalForm")).isEqualTo("Note2");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/descriptionSourceNote")).isEqualTo("Note3");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/exhibitionsNote")).isEqualTo("Note4");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/locationOfOtherArchivalMaterial")).isEqualTo("Note5");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/fundingInformation")).isEqualTo("Note6");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/issuanceNote")).isEqualTo("Note7");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/issuingBody")).isEqualTo("Note8");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/originalVersionNote")).isEqualTo("Note9");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/relatedParts")).isEqualTo("Note10");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/typeOfReport")).isEqualTo("Note11");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/reproductionNote")).isEqualTo("Note12");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/computerDataNote")).isEqualTo("Note13");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/withNote")).isEqualTo("Note14");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/accompanyingMaterial")).isEqualTo("Note15");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/biogdata")).isEqualTo("Note16");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/adminhist")).isEqualTo("Note17");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/physicalDescription")).isEqualTo("Note18");
-    assertThat(getProperty(instance, "http://bibfra.me/vocab/marc/datesOfPublicationNote")).isEqualTo("Note19");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/additionalPhysicalForm")).isEqualTo("Note2");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/descriptionSourceNote")).isEqualTo("Note3");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/exhibitionsNote")).isEqualTo("Note4");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/locationOfOtherArchivalMaterial")).isEqualTo("Note5");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/fundingInformation")).isEqualTo("Note6");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/issuanceNote")).isEqualTo("Note7");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/issuingBody")).isEqualTo("Note8");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/originalVersionNote")).isEqualTo("Note9");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/relatedParts")).isEqualTo("Note10");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/typeOfReport")).isEqualTo("Note11");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/reproductionNote")).isEqualTo("Note12");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/computerDataNote")).isEqualTo("Note13");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/withNote")).isEqualTo("Note14");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/accompanyingMaterial")).isEqualTo("Note15");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/biogdata")).isEqualTo("Note16");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/adminhist")).isEqualTo("Note17");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/physicalDescription")).isEqualTo("Note18");
+    assertThat(getProperty(instance, "http://bibfra.me/vocab/library/datesOfPublicationNote")).isEqualTo("Note19");
   }
 }

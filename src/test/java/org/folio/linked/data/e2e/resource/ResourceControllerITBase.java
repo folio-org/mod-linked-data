@@ -834,10 +834,13 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(instance.getOutgoingEdges()).hasSize(18);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
-    validateParallelTitle(edgeIterator.next(), instance);
-    validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
+    validateSupplementaryContent(edgeIterator.next(), instance);
+    validateVariantTitle(edgeIterator.next(), instance);
     validateCategory(edgeIterator.next(), instance, MEDIA, "http://id.loc.gov/vocabulary/mediaTypes/s", "s");
+    validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
     validateLccn(edgeIterator.next(), instance);
+    validateParallelTitle(edgeIterator.next(), instance);
+    validateExtent(edgeIterator.next(), instance);
     var edge = edgeIterator.next();
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(instance);
@@ -846,18 +849,15 @@ abstract class ResourceControllerITBase extends ITBase {
     if (validateFullWork) {
       validateWork(work, false);
     }
-    validateExtent(edgeIterator.next(), instance);
     validateAccessLocation(edgeIterator.next(), instance);
     validateIan(edgeIterator.next(), instance);
-    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE, "as", "American Samoa");
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION, "dz", "Algeria");
+    validateProviderEvent(edgeIterator.next(), instance, PE_MANUFACTURE, "as", "American Samoa");
     validateProviderEvent(edgeIterator.next(), instance, PE_PRODUCTION, "af", "Afghanistan");
     validateProviderEvent(edgeIterator.next(), instance, PE_PUBLICATION, "al", "Albania");
     validateOtherId(edgeIterator.next(), instance);
     validatePrimaryTitle(edgeIterator.next(), instance);
-    validateSupplementaryContent(edgeIterator.next(), instance);
     validateIsbn(edgeIterator.next(), instance);
-    validateVariantTitle(edgeIterator.next(), instance);
     validateCopyrightDate(edgeIterator.next(), instance);
     assertThat(edgeIterator.hasNext()).isFalse();
   }
@@ -930,7 +930,7 @@ abstract class ResourceControllerITBase extends ITBase {
 
   private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate,
                                      String expectedCode, String expectedLabel) {
-    var type = predicate.getUri().substring(predicate.getUri().indexOf("marc/") + 5);
+    var type = predicate.getUri().substring(predicate.getUri().indexOf("library/") + 8);
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(predicate.getUri());
@@ -1184,24 +1184,24 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
-    validateParallelTitle(outgoingEdgeIterator.next(), work);
-    validateWorkContentType(outgoingEdgeIterator.next(), work);
-    validateCategory(outgoingEdgeIterator.next(), work, SUPPLEMENTARY_CONTENT, "supplementary content term",
-      Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/msupplcont/code", CODE.getValue(), "code"),
-      "Supplementary Content"
-    );
+    validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "Illustrations",
       Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/ill", CODE.getValue(), "a"),
       "Illustrative Content"
     );
+    validateCategory(outgoingEdgeIterator.next(), work, SUPPLEMENTARY_CONTENT, "supplementary content term",
+      Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/msupplcont/code", CODE.getValue(), "code"),
+      "Supplementary Content"
+    );
+    validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
+    validateParallelTitle(outgoingEdgeIterator.next(), work);
     validateLanguage(outgoingEdgeIterator.next(), work);
     validateDissertation(outgoingEdgeIterator.next(), work);
     validateDdcClassification(outgoingEdgeIterator.next(), work);
     validateLcClassification(outgoingEdgeIterator.next(), work);
     validatePrimaryTitle(outgoingEdgeIterator.next(), work);
     validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().getFirst());
-    validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1));
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().getFirst(), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
@@ -1256,10 +1256,10 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(classification, SOURCE.getValue(), "lc");
     validateLiteral(classification, ITEM_NUMBER.getValue(), "lc item number");
     var iterator = classification.getOutgoingEdges().iterator();
-    validateStatus(iterator.next(), classification, "lc");
     var assigningSourceEdge = iterator.next();
     validateResourceEdge(assigningSourceEdge, classification, assigningSourceEdge.getTarget(),
       PredicateDictionary.ASSIGNING_SOURCE.getUri());
+    validateStatus(iterator.next(), classification, "lc");
   }
 
   private void validateWorkContentType(ResourceEdge edge, Resource source) {
@@ -1389,11 +1389,11 @@ abstract class ResourceControllerITBase extends ITBase {
     var subjectPerson = resourceTestService.saveGraph(getSubjectPersonPreferred());
     var subjectForm = resourceTestService.saveGraph(getSubjectFormNotPreferred());
     var unitedStates = saveResource(7109832602847218134L, "United States",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"United States\"], \"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"n-us\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/n-us\"]}", PLACE);
+      "{\"http://bibfra.me/vocab/lite/name\": [\"United States\"], \"http://bibfra.me/vocab/library/geographicAreaCode\": [\"n-us\"], "
+        + "\"http://bibfra.me/vocab/library/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/n-us\"]}", PLACE);
     var europe = saveResource(- 4654600487710655316L, "Europe",
-      "{\"http://bibfra.me/vocab/lite/name\": [\"Europe\"], \"http://bibfra.me/vocab/marc/geographicAreaCode\": [\"e\"], "
-        + "\"http://bibfra.me/vocab/marc/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/e\"]}", PLACE);
+      "{\"http://bibfra.me/vocab/lite/name\": [\"Europe\"], \"http://bibfra.me/vocab/library/geographicAreaCode\": [\"e\"], "
+        + "\"http://bibfra.me/vocab/library/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/e\"]}", PLACE);
     var genre1 = saveResource(- 9064822434663187463L, "genre 1", FORM,
       "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}", "8138e88f-4278-45ba-838c-816b80544f82");
     var genre2 = saveResource(- 4816872480602594231L, "genre 2", "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}", FORM);

@@ -31,7 +31,7 @@
     {
       "type": "dropdown",
       "displayName": "Title Information",
-      "uriBFLite": "http://bibfra.me/vocab/marc/title",
+      "uriBFLite": "http://bibfra.me/vocab/library/title",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -51,7 +51,7 @@
       "type": "dropdownOption",
       "displayName": "Instance Title",
       "bfid": "lc:RT:bf2:InstanceTitle",
-      "uriBFLite": "http://bibfra.me/vocab/marc/Title",
+      "uriBFLite": "http://bibfra.me/vocab/library/Title",
       "children": [
         "Profile:Instance:TitleInformation:InstanceTitle:NonSortCharacterCount",
         "Profile:Instance:TitleInformation:InstanceTitle:MainTitle",
@@ -80,7 +80,7 @@
     {
       "type": "literal",
       "displayName": "Main Title",
-      "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/mainTitle",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -95,7 +95,7 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
+      "uriBFLite": "http://bibfra.me/vocab/library/partNumber",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -110,7 +110,7 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uriBFLite": "http://bibfra.me/vocab/marc/partName",
+      "uriBFLite": "http://bibfra.me/vocab/library/partName",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -125,7 +125,7 @@
     {
       "type": "literal",
       "displayName": "Other Title Information",
-      "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/subTitle",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -141,7 +141,7 @@
       "type": "dropdownOption",
       "displayName": "Variant Title",
       "bfid": "lc:RT:bf2:Title:VarTitle",
-      "uriBFLite": "http://bibfra.me/vocab/marc/VariantTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/VariantTitle",
       "children": [
         "Profile:Instance:TitleInformation:VariantTitle:VariantTitle",
         "Profile:Instance:TitleInformation:VariantTitle:PartNumber",
@@ -157,7 +157,7 @@
     {
       "type": "literal",
       "displayName": "Variant Title",
-      "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/mainTitle",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -172,7 +172,7 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
+      "uriBFLite": "http://bibfra.me/vocab/library/partNumber",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -187,7 +187,7 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uriBFLite": "http://bibfra.me/vocab/marc/partName",
+      "uriBFLite": "http://bibfra.me/vocab/library/partName",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -202,7 +202,7 @@
     {
       "type": "literal",
       "displayName": "Other title information",
-      "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/subTitle",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -232,7 +232,7 @@
     {
       "type": "literal",
       "displayName": "Variant title type",
-      "uriBFLite": "http://bibfra.me/vocab/marc/variantType",
+      "uriBFLite": "http://bibfra.me/vocab/library/variantType",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -263,7 +263,7 @@
       "type": "dropdownOption",
       "displayName": "Parallel Title",
       "bfid": "lc:RT:bf2:ParallelTitle",
-      "uriBFLite": "http://bibfra.me/vocab/marc/ParallelTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/ParallelTitle",
       "children": [
         "Profile:Instance:TitleInformation:ParallelTitle:ParallelTitle",
         "Profile:Instance:TitleInformation:ParallelTitle:OtherTitleInformation",
@@ -278,7 +278,7 @@
     {
       "type": "literal",
       "displayName": "Parallel Title",
-      "uriBFLite": "http://bibfra.me/vocab/marc/mainTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/mainTitle",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -293,7 +293,7 @@
     {
       "type": "literal",
       "displayName": "Other Title Information",
-      "uriBFLite": "http://bibfra.me/vocab/marc/subTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/subTitle",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -308,7 +308,7 @@
     {
       "type": "literal",
       "displayName": "Part number",
-      "uriBFLite": "http://bibfra.me/vocab/marc/partNumber",
+      "uriBFLite": "http://bibfra.me/vocab/library/partNumber",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -323,7 +323,7 @@
     {
       "type": "literal",
       "displayName": "Part name",
-      "uriBFLite": "http://bibfra.me/vocab/marc/partName",
+      "uriBFLite": "http://bibfra.me/vocab/library/partName",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -368,7 +368,7 @@
     {
       "type": "literal",
       "displayName": "Statement of Responsibility",
-      "uriBFLite": "http://bibfra.me/vocab/marc/statementOfResponsibility",
+      "uriBFLite": "http://bibfra.me/vocab/library/statementOfResponsibility",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -383,7 +383,7 @@
     {
       "type": "literal",
       "displayName": "Edition Statement",
-      "uriBFLite": "http://bibfra.me/vocab/marc/edition",
+      "uriBFLite": "http://bibfra.me/vocab/library/edition",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -398,7 +398,7 @@
     {
       "type": "dropdown",
       "displayName": "Provision Activity",
-      "uriBFLite": "http://bibfra.me/vocab/marc/provisionActivity",
+      "uriBFLite": "http://bibfra.me/vocab/library/provisionActivity",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -420,7 +420,7 @@
       "type": "dropdownOption",
       "displayName": "Publication",
       "bfid": "lc:RT:bf2:PubInfoNew",
-      "uriBFLite": "http://bibfra.me/vocab/marc/publication",
+      "uriBFLite": "http://bibfra.me/vocab/library/publication",
       "children": [
         "Profile:Instance:ProvisionActivity:Publication:EDTFDateToFrom008",
         "Profile:Instance:ProvisionActivity:Publication:SearchPlaceOfPublicationToFrom008",
@@ -511,7 +511,7 @@
       "type": "dropdownOption",
       "displayName": "Distribution",
       "bfid": "lc:RT:bf2:DistInfoNew",
-      "uriBFLite": "http://bibfra.me/vocab/marc/distribution",
+      "uriBFLite": "http://bibfra.me/vocab/library/distribution",
       "children": [
         "Profile:Instance:ProvisionActivity:Distribution:EDTFDateToFrom008",
         "Profile:Instance:ProvisionActivity:Distribution:SearchPlaceOfPublicationToFrom008",
@@ -602,7 +602,7 @@
       "type": "dropdownOption",
       "displayName": "Manufacture",
       "bfid": "lc:RT:bf2:ManuInfoNew",
-      "uriBFLite": "http://bibfra.me/vocab/marc/manufacture",
+      "uriBFLite": "http://bibfra.me/vocab/library/manufacture",
       "children": [
         "Profile:Instance:ProvisionActivity:Manufacture:EDTFDateToFrom008",
         "Profile:Instance:ProvisionActivity:Manufacture:SearchPlaceOfPublicationToFrom008",
@@ -693,7 +693,7 @@
       "type": "dropdownOption",
       "displayName": "Production",
       "bfid": "lc:RT:bf2:ProdInfoNew",
-      "uriBFLite": "http://bibfra.me/vocab/marc/production",
+      "uriBFLite": "http://bibfra.me/vocab/library/production",
       "children": [
         "Profile:Instance:ProvisionActivity:Production:EDTFDateToFrom008",
         "Profile:Instance:ProvisionActivity:Production:SearchPlaceOfPublicationToFrom008",
@@ -783,7 +783,7 @@
     {
       "type": "literal",
       "displayName": "Copyright Date",
-      "uriBFLite": "http://bibfra.me/vocab/marc/copyright",
+      "uriBFLite": "http://bibfra.me/vocab/library/copyright",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -798,7 +798,7 @@
     {
       "type": "simple",
       "displayName": "Mode of Issuance",
-      "uriBFLite": "http://bibfra.me/vocab/marc/issuance",
+      "uriBFLite": "http://bibfra.me/vocab/library/issuance",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -863,7 +863,7 @@
     {
       "type": "simple",
       "displayName": "Invalid/Canceled?",
-      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "uriBFLite": "http://bibfra.me/vocab/library/status",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -908,7 +908,7 @@
     {
       "type": "literal",
       "displayName": "Qualifier",
-      "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
+      "uriBFLite": "http://bibfra.me/vocab/library/qualifier",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -923,7 +923,7 @@
     {
       "type": "simple",
       "displayName": "Incorrect, Invalid or Canceled?",
-      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "uriBFLite": "http://bibfra.me/vocab/library/status",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -966,7 +966,7 @@
     {
       "type": "simple",
       "displayName": "Incorrect, Invalid, or Canceled?",
-      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "uriBFLite": "http://bibfra.me/vocab/library/status",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1010,7 +1010,7 @@
     {
       "type": "literal",
       "displayName": "Qualifier",
-      "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
+      "uriBFLite": "http://bibfra.me/vocab/library/qualifier",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1025,7 +1025,7 @@
     {
       "type": "simple",
       "displayName": "Invalid/Canceled?",
-      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "uriBFLite": "http://bibfra.me/vocab/library/status",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1069,7 +1069,7 @@
     {
       "type": "literal",
       "displayName": "Qualifier",
-      "uriBFLite": "http://bibfra.me/vocab/marc/qualifier",
+      "uriBFLite": "http://bibfra.me/vocab/library/qualifier",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1084,7 +1084,7 @@
     {
       "type": "simple",
       "displayName": "Invalid/Canceled?",
-      "uriBFLite": "http://bibfra.me/vocab/marc/status",
+      "uriBFLite": "http://bibfra.me/vocab/library/status",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1149,7 +1149,7 @@
     {
       "type": "group",
       "displayName": "Supplementary Content note",
-      "uriBFLite": "http://bibfra.me/vocab/marc/supplementaryContent",
+      "uriBFLite": "http://bibfra.me/vocab/library/supplementaryContent",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -1197,7 +1197,7 @@
     {
       "type": "simple",
       "displayName": "Media type",
-      "uriBFLite": "http://bibfra.me/vocab/marc/media",
+      "uriBFLite": "http://bibfra.me/vocab/library/media",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -1247,7 +1247,7 @@
     {
       "type": "literal",
       "displayName": "Applies to",
-      "uriBFLite": "http://bibfra.me/vocab/marc/materialsSpecified",
+      "uriBFLite": "http://bibfra.me/vocab/library/materialsSpecified",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1261,7 +1261,7 @@
     {
       "type": "literal",
       "displayName": "Dimensions",
-      "uriBFLite": "http://bibfra.me/vocab/marc/dimensions",
+      "uriBFLite": "http://bibfra.me/vocab/library/dimensions",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -1276,7 +1276,7 @@
     {
       "type": "simple",
       "displayName": "Carrier type",
-      "uriBFLite": "http://bibfra.me/vocab/marc/carrier",
+      "uriBFLite": "http://bibfra.me/vocab/library/carrier",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -1293,7 +1293,7 @@
     {
       "type": "group",
       "displayName": "URL of Instance",
-      "uriBFLite": "http://bibfra.me/vocab/marc/accessLocation",
+      "uriBFLite": "http://bibfra.me/vocab/library/accessLocation",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -1341,7 +1341,7 @@
     {
       "type": "simple",
       "displayName": "Frequency",
-      "uriBFLite": "http://bibfra.me/vocab/marc/publicationFrequency",
+      "uriBFLite": "http://bibfra.me/vocab/library/publicationFrequency",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -1357,7 +1357,7 @@
     {
       "type": "group",
       "displayName": "Admin Metadata",
-      "uriBFLite": "http://bibfra.me/vocab/marc/adminMetadata",
+      "uriBFLite": "http://bibfra.me/vocab/library/adminMetadata",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1393,7 +1393,7 @@
     {
       "type": "literal",
       "displayName": "Local resource ID number",
-      "uriBFLite": "http://bibfra.me/vocab/marc/controlNumber",
+      "uriBFLite": "http://bibfra.me/vocab/library/controlNumber",
       "constraints": {
         "repeatable": false,
         "editable": false,
@@ -1407,7 +1407,7 @@
     {
       "type": "literal",
       "displayName": "Cataloging agency",
-      "uriBFLite": "http://bibfra.me/vocab/marc/catalogingAgency",
+      "uriBFLite": "http://bibfra.me/vocab/library/catalogingAgency",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1435,7 +1435,7 @@
     {
       "type": "literal",
       "displayName": "Transcribing agency",
-      "uriBFLite": "http://bibfra.me/vocab/marc/transcribingAgency",
+      "uriBFLite": "http://bibfra.me/vocab/library/transcribingAgency",
       "constraints": {
         "repeatable": false,
         "editable": true,
@@ -1449,7 +1449,7 @@
     {
       "type": "literal",
       "displayName": "Modifying agency",
-      "uriBFLite": "http://bibfra.me/vocab/marc/modifyingAgency",
+      "uriBFLite": "http://bibfra.me/vocab/library/modifyingAgency",
       "constraints": {
         "repeatable": true,
         "editable": true,
