@@ -21,14 +21,14 @@
             "type": "object",
             "$ref": "../StatusResponse.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/status"
+          "x-json-property": "http://bibfra.me/vocab/library/status"
         },
         "qualifier": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/qualifier"
+          "x-json-property": "http://bibfra.me/vocab/library/qualifier"
         }
       }
     }

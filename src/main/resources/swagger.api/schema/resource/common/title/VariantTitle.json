@@ -27,7 +27,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/variantType"
+          "x-json-property": "http://bibfra.me/vocab/library/variantType"
         }
       }
     }

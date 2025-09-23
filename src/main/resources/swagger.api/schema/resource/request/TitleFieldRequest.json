@@ -15,7 +15,7 @@
               "PrimaryTitle": {
                 "type": "object",
                 "$ref": "../common/title/PrimaryTitle.json",
-                "x-json-property": "http://bibfra.me/vocab/marc/Title",
+                "x-json-property": "http://bibfra.me/vocab/library/Title",
                 "description": "The primary title of the work or instance"
               }
             }
@@ -27,7 +27,7 @@
               "VariantTitle": {
                 "type": "object",
                 "$ref": "../common/title/VariantTitle.json",
-                "x-json-property": "http://bibfra.me/vocab/marc/VariantTitle",
+                "x-json-property": "http://bibfra.me/vocab/library/VariantTitle",
                 "description": "The variant title of the work or instance"
               }
             }
@@ -39,14 +39,14 @@
               "ParallelTitle": {
                 "type": "object",
                 "$ref": "../common/title/ParallelTitle.json",
-                "x-json-property": "http://bibfra.me/vocab/marc/ParallelTitle",
+                "x-json-property": "http://bibfra.me/vocab/library/ParallelTitle",
                 "description": "The parallel title of the work or instance"
               }
             }
           }
         ]
       },
-      "x-json-property": "http://bibfra.me/vocab/marc/title",
+      "x-json-property": "http://bibfra.me/vocab/library/title",
       "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
     }
   },

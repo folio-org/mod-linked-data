@@ -18,18 +18,18 @@ class PartOfSeriesIT extends PostResourceIT {
          "resource":{
             "http://bibfra.me/vocab/lite/Work":{
                "profileId": 2,
-               "http://bibfra.me/vocab/marc/title":[
+               "http://bibfra.me/vocab/library/title":[
                  {
-                  "http://bibfra.me/vocab/marc/Title":{
-                     "http://bibfra.me/vocab/marc/mainTitle":[ "%s" ]
+                  "http://bibfra.me/vocab/library/Title":{
+                     "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
                   }
                  }
                ],
                "http://bibfra.me/vocab/relation/isPartOf":[
                   {
                     "http://bibfra.me/vocab/lite/name":[ "Title 1" ],
-                    "http://bibfra.me/vocab/marc/volume":[ "Volume 1" ],
-                    "http://bibfra.me/vocab/marc/issn":[ "ISSN 1" ]
+                    "http://bibfra.me/vocab/library/volume":[ "Volume 1" ],
+                    "http://bibfra.me/vocab/library/issn":[ "ISSN 1" ]
                   }
                ]
             }
@@ -45,23 +45,23 @@ class PartOfSeriesIT extends PostResourceIT {
     apiResponse
       .andExpect(status().isOk())
       .andExpect(jsonPath(path + "['http://bibfra.me/vocab/lite/name'][0]").value("Title 1"))
-      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/marc/volume'][0]").value("Volume 1"))
-      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/marc/issn'][0]").value("ISSN 1"));
+      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/library/volume'][0]").value("Volume 1"))
+      .andExpect(jsonPath(path + "['http://bibfra.me/vocab/library/issn'][0]").value("ISSN 1"));
   }
 
   @Override
   protected void validateGraph(Resource work) {
-    final var expectedWorkSeriesId = 6898242764991459970L;
-    final var expectedSeriesId = -4783956033812981536L;
+    final var expectedWorkSeriesId = 687055746085690020L;
+    final var expectedSeriesId = 8151798709976991138L;
     final var expectedIssnId = -1770271650159630429L;
-    final var expectedInstanceId = 9135509770348600888L;
+    final var expectedInstanceId = -6685214456917734615L;
 
     var workSeries = getFirstOutgoingResource(work, "http://bibfra.me/vocab/relation/isPartOf");
     assertThat(workSeries.getId()).isEqualTo(expectedWorkSeriesId);
     validateResourceType(workSeries,
       "http://bibfra.me/vocab/lite/Work", "http://bibfra.me/vocab/lite/Series");
     assertThat(getProperty(workSeries, "http://bibfra.me/vocab/lite/name")).isEqualTo("Title 1");
-    assertThat(getProperty(workSeries, "http://bibfra.me/vocab/marc/volume")).isEqualTo("Volume 1");
+    assertThat(getProperty(workSeries, "http://bibfra.me/vocab/library/volume")).isEqualTo("Volume 1");
     assertThat(getProperty(workSeries, "http://bibfra.me/vocab/lite/label"))
       .isEqualTo("Title 1 Volume 1");
 
@@ -69,7 +69,7 @@ class PartOfSeriesIT extends PostResourceIT {
     assertThat(series.getId()).isEqualTo(expectedSeriesId);
     validateResourceType(series, "http://bibfra.me/vocab/lite/Series");
     assertThat(getProperty(series, "http://bibfra.me/vocab/lite/name")).isEqualTo("Title 1");
-    assertThat(getProperty(series, "http://bibfra.me/vocab/marc/issn")).isEqualTo("ISSN 1");
+    assertThat(getProperty(series, "http://bibfra.me/vocab/library/issn")).isEqualTo("ISSN 1");
     assertThat(getProperty(series, "http://bibfra.me/vocab/lite/label")).isEqualTo("Title 1");
 
     var issn = getFirstOutgoingResource(series, "http://library.link/vocab/map");

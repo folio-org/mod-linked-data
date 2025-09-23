@@ -57,7 +57,7 @@ class ResourceControllerSrsIT extends ITBase {
     resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toCreatorReferenceId(), equalTo("8288857748391775847")));
+      .andExpect(jsonPath(toCreatorReferenceId(), equalTo("-2642702223879770981")));
   }
 
   @Test

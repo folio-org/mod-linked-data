@@ -2,35 +2,35 @@
   "resource": {
     "http://bibfra.me/vocab/lite/Work": {
       "profileId": 2,
-      "http://bibfra.me/vocab/marc/title": [
+      "http://bibfra.me/vocab/library/title": [
         {
-          "http://bibfra.me/vocab/marc/Title": {
-            "http://bibfra.me/vocab/marc/partName": [
+          "http://bibfra.me/vocab/library/Title": {
+            "http://bibfra.me/vocab/library/partName": [
               "Primary: partName"
             ],
-            "http://bibfra.me/vocab/marc/partNumber": [
+            "http://bibfra.me/vocab/library/partNumber": [
               "Primary: partNumber"
             ],
-            "http://bibfra.me/vocab/marc/mainTitle": [
+            "http://bibfra.me/vocab/library/mainTitle": [
               "Primary: mainTitle"
             ],
             "http://bibfra.me/vocab/bflc/nonSortNum": [
               "Primary: nonSortNum"
             ],
-            "http://bibfra.me/vocab/marc/subTitle": [
+            "http://bibfra.me/vocab/library/subTitle": [
               "Primary: subTitle"
             ]
           }
         },
         {
-          "http://bibfra.me/vocab/marc/ParallelTitle": {
-            "http://bibfra.me/vocab/marc/partName": [
+          "http://bibfra.me/vocab/library/ParallelTitle": {
+            "http://bibfra.me/vocab/library/partName": [
               "Parallel: partName"
             ],
-            "http://bibfra.me/vocab/marc/partNumber": [
+            "http://bibfra.me/vocab/library/partNumber": [
               "Parallel: partNumber"
             ],
-            "http://bibfra.me/vocab/marc/mainTitle": [
+            "http://bibfra.me/vocab/library/mainTitle": [
               "Parallel: mainTitle"
             ],
             "http://bibfra.me/vocab/lite/note": [
@@ -39,20 +39,20 @@
             "http://bibfra.me/vocab/lite/date": [
               "Parallel: date"
             ],
-            "http://bibfra.me/vocab/marc/subTitle": [
+            "http://bibfra.me/vocab/library/subTitle": [
               "Parallel: subTitle"
             ]
           }
         },
         {
-          "http://bibfra.me/vocab/marc/VariantTitle": {
-            "http://bibfra.me/vocab/marc/partName": [
+          "http://bibfra.me/vocab/library/VariantTitle": {
+            "http://bibfra.me/vocab/library/partName": [
               "Variant: partName"
             ],
-            "http://bibfra.me/vocab/marc/partNumber": [
+            "http://bibfra.me/vocab/library/partNumber": [
               "Variant: partNumber"
             ],
-            "http://bibfra.me/vocab/marc/mainTitle": [
+            "http://bibfra.me/vocab/library/mainTitle": [
               "Variant: mainTitle"
             ],
             "http://bibfra.me/vocab/lite/note": [
@@ -61,23 +61,23 @@
             "http://bibfra.me/vocab/lite/date": [
               "Variant: date"
             ],
-            "http://bibfra.me/vocab/marc/subTitle": [
+            "http://bibfra.me/vocab/library/subTitle": [
               "Variant: subTitle"
             ],
-            "http://bibfra.me/vocab/marc/variantType": [
+            "http://bibfra.me/vocab/library/variantType": [
               "Variant: variantType"
             ]
           }
         }
       ],
-      "http://bibfra.me/vocab/marc/summary": [
+      "http://bibfra.me/vocab/library/summary": [
         "summary text"
       ],
       "_languages": [
         {
           "_codes": [
             {
-              "http://bibfra.me/vocab/marc/term": [
+              "http://bibfra.me/vocab/library/term": [
                 "English"
               ],
               "http://bibfra.me/vocab/lite/link": [
@@ -114,21 +114,21 @@
           "id": "-4816872480602594231"
         }
       ],
-      "http://bibfra.me/vocab/marc/tableOfContents": [
+      "http://bibfra.me/vocab/library/tableOfContents": [
         "table of contents"
       ],
       "http://bibfra.me/vocab/lite/classification": [
         {
-          "http://bibfra.me/vocab/marc/code": [
+          "http://bibfra.me/vocab/library/code": [
             "lc code"
           ],
-          "http://bibfra.me/vocab/marc/source": [
+          "http://bibfra.me/vocab/library/source": [
             "lc"
           ],
-          "http://bibfra.me/vocab/marc/itemNumber": [
+          "http://bibfra.me/vocab/library/itemNumber": [
             "lc item number"
           ],
-          "http://bibfra.me/vocab/marc/status": [
+          "http://bibfra.me/vocab/library/status": [
             {
               "http://bibfra.me/vocab/lite/label": [
                 "lc status value"
@@ -145,19 +145,19 @@
           ]
         },
         {
-          "http://bibfra.me/vocab/marc/code": [
+          "http://bibfra.me/vocab/library/code": [
             "ddc code"
           ],
-          "http://bibfra.me/vocab/marc/source": [
+          "http://bibfra.me/vocab/library/source": [
             "ddc"
           ],
-          "http://bibfra.me/vocab/marc/itemNumber": [
+          "http://bibfra.me/vocab/library/itemNumber": [
             "ddc item number"
           ],
-          "http://bibfra.me/vocab/marc/editionNumber": [
+          "http://bibfra.me/vocab/library/editionNumber": [
             "edition number"
           ],
-          "http://bibfra.me/vocab/marc/edition": [
+          "http://bibfra.me/vocab/library/edition": [
             "edition"
           ],
           "_assigningSourceReference": [
@@ -167,18 +167,18 @@
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/content": [
+      "http://bibfra.me/vocab/library/content": [
         {
-          "http://bibfra.me/vocab/marc/code": [
+          "http://bibfra.me/vocab/library/code": [
             "txt"
           ],
-          "http://bibfra.me/vocab/marc/term": [
+          "http://bibfra.me/vocab/library/term": [
             "text"
           ],
           "http://bibfra.me/vocab/lite/link": [
             "http://id.loc.gov/vocabulary/contentTypes/txt"
           ],
-          "http://bibfra.me/vocab/marc/source": [
+          "http://bibfra.me/vocab/library/source": [
             "content source"
           ]
         }
@@ -189,12 +189,12 @@
       "http://bibfra.me/vocab/lite/dateEnd": [
         "2025"
       ],
-      "http://bibfra.me/vocab/marc/governmentPublication": [
+      "http://bibfra.me/vocab/library/governmentPublication": [
         {
-          "http://bibfra.me/vocab/marc/code": [
+          "http://bibfra.me/vocab/library/code": [
             "a"
           ],
-          "http://bibfra.me/vocab/marc/term": [
+          "http://bibfra.me/vocab/library/term": [
             "Autonomous"
           ],
           "http://bibfra.me/vocab/lite/link": [
@@ -202,7 +202,7 @@
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/originPlace": [
+      "http://bibfra.me/vocab/library/originPlace": [
         {
           "http://bibfra.me/vocab/lite/name": [
             "France"
@@ -212,28 +212,28 @@
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/illustrations": [
+      "http://bibfra.me/vocab/library/illustrations": [
         {
           "http://bibfra.me/vocab/lite/link": [
               "http://id.loc.gov/vocabulary/millus/ill"
           ],
-          "http://bibfra.me/vocab/marc/term": [
+          "http://bibfra.me/vocab/library/term": [
               "Illustrations"
           ],
-          "http://bibfra.me/vocab/marc/code": [
+          "http://bibfra.me/vocab/library/code": [
               "a"
           ]
         }
       ],
-      "http://bibfra.me/vocab/marc/supplementaryContent": [
+      "http://bibfra.me/vocab/library/supplementaryContent": [
         {
           "http://bibfra.me/vocab/lite/link": [
             "http://id.loc.gov/vocabulary/msupplcont/code"
           ],
-          "http://bibfra.me/vocab/marc/term": [
+          "http://bibfra.me/vocab/library/term": [
             "supplementary content term"
           ],
-          "http://bibfra.me/vocab/marc/code": [
+          "http://bibfra.me/vocab/library/code": [
             "code"
           ]
         }
@@ -243,16 +243,16 @@
           "http://bibfra.me/vocab/lite/label": [
             "label"
           ],
-          "http://bibfra.me/vocab/marc/degree": [
+          "http://bibfra.me/vocab/library/degree": [
             "degree"
           ],
-          "http://bibfra.me/vocab/marc/dissertationYear": [
+          "http://bibfra.me/vocab/library/dissertationYear": [
             "dissertation year"
           ],
-          "http://bibfra.me/vocab/marc/dissertationNote": [
+          "http://bibfra.me/vocab/library/dissertationNote": [
             "dissertation note"
           ],
-          "http://bibfra.me/vocab/marc/dissertationID": [
+          "http://bibfra.me/vocab/library/dissertationID": [
             "dissertation id"
           ],
           "_grantingInstitutionReference": [

@@ -666,13 +666,13 @@ public class MonographTestUtil {
   public static Resource getWork(String titleStr, HashService hashService) {
     var titleDoc = """
       {
-        "http://bibfra.me/vocab/marc/mainTitle": ["%TITLE%"]
+        "http://bibfra.me/vocab/library/mainTitle": ["%TITLE%"]
       }
       """
       .replace("%TITLE%", titleStr);
     var workDoc = """
       {
-        "http://bibfra.me/vocab/marc/summary": ["%SUMMARY_NOTE%"]
+        "http://bibfra.me/vocab/library/summary": ["%SUMMARY_NOTE%"]
       }
       """
       .replace("%SUMMARY_NOTE%", titleStr + "_summary_note");

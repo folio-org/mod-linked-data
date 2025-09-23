@@ -17,7 +17,7 @@
             "type": "object",
             "$ref": "ProviderEventRequest.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/production"
+          "x-json-property": "http://bibfra.me/vocab/library/production"
         },
         "publication": {
           "type": "array",
@@ -25,7 +25,7 @@
             "type": "object",
             "$ref": "ProviderEventRequest.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/publication"
+          "x-json-property": "http://bibfra.me/vocab/library/publication"
         },
         "distribution": {
           "type": "array",
@@ -33,7 +33,7 @@
             "type": "object",
             "$ref": "ProviderEventRequest.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/distribution"
+          "x-json-property": "http://bibfra.me/vocab/library/distribution"
         },
         "manufacture": {
           "type": "array",
@@ -41,7 +41,7 @@
             "type": "object",
             "$ref": "ProviderEventRequest.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/manufacture"
+          "x-json-property": "http://bibfra.me/vocab/library/manufacture"
         },
         "map": {
           "type": "array",
@@ -114,7 +114,7 @@
             "type": "object",
             "$ref": "../common/SupplementaryContent.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/supplementaryContent"
+          "x-json-property": "http://bibfra.me/vocab/library/supplementaryContent"
         },
         "accessLocation": {
           "type": "array",
@@ -122,7 +122,7 @@
             "type": "object",
             "$ref": "../common/AccessLocation.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/accessLocation"
+          "x-json-property": "http://bibfra.me/vocab/library/accessLocation"
         },
         "media": {
           "type": "array",
@@ -130,7 +130,7 @@
             "type": "object",
             "$ref": "../common/Category.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/media"
+          "x-json-property": "http://bibfra.me/vocab/library/media"
         },
         "carrier": {
           "type": "array",
@@ -138,14 +138,14 @@
             "type": "object",
             "$ref": "../common/Category.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/carrier"
+          "x-json-property": "http://bibfra.me/vocab/library/carrier"
         },
         "edition": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/edition"
+          "x-json-property": "http://bibfra.me/vocab/library/edition"
         },
         "copyright": {
           "type": "array",
@@ -153,7 +153,7 @@
             "type": "object",
             "$ref": "../common/CopyrightEvent.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/copyright"
+          "x-json-property": "http://bibfra.me/vocab/library/copyright"
         },
         "extent": {
           "type": "array",
@@ -168,7 +168,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/dimensions"
+          "x-json-property": "http://bibfra.me/vocab/library/dimensions"
         },
         "projectProvisionDate": {
           "type": "array",
@@ -183,14 +183,14 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/issuance"
+          "x-json-property": "http://bibfra.me/vocab/library/issuance"
         },
         "statementOfResponsibility": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/statementOfResponsibility"
+          "x-json-property": "http://bibfra.me/vocab/library/statementOfResponsibility"
         },
         "bookFormat": {
           "type": "array",
@@ -198,7 +198,7 @@
             "type": "object",
             "$ref": "../common/Category.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/bookFormat"
+          "x-json-property": "http://bibfra.me/vocab/library/bookFormat"
         },
         "publicationFrequency": {
           "type": "array",
@@ -206,7 +206,7 @@
             "type": "object",
             "$ref": "../common/PublicationFrequency.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/publicationFrequency"
+          "x-json-property": "http://bibfra.me/vocab/library/publicationFrequency"
         },
         "adminMetadata": {
           "type": "array",
@@ -214,7 +214,7 @@
             "type": "object",
             "$ref": "../common/AdminMetadata.json"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/adminMetadata"
+          "x-json-property": "http://bibfra.me/vocab/library/adminMetadata"
         },
         "_notes": {
           "type": "array",

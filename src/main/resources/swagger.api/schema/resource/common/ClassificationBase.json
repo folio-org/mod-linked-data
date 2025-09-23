@@ -10,35 +10,35 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/code"
+          "x-json-property": "http://bibfra.me/vocab/library/code"
         },
         "source": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/source"
+          "x-json-property": "http://bibfra.me/vocab/library/source"
         },
         "itemNumber": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/itemNumber"
+          "x-json-property": "http://bibfra.me/vocab/library/itemNumber"
         },
         "editionNumber": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/editionNumber"
+          "x-json-property": "http://bibfra.me/vocab/library/editionNumber"
         },
         "edition": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/marc/edition"
+          "x-json-property": "http://bibfra.me/vocab/library/edition"
         }
       }
     }
