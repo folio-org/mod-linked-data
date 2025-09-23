@@ -12,12 +12,12 @@ import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
+import static org.folio.ld.dictionary.PredicateDictionary.EXPRESSION_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
-import static org.folio.ld.dictionary.PredicateDictionary.HAS_EXPRESSION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
@@ -1398,7 +1398,7 @@ abstract class ResourceControllerITBase extends ITBase {
   private void validateHub(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(HAS_EXPRESSION.getUri());
+    assertThat(edge.getPredicate().getUri()).isEqualTo(EXPRESSION_OF.getUri());
     var hub = edge.getTarget();
     var types = hub.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
     assertThat(types).containsOnly(HUB.getUri());

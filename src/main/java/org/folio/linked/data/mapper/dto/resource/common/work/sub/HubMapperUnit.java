@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.dto.resource.common.work.sub;
 
-import static org.folio.ld.dictionary.PredicateDictionary.HAS_EXPRESSION;
+import static org.folio.ld.dictionary.PredicateDictionary.EXPRESSION_OF;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = HUB, predicate = HAS_EXPRESSION, requestDto = Hub.class)
+@MapperUnit(type = HUB, predicate = EXPRESSION_OF, requestDto = Hub.class)
 public class HubMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final HashService hashService;
@@ -44,7 +44,7 @@ public class HubMapperUnit implements WorkSubResourceMapperUnit {
       }
     }
     return parentDto;
-	}
+  }
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
