@@ -265,15 +265,6 @@
           ]
         }
       ],
-      "_hubs": [
-        {
-          "_relation": "http://bibfra.me/vocab/lite/hasExpression",
-          "_hub": {
-            "http://bibfra.me/vocab/lite/label": ["hub label"],
-            "http://bibfra.me/vocab/lite/link": ["hub link"]
-          }
-        }
-      ],
       "_instanceReference": [
         {
           "id": "%INSTANCE_ID%"
