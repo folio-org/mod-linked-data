@@ -4,8 +4,11 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.InstanceField;
@@ -16,12 +19,14 @@ import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceSubgraphView;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.repo.ResourceSubgraphViewRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
@@ -51,6 +56,8 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceCopyService resourceCopyService;
   private final RawMarcService rawMarcService;
   private final ResourceProfileLinkingService resourceProfileService;
+  private final ResourceSubgraphViewRepository resourceSubgraphViewRepository;
+  private final ObjectMapper objectMapper;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -75,6 +82,16 @@ public class ResourceServiceImpl implements ResourceService {
     return folioMetadataRepo.findIdByInventoryId(inventoryId)
       .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByInventoryIdException(inventoryId));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Set<org.folio.ld.dictionary.model.Resource> getResourcesByInventoryIds(Set<String> inventoryIds) {
+    return resourceSubgraphViewRepository.findByInventoryIdIn(inventoryIds)
+      .stream()
+      .map(ResourceSubgraphView::getResourceSubgraph)
+      .flatMap(resourceJson -> toResource(resourceJson).stream())
+      .collect(Collectors.toSet());
   }
 
   @Override
@@ -179,4 +196,14 @@ public class ResourceServiceImpl implements ResourceService {
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
   }
+
+  private Optional<org.folio.ld.dictionary.model.Resource> toResource(String resourceSubgraph) {
+    try {
+      return Optional.of(objectMapper.readValue(resourceSubgraph, org.folio.ld.dictionary.model.Resource.class));
+    } catch (Exception e) {
+      log.error("Failed to convert resource subgraph to Resource", e);
+      return Optional.empty();
+    }
+  }
+
 }

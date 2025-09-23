@@ -30,3 +30,4 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
   Optional<Resource> findByFolioMetadataInventoryId(String srsId);
 }
+

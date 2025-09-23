@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.resource;
 
 import java.util.Set;
+import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -12,6 +13,8 @@ public interface ResourceService {
   ResourceResponseDto getResourceById(Long id);
 
   ResourceIdDto getResourceIdByInventoryId(String inventoryId);
+
+  Set<Resource> getResourcesByInventoryIds(Set<String> inventoryIds);
 
   ResourceResponseDto updateResource(Long id, ResourceRequestDto bibframeRequest);
 

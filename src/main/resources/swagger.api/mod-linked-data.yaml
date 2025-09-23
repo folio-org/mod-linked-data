@@ -168,6 +168,31 @@ paths:
         '404':
           description: No resource id is found by its inventory id
 
+  /linked-data/resource/by-inventory-ids:
+    post:
+      operationId: getResourcesByInventoryIds
+      tags:
+        - resource
+      description: Get resources by their inventory ids
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "schema/inventoryIdsRequestDTO.json"
+      responses:
+        '200':
+          description: The response is an array of Resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  format: Resource
+                uniqueItems: true
+                description: Array of Resources.
+
   /linked-data/inventory-instance/{inventoryId}/import-supported:
     get:
       operationId: checkMarcBibImportableToGraph

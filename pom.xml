@@ -476,6 +476,12 @@
                   <modelPropertyNaming>original</modelPropertyNaming>
                 </additionalProperties>
               </configOptions>
+              <typeMappings>
+                <typeMapping>object+Resource=Resource</typeMapping>
+              </typeMappings>
+              <importMappings>
+                <importMapping>Resource=org.folio.ld.dictionary.model.Resource</importMapping>
+              </importMappings>
             </configuration>
           </execution>
           <execution>

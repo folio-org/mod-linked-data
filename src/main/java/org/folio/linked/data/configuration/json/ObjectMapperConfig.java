@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.SourceRecordDomainEventDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.IdentifierFieldDeserializer;
@@ -16,6 +17,7 @@ import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.rdf4ld.util.ExportedResourceDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -40,7 +42,8 @@ public class ObjectMapperConfig {
       .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer(exceptionBuilder))
       .addDeserializer(TitleFieldRequestTitleInner.class, new TitleFieldRequestDeserializer(exceptionBuilder))
       .addDeserializer(IdentifierField.class, new IdentifierFieldDeserializer(exceptionBuilder))
-      .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer(objectMapper));
+      .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer(objectMapper))
+      .addDeserializer(Resource.class, new ExportedResourceDeserializer());
   }
 
 }

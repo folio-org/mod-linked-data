@@ -1,0 +1,17 @@
+{
+  "description": "Request body for retrieving resources by a set of inventory IDs",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "inventoryIds": {
+      "type": "array",
+      "description": "A set of inventory IDs",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true,
+      "x-java-type": "java.util.Set"
+    }
+  },
+  "required": ["inventoryIds"]
+}
