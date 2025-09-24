@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.ld.dictionary.serializer.ResourceSerializer;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.SourceRecordDomainEventDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.IdentifierFieldDeserializer;
@@ -43,7 +44,8 @@ public class ObjectMapperConfig {
       .addDeserializer(TitleFieldRequestTitleInner.class, new TitleFieldRequestDeserializer(exceptionBuilder))
       .addDeserializer(IdentifierField.class, new IdentifierFieldDeserializer(exceptionBuilder))
       .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer(objectMapper))
-      .addDeserializer(Resource.class, new ExportedResourceDeserializer());
+      .addDeserializer(Resource.class, new ExportedResourceDeserializer())
+      .addSerializer(Resource.class, new ResourceSerializer());
   }
 
 }
