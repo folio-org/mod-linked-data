@@ -63,6 +63,7 @@
 - Save outgoing edges of admin metadata [MODLD-863](https://folio-org.atlassian.net/browse/MODLD-863)
 - Update profiles to include MARC labels [MODLD-871](https://folio-org.atlassian.net/browse/MODLD-871)
 - Update vocabulary term IRIs to replace 'marc' with 'library' [MODLD-792](https://folio-org.atlassian.net/browse/MODLD-792)
+- Add Hub association to Works [MODLD-870](https://folio-org.atlassian.net/browse/MODLD-870)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

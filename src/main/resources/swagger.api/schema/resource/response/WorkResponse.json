@@ -180,6 +180,13 @@
             "$ref": "CategoryResponse.json"
           },
           "x-json-property": "http://bibfra.me/vocab/library/characteristic"
+        },
+        "_hubs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "HubResponse.json"
+          }
         }
       }
     }
