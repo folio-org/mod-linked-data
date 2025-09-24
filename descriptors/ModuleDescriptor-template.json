@@ -147,6 +147,12 @@
           "pathPattern": "/linked-data/import/file",
           "permissionsRequired": ["linked-data.import.file.post"],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/resources/search",
+          "permissionsRequired": ["linked-data.resources.search.post"],
+          "modulePermissions": []
         }
       ]
     },
@@ -315,6 +321,11 @@
       "permissionName": "linked-data.resources.rdf.get",
       "displayName": "Linked Data: Export an Instance to RDF JSON-LD",
       "description": "Export an Instance to RDF JSON-LD"
+    },
+    {
+      "permissionName": "linked-data.resources.search.post",
+      "displayName": "Linked Data: Search resources",
+      "description": "Limited search within linked data graph storage. For more extensive search capabilities, use mod-search."
     }
   ],
   "launchDescriptor": {
