@@ -4,10 +4,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.Immutable;
 
 @Entity
 @Table(name = "export_resources")
-public class ResourceSubgraphView {
+@Immutable
+public class ResourceGraphView {
 
   @Id
   @Column(name = "resource_hash")

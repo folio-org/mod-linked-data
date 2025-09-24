@@ -5,6 +5,7 @@ import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -15,18 +16,19 @@ import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.domain.dto.SearchResourcesRequestDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceSubgraphView;
+import org.folio.linked.data.model.entity.ResourceGraphView;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
+import org.folio.linked.data.repo.ResourceGraphViewRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.repo.ResourceSubgraphViewRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
@@ -56,7 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceCopyService resourceCopyService;
   private final RawMarcService rawMarcService;
   private final ResourceProfileLinkingService resourceProfileService;
-  private final ResourceSubgraphViewRepository resourceSubgraphViewRepository;
+  private final ResourceGraphViewRepository resourceGraphViewRepository;
   private final ObjectMapper objectMapper;
 
   @Override
@@ -86,10 +88,10 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   @Transactional(readOnly = true)
-  public Set<org.folio.ld.dictionary.model.Resource> getResourcesByInventoryIds(Set<String> inventoryIds) {
-    return resourceSubgraphViewRepository.findByInventoryIdIn(inventoryIds)
+  public Set<org.folio.ld.dictionary.model.Resource> searchResources(SearchResourcesRequestDto request) {
+    return resourceGraphViewRepository.findByInventoryIdIn(request.getInventoryIds())
       .stream()
-      .map(ResourceSubgraphView::getResourceSubgraph)
+      .map(ResourceGraphView::getResourceSubgraph)
       .flatMap(resourceJson -> toResource(resourceJson).stream())
       .collect(Collectors.toSet());
   }
@@ -200,7 +202,7 @@ public class ResourceServiceImpl implements ResourceService {
   private Optional<org.folio.ld.dictionary.model.Resource> toResource(String resourceSubgraph) {
     try {
       return Optional.of(objectMapper.readValue(resourceSubgraph, org.folio.ld.dictionary.model.Resource.class));
-    } catch (Exception e) {
+    } catch (IOException e) {
       log.error("Failed to convert resource subgraph to Resource", e);
       return Optional.empty();
     }

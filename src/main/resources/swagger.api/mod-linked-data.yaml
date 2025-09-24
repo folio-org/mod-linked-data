@@ -168,9 +168,9 @@ paths:
         '404':
           description: No resource id is found by its inventory id
 
-  /linked-data/resource/by-inventory-ids:
+  /linked-data/resources/search:
     post:
-      operationId: getResourcesByInventoryIds
+      operationId: searchResources
       tags:
         - resource
       description: Get resources by their inventory ids
@@ -179,7 +179,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "schema/inventoryIdsRequestDTO.json"
+              $ref: "schema/searchResourcesRequestDto.json"
       responses:
         '200':
           description: The response is an array of Resources

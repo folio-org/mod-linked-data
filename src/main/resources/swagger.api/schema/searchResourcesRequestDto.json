@@ -1,5 +1,5 @@
 {
-  "description": "Request body for retrieving resources by a set of inventory IDs",
+  "description": "Request body to search resources",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "type": "object",
   "properties": {
