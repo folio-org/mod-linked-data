@@ -4,11 +4,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.Immutable;
 
+@Data
 @Entity
 @Table(name = "export_resources")
 @Immutable
+@Accessors(chain = true)
 public class ResourceGraphView {
 
   @Id
@@ -20,29 +24,4 @@ public class ResourceGraphView {
 
   @Column(name = "resource_subgraph")
   private String resourceSubgraph;
-
-  public Long getResourceHash() {
-    return resourceHash;
-  }
-
-  public void setResourceHash(Long resourceHash) {
-    this.resourceHash = resourceHash;
-  }
-
-  public String getInventoryId() {
-    return inventoryId;
-  }
-
-  public void setInventoryId(String inventoryId) {
-    this.inventoryId = inventoryId;
-  }
-
-  public String getResourceSubgraph() {
-    return resourceSubgraph;
-  }
-
-  public void setResourceSubgraph(String resourceSubgraph) {
-    this.resourceSubgraph = resourceSubgraph;
-  }
 }
-
