@@ -57,4 +57,22 @@ class ResourceControllerSearchResourceIT extends ITBase {
       )));
   }
 
+  @Test
+  void shouldReturnEmptyArrayForNonExistingInventoryId() throws Exception {
+    var requestBuilder = post("/linked-data/resources/search")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content("""
+        {
+          "inventoryIds": ["non-existing-id-12345"]
+        }
+        """);
+
+    mockMvc.perform(requestBuilder)
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$").isArray())
+      .andExpect(jsonPath("$.length()").value(0));
+  }
+
 }
