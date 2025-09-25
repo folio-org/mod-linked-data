@@ -173,7 +173,7 @@ paths:
       operationId: searchResources
       tags:
         - resource
-      description: Get resources by their inventory ids
+      description: Search resources in the linked data graph by identifiers. Returns resources with outgoing edges up to 7 levels deep. For more extensive search capabilities, use mod-search.
       requestBody:
         required: true
         content:

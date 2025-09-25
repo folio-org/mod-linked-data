@@ -93,7 +93,7 @@ public class ResourceServiceImpl implements ResourceService {
     return resourceGraphViewRepository.findByInventoryIdIn(request.getInventoryIds())
       .stream()
       .map(ResourceGraphView::getResourceSubgraph)
-      .flatMap(resourceJson -> toResource(resourceJson).stream())
+      .flatMap(resourceJson -> toResourceGraphView(resourceJson).stream())
       .collect(Collectors.toSet());
   }
 
@@ -200,7 +200,7 @@ public class ResourceServiceImpl implements ResourceService {
     };
   }
 
-  private Optional<ResourceGraphViewDto> toResource(String resourceSubgraph) {
+  private Optional<ResourceGraphViewDto> toResourceGraphView(String resourceSubgraph) {
     try {
       return Optional.of(objectMapper.readValue(resourceSubgraph, ResourceGraphViewDto.class));
     } catch (IOException e) {
