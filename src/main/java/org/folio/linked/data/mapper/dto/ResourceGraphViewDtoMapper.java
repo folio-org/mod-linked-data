@@ -19,7 +19,7 @@ public class ResourceGraphViewDtoMapper {
     try {
       return Optional.of(objectMapper.readValue(jsonGraph, ResourceGraphViewDto.class));
     } catch (IOException e) {
-      log.error("Failed to convert resource subgraph to Resource", e);
+      log.error("Failed to convert resource graph JSON to DTO: {}", jsonGraph, e);
       return Optional.empty();
     }
   }

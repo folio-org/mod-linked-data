@@ -9,8 +9,7 @@
       "items": {
         "type": "string"
       },
-      "uniqueItems": true,
-      "x-java-type": "java.util.Set"
+      "uniqueItems": true
     }
   },
   "required": ["inventoryIds"]

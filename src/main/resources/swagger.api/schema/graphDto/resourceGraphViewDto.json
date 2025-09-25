@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "ResourceSubgraph",
+  "title": "Resource graph view",
   "type": "object",
   "description": "Representation of a resource, including its properties, types and outgoing edges to other resources.",
   "properties": {
@@ -34,7 +34,7 @@
       }
     }
   },
-  "required": ["id", "doc", "label", "types", "outgoingEdges"],
+  "required": ["id", "doc", "label", "types"],
   "additionalProperties": false
 }
 
