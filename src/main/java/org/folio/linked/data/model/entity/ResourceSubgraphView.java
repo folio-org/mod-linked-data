@@ -13,7 +13,7 @@ import org.hibernate.annotations.Immutable;
 @Table(name = "export_resources")
 @Immutable
 @Accessors(chain = true)
-public class ResourceGraphView {
+public class ResourceSubgraphView {
 
   @Id
   @Column(name = "resource_hash")

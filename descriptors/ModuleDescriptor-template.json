@@ -324,8 +324,8 @@
     },
     {
       "permissionName": "linked-data.resources.search.post",
-      "displayName": "Linked Data: Search resources",
-      "description": "Limited search within linked data graph storage. For more extensive search capabilities, use mod-search."
+      "displayName": "Linked Data: Search resources using identifiers",
+      "description": "Limited search within linked data graph using identifiers. For advanced search, use mod-search"
     }
   ],
   "launchDescriptor": {

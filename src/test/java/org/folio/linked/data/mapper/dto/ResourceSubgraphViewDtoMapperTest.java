@@ -8,13 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 @UnitTest
-class ResourceGraphViewDtoMapperTest {
+class ResourceSubgraphViewDtoMapperTest {
 
-  private ResourceGraphViewDtoMapper mapper;
+  private ResourceSubgraphViewDtoMapper mapper;
 
   @BeforeEach
   void setUp() {
-    mapper = new ResourceGraphViewDtoMapper(OBJECT_MAPPER);
+    mapper = new ResourceSubgraphViewDtoMapper(OBJECT_MAPPER);
   }
 
   @Test

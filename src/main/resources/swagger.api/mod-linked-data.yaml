@@ -173,7 +173,7 @@ paths:
       operationId: searchResources
       tags:
         - resource
-      description: Search resources in the linked data graph by identifiers. Returns resources with outgoing edges up to 7 levels deep. For more extensive search capabilities, use mod-search.
+      description: Search resources in the linked data graph by identifiers. Returns a subgraph up to 7 levels deep. For advanced search, use mod-search.
       requestBody:
         required: true
         content:
@@ -188,7 +188,7 @@ paths:
               schema:
                 type: array
                 items:
-                  "$ref": "schema/graphDto/resourceGraphViewDto.json"
+                  "$ref": "schema/graphDto/resourceSubgraphViewDto.json"
                 uniqueItems: true
                 description: Array of Resources.
 

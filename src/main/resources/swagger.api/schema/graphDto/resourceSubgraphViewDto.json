@@ -34,7 +34,7 @@
       }
     }
   },
-  "required": ["id", "doc", "label", "types"],
+  "required": ["id", "label", "types"],
   "additionalProperties": false
 }
 
