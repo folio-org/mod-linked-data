@@ -188,8 +188,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  format: Resource
+                  "$ref": "schema/graphDto/resourceGraphViewDto.json"
                 uniqueItems: true
                 description: Array of Resources.
 

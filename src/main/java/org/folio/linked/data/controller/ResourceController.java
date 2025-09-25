@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ResourceGraphViewDto;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
@@ -85,7 +85,7 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
-  public ResponseEntity<Set<Resource>> searchResources(SearchResourcesRequestDto searchRequest) {
+  public ResponseEntity<Set<ResourceGraphViewDto>> searchResources(SearchResourcesRequestDto searchRequest) {
     return ResponseEntity.ok(resourceService.searchResources(searchRequest));
   }
 

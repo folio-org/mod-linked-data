@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.InstanceField;
+import org.folio.linked.data.domain.dto.ResourceGraphViewDto;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -88,7 +89,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   @Transactional(readOnly = true)
-  public Set<org.folio.ld.dictionary.model.Resource> searchResources(SearchResourcesRequestDto request) {
+  public Set<ResourceGraphViewDto> searchResources(SearchResourcesRequestDto request) {
     return resourceGraphViewRepository.findByInventoryIdIn(request.getInventoryIds())
       .stream()
       .map(ResourceGraphView::getResourceSubgraph)
@@ -199,9 +200,9 @@ public class ResourceServiceImpl implements ResourceService {
     };
   }
 
-  private Optional<org.folio.ld.dictionary.model.Resource> toResource(String resourceSubgraph) {
+  private Optional<ResourceGraphViewDto> toResource(String resourceSubgraph) {
     try {
-      return Optional.of(objectMapper.readValue(resourceSubgraph, org.folio.ld.dictionary.model.Resource.class));
+      return Optional.of(objectMapper.readValue(resourceSubgraph, ResourceGraphViewDto.class));
     } catch (IOException e) {
       log.error("Failed to convert resource subgraph to Resource", e);
       return Optional.empty();
