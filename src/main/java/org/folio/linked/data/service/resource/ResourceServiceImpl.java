@@ -4,10 +4,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +17,7 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.SearchResourcesRequestDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.mapper.dto.ResourceGraphViewDtoMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceGraphView;
@@ -60,7 +58,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final RawMarcService rawMarcService;
   private final ResourceProfileLinkingService resourceProfileService;
   private final ResourceGraphViewRepository resourceGraphViewRepository;
-  private final ObjectMapper objectMapper;
+  private final ResourceGraphViewDtoMapper graphViewDtoMapper;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -93,7 +91,7 @@ public class ResourceServiceImpl implements ResourceService {
     return resourceGraphViewRepository.findByInventoryIdIn(request.getInventoryIds())
       .stream()
       .map(ResourceGraphView::getResourceSubgraph)
-      .flatMap(resourceJson -> toResourceGraphView(resourceJson).stream())
+      .flatMap(resourceJson -> graphViewDtoMapper.fromJson(resourceJson).stream())
       .collect(Collectors.toSet());
   }
 
@@ -199,14 +197,4 @@ public class ResourceServiceImpl implements ResourceService {
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
   }
-
-  private Optional<ResourceGraphViewDto> toResourceGraphView(String resourceSubgraph) {
-    try {
-      return Optional.of(objectMapper.readValue(resourceSubgraph, ResourceGraphViewDto.class));
-    } catch (IOException e) {
-      log.error("Failed to convert resource subgraph to Resource", e);
-      return Optional.empty();
-    }
-  }
-
 }
