@@ -6,22 +6,28 @@ import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.domain.dto.ResourceSubgraphViewDto;
+import org.folio.linked.data.domain.dto.SearchResourcesRequestDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.mapper.dto.ResourceSubgraphViewDtoMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceSubgraphView;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.repo.ResourceSubgraphViewRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
@@ -51,6 +57,8 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceCopyService resourceCopyService;
   private final RawMarcService rawMarcService;
   private final ResourceProfileLinkingService resourceProfileService;
+  private final ResourceSubgraphViewRepository resourceSubgraphViewRepository;
+  private final ResourceSubgraphViewDtoMapper resourceSubgraphViewDtoMapper;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -75,6 +83,16 @@ public class ResourceServiceImpl implements ResourceService {
     return folioMetadataRepo.findIdByInventoryId(inventoryId)
       .map(idOnly -> new ResourceIdDto().id(String.valueOf(idOnly.getId())))
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByInventoryIdException(inventoryId));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Set<ResourceSubgraphViewDto> searchResources(SearchResourcesRequestDto request) {
+    return resourceSubgraphViewRepository.findByInventoryIdIn(request.getInventoryIds())
+      .stream()
+      .map(ResourceSubgraphView::getResourceSubgraph)
+      .flatMap(resourceJson -> resourceSubgraphViewDtoMapper.fromJson(resourceJson).stream())
+      .collect(Collectors.toSet());
   }
 
   @Override

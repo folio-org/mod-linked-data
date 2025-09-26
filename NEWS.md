@@ -64,6 +64,7 @@
 - Update profiles to include MARC labels [MODLD-871](https://folio-org.atlassian.net/browse/MODLD-871)
 - Update vocabulary term IRIs to replace 'marc' with 'library' [MODLD-792](https://folio-org.atlassian.net/browse/MODLD-792)
 - Add Hub association to Works [MODLD-870](https://folio-org.atlassian.net/browse/MODLD-870)
+- New API to search resources using inventory IDs [MODLD-874](https://folio-org.atlassian.net/browse/MODLD-874)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
