@@ -33,14 +33,11 @@ import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
-import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
-import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
+import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -48,11 +45,9 @@ import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -68,7 +63,7 @@ class ResourceServiceImplTest {
   @Mock
   private ResourceDtoMapper resourceDtoMapper;
   @Mock
-  private ApplicationEventPublisher applicationEventPublisher;
+  private ResourceEventsPublisher resourceEventsPublisher;
   @Mock
   private MetadataService metadataService;
   @Mock
@@ -85,27 +80,7 @@ class ResourceServiceImplTest {
   private RawMarcService rawMarcService;
 
   @Test
-  void create_shouldPersistMappedResourceAndNotPublishResourceCreatedEvent_forResourceWithNoWork() {
-    // given
-    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
-    var mapped = new Resource().setId(12345L);
-    when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
-    var persisted = new Resource().setId(67890L);
-    var expectedResponse = new ResourceResponseDto();
-    expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
-    when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedResponse);
-    when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
-
-    // when
-    var response = resourceService.createResource(request);
-
-    // then
-    assertThat(response).isEqualTo(expectedResponse);
-    verify(applicationEventPublisher, never()).publishEvent(any());
-  }
-
-  @Test
-  void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent_forResourceWithWork() {
+  void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent() {
     // given
     var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
     var work = new Resource().addTypes(WORK).setId(555L);
@@ -120,9 +95,7 @@ class ResourceServiceImplTest {
 
     // then
     assertThat(response).isEqualTo(expectedResponse);
-    var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
-    verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertThat(work.getId()).isEqualTo(resourceCreateEventCaptor.getValue().resource().getId());
+    verify(resourceEventsPublisher).publishEventsForCreate(work);
   }
 
   @Test
@@ -146,9 +119,7 @@ class ResourceServiceImplTest {
 
     // then
     assertThat(response).isEqualTo(expectedResponse);
-    var resourceCreateEventCaptor = ArgumentCaptor.forClass(ResourceCreatedEvent.class);
-    verify(applicationEventPublisher).publishEvent(resourceCreateEventCaptor.capture());
-    assertThat(work.getId()).isEqualTo(resourceCreateEventCaptor.getValue().resource().getId());
+    verify(resourceEventsPublisher).publishEventsForCreate(work);
     verify(resourceProfileLinkingService).linkResourceToProfile(work, profileId);
   }
 
@@ -264,7 +235,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).breakEdgesAndDelete(oldWork);
     verify(resourceGraphService).saveMergingGraph(work);
     verify(folioExecutionContext).getUserId();
-    verify(applicationEventPublisher).publishEvent(new ResourceUpdatedEvent(work));
+    verify(resourceEventsPublisher).publishEventsForUpdate(oldWork, work);
     verify(resourceCopyService).copyEdgesAndProperties(oldWork, work);
   }
 
@@ -299,7 +270,7 @@ class ResourceServiceImplTest {
     assertThat(expectedDto).isEqualTo(result);
     verify(resourceGraphService).breakEdgesAndDelete(oldInstance);
     verify(resourceGraphService).saveMergingGraph(mapped);
-    verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(oldInstance, mapped.getId()));
+    verify(resourceEventsPublisher).publishEventsForUpdate(oldInstance, mapped);
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
     verify(rawMarcService).saveRawMarc(persisted, unmappedMarc);
     verify(resourceProfileLinkingService).linkResourceToProfile(persisted, profileId);
@@ -316,9 +287,7 @@ class ResourceServiceImplTest {
 
     // then
     verify(resourceGraphService).breakEdgesAndDelete(work);
-    var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
-    verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
-    assertThat(work).isEqualTo(resourceDeletedEventCaptor.getValue().resource());
+    verify(resourceEventsPublisher).publishEventsForDelete(work);
   }
 
   @Test
@@ -340,9 +309,7 @@ class ResourceServiceImplTest {
 
     // then
     verify(resourceGraphService).breakEdgesAndDelete(instance);
-    var resourceDeletedEventCaptor = ArgumentCaptor.forClass(ResourceDeletedEvent.class);
-    verify(applicationEventPublisher).publishEvent(resourceDeletedEventCaptor.capture());
-    assertThat(instance).isEqualTo(resourceDeletedEventCaptor.getValue().resource());
+    verify(resourceEventsPublisher).publishEventsForDelete(instance);
   }
 
 }
