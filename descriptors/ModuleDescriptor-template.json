@@ -234,6 +234,11 @@
   ],
   "permissionSets": [
     {
+      "permissionName": "linked-data.resources.searchbyabel.get",
+      "displayName": "Linked Data: Search resources by label",
+      "description": "Search linked-data resources by label"
+    },
+    {
       "permissionName": "linked-data.resources.bib.get",
       "displayName": "Linked Data: Get a bibliographic (Work or Instance) resource",
       "description": "Get a bibliographic (Work or Instance) linked-data resource"
