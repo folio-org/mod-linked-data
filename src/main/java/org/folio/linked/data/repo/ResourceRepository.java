@@ -29,4 +29,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   Optional<Resource> findByFolioMetadataSrsId(String srsId);
 
   Optional<Resource> findByFolioMetadataInventoryId(String srsId);
+
+  Set<Resource> findByLabelContainingIgnoreCase(String label);
 }
