@@ -116,6 +116,30 @@
           "pathPattern": "/linked-data/hub",
           "permissionsRequired": [ "linked-data.hub.import.post" ],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/resources/search-by-label",
+          "permissionsRequired": ["linked-data.resources.searchbyabel.get"],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/resources/connect",
+          "permissionsRequired": ["linked-data.resources.connect.post"],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/resources/disconnect",
+          "permissionsRequired": ["linked-data.resources.disconnect.post"],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/predicates",
+          "permissionsRequired": ["linked-data.resources.predicates.get"],
+          "modulePermissions": []
         }
       ]
     },
@@ -390,6 +414,26 @@
       "permissionName": "linked-data.vocabularies.item.get",
       "displayName": "Linked Data: Get vocabulary JSON by vocabulary name",
       "description": "Get vocabulary JSON by vocabulary name"
+    },
+    {
+      "permissionName": "linked-data.resources.searchbyabel.get",
+      "displayName": "Linked Data: Search resources by label",
+      "description": "Search linked-data resources by label"
+    },
+    {
+      "permissionName": "linked-data.resources.connect.post",
+      "displayName": "Linked Data: Connect two resources",
+      "description": "Linked Data: Connect two resources"
+    },
+    {
+      "permissionName": "linked-data.resources.disconnect.post",
+      "displayName": "Linked Data: Disconnect two resources",
+      "description": "Linked Data: Disconnect two resources"
+    },
+    {
+      "permissionName": "linked-data.resources.predicates.get",
+      "displayName": "Linked Data: Get predicates",
+      "description": "Linked Data: Get predicates"
     }
   ],
   "launchDescriptor": {

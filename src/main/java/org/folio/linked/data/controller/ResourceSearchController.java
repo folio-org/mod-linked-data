@@ -1,0 +1,34 @@
+package org.folio.linked.data.controller;
+
+import java.util.Set;
+import org.folio.linked.data.repo.ResourceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class ResourceSearchController {
+  private final ResourceRepository resourceRepository;
+
+  @Autowired
+  public ResourceSearchController(ResourceRepository resourceRepository) {
+    this.resourceRepository = resourceRepository;
+  }
+
+  @GetMapping("/linked-data/resources/search-by-label")
+  public Set<Resource> searchResourcesByLabel(@RequestParam String label) {
+    var entities = resourceRepository.findByLabelContainingIgnoreCase(label);
+    return entities.stream()
+      .map(e -> new Resource(
+        e.getId(),
+        e.getTypes() != null ? e.getTypes().stream()
+          .map(t -> t.getUri()).collect(java.util.stream.Collectors.toSet())
+          : java.util.Collections.emptySet(),
+        e.getLabel()
+      ))
+      .collect(java.util.stream.Collectors.toSet());
+  }
+
+  record Resource(Long id, Set<String> types, String label) {}
+}

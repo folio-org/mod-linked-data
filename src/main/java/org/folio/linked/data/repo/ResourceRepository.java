@@ -19,4 +19,6 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
   void updateIndexDateBatch(@Param("ids") Set<Long> ids);
 
   Optional<Resource> findByFolioMetadataSrsId(String srsId);
+
+  Set<Resource> findByLabelContainingIgnoreCase(String label);
 }
