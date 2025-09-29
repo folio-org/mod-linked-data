@@ -153,6 +153,12 @@
           "pathPattern": "/linked-data/resources/search",
           "permissionsRequired": ["linked-data.resources.search.post"],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/resources/search-by-label",
+          "permissionsRequired": ["linked-data.resources.searchbyabel.get"],
+          "modulePermissions": []
         }
       ]
     },
