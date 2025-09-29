@@ -153,6 +153,24 @@
           "pathPattern": "/linked-data/resources/search",
           "permissionsRequired": ["linked-data.resources.search.post"],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/resources/search-by-label",
+          "permissionsRequired": ["linked-data.resources.searchbyabel.get"],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/resources/connect",
+          "permissionsRequired": ["linked-data.resources.connect.post"],
+          "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/resources/disconnect",
+          "permissionsRequired": ["linked-data.resources.disconnect.post"],
+          "modulePermissions": []
         }
       ]
     },
@@ -227,6 +245,11 @@
     }
   ],
   "permissionSets": [
+    {
+      "permissionName": "linked-data.resources.searchbyabel.get",
+      "displayName": "Linked Data: Search resources by label",
+      "description": "Search linked-data resources by label"
+    },
     {
       "permissionName": "linked-data.resources.bib.get",
       "displayName": "Linked Data: Get a bibliographic (Work or Instance) resource",
@@ -326,6 +349,16 @@
       "permissionName": "linked-data.resources.search.post",
       "displayName": "Linked Data: Search resources using identifiers",
       "description": "Limited search within linked data graph using identifiers. For advanced search, use mod-search"
+    },
+    {
+      "permissionName": "linked-data.resources.connect.post",
+      "displayName": "Linked Data: Connect two resources",
+      "description": "Linked Data: Connect two resources"
+    },
+    {
+      "permissionName": "linked-data.resources.disconnect.post",
+      "displayName": "Linked Data: Disconnect two resources",
+      "description": "Linked Data: Disconnect two resources"
     }
   ],
   "launchDescriptor": {
