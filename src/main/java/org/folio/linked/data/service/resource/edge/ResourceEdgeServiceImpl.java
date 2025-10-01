@@ -41,7 +41,7 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   }
 
   @Override
-  public long deleteEdgesHavingPredicate(Long resourceId, PredicateDictionary predicateToDelete) {
+  public Long deleteEdgesHavingPredicate(Long resourceId, PredicateDictionary predicateToDelete) {
     return resourceEdgeRepository.deleteByIdSourceHashAndIdPredicateHash(resourceId, predicateToDelete.getHash());
   }
 

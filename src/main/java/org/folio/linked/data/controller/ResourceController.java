@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
@@ -19,6 +20,7 @@ import org.folio.linked.data.service.rdf.RdfExportService;
 import org.folio.linked.data.service.resource.ResourceService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcBibService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,7 +66,8 @@ public class ResourceController implements ResourceApi {
   }
 
   @Override
-  public ResponseEntity<ResourceResponseDto> updateResource(Long id, @Valid ResourceRequestDto resourceDto) {
+  public ResponseEntity<ResourceResponseDto> updateResource(@NotNull Long id,
+                                                            @Nullable @Valid ResourceRequestDto resourceDto) {
     return ResponseEntity.ok(resourceService.updateResource(id, resourceDto));
   }
 
