@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Hub request DTO",
+  "allOf": [
+    {
+      "$ref": "TitleFieldRequest.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "_languages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Language.json"
+          },
+          "x-json-property": "_languages"
+        },
+        "_creatorReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Agent.json"
+          }
+        }
+      }
+    }
+  ]
+}

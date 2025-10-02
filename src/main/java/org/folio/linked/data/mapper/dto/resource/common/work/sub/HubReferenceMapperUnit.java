@@ -12,9 +12,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.Hub;
-import org.folio.linked.data.domain.dto.HubAllOfHub;
-import org.folio.linked.data.domain.dto.HubResponse;
+import org.folio.linked.data.domain.dto.HubReference;
+import org.folio.linked.data.domain.dto.HubReferenceAllOfHub;
+import org.folio.linked.data.domain.dto.HubReferenceResponse;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
@@ -24,18 +24,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = HUB, predicate = EXPRESSION_OF, requestDto = Hub.class)
-public class HubMapperUnit implements WorkSubResourceMapperUnit {
+@MapperUnit(type = HUB, predicate = EXPRESSION_OF, requestDto = HubReference.class)
+public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof WorkResponse workDto) {
-      var hub = new HubResponse();
+      var hub = new HubReferenceResponse();
       var doc = resourceToConvert.getDoc();
       if (doc != null) {
-        hub.setHub(new HubAllOfHub()
+        hub.setHub(new HubReferenceAllOfHub()
           .addLabelItem(doc.get(PropertyDictionary.LABEL.getValue()).get(0).asText())
           .addLinkItem(doc.get(PropertyDictionary.LINK.getValue()).get(0).asText()));
         hub.setId(String.valueOf(resourceToConvert.getId()));
@@ -48,7 +48,7 @@ public class HubMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var hub = (Hub) dto;
+    var hub = (HubReference) dto;
     var resource = new Resource();
     resource.addTypes(ResourceTypeDictionary.HUB);
     resource.setDoc(getDoc(hub));
@@ -57,7 +57,7 @@ public class HubMapperUnit implements WorkSubResourceMapperUnit {
     return resource;
   }
 
-  private JsonNode getDoc(Hub dto) {
+  private JsonNode getDoc(HubReference dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, LABEL, dto.getHub().getLabel());
     putProperty(map, LINK, dto.getHub().getLink());
