@@ -14,12 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.linked.data.domain.dto.InstanceResponse;
-import org.folio.linked.data.domain.dto.PrimaryTitle;
-import org.folio.linked.data.domain.dto.PrimaryTitleField;
-import org.folio.linked.data.domain.dto.PrimaryTitleFieldResponse;
-import org.folio.linked.data.domain.dto.PrimaryTitleResponse;
-import org.folio.linked.data.domain.dto.WorkResponse;
+import org.folio.linked.data.domain.dto.*;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -42,6 +37,8 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
       instance.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
     } else if (parentDto instanceof WorkResponse work) {
       work.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
+    } else if (parentDto instanceof HubResponse hub) {
+      hub.addTitleItem(new PrimaryTitleFieldResponse().primaryTitle(primaryTitle));
     }
     return parentDto;
   }

@@ -84,13 +84,20 @@ public abstract class PostResourceIT extends ITBase {
     try {
       var postResponseContent = postResponse.andReturn().getResponse().getContentAsString();
       var jsonNode = objectMapper.readTree(postResponseContent);
+      var resourceNode = jsonNode.path("resource");
 
-      var instanceOrWorkNode = jsonNode.path("resource")
-        .path("http://bibfra.me/vocab/lite/Instance").isMissingNode()
-        ? jsonNode.path("resource").path("http://bibfra.me/vocab/lite/Work")
-        : jsonNode.path("resource").path("http://bibfra.me/vocab/lite/Instance");
+      JsonNode instanceOrWorkOrHub;
+      if (resourceNode.has("http://bibfra.me/vocab/lite/Instance")) {
+        instanceOrWorkOrHub = resourceNode.path("http://bibfra.me/vocab/lite/Instance");
+      } else if (resourceNode.has("http://bibfra.me/vocab/lite/Work")) {
+        instanceOrWorkOrHub = resourceNode.path("http://bibfra.me/vocab/lite/Work");
+      } else if (resourceNode.has("http://bibfra.me/vocab/lite/Hub")) {
+        instanceOrWorkOrHub = resourceNode.path("http://bibfra.me/vocab/lite/Hub");
+      } else {
+        throw new RuntimeException("No Instance, Work, or Hub node found in response");
+      }
 
-      return instanceOrWorkNode.path("id").asText();
+      return instanceOrWorkOrHub.path("id").asText();
 
     } catch (JsonProcessingException | UnsupportedEncodingException e) {
       throw new RuntimeException(e);

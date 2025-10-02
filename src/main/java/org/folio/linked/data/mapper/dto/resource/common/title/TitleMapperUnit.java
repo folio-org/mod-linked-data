@@ -4,6 +4,8 @@ import static java.lang.String.join;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.util.Set;
+import org.folio.linked.data.domain.dto.HubRequest;
+import org.folio.linked.data.domain.dto.HubResponse;
 import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.WorkRequest;
@@ -16,7 +18,9 @@ public abstract class TitleMapperUnit implements SingleResourceMapperUnit {
     InstanceRequest.class,
     InstanceResponse.class,
     WorkRequest.class,
-    WorkResponse.class
+    WorkResponse.class,
+    HubRequest.class,
+    HubResponse.class
   );
 
   @Override

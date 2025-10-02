@@ -9,13 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.InstanceField;
-import org.folio.linked.data.domain.dto.ResourceIdDto;
-import org.folio.linked.data.domain.dto.ResourceRequestDto;
-import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.ResourceSubgraphViewDto;
-import org.folio.linked.data.domain.dto.SearchResourcesRequestDto;
-import org.folio.linked.data.domain.dto.WorkField;
+import org.folio.linked.data.domain.dto.*;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceSubgraphViewDtoMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
@@ -184,6 +178,7 @@ public class ResourceServiceImpl implements ResourceService {
     return switch (requestDto.getResource()) {
       case InstanceField instance -> "Instance, Title: " + getPrimaryMainTitles(instance.getInstance().getTitle());
       case WorkField work -> "Work, Title: " + getPrimaryMainTitles(work.getWork().getTitle());
+      case HubField hub -> "Hub, Title: " + getPrimaryMainTitles(hub.getHub().getTitle());
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
@@ -193,6 +188,7 @@ public class ResourceServiceImpl implements ResourceService {
     return switch (requestDto.getResource()) {
       case InstanceField instance -> instance.getInstance().getProfileId();
       case WorkField work -> work.getWork().getProfileId();
+      case HubField hub -> null;
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
