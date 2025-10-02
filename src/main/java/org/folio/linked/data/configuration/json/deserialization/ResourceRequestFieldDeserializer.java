@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import java.io.IOException;
 import java.util.Map;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.WorkField;
@@ -16,7 +17,8 @@ public class ResourceRequestFieldDeserializer extends JsonDeserializer<ResourceR
 
   private static final Map<String, Class<? extends ResourceRequestField>> IDENDTITY_MAP = Map.of(
     ResourceTypeDictionary.INSTANCE.getUri(), InstanceField.class,
-    ResourceTypeDictionary.WORK.getUri(), WorkField.class
+    ResourceTypeDictionary.WORK.getUri(), WorkField.class,
+    ResourceTypeDictionary.HUB.getUri(), HubField.class
   );
   private final DtoDeserializer<ResourceRequestField> dtoDeserializer;
 
