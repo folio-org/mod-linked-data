@@ -8,13 +8,13 @@
     {
       "type": "object",
       "properties": {
-        "_languages": {
+        "languages": {
           "type": "array",
           "items": {
             "type": "object",
             "$ref": "../common/Language.json"
           },
-          "x-json-property": "_languages"
+          "x-json-property": "http://bibfra.me/vocab/lite/language"
         },
         "_creatorReference": {
           "type": "array",

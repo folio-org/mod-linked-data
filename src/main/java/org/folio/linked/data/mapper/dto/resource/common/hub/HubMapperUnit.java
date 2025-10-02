@@ -4,7 +4,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
@@ -16,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.HubRequest;
-import org.folio.linked.data.domain.dto.WorkField;
+import org.folio.linked.data.domain.dto.HubResponse;
+import org.folio.linked.data.domain.dto.HubResponseField;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
@@ -27,13 +28,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = WORK, requestDto = WorkField.class)
+@MapperUnit(type = HUB, requestDto = HubField.class)
 public class HubMapperUnit extends TopResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    if (parentDto instanceof ResourceResponseDto resourceDto) {
+      var hub = coreMapper.toDtoWithEdges(resourceToConvert, HubResponse.class, false);
+      hub.setId(String.valueOf(resourceToConvert.getId()));
+      resourceDto.setResource(new HubResponseField().hub(hub));
+    }
     return parentDto;
   }
 

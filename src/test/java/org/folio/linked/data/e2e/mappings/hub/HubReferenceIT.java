@@ -8,7 +8,7 @@ import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.test.web.servlet.ResultActions;
 
-class HubIT extends PostResourceIT {
+class HubReferenceIT extends PostResourceIT {
 
   @Override
   protected String postPayload() {
