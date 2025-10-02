@@ -6,7 +6,7 @@
       "$ref": "../common/IdField.json"
     },
     {
-      "$ref": "../common/Hub.json"
+      "$ref": "../common/HubReference.json"
     }
   ]
 }
