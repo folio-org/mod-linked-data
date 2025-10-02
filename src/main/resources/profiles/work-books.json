@@ -12,6 +12,7 @@
       "children": [
         "Profile:Work:CreatorOfWork",
         "Profile:Work:TitleInformation",
+        "Profile:Work:Hubs",
         "Profile:Work:IllustrativeContent",
         "Profile:Work:GovernmentPublication",
         "Profile:Work:SupplementaryContent",
@@ -481,6 +482,79 @@
       },
       "id": "Profile:Work:TitleInformation:ParallelTitle:Note",
       "marc": "246 $i"
+    },
+    {
+      "type": "group",
+      "displayName": "Hub",
+      "uriBFLite": "_hubs",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bflc/PrimaryContribution"
+        }
+      },
+      "children": [
+        "Profile:Work:Hubs:Hub",
+        "Profile:Work:Hubs:Relationship"
+      ],
+      "id": "Profile:Work:Hubs"
+    },
+    {
+      "type": "complex",
+      "displayName": "Hub",
+      "uriBFLite": "_hub",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://preprod.id.loc.gov/authorities/names"],
+        "valueDataType": {}
+      },
+      "layout": {
+        "api": "hub",
+        "isNew": true,
+        "baseLabelType": "hub"
+      },
+      "id": "Profile:Work:Hubs:Hub"
+    },
+    {
+      "type": "dropdown",
+      "displayName": "Relationship",
+      "uriBFLite": "_relation",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bflc/PrimaryContribution"
+        }
+      },
+      "children": [
+        "Profile:Work:Hubs:Relationship:ExpressionOf",
+        "Profile:Work:Hubs:Relationship:Subject"
+      ],
+      "id": "Profile:Work:Hubs:Relationship"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Expression Of",
+      "uriBFLite": "http://bibfra.me/vocab/lite/expressionOf",
+      "children": [],
+      "id": "Profile:Work:Hubs:Relationship:ExpressionOf"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Subject",
+      "uriBFLite": "http://bibfra.me/vocab/lite/subject",
+      "children": [],
+      "id": "Profile:Work:Hubs:Relationship:Subject"
     },
     {
       "type": "simple",
