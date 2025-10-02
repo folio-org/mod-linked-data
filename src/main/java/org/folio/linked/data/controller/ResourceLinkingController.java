@@ -42,7 +42,7 @@ public class ResourceLinkingController {
     PredicateDictionary predicateDict = null;
     for (PredicateDictionary pd : PredicateDictionary.values()) {
       String uri = pd.getUri();
-      if (uri.toLowerCase().endsWith(normalizedType)) {
+      if (uri != null && uri.toLowerCase().endsWith(normalizedType)) {
         predicateDict = pd;
         break;
       }
