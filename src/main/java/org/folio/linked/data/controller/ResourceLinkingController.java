@@ -59,4 +59,40 @@ public class ResourceLinkingController {
 
     return ResponseEntity.ok("Resources connected successfully");
   }
+
+  @PostMapping("/disconnect")
+  public ResponseEntity<String> disconnectResources(
+      @RequestParam Long sourceResourceId,
+      @RequestParam Long targetResourceId,
+      @RequestParam String connectionType) {
+
+    // Normalize connectionType (remove spaces, lower case)
+    String normalizedType = connectionType.replace(" ", "").toLowerCase();
+
+    // Find predicate whose URI ends with normalizedType (case-insensitive, ignore spaces/camel case)
+    PredicateDictionary predicateDict = null;
+    for (PredicateDictionary pd : PredicateDictionary.values()) {
+      String uri = pd.getUri();
+      if (uri != null && uri.toLowerCase().endsWith(normalizedType)) {
+        predicateDict = pd;
+        break;
+      }
+    }
+    if (predicateDict == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body("Predicate not found for connection type: " + connectionType);
+    }
+
+    // Delete ResourceEdge directly by hashes
+    long deletedCount = resourceEdgeRepository.deleteByIdSourceHashAndIdTargetHashAndIdPredicateHash(
+      sourceResourceId,
+      targetResourceId,
+      predicateDict.getHash()
+    );
+    if (deletedCount == 0) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body("ResourceEdge not found for given parameters");
+    }
+    return ResponseEntity.ok("Resources disconnected successfully");
+  }
 }
