@@ -8,6 +8,7 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +23,7 @@ public class ResourceLinkingController {
   private final ResourceEdgeRepository resourceEdgeRepository;
 
   @PostMapping("/connect")
+  @Transactional
   public ResponseEntity<String> connectResources(
       @RequestParam Long sourceResourceId,
       @RequestParam Long targetResourceId,
@@ -61,6 +63,7 @@ public class ResourceLinkingController {
   }
 
   @PostMapping("/disconnect")
+  @Transactional
   public ResponseEntity<String> disconnectResources(
       @RequestParam Long sourceResourceId,
       @RequestParam Long targetResourceId,
