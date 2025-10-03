@@ -537,8 +537,7 @@
         }
       },
       "children": [
-        "Profile:Work:Hubs:Relationship:ExpressionOf",
-        "Profile:Work:Hubs:Relationship:Subject"
+        "Profile:Work:Hubs:Relationship:ExpressionOf"
       ],
       "id": "Profile:Work:Hubs:Relationship"
     },
@@ -548,13 +547,6 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/expressionOf",
       "children": [],
       "id": "Profile:Work:Hubs:Relationship:ExpressionOf"
-    },
-    {
-      "type": "dropdownOption",
-      "displayName": "Subject",
-      "uriBFLite": "http://bibfra.me/vocab/lite/subject",
-      "children": [],
-      "id": "Profile:Work:Hubs:Relationship:Subject"
     },
     {
       "type": "simple",
