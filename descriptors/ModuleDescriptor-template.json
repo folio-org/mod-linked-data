@@ -165,6 +165,12 @@
           "pathPattern": "/linked-data/resources/connect",
           "permissionsRequired": ["linked-data.resources.connect.post"],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/resources/disconnect",
+          "permissionsRequired": ["linked-data.resources.disconnect.post"],
+          "modulePermissions": []
         }
       ]
     },
@@ -348,6 +354,11 @@
       "permissionName": "linked-data.resources.connect.post",
       "displayName": "Linked Data: Connect two resources",
       "description": "Linked Data: Connect two resources"
+    },
+    {
+      "permissionName": "linked-data.resources.disconnect.post",
+      "displayName": "Linked Data: Disconnect two resources",
+      "description": "Linked Data: Disconnect two resources"
     }
   ],
   "launchDescriptor": {
