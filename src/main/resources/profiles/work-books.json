@@ -533,7 +533,7 @@
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {
-          "dataTypeURI": "http://id.loc.gov/ontologies/bflc/PrimaryContribution"
+          "dataTypeURI": ""
         }
       },
       "children": [
