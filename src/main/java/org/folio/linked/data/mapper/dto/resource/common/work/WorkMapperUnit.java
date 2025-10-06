@@ -44,7 +44,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.linked.data.domain.dto.Hub;
+import org.folio.linked.data.domain.dto.HubReference;
 import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -167,7 +167,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return result;
   }
 
-  private static Optional<PredicateDictionary> getHubPredicate(Hub hub) {
+  private static Optional<PredicateDictionary> getHubPredicate(HubReference hub) {
     return PredicateDictionary.fromUri(hub.getRelation());
   }
 }
