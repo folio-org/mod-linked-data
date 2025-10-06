@@ -1,33 +1,28 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Hub object",
+  "description": "Hub reference",
   "allOf": [
     {
       "type": "object",
       "properties": {
-        "_relation": {
-          "type": "string"
+        "label": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/label"
         },
-        "_hub": {
-          "type": "object",
-          "properties": {
-            "label": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "x-json-property": "http://bibfra.me/vocab/lite/label"
-            },
-            "link": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "x-json-property": "http://bibfra.me/vocab/lite/link"
-            }
-          }
+        "link": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/link"
         }
       }
+    },
+    {
+      "$ref": "../common/IdField.json"
     }
   ]
 }

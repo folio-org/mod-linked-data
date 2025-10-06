@@ -44,7 +44,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
-import org.folio.linked.data.domain.dto.HubReference;
+import org.folio.linked.data.domain.dto.HubReferenceWithType;
 import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
@@ -120,7 +120,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
       .stream()
       .filter(hub -> getHubPredicate(hub).isPresent())
       .forEach(hub ->
-        coreMapper.addOutgoingEdges(work, WorkRequest.class, List.of(hub), getHubPredicate(hub).get())
+        coreMapper.addOutgoingEdges(work, WorkRequest.class, List.of(hub.getHub()), getHubPredicate(hub).get())
       );
 
     work.setId(hashService.hash(work));
@@ -167,7 +167,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     return result;
   }
 
-  private static Optional<PredicateDictionary> getHubPredicate(HubReference hub) {
+  private static Optional<PredicateDictionary> getHubPredicate(HubReferenceWithType hub) {
     return PredicateDictionary.fromUri(hub.getRelation());
   }
 }

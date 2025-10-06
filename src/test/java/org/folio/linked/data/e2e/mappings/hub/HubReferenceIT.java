@@ -62,8 +62,8 @@ class HubReferenceIT extends PostResourceIT {
     var workPath = "$.resource['http://bibfra.me/vocab/lite/Work']";
 
     apiResponse
-      .andExpect(jsonPath(workPath + "['_hubs'][0]['id']").value("-1420048856840056963"))
       .andExpect(jsonPath(workPath + "['_hubs'][0]['_relation']").value("http://bibfra.me/vocab/lite/expressionOf"))
+      .andExpect(jsonPath(workPath + "['_hubs'][0]['_hub']['id']").value("-1420048856840056963"))
       .andExpect(jsonPath(workPath + "['_hubs'][0]['_hub']['http://bibfra.me/vocab/lite/label'][0]").value("hub label"))
       .andExpect(jsonPath(workPath + "['_hubs'][0]['_hub']['http://bibfra.me/vocab/lite/link'][0]").value("hub link"));
   }
