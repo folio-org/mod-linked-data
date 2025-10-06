@@ -29,6 +29,17 @@
               "description": "Work response DTO."
             }
           }
+        },
+        {
+          "title": "HubResponseField",
+          "properties": {
+            "Hub": {
+              "type": "object",
+              "$ref": "resource/response/HubResponse.json",
+              "x-json-property": "http://bibfra.me/vocab/lite/Hub",
+              "description": "Hub response DTO."
+            }
+          }
         }
       ]
     }

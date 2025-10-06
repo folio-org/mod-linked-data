@@ -238,5 +238,6 @@
         }
       }
     }
-  ]
+  ],
+  "x-implements": "org.folio.linked.data.model.dto.HasTitle"
 }

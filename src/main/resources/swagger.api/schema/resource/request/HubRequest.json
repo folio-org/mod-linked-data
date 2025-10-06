@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Hub request DTO",
+  "allOf": [
+    {
+      "$ref": "../common/ProfileIdField.json"
+    },
+    {
+      "$ref": "TitleFieldRequest.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Language.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/language"
+        },
+        "_creatorReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Agent.json"
+          }
+        },
+        "_contributorReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Agent.json"
+          }
+        }
+      }
+    }
+  ]
+}

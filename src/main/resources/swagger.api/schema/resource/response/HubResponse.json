@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Work Info",
+  "allOf": [
+    {
+      "$ref": "../common/IdField.json"
+    },
+    {
+      "$ref": "../common/ProfileIdField.json"
+    },
+    {
+      "$ref": "title/TitleFieldResponse.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "languages": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Language.json"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/language"
+        },
+        "_creatorReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Agent.json"
+          }
+        },
+        "_contributorReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/Agent.json"
+          }
+        }
+      }
+    }
+  ],
+  "x-implements": ["org.folio.linked.data.model.dto.HasTitle", "org.folio.linked.data.model.dto.HasCreator"]
+}

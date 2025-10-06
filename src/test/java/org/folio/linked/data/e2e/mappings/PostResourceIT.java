@@ -11,12 +11,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
+import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
@@ -80,21 +80,20 @@ public abstract class PostResourceIT extends ITBase {
     validateApiResponse(getResponse);
   }
 
+  @SneakyThrows
   private String getResourceId(ResultActions postResponse) {
-    try {
-      var postResponseContent = postResponse.andReturn().getResponse().getContentAsString();
-      var jsonNode = objectMapper.readTree(postResponseContent);
+    var postResponseContent = postResponse.andReturn().getResponse().getContentAsString();
+    var resourceNode = objectMapper.readTree(postResponseContent).path("resource");
 
-      var instanceOrWorkNode = jsonNode.path("resource")
-        .path("http://bibfra.me/vocab/lite/Instance").isMissingNode()
-        ? jsonNode.path("resource").path("http://bibfra.me/vocab/lite/Work")
-        : jsonNode.path("resource").path("http://bibfra.me/vocab/lite/Instance");
-
-      return instanceOrWorkNode.path("id").asText();
-
-    } catch (JsonProcessingException | UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    }
+    return Stream.of(
+        "http://bibfra.me/vocab/lite/Instance",
+        "http://bibfra.me/vocab/lite/Work",
+        "http://bibfra.me/vocab/lite/Hub"
+      )
+      .filter(resourceNode::has)
+      .findFirst()
+      .map(key -> resourceNode.path(key).path("id").asText())
+      .orElseThrow(() -> new RuntimeException("No Instance, Work, or Hub node found in response"));
   }
 
   protected String getProperty(Resource resource, String property) {

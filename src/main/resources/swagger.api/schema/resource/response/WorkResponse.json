@@ -190,5 +190,6 @@
         }
       }
     }
-  ]
+  ],
+  "x-implements": ["org.folio.linked.data.model.dto.HasTitle", "org.folio.linked.data.model.dto.HasCreator"]
 }
