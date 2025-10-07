@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Hub reference with relation type",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "_relation": {
+          "type": "string"
+        },
+        "_hub": {
+          "$ref": "./HubReference.json"
+        }
+      }
+    }
+  ]
+}
+

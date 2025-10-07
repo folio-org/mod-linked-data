@@ -183,7 +183,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "../common/Hub.json"
+            "$ref": "../common/HubReferenceWithType.json"
           }
         }
       }

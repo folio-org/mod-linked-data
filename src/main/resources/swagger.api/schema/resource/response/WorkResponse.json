@@ -185,7 +185,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "HubResponse.json"
+            "$ref": "../common/HubReferenceWithType.json"
           }
         }
       }
