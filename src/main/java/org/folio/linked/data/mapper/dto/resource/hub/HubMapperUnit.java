@@ -1,5 +1,7 @@
 package org.folio.linked.data.mapper.dto.resource.hub;
 
+import static com.github.jknack.handlebars.internal.lang3.StringUtils.SPACE;
+import static java.lang.String.join;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
@@ -51,20 +53,31 @@ public class HubMapperUnit extends TopResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var hubDto = ((HubField) dto).getHub();
     var hub = new Resource().addTypes(HUB);
-    hub.setDoc(getDoc(hubDto));
-    hub.setLabel(getFirstValue(() -> getPrimaryMainTitles(hubDto.getTitle())));
+
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getTitle(), TITLE);
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getCreatorReference(), CREATOR);
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getContributorReference(), CONTRIBUTOR);
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getLanguages(), PredicateDictionary.LANGUAGE);
 
+    hub.setDoc(getDoc(hubDto, hub));
+    hub.setLabel(getLabel(hubDto, hub));
     hub.setId(hashService.hash(hub));
     return hub;
   }
 
-  private JsonNode getDoc(HubRequest dto) {
+  private JsonNode getDoc(HubRequest dto, Resource hubResource) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, LABEL, List.of(getFirstValue(() -> getPrimaryMainTitles(dto.getTitle()))));
+    putProperty(map, LABEL, List.of(getLabel(dto, hubResource)));
     return coreMapper.toJson(map);
+  }
+
+  private String getLabel(HubRequest dto, Resource hubResource) {
+    var titleLabel = getFirstValue(() -> getPrimaryMainTitles(dto.getTitle()));
+    return hubResource.getOutgoingEdges().stream()
+      .filter(edge -> CREATOR.getUri().equals(edge.getPredicate().getUri()))
+      .map(edge -> edge.getTarget().getLabel())
+      .findFirst()
+      .map(creatorLabel -> join(SPACE, creatorLabel, titleLabel))
+      .orElse(titleLabel);
   }
 }

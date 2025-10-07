@@ -53,7 +53,10 @@ class HubLanguageIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource hub) {
+    var expectedHubLabel = "TEST: HubLanguageIT";
     validateResourceType(hub, "http://bibfra.me/vocab/lite/Hub");
+    assertThat(hub.getLabel()).isEqualTo(expectedHubLabel);
+    assertThat(getProperty(hub, "http://bibfra.me/vocab/lite/label")).isEqualTo(expectedHubLabel);
 
     var language = getFirstOutgoingResource(hub, "http://bibfra.me/vocab/lite/language");
     validateResourceType(language, "http://bibfra.me/vocab/lite/LanguageCategory");
@@ -63,3 +66,4 @@ class HubLanguageIT extends PostResourceIT {
     assertThat(language.getLabel()).isEqualTo("eng");
   }
 }
+
