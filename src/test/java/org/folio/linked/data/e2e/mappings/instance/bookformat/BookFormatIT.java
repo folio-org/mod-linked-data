@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e.mappings.instance.bookformat.bookformat;
+package org.folio.linked.data.e2e.mappings.instance.bookformat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
