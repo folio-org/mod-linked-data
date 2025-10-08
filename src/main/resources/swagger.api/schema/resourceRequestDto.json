@@ -35,6 +35,17 @@
               "description": "Work request DTO"
             }
           }
+        },
+        {
+          "title": "HubField",
+          "properties": {
+            "Hub": {
+              "type": "object",
+              "$ref": "resource/request/HubRequest.json",
+              "x-json-property": "http://bibfra.me/vocab/lite/Hub",
+              "description": "Hub request DTO"
+            }
+          }
         }
       ]
     }

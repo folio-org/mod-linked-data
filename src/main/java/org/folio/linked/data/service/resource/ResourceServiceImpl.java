@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
@@ -184,6 +185,7 @@ public class ResourceServiceImpl implements ResourceService {
     return switch (requestDto.getResource()) {
       case InstanceField instance -> "Instance, Title: " + getPrimaryMainTitles(instance.getInstance().getTitle());
       case WorkField work -> "Work, Title: " + getPrimaryMainTitles(work.getWork().getTitle());
+      case HubField hub -> "Hub, Title: " + getPrimaryMainTitles(hub.getHub().getTitle());
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
@@ -193,6 +195,7 @@ public class ResourceServiceImpl implements ResourceService {
     return switch (requestDto.getResource()) {
       case InstanceField instance -> instance.getInstance().getProfileId();
       case WorkField work -> work.getWork().getProfileId();
+      case HubField hub -> hub.getHub().getProfileId();
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
