@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.language;
+package org.folio.linked.data.mapper.dto.resource.common.work.sub;
 
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESSIBLE_AUDIO_LANGUAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESSIBLE_VISUAL_MATERIAL_LANGUAGE;
@@ -24,7 +24,7 @@ import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
-import org.folio.linked.data.mapper.dto.resource.common.work.sub.WorkSubResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.resource.common.language.AbstractLanguageMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
