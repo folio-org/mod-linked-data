@@ -67,6 +67,7 @@
 - New API to search resources using inventory IDs [MODLD-874](https://folio-org.atlassian.net/browse/MODLD-874)
 - Update profiles to include Hubs. [UILD-647](https://folio-org.atlassian.net/browse/UILD-647)
 - Update /resource API to support CRUD operations of Hubs [MODLD-889](https://folio-org.atlassian.net/browse/MODLD-889)
+- Fix PUT /resource/{id} API to preserve incoming connections when updating a resource. [MODLD-891](https://folio-org.atlassian.net/browse/MODLD-891)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

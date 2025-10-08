@@ -56,6 +56,7 @@ class ResourceCopyServiceImplTest {
 
     // then
     verify(resourceEdgeService).copyOutgoingEdges(old, updated);
+    verify(resourceEdgeService).copyOutgoingEdges(old, updated);
   }
 
   @Test

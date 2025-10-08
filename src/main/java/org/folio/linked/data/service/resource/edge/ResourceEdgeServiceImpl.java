@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ResourceEdgeServiceImpl implements ResourceEdgeService {
 
-  private static final Map<ResourceTypeDictionary, Set<PredicateDictionary>> EDGES_TO_BE_COPIED = Map.of(
+  private static final Map<ResourceTypeDictionary, Set<PredicateDictionary>> OUTGOING_EDGES_TO_BE_COPIED = Map.of(
     WORK, Set.of(DISSERTATION, GENRE)
   );
   private final ResourceModelMapper resourceModelMapper;
@@ -33,10 +33,20 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   @Override
   public void copyOutgoingEdges(Resource from, Resource to) {
     if (from.getTypes().equals(to.getTypes())) {
-      getEdgesToBeCopied(from)
+      getOutgoingEdgesToBeCopied(from)
         .stream()
         .map(edge -> new ResourceEdge(to, edge.getTarget(), edge.getPredicate()))
         .forEach(to::addOutgoingEdge);
+    }
+  }
+
+  @Override
+  public void copyIncomingEdges(Resource from, Resource to) {
+    if (from.getTypes().equals(to.getTypes())) {
+      from.getIncomingEdges()
+        .stream()
+        .map(edge -> new ResourceEdge(edge.getSource(), to, edge.getPredicate()))
+        .forEach(to::addIncomingEdge);
     }
   }
 
@@ -57,7 +67,7 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
     return resourceEdgeRepository.save(edge).getId();
   }
 
-  private Set<ResourceEdge> getEdgesToBeCopied(Resource resource) {
+  private Set<ResourceEdge> getOutgoingEdgesToBeCopied(Resource resource) {
     var predicatesToBeCopied = getPredicatesToBeCopied(resource);
     return getOutgoingEdgesWithPredicate(resource, predicatesToBeCopied);
   }
@@ -69,7 +79,7 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   }
 
   private Set<String> getPredicatesToBeCopied(Resource resource) {
-    return EDGES_TO_BE_COPIED.entrySet().stream()
+    return OUTGOING_EDGES_TO_BE_COPIED.entrySet().stream()
       .filter(entry -> resource.isOfType(entry.getKey()))
       .flatMap(entry -> entry.getValue().stream())
       .map(PredicateDictionary::getUri)

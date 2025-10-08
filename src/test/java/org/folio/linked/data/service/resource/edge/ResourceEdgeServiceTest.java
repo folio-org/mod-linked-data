@@ -92,6 +92,31 @@ class ResourceEdgeServiceTest {
     ).containsExactlyInAnyOrderElementsOf(expectedPredicates);
   }
 
+  static Stream<Arguments> incomingDataProvider() {
+    return Stream.of(
+      Arguments.of(getWorkWithIncomingEdges(), getEmptyWork(), List.of(TITLE.getUri(), DISSERTATION.getUri())),
+      Arguments.of(getInstanceWithIncomingEdges(), getEmptyInstance(), List.of(TITLE.getUri())),
+      Arguments.of(getWorkWithIncomingEdges(), getEmptyInstance(), List.of())
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("incomingDataProvider")
+  void copyIncomingEdges_shouldCopy_appropriateEdges(Resource from,
+                                                     Resource to,
+                                                     List<String> expectedPredicates) {
+    //when
+    resourceEdgeService.copyIncomingEdges(from, to);
+
+    //then
+    assertThat(to.getIncomingEdges()
+      .stream()
+      .map(ResourceEdge::getPredicate)
+      .map(PredicateEntity::getUri)
+      .toList()
+    ).containsExactlyInAnyOrderElementsOf(expectedPredicates);
+  }
+
   private static Resource getEmptyInstance() {
     var instance = new Resource();
     instance.setTypes(Set.of(new ResourceTypeEntity(1L, ResourceTypeDictionary.INSTANCE.getUri(), "instance")));
@@ -116,5 +141,18 @@ class ResourceEdgeServiceTest {
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), DISSERTATION));
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), GENRE));
     return work;
+  }
+
+  private static Resource getWorkWithIncomingEdges() {
+    var work = getEmptyWork();
+    work.addIncomingEdge(new ResourceEdge(new Resource(), work, TITLE));
+    work.addIncomingEdge(new ResourceEdge(new Resource(), work, DISSERTATION));
+    return work;
+  }
+
+  private static Resource getInstanceWithIncomingEdges() {
+    var instance = getEmptyInstance();
+    instance.addIncomingEdge(new ResourceEdge(new Resource(), instance, TITLE));
+    return instance;
   }
 }

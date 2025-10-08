@@ -51,6 +51,7 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
   @Override
   public void copyEdgesAndProperties(Resource old, Resource updated) {
     resourceEdgeService.copyOutgoingEdges(old, updated);
+    resourceEdgeService.copyIncomingEdges(old, updated);
     copyProperties(old, updated);
   }
 
