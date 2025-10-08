@@ -59,8 +59,7 @@
         "Profile:Instance:TitleInformation:InstanceTitle:PartName",
         "Profile:Instance:TitleInformation:InstanceTitle:OtherTitleInformation"
       ],
-      "id": "Profile:Instance:TitleInformation:InstanceTitle",
-      "marc": "N/A"
+      "id": "Profile:Instance:TitleInformation:InstanceTitle"
     },
     {
       "type": "literal",
@@ -151,8 +150,7 @@
         "Profile:Instance:TitleInformation:VariantTitle:VariantTitleType",
         "Profile:Instance:TitleInformation:VariantTitle:Note"
       ],
-      "id": "Profile:Instance:TitleInformation:VariantTitle",
-      "marc": "N/A"
+      "id": "Profile:Instance:TitleInformation:VariantTitle"
     },
     {
       "type": "literal",
@@ -272,8 +270,7 @@
         "Profile:Instance:TitleInformation:ParallelTitle:Date",
         "Profile:Instance:TitleInformation:ParallelTitle:Note"
       ],
-      "id": "Profile:Instance:TitleInformation:ParallelTitle",
-      "marc": "N/A"
+      "id": "Profile:Instance:TitleInformation:ParallelTitle"
     },
     {
       "type": "literal",
@@ -432,7 +429,7 @@
     },
     {
       "type": "literal",
-      "displayName": "EDTF Date (to/from 008)",
+      "displayName": "EDTF Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -447,7 +444,7 @@
     },
     {
       "type": "simple",
-      "displayName": "Search place of publication (to/from 008)",
+      "displayName": "Search place of publication",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -464,7 +461,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Place (to/from 26X $a)",
+      "displayName": "Place",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -479,7 +476,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Name (to/from 26X $b)",
+      "displayName": "Name",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -494,7 +491,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Date (to/from 26X $c)",
+      "displayName": "Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -523,7 +520,7 @@
     },
     {
       "type": "literal",
-      "displayName": "EDTF Date (to/from 008)",
+      "displayName": "EDTF Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -538,7 +535,7 @@
     },
     {
       "type": "simple",
-      "displayName": "Search place of publication (to/from 008)",
+      "displayName": "Search place of publication",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -555,7 +552,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Place (to/from 26X $a)",
+      "displayName": "Place",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -570,7 +567,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Name (to/from 26X $b)",
+      "displayName": "Name",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -585,7 +582,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Date (to/from 26X $c)",
+      "displayName": "Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -614,7 +611,7 @@
     },
     {
       "type": "literal",
-      "displayName": "EDTF Date (to/from 008)",
+      "displayName": "EDTF Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -629,7 +626,7 @@
     },
     {
       "type": "simple",
-      "displayName": "Search place of publication (to/from 008)",
+      "displayName": "Search place of publication",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -646,7 +643,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Place (to/from 26X $a)",
+      "displayName": "Place",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -661,7 +658,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Name (to/from 26X $b)",
+      "displayName": "Name",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -676,7 +673,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Date (to/from 26X $c)",
+      "displayName": "Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -705,7 +702,7 @@
     },
     {
       "type": "literal",
-      "displayName": "EDTF Date (to/from 008)",
+      "displayName": "EDTF Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerDate",
       "constraints": {
         "repeatable": true,
@@ -720,7 +717,7 @@
     },
     {
       "type": "simple",
-      "displayName": "Search place of publication (to/from 008)",
+      "displayName": "Search place of publication",
       "uriBFLite": "http://bibfra.me/vocab/lite/providerPlace",
       "constraints": {
         "repeatable": true,
@@ -737,7 +734,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Place (to/from 26X $a)",
+      "displayName": "Place",
       "uriBFLite": "http://bibfra.me/vocab/lite/place",
       "constraints": {
         "repeatable": true,
@@ -752,7 +749,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Name (to/from 26X $b)",
+      "displayName": "Name",
       "uriBFLite": "http://bibfra.me/vocab/lite/name",
       "constraints": {
         "repeatable": true,
@@ -767,7 +764,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Date (to/from 26X $c)",
+      "displayName": "Date",
       "uriBFLite": "http://bibfra.me/vocab/lite/date",
       "constraints": {
         "repeatable": true,
@@ -961,7 +958,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:ISSN:ISSN"
+      "id": "Profile:Instance:Identifiers:ISSN:ISSN",
+      "marc": "022 $a"
     },
     {
       "type": "simple",
@@ -978,7 +976,7 @@
         }
       },
       "id": "Profile:Instance:Identifiers:ISSN:IncorrectInvalidOrCanceled",
-      "marc": "020 $z"
+      "marc": "022 $z"
     },
     {
       "type": "dropdownOption",
@@ -1005,7 +1003,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:IAN:IAN"
+      "id": "Profile:Instance:Identifiers:IAN:IAN",
+      "marc": "024 _3 $a"
     },
     {
       "type": "literal",
@@ -1020,7 +1019,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:Identifiers:IAN:Qualifier",
-      "marc": "020 $q"
+      "marc": "024 _3 $q"
     },
     {
       "type": "simple",
@@ -1037,7 +1036,7 @@
         }
       },
       "id": "Profile:Instance:Identifiers:IAN:InvalidCanceled",
-      "marc": "020 $z"
+      "marc": "024 _3 $z"
     },
     {
       "type": "dropdownOption",
@@ -1064,7 +1063,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:Identifiers:OtherIdentifier:OtherIdentifier"
+      "id": "Profile:Instance:Identifiers:OtherIdentifier:OtherIdentifier",
+      "marc": "024 _8 $a"
     },
     {
       "type": "literal",
@@ -1079,7 +1079,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:Identifiers:OtherIdentifier:Qualifier",
-      "marc": "020 $q"
+      "marc": "024 _8 $q"
     },
     {
       "type": "simple",
@@ -1096,7 +1096,7 @@
         }
       },
       "id": "Profile:Instance:Identifiers:OtherIdentifier:InvalidCanceled",
-      "marc": "020 $z"
+      "marc": "024 _8 $z"
     },
     {
       "type": "group",
@@ -1143,8 +1143,7 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:NotesAboutTheInstance:NoteType",
-      "marc": "N/A"
+      "id": "Profile:Instance:NotesAboutTheInstance:NoteType"
     },
     {
       "type": "group",
@@ -1176,8 +1175,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:SupplementaryContentNote:Note",
-      "marc": "353 $a"
+      "id": "Profile:Instance:SupplementaryContentNote:Note"
     },
     {
       "type": "literal",
@@ -1191,8 +1189,7 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:SupplementaryContentNote:URLForSupplementaryContent",
-      "marc": "353 $b"
+      "id": "Profile:Instance:SupplementaryContentNote:URLForSupplementaryContent"
     },
     {
       "type": "simple",
@@ -1352,7 +1349,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Frequency"
         }
       },
-      "id": "Profile:Instance:Frequency"
+      "id": "Profile:Instance:Frequency",
+      "marc": "008/18-19"
     },
     {
       "type": "group",
@@ -1388,7 +1386,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:AdminMetadata:DateOfCreation"
+      "id": "Profile:Instance:AdminMetadata:DateOfCreation",
+      "marc": "008/0-6"
     },
     {
       "type": "literal",
@@ -1402,7 +1401,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:AdminMetadata:LocalResourceIDNumber"
+      "id": "Profile:Instance:AdminMetadata:LocalResourceIDNumber",
+      "marc": "001 $a"
     },
     {
       "type": "literal",
@@ -1416,7 +1416,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:AdminMetadata:CatalogingAgency"
+      "id": "Profile:Instance:AdminMetadata:CatalogingAgency",
+      "marc": "040 $a"
     },
     {
       "type": "simple",
@@ -1430,7 +1431,8 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
         "valueDataType": { "remark": "", "dataTypeURI": ""}
       },
-      "id": "Profile:Instance:AdminMetadata:Language"
+      "id": "Profile:Instance:AdminMetadata:Language",
+      "marc": "040 $b"
     },
     {
       "type": "literal",
@@ -1444,7 +1446,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:AdminMetadata:TranscribingAgency"
+      "id": "Profile:Instance:AdminMetadata:TranscribingAgency",
+      "marc": "040 $c"
     },
     {
       "type": "literal",
@@ -1458,7 +1461,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Instance:AdminMetadata:ModifyingAgency"
+      "id": "Profile:Instance:AdminMetadata:ModifyingAgency",
+      "marc": "040 $d"
     }
   ]
 }
