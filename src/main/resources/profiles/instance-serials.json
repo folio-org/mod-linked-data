@@ -300,7 +300,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:TitleInformation:ParallelTitle:OtherTitleInformation",
-      "marc": "246 $b"
+      "marc": "246 _1 $b"
     },
     {
       "type": "literal",
@@ -315,7 +315,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:TitleInformation:ParallelTitle:PartNumber",
-      "marc": "246 $n"
+      "marc": "246 _1 $n"
     },
     {
       "type": "literal",
@@ -330,7 +330,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:TitleInformation:ParallelTitle:PartName",
-      "marc": "246 $p"
+      "marc": "246 _1 $p"
     },
     {
       "type": "literal",
@@ -345,7 +345,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:TitleInformation:ParallelTitle:Date",
-      "marc": "246 $f"
+      "marc": "246 _1 $f"
     },
     {
       "type": "literal",
@@ -360,7 +360,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:TitleInformation:ParallelTitle:Note",
-      "marc": "246 $i"
+      "marc": "246 _1 $i"
     },
     {
       "type": "literal",
