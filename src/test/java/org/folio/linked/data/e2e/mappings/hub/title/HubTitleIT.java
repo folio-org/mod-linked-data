@@ -46,9 +46,10 @@ class HubTitleIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource hub) {
+    var expectedHubLabel = "TEST: HubTitleIT";
     validateResourceType(hub, "http://bibfra.me/vocab/lite/Hub");
-    assertThat(hub.getLabel()).isEqualTo("TEST: HubTitleIT");
-    assertThat(getProperty(hub, "http://bibfra.me/vocab/lite/label")).isEqualTo("TEST: HubTitleIT");
+    assertThat(hub.getLabel()).isEqualTo(expectedHubLabel);
+    assertThat(getProperty(hub, "http://bibfra.me/vocab/lite/label")).isEqualTo(expectedHubLabel);
 
     var title = getFirstOutgoingResource(hub, "http://bibfra.me/vocab/library/title");
     validateResourceType(title, "http://bibfra.me/vocab/library/Title");
