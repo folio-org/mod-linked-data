@@ -1,17 +1,29 @@
 package org.folio.linked.data.e2e.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.EXPRESSION_OF;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.e2e.ITBase;
@@ -53,19 +65,13 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     // given
     var person = getPerson();
     resourceTestService.saveGraph(person);
-    var work = getWork();
+    var work = getWork("simple_work");
     var instance = getInstance(work);
     resourceTestService.saveGraph(instance);
 
     // when
-    var workUpdateRequestDto = getWorkRequestDto(person.getId(), instance.getId());
-
-    var updateRequest = put(RESOURCE_URL + "/" + work.getId())
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(workUpdateRequestDto);
-
-    mockMvc.perform(updateRequest).andExpect(status().isOk());
+    var workUpdateRequestDto = getWorkRequestDto("simple_work", person.getId(), instance.getId());
+    putResource(work.getId(), workUpdateRequestDto);
 
     // then
     awaitAndAssert(() ->
@@ -75,44 +81,84 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     );
   }
 
-  private String getWorkRequestDto(Long personId, Long instanceId) {
+  @Test
+  void updateWork_should_retain_incoming_edges() throws Exception {
+    // given
+    var work1 = getWork("work1");
+    var work2 = getWork("work2");
+    var edge = new ResourceEdge(work1, work2, EXPRESSION_OF);
+    work1.addOutgoingEdge(edge);
+    work2.addIncomingEdge(edge);
+    resourceTestService.saveGraph(work2);
+
+    // when
+    var workUpdateRequestDto = getWorkRequestDto("updated work2", null, null);
+    var putApiResponse = putResource(work2.getId(), workUpdateRequestDto);
+    var updatedWork2Id = putApiResponse
+      .path("resource")
+      .path("http://bibfra.me/vocab/lite/Work")
+      .path("id")
+      .asLong();
+
+    // then
+    var work1Graph = performGetGraph(work1.getId());
+    var work2Graph = performGetGraph(updatedWork2Id);
+
+    var work1OutgoingExpressionOf = work1Graph
+      .path("outgoingEdges")
+      .path("edges")
+      .path("http://bibfra.me/vocab/lite/expressionOf");
+    assertThat(work1OutgoingExpressionOf.isArray()).isTrue();
+    assertThat(work1OutgoingExpressionOf.toString()).contains(String.valueOf(updatedWork2Id));
+
+    var work2IncomingExpressionOf = work2Graph
+      .path("incomingEdges")
+      .path("edges")
+      .path("http://bibfra.me/vocab/lite/expressionOf");
+    assertThat(work2IncomingExpressionOf.isArray()).isTrue();
+    assertThat(work2IncomingExpressionOf.toString()).contains(String.valueOf(work1.getId()));
+  }
+
+  private String getWorkRequestDto(String label, Long personId, Long instanceId) {
+    var creatorRef = personId == null
+      ? ""
+      : ", \"_creatorReference\": [ { \"id\": \"" + personId + "\" } ]";
+    var instanceRef = instanceId == null
+      ? ""
+      : ", \"_instanceReference\": [ { \"id\": \"" + instanceId + "\" } ]";
     return """
       {
         "resource": {
           "http://bibfra.me/vocab/lite/Work": {
             "profileId": 2,
             "http://bibfra.me/vocab/library/title": [
-                {
-                  "http://bibfra.me/vocab/library/Title": {
-                      "http://bibfra.me/vocab/library/mainTitle": [ "simple_work" ]
-                  }
+              {
+                "http://bibfra.me/vocab/library/Title": {
+                  "http://bibfra.me/vocab/library/mainTitle": [ "%s" ]
                 }
-            ],
-            "_creatorReference": [ { "id": "%PERSON_ID%" } ],
-            "_instanceReference": [ { "id": "%INSTANCE_ID%"} ]
+              }
+            ]%s%s
           }
         }
       }
-      """
-      .replace("%PERSON_ID%", personId.toString())
-      .replace("%INSTANCE_ID%", instanceId.toString());
+      """.formatted(label, creatorRef, instanceRef);
   }
 
-  private Resource getWork() {
+  private Resource getWork(String label) {
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
       .setDoc(readTree("""
         {
-          "http://bibfra.me/vocab/library/mainTitle": ["simple_work"]
+          "http://bibfra.me/vocab/library/mainTitle": ["%s"]
         }
-        """))
-      .setLabel("simple_work");
+        """.formatted(label)))
+      .setLabel(label);
     var work = new Resource()
-      .addTypes(ResourceTypeDictionary.WORK)
+      .addTypes(WORK, BOOKS)
       .setDoc(readTree("{}"))
-      .setLabel("simple_work");
+      .setLabel(label);
 
-    work.addOutgoingEdge(new ResourceEdge(work, title, PredicateDictionary.TITLE));
+    work.addOutgoingEdge(new ResourceEdge(work, title, TITLE));
 
     title.setId(hashService.hash(title));
     work.setId(hashService.hash(work));
@@ -130,12 +176,12 @@ class ResourceControllerUpdateWorkIT extends ITBase {
         """))
       .setLabel("simple_instance");
     var instance = new Resource()
-      .addTypes(ResourceTypeDictionary.INSTANCE)
+      .addTypes(INSTANCE)
       .setDoc(readTree("{}"))
       .setLabel("simple_instance");
 
-    instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
-    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
+    instance.addOutgoingEdge(new ResourceEdge(instance, title, TITLE));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
 
     title.setId(hashService.hash(title));
     instance.setId(hashService.hash(instance));
@@ -145,7 +191,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
 
   private Resource getPerson() {
     var person = new Resource()
-      .addTypes(ResourceTypeDictionary.PERSON)
+      .addTypes(PERSON)
       .setDoc(readTree("""
         {
           "http://bibfra.me/vocab/lite/name": ["Person name"]
@@ -154,7 +200,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       .setLabel("Person name");
 
     var lccn = new Resource()
-      .addTypes(ResourceTypeDictionary.ID_LCCN, ResourceTypeDictionary.IDENTIFIER)
+      .addTypes(ID_LCCN, IDENTIFIER)
       .setDoc(readTree("""
         {
           "http://bibfra.me/vocab/lite/link": ["n123456789"]
@@ -163,7 +209,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       .setLabel("n123456789");
 
     person.setFolioMetadata(new FolioMetadata(person).setInventoryId("123456789"));
-    person.addOutgoingEdge(new ResourceEdge(person, lccn, PredicateDictionary.MAP));
+    person.addOutgoingEdge(new ResourceEdge(person, lccn, MAP));
 
     person.setId(hashService.hash(person));
     lccn.setId(hashService.hash(lccn));
@@ -199,5 +245,26 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       sf -> sf.getCode() == 'a' && sf.getData().equals("simple_instance")
     );
     return isDf100Valid && isDf245Valid;
+  }
+
+  private JsonNode performGetGraph(Long resourceId) throws Exception {
+    var requestBuilder = get(RESOURCE_URL + "/" + resourceId + "/graph")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+    var response = mockMvc.perform(requestBuilder)
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    return objectMapper.readTree(response);
+  }
+
+  private JsonNode putResource(Long resourceId, String dto) throws Exception {
+    var updateRequest = put(RESOURCE_URL + "/" + resourceId)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(dto);
+    var response = mockMvc.perform(updateRequest)
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    return objectMapper.readTree(response);
   }
 }

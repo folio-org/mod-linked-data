@@ -8,6 +8,8 @@ public interface ResourceEdgeService {
 
   void copyOutgoingEdges(Resource from, Resource to);
 
+  void copyIncomingEdges(Resource from, Resource to);
+
   Long deleteEdgesHavingPredicate(Long resourceId, PredicateDictionary predicatedToDelete);
 
   ResourceEdgePk saveNewResourceEdge(Long sourceId,
