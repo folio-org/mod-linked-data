@@ -50,7 +50,7 @@ class HubReferenceIT extends PostResourceIT {
     var hub = getFirstOutgoingResource(work, "http://bibfra.me/vocab/lite/expressionOf");
     validateResourceType(hub, "http://bibfra.me/vocab/lite/Hub");
 
-    assertThat(hub.getId()).isEqualTo(-1420048856840056963L);
+    assertThat(hub.getId()).isEqualTo(1407893064845187544L);
     assertThat(hub.getLabel()).isEqualTo("hub label");
     assertThat(getProperty(hub, "http://bibfra.me/vocab/lite/label")).isEqualTo("hub label");
     assertThat(getProperty(hub, "http://bibfra.me/vocab/lite/link")).isEqualTo("hub link");
@@ -63,7 +63,7 @@ class HubReferenceIT extends PostResourceIT {
 
     apiResponse
       .andExpect(jsonPath(workPath + "['_hubs'][0]['_relation']").value("http://bibfra.me/vocab/lite/expressionOf"))
-      .andExpect(jsonPath(workPath + "['_hubs'][0]['_hub']['id']").value("-1420048856840056963"))
+      .andExpect(jsonPath(workPath + "['_hubs'][0]['_hub']['id']").value("1407893064845187544"))
       .andExpect(jsonPath(workPath + "['_hubs'][0]['_hub']['http://bibfra.me/vocab/lite/label'][0]").value("hub label"))
       .andExpect(jsonPath(workPath + "['_hubs'][0]['_hub']['http://bibfra.me/vocab/lite/link'][0]").value("hub link"));
   }
