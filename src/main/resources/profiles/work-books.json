@@ -192,8 +192,7 @@
         "Profile:Work:TitleInformation:WorkTitle:PartNumber",
         "Profile:Work:TitleInformation:WorkTitle:PartName"
       ],
-      "id": "Profile:Work:TitleInformation:WorkTitle",
-      "marc": "N/A"
+      "id": "Profile:Work:TitleInformation:WorkTitle"
     },
     {
       "type": "literal",
@@ -269,8 +268,7 @@
         "Profile:Work:TitleInformation:VariantTitle:VariantTitleType",
         "Profile:Work:TitleInformation:VariantTitle:Note"
       ],
-      "id": "Profile:Work:TitleInformation:VariantTitle",
-      "marc": "N/A"
+      "id": "Profile:Work:TitleInformation:VariantTitle"
     },
     {
       "type": "literal",
@@ -390,8 +388,7 @@
         "Profile:Work:TitleInformation:ParallelTitle:Date",
         "Profile:Work:TitleInformation:ParallelTitle:Note"
       ],
-      "id": "Profile:Work:TitleInformation:ParallelTitle",
-      "marc": "N/A"
+      "id": "Profile:Work:TitleInformation:ParallelTitle"
     },
     {
       "type": "literal",
@@ -406,7 +403,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Work:TitleInformation:ParallelTitle:ParallelTitle",
-      "marc": "246 $a"
+      "marc": "246 _1 $a"
     },
     {
       "type": "literal",
@@ -421,7 +418,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Work:TitleInformation:ParallelTitle:OtherTitleInformation",
-      "marc": "246 $b"
+      "marc": "246 _1 $b"
     },
     {
       "type": "literal",
@@ -436,7 +433,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Work:TitleInformation:ParallelTitle:PartNumber",
-      "marc": "246 $n"
+      "marc": "246 _1 $n"
     },
     {
       "type": "literal",
@@ -451,7 +448,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Work:TitleInformation:ParallelTitle:PartName",
-      "marc": "246 $p"
+      "marc": "246 _1 $p"
     },
     {
       "type": "literal",
@@ -466,7 +463,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Work:TitleInformation:ParallelTitle:Date",
-      "marc": "246 $f"
+      "marc": "246 _1 $f"
     },
     {
       "type": "literal",
@@ -481,7 +478,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Work:TitleInformation:ParallelTitle:Note",
-      "marc": "246 $i"
+      "marc": "246 _1 $i"
     },
     {
       "type": "group",
@@ -562,7 +559,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/illustrativeContent"
         }
       },
-      "id": "Profile:Work:IllustrativeContent"
+      "id": "Profile:Work:IllustrativeContent",
+      "marc": "008/18-21"
     },
     {
       "type": "simple",
@@ -595,7 +593,8 @@
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent"
         }
       },
-      "id": "Profile:Work:SupplementaryContent"
+      "id": "Profile:Work:SupplementaryContent",
+      "marc": "008/24-27"
     },
     {
       "type": "literal",
@@ -627,7 +626,7 @@
         }
       },
       "id": "Profile:Work:PlaceOfOriginOfTheWork",
-      "marc": "008/15-17"
+      "marc": "257 $a"
     },
     {
       "type": "group",
@@ -715,8 +714,7 @@
         "baseLabelType": "contributor"
       },
       "linkedEntry": { "dependent": "Profile:Work:OtherContributors:Subclass" },
-      "id": "Profile:Work:OtherContributors:Name",
-      "marc": "700, 710, 71X"
+      "id": "Profile:Work:OtherContributors:Name"
     },
     {
       "type": "dropdown",
@@ -740,7 +738,7 @@
       "dependsOn": "lc:RT:bf2:search:name",
       "linkedEntry": { "controlledBy": "Profile:Work:OtherContributors:Name" },
       "id": "Profile:Work:OtherContributors:Subclass",
-      "marc": "N/A"
+      "marc": "700, 71X"
     },
     {
       "type": "dropdownOption",
@@ -797,7 +795,7 @@
         ]
       },
       "id": "Profile:Work:OtherContributors:Relationship",
-      "marc": "N/A"
+      "marc": "700/710 $e $4, 711 $j $4"
     },
     {
       "type": "group",
@@ -844,8 +842,7 @@
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
         "valueDataType": {}
       },
-      "id": "Profile:Work:NotesAboutTheWork:NoteType",
-      "marc": "N/A"
+      "id": "Profile:Work:NotesAboutTheWork:NoteType"
     },
     {
       "type": "literal",
@@ -1026,8 +1023,7 @@
         "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:DeweyFullOrAbridged",
         "Profile:Work:ClassificationNumbers:DeweyDecimalClassification:Assigner"
       ],
-      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification",
-      "marc": "N/A"
+      "id": "Profile:Work:ClassificationNumbers:DeweyDecimalClassification"
     },
     {
       "type": "literal",
@@ -1140,7 +1136,7 @@
         "Profile:Work:LanguageCode:Relationship"
       ],
       "id": "Profile:Work:LanguageCode",
-      "marc": "008/35-37"
+      "marc": "008/35-37, 041"
     },
     {
       "type": "simple",
@@ -1331,7 +1327,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:PartOfSeries:Title"
+      "id": "Profile:Work:PartOfSeries:Title",
+      "marc": "490 $a"
     },
     {
       "type": "literal",
@@ -1345,7 +1342,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:PartOfSeries:ISSN"
+      "id": "Profile:Work:PartOfSeries:ISSN",
+      "marc": "490 $x"
     },
     {
       "type": "literal",
@@ -1359,7 +1357,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:PartOfSeries:SeriesEnumeration"
+      "id": "Profile:Work:PartOfSeries:SeriesEnumeration",
+      "marc": "490 $v"
     }
   ]
 }
