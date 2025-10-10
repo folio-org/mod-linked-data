@@ -521,7 +521,7 @@
       "id": "Profile:Work:Hubs:Hub"
     },
     {
-      "type": "dropdown",
+      "type": "enumerated",
       "displayName": "Relationship",
       "uriBFLite": "_relation",
       "constraints": {
