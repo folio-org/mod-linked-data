@@ -38,7 +38,7 @@ class HubTitleIT extends PostResourceIT {
     var hubPath = "$.resource['http://bibfra.me/vocab/lite/Hub']";
 
     apiResponse
-      .andExpect(jsonPath(hubPath + "['id']").value("-6603120915378868727"))
+      .andExpect(jsonPath(hubPath + "['id']").value("-1203724017859497624"))
       .andExpect(jsonPath(hubPath + "['http://bibfra.me/vocab/library/title'][0]"
         + "['http://bibfra.me/vocab/library/Title']['http://bibfra.me/vocab/library/mainTitle'][0]")
         .value("TEST: HubTitleIT"));
