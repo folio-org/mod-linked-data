@@ -22,6 +22,8 @@ components:
       $ref: folio-modules/search/linkedDataInstance.json
     linkedDataWork:
       $ref: folio-modules/search/linkedDataWork.json
+    linkedDataHub:
+      $ref: folio-modules/search/linkedDataHub.json
     instanceIngressEvent:
       $ref: folio-modules/inventory/instanceIngressEvent.json
     sourceRecordDomainEvent:

@@ -1,0 +1,21 @@
+{
+  "description": "Linked Data Hub dto",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The Linked Data ID of an Hub",
+      "type": "string"
+    },
+    "originalId": {
+      "description": "Original RDF ID of an Hub",
+      "type": "string"
+    },
+    "label": {
+      "description": "Label of the Hub",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id"
+  ]
+}

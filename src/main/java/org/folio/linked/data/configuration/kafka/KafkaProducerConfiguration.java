@@ -9,6 +9,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
+import org.folio.linked.data.domain.dto.LinkedDataHub;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -36,6 +37,16 @@ public class KafkaProducerConfiguration {
     var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
       linkedDataTopicProperties::getWorkSearchIndex);
     producer.setKeyMapper(rie -> ((LinkedDataWork) rie.getNew()).getId());
+    return producer;
+  }
+
+  @Bean
+  public FolioMessageProducer<ResourceIndexEvent> hubIndexMessageProducer(
+    KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
+  ) {
+    var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
+      linkedDataTopicProperties::getHubSearchIndex);
+    producer.setKeyMapper(rie -> ((LinkedDataHub) rie.getNew()).getId());
     return producer;
   }
 
