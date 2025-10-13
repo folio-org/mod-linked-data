@@ -7,13 +7,12 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.linked.data.util.ImportUtils;
 import org.folio.rdf4ld.service.Rdf4LdService;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +29,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
-  private final ApplicationEventPublisher applicationEventPublisher;
+  private final ResourceEventsPublisher resourceEventsPublisher;
 
   @Override
   public ImportFileResponseDto importFile(MultipartFile multipartFile) {
@@ -61,12 +60,12 @@ public class RdfImportServiceImpl implements RdfImportService {
       })
       .map(resource -> {
         metadataService.ensure(resource);
-        var saved = resourceGraphService.saveMergingGraph(resource);
-        applicationEventPublisher.publishEvent(new ResourceCreatedEvent(saved));
+        resourceGraphService.saveMergingGraph(resource);
+        resourceEventsPublisher.publishEventsForCreate(resource);
         report.addImport(
           new ImportUtils.ImportedResource(
-            saved.getId(),
-            saved.getLabel(),
+            resource.getId(),
+            resource.getLabel(),
             ImportUtils.Status.SUCCESS,
             ""));
         return resource.getId().toString();
