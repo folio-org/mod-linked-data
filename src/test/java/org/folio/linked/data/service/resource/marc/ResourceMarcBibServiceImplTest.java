@@ -42,6 +42,7 @@ import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
@@ -260,7 +261,7 @@ class ResourceMarcBibServiceImplTest {
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId))
       .setUnmappedMarc(new RawMarc().setContent(unmappedMarc));
     var resourceModelCaptor = ArgumentCaptor.forClass(org.folio.ld.dictionary.model.Resource.class);
-
+    var saveGraphResult = new SaveGraphResult(resourceEntity);
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
     when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
@@ -268,13 +269,13 @@ class ResourceMarcBibServiceImplTest {
     when(resourceModelMapper.toEntity(resourceModelCaptor.capture())).thenReturn(resourceEntity);
     when(resourceRepo.existsById(resourceId)).thenReturn(false);
     when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(false);
-    when(resourceGraphService.saveMergingGraph(resourceEntity)).thenReturn(resourceEntity);
+    when(resourceGraphService.saveMergingGraph(resourceEntity)).thenReturn(saveGraphResult);
 
     //when
     var result = resourceMarcService.importMarcRecord(inventoryId, profileId);
 
     //then
-    verify(resourceEventsPublisher).publishEventsForUpdate(resourceEntity);
+    verify(resourceEventsPublisher).emitEventsForUpdate(saveGraphResult);
     verify(resourceProfileLinkingService).linkResourceToProfile(resourceEntity, profileId);
     verify(rawMarcService).saveRawMarc(resourceEntity, unmappedMarc);
     assertThat(result)

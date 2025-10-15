@@ -60,12 +60,12 @@ public class RdfImportServiceImpl implements RdfImportService {
       })
       .map(resource -> {
         metadataService.ensure(resource);
-        var saved = resourceGraphService.saveMergingGraph(resource);
-        resourceEventsPublisher.publishEventsForCreate(resource);
+        var saveGraphResult = resourceGraphService.saveMergingGraph(resource);
+        resourceEventsPublisher.emitEventsForCreate(saveGraphResult);
         report.addImport(
           new ImportUtils.ImportedResource(
-            saved.getId(),
-            saved.getLabel(),
+            saveGraphResult.rootResource().getId(),
+            saveGraphResult.rootResource().getLabel(),
             ImportUtils.Status.SUCCESS,
             ""));
         return resource.getId().toString();

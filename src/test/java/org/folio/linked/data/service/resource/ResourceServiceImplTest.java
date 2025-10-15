@@ -39,6 +39,7 @@ import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.spring.FolioExecutionContext;
@@ -88,14 +89,15 @@ class ResourceServiceImplTest {
     var expectedResponse = new ResourceResponseDto();
     expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedResponse);
-    when(resourceGraphService.saveMergingGraph(work)).thenReturn(work);
+    var saveGraphResult = new SaveGraphResult(work);
+    when(resourceGraphService.saveMergingGraph(work)).thenReturn(saveGraphResult);
 
     // when
     var response = resourceService.createResource(request);
 
     // then
     assertThat(response).isEqualTo(expectedResponse);
-    verify(resourceEventsPublisher).publishEventsForCreate(work);
+    verify(resourceEventsPublisher).emitEventsForCreate(saveGraphResult);
   }
 
   @Test
@@ -112,14 +114,15 @@ class ResourceServiceImplTest {
     var expectedResponse = new ResourceResponseDto();
     expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedResponse);
-    when(resourceGraphService.saveMergingGraph(work)).thenReturn(work);
+    var saveGraphResult = new SaveGraphResult(work);
+    when(resourceGraphService.saveMergingGraph(work)).thenReturn(saveGraphResult);
 
     // when
     var response = resourceService.createResource(request);
 
     // then
     assertThat(response).isEqualTo(expectedResponse);
-    verify(resourceEventsPublisher).publishEventsForCreate(work);
+    verify(resourceEventsPublisher).emitEventsForCreate(saveGraphResult);
     verify(resourceProfileLinkingService).linkResourceToProfile(work, profileId);
   }
 
@@ -219,12 +222,13 @@ class ResourceServiceImplTest {
     var oldWork = new Resource().setId(id).addTypes(WORK).setLabel("oldWork");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldWork));
     var work = new Resource().setId(id).setLabel("saved").addTypes(WORK);
+    var saveGraphResult = new SaveGraphResult(work);
     when(resourceDtoMapper.toEntity(workDto)).thenReturn(work);
     var expectedDto = new ResourceResponseDto().resource(
       new WorkResponseField().work(new WorkResponse(2).id(id.toString()))
     );
     when(resourceDtoMapper.toDto(work)).thenReturn(expectedDto);
-    when(resourceGraphService.saveMergingGraph(work)).thenReturn(work);
+    when(resourceGraphService.saveMergingGraph(work)).thenReturn(saveGraphResult);
     when(folioExecutionContext.getUserId()).thenReturn(UUID.randomUUID());
 
     // when
@@ -235,7 +239,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).breakEdgesAndDelete(oldWork);
     verify(resourceGraphService).saveMergingGraph(work);
     verify(folioExecutionContext).getUserId();
-    verify(resourceEventsPublisher).publishEventsForUpdate(oldWork, work);
+    verify(resourceEventsPublisher).emitEventsForUpdate(oldWork, saveGraphResult);
     verify(resourceCopyService).copyEdgesAndProperties(oldWork, work);
   }
 
@@ -256,11 +260,12 @@ class ResourceServiceImplTest {
     );
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
     var persisted = new Resource().setId(newId).setLabel("saved");
+    var saveGraphResult = new SaveGraphResult(persisted);
     var expectedDto = new ResourceResponseDto().resource(
       new InstanceResponseField().instance(new InstanceResponse(3).id(newId.toString()))
     );
     when(resourceDtoMapper.toDto(persisted)).thenReturn(expectedDto);
-    when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(persisted);
+    when(resourceGraphService.saveMergingGraph(mapped)).thenReturn(saveGraphResult);
     when(rawMarcService.getRawMarc(oldInstance)).thenReturn(Optional.of(unmappedMarc));
 
     // when
@@ -270,7 +275,7 @@ class ResourceServiceImplTest {
     assertThat(expectedDto).isEqualTo(result);
     verify(resourceGraphService).breakEdgesAndDelete(oldInstance);
     verify(resourceGraphService).saveMergingGraph(mapped);
-    verify(resourceEventsPublisher).publishEventsForUpdate(oldInstance, mapped);
+    verify(resourceEventsPublisher).emitEventsForUpdate(oldInstance, saveGraphResult);
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
     verify(rawMarcService).saveRawMarc(persisted, unmappedMarc);
     verify(resourceProfileLinkingService).linkResourceToProfile(persisted, profileId);
@@ -287,7 +292,7 @@ class ResourceServiceImplTest {
 
     // then
     verify(resourceGraphService).breakEdgesAndDelete(work);
-    verify(resourceEventsPublisher).publishEventsForDelete(work);
+    verify(resourceEventsPublisher).emitEventForDelete(work);
   }
 
   @Test
@@ -309,7 +314,7 @@ class ResourceServiceImplTest {
 
     // then
     verify(resourceGraphService).breakEdgesAndDelete(instance);
-    verify(resourceEventsPublisher).publishEventsForDelete(instance);
+    verify(resourceEventsPublisher).emitEventForDelete(instance);
   }
 
 }

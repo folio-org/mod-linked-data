@@ -20,6 +20,7 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.folio.spring.testing.type.UnitTest;
@@ -62,7 +63,8 @@ class RdfImportServiceTest {
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
     when(resourceRepo.existsById(anyLong())).thenReturn(false);
-    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(entity);
+    var saveGraphResult = new SaveGraphResult(entity);
+    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
 
     // when
     var result = rdfImportService.importFile(multipartFile);
@@ -70,7 +72,7 @@ class RdfImportServiceTest {
     // then
     assertThat(result.getResources()).hasSize(1);
     verify(metadataService).ensure(entity);
-    verify(resourceEventsPublisher).publishEventsForCreate(entity);
+    verify(resourceEventsPublisher).emitEventsForCreate(saveGraphResult);
   }
 
   @Test

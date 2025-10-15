@@ -1,13 +1,14 @@
 package org.folio.linked.data.service.resource.events;
 
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 
 public interface ResourceEventsPublisher {
-  void publishEventsForCreate(Resource unsavedNewResource);
+  void emitEventsForCreate(SaveGraphResult saveGraphResult);
 
-  void publishEventsForUpdate(Resource unsavedNewResource);
+  void emitEventsForUpdate(SaveGraphResult saveGraphResult);
 
-  void publishEventsForUpdate(Resource oldResource, Resource unsavedNewResource);
+  void emitEventsForUpdate(Resource oldResource, SaveGraphResult saveGraphResult);
 
-  void publishEventsForDelete(Resource resourceToDelete);
+  void emitEventForDelete(Resource deletedResource);
 }

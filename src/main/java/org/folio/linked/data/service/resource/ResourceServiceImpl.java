@@ -110,7 +110,7 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("deleteResource [{}]", id);
     resourceRepo.findById(id).ifPresent(resource -> {
       resourceGraphService.breakEdgesAndDelete(resource);
-      eventsPublisher.publishEventsForDelete(resource);
+      eventsPublisher.emitEventForDelete(resource);
     });
   }
 
@@ -152,10 +152,10 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource createResourceAndPublishEvents(Resource resourceToSave, Integer profileId) {
     metadataService.ensure(resourceToSave);
-    var persisted = resourceGraphService.saveMergingGraph(resourceToSave);
-    resourceProfileService.linkResourceToProfile(persisted, profileId);
-    eventsPublisher.publishEventsForCreate(resourceToSave);
-    return persisted;
+    var saveResult = resourceGraphService.saveMergingGraph(resourceToSave);
+    resourceProfileService.linkResourceToProfile(saveResult.rootResource(), profileId);
+    eventsPublisher.emitEventsForCreate(saveResult);
+    return saveResult.rootResource();
   }
 
   private Resource updateResourceAndPublishEvents(Resource resourceToSave, Resource old, Integer profileId) {
@@ -166,11 +166,12 @@ public class ResourceServiceImpl implements ResourceService {
       .setCreatedBy(old.getCreatedBy())
       .setUpdatedBy(folioExecutionContext.getUserId());
     var unmappedMarc = rawMarcService.getRawMarc(old).orElse(null);
-    var saved = resourceGraphService.saveMergingGraph(resourceToSave);
-    rawMarcService.saveRawMarc(saved, unmappedMarc);
-    resourceProfileService.linkResourceToProfile(saved, profileId);
-    eventsPublisher.publishEventsForUpdate(old, resourceToSave);
-    return saved;
+    var saveResult = resourceGraphService.saveMergingGraph(resourceToSave);
+    var savedResource = saveResult.rootResource();
+    rawMarcService.saveRawMarc(savedResource, unmappedMarc);
+    resourceProfileService.linkResourceToProfile(savedResource, profileId);
+    eventsPublisher.emitEventsForUpdate(old, saveResult);
+    return savedResource;
   }
 
   private String toLogString(ResourceRequestDto requestDto) {

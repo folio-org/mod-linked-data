@@ -190,10 +190,11 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     ensureNotDuplicate(modelResource);
 
     var resourceEntity = resourceModelMapper.toEntity(modelResource);
-    var newResource = resourceGraphService.saveMergingGraph(resourceEntity);
+    var saveGraphResult = resourceGraphService.saveMergingGraph(resourceEntity);
+    var newResource = saveGraphResult.rootResource();
     refreshWork(newResource);
     saveUnmappedMarc(modelResource, newResource);
-    eventsPublisher.publishEventsForUpdate(newResource);
+    eventsPublisher.emitEventsForUpdate(saveGraphResult);
     return newResource;
   }
 

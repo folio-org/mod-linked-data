@@ -8,8 +8,10 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -44,8 +46,13 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   }
 
   @Override
-  public Resource saveMergingGraph(Resource resource) {
-    return saveMergingGraphSkippingAlreadySaved(resource, null);
+  public SaveGraphResult saveMergingGraph(Resource resource) {
+    Set<ResourceSaveResult> results = saveMergingGraphSkippingAlreadySaved(resource, null);
+
+    var createdResources = filterResources(results, ResourceSaveResult::isCreated);
+    var updatedResources = filterResources(results, ResourceSaveResult::isUpdated);
+
+    return new SaveGraphResult(resource, createdResources, updatedResources);
   }
 
   @Override
@@ -54,27 +61,28 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
     resourceRepo.delete(resource);
   }
 
-  private Resource saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
+  private Set<ResourceSaveResult> saveMergingGraphSkippingAlreadySaved(Resource resource, Resource saved) {
+    var result = new LinkedHashSet<ResourceSaveResult>();
     if (resource.isNew()) {
-      saveOrUpdate(resource);
-      saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved);
-      saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved);
+      result.add(saveOrUpdate(resource));
+      result.addAll(saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved));
+      result.addAll(saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved));
     }
-    return resource;
+    return result;
   }
 
-  private void saveOrUpdate(Resource resource) {
-    resourceRepo.findById(resource.getId())
-      .ifPresentOrElse(existing -> updateResource(existing, resource),
-        () -> resourceRepo.save(resource)
-      );
+  private ResourceSaveResult saveOrUpdate(Resource resource) {
+    return resourceRepo.findById(resource.getId())
+      .map(existing -> updateResource(existing, resource))
+      .orElseGet(() -> ResourceSaveResult.created(resourceRepo.save(resource)));
   }
 
-  private void updateResource(Resource existingResource, Resource incomingResource) {
+  private ResourceSaveResult updateResource(Resource existingResource, Resource incomingResource) {
     existingResource.setDoc(mergeDocs(existingResource, incomingResource));
     existingResource.setActive(incomingResource.isActive());
     addFolioMetadataIfAbsent(existingResource, incomingResource.getFolioMetadata());
     removeReplacedByEdgeIfPreferred(existingResource);
+    return ResourceSaveResult.updated(existingResource);
   }
 
   private void addFolioMetadataIfAbsent(Resource existingResource, FolioMetadata incomingFolioMetadata) {
@@ -108,21 +116,26 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
     }
   }
 
-  private void saveEdges(Resource resource, Set<ResourceEdge> edges, Function<ResourceEdge, Resource> resourceSelector,
-                         Resource saved) {
-    edges.stream()
+  private Set<ResourceSaveResult> saveEdges(Resource resource,
+                                            Set<ResourceEdge> edges,
+                                            Function<ResourceEdge, Resource> resourceSelector,
+                                            Resource saved) {
+    return edges.stream()
       .filter(edge -> notEqual(resourceSelector.apply(edge), saved))
-      .forEach(edge -> saveEdge(resourceSelector.apply(edge), resource, edge));
+      .flatMap(edge -> saveEdge(resourceSelector.apply(edge), resource, edge).stream())
+      .collect(Collectors.toSet());
   }
 
-  private void saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
+  private Set<ResourceSaveResult> saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
+    Set<ResourceSaveResult> resourceSaveResult = new LinkedHashSet<>();
     if (edge.isNew()) {
-      saveMergingGraphSkippingAlreadySaved(edgeResource, resource);
+      resourceSaveResult = saveMergingGraphSkippingAlreadySaved(edgeResource, resource);
       edge.computeId();
       if (doesNotExists(edge)) {
         edgeRepo.save(edge);
       }
     }
+    return resourceSaveResult;
   }
 
   private boolean doesNotExists(ResourceEdge edge) {
@@ -153,5 +166,26 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
         .collect(Collectors.toSet());
       edge.getSource().getOutgoingEdges().removeAll(filtered);
     });
+  }
+
+  private Set<Resource> filterResources(Set<ResourceSaveResult> results, Predicate<ResourceSaveResult> predicate) {
+    return results.stream()
+      .filter(predicate)
+      .map(ResourceSaveResult::resource)
+      .collect(Collectors.toSet());
+  }
+
+  record ResourceSaveResult(Resource resource, boolean isCreated) {
+    public static ResourceSaveResult created(Resource resource) {
+      return new ResourceSaveResult(resource, true);
+    }
+
+    public static ResourceSaveResult updated(Resource resource) {
+      return new ResourceSaveResult(resource, false);
+    }
+
+    public boolean isUpdated() {
+      return !isCreated;
+    }
   }
 }

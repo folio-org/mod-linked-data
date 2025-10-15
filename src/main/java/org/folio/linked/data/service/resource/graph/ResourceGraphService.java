@@ -7,7 +7,7 @@ public interface ResourceGraphService {
 
   ResourceGraphDto getResourceGraph(Long id);
 
-  Resource saveMergingGraph(Resource resource);
+  SaveGraphResult saveMergingGraph(Resource resource);
 
   void breakEdgesAndDelete(Resource resource);
 
