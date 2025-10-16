@@ -3,11 +3,11 @@
   "type": "object",
   "properties": {
     "id": {
-      "description": "The Linked Data ID of an Hub",
+      "description": "Linked Data ID of the Hub",
       "type": "string"
     },
     "originalId": {
-      "description": "Original RDF ID of an Hub",
+      "description": "Original RDF ID of the Hub",
       "type": "string"
     },
     "label": {

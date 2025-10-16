@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class HubCreateMessageSender  implements CreateMessageSender {
+public class HubCreateMessageSender implements CreateMessageSender {
   private final HubSearchMessageMapper mapper;
   private final ApplicationEventPublisher eventPublisher;
   @Qualifier("hubIndexMessageProducer")
