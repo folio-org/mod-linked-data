@@ -47,12 +47,16 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   @Override
   public SaveGraphResult saveMergingGraph(Resource resource) {
-    Set<ResourceSaveResult> results = saveMergingGraphSkippingAlreadySaved(resource, null);
+    var result = saveMergingGraphSkippingAlreadySaved(resource, null);
 
-    var createdResources = filterResources(results, ResourceSaveResult::isCreated);
-    var updatedResources = filterResources(results, ResourceSaveResult::isUpdated);
+    var createdResources = filterResources(result, ResourceSaveResult::isCreated);
+    var updatedResources = filterResources(result, ResourceSaveResult::isUpdated);
+    var persistedRootResource = createdResources.stream()
+      .filter(r -> r.getId().equals(resource.getId()))
+      .findFirst()
+      .orElse(resource);
 
-    return new SaveGraphResult(resource, createdResources, updatedResources);
+    return new SaveGraphResult(persistedRootResource, createdResources, updatedResources);
   }
 
   @Override

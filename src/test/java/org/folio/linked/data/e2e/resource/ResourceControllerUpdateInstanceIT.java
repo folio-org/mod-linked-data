@@ -3,8 +3,10 @@ package org.folio.linked.data.e2e.resource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getWork;
+import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.readTree;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -22,14 +24,15 @@ import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.RawMarcRepository;
-import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 @IntegrationTest
-@SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
+@SpringBootTest()
+@ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
 class ResourceControllerUpdateInstanceIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;

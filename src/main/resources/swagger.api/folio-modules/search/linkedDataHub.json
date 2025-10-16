@@ -16,6 +16,7 @@
     }
   },
   "required": [
-    "id"
+    "id",
+    "label"
   ]
 }
