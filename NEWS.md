@@ -65,7 +65,7 @@
 - Update vocabulary term IRIs to replace 'marc' with 'library' [MODLD-792](https://folio-org.atlassian.net/browse/MODLD-792)
 - Add Hub association to Works [MODLD-870](https://folio-org.atlassian.net/browse/MODLD-870)
 - New API to search resources using inventory IDs [MODLD-874](https://folio-org.atlassian.net/browse/MODLD-874)
-- Update profiles to include Hubs. [UILD-647](https://folio-org.atlassian.net/browse/UILD-647)
+- Update profiles to include Hubs. [MODLD-890](https://folio-org.atlassian.net/browse/MODLD-890)
 - Update /resource API to support CRUD operations of Hubs [MODLD-889](https://folio-org.atlassian.net/browse/MODLD-889)
 - Fix PUT /resource/{id} API to preserve incoming connections when updating a resource. [MODLD-891](https://folio-org.atlassian.net/browse/MODLD-891)
 - Update Work profiles to change Hub Relationship field type. [MODLD-893](https://folio-org.atlassian.net/browse/MODLD-893)

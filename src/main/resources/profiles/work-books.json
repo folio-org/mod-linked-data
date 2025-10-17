@@ -534,7 +534,8 @@
         }
       },
       "children": [
-        "Profile:Work:Hubs:Relationship:ExpressionOf"
+        "Profile:Work:Hubs:Relationship:ExpressionOf",
+        "Profile:Work:Hubs:Relationship:RelatedTo"
       ],
       "id": "Profile:Work:Hubs:Relationship"
     },
@@ -544,6 +545,13 @@
       "uriBFLite": "http://bibfra.me/vocab/lite/expressionOf",
       "children": [],
       "id": "Profile:Work:Hubs:Relationship:ExpressionOf"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Related To",
+      "uriBFLite": "http://bibfra.me/vocab/relation/relatedTo",
+      "children": [],
+      "id": "Profile:Work:Hubs:Relationship:RelatedTo"
     },
     {
       "type": "simple",
