@@ -70,6 +70,7 @@
 - Fix PUT /resource/{id} API to preserve incoming connections when updating a resource. [MODLD-891](https://folio-org.atlassian.net/browse/MODLD-891)
 - Update Work profiles to change Hub Relationship field type. [MODLD-893](https://folio-org.atlassian.net/browse/MODLD-893)
 - Index new Hubs in mod-search [MODLD-894](https://folio-org.atlassian.net/browse/MODLD-894)
+- Update the fields used for computing ResourceEdge's hashCode. [MODLD-896](https://folio-org.atlassian.net/browse/MODLD-896)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
