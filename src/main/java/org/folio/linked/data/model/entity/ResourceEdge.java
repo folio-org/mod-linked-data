@@ -109,7 +109,7 @@ public class ResourceEdge implements Persistable<ResourceEdgePk>  {
 
   @Override
   public int hashCode() {
-    return Objects.hash(getSourceHash(), getTargetHash(), getPredicateHash());
+    return Objects.hash(getPredicateHash());
   }
 
   private Long getSourceHash() {
