@@ -50,27 +50,14 @@ public class CoreMapperImpl implements CoreMapper {
   @Override
   public <T, P> void addOutgoingEdges(@NonNull Resource parentEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
                                       @NonNull Predicate predicate) {
-    addEdgeEntities(dtoList, parentEntity, predicate, parentDtoClass, false);
-  }
-
-  @Override
-  public <T, P> void addIncomingEdges(@NonNull Resource parentEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
-                                      @NonNull Predicate predicate) {
-    addEdgeEntities(dtoList, parentEntity, predicate, parentDtoClass, true);
-  }
-
-  private <T, P> void addEdgeEntities(List<T> dtoList, @NonNull Resource parentEntity,
-                                      @NonNull Predicate predicate, @NonNull Class<P> parentDtoClass,
-                                      boolean isIncoming) {
     ofNullable(dtoList)
       .stream()
       .flatMap(Collection::stream)
       .map(dto -> singleResourceMapper.toEntity(dto, parentDtoClass, predicate, parentEntity))
       .filter(
         r -> nonNull(r.getDoc()) || isNotEmpty(r.getIncomingEdges()) || isNotEmpty(r.getOutgoingEdges()))
-      .map(r -> new ResourceEdge(isIncoming ? r : parentEntity,
-        isIncoming ? parentEntity : r, predicate))
-      .forEach(isIncoming ? parentEntity::addIncomingEdge : parentEntity::addOutgoingEdge);
+      .map(r -> new ResourceEdge(parentEntity, r, predicate))
+      .forEach(parentEntity::addOutgoingEdge);
   }
 
   private <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass) {
