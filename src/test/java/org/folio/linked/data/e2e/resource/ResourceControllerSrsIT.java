@@ -1,12 +1,9 @@
 package org.folio.linked.data.e2e.resource;
 
-import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.INSTANCE_ID_PLACEHOLDER;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
-import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
-import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE;
+import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toCreatorReferenceId;
-import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
@@ -34,18 +31,12 @@ class ResourceControllerSrsIT extends ITBase {
   private SrsClient srsClient;
 
   @Test
-  void createWorkWithInstanceRef_shouldCreateAuthorityFromSrs() throws Exception {
+  void createWork_shouldCreateAuthorityFromSrs() throws Exception {
     // given
-    var instanceForReference = getSampleInstanceResource(null, null);
-    setExistingResourcesIds(instanceForReference, hashService);
-    resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(
-        SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE
-          .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
-      );
+      .content(SIMPLE_WORK_SAMPLE);
 
     when(srsClient.getAuthorityBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
       .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
@@ -61,18 +52,12 @@ class ResourceControllerSrsIT extends ITBase {
   }
 
   @Test
-  void createWorkWithInstanceRef_shouldReturn404_ifRecordNotFoundInSrs() throws Exception {
+  void createWork_shouldReturn404_ifRecordNotFoundInSrs() throws Exception {
     // given
-    var instanceForReference = getSampleInstanceResource(null, null);
-    setExistingResourcesIds(instanceForReference, hashService);
-    resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(
-        SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE
-          .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
-      );
+      .content(SIMPLE_WORK_SAMPLE);
 
     when(srsClient.getAuthorityBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
       .thenReturn(new ResponseEntity<>(null, HttpStatusCode.valueOf(404)));

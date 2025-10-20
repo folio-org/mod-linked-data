@@ -97,7 +97,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSubjectFormNotPref
 import static org.folio.linked.data.test.MonographTestUtil.getSubjectPersonPreferred;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
-import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
+import static org.folio.linked.data.test.TestUtil.WORK_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.assertResourceMetadata;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
@@ -301,7 +301,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
     assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
-    validateInstance(instanceResource, true);
+    validateInstance(instanceResource);
     var workId = instanceResponse.getWorkReference().getFirst().getId();
     assertThat(instanceResponse.getProfileId()).isEqualTo(instanceMonographProfileId);
     assertThat(instanceResponse.getWorkReference().getFirst().getProfileId()).isEqualTo(defaultWorkProfileId);
@@ -311,17 +311,12 @@ abstract class ResourceControllerITBase extends ITBase {
   }
 
   @Test
-  void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
+  void createWork_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var instanceForReference = getSampleInstanceResource(null, null);
-    setExistingResourcesIds(instanceForReference, hashService);
-    resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeadersWithUserId(env, USER_ID.toString()))
-      .content(
-        WORK_WITH_INSTANCE_REF_SAMPLE.replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
-      );
+      .content(WORK_SAMPLE);
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -336,7 +331,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
     var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
-    validateWork(workResource, true);
+    validateWork(workResource);
     checkSearchIndexMessage(workResource.getId(), CREATE);
     checkIndexDate(workResource.getId().toString());
     assertResourceMetadata(workResource, USER_ID, null);
@@ -465,15 +460,10 @@ abstract class ResourceControllerITBase extends ITBase {
   @Test
   void update_shouldReturnCorrectlyUpdateMetadataFields() throws Exception {
     // given
-    var instanceForReference = getSampleInstanceResource(null, null);
-    setExistingResourcesIds(instanceForReference, hashService);
-    resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeadersWithUserId(env, USER_ID.toString()))
-      .content(
-        WORK_WITH_INSTANCE_REF_SAMPLE.replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
-      );
+      .content(WORK_SAMPLE);
 
     var response = mockMvc.perform(requestBuilder)
       .andExpect(status().isOk())
@@ -482,26 +472,13 @@ abstract class ResourceControllerITBase extends ITBase {
     var originalWorkId = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
     var originalWorkResource = resourceTestService.getResourceById(originalWorkId, 4);
 
-
-    var updateDto = getSampleWorkDtoMap();
-    var workMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(WORK.getUri());
-    workMap.put("_languages",
-      Map.of(
-        "_codes", Map.of(
-          LINK.getValue(), List.of("http://id.loc.gov/vocabulary/languages/eng"),
-          TERM.getValue(), List.of("English")
-        ),
-        "_types", List.of(LANGUAGE.getUri())
-      ));
     var updatedById = UUID.randomUUID();
 
     // when
     var updateRequest = put(RESOURCE_URL + "/" + originalWorkId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeadersWithUserId(env, updatedById.toString()))
-      .content(OBJECT_MAPPER.writeValueAsString(updateDto)
-        .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
-      );
+      .content(WORK_SAMPLE);
 
     // then
     var updatedResponse = mockMvc.perform(updateRequest).andReturn().getResponse().getContentAsString();
@@ -557,6 +534,8 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
     validateWorkResponse(resultActions, toWork());
+    resultActions.andExpect(jsonPath(toInstanceReference(toWork()), notNullValue()));
+    validateInstanceResponse(resultActions, toInstanceReference(toWork()));
     validateAuthorities(resultActions, toWork());
   }
 
@@ -812,10 +791,6 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toIllustrationsCode(workBase), equalTo("a")))
       .andExpect(jsonPath(toIllustrationsLink(workBase), equalTo("http://id.loc.gov/vocabulary/millus/ill")))
       .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("Illustrations")));
-    if (workBase.equals(toWork())) {
-      resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
-      validateInstanceResponse(resultActions, toInstanceReference(workBase));
-    }
   }
 
   private void validateAuthorities(ResultActions resultActions, String workBase) throws Exception {
@@ -823,7 +798,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkGenreIsPreferred(workBase), containsInAnyOrder(true, false)));
   }
 
-  private void validateInstance(Resource instance, boolean validateFullWork) {
+  private void validateInstance(Resource instance) {
     assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -848,9 +823,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(edge.getSource()).isEqualTo(instance);
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
     var work = edge.getTarget();
-    if (validateFullWork) {
-      validateWork(work, false);
-    }
+    validateWork(work);
     validateAccessLocation(edgeIterator.next(), instance);
     validateIan(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION, "dz", "Algeria");
@@ -1175,7 +1148,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .containsOnly(CATEGORY_SET.getUri());
   }
 
-  private void validateWork(Resource work, boolean validateFullInstance) {
+  private void validateWork(Resource work) {
     assertThat(work.getId()).isEqualTo(hashService.hash(work));
     assertThat(work.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(work.getTypes().stream().map(ResourceTypeEntity::getUri).collect(toSet()))
@@ -1213,15 +1186,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().getFirst(),
       GEOGRAPHIC_COVERAGE.getUri());
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
-    if (validateFullInstance) {
-      var incomingEdgeIterator = work.getIncomingEdges().iterator();
-      var edge = incomingEdgeIterator.next();
-      assertThat(edge.getId()).isNotNull();
-      assertThat(edge.getTarget()).isEqualTo(work);
-      assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
-      validateInstance(edge.getSource(), false);
-      assertThat(incomingEdgeIterator.hasNext()).isFalse();
-    }
   }
 
   private void validateDdcClassification(ResourceEdge edge, Resource source) {
