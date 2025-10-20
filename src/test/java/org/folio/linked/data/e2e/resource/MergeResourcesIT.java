@@ -57,12 +57,24 @@ class MergeResourcesIT {
   void testResourcesMerging_1() {
     // given
     var graph1 = createGraph1toto2();
-    resourceGraphService.saveMergingGraph(graph1);
+    var result1 = resourceGraphService.saveMergingGraph(graph1);
+    assertThat(result1.rootResource().getId()).isEqualTo(1L);
+    assertThat(result1.rootResource().isNew()).isFalse();
+    assertThat(result1.newResources().stream().map(Resource::getId).toList()).contains(1L, 2L);
+    assertThat(result1.newResources()).allMatch(r -> !r.isNew());
+    assertThat(result1.updatedResources()).isEmpty();
+
     assertResourceConnectedToAnother(1L, 2L);
     var graph2 = createGraph3toto1to5toto4();
 
     // when
-    resourceGraphService.saveMergingGraph(graph2);
+    var result2 = resourceGraphService.saveMergingGraph(graph2);
+    assertThat(result2.rootResource().getId()).isEqualTo(3L);
+    assertThat(result2.rootResource().isNew()).isFalse();
+    assertThat(result2.newResources().stream().map(Resource::getId).toList()).contains(3L, 4L, 5L);
+    assertThat(result2.newResources()).allMatch(r -> !r.isNew());
+    assertThat(result2.updatedResources().stream().map(Resource::getId).toList()).contains(1L);
+    assertThat(result2.updatedResources()).allMatch(r -> !r.isNew());
 
     // then
     // whole graph should be: 3 -> [(1 -> [2, 5]), 4]

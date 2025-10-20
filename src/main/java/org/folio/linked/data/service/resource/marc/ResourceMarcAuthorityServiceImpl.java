@@ -34,6 +34,7 @@ import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.linked.data.util.ResourceUtils;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
@@ -116,6 +117,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
         .flatMap(this::contentAsJsonString)
         .flatMap(this::firstAuthorityToEntity)
         .map(resourceGraphService::saveMergingGraph)
+        .map(SaveGraphResult::rootResource)
         .orElseThrow(() -> notFoundException(srsId));
     } catch (FeignException.NotFound e) {
       log.error("Authority with srsId [{}] not found in SRS", srsId);
@@ -128,7 +130,8 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       return ofNullable(srsClient.getAuthorityByInventoryId(inventoryId))
         .flatMap(this::contentAsJsonString)
         .flatMap(this::firstAuthorityToEntity)
-        .map(resourceGraphService::saveMergingGraph);
+        .map(resourceGraphService::saveMergingGraph)
+        .map(SaveGraphResult::rootResource);
     } catch (FeignException.NotFound e) {
       log.error("Authority with inventoryId [{}] not found in SRS", inventoryId);
       return Optional.empty();
@@ -209,9 +212,9 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     markObsolete(previous);
     logMarcAction(previous, "set as obsolete", "be saved");
     setPreferred(incoming, true);
-    var saved = resourceGraphService.saveMergingGraph(incoming);
+    var saveGraphResult = resourceGraphService.saveMergingGraph(incoming);
     logMarcAction(incoming, "set as preferred", "be saved");
-    return saved.getId();
+    return saveGraphResult.rootResource().getId();
   }
 
   private void addReplacedByRelation(Resource previousObsolete, Resource incoming) {
@@ -231,7 +234,8 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
-    var newResource = resourceGraphService.saveMergingGraph(resource);
+    var saveGraphResult = resourceGraphService.saveMergingGraph(resource);
+    var newResource =  saveGraphResult.rootResource();
     var event = resourceEventSupplier.apply(newResource);
     applicationEventPublisher.publishEvent(event);
     return newResource.getId();

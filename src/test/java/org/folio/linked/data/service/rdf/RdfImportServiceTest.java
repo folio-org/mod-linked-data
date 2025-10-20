@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -16,9 +17,10 @@ import java.util.Set;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.folio.spring.testing.type.UnitTest;
@@ -27,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.multipart.MultipartFile;
 
 @UnitTest
@@ -47,7 +48,7 @@ class RdfImportServiceTest {
   @Mock
   private ResourceGraphService resourceGraphService;
   @Mock
-  private ApplicationEventPublisher applicationEventPublisher;
+  private ResourceEventsPublisher resourceEventsPublisher;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
 
@@ -62,7 +63,8 @@ class RdfImportServiceTest {
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
     when(resourceRepo.existsById(anyLong())).thenReturn(false);
-    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(entity);
+    var saveGraphResult = new SaveGraphResult(entity);
+    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
 
     // when
     var result = rdfImportService.importFile(multipartFile);
@@ -70,7 +72,7 @@ class RdfImportServiceTest {
     // then
     assertThat(result.getResources()).hasSize(1);
     verify(metadataService).ensure(entity);
-    verify(applicationEventPublisher).publishEvent(any(ResourceCreatedEvent.class));
+    verify(resourceEventsPublisher).emitEventsForCreate(saveGraphResult);
   }
 
   @Test
@@ -91,7 +93,7 @@ class RdfImportServiceTest {
     // then
     assertThat(result.getResources()).isEmpty();
     verify(resourceGraphService, never()).saveMergingGraph(any());
-    verify(applicationEventPublisher, never()).publishEvent(any());
+    verifyNoInteractions(resourceEventsPublisher);
   }
 
   @Test

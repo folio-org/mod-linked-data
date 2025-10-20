@@ -28,12 +28,12 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
@@ -41,7 +41,6 @@ import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
 import org.folio.marc4ld.util.TypeUtil;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,7 +65,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
-  private final ApplicationEventPublisher applicationEventPublisher;
+  private final ResourceEventsPublisher eventsPublisher;
   private final RawMarcService rawMarcService;
   private final ResourceProfileLinkingService resourceProfileLinkingService;
 
@@ -191,10 +190,11 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     ensureNotDuplicate(modelResource);
 
     var resourceEntity = resourceModelMapper.toEntity(modelResource);
-    var newResource = resourceGraphService.saveMergingGraph(resourceEntity);
+    var saveGraphResult = resourceGraphService.saveMergingGraph(resourceEntity);
+    var newResource = saveGraphResult.rootResource();
     refreshWork(newResource);
     saveUnmappedMarc(modelResource, newResource);
-    applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(newResource));
+    eventsPublisher.emitEventsForUpdate(saveGraphResult);
     return newResource;
   }
 

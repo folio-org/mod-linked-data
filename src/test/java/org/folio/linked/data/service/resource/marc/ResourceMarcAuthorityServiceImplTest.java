@@ -39,6 +39,7 @@ import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
@@ -123,7 +124,7 @@ class ResourceMarcAuthorityServiceImplTest {
     var dictionaryModelMock = mock(org.folio.ld.dictionary.model.Resource.class);
     when(marcAuthority2ldMapper.fromMarcJson(any())).thenReturn(List.of(dictionaryModelMock));
     when(resourceModelMapper.toEntity(dictionaryModelMock)).thenReturn(createdResource);
-    doReturn(createdResource).when(resourceGraphService).saveMergingGraph(createdResource);
+    doReturn(new SaveGraphResult(createdResource)).when(resourceGraphService).saveMergingGraph(createdResource);
 
     // when
     var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(new Agent().id(id).srsId(id));
@@ -178,7 +179,7 @@ class ResourceMarcAuthorityServiceImplTest {
     var dictionaryModelMock = mock(org.folio.ld.dictionary.model.Resource.class);
     when(marcAuthority2ldMapper.fromMarcJson(any())).thenReturn(List.of(dictionaryModelMock));
     when(resourceModelMapper.toEntity(dictionaryModelMock)).thenReturn(createdResource);
-    doReturn(createdResource).when(resourceGraphService).saveMergingGraph(createdResource);
+    doReturn(new SaveGraphResult(createdResource)).when(resourceGraphService).saveMergingGraph(createdResource);
 
     // when
     var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(id);
@@ -212,7 +213,7 @@ class ResourceMarcAuthorityServiceImplTest {
     var mapped = new Resource().setId(id).addTypes(PERSON);
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
-    doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
+    doReturn(new SaveGraphResult(mapped)).when(resourceGraphService).saveMergingGraph(mapped);
     doReturn(Optional.empty()).when(folioMetadataRepo).findIdBySrsId(srsId);
 
     // when
@@ -235,7 +236,7 @@ class ResourceMarcAuthorityServiceImplTest {
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(Optional.of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
-    doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
+    doReturn(new SaveGraphResult(mapped)).when(resourceGraphService).saveMergingGraph(mapped);
 
     // when
     var result = resourceMarcAuthorityService.saveMarcAuthority(model);
@@ -259,7 +260,7 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(newAuthority).when(resourceModelMapper).toEntity(any());
     doReturn(of(existedAuthority)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
     doReturn(of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
-    doReturn(newAuthority).when(resourceGraphService).saveMergingGraph(newAuthority);
+    doReturn(new SaveGraphResult(newAuthority)).when(resourceGraphService).saveMergingGraph(newAuthority);
 
     // when
     var actualId = resourceMarcAuthorityService.saveMarcAuthority(new org.folio.ld.dictionary.model.Resource());
@@ -287,7 +288,7 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     var anotherResourceId = Optional.of((FolioMetadataRepository.IdOnly) () -> id - 1);
     doReturn(anotherResourceId).when(folioMetadataRepo).findIdBySrsId(srsId);
-    doReturn(mapped).when(resourceGraphService).saveMergingGraph(mapped);
+    doReturn(new SaveGraphResult(mapped)).when(resourceGraphService).saveMergingGraph(mapped);
 
     // when
     var result = resourceMarcAuthorityService.saveMarcAuthority(model);

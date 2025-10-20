@@ -36,13 +36,13 @@ import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceMarcViewDtoMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.event.ResourceEvent;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
+import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
+import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.marc4ld.enums.UnmappedMarcHandling;
 import org.folio.marc4ld.service.ld2marc.Ld2MarcMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
@@ -57,7 +57,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
@@ -83,7 +82,7 @@ class ResourceMarcBibServiceImplTest {
   @Mock
   private MarcBib2ldMapper marcBib2ldMapper;
   @Mock
-  private ApplicationEventPublisher applicationEventPublisher;
+  private ResourceEventsPublisher resourceEventsPublisher;
   @Mock
   private ResourceGraphService resourceGraphService;
   @Mock
@@ -261,9 +260,8 @@ class ResourceMarcBibServiceImplTest {
       .setId(resourceId)
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId))
       .setUnmappedMarc(new RawMarc().setContent(unmappedMarc));
-    var resourceEventCaptor = ArgumentCaptor.forClass(ResourceEvent.class);
     var resourceModelCaptor = ArgumentCaptor.forClass(org.folio.ld.dictionary.model.Resource.class);
-
+    var saveGraphResult = new SaveGraphResult(resourceEntity);
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
     when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
@@ -271,20 +269,15 @@ class ResourceMarcBibServiceImplTest {
     when(resourceModelMapper.toEntity(resourceModelCaptor.capture())).thenReturn(resourceEntity);
     when(resourceRepo.existsById(resourceId)).thenReturn(false);
     when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(false);
-    when(resourceGraphService.saveMergingGraph(resourceEntity)).thenReturn(resourceEntity);
+    when(resourceGraphService.saveMergingGraph(resourceEntity)).thenReturn(saveGraphResult);
 
     //when
     var result = resourceMarcService.importMarcRecord(inventoryId, profileId);
 
     //then
-    verify(applicationEventPublisher).publishEvent(resourceEventCaptor.capture());
+    verify(resourceEventsPublisher).emitEventsForUpdate(saveGraphResult);
     verify(resourceProfileLinkingService).linkResourceToProfile(resourceEntity, profileId);
     verify(rawMarcService).saveRawMarc(resourceEntity, unmappedMarc);
-    assertThat(resourceEventCaptor.getValue())
-      .satisfies(event -> {
-        assertThat(event).isInstanceOf(ResourceUpdatedEvent.class);
-        assertThat(((ResourceUpdatedEvent) event).resource()).isEqualTo(resourceEntity);
-      });
     assertThat(result)
       .satisfies(resourceIdDto -> {
         assertThat(resourceIdDto).isInstanceOf(ResourceIdDto.class);

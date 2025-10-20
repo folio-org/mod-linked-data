@@ -50,7 +50,8 @@ public class ResourceTestService {
   }
 
   public Resource saveGraph(Resource resource) {
-    return resourceGraphService.saveMergingGraph(resource);
+    return resourceGraphService.saveMergingGraph(resource)
+      .rootResource();
   }
 
   public Optional<Resource> findById(long id) {

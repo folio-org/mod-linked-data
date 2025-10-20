@@ -71,6 +71,9 @@ folio:
       - name: ${mod-linked-data.kafka.topic.work-search-index}
         numPartitions: ${KAFKA_WORK_SEARCH_INDEX_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_WORK_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR:}
+      - name: ${mod-linked-data.kafka.topic.hub-search-index}
+        numPartitions: ${KAFKA_HUB_SEARCH_INDEX_TOPIC_PARTITIONS:3}
+        replicationFactor: ${KAFKA_HUB_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR:}
 
 mod-linked-data:
   reindex:
@@ -78,6 +81,7 @@ mod-linked-data:
   kafka:
     topic:
       work-search-index: ${KAFKA_WORK_SEARCH_INDEX_TOPIC:linked-data.work}
+      hub-search-index: ${KAFKA_HUB_SEARCH_INDEX_TOPIC:linked-data.hub}
       instance-ingress: ${KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC:inventory.instance_ingress}
   cache:
     ttl:

@@ -15,6 +15,7 @@ public class Constants {
   public static final String RESOURCE_WITH_GIVEN_ID = "Resource with given id [";
   public static final String IS_NOT_FOUND = "] is not found";
   public static final String SEARCH_WORK_RESOURCE_NAME = "linked-data-work";
+  public static final String SEARCH_HUB_RESOURCE_NAME = "linked-data-hub";
   public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";
   public static final String MSG_UNKNOWN_TYPES =
     "Unknown type(s) [{}] of [{}] was ignored during Resource [resourceId = {}] conversion to Index message";

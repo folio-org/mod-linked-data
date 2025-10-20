@@ -22,21 +22,17 @@ import org.folio.linked.data.mapper.dto.ResourceSubgraphViewDtoMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceSubgraphView;
-import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
-import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
-import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
-import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.repo.ResourceSubgraphViewRepository;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.copy.ResourceCopyService;
+import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.linked.data.util.ResourceUtils;
 import org.folio.spring.FolioExecutionContext;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +49,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceGraphService resourceGraphService;
   private final FolioMetadataRepository folioMetadataRepo;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
-  private final ApplicationEventPublisher applicationEventPublisher;
+  private final ResourceEventsPublisher eventsPublisher;
   private final FolioExecutionContext folioExecutionContext;
   private final ResourceCopyService resourceCopyService;
   private final RawMarcService rawMarcService;
@@ -114,7 +110,7 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("deleteResource [{}]", id);
     resourceRepo.findById(id).ifPresent(resource -> {
       resourceGraphService.breakEdgesAndDelete(resource);
-      applicationEventPublisher.publishEvent(new ResourceDeletedEvent(resource));
+      eventsPublisher.emitEventForDelete(resource);
     });
   }
 
@@ -156,10 +152,10 @@ public class ResourceServiceImpl implements ResourceService {
 
   private Resource createResourceAndPublishEvents(Resource resourceToSave, Integer profileId) {
     metadataService.ensure(resourceToSave);
-    var persisted = resourceGraphService.saveMergingGraph(resourceToSave);
-    resourceProfileService.linkResourceToProfile(persisted, profileId);
-    applicationEventPublisher.publishEvent(new ResourceCreatedEvent(persisted));
-    return persisted;
+    var saveResult = resourceGraphService.saveMergingGraph(resourceToSave);
+    resourceProfileService.linkResourceToProfile(saveResult.rootResource(), profileId);
+    eventsPublisher.emitEventsForCreate(saveResult);
+    return saveResult.rootResource();
   }
 
   private Resource updateResourceAndPublishEvents(Resource resourceToSave, Resource old, Integer profileId) {
@@ -170,15 +166,12 @@ public class ResourceServiceImpl implements ResourceService {
       .setCreatedBy(old.getCreatedBy())
       .setUpdatedBy(folioExecutionContext.getUserId());
     var unmappedMarc = rawMarcService.getRawMarc(old).orElse(null);
-    var saved = resourceGraphService.saveMergingGraph(resourceToSave);
-    rawMarcService.saveRawMarc(saved, unmappedMarc);
-    resourceProfileService.linkResourceToProfile(saved, profileId);
-    if (Objects.equals(old.getId(), saved.getId())) {
-      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(saved));
-    } else {
-      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(old, saved.getId()));
-    }
-    return saved;
+    var saveResult = resourceGraphService.saveMergingGraph(resourceToSave);
+    var savedResource = saveResult.rootResource();
+    rawMarcService.saveRawMarc(savedResource, unmappedMarc);
+    resourceProfileService.linkResourceToProfile(savedResource, profileId);
+    eventsPublisher.emitEventsForUpdate(old, saveResult);
+    return savedResource;
   }
 
   private String toLogString(ResourceRequestDto requestDto) {

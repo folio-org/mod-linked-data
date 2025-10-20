@@ -61,8 +61,8 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
                                             org.folio.ld.dictionary.model.Resource targetModel) {
     var sourceRef = new Resource().setId(sourceId);
     var target = resourceModelMapper.toEntity(targetModel);
-    var savedTarget = resourceGraphService.saveMergingGraph(target);
-    var edge = new ResourceEdge(sourceRef, savedTarget, new PredicateEntity(predicate));
+    var saveResult = resourceGraphService.saveMergingGraph(target);
+    var edge = new ResourceEdge(sourceRef, saveResult.rootResource(), new PredicateEntity(predicate));
     edge.computeId();
     return resourceEdgeRepository.save(edge).getId();
   }

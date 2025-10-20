@@ -14,5 +14,6 @@ import org.springframework.stereotype.Component;
 public class LinkedDataTopicProperties {
 
   private String workSearchIndex;
+  private String hubSearchIndex;
   private String instanceIngress;
 }
