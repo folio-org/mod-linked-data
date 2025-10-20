@@ -32,6 +32,7 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -228,4 +229,29 @@ public class Resource implements Persistable<Long> {
       .anyMatch(this::isOfType);
   }
 
+  public Resource setId(@NonNull Long id) {
+    if (Objects.equals(id, this.id)) {
+      return this;
+    }
+
+    this.id = id;
+
+    /*
+      The "id" field is used in the hashCode calculation of associated ResourceEdge objects.  If id changes, the
+      hashCode of those ResourceEdge objects also changes. This cause existing ResourceEdge objects to be stored in the
+      wrong Bucket of the HashSet. For example, a ResourceEdge that is supposed tobe stored in Bucket 1 per the new id
+      value may be stored in Bucket 2 per the old id value.
+
+      Recreate the outgoing / incoming edge HashSets so that existing edges are stored in the correct HashSet bucket.
+    */
+    if (nonNull(outgoingEdges)) {
+      this.outgoingEdges = new LinkedHashSet<>(outgoingEdges);
+    }
+
+    if (nonNull(incomingEdges)) {
+      this.incomingEdges = new LinkedHashSet<>(incomingEdges);
+    }
+
+    return this;
+  }
 }

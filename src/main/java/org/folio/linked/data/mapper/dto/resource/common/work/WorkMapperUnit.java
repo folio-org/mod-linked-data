@@ -123,6 +123,15 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
         coreMapper.addOutgoingEdges(work, WorkRequest.class, List.of(hub.getHub()), getHubPredicate(hub).get())
       );
 
+    /*
+     * TODO - Comment to be be removed. This is added to make the code review easier.
+     *
+     * After the following line, the "id" of the Work object is updated.
+     * The "id" is used to compute the hash code for ResourceEdges associated with this Work.
+     * Changing the id means that ResourceEdges previously added to the HashSet buckets (lines 100 - 124)
+     * may now be in the wrong buckets, since their hash was computed using the old id.
+     * To ensure correct bucketing, we need to "re-bucket" these edges after the id is updated.
+     */
     work.setId(hashService.hash(work));
     return work;
   }
