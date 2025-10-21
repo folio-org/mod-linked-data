@@ -77,7 +77,7 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
       .addTypes(CONCEPT);
     subject.getTypes().forEach(concept::addType);
     concept.addOutgoingEdge(new ResourceEdge(concept, subject, FOCUS));
-    concept.setId(hashService.hash(concept));
+    concept.setIdAndRefreshEdges(hashService.hash(concept));
     return concept;
   }
 

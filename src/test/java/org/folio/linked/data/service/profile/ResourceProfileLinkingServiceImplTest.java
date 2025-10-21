@@ -84,7 +84,9 @@ class ResourceProfileLinkingServiceImplTest {
   void shouldResolveProfileId_returnUserPreferredProfile() {
     // given
     var profileId = 2;
-    var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri()))).setId(1L);
+    var resource = new Resource()
+      .setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri())))
+      .setIdAndRefreshEdges(1L);
     when(resourceProfileRepository.findProfileIdByResourceHash(resource.getId())).thenReturn(Optional.empty());
     when(preferredProfileService.getPreferredProfiles(INSTANCE.getUri()))
       .thenReturn(List.of(new ProfileMetadata(profileId, "", "")));
@@ -121,15 +123,15 @@ class ResourceProfileLinkingServiceImplTest {
   }
 
   private static Resource getWork(ResourceTypeDictionary extraType) {
-    return new Resource().setId(1L).addTypes(WORK, extraType);
+    return new Resource().setIdAndRefreshEdges(1L).addTypes(WORK, extraType);
   }
 
   private static Resource getInstance() {
-    return new Resource().setId(2L).addTypes(INSTANCE);
+    return new Resource().setIdAndRefreshEdges(2L).addTypes(INSTANCE);
   }
 
   private static ResourceEdge getBookFormatEdge() {
-    return new ResourceEdge(getInstance(), new Resource().setId(3L), BOOK_FORMAT);
+    return new ResourceEdge(getInstance(), new Resource().setIdAndRefreshEdges(3L), BOOK_FORMAT);
   }
 
   private static ResourceEdge getSerialWorkEdge() {

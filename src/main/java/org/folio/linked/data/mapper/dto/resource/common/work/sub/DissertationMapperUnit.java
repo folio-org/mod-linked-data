@@ -49,7 +49,7 @@ public class DissertationMapperUnit implements WorkSubResourceMapperUnit {
     resource.setDoc(getDoc(dissertation));
     coreMapper.addOutgoingEdges(resource, Dissertation.class,
       dissertation.getGrantingInstitutionReference(), GRANTING_INSTITUTION);
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

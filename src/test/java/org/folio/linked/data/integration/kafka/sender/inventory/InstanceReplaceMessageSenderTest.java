@@ -22,7 +22,7 @@ class InstanceReplaceMessageSenderTest {
   @Test
   void produce_shouldCallInstanceUpdateMessageSenderProduce() {
     // given
-    var resource = new Resource().setId(123L);
+    var resource = new Resource().setIdAndRefreshEdges(123L);
 
     // when
     producer.produce(new Resource(), resource);

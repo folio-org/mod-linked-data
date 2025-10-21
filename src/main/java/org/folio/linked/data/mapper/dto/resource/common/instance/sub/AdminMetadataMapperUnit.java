@@ -50,7 +50,7 @@ public class AdminMetadataMapperUnit implements InstanceSubResourceMapperUnit {
 
     coreMapper.addOutgoingEdges(resource, AdminMetadata.class, metadata.getCatalogingLanguage(), CATALOGING_LANGUAGE);
 
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

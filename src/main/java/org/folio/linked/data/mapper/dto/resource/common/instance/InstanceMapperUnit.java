@@ -130,7 +130,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
       PUBLICATION_FREQUENCY);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getAdminMetadata(), ADMIN_METADATA);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
-    instance.setId(hashService.hash(instance));
+    instance.setIdAndRefreshEdges(hashService.hash(instance));
     return instance;
   }
 

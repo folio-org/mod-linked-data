@@ -139,7 +139,7 @@ class MergeResourcesIT {
   void should_remove_replacedBy_edge_when_resource_becomes_preferred() {
     // given
     var replacedByTargetResource = createResource(2L, Map.of()).setDoc(getInitialDoc());
-    var lccnResource = new Resource().setId(3L);
+    var lccnResource = new Resource().setIdAndRefreshEdges(3L);
     var sourceResource = createResource(1L,
       Map.of(
         PredicateDictionary.REPLACED_BY, List.of(replacedByTargetResource),
@@ -149,7 +149,7 @@ class MergeResourcesIT {
     resourceGraphService.saveMergingGraph(sourceResource);
 
     // when
-    var statusResource = new Resource().setId(4L);
+    var statusResource = new Resource().setIdAndRefreshEdges(4L);
     var newSourceResource = createResource(1L,
       Map.of(PredicateDictionary.STATUS, List.of(statusResource))
     ).setDoc(getNewDoc());
@@ -255,7 +255,7 @@ class MergeResourcesIT {
       Map.of(PropertyDictionary.NAME, List.of("John Doe")),
       Set.of(ResourceTypeDictionary.IDENTIFIER),
       pred2OutgoingResources
-    ).setId(hash);
+    ).setIdAndRefreshEdges(hash);
   }
 
   private void assertEdge(ResourceEdge edge, long sourceHash, long targetHash, Resource source) {

@@ -55,7 +55,7 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
     resource.setLabel(getLabel(getFirstValue(variantTitle::getMainTitle), getFirstValue(variantTitle::getSubTitle)));
     resource.addTypes(VARIANT_TITLE);
     resource.setDoc(getDoc(variantTitle));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

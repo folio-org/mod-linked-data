@@ -55,7 +55,7 @@ class WorkUpdateMessageSenderTest {
   @Test
   void produce_shouldSendUpdateMessageAndIndexEvent_ifNewWorkIsIndexable() {
     // given
-    var newResource = new Resource().setId(randomLong()).setLabel("new").addTypes(WORK);
+    var newResource = new Resource().setIdAndRefreshEdges(randomLong()).setLabel("new").addTypes(WORK);
     var expectedMessage = new ResourceIndexEvent().id(String.valueOf(newResource.getId()));
     when(workSearchMessageMapper.toIndex(newResource)).thenReturn(expectedMessage);
 
@@ -73,8 +73,8 @@ class WorkUpdateMessageSenderTest {
   @Test
   void produce_shouldSendUpdateParentWorkAndIndexEvent_ifResourceIsInstance() {
     // given
-    var newInstance = new Resource().setId(1L).setLabel("newInstance").addTypes(INSTANCE);
-    var work = new Resource().setId(3L).setLabel("work").addTypes(WORK);
+    var newInstance = new Resource().setIdAndRefreshEdges(1L).setLabel("newInstance").addTypes(INSTANCE);
+    var work = new Resource().setIdAndRefreshEdges(3L).setLabel("work").addTypes(WORK);
     newInstance.addOutgoingEdge(new ResourceEdge(newInstance, work, INSTANTIATES));
     var expectedMessage = new ResourceIndexEvent().id(String.valueOf(work.getId()));
     when(workSearchMessageMapper.toIndex(work)).thenReturn(expectedMessage);

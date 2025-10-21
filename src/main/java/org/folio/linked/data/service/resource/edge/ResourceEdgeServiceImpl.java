@@ -59,7 +59,7 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   public ResourceEdgePk saveNewResourceEdge(Long sourceId,
                                             PredicateDictionary predicate,
                                             org.folio.ld.dictionary.model.Resource targetModel) {
-    var sourceRef = new Resource().setId(sourceId);
+    var sourceRef = new Resource().setIdAndRefreshEdges(sourceId);
     var target = resourceModelMapper.toEntity(targetModel);
     var saveResult = resourceGraphService.saveMergingGraph(target);
     var edge = new ResourceEdge(sourceRef, saveResult.rootResource(), new PredicateEntity(predicate));

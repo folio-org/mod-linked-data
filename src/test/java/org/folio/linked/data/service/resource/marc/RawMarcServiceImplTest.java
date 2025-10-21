@@ -48,7 +48,9 @@ class RawMarcServiceImplTest {
   void testGetRawMarcForInstanceResource() {
     // given
     var rawMarcContent = "rawMarcContent";
-    var resource = new Resource().setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri()))).setId(1L);
+    var resource = new Resource()
+      .setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri())))
+      .setIdAndRefreshEdges(1L);
     when(rawMarcRepository.findById(1L)).thenReturn(Optional.of(new RawMarc(resource).setContent(rawMarcContent)));
 
     // when
@@ -91,7 +93,7 @@ class RawMarcServiceImplTest {
     // given
     var instanceResource = new Resource()
       .setTypes(Set.of(new ResourceTypeEntity().setUri(INSTANCE.getUri())))
-      .setId(100L);
+      .setIdAndRefreshEdges(100L);
 
     // when
     rawMarcService.saveRawMarc(instanceResource, "rawMarcContent");

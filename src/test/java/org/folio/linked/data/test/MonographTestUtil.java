@@ -249,7 +249,7 @@ public class MonographTestUtil {
         .setSrsId("43d58061-decf-4d74-9747-0e1c368e861b")
     );
     if (nonNull(id)) {
-      instance.setId(id);
+      instance.setIdAndRefreshEdges(id);
     }
     instance.setLabel(primaryTitle.getLabel());
     if (nonNull(linkedWork)) {
@@ -324,7 +324,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("United States")
-      .setId(7109832602847218134L);
+      .setIdAndRefreshEdges(7109832602847218134L);
 
     var europe = createResource(
       Map.of(
@@ -335,7 +335,7 @@ public class MonographTestUtil {
       Set.of(PLACE),
       emptyMap()
     ).setLabel("Europe")
-      .setId(-4654600487710655316L);
+      .setIdAndRefreshEdges(-4654600487710655316L);
 
     var genre1 = createResource(
       Map.of(
@@ -345,7 +345,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 1")
-      .setId(-9064822434663187463L);
+      .setIdAndRefreshEdges(-9064822434663187463L);
 
     var genre2 = createResource(
       Map.of(
@@ -354,7 +354,7 @@ public class MonographTestUtil {
       Set.of(FORM),
       emptyMap()
     ).setLabel("genre 2")
-      .setId(-4816872480602594231L);
+      .setIdAndRefreshEdges(-4816872480602594231L);
 
     var governmentPublication = createResource(
       Map.of(
@@ -439,7 +439,7 @@ public class MonographTestUtil {
       Set.of(type),
       emptyMap()
     ).setLabel("subject " + name)
-      .setId(subjectId);
+      .setIdAndRefreshEdges(subjectId);
 
     var subjectConcept = createResource(
       Map.of(
@@ -448,7 +448,7 @@ public class MonographTestUtil {
       Set.of(CONCEPT, type),
       emptyMap()
     ).setLabel("subject " + name)
-      .setId(conceptId);
+      .setIdAndRefreshEdges(conceptId);
 
     subjectConcept.addOutgoingEdge(new ResourceEdge(subjectConcept, subject, FOCUS));
     return subjectConcept;
@@ -462,7 +462,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("assigning agency")
-      .setId(4932783899755316479L);
+      .setIdAndRefreshEdges(4932783899755316479L);
     var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
     pred2OutgoingResources.put(PredicateDictionary.ASSIGNING_SOURCE, List.of(assigningSource));
     return createResource(
@@ -486,7 +486,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("United States, Library of Congress")
-      .setId(8752404686183471966L);
+      .setIdAndRefreshEdges(8752404686183471966L);
     return createResource(
       Map.of(
         CODE, List.of("lc code"),
@@ -509,7 +509,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("granting institution 1")
-      .setId(5481852630377445080L);
+      .setIdAndRefreshEdges(5481852630377445080L);
 
     var grantingInstitution2 = createResource(
       Map.of(
@@ -518,7 +518,7 @@ public class MonographTestUtil {
       Set.of(ORGANIZATION),
       emptyMap()
     ).setLabel("granting institution 2")
-      .setId(-6468470931408362304L);
+      .setIdAndRefreshEdges(-6468470931408362304L);
 
     return createResource(
       Map.of(
@@ -652,7 +652,7 @@ public class MonographTestUtil {
     var properties = propertiesDic.entrySet().stream().collect(toMap(e -> e.getKey().getValue(), Map.Entry::getValue));
     resource.setDoc(getJsonNode(properties));
     types.forEach(resource::addTypes);
-    resource.setId(randomLong());
+    resource.setIdAndRefreshEdges(randomLong());
     return resource;
   }
 
@@ -687,8 +687,8 @@ public class MonographTestUtil {
 
     work.addOutgoingEdge(new ResourceEdge(work, title, TITLE));
 
-    title.setId(hashService.hash(title));
-    work.setId(hashService.hash(work));
+    title.setIdAndRefreshEdges(hashService.hash(title));
+    work.setIdAndRefreshEdges(hashService.hash(work));
 
     return work;
   }

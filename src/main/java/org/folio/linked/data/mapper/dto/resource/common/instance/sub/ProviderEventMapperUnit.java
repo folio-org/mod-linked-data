@@ -67,7 +67,7 @@ public class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
     resource.addTypes(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));
     coreMapper.addOutgoingEdges(resource, ProviderEventRequest.class, providerEvent.getProviderPlace(), PROVIDER_PLACE);
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

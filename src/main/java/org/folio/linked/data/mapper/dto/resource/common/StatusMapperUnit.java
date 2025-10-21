@@ -68,7 +68,7 @@ public class StatusMapperUnit implements SingleResourceMapperUnit {
     resource.setLabel(getFirstValue(status::getValue));
     resource.addTypes(STATUS);
     resource.setDoc(getDoc(status));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 
