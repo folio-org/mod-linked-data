@@ -32,7 +32,7 @@ public abstract class AbstractLanguageMapperUnit implements SingleResourceMapper
       .setLabel(getFirstValue(() -> getMarcCodes(languageCategory.getLink())))
       .addTypes(LANGUAGE_CATEGORY)
       .setDoc(getDoc(languageCategory));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

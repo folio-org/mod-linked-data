@@ -52,7 +52,8 @@ class ResourceEdgeServiceTest {
     var edgeModel = new org.folio.ld.dictionary.model.ResourceEdge(
       new org.folio.ld.dictionary.model.Resource().setId(sourceId),
       new org.folio.ld.dictionary.model.Resource().setId(randomLong()), TITLE);
-    var mappedEdgeResource = new org.folio.linked.data.model.entity.Resource().setId(edgeModel.getTarget().getId());
+    var mappedEdgeResource = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(edgeModel.getTarget().getId());
     doReturn(mappedEdgeResource).when(resourceModelMapper).toEntity(edgeModel.getTarget());
     doReturn(new SaveGraphResult(mappedEdgeResource)).when(resourceGraphService).saveMergingGraph(mappedEdgeResource);
     when(resourceEdgeRepository.save(any(org.folio.linked.data.model.entity.ResourceEdge.class)))

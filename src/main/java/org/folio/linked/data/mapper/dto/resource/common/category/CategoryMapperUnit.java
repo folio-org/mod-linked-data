@@ -60,7 +60,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
     resource.addTypes(CATEGORY);
     resource.setDoc(getDoc(category));
     resource.addOutgoingEdge(categorySet);
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 
@@ -92,7 +92,7 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
       .addTypes(CATEGORY_SET)
       .setDoc(coreMapper.toJson(map))
       .setLabel(label);
-    categorySet.setId(hashService.hash(categorySet));
+    categorySet.setIdAndRefreshEdges(hashService.hash(categorySet));
     return categorySet;
   }
 }

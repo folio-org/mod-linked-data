@@ -46,7 +46,7 @@ class WorkReplaceMessageSenderTest {
   void produce_shouldSendDeleteAndCreateEvents_ifNewResourceIsWork() {
     // given
     long id = 1L;
-    var newResource = new Resource().setId(id).setLabel("new").addTypes(WORK);
+    var newResource = new Resource().setIdAndRefreshEdges(id).setLabel("new").addTypes(WORK);
     var old = new Resource();
 
     // when
@@ -61,8 +61,8 @@ class WorkReplaceMessageSenderTest {
   @Test
   void produce_shouldSendUpdateWorkEvent_ifResourceIsInstance() {
     // given
-    var newInstance = new Resource().setId(1L).setLabel("newInstance").addTypes(INSTANCE);
-    var work = new Resource().setId(3L).setLabel("work").addTypes(WORK);
+    var newInstance = new Resource().setIdAndRefreshEdges(1L).setLabel("newInstance").addTypes(INSTANCE);
+    var work = new Resource().setIdAndRefreshEdges(3L).setLabel("work").addTypes(WORK);
     newInstance.addOutgoingEdge(new ResourceEdge(newInstance, work, INSTANTIATES));
     var old = new Resource();
 

@@ -1394,7 +1394,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .forEach(resource::addType);
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
-    resource.setId(id);
+    resource.setIdAndRefreshEdges(id);
     return resource;
   }
 

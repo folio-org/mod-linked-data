@@ -47,7 +47,7 @@ class ResourceMarcViewDtoMapperTest {
 
   private Resource generateTestResource() {
     return new Resource()
-      .setId(3856321131L)
+      .setIdAndRefreshEdges(3856321131L)
       .setTypes(Set.of(new ResourceTypeEntity().setUri(PROVIDER_EVENT.getUri())))
       .setDoc(new ObjectMapper().valueToTree(Map.of(
         "http://bibfra.me/vocab/lite/name", List.of("name $ 2023"),

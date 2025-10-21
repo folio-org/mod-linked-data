@@ -56,7 +56,7 @@ public class ClassificationMapperUnit implements WorkSubResourceMapperUnit {
       coreMapper.addOutgoingEdges(resource, Classification.class,
         classification.getStatus(), STATUS);
     }
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 
