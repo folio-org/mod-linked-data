@@ -83,7 +83,7 @@ class ResourceMarcAuthorityServiceImplTest {
   @Test
   void fetchAuthorityOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsById() {
     // given
-    var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
+    var existingResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findById(123L)).thenReturn(of(existingResource));
 
     // when
@@ -98,7 +98,7 @@ class ResourceMarcAuthorityServiceImplTest {
   void fetchAuthorityOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsBySrsId() {
     // given
     var id = "123";
-    var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
+    var existingResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findById(123L)).thenReturn(empty());
     when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(of(existingResource));
 
@@ -115,7 +115,7 @@ class ResourceMarcAuthorityServiceImplTest {
   void fetchAuthorityOrCreateFromSrsRecord_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
     // given
     var id = "123";
-    var createdResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
+    var createdResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findById(123L)).thenReturn(empty());
     when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(empty());
     when(srsClient.getAuthorityBySrsId(id))
@@ -157,7 +157,7 @@ class ResourceMarcAuthorityServiceImplTest {
   void fetchAuthorityOrCreateByInventoryId_shouldFetchAuthority_ifExistsByInventoryId() {
     // given
     var id = "123";
-    var existingResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
+    var existingResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(of(existingResource));
 
     // when
@@ -171,7 +171,7 @@ class ResourceMarcAuthorityServiceImplTest {
   void fetchAuthorityOrCreateByInventoryId_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
     // given
     var id = "123";
-    var createdResource = new Resource().setId(123L).setLabel("").addTypes(PERSON);
+    var createdResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
     when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(empty());
     when(srsClient.getAuthorityByInventoryId(id))
       .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
@@ -210,7 +210,7 @@ class ResourceMarcAuthorityServiceImplTest {
     var srsId = UUID.randomUUID().toString();
     var model = new org.folio.ld.dictionary.model.Resource().setId(id)
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
-    var mapped = new Resource().setId(id).addTypes(PERSON);
+    var mapped = new Resource().setIdAndRefreshEdges(id).addTypes(PERSON);
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(new SaveGraphResult(mapped)).when(resourceGraphService).saveMergingGraph(mapped);
@@ -232,7 +232,7 @@ class ResourceMarcAuthorityServiceImplTest {
     var srsId = UUID.randomUUID().toString();
     var model = new org.folio.ld.dictionary.model.Resource().setId(id)
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
-    var mapped = new Resource().setId(id).addTypes(PERSON);
+    var mapped = new Resource().setIdAndRefreshEdges(id).addTypes(PERSON);
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     doReturn(Optional.of((FolioMetadataRepository.IdOnly) () -> id)).when(folioMetadataRepo).findIdBySrsId(srsId);
@@ -251,8 +251,8 @@ class ResourceMarcAuthorityServiceImplTest {
   void saveMarcAuthority_shouldNotReplaceOldAuthority_ifNewAuthorityHasDifferentTypes() {
     // given
     var id = 12345L;
-    var existedAuthority = new Resource().setId(id).addTypes(PERSON);
-    var newAuthority = new Resource().setId(id - 1).addTypes(PERSON, CONCEPT);
+    var existedAuthority = new Resource().setIdAndRefreshEdges(id).addTypes(PERSON);
+    var newAuthority = new Resource().setIdAndRefreshEdges(id - 1).addTypes(PERSON, CONCEPT);
 
     var srsId = UUID.randomUUID().toString();
     newAuthority.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(newAuthority).setSrsId(srsId));
@@ -277,13 +277,13 @@ class ResourceMarcAuthorityServiceImplTest {
     // given
     var id = randomLong();
     var srsId = UUID.randomUUID().toString();
-    var existed = new Resource().setId(id).addTypes(PERSON).setManaged(true);
+    var existed = new Resource().setIdAndRefreshEdges(id).addTypes(PERSON).setManaged(true);
     existed.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(existed));
     doReturn(of(existed)).when(resourceRepo).findByFolioMetadataSrsId(srsId);
     var model = new org.folio.ld.dictionary.model.Resource()
       .setId(id)
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
-    var mapped = new Resource().setId(id).addTypes(PERSON);
+    var mapped = new Resource().setIdAndRefreshEdges(id).addTypes(PERSON);
     mapped.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(mapped).setSrsId(srsId));
     doReturn(mapped).when(resourceModelMapper).toEntity(model);
     var anotherResourceId = Optional.of((FolioMetadataRepository.IdOnly) () -> id - 1);
@@ -308,7 +308,7 @@ class ResourceMarcAuthorityServiceImplTest {
   void saveMarcAuthority_shouldThrowException_whenSrsIdIsMissing() {
     // given
     var model = new org.folio.ld.dictionary.model.Resource();
-    var personWithoutSrsId = new Resource().setId(randomLong()).addTypes(PERSON);
+    var personWithoutSrsId = new Resource().setIdAndRefreshEdges(randomLong()).addTypes(PERSON);
     doReturn(personWithoutSrsId).when(resourceModelMapper).toEntity(model);
 
     // then
@@ -321,7 +321,7 @@ class ResourceMarcAuthorityServiceImplTest {
   void saveMarcAuthority_shouldThrowException_whenResourceIsNotAuthority() {
     // given
     var model = new org.folio.ld.dictionary.model.Resource();
-    var work = new Resource().setId(randomLong()).addTypes(WORK);
+    var work = new Resource().setIdAndRefreshEdges(randomLong()).addTypes(WORK);
     work.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(work).setSrsId(randomString()));
     doReturn(work).when(resourceModelMapper).toEntity(model);
 

@@ -46,7 +46,7 @@ public class WorkDeleteMessageSender implements DeleteMessageSender {
 
   @Override
   public void accept(Resource resource) {
-    var onlyIdResource = new Resource().setId(resource.getId());
+    var onlyIdResource = new Resource().setIdAndRefreshEdges(resource.getId());
     var message = workSearchMessageMapper.toIndex(onlyIdResource)
       .type(DELETE);
     bibliographicMessageProducer.sendMessages(List.of(message));

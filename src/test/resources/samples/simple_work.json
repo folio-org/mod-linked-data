@@ -40,11 +40,6 @@
                         "http://bibfra.me/vocab/relation/author"
                     ]
                 }
-            ],
-            "_instanceReference": [
-                {
-                    "id": "%INSTANCE_ID%"
-                }
             ]
         }
     }

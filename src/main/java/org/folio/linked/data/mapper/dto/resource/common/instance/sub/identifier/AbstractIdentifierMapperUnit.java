@@ -52,7 +52,7 @@ abstract class AbstractIdentifierMapperUnit implements InstanceSubResourceMapper
     resource.addTypes(IDENTIFIER, getIdentifierType());
     resource.setDoc(getDoc(identifierRequest));
     coreMapper.addOutgoingEdges(resource, IdentifierRequest.class, identifierRequest.getStatus(), STATUS);
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

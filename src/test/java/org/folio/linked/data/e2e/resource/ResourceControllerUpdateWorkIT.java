@@ -160,8 +160,8 @@ class ResourceControllerUpdateWorkIT extends ITBase {
 
     work.addOutgoingEdge(new ResourceEdge(work, title, TITLE));
 
-    title.setId(hashService.hash(title));
-    work.setId(hashService.hash(work));
+    title.setIdAndRefreshEdges(hashService.hash(title));
+    work.setIdAndRefreshEdges(hashService.hash(work));
 
     return work;
   }
@@ -183,8 +183,8 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     instance.addOutgoingEdge(new ResourceEdge(instance, title, TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
 
-    title.setId(hashService.hash(title));
-    instance.setId(hashService.hash(instance));
+    title.setIdAndRefreshEdges(hashService.hash(title));
+    instance.setIdAndRefreshEdges(hashService.hash(instance));
 
     return instance;
   }
@@ -211,8 +211,8 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     person.setFolioMetadata(new FolioMetadata(person).setInventoryId("123456789"));
     person.addOutgoingEdge(new ResourceEdge(person, lccn, MAP));
 
-    person.setId(hashService.hash(person));
-    lccn.setId(hashService.hash(lccn));
+    person.setIdAndRefreshEdges(hashService.hash(person));
+    lccn.setIdAndRefreshEdges(hashService.hash(lccn));
 
     return person;
   }

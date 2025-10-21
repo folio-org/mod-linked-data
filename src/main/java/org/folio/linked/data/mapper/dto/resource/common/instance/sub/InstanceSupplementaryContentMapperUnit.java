@@ -45,7 +45,7 @@ public class InstanceSupplementaryContentMapperUnit implements InstanceSubResour
       .setLabel(getFirstValue(supplementaryContent::getName))
       .addTypes(SUPPLEMENTARY_CONTENT)
       .setDoc(getDoc(supplementaryContent));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

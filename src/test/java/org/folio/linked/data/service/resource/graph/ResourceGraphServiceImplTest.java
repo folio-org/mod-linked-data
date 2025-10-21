@@ -42,7 +42,7 @@ class ResourceGraphServiceImplTest {
   void getResourceGraph_shouldReturnResourceGraphDto_whenResourceExists() {
     //given
     var id = randomLong();
-    var resource = new Resource().setId(id);
+    var resource = new Resource().setIdAndRefreshEdges(id);
     var expectedResourceGraphDto = new ResourceGraphDto().id(String.valueOf(id));
 
     when(resourceRepo.findById(id)).thenReturn(Optional.of(resource));

@@ -124,7 +124,7 @@ class SourceRecordDomainEventHandlerIT {
   void shouldSaveAdminMetadataOutOfMarcBibSourceRecordDomainEvent() {
     // given
     var existedInstance = new Resource()
-      .setId(6331008328653046125L)
+      .setIdAndRefreshEdges(6331008328653046125L)
       .addTypes(INSTANCE);
     var folioMetadata = new FolioMetadata(existedInstance).setInventoryId("2165ef4b-001f-46b3-a60e-52bcdeb3d5a1");
     existedInstance.setFolioMetadata(folioMetadata);

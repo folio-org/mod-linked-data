@@ -252,7 +252,7 @@ class ResourceMarcBibServiceImplTest {
     var unmappedMarc = "{}";
     var resourceId = 1L;
     var srsId = UUID.randomUUID().toString();
-    var resourceEntity = new Resource().setId(resourceId);
+    var resourceEntity = new Resource().setIdAndRefreshEdges(resourceId);
     final var profileId = random(Integer.class);
     resourceEntity.setFolioMetadata(new org.folio.linked.data.model.entity.FolioMetadata(resourceEntity)
       .setSrsId(srsId));

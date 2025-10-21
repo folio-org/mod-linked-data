@@ -68,8 +68,8 @@ public class TestUtil {
     = new RequestProcessingExceptionBuilder(new ErrorResponseConfig());
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper(EMPTY_EXCEPTION_BUILDER);
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
-  public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
-  public static final String SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/simple_work.json");
+  public static final String WORK_SAMPLE = loadResourceAsString("samples/work_sample.json");
+  public static final String SIMPLE_WORK_SAMPLE = loadResourceAsString("samples/simple_work.json");
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
   private static final String FOLIO_OKAPI_URL = "folio.okapi-url";
@@ -135,7 +135,7 @@ public class TestUtil {
 
   @SneakyThrows
   public static Map<String, Object> getSampleWorkDtoMap() {
-    return OBJECT_MAPPER.readValue(WORK_WITH_INSTANCE_REF_SAMPLE, Map.class);
+    return OBJECT_MAPPER.readValue(WORK_SAMPLE, Map.class);
   }
 
   public static <T> T random(Class<T> clazz) {

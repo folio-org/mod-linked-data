@@ -40,7 +40,7 @@ class InstanceUpdateMessageSenderTest {
   @Test
   void produce_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
-    var notInstance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.FAMILY);
+    var notInstance = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.FAMILY);
 
     // when
     producer.produce(notInstance);
@@ -52,7 +52,7 @@ class InstanceUpdateMessageSenderTest {
   @Test
   void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
-    var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var instance = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata = new FolioMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance.setFolioMetadata(metadata);
 
@@ -72,11 +72,11 @@ class InstanceUpdateMessageSenderTest {
   @Test
   void produce_shouldSendExpectedMessages_ifGivenResourceIsWorkWithInstances() {
     // given
-    var work = new Resource().setId(1L).addTypes(ResourceTypeDictionary.WORK);
-    var instance1 = new Resource().setId(2L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var work = new Resource().setIdAndRefreshEdges(1L).addTypes(ResourceTypeDictionary.WORK);
+    var instance1 = new Resource().setIdAndRefreshEdges(2L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata1 = new FolioMetadata(instance1).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance1.setFolioMetadata(metadata1);
-    var instance2 = new Resource().setId(3L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var instance2 = new Resource().setIdAndRefreshEdges(3L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata2 = new FolioMetadata(instance2).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance2.setFolioMetadata(metadata2);
     work.addIncomingEdge(new ResourceEdge(instance1, work, INSTANTIATES));

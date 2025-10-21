@@ -61,7 +61,7 @@ public class HubMapperUnit extends TopResourceMapperUnit {
 
     hub.setDoc(getDoc(hubDto, hub));
     hub.setLabel(getLabel(hubDto, hub));
-    hub.setId(hashService.hash(hub));
+    hub.setIdAndRefreshEdges(hashService.hash(hub));
     return hub;
   }
 

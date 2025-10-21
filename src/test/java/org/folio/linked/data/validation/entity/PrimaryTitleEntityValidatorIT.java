@@ -29,7 +29,7 @@ class PrimaryTitleEntityValidatorIT extends ITBase {
   void saveNotInstanceAndWorkResourceWithNoPrimaryMainTitle_shouldBeOk() {
     // given
     var resource = new Resource()
-      .setId(123L);
+      .setIdAndRefreshEdges(123L);
 
     // when
     var result = resourceRepository.save(resource);
@@ -42,7 +42,7 @@ class PrimaryTitleEntityValidatorIT extends ITBase {
   void saveInstanceResourceWithNoPrimaryMainTitle_shouldFail() {
     // given
     var resource = new Resource()
-      .setId(456L)
+      .setIdAndRefreshEdges(456L)
       .addTypes(INSTANCE);
 
     // when
@@ -62,7 +62,7 @@ class PrimaryTitleEntityValidatorIT extends ITBase {
   void saveWorkResourceWithNoPrimaryMainTitle_shouldFail() {
     // given
     var resource = new Resource()
-      .setId(789L)
+      .setIdAndRefreshEdges(789L)
       .addTypes(WORK);
 
     // when

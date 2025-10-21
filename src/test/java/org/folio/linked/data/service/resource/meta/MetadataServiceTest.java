@@ -20,7 +20,7 @@ class MetadataServiceTest {
   void ensure1_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
     var resource = new Resource()
-      .setId(randomLong());
+      .setIdAndRefreshEdges(randomLong());
 
     // when
     metadataService.ensure(resource);
@@ -33,7 +33,7 @@ class MetadataServiceTest {
   void ensure2_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
     var resource = new Resource()
-      .setId(randomLong());
+      .setIdAndRefreshEdges(randomLong());
     var metadata = new FolioMetadata(resource)
       .setInventoryId(UUID.randomUUID().toString())
       .setSrsId(UUID.randomUUID().toString());
@@ -49,7 +49,7 @@ class MetadataServiceTest {
   void ensure1_shouldSetRandomIdsAndSourceLd_ifGivenResourceIsInstance() {
     // given
     var resource = new Resource()
-      .setId(randomLong())
+      .setIdAndRefreshEdges(randomLong())
       .addTypes(ResourceTypeDictionary.INSTANCE);
 
     // when
@@ -68,7 +68,7 @@ class MetadataServiceTest {
   void ensure2_shouldSetGivenIdsAndSourceLd_ifGivenResourceIsInstance() {
     // given
     var resource = new Resource()
-      .setId(randomLong())
+      .setIdAndRefreshEdges(randomLong())
       .addTypes(ResourceTypeDictionary.INSTANCE);
     var oldMetadata = new FolioMetadata(resource)
       .setInventoryId(UUID.randomUUID().toString())

@@ -49,7 +49,7 @@ public class PublicationFrequencyMapperUnit implements InstanceSubResourceMapper
       .setLabel(getFirstValue(frequency::getLabel))
       .addTypes(FREQUENCY)
       .setDoc(getDoc(frequency));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

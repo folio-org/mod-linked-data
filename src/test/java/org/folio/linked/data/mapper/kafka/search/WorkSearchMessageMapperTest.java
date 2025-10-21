@@ -67,7 +67,7 @@ class WorkSearchMessageMapperTest {
   @Test
   void toIndex_shouldReturnCorrectlyMappedIndex_fromResourceWithIdOnly() {
     // given
-    var resource = new Resource().setId(randomLong());
+    var resource = new Resource().setIdAndRefreshEdges(randomLong());
 
     // when
     var result = workSearchMessageMapper.toIndex(resource);
@@ -106,7 +106,7 @@ class WorkSearchMessageMapperTest {
     work.addOutgoingEdge(new ResourceEdge(work, emptyContributor, CONTRIBUTOR));
     final var instance1 = getInstance(1L, work);
     final var instance2 = getInstance(2L, work);
-    final var emptyInstance = new Resource().setId(3L).addTypes(INSTANCE);
+    final var emptyInstance = new Resource().setIdAndRefreshEdges(3L).addTypes(INSTANCE);
     var edge = new ResourceEdge(emptyInstance, work, INSTANTIATES);
     emptyInstance.addOutgoingEdge(edge);
     work.addIncomingEdge(edge);
@@ -149,7 +149,7 @@ class WorkSearchMessageMapperTest {
 
   private Resource getIdentifier() {
     var id = new Resource();
-    id.setId(randomLong());
+    id.setIdAndRefreshEdges(randomLong());
     id.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of("wrongId"))));
     id.addTypes(ANNOTATION);
     return id;
@@ -157,7 +157,7 @@ class WorkSearchMessageMapperTest {
 
   private Resource getContributor(ResourceTypeDictionary type) {
     var contributor = new Resource();
-    contributor.setId(randomLong());
+    contributor.setIdAndRefreshEdges(randomLong());
     contributor.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(UUID.randomUUID().toString()))));
     contributor.addTypes(type);
     return contributor;

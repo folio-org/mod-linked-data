@@ -101,7 +101,7 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
   private void setResourceIds(Resource... resources) {
     stream(resources)
       .filter(Objects::nonNull)
-      .forEach(resource -> resource.setId(hashService.hash(resource)));
+      .forEach(resource -> resource.setIdAndRefreshEdges(hashService.hash(resource)));
   }
 
   private JsonNode getIssnDoc(PartOfSeries dto) {

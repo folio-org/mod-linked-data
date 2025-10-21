@@ -52,7 +52,7 @@ public abstract class PlaceMapperUnit implements SingleResourceMapperUnit, MarcC
     resource.setLabel(getLabel(place));
     resource.addTypes(PLACE);
     resource.setDoc(getDoc(place));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

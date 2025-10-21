@@ -58,7 +58,7 @@ class WorkCreateMessageSenderTest {
   @Test
   void produce_shouldSendMessageAndPublishIndexEvent_ifGivenResourceIsWorkAndIndexable() {
     // given
-    var resource = new Resource().addTypes(WORK).setId(randomLong());
+    var resource = new Resource().addTypes(WORK).setIdAndRefreshEdges(randomLong());
     var expectedMessage = new ResourceIndexEvent()
       .id(String.valueOf(resource.getId()));
     when(workSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
@@ -79,8 +79,8 @@ class WorkCreateMessageSenderTest {
   @Test
   void produce_shouldTriggerWorkUpdate_ifGivenResourceIsInstanceWithWorkReference() {
     // given
-    var instance = new Resource().addTypes(INSTANCE).setId(randomLong());
-    var work = new Resource().addTypes(WORK).setId(randomLong());
+    var instance = new Resource().addTypes(INSTANCE).setIdAndRefreshEdges(randomLong());
+    var work = new Resource().addTypes(WORK).setIdAndRefreshEdges(randomLong());
     instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
 
     // when

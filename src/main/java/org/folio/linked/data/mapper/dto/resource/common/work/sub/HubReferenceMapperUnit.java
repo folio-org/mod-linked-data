@@ -54,7 +54,7 @@ public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
     resource.addTypes(ResourceTypeDictionary.HUB);
     resource.setDoc(getDoc(hub));
     resource.setLabel(hub.getLabel().getFirst());
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

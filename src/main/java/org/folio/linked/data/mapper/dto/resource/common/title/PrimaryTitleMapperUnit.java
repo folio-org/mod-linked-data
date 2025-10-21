@@ -51,7 +51,7 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
     resource.setLabel(getLabel(getFirstValue(primaryTitle::getMainTitle), getFirstValue(primaryTitle::getSubTitle)));
     resource.addTypes(TITLE);
     resource.setDoc(getDoc(primaryTitle));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

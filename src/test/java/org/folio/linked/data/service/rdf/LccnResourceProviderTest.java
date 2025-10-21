@@ -42,7 +42,7 @@ class LccnResourceProviderTest {
     var authoritiesResponse = new AuthoritySearchResponse().authorities(List.of(authorityItem));
     when(searchClient.searchAuthorities("lccn = " + lccn))
       .thenReturn(ResponseEntity.ok(authoritiesResponse));
-    var fetchedResource = new Resource().setId(1L);
+    var fetchedResource = new Resource().setIdAndRefreshEdges(1L);
     when(resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(inventoryId))
       .thenReturn(Optional.of(fetchedResource));
     var expectedResource = new org.folio.ld.dictionary.model.Resource().setId(1L);

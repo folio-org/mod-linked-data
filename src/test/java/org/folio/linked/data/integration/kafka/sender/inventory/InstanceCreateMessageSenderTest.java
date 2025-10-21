@@ -38,7 +38,7 @@ class InstanceCreateMessageSenderTest {
   @Test
   void produce_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
-    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.FAMILY);
+    var resource = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.FAMILY);
 
     // when
     producer.produce(resource);
@@ -50,7 +50,7 @@ class InstanceCreateMessageSenderTest {
   @Test
   void produce_shouldDoNothing_ifGivenResourceIsInstanceMarcSourced() {
     // given
-    var resource = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var resource = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     resource.setFolioMetadata(new FolioMetadata(resource).setSource(MARC));
 
     // when
@@ -63,7 +63,7 @@ class InstanceCreateMessageSenderTest {
   @Test
   void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
     // given
-    var instance = new Resource().setId(123L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var instance = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.INSTANCE);
     var metadata = new FolioMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
     instance.setFolioMetadata(metadata);
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))

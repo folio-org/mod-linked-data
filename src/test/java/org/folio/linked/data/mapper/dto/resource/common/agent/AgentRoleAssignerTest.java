@@ -38,8 +38,8 @@ class AgentRoleAssignerTest {
     var nonRolePredicate = "http://bibfra.me/vocab/some/other/predicate";
 
     var workResource = new Resource();
-    var sameAgentResource = new Resource().setId(Long.parseLong(agent.getId()));
-    var anotherAgentResource = new Resource().setId(Long.parseLong(agent.getId()) + 1);
+    var sameAgentResource = new Resource().setIdAndRefreshEdges(Long.parseLong(agent.getId()));
+    var anotherAgentResource = new Resource().setIdAndRefreshEdges(Long.parseLong(agent.getId()) + 1);
 
     workResource.setOutgoingEdges(Set.of(
       // "relation" edges pointing to the agent

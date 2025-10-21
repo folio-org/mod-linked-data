@@ -264,11 +264,6 @@
             }
           ]
         }
-      ],
-      "_instanceReference": [
-        {
-          "id": "%INSTANCE_ID%"
-        }
       ]
     }
   }

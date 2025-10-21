@@ -33,7 +33,7 @@ class InstanceIngressMessageMapperTest {
   @Test
   void testMapping() {
     // given
-    var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
+    var instance = new Resource().setIdAndRefreshEdges(randomLong()).addTypes(INSTANCE);
     var inventoryId = UUID.randomUUID().toString();
     var srsId = UUID.randomUUID().toString();
     instance.setFolioMetadata(

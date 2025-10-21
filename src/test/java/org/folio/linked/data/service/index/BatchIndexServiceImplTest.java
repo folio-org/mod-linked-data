@@ -32,8 +32,8 @@ class BatchIndexServiceImplTest {
   @Test
   void indexWorks_shouldReturnNumberOfIndexedResources_andIdsOfResourcesThatWereProcessedWithoutException() {
     //given
-    var indexedResource = new Resource().setId(1L);
-    var resourceWithException = new Resource().setId(2L);
+    var indexedResource = new Resource().setIdAndRefreshEdges(1L);
+    var resourceWithException = new Resource().setIdAndRefreshEdges(2L);
     var resources = Stream.of(indexedResource, resourceWithException);
     doNothing().when(workCreateMessageSender).acceptWithoutIndexDateUpdate(indexedResource);
     doThrow(new RuntimeException()).when(workCreateMessageSender).acceptWithoutIndexDateUpdate(resourceWithException);

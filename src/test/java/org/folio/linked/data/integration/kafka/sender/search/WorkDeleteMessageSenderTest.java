@@ -56,7 +56,7 @@ class WorkDeleteMessageSenderTest {
   void produce_shouldSendWorkDeletedMessage_forWork() {
     // given
     var id = 1L;
-    var work = new Resource().setId(id).addTypes(ResourceTypeDictionary.WORK);
+    var work = new Resource().setIdAndRefreshEdges(id).addTypes(ResourceTypeDictionary.WORK);
     var expectedMessage = new ResourceIndexEvent().id(String.valueOf(id));
     doReturn(expectedMessage).when(workSearchMessageMapper).toIndex(work);
 
@@ -74,8 +74,8 @@ class WorkDeleteMessageSenderTest {
   @Test
   void produce_shouldTriggerWorkUpdate_forInstanceWithWork() {
     // given
-    var instance = new Resource().setId(1L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var work = new Resource().setId(2L).addTypes(ResourceTypeDictionary.WORK);
+    var instance = new Resource().setIdAndRefreshEdges(1L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var work = new Resource().setIdAndRefreshEdges(2L).addTypes(ResourceTypeDictionary.WORK);
     var edge = new ResourceEdge(instance, work, INSTANTIATES);
     instance.getOutgoingEdges().add(edge);
     work.getIncomingEdges().add(edge);

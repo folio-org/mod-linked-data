@@ -120,7 +120,7 @@ class WorkCreatorIT extends PostResourceIT {
       .addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()))
       .setDoc(objectMapper.readTree("{}"))
       .setLabel(label)
-      .setId(id);
+      .setIdAndRefreshEdges(id);
     resource.setFolioMetadata(new FolioMetadata(resource).setSrsId(srsId));
     resourceTestService.saveGraph(resource);
   }

@@ -128,7 +128,7 @@ class ResourceUtilsTest {
   @Test
   void extractInstancesFromWork_shouldReturnInstance_ifGivenResourceIsinstance() {
     // given
-    var instance = new Resource().setId(1L).addTypes(INSTANCE);
+    var instance = new Resource().setIdAndRefreshEdges(1L).addTypes(INSTANCE);
 
     // when
     var result = ResourceUtils.extractInstancesFromWork(instance);
@@ -140,8 +140,8 @@ class ResourceUtilsTest {
   @Test
   void extractInstancesFromWork_shouldReturnEmptyList_ifGivenResourceIsNotInstanceOrWork() {
     // given
-    var resource = new Resource().setId(1L).addTypes(JURISDICTION);
-    var instance = new Resource().setId(2L).addTypes(INSTANCE);
+    var resource = new Resource().setIdAndRefreshEdges(1L).addTypes(JURISDICTION);
+    var instance = new Resource().setIdAndRefreshEdges(2L).addTypes(INSTANCE);
     resource.addOutgoingEdge(new ResourceEdge(resource, instance, INSTANTIATES));
     resource.addIncomingEdge(new ResourceEdge(instance, resource, INSTANTIATES));
 
@@ -155,10 +155,10 @@ class ResourceUtilsTest {
   @Test
   void extractInstancesFromWork_shouldReturnInstancesListWithEdgesToWork_ifGivenResourceIsWork() {
     // given
-    var work = new Resource().setId(0L).addTypes(WORK);
-    var instance1 = new Resource().setId(1L).addTypes(INSTANCE);
+    var work = new Resource().setIdAndRefreshEdges(0L).addTypes(WORK);
+    var instance1 = new Resource().setIdAndRefreshEdges(1L).addTypes(INSTANCE);
     work.addIncomingEdge(new ResourceEdge(instance1, work, INSTANTIATES));
-    var instance2 = new Resource().setId(2L).addTypes(INSTANCE);
+    var instance2 = new Resource().setIdAndRefreshEdges(2L).addTypes(INSTANCE);
     work.addIncomingEdge(new ResourceEdge(instance2, work, INSTANTIATES));
 
     // when
