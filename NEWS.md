@@ -71,6 +71,7 @@
 - Update Work profiles to change Hub Relationship field type. [MODLD-893](https://folio-org.atlassian.net/browse/MODLD-893)
 - Index new Hubs in mod-search [MODLD-894](https://folio-org.atlassian.net/browse/MODLD-894)
 - Reinitialize edges after setting resource's ID. [MODLD-896](https://folio-org.atlassian.net/browse/MODLD-896)
+- Update HubReferenceMapperUnit to support RELATED_TO predicate. [MODLD-893](https://folio-org.atlassian.net/browse/MODLD-893)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
