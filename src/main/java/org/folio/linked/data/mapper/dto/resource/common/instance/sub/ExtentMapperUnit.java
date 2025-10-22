@@ -44,7 +44,7 @@ public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
       .setLabel(getFirstValue(extent::getLabel))
       .addTypes(EXTENT)
       .setDoc(getDoc(extent));
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 

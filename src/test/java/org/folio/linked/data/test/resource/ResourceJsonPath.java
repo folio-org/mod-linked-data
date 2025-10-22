@@ -87,6 +87,10 @@ public class ResourceJsonPath {
     return join(".", workBase, arrayPath(INSTANCE_REF));
   }
 
+  public static String toInstanceReferenceArray(String workBase) {
+    return join(".", workBase, INSTANCE_REF);
+  }
+
   public static String toWork() {
     return join(".", "$", path("resource"), path(WORK.getUri()));
   }

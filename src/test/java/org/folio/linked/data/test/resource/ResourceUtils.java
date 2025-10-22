@@ -9,7 +9,7 @@ import org.folio.linked.data.service.resource.hash.HashService;
 public class ResourceUtils {
 
   public static void setExistingResourcesIds(Resource resource, HashService hashService) {
-    resource.setId(hashService.hash(resource));
+    resource.setIdAndRefreshEdges(hashService.hash(resource));
     resource.getOutgoingEdges()
       .stream()
       .map(ResourceEdge::getTarget)

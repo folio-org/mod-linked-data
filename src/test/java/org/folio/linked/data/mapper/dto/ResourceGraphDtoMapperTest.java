@@ -35,7 +35,7 @@ class ResourceGraphDtoMapperTest {
   void toResourceGraphDto_shouldReturnResourceGraphDto() {
     //given
     var resource = generateTestResource();
-    var providerPlace = new Resource().setId(1654360880L);
+    var providerPlace = new Resource().setIdAndRefreshEdges(1654360880L);
     resource.setOutgoingEdges(Set.of(new ResourceEdge(resource, providerPlace, PROVIDER_PLACE)));
 
     //when
@@ -55,7 +55,7 @@ class ResourceGraphDtoMapperTest {
 
   private Resource generateTestResource() {
     return new Resource()
-      .setId(3856321131L)
+      .setIdAndRefreshEdges(3856321131L)
       .setTypes(Set.of(new ResourceTypeEntity().setUri(PROVIDER_EVENT.getUri())))
       .setDoc(new ObjectMapper().valueToTree(Map.of(
         "http://bibfra.me/vocab/lite/name", List.of("name $ 2023"),

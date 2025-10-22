@@ -84,7 +84,7 @@ class ResourceServiceImplTest {
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent() {
     // given
     var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
-    var work = new Resource().addTypes(WORK).setId(555L);
+    var work = new Resource().addTypes(WORK).setIdAndRefreshEdges(555L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
     expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
@@ -109,7 +109,7 @@ class ResourceServiceImplTest {
         new WorkRequest(2, List.of()).profileId(profileId)
       )
     );
-    var work = new Resource().addTypes(WORK).setId(444L);
+    var work = new Resource().addTypes(WORK).setIdAndRefreshEdges(444L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
     expectedResponse.setResource(new InstanceResponseField().instance(new InstanceResponse(3).id("123")));
@@ -130,7 +130,7 @@ class ResourceServiceImplTest {
   void create_shouldNotPersistResourceAndThrowAlreadyExists_forExistedResource() {
     // given
     var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
-    var mapped = new Resource().setId(12345L);
+    var mapped = new Resource().setIdAndRefreshEdges(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
     var expectedException = emptyRequestProcessingException();
@@ -219,9 +219,9 @@ class ResourceServiceImplTest {
     // given
     var id = randomLong();
     var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest(2, List.of())));
-    var oldWork = new Resource().setId(id).addTypes(WORK).setLabel("oldWork");
+    var oldWork = new Resource().setIdAndRefreshEdges(id).addTypes(WORK).setLabel("oldWork");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldWork));
-    var work = new Resource().setId(id).setLabel("saved").addTypes(WORK);
+    var work = new Resource().setIdAndRefreshEdges(id).setLabel("saved").addTypes(WORK);
     var saveGraphResult = new SaveGraphResult(work);
     when(resourceDtoMapper.toEntity(workDto)).thenReturn(work);
     var expectedDto = new ResourceResponseDto().resource(
@@ -250,16 +250,16 @@ class ResourceServiceImplTest {
     var oldId = randomLong();
     var newId = randomLong();
     final var unmappedMarc = "{}";
-    var oldInstance = new Resource().setId(oldId).addTypes(INSTANCE).setLabel("oldInstance");
+    var oldInstance = new Resource().setIdAndRefreshEdges(oldId).addTypes(INSTANCE).setLabel("oldInstance");
     when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
-    var mapped = new Resource().setId(newId).setLabel("mapped");
+    var mapped = new Resource().setIdAndRefreshEdges(newId).setLabel("mapped");
     var instanceDto = new ResourceRequestDto().resource(
       new InstanceField().instance(
         new InstanceRequest(3, List.of()).profileId(profileId)
       )
     );
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
-    var persisted = new Resource().setId(newId).setLabel("saved");
+    var persisted = new Resource().setIdAndRefreshEdges(newId).setLabel("saved");
     var saveGraphResult = new SaveGraphResult(persisted);
     var expectedDto = new ResourceResponseDto().resource(
       new InstanceResponseField().instance(new InstanceResponse(3).id(newId.toString()))
@@ -284,7 +284,7 @@ class ResourceServiceImplTest {
   @Test
   void delete_shouldDeleteWorkAndPublishResourceDeletedEvent() {
     // given
-    var work = new Resource().setId(randomLong()).addTypes(WORK);
+    var work = new Resource().setIdAndRefreshEdges(randomLong()).addTypes(WORK);
     when(resourceRepo.findById(work.getId())).thenReturn(Optional.of(work));
 
     // when
@@ -298,9 +298,9 @@ class ResourceServiceImplTest {
   @Test
   void delete_shouldDeleteInstanceAndPublishResourceDeletedEvent() {
     // given
-    var work = new Resource().setId(randomLong()).addTypes(WORK);
-    var instance = new Resource().setId(randomLong()).addTypes(INSTANCE);
-    var instance2 = new Resource().setId(randomLong()).addTypes(INSTANCE);
+    var work = new Resource().setIdAndRefreshEdges(randomLong()).addTypes(WORK);
+    var instance = new Resource().setIdAndRefreshEdges(randomLong()).addTypes(INSTANCE);
+    var instance2 = new Resource().setIdAndRefreshEdges(randomLong()).addTypes(INSTANCE);
     var edge1 = new ResourceEdge(instance, work, INSTANTIATES);
     var edge2 = new ResourceEdge(instance2, work, INSTANTIATES);
     work.addIncomingEdge(edge1);

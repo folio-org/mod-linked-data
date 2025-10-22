@@ -58,7 +58,7 @@ class RdfExportServiceTest {
   void throwsBadRequestException_ifResourceIsNotInstance() {
     // given
     var id = 123L;
-    var resource = new Resource().setId(id);
+    var resource = new Resource().setIdAndRefreshEdges(id);
     when(resourceRepository.findById(id)).thenReturn(Optional.of(resource));
     var expectedException = mock(RequestProcessingException.class);
     when(exceptionBuilder.badRequestException(any(), any())).thenReturn(expectedException);
@@ -74,7 +74,7 @@ class RdfExportServiceTest {
   void returnsRdfResourceDto_ifResourceIsInstance() throws IOException {
     // given
     var id = 123L;
-    var instance = new Resource().setId(id).addTypes(ResourceTypeDictionary.INSTANCE);
+    var instance = new Resource().setIdAndRefreshEdges(id).addTypes(ResourceTypeDictionary.INSTANCE);
     when(resourceRepository.findById(id)).thenReturn(Optional.of(instance));
     var instanceModel = new org.folio.ld.dictionary.model.Resource().setId(id);
     when(resourceModelMapper.toModel(instance)).thenReturn(instanceModel);

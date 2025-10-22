@@ -97,7 +97,7 @@ class SubjectMapperUnitTest {
         }
         """))
       .setLabel(label)
-      .setId(id)
+      .setIdAndRefreshEdges(id)
       .addTypes(CONCEPT, PLACE);
 
     // when

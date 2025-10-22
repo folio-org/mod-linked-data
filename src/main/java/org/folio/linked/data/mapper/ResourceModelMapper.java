@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper;
 
+import static java.util.Objects.nonNull;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.lang.annotation.ElementType;
@@ -18,6 +19,7 @@ import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -36,8 +38,16 @@ public abstract class ResourceModelMapper {
 
   @Mapping(target = "folioMetadata",
     expression = "java(model.getFolioMetadata() != null ? mapFolioMetadata(model.getFolioMetadata(), resource) : null)")
+  @Mapping(target = "id", ignore = true)
   protected abstract Resource toEntity(org.folio.ld.dictionary.model.Resource model,
                                        @Context CyclicGraphContext cycleContext);
+
+  @AfterMapping
+  protected void assignId(@MappingTarget Resource target, org.folio.ld.dictionary.model.Resource source) {
+    if (nonNull(source.getId())) {
+      target.setIdAndRefreshEdges(source.getId());
+    }
+  }
 
   @NotForGeneration
   public org.folio.ld.dictionary.model.Resource toModel(Resource entity) {

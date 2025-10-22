@@ -123,7 +123,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
         coreMapper.addOutgoingEdges(work, WorkRequest.class, List.of(hub.getHub()), getHubPredicate(hub).get())
       );
 
-    work.setId(hashService.hash(work));
+    work.setIdAndRefreshEdges(hashService.hash(work));
     return work;
   }
 

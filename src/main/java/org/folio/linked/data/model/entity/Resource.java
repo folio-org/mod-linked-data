@@ -144,6 +144,10 @@ public class Resource implements Persistable<Long> {
       .orElse(null);
   }
 
+  protected void setId(Long id) {
+    this.id = id;
+  }
+
   @Override
   public boolean isNew() {
     return !managed;
@@ -228,4 +232,17 @@ public class Resource implements Persistable<Long> {
       .anyMatch(this::isOfType);
   }
 
+  public Resource setIdAndRefreshEdges(@NonNull Long id) {
+    this.id = id;
+
+    if (nonNull(outgoingEdges)) {
+      this.outgoingEdges = new LinkedHashSet<>(outgoingEdges);
+    }
+
+    if (nonNull(incomingEdges)) {
+      this.incomingEdges = new LinkedHashSet<>(incomingEdges);
+    }
+
+    return this;
+  }
 }

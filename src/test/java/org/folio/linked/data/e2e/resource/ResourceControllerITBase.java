@@ -135,6 +135,7 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustratio
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIllustrationsTerm;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstance;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceReference;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstanceReferenceArray;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnQualifier;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnStatusLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toIsbnStatusValue;
@@ -433,6 +434,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(toWork(), notNullValue()))
+      .andExpect(jsonPath(toInstanceReferenceArray(toWork()), hasSize(1)))
       .andReturn().getResponse().getContentAsString();
     var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
     var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
@@ -1428,7 +1430,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .forEach(resource::addType);
     resource.setLabel(label);
     resource.setDoc(OBJECT_MAPPER.readTree(doc));
-    resource.setId(id);
+    resource.setIdAndRefreshEdges(id);
     return resource;
   }
 

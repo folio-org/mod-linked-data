@@ -175,8 +175,8 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
     instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
     instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
 
-    title.setId(hashService.hash(title));
-    instance.setId(hashService.hash(instance));
+    title.setIdAndRefreshEdges(hashService.hash(title));
+    instance.setIdAndRefreshEdges(hashService.hash(instance));
 
     return instance;
   }
