@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class InventoryInstanceEventHandler {
+public class InventoryInstanceEventHandler implements ExternalEventHandler<InventoryInstanceEvent> {
 
   private static final String INSTANCE_REINDEX_NOT_REQUIRED = "Ignoring InventoryInstanceEvent '{}',"
     + " reindexing not required.";

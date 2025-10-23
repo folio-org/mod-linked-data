@@ -17,6 +17,7 @@ import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
+import org.folio.linked.data.integration.kafka.listener.handler.srs.SourceRecordDomainEventHandlerImpl;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcBibService;
@@ -34,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class SourceRecordDomainEventHandlerTest {
 
   @InjectMocks
-  private SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
+  private SourceRecordDomainEventHandlerImpl sourceRecordDomainEventHandler;
 
   @Mock
   private MarcBib2ldMapper marcBib2ldMapper;

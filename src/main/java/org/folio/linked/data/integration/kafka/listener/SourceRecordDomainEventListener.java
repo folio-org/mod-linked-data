@@ -17,7 +17,7 @@ import org.apache.kafka.common.header.Headers;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.domain.dto.SourceRecordType;
-import org.folio.linked.data.integration.kafka.listener.handler.SourceRecordDomainEventHandler;
+import org.folio.linked.data.integration.kafka.listener.handler.srs.SourceRecordDomainEventHandler;
 import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
