@@ -275,7 +275,7 @@ class ResourceMarcBibServiceImplTest {
     var result = resourceMarcService.importMarcRecord(inventoryId, profileId);
 
     //then
-    verify(resourceEventsPublisher).emitEventsForUpdate(saveGraphResult);
+    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, null);
     verify(resourceProfileLinkingService).linkResourceToProfile(resourceEntity, profileId);
     verify(rawMarcService).saveRawMarc(resourceEntity, unmappedMarc);
     assertThat(result)

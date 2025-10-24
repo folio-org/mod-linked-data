@@ -97,7 +97,7 @@ class ResourceServiceImplTest {
 
     // then
     assertThat(response).isEqualTo(expectedResponse);
-    verify(resourceEventsPublisher).emitEventsForCreate(saveGraphResult);
+    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, null);
   }
 
   @Test
@@ -122,7 +122,7 @@ class ResourceServiceImplTest {
 
     // then
     assertThat(response).isEqualTo(expectedResponse);
-    verify(resourceEventsPublisher).emitEventsForCreate(saveGraphResult);
+    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, null);
     verify(resourceProfileLinkingService).linkResourceToProfile(work, profileId);
   }
 
@@ -239,7 +239,7 @@ class ResourceServiceImplTest {
     verify(resourceGraphService).breakEdgesAndDelete(oldWork);
     verify(resourceGraphService).saveMergingGraph(work);
     verify(folioExecutionContext).getUserId();
-    verify(resourceEventsPublisher).emitEventsForUpdate(oldWork, saveGraphResult);
+    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, oldWork);
     verify(resourceCopyService).copyEdgesAndProperties(oldWork, work);
   }
 
@@ -275,7 +275,7 @@ class ResourceServiceImplTest {
     assertThat(expectedDto).isEqualTo(result);
     verify(resourceGraphService).breakEdgesAndDelete(oldInstance);
     verify(resourceGraphService).saveMergingGraph(mapped);
-    verify(resourceEventsPublisher).emitEventsForUpdate(oldInstance, saveGraphResult);
+    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, oldInstance);
     verify(resourceCopyService).copyEdgesAndProperties(oldInstance, mapped);
     verify(rawMarcService).saveRawMarc(persisted, unmappedMarc);
     verify(resourceProfileLinkingService).linkResourceToProfile(persisted, profileId);
