@@ -20,6 +20,8 @@ folio:
         num-partitions: 1
       - name: linked-data.hub
         numPartitions: 1
+      - name: linked_data_import.output
+        numPartitions: 1
 
 mod-linked-data:
   reindex:
@@ -30,3 +32,4 @@ test:
     search-work: folio.test_tenant.linked-data.work
     search-hub: folio.test_tenant.linked-data.hub
     inventory-instance-ingress: folio.test_tenant.inventory.instance_ingress
+    ld-import-output: folio.test_tenant.linked_data_import.output

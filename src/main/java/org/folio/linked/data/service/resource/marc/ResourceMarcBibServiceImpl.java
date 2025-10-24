@@ -194,7 +194,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     var newResource = saveGraphResult.rootResource();
     refreshWork(newResource);
     saveUnmappedMarc(modelResource, newResource);
-    eventsPublisher.emitEventsForUpdate(saveGraphResult);
+    eventsPublisher.emitEventsForCreateAndUpdate(saveGraphResult, null);
     return newResource;
   }
 

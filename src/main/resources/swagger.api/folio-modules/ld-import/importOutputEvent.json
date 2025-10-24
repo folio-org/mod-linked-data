@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Linked Data Import result DTO",
+  "properties": {
+    "resources": {
+      "description": "Array of imported resources",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "resourcePlaceholder.json"
+      }
+    },
+    "tenant": {
+      "description": "Tenant id",
+      "type": "string"
+    },
+    "ts": {
+      "description": "Message timestamp",
+      "type": "string"
+    }
+  },
+  "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage",
+  "required": ["resources"]
+}

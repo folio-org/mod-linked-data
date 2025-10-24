@@ -72,7 +72,7 @@ class RdfImportServiceTest {
     // then
     assertThat(result.getResources()).hasSize(1);
     verify(metadataService).ensure(entity);
-    verify(resourceEventsPublisher).emitEventsForCreate(saveGraphResult);
+    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, null);
   }
 
   @Test

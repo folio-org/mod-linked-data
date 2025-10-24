@@ -1,4 +1,4 @@
-package org.folio.linked.data.integration.kafka.listener.handler;
+package org.folio.linked.data.integration.kafka.listener.handler.srs;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class SourceRecordDomainEventHandler {
+public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEventHandler {
 
   private static final String EVENT_SAVED = "SourceRecordDomainEvent [id {}] was saved as {} resource [id {}]";
   private static final String EMPTY_RESOURCE_MAPPED = "Empty resource(s) mapped from SourceRecordDomainEvent [id {}]";
@@ -43,6 +43,7 @@ public class SourceRecordDomainEventHandler {
   private final MarcBib2ldMapper marcBib2ldMapper;
 
   @SuppressWarnings("java:S125")
+  @Override
   public void handle(SourceRecordDomainEvent event, SourceRecordType recordType) {
     if (notProcessableEvent(event, recordType)) {
       return;

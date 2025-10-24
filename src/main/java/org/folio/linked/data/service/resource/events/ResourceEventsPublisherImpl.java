@@ -1,13 +1,14 @@
 package org.folio.linked.data.service.resource.events;
 
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toSet;
+
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.model.entity.event.ResourceDeletedEvent;
-import org.folio.linked.data.model.entity.event.ResourceEvent;
 import org.folio.linked.data.model.entity.event.ResourceReplacedEvent;
 import org.folio.linked.data.model.entity.event.ResourceUpdatedEvent;
 import org.folio.linked.data.service.resource.graph.SaveGraphResult;
@@ -20,44 +21,34 @@ public class ResourceEventsPublisherImpl implements ResourceEventsPublisher {
   private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
-  public void emitEventsForCreate(SaveGraphResult saveGraphResult) {
-    emitResourceCreatedEvents(saveGraphResult.newResources());
-  }
-
-  @Override
-  public void emitEventsForUpdate(SaveGraphResult saveGraphResult) {
-    emitEventsForUpdate(null, saveGraphResult);
-  }
-
-  @Override
-  public void emitEventsForUpdate(Resource oldResource, SaveGraphResult saveGraphResult) {
+  public void emitEventsForCreateAndUpdate(SaveGraphResult saveGraphResult, Resource oldResource) {
     var rootResource = saveGraphResult.rootResource();
-    var rootResourceEvent = (oldResource == null || Objects.equals(oldResource.getId(), rootResource.getId()))
-      ? new ResourceUpdatedEvent(rootResource)
-      : new ResourceReplacedEvent(oldResource, rootResource.getId());
+    if (isNull(oldResource) && saveGraphResult.newResources().contains(rootResource)) {
+      applicationEventPublisher.publishEvent(new ResourceCreatedEvent(rootResource));
+    } else if (isNull(oldResource) || Objects.equals(oldResource.getId(), rootResource.getId())) {
+      applicationEventPublisher.publishEvent(new ResourceUpdatedEvent(rootResource));
+    } else {
+      applicationEventPublisher.publishEvent(new ResourceReplacedEvent(oldResource, rootResource.getId()));
+    }
 
-    emitEvent(rootResourceEvent);
-    emitResourceCreatedEvents(
+    emitNewLinkedResourceEvents(
       saveGraphResult.newResources()
         .stream()
         .filter(r -> !Objects.equals(r.getId(), rootResource.getId()))
-        .collect(Collectors.toSet())
+        .collect(toSet())
     );
   }
 
   @Override
   public void emitEventForDelete(Resource deletedResource) {
-    emitEvent(new ResourceDeletedEvent(deletedResource));
+    applicationEventPublisher.publishEvent(new ResourceDeletedEvent(deletedResource));
   }
 
-  private void emitResourceCreatedEvents(Set<Resource> createdResources) {
+  private void emitNewLinkedResourceEvents(Set<Resource> createdResources) {
     createdResources
       .stream()
       .map(ResourceCreatedEvent::new)
-      .forEach(this::emitEvent);
+      .forEach(applicationEventPublisher::publishEvent);
   }
 
-  private void emitEvent(ResourceEvent event) {
-    applicationEventPublisher.publishEvent(event);
-  }
 }

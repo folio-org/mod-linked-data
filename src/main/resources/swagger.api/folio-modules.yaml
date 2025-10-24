@@ -32,3 +32,5 @@ components:
       $ref: folio-modules/inventory/inventoryInstanceEvent.json
     configurationsDto:
       $ref: folio-modules/configuration/configurations.json
+    importOutputEvent:
+      $ref: folio-modules/ld-import/importOutputEvent.json
