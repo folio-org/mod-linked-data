@@ -10,7 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
-import org.folio.linked.data.integration.kafka.listener.handler.InventoryInstanceEventHandler;
+import org.folio.linked.data.integration.kafka.listener.handler.ExternalEventHandler;
 import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
@@ -27,7 +27,7 @@ public class InventoryInstanceEventListener implements LinkedDataListener<Invent
   private static final String INVENTORY_INSTANCE_EVENT_LISTENER = "mod-linked-data-inventory-instance-event-listener";
   private static final String INVENTORY_EVENT_LISTENER_CONTAINER_FACTORY = "inventoryEventListenerContainerFactory";
   private final TenantScopedExecutionService tenantScopedExecutionService;
-  private final InventoryInstanceEventHandler inventoryInstanceEventHandler;
+  private final ExternalEventHandler<InventoryInstanceEvent> inventoryInstanceEventHandler;
   private final LinkedDataTenantService linkedDataTenantService;
 
   @KafkaListener(

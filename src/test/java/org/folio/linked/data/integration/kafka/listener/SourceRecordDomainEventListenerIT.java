@@ -18,7 +18,7 @@ import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.integration.kafka.listener.handler.SourceRecordDomainEventHandler;
+import org.folio.linked.data.integration.kafka.listener.handler.srs.SourceRecordDomainEventHandlerImpl;
 import org.folio.linked.data.test.TestUtil;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +34,7 @@ class SourceRecordDomainEventListenerIT {
   private KafkaTemplate<String, String> eventKafkaTemplate;
 
   @MockitoSpyBean
-  private SourceRecordDomainEventHandler sourceRecordDomainEventHandler;
+  private SourceRecordDomainEventHandlerImpl sourceRecordDomainEventHandler;
 
   @BeforeAll
   static void setup(@Autowired KafkaAdminService kafkaAdminService) {

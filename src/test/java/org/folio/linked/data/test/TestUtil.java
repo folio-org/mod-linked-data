@@ -44,6 +44,8 @@ import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.mapper.ResourceModelMapper;
+import org.folio.linked.data.mapper.ResourceModelMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.test.json.IdentifierFieldResponseDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
@@ -64,12 +66,14 @@ public class TestUtil {
   public static final String TENANT_ID = "test_tenant";
   public static final String RECORD_DOMAIN_EVENT_TOPIC = "srs.source_records";
   public static final String INVENTORY_INSTANCE_EVENT_TOPIC = "inventory.instance";
+  public static final String LD_IMPORT_OUTPUT_TOPIC = "linked_data_import.output";
   public static final RequestProcessingExceptionBuilder EMPTY_EXCEPTION_BUILDER
     = new RequestProcessingExceptionBuilder(new ErrorResponseConfig());
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper(EMPTY_EXCEPTION_BUILDER);
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
   public static final String SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/simple_work.json");
+  public static final ResourceModelMapper RESOURCE_MODEL_MAPPER = new ResourceModelMapperImpl();
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
   private static final String FOLIO_OKAPI_URL = "folio.okapi-url";

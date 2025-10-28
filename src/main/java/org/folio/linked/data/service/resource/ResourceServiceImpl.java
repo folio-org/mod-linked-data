@@ -154,7 +154,7 @@ public class ResourceServiceImpl implements ResourceService {
     metadataService.ensure(resourceToSave);
     var saveResult = resourceGraphService.saveMergingGraph(resourceToSave);
     resourceProfileService.linkResourceToProfile(saveResult.rootResource(), profileId);
-    eventsPublisher.emitEventsForCreate(saveResult);
+    eventsPublisher.emitEventsForCreateAndUpdate(saveResult, null);
     return saveResult.rootResource();
   }
 
@@ -170,7 +170,7 @@ public class ResourceServiceImpl implements ResourceService {
     var savedResource = saveResult.rootResource();
     rawMarcService.saveRawMarc(savedResource, unmappedMarc);
     resourceProfileService.linkResourceToProfile(savedResource, profileId);
-    eventsPublisher.emitEventsForUpdate(old, saveResult);
+    eventsPublisher.emitEventsForCreateAndUpdate(saveResult, old);
     return savedResource;
   }
 

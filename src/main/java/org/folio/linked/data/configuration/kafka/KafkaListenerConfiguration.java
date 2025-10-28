@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
 import org.folio.spring.tools.kafka.FolioKafkaProperties;
@@ -52,6 +53,13 @@ public class KafkaListenerConfiguration {
   }
 
   @Bean
+  public ConcurrentKafkaListenerContainerFactory<String, ImportOutputEvent> importOutputEventListenerContainerFactory(
+    ConsumerFactory<String, ImportOutputEvent> ldImportOutputEventConsumerFactory
+  ) {
+    return concurrentKafkaBatchListenerContainerFactory(ldImportOutputEventConsumerFactory);
+  }
+
+  @Bean
   public ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory() {
     return errorHandlingConsumerFactory(SourceRecordDomainEvent.class);
   }
@@ -59,6 +67,11 @@ public class KafkaListenerConfiguration {
   @Bean
   public ConsumerFactory<String, InventoryInstanceEvent> inventoryInstanceEventConsumerFactory() {
     return errorHandlingConsumerFactory(InventoryInstanceEvent.class);
+  }
+
+  @Bean
+  public ConsumerFactory<String, ImportOutputEvent> ldImportOutputEventConsumerFactory() {
+    return errorHandlingConsumerFactory(ImportOutputEvent.class);
   }
 
   private <K, V> ConcurrentKafkaListenerContainerFactory<K, V> concurrentKafkaBatchListenerContainerFactory(

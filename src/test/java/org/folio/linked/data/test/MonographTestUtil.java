@@ -89,6 +89,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTE
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
+import static org.folio.linked.data.test.TestUtil.RESOURCE_MODEL_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.test.TestUtil.readTree;
@@ -691,5 +692,33 @@ public class MonographTestUtil {
     work.setIdAndRefreshEdges(hashService.hash(work));
 
     return work;
+  }
+
+  public static org.folio.ld.dictionary.model.Resource getSimpleInstanceModel(Long id) {
+    var primaryTitle = createPrimaryTitle(id);
+    var lccn = createResource(
+      Map.of(NAME, List.of("lccn value")),
+      Set.of(IDENTIFIER, ID_LCCN),
+      Map.of(STATUS, List.of(status("lccn")))
+    ).setLabel("lccn value");
+
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
+    pred2OutgoingResources.put(MAP, List.of(lccn));
+
+    var instance = createResource(
+      Map.ofEntries(
+        entry(DIMENSIONS, List.of("20 cm")),
+        entry(EDITION, List.of("edition statement")),
+        entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),
+        entry(ISSUANCE, List.of("single unit")),
+        entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility"))
+      ),
+      Set.of(INSTANCE),
+      pred2OutgoingResources
+    );
+    instance.setLabel(primaryTitle.getLabel());
+
+    return RESOURCE_MODEL_MAPPER.toModel(instance);
   }
 }
