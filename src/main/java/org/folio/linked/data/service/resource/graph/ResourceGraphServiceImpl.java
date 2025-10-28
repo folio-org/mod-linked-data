@@ -51,8 +51,8 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
     var createdResources = filterResources(result, ResourceSaveResult::isCreated);
     var updatedResources = filterResources(result, ResourceSaveResult::isUpdated);
-    var persistedRootResource = filterResources(result, r -> r.resource().getId().equals(resource.getId()))
-      .stream()
+    var persistedRootResource = createdResources.stream()
+      .filter(r -> r.getId().equals(resource.getId()))
       .findFirst()
       .orElse(resource);
 
