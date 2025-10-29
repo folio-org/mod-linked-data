@@ -31,19 +31,20 @@ public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
-    if (parentDto instanceof WorkResponse workDto) {
-      var hub = new HubReferenceWithType();
+    if (parentDto instanceof WorkResponse workDto && resourceToConvert.getDoc() != null) {
       var doc = resourceToConvert.getDoc();
-      if (doc != null) {
-        hub.setHub(
-          new HubReference()
-            .addLabelItem(doc.get(PropertyDictionary.LABEL.getValue()).get(0).asText())
-            .addLinkItem(doc.get(PropertyDictionary.LINK.getValue()).get(0).asText())
-            .id(String.valueOf(resourceToConvert.getId()))
-        );
-        hub.setRelation(context.predicate().getUri());
-        workDto.addHubsItem(hub);
+      var hub = new HubReference()
+        .addLabelItem(doc.get(PropertyDictionary.LABEL.getValue()).get(0).asText())
+        .id(String.valueOf(resourceToConvert.getId()));
+      var linkNode = doc.get(PropertyDictionary.LINK.getValue());
+      if (linkNode != null && !linkNode.isEmpty()) {
+        hub.addLinkItem(linkNode.get(0).asText());
       }
+      workDto.addHubsItem(
+        new HubReferenceWithType()
+          .hub(hub)
+          .relation(context.predicate().getUri())
+      );
     }
     return parentDto;
   }
