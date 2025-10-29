@@ -28,8 +28,7 @@ class HubReferenceIT extends PostResourceIT {
               {
                 "_relation": "http://bibfra.me/vocab/lite/expressionOf",
                 "_hub": {
-                  "http://bibfra.me/vocab/lite/label": [ "hub label 1" ],
-                  "http://bibfra.me/vocab/lite/link": [ "hub link 1" ]
+                  "http://bibfra.me/vocab/lite/label": [ "hub label 1" ]
                 }
               },
               {
@@ -55,7 +54,6 @@ class HubReferenceIT extends PostResourceIT {
     assertThat(expressionOfHub.getId()).isEqualTo(-2469667353235297183L);
     assertThat(expressionOfHub.getLabel()).isEqualTo("hub label 1");
     assertThat(getProperty(expressionOfHub, "http://bibfra.me/vocab/lite/label")).isEqualTo("hub label 1");
-    assertThat(getProperty(expressionOfHub, "http://bibfra.me/vocab/lite/link")).isEqualTo("hub link 1");
 
     var relatedToHub = getFirstOutgoingResource(work, "http://bibfra.me/vocab/relation/relatedTo");
     validateResourceType(relatedToHub, "http://bibfra.me/vocab/lite/Hub");
@@ -74,7 +72,6 @@ class HubReferenceIT extends PostResourceIT {
 
     apiResponse
       .andExpect(jsonPath(expressionOfPath + "['http://bibfra.me/vocab/lite/label'][0]").value("hub label 1"))
-      .andExpect(jsonPath(expressionOfPath + "['http://bibfra.me/vocab/lite/link'][0]").value("hub link 1"))
       .andExpect(jsonPath(relatedToPath + "['http://bibfra.me/vocab/lite/label'][0]").value("hub label 2"))
       .andExpect(jsonPath(relatedToPath + "['http://bibfra.me/vocab/lite/link'][0]").value("hub link 2"));
   }
