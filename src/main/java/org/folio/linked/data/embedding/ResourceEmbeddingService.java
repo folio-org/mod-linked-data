@@ -20,11 +20,11 @@ public class ResourceEmbeddingService {
     if (resource.isOfType(PERSON)) {
       var name = String.join(", ", getPropertyValues(resource, NAME));
       var date = String.join(", ", getPropertyValues(resource, DATE));
-      var toEmbed = "This is a Person with name %s and date of birth: %s".formatted(name, date);
+      var toEmbed = "This is a Person with name %s and date of birth/death: %s".formatted(name, date);
       var embedding = embeddingService.generateEmbedding(toEmbed);
       System.out.printf("""
-        Text representation of the resource: %s
-        Vector embedding: %s
+        Text: %s
+        Vector: %s
         %n""", toEmbed, embedding);
       return embedding;
     }

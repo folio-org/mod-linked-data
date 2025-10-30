@@ -3,17 +3,17 @@ package org.folio.linked.data.repo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class ResourceEmbeddingRepositoryCustomImpl implements ResourceEmbeddingRepositoryCustom {
   @PersistenceContext
   private EntityManager entityManager;
-  @Autowired
-  private ResourceRepository resourceRepository;
+  private final ResourceRepository resourceRepository;
 
   @Override
   public Optional<SimilarResourceWithScore> findSimilarAuthority(List<Double> embeddingDbl, double minSimilarity) {
