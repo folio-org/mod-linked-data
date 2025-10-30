@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/okapi_modules
-    username: folio_admin
-    password: folio_admin
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: password
   kafka:
     bootstrap-servers: localhost:29092
 
