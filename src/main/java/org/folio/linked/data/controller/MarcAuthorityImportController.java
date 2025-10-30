@@ -11,6 +11,7 @@ import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/graph/import")
@@ -36,7 +37,11 @@ public class MarcAuthorityImportController {
         return ResponseEntity.badRequest().body(similar.get());
       }
     }
-    resourceGraphService.saveMergingGraph(entity);
-    return ResponseEntity.noContent().build();
+    var result = resourceGraphService.saveMergingGraph(entity);
+    return ResponseEntity.ok().body(Map.of(
+      "id", result.rootResource().getId(),
+      "label", result.rootResource().getLabel(),
+      "doc", result.rootResource().getDoc()
+    ));
   }
 }
