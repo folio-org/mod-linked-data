@@ -8,5 +8,5 @@ public interface ResourceEmbeddingRepositoryCustom {
 
   void upsertEmbedding(Long resourceHash, List<Double> embedding);
 
-  record SimilarResource(Long id, String label, double similarityScore) {}
+  record SimilarResource(String reason, Long existingResourceId, String label, double similarityScore) {}
 }

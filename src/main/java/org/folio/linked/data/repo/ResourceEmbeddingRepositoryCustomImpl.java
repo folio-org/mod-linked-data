@@ -19,9 +19,13 @@ public class ResourceEmbeddingRepositoryCustomImpl implements ResourceEmbeddingR
   public Optional<SimilarResource> findSimilarAuthority(List<Double> embeddingDbl, double minSimilarity) {
     var embedding = toEmbedding(embeddingDbl);
     String sql = """
-      SELECT resource_hash, embedding, 1 - (embedding <=> CAST(:embedding AS vector)) AS similarity FROM resource_embeddings
-      WHERE 1 - (embedding <=> CAST(:embedding AS vector)) > :minSimilarity
-      LIMIT 1""";
+      SELECT resource_hash,
+             embedding,
+             1 - (embedding <=> CAST(:embedding AS vector)) AS similarity
+        FROM resource_embeddings
+       WHERE 1 - (embedding <=> CAST(:embedding AS vector)) > :minSimilarity
+      LIMIT 1
+      """;
 
     Query query = entityManager.createNativeQuery(sql);
     query.setParameter("embedding", embedding);
@@ -36,7 +40,7 @@ public class ResourceEmbeddingRepositoryCustomImpl implements ResourceEmbeddingR
         var resourceHash = ((Number) row[0]).longValue();
         var resource = resourceRepository.findById(resourceHash).get();
         var similarity = ((Number) row[2]).doubleValue();
-        return new SimilarResource(resourceHash, resource.getLabel(), similarity);
+        return new SimilarResource("Similar resource already exist in graph", resourceHash, resource.getLabel(), similarity * 100);
       });
   }
 
@@ -45,8 +49,9 @@ public class ResourceEmbeddingRepositoryCustomImpl implements ResourceEmbeddingR
     var embeddingStr = toEmbedding(embedding); // Converts to "[0.1, 0.2, ...]"
     var sql = """
       INSERT INTO resource_embeddings (resource_hash, embedding)
-      VALUES (:resourceHash, CAST(:embedding AS vector))
-      ON CONFLICT (resource_hash) DO UPDATE SET embedding = EXCLUDED.embedding""";
+           VALUES (:resourceHash, CAST(:embedding AS vector))
+      ON CONFLICT (resource_hash) DO UPDATE SET embedding = EXCLUDED.embedding
+      """;
     Query query = entityManager.createNativeQuery(sql);
     query.setParameter("resourceHash", resourceHash);
     query.setParameter("embedding", embeddingStr);
@@ -61,9 +66,7 @@ public class ResourceEmbeddingRepositoryCustomImpl implements ResourceEmbeddingR
       if (i < embeddingArray.length - 1) sb.append(",");
     }
     sb.append("]");
-    String vectorLiteral = sb.toString();
-    System.out.println("Embedding: " + vectorLiteral);
-    return vectorLiteral;
+    return sb.toString();
   }
 
   private float[] toFloatArray(List<Double> doubleList) {
