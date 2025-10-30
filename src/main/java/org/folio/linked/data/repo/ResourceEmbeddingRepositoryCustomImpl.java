@@ -16,7 +16,7 @@ public class ResourceEmbeddingRepositoryCustomImpl implements ResourceEmbeddingR
   private ResourceRepository resourceRepository;
 
   @Override
-  public Optional<SimilarResource> findSimilarAuthority(List<Double> embeddingDbl, double minSimilarity) {
+  public Optional<SimilarResourceWithScore> findSimilarAuthority(List<Double> embeddingDbl, double minSimilarity) {
     var embedding = toEmbedding(embeddingDbl);
     String sql = """
       SELECT resource_hash,
@@ -40,7 +40,11 @@ public class ResourceEmbeddingRepositoryCustomImpl implements ResourceEmbeddingR
         var resourceHash = ((Number) row[0]).longValue();
         var resource = resourceRepository.findById(resourceHash).get();
         var similarity = ((Number) row[2]).doubleValue();
-        return new SimilarResource("Similar resource already exist in graph", resourceHash, resource.getLabel(), similarity * 100);
+        return new SimilarResourceWithScore(
+          "similar_resource_exists",
+          similarity * 100,
+          new SimilarResource(resourceHash, resource.getLabel())
+        );
       });
   }
 
