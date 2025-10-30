@@ -16,12 +16,14 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import org.folio.linked.data.embedding.ResourceEmbeddingService;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.ResourceGraphDtoMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
+import org.folio.linked.data.repo.ResourceEmbeddingRepositoryCustom;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.util.JsonUtils;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,8 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceGraphDtoMapper resourceDtoMapper;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ResourceEmbeddingService resourceEmbeddingService;
+  private final ResourceEmbeddingRepositoryCustom resourceEmbeddingRepository;
 
   @Override
   public ResourceGraphDto getResourceGraph(Long id) {
@@ -76,9 +80,16 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   }
 
   private ResourceSaveResult saveOrUpdate(Resource resource) {
-    return resourceRepo.findById(resource.getId())
+    ResourceSaveResult result = resourceRepo.findById(resource.getId())
       .map(existing -> updateResource(existing, resource))
       .orElseGet(() -> ResourceSaveResult.created(resourceRepo.save(resource)));
+
+    // --- Embed and store embedding ---
+    var embeddingVector = resourceEmbeddingService.embedResource(resource);
+    if (embeddingVector != null && !embeddingVector.isEmpty()) {
+      resourceEmbeddingRepository.upsertEmbedding(resource.getId(), embeddingVector);
+    }
+    return result;
   }
 
   private ResourceSaveResult updateResource(Resource existingResource, Resource incomingResource) {
