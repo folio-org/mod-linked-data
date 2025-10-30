@@ -13,9 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/graph")
+@RequestMapping("/graph/import")
 @RequiredArgsConstructor
-public class MarcAuthorityController {
+public class MarcAuthorityImportController {
   private static final Double SIMILARITY_THRESHOLD = 0.85;
 
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
@@ -23,20 +23,17 @@ public class MarcAuthorityController {
   private final ResourceEmbeddingRepositoryCustom resourceEmbeddingRepository;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
-  private final RequestProcessingExceptionBuilder exceptionBuilder;
-  private final ObjectMapper objectMapper;
 
   @PostMapping("/from-marc-authority")
   @SneakyThrows
-  public ResponseEntity<Void> create(@RequestBody String marc) {
+  public ResponseEntity<Object> create(@RequestBody String marc) {
     var resource = marcAuthority2ldMapper.fromMarcJson(marc);
     var entity = resourceModelMapper.toEntity(resource.stream().findFirst().get());
     var embedding = embeddingService.embedResource(entity);
     if (!embedding.isEmpty()) {
       var similar = resourceEmbeddingRepository.findSimilarAuthority(embedding, SIMILARITY_THRESHOLD);
       if (similar.isPresent()) {
-        var similarStr = objectMapper.writeValueAsString(similar.get());
-        throw exceptionBuilder.badRequestException("Similar resource already exist in graph " + similarStr, similarStr);
+        return ResponseEntity.badRequest().body(similar.get());
       }
     }
     resourceGraphService.saveMergingGraph(entity);
