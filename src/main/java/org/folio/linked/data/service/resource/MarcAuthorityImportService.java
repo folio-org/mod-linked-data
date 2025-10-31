@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MarcAuthorityImportService {
-  private static final Double SIMILARITY_THRESHOLD = 0.80;
+  private static final Double SIMILARITY_THRESHOLD = 0.85;
 
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
   private final ResourceEmbeddingService embeddingService;
