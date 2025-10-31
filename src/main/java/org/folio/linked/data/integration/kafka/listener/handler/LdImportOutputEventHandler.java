@@ -21,10 +21,13 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
   private final ResourceEventsPublisher resourceEventsPublisher;
 
   public void handle(ImportOutputEvent event) {
+    log.info("Handling LD Import output event with id {} for tenant {}", event.getTs(), event.getTenant());
     event.getResources().forEach(resource -> {
       try {
+        log.info("Saving LD Import output resource with id = {}", resource.getId());
         var entity = resourceModelMapper.toEntity(resource);
         var saveGraphResult = resourceGraphService.saveMergingGraph(entity);
+        log.info("Sending create/update events for LD Import output resource with id = {}", resource.getId());
         resourceEventsPublisher.emitEventsForCreateAndUpdate(saveGraphResult, null);
       } catch (Exception e) {
         log.error("Exception during LD Import output resource with id = {} saving", resource.getId(), e);
