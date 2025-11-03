@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
 public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOutputEvent> {
-  private final ObjectMapper objectMapper;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
   private final ResourceEventsPublisher resourceEventsPublisher;
@@ -28,7 +27,7 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
     log.info("Handling LD Import output event with id {} for tenant {}", event.getTs(), event.getTenant());
     event.getResources().forEach(rawResource -> {
       try {
-        var resource = objectMapper.readValue(rawResource, Resource.class);
+        var resource = new ObjectMapper().readValue(rawResource, Resource.class);
         log.debug("Saving LD Import output resource with id = {}", resource.getId());
         var entity = resourceModelMapper.toEntity(resource);
         var saveGraphResult = resourceGraphService.saveMergingGraph(entity);
@@ -43,7 +42,7 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
 
   private String readId(String rawResource) {
     try {
-      return objectMapper.readTree(rawResource).get("id").asText();
+      return new ObjectMapper().readTree(rawResource).get("id").asText();
     } catch (JsonProcessingException e) {
       return "unknown-id";
     }
