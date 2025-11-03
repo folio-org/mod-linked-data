@@ -11,17 +11,20 @@ import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.resource.ResourceTestRepository;
 import org.folio.spring.tools.kafka.KafkaAdminService;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,10 +79,23 @@ class LdImportOutputEventHandlerIT {
 
   @SneakyThrows
   private ProducerRecord<String, String> getImportOutputEventProducerRecord(List<Resource> resources) {
-    var topic = getTenantTopicName(LD_IMPORT_OUTPUT_TOPIC, TENANT_ID);
-    var value = OBJECT_MAPPER.writeValueAsString(Map.of("resources", resources));
     var headers = new ArrayList<>(defaultKafkaHeaders());
-    return new ProducerRecord(topic, 0, "1", value, headers);
+    var topic = getTenantTopicName(LD_IMPORT_OUTPUT_TOPIC, TENANT_ID);
+    var value = new ImportOutputEvent().resources(getSerializedResources(resources));
+    return new ProducerRecord(topic, 0, "1", OBJECT_MAPPER.writeValueAsString(value), headers);
+  }
+
+  private @NotNull List<String> getSerializedResources(List<Resource> resources) {
+    return resources.stream()
+      .map(r -> {
+        try {
+          return OBJECT_MAPPER.writeValueAsString(r);
+        } catch (JsonProcessingException e) {
+          return null;
+        }
+      })
+      .filter(Objects::nonNull)
+      .toList();
   }
 
   private void awaitAndAssertResource(Resource given) {

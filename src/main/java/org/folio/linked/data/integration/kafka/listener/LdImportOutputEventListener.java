@@ -46,7 +46,7 @@ public class LdImportOutputEventListener implements LinkedDataListener<ImportOut
   }
 
   private void handleRecord(ConsumerRecord<String, ImportOutputEvent> consumerRecord) {
-    log.info("Processing LD-Import output event with id {}", consumerRecord.value().getTs());
+    log.debug("Processing LD-Import output event with id {}", consumerRecord.value().getTs());
     var event = consumerRecord.value();
     tenantScopedExecutionService.executeAsyncWithRetry(
       consumerRecord.headers(),
