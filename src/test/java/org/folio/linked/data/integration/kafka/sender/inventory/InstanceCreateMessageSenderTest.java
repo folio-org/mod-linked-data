@@ -1,19 +1,14 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.model.entity.ResourceSource.MARC;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
-import org.folio.linked.data.domain.dto.InstanceIngressPayload;
 import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
-import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
@@ -48,26 +43,10 @@ class InstanceCreateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldDoNothing_ifGivenResourceIsInstanceMarcSourced() {
-    // given
-    var resource = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    resource.setFolioMetadata(new FolioMetadata(resource).setSource(MARC));
-
-    // when
-    producer.produce(resource);
-
-    // then
-    verifyNoInteractions(instanceIngressMessageProducer);
-  }
-
-  @Test
-  void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
+  void produce_shouldSendExpectedMessage() {
     // given
     var instance = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata = new FolioMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance.setFolioMetadata(metadata);
-    var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
-      .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
+    var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()));
     when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when

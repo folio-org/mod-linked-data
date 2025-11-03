@@ -2,19 +2,15 @@ package org.folio.linked.data.integration.kafka.sender.inventory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
-import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
-import org.folio.linked.data.domain.dto.InstanceIngressPayload;
 import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
-import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
@@ -50,14 +46,10 @@ class InstanceUpdateMessageSenderTest {
   }
 
   @Test
-  void produce_shouldSendExpectedMessage_ifGivenResourceIsInstanceLinkedDataSourced() {
+  void produce_shouldSendExpectedMessage_ifGivenResourceIsInstance() {
     // given
     var instance = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata = new FolioMetadata(instance).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance.setFolioMetadata(metadata);
-
-    var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()))
-      .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata.getInventoryId()));
+    var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()));
     when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 
     // when
@@ -74,19 +66,13 @@ class InstanceUpdateMessageSenderTest {
     // given
     var work = new Resource().setIdAndRefreshEdges(1L).addTypes(ResourceTypeDictionary.WORK);
     var instance1 = new Resource().setIdAndRefreshEdges(2L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata1 = new FolioMetadata(instance1).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance1.setFolioMetadata(metadata1);
     var instance2 = new Resource().setIdAndRefreshEdges(3L).addTypes(ResourceTypeDictionary.INSTANCE);
-    var metadata2 = new FolioMetadata(instance2).setSource(LINKED_DATA).setInventoryId(UUID.randomUUID().toString());
-    instance2.setFolioMetadata(metadata2);
     work.addIncomingEdge(new ResourceEdge(instance1, work, INSTANTIATES));
     work.addIncomingEdge(new ResourceEdge(instance2, work, INSTANTIATES));
 
-    var ingressEvent1 = new InstanceIngressEvent().id(String.valueOf(instance1.getId()))
-      .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata1.getInventoryId()));
+    var ingressEvent1 = new InstanceIngressEvent().id(String.valueOf(instance1.getId()));
     when(instanceIngressMessageMapper.toInstanceIngressEvent(instance1)).thenReturn(ingressEvent1);
-    var ingressEvent2 = new InstanceIngressEvent().id(String.valueOf(instance2.getId()))
-      .eventPayload(new InstanceIngressPayload().sourceRecordIdentifier(metadata2.getInventoryId()));
+    var ingressEvent2 = new InstanceIngressEvent().id(String.valueOf(instance2.getId()));
     when(instanceIngressMessageMapper.toInstanceIngressEvent(instance2)).thenReturn(ingressEvent2);
 
     // when
