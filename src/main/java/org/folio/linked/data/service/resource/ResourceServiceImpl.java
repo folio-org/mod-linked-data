@@ -71,7 +71,7 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   public void saveResource(org.folio.ld.dictionary.model.Resource resource) {
-    log.info("Saving resource [{}]", resource.getId());
+    log.debug("Saving resource with id [{}] out of incoming Model", resource.getId());
     var mapped = resourceModelMapper.toEntity(resource);
     metadataService.ensure(mapped);
     var saveResult = resourceGraphService.saveMergingGraph(mapped);

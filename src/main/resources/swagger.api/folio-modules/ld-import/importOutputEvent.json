@@ -7,7 +7,8 @@
       "description": "Array of imported resources",
       "type": "array",
       "items": {
-        "type": "object"
+        "type": "object",
+        "$ref": "resourcePlaceholder.json"
       }
     },
     "tenant": {

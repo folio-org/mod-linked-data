@@ -8,7 +8,6 @@ import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
-import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.spring.testing.type.UnitTest;
@@ -72,14 +71,8 @@ class ObjectMapperConfigTest {
     assertThat(result.getTs()).isEqualTo("1762182290977");
     assertThat(result.getTenant()).isEqualTo("test_tenant");
     assertThat(result.getResources()).hasSize(1);
-    result.getResources().stream()
-      // when
-      .map(r -> OBJECT_MAPPER.convertValue(r, Resource.class))
-      // then
-      .forEach(r -> {
-        assertThat(r.getTypes()).contains(INSTANCE);
-        assertThat(r.getOutgoingEdges()).hasSize(2);
-      });
+    assertThat(result.getResources().getFirst().getTypes()).contains(INSTANCE);
+    assertThat(result.getResources().getFirst().getOutgoingEdges()).hasSize(2);
   }
 
 }

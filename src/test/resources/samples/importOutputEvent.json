@@ -1,9 +1,9 @@
 {
-  "resources" : [ {
+  "resources" : {
     "id" : -1653433756816039203,
     "label" : "NOV_3_DEMO_2_1",
     "createdDate" : 1762182290941,
-    "types" : [ "INSTANCE" ],
+    "types" : "INSTANCE",
     "outgoingEdges" : [ {
       "source" : -1653433756816039203,
       "target" : {
@@ -13,7 +13,7 @@
           "http://bibfra.me/vocab/library/mainTitle" : [ "NOV_3_DEMO_2_1" ]
         },
         "createdDate" : 1762182290946,
-        "types" : [ "TITLE" ]
+        "types" : "TITLE"
       },
       "predicate" : "TITLE"
     }, {
@@ -22,7 +22,7 @@
         "id" : -31246595065653152,
         "label" : "NOV_3_DEMO_2_1",
         "createdDate" : 1762182290961,
-        "types" : [ "WORK" ],
+        "types" : "WORK",
         "outgoingEdges" : [ {
           "source" : -31246595065653152,
           "target" : 8510951411829723076,
@@ -36,7 +36,7 @@
               "http://bibfra.me/vocab/lite/label" : [ "Car manufacture conference, NY, 2024" ]
             },
             "createdDate" : 1762182290969,
-            "types" : [ "MEETING" ]
+            "types" : "MEETING"
           },
           "predicate" : "CONTRIBUTOR"
         }, {
@@ -48,7 +48,7 @@
               "http://bibfra.me/vocab/lite/label" : [ "Fujifilm, Tokio, 1957" ]
             },
             "createdDate" : 1762182290969,
-            "types" : [ "ORGANIZATION" ]
+            "types" : "ORGANIZATION"
           },
           "predicate" : "CONTRIBUTOR"
         }, {
@@ -60,7 +60,7 @@
               "http://bibfra.me/vocab/lite/label" : [ "Puerto, Fuerza Aérea, 1973" ]
             },
             "createdDate" : 1762182290964,
-            "types" : [ "JURISDICTION" ]
+            "types" : "JURISDICTION"
           },
           "predicate" : "CONTRIBUTOR"
         }, {
@@ -72,7 +72,7 @@
               "http://bibfra.me/vocab/lite/label" : [ "Jina Sackony, CA, 2011" ]
             },
             "createdDate" : 1762182290970,
-            "types" : [ "PERSON" ]
+            "types" : "PERSON"
           },
           "predicate" : "CREATOR"
         }, {
@@ -84,14 +84,14 @@
               "http://bibfra.me/vocab/lite/label" : [ "Julia Styles, MA, 2001" ]
             },
             "createdDate" : 1762182290971,
-            "types" : [ "FAMILY" ]
+            "types" : "FAMILY"
           },
           "predicate" : "CREATOR"
         } ]
       },
       "predicate" : "INSTANTIATES"
     } ]
-  } ],
+  },
   "tenant" : "test_tenant",
   "ts" : "1762182290977"
 }
