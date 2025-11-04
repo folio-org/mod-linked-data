@@ -1,13 +1,11 @@
 package org.folio.linked.data.configuration.kafka;
 
-import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
-import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import java.util.function.Supplier;
+import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
@@ -25,12 +23,8 @@ import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 @Configuration
-@RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
 public class KafkaListenerConfiguration {
-
-  private final KafkaProperties kafkaProperties;
-  private final ObjectMapper mapper;
 
   @Bean
   @ConfigurationProperties("folio.kafka")
@@ -60,33 +54,40 @@ public class KafkaListenerConfiguration {
   }
 
   @Bean
-  public ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory() {
-    return errorHandlingConsumerFactory(SourceRecordDomainEvent.class);
+  public ConsumerFactory<String, SourceRecordDomainEvent> srsDomainEventConsumerFactory(ObjectMapper mapper,
+                                                                                        KafkaProperties properties) {
+    return errorHandlingConsumerFactory(SourceRecordDomainEvent.class, mapper, properties);
   }
 
   @Bean
-  public ConsumerFactory<String, InventoryInstanceEvent> inventoryInstanceEventConsumerFactory() {
-    return errorHandlingConsumerFactory(InventoryInstanceEvent.class);
+  public ConsumerFactory<String, InventoryInstanceEvent> inventoryEventConsumerFactory(ObjectMapper mapper,
+                                                                                       KafkaProperties properties) {
+    return errorHandlingConsumerFactory(InventoryInstanceEvent.class, mapper, properties);
   }
 
   @Bean
-  public ConsumerFactory<String, ImportOutputEvent> ldImportOutputEventConsumerFactory() {
-    return errorHandlingConsumerFactory(ImportOutputEvent.class);
+  public ConsumerFactory<String, ImportOutputEvent> ldImportOutputEventConsumerFactory(ObjectMapper mapper,
+                                                                                       KafkaProperties properties) {
+    return errorHandlingConsumerFactory(ImportOutputEvent.class, mapper, properties);
   }
 
-  private <K, V> ConcurrentKafkaListenerContainerFactory<K, V> concurrentKafkaBatchListenerContainerFactory(
-    ConsumerFactory<K, V> consumerFactory) {
-    var factory = new ConcurrentKafkaListenerContainerFactory<K, V>();
+
+  private <V> ConcurrentKafkaListenerContainerFactory<String, V> concurrentKafkaBatchListenerContainerFactory(
+    ConsumerFactory<String, V> consumerFactory) {
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, V>();
     factory.setBatchListener(true);
     factory.setConsumerFactory(consumerFactory);
     return factory;
   }
 
-  public <T> ConsumerFactory<String, T> errorHandlingConsumerFactory(Class<T> clazz) {
-    var deserializer = new ErrorHandlingDeserializer<>(new JsonDeserializer<>(clazz, mapper));
-    Map<String, Object> config = new HashMap<>(kafkaProperties.buildConsumerProperties(null));
-    config.put(KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-    config.put(VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
-    return new DefaultKafkaConsumerFactory<>(config, new StringDeserializer(), deserializer);
+
+  private <V> ConsumerFactory<String, V> errorHandlingConsumerFactory(Class<V> clazz,
+                                                                      ObjectMapper mapper,
+                                                                      KafkaProperties kafkaProperties) {
+    var properties = new HashMap<>(kafkaProperties.buildConsumerProperties(null));
+    Supplier<Deserializer<String>> keyDeserializer = StringDeserializer::new;
+    Supplier<Deserializer<V>> valueDeserializer = () ->
+      new ErrorHandlingDeserializer<>(new JsonDeserializer<>(clazz, mapper));
+    return new DefaultKafkaConsumerFactory<>(properties, keyDeserializer, valueDeserializer);
   }
 }

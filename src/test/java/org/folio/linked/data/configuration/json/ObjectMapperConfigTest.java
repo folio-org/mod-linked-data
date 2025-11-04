@@ -1,11 +1,15 @@
 package org.folio.linked.data.configuration.json;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.test.TestUtil.EMPTY_EXCEPTION_BUILDER;
+import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -55,4 +59,27 @@ class ObjectMapperConfigTest {
   private static class TestClass {
     private String content;
   }
+
+  @Test
+  void importOutputEventDeserialization() throws JsonProcessingException {
+    // given
+    var value = loadResourceAsString("samples/importOutputEvent.json");
+
+    // when
+    var result = OBJECT_MAPPER.readValue(value, ImportOutputEvent.class);
+
+    // then
+    assertThat(result.getTs()).isEqualTo("1762182290977");
+    assertThat(result.getTenant()).isEqualTo("test_tenant");
+    assertThat(result.getResources()).hasSize(1);
+    result.getResources().stream()
+      // when
+      .map(r -> OBJECT_MAPPER.convertValue(r, Resource.class))
+      // then
+      .forEach(r -> {
+        assertThat(r.getTypes()).contains(INSTANCE);
+        assertThat(r.getOutgoingEdges()).hasSize(2);
+      });
+  }
+
 }
