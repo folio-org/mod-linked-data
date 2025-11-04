@@ -72,7 +72,7 @@
 - Index new Hubs in mod-search [MODLD-894](https://folio-org.atlassian.net/browse/MODLD-894)
 - Reinitialize edges after setting resource's ID. [MODLD-896](https://folio-org.atlassian.net/browse/MODLD-896)
 - Update HubReferenceMapperUnit to support RELATED_TO predicate. [MODLD-893](https://folio-org.atlassian.net/browse/MODLD-893)
-- LdImportOutputEvent Listener and Handler introduced. [MODLD-873](https://folio-org.atlassian.net/browse/MODLD-873)
+- LdImportOutputEvent Listener and Handler introduced. Optimized ResourceEventsPublisher. [MODLD-873](https://folio-org.atlassian.net/browse/MODLD-873)
 - Gracefully handle missing LINK property of Hub resource [MODLD-884](https://folio-org.atlassian.net/browse/MODLD-884)
 
 ## 1.0.4 (04-24-2025)
