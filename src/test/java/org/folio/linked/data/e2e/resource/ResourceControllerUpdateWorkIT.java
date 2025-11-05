@@ -1,6 +1,5 @@
 package org.folio.linked.data.e2e.resource;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.EXPRESSION_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
@@ -33,7 +32,6 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
-import org.folio.linked.data.test.resource.ResourceTestRepository;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.marc4ld.service.marc2ld.reader.MarcReaderProcessor;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,8 +51,6 @@ class ResourceControllerUpdateWorkIT extends ITBase {
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
   private MarcReaderProcessor marcReader;
-  @Autowired
-  private ResourceTestRepository resourceTestRepository;
 
   @BeforeEach
   @Override
@@ -104,17 +100,13 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       .path("http://bibfra.me/vocab/lite/Work")
       .path("id")
       .asLong();
-
-    var work1Found = resourceTestRepository.findByIdWithEdgesLoaded(work1.getId());
-    assertThat(work1Found).isPresent();
-    assertThat(work1Found.get().getOutgoingEdges().stream().anyMatch(e ->
+    var work1Found = performGetGraph(work1.getId());
+    var work2Found = performGetGraph(updatedWork2Id);
+    assertTrue(work1Found.getOutgoingEdges().stream().anyMatch(e ->
       EXPRESSION_OF.getUri().equals(e.getPredicate().getUri()) && updatedWork2Id == e.getTarget().getId())
     );
-
-    var work2Found = resourceTestRepository.findByIdWithEdgesLoaded(updatedWork2Id);
-    assertThat(work2Found).isPresent();
-    assertThat(work2Found.get().getIncomingEdges().stream().anyMatch(e ->
-      EXPRESSION_OF.getUri().equals(e.getPredicate().getUri()) && work1.getId().equals(e.getTarget().getId()))
+    assertTrue(work2Found.getIncomingEdges().stream().anyMatch(e ->
+      EXPRESSION_OF.getUri().equals(e.getPredicate().getUri()) && work1.getId().equals(e.getSource().getId()))
     );
   }
 
@@ -246,14 +238,14 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     return isDf100Valid && isDf245Valid;
   }
 
-  private JsonNode performGetGraph(Long resourceId) throws Exception {
+  private org.folio.ld.dictionary.model.Resource performGetGraph(Long resourceId) throws Exception {
     var requestBuilder = get(RESOURCE_URL + "/" + resourceId + "/graph")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
     var response = mockMvc.perform(requestBuilder)
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString();
-    return objectMapper.readTree(response);
+    return objectMapper.readValue(response, org.folio.ld.dictionary.model.Resource.class);
   }
 
   private JsonNode putResource(Long resourceId, String dto) throws Exception {

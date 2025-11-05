@@ -25,6 +25,15 @@ import org.junit.jupiter.params.provider.MethodSource;
 @UnitTest
 class ResourceUtilsTest {
 
+  private static Stream<Arguments> dataProvider() {
+    return Stream.of(
+      Arguments.of(new Resource().addTypes(INSTANCE), List.of("http://bibfra.me/vocab/lite/Instance")),
+      Arguments.of(new Resource().addTypes(WORK), List.of("http://bibfra.me/vocab/lite/Work")),
+      Arguments.of(new Resource().addTypes(CONCEPT, PERSON),
+        List.of("http://bibfra.me/vocab/lite/Concept", "http://bibfra.me/vocab/lite/Person"))
+    );
+  }
+
   @Test
   void getFirstValue_shouldReturnEmptyString_ifGivenSupplierIsNull() {
     // given
@@ -207,15 +216,6 @@ class ResourceUtilsTest {
       .containsExactlyInAnyOrderElementsOf(expectedTypes);
   }
 
-  private static Stream<Arguments> dataProvider() {
-    return Stream.of(
-      Arguments.of(new Resource().addTypes(INSTANCE), List.of("http://bibfra.me/vocab/lite/Instance")),
-      Arguments.of(new Resource().addTypes(WORK), List.of("http://bibfra.me/vocab/lite/Work")),
-      Arguments.of(new Resource().addTypes(CONCEPT, PERSON),
-        List.of("http://bibfra.me/vocab/lite/Concept", "http://bibfra.me/vocab/lite/Person"))
-    );
-  }
-
   @Test
   void copyWithoutPreferred_removesPreferredProperty_whenDocContainsPreferred() {
     // given
@@ -261,4 +261,5 @@ class ResourceUtilsTest {
     assertThat(result.has("otherProperty")).isTrue();
     assertThat(result.get("otherProperty").asText()).isEqualTo("value");
   }
+
 }

@@ -2,7 +2,6 @@ package org.folio.linked.data.mapper;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toCollection;
-import static org.folio.linked.data.util.ResourceUtils.ensureEdgesLimit;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.lang.annotation.ElementType;
@@ -52,7 +51,7 @@ public abstract class ResourceModelMapper {
 
   @NotForGeneration
   public org.folio.ld.dictionary.model.Resource toModel(Resource entity) {
-    return toModel(ensureEdgesLimit(entity), new CyclicGraphContext());
+    return toModel(entity, new CyclicGraphContext());
   }
 
   protected abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity,
