@@ -1,0 +1,97 @@
+{
+  "resources" : {
+    "id" : -1653433756816039203,
+    "label" : "NOV_3_DEMO_2_1",
+    "createdDate" : 1762182290941,
+    "types" : "INSTANCE",
+    "outgoingEdges" : [ {
+      "source" : -1653433756816039203,
+      "target" : {
+        "id" : 8510951411829723076,
+        "label" : "NOV_3_DEMO_2_1",
+        "doc" : {
+          "http://bibfra.me/vocab/library/mainTitle" : [ "NOV_3_DEMO_2_1" ]
+        },
+        "createdDate" : 1762182290946,
+        "types" : "TITLE"
+      },
+      "predicate" : "TITLE"
+    }, {
+      "source" : -1653433756816039203,
+      "target" : {
+        "id" : -31246595065653152,
+        "label" : "NOV_3_DEMO_2_1",
+        "createdDate" : 1762182290961,
+        "types" : "WORK",
+        "outgoingEdges" : [ {
+          "source" : -31246595065653152,
+          "target" : 8510951411829723076,
+          "predicate" : "TITLE"
+        }, {
+          "source" : -31246595065653152,
+          "target" : {
+            "id" : -6397730821064443625,
+            "label" : "Car manufacture conference, NY, 2024",
+            "doc" : {
+              "http://bibfra.me/vocab/lite/label" : [ "Car manufacture conference, NY, 2024" ]
+            },
+            "createdDate" : 1762182290969,
+            "types" : "MEETING"
+          },
+          "predicate" : "CONTRIBUTOR"
+        }, {
+          "source" : -31246595065653152,
+          "target" : {
+            "id" : 7705424726444592200,
+            "label" : "Fujifilm, Tokio, 1957",
+            "doc" : {
+              "http://bibfra.me/vocab/lite/label" : [ "Fujifilm, Tokio, 1957" ]
+            },
+            "createdDate" : 1762182290969,
+            "types" : "ORGANIZATION"
+          },
+          "predicate" : "CONTRIBUTOR"
+        }, {
+          "source" : -31246595065653152,
+          "target" : {
+            "id" : 7153248757047281028,
+            "label" : "Puerto, Fuerza Aérea, 1973",
+            "doc" : {
+              "http://bibfra.me/vocab/lite/label" : [ "Puerto, Fuerza Aérea, 1973" ]
+            },
+            "createdDate" : 1762182290964,
+            "types" : "JURISDICTION"
+          },
+          "predicate" : "CONTRIBUTOR"
+        }, {
+          "source" : -31246595065653152,
+          "target" : {
+            "id" : 2398657963381151321,
+            "label" : "Jina Sackony, CA, 2011",
+            "doc" : {
+              "http://bibfra.me/vocab/lite/label" : [ "Jina Sackony, CA, 2011" ]
+            },
+            "createdDate" : 1762182290970,
+            "types" : "PERSON"
+          },
+          "predicate" : "CREATOR"
+        }, {
+          "source" : -31246595065653152,
+          "target" : {
+            "id" : 2816088933825470931,
+            "label" : "Julia Styles, MA, 2001",
+            "doc" : {
+              "http://bibfra.me/vocab/lite/label" : [ "Julia Styles, MA, 2001" ]
+            },
+            "createdDate" : 1762182290971,
+            "types" : "FAMILY"
+          },
+          "predicate" : "CREATOR"
+        } ]
+      },
+      "predicate" : "INSTANTIATES"
+    } ]
+  },
+  "tenant" : "test_tenant",
+  "ts" : "1762182290977"
+}

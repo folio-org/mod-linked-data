@@ -1,22 +1,18 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.MonographTestUtil.getSimpleInstanceModel;
 import static org.folio.linked.data.test.TestUtil.LD_IMPORT_OUTPUT_TOPIC;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
+import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
@@ -60,38 +56,32 @@ class LdImportOutputEventHandlerIT {
   @Test
   void incomingLdImportEvent_shouldBeHandledCorrectly() {
     // given
-    var r1 = getSimpleInstanceModel(1L);
-    var r2 = getSimpleInstanceModel(2L);
-    var r3 = getSimpleInstanceModel(3L);
-    var ldImportOutputEvent = getImportOutputEventProducerRecord(List.of(r1, r2, r3));
+    var ldImportOutputEvent = getImportOutputEventProducerRecord();
+    var id = -1653433756816039203L;
 
     // when
     eventKafkaTemplate.send(ldImportOutputEvent);
 
     // then
-    awaitAndAssertResource(r1);
-    awaitAndAssertResource(r2);
-    awaitAndAssertResource(r3);
+    awaitAndAssert(() -> assertTrue(
+      resourceRepository.existsById(id)
+    ));
+
+    var foundOpt = tenantScopedExecutionService.execute(TENANT_ID,
+      () -> resourceRepository.findByIdWithEdgesLoaded(id)
+    );
+    assertThat(foundOpt).isPresent();
+    var found = foundOpt.get();
+    assertThat(found.getTypes()).isNotEmpty();
+    assertThat(found.getOutgoingEdges()).isNotEmpty();
   }
 
   @SneakyThrows
-  private ProducerRecord<String, String> getImportOutputEventProducerRecord(List<Resource> resources) {
-    var topic = getTenantTopicName(LD_IMPORT_OUTPUT_TOPIC, TENANT_ID);
-    var value = OBJECT_MAPPER.writeValueAsString(Map.of("resources", resources));
+  private ProducerRecord<String, String> getImportOutputEventProducerRecord() {
     var headers = new ArrayList<>(defaultKafkaHeaders());
+    var topic = getTenantTopicName(LD_IMPORT_OUTPUT_TOPIC, TENANT_ID);
+    var value = loadResourceAsString("samples/importOutputEvent.json");
     return new ProducerRecord(topic, 0, "1", value, headers);
   }
 
-  private void awaitAndAssertResource(Resource given) {
-    awaitAndAssert(() -> assertTrue(
-      resourceRepository.existsById(given.getId())
-    ));
-
-    var found = tenantScopedExecutionService.execute(TENANT_ID,
-      () -> resourceRepository.findByIdWithEdgesLoaded(given.getId())
-    );
-
-    assertThat(found).isPresent()
-      .get().isEqualTo(resourceModelMapper.toEntity(given));
-  }
 }

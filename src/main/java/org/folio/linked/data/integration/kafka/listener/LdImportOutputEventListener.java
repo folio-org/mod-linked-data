@@ -36,6 +36,7 @@ public class LdImportOutputEventListener implements LinkedDataListener<ImportOut
     concurrency = "#{folioKafkaProperties.listener['ld-import-output-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['ld-import-output-event'].topicPattern}")
   public void handleImportOutputEvent(List<ConsumerRecord<String, ImportOutputEvent>> consumerRecords) {
+    log.info("Received {} LD-Import output events", consumerRecords.size());
     handle(consumerRecords, this::handleRecord, linkedDataTenantService, log);
   }
 
@@ -45,6 +46,7 @@ public class LdImportOutputEventListener implements LinkedDataListener<ImportOut
   }
 
   private void handleRecord(ConsumerRecord<String, ImportOutputEvent> consumerRecord) {
+    log.debug("Processing LD-Import output event with id {}", consumerRecord.value().getTs());
     var event = consumerRecord.value();
     tenantScopedExecutionService.executeAsyncWithRetry(
       consumerRecord.headers(),

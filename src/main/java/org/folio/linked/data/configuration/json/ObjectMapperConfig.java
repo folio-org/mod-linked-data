@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.SourceRecordDomainEventDeserializer;
@@ -20,14 +21,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-@Primary
 @Configuration
 public class ObjectMapperConfig {
 
   @Bean
+  @Primary
   public ObjectMapper objectMapper(RequestProcessingExceptionBuilder exceptionBuilder) {
     var om = new ObjectMapper()
       .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+      .configure(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID, true)
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
       .addMixIn(MarcRecord.class, MarcRecordSerializationConfig.class);
