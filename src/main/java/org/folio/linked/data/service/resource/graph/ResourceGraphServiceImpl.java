@@ -15,9 +15,8 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.mapper.dto.ResourceGraphDtoMapper;
+import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -35,14 +34,14 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
-  private final ResourceGraphDtoMapper resourceDtoMapper;
+  private final ResourceModelMapper resourceModelMapper;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
-  public ResourceGraphDto getResourceGraph(Long id) {
+  public org.folio.ld.dictionary.model.Resource getResourceGraph(Long id) {
     var resource = resourceRepo.findById(id)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
-    return resourceDtoMapper.toResourceGraphDto(resource);
+    return resourceModelMapper.toModel(resource);
   }
 
   @Override

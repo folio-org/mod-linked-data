@@ -188,7 +188,7 @@ paths:
               schema:
                 type: array
                 items:
-                  "$ref": "schema/graphDto/resourceSubgraphViewDto.json"
+                  $ref: common/resourcePlaceholder.json
                 uniqueItems: true
                 description: Array of Resources.
 
@@ -374,7 +374,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: schema/graphDto/resourceGraphDto.json
+                $ref: common/resourcePlaceholder.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':

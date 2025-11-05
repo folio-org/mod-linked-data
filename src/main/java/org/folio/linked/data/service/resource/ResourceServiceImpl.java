@@ -14,12 +14,11 @@ import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.ResourceSubgraphViewDto;
 import org.folio.linked.data.domain.dto.SearchResourcesRequestDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.mapper.dto.ResourceSubgraphViewDtoMapper;
+import org.folio.linked.data.mapper.dto.ResourceSubgraphViewMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceSubgraphView;
@@ -56,7 +55,7 @@ public class ResourceServiceImpl implements ResourceService {
   private final RawMarcService rawMarcService;
   private final ResourceProfileLinkingService resourceProfileService;
   private final ResourceSubgraphViewRepository resourceSubgraphViewRepository;
-  private final ResourceSubgraphViewDtoMapper resourceSubgraphViewDtoMapper;
+  private final ResourceSubgraphViewMapper resourceSubgraphViewMapper;
   private final ResourceModelMapper resourceModelMapper;
 
   @Override
@@ -95,11 +94,11 @@ public class ResourceServiceImpl implements ResourceService {
 
   @Override
   @Transactional(readOnly = true)
-  public Set<ResourceSubgraphViewDto> searchResources(SearchResourcesRequestDto request) {
+  public Set<org.folio.ld.dictionary.model.Resource> searchResources(SearchResourcesRequestDto request) {
     return resourceSubgraphViewRepository.findByInventoryIdIn(request.getInventoryIds())
       .stream()
       .map(ResourceSubgraphView::getResourceSubgraph)
-      .flatMap(resourceJson -> resourceSubgraphViewDtoMapper.fromJson(resourceJson).stream())
+      .flatMap(resourceJson -> resourceSubgraphViewMapper.fromJson(resourceJson).stream())
       .collect(Collectors.toSet());
   }
 

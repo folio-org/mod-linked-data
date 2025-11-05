@@ -5,6 +5,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -40,6 +41,7 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 @UtilityClass
 public class ResourceUtils {
 
+  private static final int EDGES_LIMIT = 1000;
   private static final Pattern DATE_CLEAN_PATTERN = Pattern.compile("[^0-9T:\\-+.]");
   private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
     .appendOptional(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
@@ -183,5 +185,15 @@ public class ResourceUtils {
   public static boolean hasEdge(Resource resource, PredicateDictionary predicate) {
     return resource.getOutgoingEdges().stream()
       .anyMatch(re -> predicate.getUri().equals(re.getPredicate().getUri()));
+  }
+
+  public static Resource ensureEdgesLimit(Resource resource) {
+    if (resource.getOutgoingEdges().size() > EDGES_LIMIT) {
+      resource.setOutgoingEdges(resource.getOutgoingEdges().stream().limit(EDGES_LIMIT).collect(toSet()));
+    }
+    if (resource.getIncomingEdges().size() > EDGES_LIMIT) {
+      resource.setIncomingEdges(resource.getIncomingEdges().stream().limit(EDGES_LIMIT).collect(toSet()));
+    }
+    return resource;
   }
 }

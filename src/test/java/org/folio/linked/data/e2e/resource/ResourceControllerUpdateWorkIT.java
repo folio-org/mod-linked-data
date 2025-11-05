@@ -33,6 +33,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
+import org.folio.linked.data.test.resource.ResourceTestRepository;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.marc4ld.service.marc2ld.reader.MarcReaderProcessor;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,6 +53,8 @@ class ResourceControllerUpdateWorkIT extends ITBase {
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
   private MarcReaderProcessor marcReader;
+  @Autowired
+  private ResourceTestRepository resourceTestRepository;
 
   @BeforeEach
   @Override
@@ -90,33 +93,29 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     work1.addOutgoingEdge(edge);
     work2.addIncomingEdge(edge);
     resourceTestService.saveGraph(work2);
+    var workUpdateRequestDto = getWorkRequestDto("updated work2", null, null);
 
     // when
-    var workUpdateRequestDto = getWorkRequestDto("updated work2", null, null);
     var putApiResponse = putResource(work2.getId(), workUpdateRequestDto);
+
+    // then
     var updatedWork2Id = putApiResponse
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
       .path("id")
       .asLong();
 
-    // then
-    var work1Graph = performGetGraph(work1.getId());
-    var work2Graph = performGetGraph(updatedWork2Id);
+    var work1Found = resourceTestRepository.findByIdWithEdgesLoaded(work1.getId());
+    assertThat(work1Found).isPresent();
+    assertThat(work1Found.get().getOutgoingEdges().stream().anyMatch(e ->
+      EXPRESSION_OF.getUri().equals(e.getPredicate().getUri()) && updatedWork2Id == e.getTarget().getId())
+    );
 
-    var work1OutgoingExpressionOf = work1Graph
-      .path("outgoingEdges")
-      .path("edges")
-      .path("http://bibfra.me/vocab/lite/expressionOf");
-    assertThat(work1OutgoingExpressionOf.isArray()).isTrue();
-    assertThat(work1OutgoingExpressionOf.toString()).contains(String.valueOf(updatedWork2Id));
-
-    var work2IncomingExpressionOf = work2Graph
-      .path("incomingEdges")
-      .path("edges")
-      .path("http://bibfra.me/vocab/lite/expressionOf");
-    assertThat(work2IncomingExpressionOf.isArray()).isTrue();
-    assertThat(work2IncomingExpressionOf.toString()).contains(String.valueOf(work1.getId()));
+    var work2Found = resourceTestRepository.findByIdWithEdgesLoaded(updatedWork2Id);
+    assertThat(work2Found).isPresent();
+    assertThat(work2Found.get().getIncomingEdges().stream().anyMatch(e ->
+      EXPRESSION_OF.getUri().equals(e.getPredicate().getUri()) && work1.getId().equals(e.getTarget().getId()))
+    );
   }
 
   private String getWorkRequestDto(String label, Long personId, Long instanceId) {
