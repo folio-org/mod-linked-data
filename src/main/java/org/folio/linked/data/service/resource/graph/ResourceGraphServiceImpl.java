@@ -2,6 +2,7 @@ package org.folio.linked.data.service.resource.graph;
 
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toCollection;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
@@ -15,6 +16,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;
@@ -41,7 +43,21 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   public org.folio.ld.dictionary.model.Resource getResourceGraph(Long id) {
     var resource = resourceRepo.findById(id)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id)));
-    return resourceModelMapper.toModel(resource);
+    var modelWithNoIncomingEdges = resourceModelMapper.toModel(resource);
+    return withIncomingEdges(modelWithNoIncomingEdges, resource);
+  }
+
+  private org.folio.ld.dictionary.model.Resource withIncomingEdges(org.folio.ld.dictionary.model.Resource model,
+                                                                   Resource resource) {
+    var ies = resource.getIncomingEdges().stream()
+      .map(ie -> {
+        var sourceModel = resourceModelMapper.toModel(ie.getSource());
+        var predicateModel = PredicateDictionary.fromUri(ie.getPredicate().getUri()).orElseThrow();
+        return new org.folio.ld.dictionary.model.ResourceEdge(sourceModel, model, predicateModel);
+      })
+      .collect(toCollection(LinkedHashSet::new));
+    model.setIncomingEdges(ies);
+    return model;
   }
 
   @Override
@@ -106,7 +122,7 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
     return mergedDoc;
   }
 
-  private static void resetPreferredFlagWithIncomingValue(Resource incomingResource, JsonNode mergedDoc) {
+  private void resetPreferredFlagWithIncomingValue(Resource incomingResource, JsonNode mergedDoc) {
     var resourcePreferred = RESOURCE_PREFERRED.getValue();
     ofNullable(incomingResource.getDoc())
       .flatMap(incomingDoc -> JsonUtils.getProperty(incomingDoc, resourcePreferred))

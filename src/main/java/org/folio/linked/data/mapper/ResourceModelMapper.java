@@ -54,6 +54,7 @@ public abstract class ResourceModelMapper {
     return toModel(entity, new CyclicGraphContext());
   }
 
+  @Mapping(ignore = true, target = "incomingEdges")
   protected abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity,
                                                                     @Context CyclicGraphContext cycleContext);
 
