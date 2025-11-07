@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper;
 
 import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toCollection;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +13,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.FolioMetadata;
@@ -62,7 +62,7 @@ public abstract class ResourceModelMapper {
     return typeEntities.stream()
       .map(typeEntity -> ResourceTypeDictionary.fromUri(typeEntity.getUri()).orElse(null))
       .filter(Objects::nonNull)
-      .collect(Collectors.toCollection(LinkedHashSet::new));
+      .collect(toCollection(LinkedHashSet::new));
   }
 
   protected PredicateDictionary map(PredicateEntity predicateEntity) {

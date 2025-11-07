@@ -184,4 +184,5 @@ public class ResourceUtils {
     return resource.getOutgoingEdges().stream()
       .anyMatch(re -> predicate.getUri().equals(re.getPredicate().getUri()));
   }
+
 }

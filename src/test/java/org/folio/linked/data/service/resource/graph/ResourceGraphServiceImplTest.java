@@ -8,10 +8,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
-import org.folio.linked.data.domain.dto.ResourceGraphDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.mapper.dto.ResourceGraphDtoMapper;
+import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
@@ -34,7 +33,7 @@ class ResourceGraphServiceImplTest {
   @Mock
   private ResourceEdgeRepository edgeRepo;
   @Mock
-  private ResourceGraphDtoMapper resourceDtoMapper;
+  private ResourceModelMapper resourceModelMapper;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
 
@@ -43,16 +42,16 @@ class ResourceGraphServiceImplTest {
     //given
     var id = randomLong();
     var resource = new Resource().setIdAndRefreshEdges(id);
-    var expectedResourceGraphDto = new ResourceGraphDto().id(String.valueOf(id));
+    var expectedResourceModel = new org.folio.ld.dictionary.model.Resource().setId(id);
 
     when(resourceRepo.findById(id)).thenReturn(Optional.of(resource));
-    when(resourceDtoMapper.toResourceGraphDto(resource)).thenReturn(expectedResourceGraphDto);
+    when(resourceModelMapper.toModel(resource)).thenReturn(expectedResourceModel);
 
     //when
     var resourceGraphDto = resourceGraphService.getResourceGraph(id);
 
     //then
-    assertThat(expectedResourceGraphDto).isEqualTo(resourceGraphDto);
+    assertThat(expectedResourceModel).isEqualTo(resourceGraphDto);
   }
 
   @Test

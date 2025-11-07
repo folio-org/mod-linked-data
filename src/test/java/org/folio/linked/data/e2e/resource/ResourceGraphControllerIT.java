@@ -1,12 +1,12 @@
 package org.folio.linked.data.e2e.resource;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -15,11 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import org.folio.linked.data.domain.dto.ResourceGraphDto;
+import java.util.Set;
+import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
@@ -58,43 +56,34 @@ class ResourceGraphControllerIT extends ITBase {
     var providerEventResource = resourceTestService.saveGraph(providerEvent);
 
     // when
-    var providerEventResultActions = performGet(providerEventResource.getId());
+    var providerEventResponse = performGet(providerEventResource.getId())
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
 
     // then
-    var providerEventResponse = providerEventResultActions
+    var providerEventModel = objectMapper.readValue(providerEventResponse, Resource.class);
+    assertNotNull(providerEventModel.getId());
+    assertThat(providerEventModel.getTypes()).isEqualTo(Set.of(PROVIDER_EVENT));
+    assertThat(providerEventModel.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("production name");
+    assertThat(providerEventModel.getDoc().get(PROVIDER_DATE.getValue()).get(0).asText())
+      .isEqualTo("production provider date");
+    assertThat(providerEventModel.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asText())
+      .isEqualTo("production simple place");
+    assertThat(providerEventModel.getIncomingEdges()).isEmpty();
+    assertThat(providerEventModel.getOutgoingEdges()).hasSize(1);
+    var providerPlaceEdge = providerEventModel.getOutgoingEdges().iterator().next();
+    assertThat(providerPlaceEdge.getPredicate()).isEqualTo(PROVIDER_PLACE);
+
+    var providerPlaceResponse = performGet(providerPlaceEdge.getTarget().getId())
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
-    var providerEventGraphDto = objectMapper.readValue(providerEventResponse, ResourceGraphDto.class);
-
-    assertNotNull(providerEventGraphDto.getId());
-    assertEquals(List.of(PROVIDER_EVENT.getUri()), providerEventGraphDto.getTypes());
-    assertEquals("production name",
-      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(NAME.getValue()).getFirst());
-    assertEquals("production provider date",
-      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(PROVIDER_DATE.getValue()).getFirst());
-    assertEquals("production simple place",
-      ((Map<String, List<String>>) providerEventGraphDto.getDoc()).get(SIMPLE_PLACE.getValue()).getFirst());
-    assertEquals("production name", providerEventGraphDto.getLabel());
-    var providerPlaceHash = (providerEventGraphDto.getOutgoingEdges()).getEdges()
-      .get(PROVIDER_PLACE.getUri()).getFirst();
-    assertNotNull(providerPlaceHash);
-    assertEquals(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(date),
-      providerEventGraphDto.getIndexDate());
-    assertEquals(0, providerEventGraphDto.getIncomingEdges().getTotalElements()); // No incoming edges to ProviderEvent
-    assertEquals(1, providerEventGraphDto.getOutgoingEdges().getTotalElements()); // 1 outgoing edge to Place resource
-
-    var providerPlaceResultActions = performGet(providerPlaceHash);
-    var providerPlaceResponse = providerPlaceResultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andReturn().getResponse().getContentAsString();
-    var providerPlaceGraphDto = objectMapper.readValue(providerPlaceResponse, ResourceGraphDto.class);
-    var providerPlaceSourceHash = providerPlaceGraphDto.getIncomingEdges().getEdges()
-      .get(PROVIDER_PLACE.getUri()).getFirst();
-    assertEquals(providerPlaceSourceHash, providerEventResource.getId());
-    assertEquals(1, providerPlaceGraphDto.getIncomingEdges().getTotalElements()); // 1 incoming edge from ProviderEvent
-    assertEquals(0, providerPlaceGraphDto.getOutgoingEdges().getTotalElements()); // No outgoing edges from Place
+    var providerPlaceModel = objectMapper.readValue(providerPlaceResponse, Resource.class);
+    assertThat(providerPlaceModel.getOutgoingEdges()).isEmpty();
+    assertThat(providerPlaceModel.getIncomingEdges()).hasSize(1);
+    var providerPlaceSourceEdge = providerPlaceModel.getIncomingEdges().iterator().next();
+    assertThat(providerPlaceSourceEdge.getSource().getId()).isEqualTo(providerEventResource.getId());
   }
 
   private ResultActions performGet(Long resourceId) throws Exception {

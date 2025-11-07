@@ -31,30 +31,26 @@ class ResourceControllerSearchResourceIT extends ITBase {
       );
 
     // when
-    var resultActions = mockMvc.perform(requestBuilder);
+    var resultActions = mockMvc.perform(requestBuilder)
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON));
 
     // then
-    var isbnPath = "$[0].outgoingEdges['http://library.link/vocab/map'][?(@.label == 'isbn value')]";
+    var isbnPath = "$[0].outgoingEdges[*].target.[?(@.label == 'isbn value')]";
     var statementOfRespPath = "$[0].doc['http://bibfra.me/vocab/library/statementOfResponsibility']";
     resultActions
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("$").isArray())
       .andExpect(jsonPath("$.length()").value(1))
       .andExpect(jsonPath("$[0].types").isArray())
-      .andExpect(jsonPath("$[0].types[0]").value("http://bibfra.me/vocab/lite/Instance"))
+      .andExpect(jsonPath("$[0].types[0]").value("INSTANCE"))
       .andExpect(jsonPath("$[0].label").value("Primary: mainTitle Primary: subTitle"))
       .andExpect(jsonPath(statementOfRespPath).isArray())
       .andExpect(jsonPath(statementOfRespPath + "[0]").value("statement of responsibility"))
-      .andExpect(jsonPath("$[0].outgoingEdges['http://library.link/vocab/map']").isArray())
+      .andExpect(jsonPath("$[0].outgoingEdges").isArray())
       .andExpect(jsonPath(isbnPath).isNotEmpty())
-      .andExpect(jsonPath(isbnPath + ".doc['http://bibfra.me/vocab/lite/name'][0]")
-        .value("isbn value"))
+      .andExpect(jsonPath(isbnPath + ".doc['http://bibfra.me/vocab/lite/name'][0]").value("isbn value"))
       .andExpect(jsonPath(isbnPath + ".types").isArray())
-      .andExpect(jsonPath(isbnPath + ".types[*]", hasItems(
-        "http://library.link/identifier/ISBN",
-        "http://bibfra.me/vocab/lite/Identifier"
-      )));
+      .andExpect(jsonPath(isbnPath + ".types[*]", hasItems("ID_ISBN", "IDENTIFIER")));
   }
 
   @Test
