@@ -18,7 +18,7 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
   private final ResourceService resourceService;
 
   public void handle(ImportOutputEvent event) {
-    log.info("Handling LD Import output event with id {} for tenant {}", event.getTs(), event.getTenant());
+    log.debug("Handling LD Import output event with id {} for tenant {}", event.getTs(), event.getTenant());
     var counter = new AtomicInteger();
     event.getResources().forEach(resource -> {
       try {

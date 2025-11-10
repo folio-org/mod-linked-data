@@ -69,7 +69,7 @@ public class Resource implements Persistable<Long> {
 
   @NonNull
   @Column(nullable = false)
-  private String label;
+  private String label = "";
 
   @Column(columnDefinition = "json")
   @Type(JsonBinaryType.class)
@@ -146,6 +146,13 @@ public class Resource implements Persistable<Long> {
 
   protected void setId(Long id) {
     this.id = id;
+  }
+
+  public Resource setLabel(String label) {
+    if (nonNull(label)) {
+      this.label = label;
+    }
+    return this;
   }
 
   @Override
