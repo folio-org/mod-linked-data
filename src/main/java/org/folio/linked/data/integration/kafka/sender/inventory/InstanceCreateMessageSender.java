@@ -49,7 +49,7 @@ public class InstanceCreateMessageSender implements CreateMessageSender {
   @Override
   @SneakyThrows
   public void accept(Resource resource) {
-    log.info("Publishing CREATE_INSTANCE message to inventory for instance with ID [{}]", resource.getId());
+    log.debug("Publishing CREATE_INSTANCE message to inventory for instance with ID [{}]", resource.getId());
     var message = instanceIngressMessageMapper.toInstanceIngressEvent(resource)
       .eventType(CREATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));

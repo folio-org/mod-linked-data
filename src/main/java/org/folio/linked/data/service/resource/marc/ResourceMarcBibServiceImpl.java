@@ -146,7 +146,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
     var resourceId = idOptional.get().getId();
     removeExistingAdminMetadataIfAny(resourceId);
     var edgeId = resourceEdgeService.saveNewResourceEdge(resourceId, adminEdge.getPredicate(), adminEdge.getTarget());
-    log.info("New AdminMetadata has been added and saved under id [{}]", edgeId);
+    log.debug("New AdminMetadata has been added and saved under id [{}]", edgeId);
     return true;
   }
 

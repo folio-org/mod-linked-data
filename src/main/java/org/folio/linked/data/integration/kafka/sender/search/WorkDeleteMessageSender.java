@@ -55,7 +55,7 @@ public class WorkDeleteMessageSender implements DeleteMessageSender {
   private void triggerParentWorkUpdate(Resource instance) {
     extractWorkFromInstance(instance)
       .ifPresentOrElse(work -> {
-        log.info("Instance [id {}] deletion triggered parent Work [id {}] index update", instance.getId(),
+        log.debug("Instance [id {}] deletion triggered parent Work [id {}] index update", instance.getId(),
           work.getId());
         var newWork = new Resource(work);
         newWork.getIncomingEdges().remove(new ResourceEdge(instance, work, INSTANTIATES));

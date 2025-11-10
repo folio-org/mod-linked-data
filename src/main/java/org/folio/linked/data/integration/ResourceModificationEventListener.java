@@ -39,7 +39,7 @@ public class ResourceModificationEventListener {
   public void afterCreate(ResourceCreatedEvent resourceCreatedEvent) {
     var resource = resourceCreatedEvent.resource();
     log.debug("ResourceCreatedEvent received [{}]", resourceCreatedEvent);
-    log.info("Resource with id {} and types {} was created", resource.getId(), getTypeUris(resource));
+    log.debug("Resource with id {} and types {} was created", resource.getId(), getTypeUris(resource));
     createMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
@@ -47,7 +47,7 @@ public class ResourceModificationEventListener {
   public void afterUpdate(ResourceUpdatedEvent resourceUpdatedEvent) {
     var resource = resourceUpdatedEvent.resource();
     log.debug("ResourceUpdatedEvent received [{}]", resourceUpdatedEvent);
-    log.info("Resource with id {} and types {} was updated", resource.getId(), getTypeUris(resource));
+    log.debug("Resource with id {} and types {} was updated", resource.getId(), getTypeUris(resource));
     updateMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
@@ -56,7 +56,7 @@ public class ResourceModificationEventListener {
     var previous = resourceReplacedEvent.previous();
     var currentResourceId = resourceReplacedEvent.currentResourceId();
     log.debug("ResourceReplacedEvent received [{}]", resourceReplacedEvent);
-    log.info("Resource with id {} and types {} was replaced by resource with id {}",
+    log.debug("Resource with id {} and types {} was replaced by resource with id {}",
       previous.getId(), getTypeUris(previous), currentResourceId);
     resourceRepository.findById(currentResourceId)
       .ifPresent(
@@ -68,7 +68,7 @@ public class ResourceModificationEventListener {
   public void afterDelete(ResourceDeletedEvent resourceDeletedEvent) {
     var resource = resourceDeletedEvent.resource();
     log.debug("ResourceDeletedEvent received [{}]", resourceDeletedEvent);
-    log.info("Resource with id {} and types {} was deleted", resource.getId(), getTypeUris(resource));
+    log.debug("Resource with id {} and types {} was deleted", resource.getId(), getTypeUris(resource));
     deleteMessageSenders.forEach(sender -> sender.produce(resource));
   }
 
@@ -76,7 +76,7 @@ public class ResourceModificationEventListener {
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void afterIndex(ResourceIndexedEvent resourceIndexedEvent) {
     log.debug("ResourceIndexedEvent received [{}]", resourceIndexedEvent);
-    log.info("Resource with id {} was indexed", resourceIndexedEvent.resourceId());
+    log.debug("Resource with id {} was indexed", resourceIndexedEvent.resourceId());
     resourceRepository.updateIndexDate(resourceIndexedEvent.resourceId());
   }
 }

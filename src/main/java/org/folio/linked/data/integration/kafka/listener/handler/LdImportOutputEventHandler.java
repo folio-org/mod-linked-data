@@ -26,9 +26,9 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
         counter.getAndIncrement();
       } catch (Exception e) {
         if (log.isDebugEnabled()) {
-          log.debug("Exception during saving LDImport resource: {}", resource);
+          log.debug("Exception [{}] during saving LDImport resource: {}", e.getMessage(), resource);
         } else {
-          log.error("Exception during saving LDImport resource with id [{}]", resource.getId());
+          log.error("Exception [{}] during saving LDImport resource with id [{}]", e.getMessage(), resource.getId());
         }
       }
     });

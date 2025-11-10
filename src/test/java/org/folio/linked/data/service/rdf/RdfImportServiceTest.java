@@ -113,7 +113,7 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void returnsEmptyResul_whenRdf2LdMappingFails() throws IOException {
+  void returnsEmptyResult_whenRdf2LdMappingFails() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     var message = "mapping exception";

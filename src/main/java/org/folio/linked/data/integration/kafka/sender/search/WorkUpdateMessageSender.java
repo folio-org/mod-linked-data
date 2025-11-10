@@ -58,7 +58,7 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
   private List<Resource> selectParentWorkForUpdate(Resource instance) {
     return extractWorkFromInstance(instance)
       .map(work -> {
-        log.info("Instance [{}] update triggered parent Work [{}] index update", instance.getId(), work.getId());
+        log.debug("Instance [{}] update triggered parent Work [{}] index update", instance.getId(), work.getId());
         return Collections.singletonList(work);
       })
       .orElseGet(() -> {
