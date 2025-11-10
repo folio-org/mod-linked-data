@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.rdf;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -38,6 +39,9 @@ public class RdfImportServiceImpl implements RdfImportService {
       return save(resources);
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf import incoming file reading error", e.getMessage());
+    } catch (Exception e) {
+      log.error("Rdf import error", e);
+      return new ImportFileResponseDto(List.of(), e.getMessage());
     }
   }
 
