@@ -48,7 +48,7 @@
     <lib-linked-data-rdf4ld.version>1.0.0-SNAPSHOT</lib-linked-data-rdf4ld.version>
 
     <!-- Dependencies versions -->
-    <apache-commons-io.version>2.20.0</apache-commons-io.version>
+    <apache-commons-io.version>2.21.0</apache-commons-io.version>
     <apache-commons-collections.version>4.5.0</apache-commons-collections.version>
     <apache-commons-csv.version>1.14.1</apache-commons-csv.version>
     <mapstruct.version>1.6.3</mapstruct.version>
