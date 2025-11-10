@@ -11,6 +11,11 @@
         "$ref": "../../common/resourcePlaceholder.json"
       }
     },
+    "jobInstanceId": {
+      "description": "Import Job Instance ID",
+      "type": "integer",
+      "format": "int64"
+    },
     "tenant": {
       "description": "Tenant id",
       "type": "string"

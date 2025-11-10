@@ -18,7 +18,7 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
   private final ResourceService resourceService;
 
   public void handle(ImportOutputEvent event) {
-    log.debug("Handling LD Import output event with id {} for tenant {}", event.getTs(), event.getTenant());
+    log.debug("Handling LD Import output event with Job ID {} and ts {}", event.getJobInstanceId(), event.getTs());
     var counter = new AtomicInteger();
     event.getResources().forEach(resource -> {
       try {
@@ -28,12 +28,13 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
         if (log.isDebugEnabled()) {
           log.debug("Exception [{}] during saving LDImport resource: {}", e.getMessage(), resource);
         } else {
-          log.error("Exception [{}] during saving LDImport resource with id [{}]", e.getMessage(), resource.getId());
+          log.error("Exception [{}] during saving LDImport (Job ID {}) resource with id [{}]", e.getMessage(),
+            event.getJobInstanceId(), resource.getId());
         }
       }
     });
-    log.info("{} of {} resource(s) saved out of LDImportOutput event with ID {} for tenant {}", counter.get(),
-      event.getResources().size(), event.getTs(), event.getTenant());
+    log.info("{} of {} resource(s) saved out of LDImportOutput event with Job ID {} and ts {}",
+      counter.get(), event.getResources().size(), event.getJobInstanceId(), event.getTs());
   }
 
 }
