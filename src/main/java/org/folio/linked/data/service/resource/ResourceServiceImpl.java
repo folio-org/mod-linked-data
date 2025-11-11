@@ -17,7 +17,6 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.SearchResourcesRequestDto;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.dto.ResourceSubgraphViewMapper;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -56,7 +55,6 @@ public class ResourceServiceImpl implements ResourceService {
   private final ResourceProfileLinkingService resourceProfileService;
   private final ResourceSubgraphViewRepository resourceSubgraphViewRepository;
   private final ResourceSubgraphViewMapper resourceSubgraphViewMapper;
-  private final ResourceModelMapper resourceModelMapper;
 
   @Override
   public ResourceResponseDto createResource(ResourceRequestDto resourceDto) {
@@ -66,15 +64,6 @@ public class ResourceServiceImpl implements ResourceService {
     log.debug("createResource\n[{}]\nfrom DTO [{}]", mapped, resourceDto);
     var persisted = createResourceAndPublishEvents(mapped, getProfileId(resourceDto));
     return resourceDtoMapper.toDto(persisted);
-  }
-
-  @Override
-  public void saveResource(org.folio.ld.dictionary.model.Resource resource) {
-    log.debug("Saving resource with id [{}] out of incoming Model", resource.getId());
-    var mapped = resourceModelMapper.toEntity(resource);
-    metadataService.ensure(mapped);
-    var saveResult = resourceGraphService.saveMergingGraph(mapped);
-    eventsPublisher.emitEventsForCreateAndUpdate(saveResult, null);
   }
 
   @Override

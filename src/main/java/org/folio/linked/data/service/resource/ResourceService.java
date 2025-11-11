@@ -11,8 +11,6 @@ public interface ResourceService {
 
   ResourceResponseDto createResource(ResourceRequestDto resourceRequest);
 
-  void saveResource(Resource resource);
-
   ResourceResponseDto getResourceById(Long id);
 
   ResourceIdDto getResourceIdByInventoryId(String inventoryId);

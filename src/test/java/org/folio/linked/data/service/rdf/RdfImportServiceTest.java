@@ -3,11 +3,14 @@ package org.folio.linked.data.service.rdf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -15,10 +18,14 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
+import org.folio.linked.data.mapper.model.ImportEventResultMapper;
+import org.folio.linked.data.model.entity.imprt.ImportEventResult;
+import org.folio.linked.data.repo.ImportEventResultRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
@@ -53,9 +60,13 @@ class RdfImportServiceTest {
   private ResourceEventsPublisher resourceEventsPublisher;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
+  @Mock
+  private ImportEventResultMapper importEventResultMapper;
+  @Mock
+  private ImportEventResultRepository importEventResultRepository;
 
   @Test
-  void savesResourcesAndPublishesEvents_whenValidFileProvided() throws IOException {
+  void importFile_createsResourcesAndPublishesEvents_whenValidFileProvided() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     var inputStream = mock(InputStream.class);
@@ -64,8 +75,7 @@ class RdfImportServiceTest {
     when(multipartFile.getInputStream()).thenReturn(inputStream);
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
-    when(resourceRepo.existsById(anyLong())).thenReturn(false);
-    var saveGraphResult = new SaveGraphResult(entity);
+    var saveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
     when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
 
     // when
@@ -78,16 +88,37 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void ignoresExistingResourceAndNotPublishEvent_whenResourceAlreadyExists() throws IOException {
+  void importFile_updatesResourcesAndPublishesEvents_whenValidFileProvidedAndResourceExists() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     var inputStream = mock(InputStream.class);
     var resources = Set.of(mock(org.folio.ld.dictionary.model.Resource.class));
-    var mappedEntity = mock(org.folio.linked.data.model.entity.Resource.class);
+    var entity = mock(org.folio.linked.data.model.entity.Resource.class);
     when(multipartFile.getInputStream()).thenReturn(inputStream);
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
-    when(resourceModelMapper.toEntity(any())).thenReturn(mappedEntity);
-    when(resourceRepo.existsById(anyLong())).thenReturn(true);
+    when(resourceModelMapper.toEntity(any())).thenReturn(entity);
+    var saveGraphResult = new SaveGraphResult(entity, Set.of(), Set.of(entity));
+    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
+
+    // when
+    var result = rdfImportService.importFile(multipartFile);
+
+    // then
+    assertThat(result.getResources()).hasSize(1);
+    verify(metadataService).ensure(entity);
+    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, null);
+  }
+
+  @Test
+  void importFile_notSavesAnythingAnfNotPublishEvent_whenResourceMappingFailed() throws IOException {
+    // given
+    var multipartFile = mock(MultipartFile.class);
+    var inputStream = mock(InputStream.class);
+    var resources = Set.of(mock(org.folio.ld.dictionary.model.Resource.class));
+    when(multipartFile.getInputStream()).thenReturn(inputStream);
+    when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
+    when(multipartFile.getInputStream()).thenReturn(inputStream);
+    when(resourceModelMapper.toEntity(any())).thenThrow(new RuntimeException());
 
     // when
     var result = rdfImportService.importFile(multipartFile);
@@ -99,7 +130,7 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void throwsException_whenFileCannotBeRead() throws IOException {
+  void importFile_throwsException_whenFileCannotBeRead() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     when(multipartFile.getInputStream()).thenThrow(IOException.class);
@@ -113,7 +144,7 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void returnsEmptyResult_whenRdf2LdMappingFails() throws IOException {
+  void importFile_returnsEmptyResult_whenRdf2LdMappingFails() throws IOException {
     // given
     var multipartFile = mock(MultipartFile.class);
     var message = "mapping exception";
@@ -124,6 +155,44 @@ class RdfImportServiceTest {
 
     // then
     assertThat(result).isEqualTo(new ImportFileResponseDto(List.of(), message));
+  }
+
+  @Test
+  void saveImportEventResources_shouldSaveResourcesAndEventResult() {
+    // given
+    var resource1 = new Resource().setId(1L).setLabel("for creation");
+    var resource2 = new Resource().setId(2L).setLabel("for update");
+    var resource3 = new Resource().setId(3L).setLabel("for failure");
+    var entity1 = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(1L)
+      .setLabel(resource1.getLabel());
+    when(resourceModelMapper.toEntity(resource1)).thenReturn(entity1);
+    var entity2 = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(2L)
+      .setLabel(resource2.getLabel());
+    when(resourceModelMapper.toEntity(resource2)).thenReturn(entity2);
+    doThrow(new RuntimeException()).when(resourceModelMapper).toEntity(resource3);
+    var saveGraphResult1 = new SaveGraphResult(entity1, Set.of(entity1), Set.of());
+    when(resourceGraphService.saveMergingGraph(entity1)).thenReturn(saveGraphResult1);
+    var saveGraphResult2 = new SaveGraphResult(entity2, Set.of(), Set.of(entity2));
+    when(resourceGraphService.saveMergingGraph(entity2)).thenReturn(saveGraphResult2);
+    var ts = "123";
+    var jobInstanceId = 456L;
+    var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
+    when(importEventResultMapper.fromImportReport(eq(ts), eq(jobInstanceId), any()))
+      .thenReturn(expectedImportEventResult);
+
+    // when
+    rdfImportService.saveImportEventResources(ts, jobInstanceId, List.of(resource1, resource2, resource3));
+
+    // then
+    var inOrder = inOrder(metadataService, resourceEventsPublisher);
+    inOrder.verify(metadataService).ensure(entity1);
+    inOrder.verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult1, null);
+    inOrder.verify(metadataService).ensure(entity2);
+    inOrder.verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult2, null);
+
+    verifyNoMoreInteractions(metadataService);
+    verifyNoMoreInteractions(resourceEventsPublisher);
+    verify(importEventResultRepository).save(expectedImportEventResult);
   }
 
 }

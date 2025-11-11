@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.resource.monograph.common;
+package org.folio.linked.data.mapper.dto.resource.common;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.Note;
-import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

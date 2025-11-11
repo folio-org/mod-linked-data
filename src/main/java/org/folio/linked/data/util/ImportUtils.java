@@ -1,19 +1,21 @@
 package org.folio.linked.data.util;
 
+import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.folio.ld.dictionary.model.Resource;
 
 @Log4j2
 @UtilityClass
@@ -21,17 +23,10 @@ public class ImportUtils {
   public static final String APPLICATION_LD_JSON_VALUE = "application/ld+json";
   public static final String TEXT_TURTLE_VALUE = "text/turtle";
 
-  private enum ReportHeader {
-    ID,
-    LABEL,
-    STATUS,
-    FAILURE_REASON;
-  }
-
   /**
    * Content type is guessed by the browser File API implementation / the
    * underlying OS and probably doesn't correspond to MIME types the rdf4j
-   * library understands. Map common generic MIME types the browser might 
+   * library understands. Map common generic MIME types the browser might
    * guess to the appropriate rdf4j equivalent. rdf4j accepts application/xml
    * already, no map required.
    *
@@ -48,46 +43,73 @@ public class ImportUtils {
     };
   }
 
+  private enum ReportHeader {
+    ID,
+    LABEL,
+    STATUS,
+    FAILURE_REASON;
+  }
+
   @RequiredArgsConstructor
   public enum Status {
-    SUCCESS("Success"),
-    FAILURE("Failure");
+    CREATED("Created"),
+    UPDATED("Updated"),
+    FAILED("Failed");
 
     private final String value;
   }
 
   @Data
-  @AllArgsConstructor
   public static class ImportedResource {
     private Long id;
     private String label;
     private Status status;
     private String failureReason;
+    private Resource failedResource;
+
+    public ImportedResource(Resource resource, Status status, String failureReason) {
+      this.id = resource.getId();
+      this.label = resource.getLabel();
+      this.status = status;
+      this.failureReason = failureReason;
+      this.failedResource = status == FAILED ? resource : null;
+    }
   }
 
   @Data
   public static class ImportReport {
     private List<ImportedResource> imports = new ArrayList<>();
 
-    public boolean addImport(ImportedResource resource) {
-      return this.imports.add(resource);
+    public void addImport(ImportedResource resource) {
+      this.imports.add(resource);
     }
 
-    public String toCsv() throws IOException {
-      StringWriter sw = new StringWriter();
-      CSVFormat format = CSVFormat.EXCEL.builder()
+    public String toCsv() {
+      var sw = new StringWriter();
+      var format = CSVFormat.EXCEL.builder()
         .setHeader(ReportHeader.class)
         .get();
-      try (CSVPrinter printer = new CSVPrinter(sw, format)) {
-        for (ImportedResource resource : imports) {
+      try (var printer = new CSVPrinter(sw, format)) {
+        for (var resource : imports) {
           printer.printRecord(
             resource.getId(),
             resource.getLabel(),
             resource.getStatus().value,
-            resource.getFailureReason());
+            resource.getFailureReason()
+          );
         }
+      } catch (IOException e) {
+        log.warn("I/O error while generating CSV report", e);
       }
       return sw.toString();
+    }
+
+    public List<String> getIdsWithStatus(Status... statuses) {
+      return imports.stream()
+        .filter(ir -> Arrays.stream(statuses).toList().contains(ir.status))
+        .map(ImportedResource::getId)
+        .map(Object::toString)
+        .toList();
     }
   }
 }
