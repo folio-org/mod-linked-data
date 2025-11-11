@@ -32,7 +32,7 @@ public class InstanceUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public void accept(Resource resource) {
-    log.info("Publishing UPDATE_INSTANCE message to inventory for instance with ID [{}]", resource.getId());
+    log.debug("Publishing UPDATE_INSTANCE message to inventory for instance with ID [{}]", resource.getId());
     var message = instanceIngressMessageMapper.toInstanceIngressEvent(resource)
       .eventType(UPDATE_INSTANCE);
     instanceIngressMessageProducer.sendMessages(List.of(message));

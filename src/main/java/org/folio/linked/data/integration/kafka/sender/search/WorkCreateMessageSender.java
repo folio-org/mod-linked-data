@@ -52,7 +52,7 @@ public class WorkCreateMessageSender implements CreateMessageSender {
   private void triggerParentWorkUpdate(Resource instance) {
     extractWorkFromInstance(instance)
       .ifPresentOrElse(work -> {
-        log.info("Instance [id {}] creation triggered parent Work [id {}] index update",
+        log.debug("Instance [id {}] creation triggered parent Work [id {}] index update",
           instance.getId(), work.getId());
         workUpdateMessageSender.produce(work);
       }, () -> log.error("Instance [id {}] created, but parent work wasn't found!", instance.getId()));
@@ -68,7 +68,7 @@ public class WorkCreateMessageSender implements CreateMessageSender {
   }
 
   private void accept(Resource resource, Boolean putIndexDate) {
-    log.info("Publishing Index create message for work with ID [{}]", resource.getId());
+    log.debug("Publishing Index create message for work with ID [{}]", resource.getId());
     var message = workSearchMessageMapper.toIndex(resource)
       .type(CREATE);
     bibliographicMessageProducer.sendMessages(List.of(message));

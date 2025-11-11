@@ -13,7 +13,9 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
+import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -108,6 +110,20 @@ class RdfImportServiceTest {
     assertThatThrownBy(() -> rdfImportService.importFile(multipartFile))
       // then
       .isEqualTo(expectedException);
+  }
+
+  @Test
+  void returnsEmptyResult_whenRdf2LdMappingFails() throws IOException {
+    // given
+    var multipartFile = mock(MultipartFile.class);
+    var message = "mapping exception";
+    when(multipartFile.getInputStream()).thenThrow(new RuntimeException(message));
+
+    // when
+    var result = rdfImportService.importFile(multipartFile);
+
+    // then
+    assertThat(result).isEqualTo(new ImportFileResponseDto(List.of(), message));
   }
 
 }

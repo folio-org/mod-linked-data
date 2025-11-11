@@ -104,7 +104,7 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
     marcBib2ldMapper.fromMarcJson(event.getEventPayload().getParsedRecord().getContent())
       .ifPresentOrElse(mapped -> {
           if (resourceMarcBibService.saveAdminMetadata(mapped)) {
-            log.info("AdminMetadata has been added to resource with id [{}], SourceRecordDomainEvent id [{}]",
+            log.debug("AdminMetadata has been added to resource with id [{}], SourceRecordDomainEvent id [{}]",
               mapped.getId(), event.getId());
           }
         },
