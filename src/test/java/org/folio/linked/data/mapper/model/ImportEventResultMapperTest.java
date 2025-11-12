@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class ImportEventResultMapperTest {
+class ImportEventResultMapperTest {
 
   @InjectMocks
   private ImportEventResultMapperImpl mapper;
@@ -67,11 +67,11 @@ public class ImportEventResultMapperTest {
     // then
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
     assertThat(result.getJobId()).isEqualTo(jobId);
-    assertThat(result.getResourcesCount()).isEqualTo(0);
-    assertThat(result.getCreatedCount()).isEqualTo(0);
-    assertThat(result.getUpdatedCount()).isEqualTo(0);
-    assertThat(result.getFailedCount()).isEqualTo(0);
-    assertThat(result.getFailedResources()).hasSize(0);
+    assertThat(result.getResourcesCount()).isZero();
+    assertThat(result.getCreatedCount()).isZero();
+    assertThat(result.getUpdatedCount()).isZero();
+    assertThat(result.getFailedCount()).isZero();
+    assertThat(result.getFailedResources()).isEmpty();
   }
 
   @Test
@@ -91,8 +91,8 @@ public class ImportEventResultMapperTest {
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
     assertThat(result.getJobId()).isEqualTo(jobId);
     assertThat(result.getResourcesCount()).isEqualTo(1);
-    assertThat(result.getCreatedCount()).isEqualTo(0);
-    assertThat(result.getUpdatedCount()).isEqualTo(0);
+    assertThat(result.getCreatedCount()).isZero();
+    assertThat(result.getUpdatedCount()).isZero();
     assertThat(result.getFailedCount()).isEqualTo(1);
     assertThat(result.getFailedResources()).hasSize(1);
     var importEventFailedResource = result.getFailedResources().iterator().next();

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -179,9 +180,13 @@ class RdfImportServiceTest {
     var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
     when(importEventResultMapper.fromImportReport(eq(ts), eq(jobInstanceId), any()))
       .thenReturn(expectedImportEventResult);
+    var event = new ImportOutputEvent()
+      .ts(ts)
+      .jobInstanceId(jobInstanceId)
+      .resources(List.of(resource1, resource2, resource3));
 
     // when
-    rdfImportService.saveImportEventResources(ts, jobInstanceId, List.of(resource1, resource2, resource3));
+    rdfImportService.importOutputEvent(event);
 
     // then
     var inOrder = inOrder(metadataService, resourceEventsPublisher);

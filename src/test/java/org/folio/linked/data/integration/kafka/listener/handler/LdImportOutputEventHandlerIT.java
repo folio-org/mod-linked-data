@@ -86,8 +86,8 @@ class LdImportOutputEventHandlerIT {
     assertThat(eventResultSaved.getJobId()).isEqualTo(123L);
     assertThat(eventResultSaved.getResourcesCount()).isEqualTo(1);
     assertThat(eventResultSaved.getCreatedCount()).isEqualTo(1);
-    assertThat(eventResultSaved.getUpdatedCount()).isEqualTo(0);
-    assertThat(eventResultSaved.getFailedCount()).isEqualTo(0);
+    assertThat(eventResultSaved.getUpdatedCount()).isZero();
+    assertThat(eventResultSaved.getFailedCount()).isZero();
   }
 
   @SneakyThrows

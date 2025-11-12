@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.model.ImportEventResultMapper;
@@ -43,7 +44,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   public ImportFileResponseDto importFile(MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
       var resources = rdf4LdService.mapBibframe2RdfToLd(is, ImportUtils.toRdfMediaType(multipartFile.getContentType()));
-      var importReport = save(resources);
+      var importReport = doImport(resources);
       var reportCsv = importReport.toCsv();
       return new ImportFileResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
@@ -55,13 +56,13 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public void saveImportEventResources(String ts, Long jobInstanceId, List<Resource> resources) {
-    var importReport = save(resources);
-    var importEventResult = importEventResultMapper.fromImportReport(ts, jobInstanceId, importReport);
+  public void importOutputEvent(ImportOutputEvent event) {
+    var report = doImport(event.getResources());
+    var importEventResult = importEventResultMapper.fromImportReport(event.getTs(), event.getJobInstanceId(), report);
     importEventResultRepository.save(importEventResult);
   }
 
-  private ImportUtils.ImportReport save(Collection<Resource> resources) {
+  private ImportUtils.ImportReport doImport(Collection<Resource> resources) {
     var report = new ImportUtils.ImportReport();
     resources.forEach(resourceModel -> {
       try {

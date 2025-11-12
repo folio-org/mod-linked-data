@@ -16,6 +16,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@SuppressWarnings("java:S6813")
 @Mapper(componentModel = SPRING, imports = ImportUtils.Status.class)
 public abstract class ImportEventResultMapper {
 
