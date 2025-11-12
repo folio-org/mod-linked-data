@@ -197,8 +197,8 @@ public class TestUtil {
   }
 
   public static void cleanResourceTables(JdbcTemplate jdbcTemplate) {
-    JdbcTestUtils.deleteFromTables(jdbcTemplate,
-      "folio_metadata", "resource_edges", "resource_type_map", "resources");
+    JdbcTestUtils.deleteFromTables(jdbcTemplate, "folio_metadata", "resource_edges", "resource_type_map",
+      "resources", "import_event_result", "import_event_failed_resource");
   }
 
   public static ErrorResponseConfig.Error genericError(int parametersCount) {

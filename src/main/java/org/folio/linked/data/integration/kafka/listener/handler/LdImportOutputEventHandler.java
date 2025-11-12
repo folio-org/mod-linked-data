@@ -2,11 +2,10 @@ package org.folio.linked.data.integration.kafka.listener.handler;
 
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
-import org.folio.linked.data.service.resource.ResourceService;
+import org.folio.linked.data.service.rdf.RdfImportService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -15,26 +14,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
 public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOutputEvent> {
-  private final ResourceService resourceService;
+  private final RdfImportService rdfImportService;
 
   public void handle(ImportOutputEvent event) {
-    log.debug("Handling LD Import output event with Job ID {} and ts {}", event.getJobInstanceId(), event.getTs());
-    var counter = new AtomicInteger();
-    event.getResources().forEach(resource -> {
-      try {
-        resourceService.saveResource(resource);
-        counter.getAndIncrement();
-      } catch (Exception e) {
-        if (log.isDebugEnabled()) {
-          log.debug("Exception [{}] during saving LDImport resource: {}", e.getMessage(), resource);
-        } else {
-          log.error("Exception [{}] during saving LDImport (Job ID {}) resource with id [{}]", e.getMessage(),
-            event.getJobInstanceId(), resource.getId());
-        }
-      }
-    });
-    log.info("{} of {} resource(s) saved out of LDImportOutput event with Job ID {} and ts {}",
-      counter.get(), event.getResources().size(), event.getJobInstanceId(), event.getTs());
+    log.info("Handling LD Import output event with Job ID {} and ts {}", event.getJobInstanceId(), event.getTs());
+    rdfImportService.importOutputEvent(event);
   }
 
 }

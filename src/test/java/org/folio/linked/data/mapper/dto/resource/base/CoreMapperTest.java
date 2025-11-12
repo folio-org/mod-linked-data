@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.resource.common;
+package org.folio.linked.data.mapper.dto.resource.base;
 
 import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -23,8 +23,6 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
-import org.folio.linked.data.mapper.dto.resource.base.CoreMapperImpl;
-import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;

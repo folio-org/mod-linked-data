@@ -1,14 +1,21 @@
 package org.folio.linked.data.service.rdf;
 
+import static org.folio.linked.data.util.ImportUtils.Status.CREATED;
+import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
+import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
+
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.mapper.model.ImportEventResultMapper;
+import org.folio.linked.data.repo.ImportEventResultRepository;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -26,17 +33,20 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private final Rdf4LdService rdf4LdService;
   private final MetadataService metadataService;
-  private final ResourceRepository resourceRepo;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
-  private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ImportEventResultMapper importEventResultMapper;
   private final ResourceEventsPublisher resourceEventsPublisher;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ImportEventResultRepository importEventResultRepository;
 
   @Override
   public ImportFileResponseDto importFile(MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
       var resources = rdf4LdService.mapBibframe2RdfToLd(is, ImportUtils.toRdfMediaType(multipartFile.getContentType()));
-      return save(resources);
+      var importReport = doImport(resources);
+      var reportCsv = importReport.toCsv();
+      return new ImportFileResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf import incoming file reading error", e.getMessage());
     } catch (Exception e) {
@@ -45,41 +55,29 @@ public class RdfImportServiceImpl implements RdfImportService {
     }
   }
 
-  private ImportFileResponseDto save(Set<org.folio.ld.dictionary.model.Resource> resources) {
-    var reportCsv = "";
+  @Override
+  public void importOutputEvent(ImportOutputEvent event) {
+    var report = doImport(event.getResources());
+    var importEventResult = importEventResultMapper.fromImportReport(event.getTs(), event.getJobInstanceId(), report);
+    importEventResultRepository.save(importEventResult);
+  }
+
+  private ImportUtils.ImportReport doImport(Collection<Resource> resources) {
     var report = new ImportUtils.ImportReport();
-    var ids = resources.stream()
-      .map(resourceModelMapper::toEntity)
-      .filter(r -> {
-        boolean exists = resourceRepo.existsById(r.getId());
-        if (exists) {
-          report.addImport(
-            new ImportUtils.ImportedResource(
-              r.getId(),
-              r.getLabel(),
-              ImportUtils.Status.FAILURE,
-              "Already exists in graph"));
-        }
-        return !exists;
-      })
-      .map(resource -> {
+    resources.forEach(resourceModel -> {
+      try {
+        var resource = resourceModelMapper.toEntity(resourceModel);
         metadataService.ensure(resource);
         var saveGraphResult = resourceGraphService.saveMergingGraph(resource);
         resourceEventsPublisher.emitEventsForCreateAndUpdate(saveGraphResult, null);
-        report.addImport(
-          new ImportUtils.ImportedResource(
-            saveGraphResult.rootResource().getId(),
-            saveGraphResult.rootResource().getLabel(),
-            ImportUtils.Status.SUCCESS,
-            ""));
-        return resource.getId().toString();
-      })
-      .toList();
-    try {
-      reportCsv = report.toCsv();
-    } catch (IOException e) {
-      log.warn("I/O error while generating CSV report, returning empty report", e);
-    }
-    return new ImportFileResponseDto(ids, reportCsv);
+        var status = saveGraphResult.newResources().contains(resource) ? CREATED : UPDATED;
+        report.addImport(new ImportUtils.ImportedResource(resourceModel, status, null));
+      } catch (Exception e) {
+        log.debug("Exception during import of a resource with ID {}", resourceModel.getId(), e);
+        report.addImport(new ImportUtils.ImportedResource(resourceModel, FAILED, e.getMessage()));
+      }
+    });
+    return report;
   }
+
 }
