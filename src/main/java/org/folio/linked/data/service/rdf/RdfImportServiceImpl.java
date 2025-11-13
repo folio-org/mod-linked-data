@@ -3,6 +3,7 @@ package org.folio.linked.data.service.rdf;
 import static org.folio.linked.data.util.ImportUtils.Status.CREATED;
 import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -56,6 +57,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
+  @Transactional(propagation = REQUIRES_NEW)
   public void importOutputEvent(ImportOutputEvent event) {
     var report = doImport(event.getResources());
     var importEventResult = importEventResultMapper.fromImportReport(event.getTs(), event.getJobInstanceId(), report);
