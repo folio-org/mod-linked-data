@@ -5,6 +5,7 @@ import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
+import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
 
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class SourceRecordDomainEventListener implements LinkedDataListener<SourceRecordDomainEvent> {
+public class SourceRecordDomainEventListener {
 
   private static final String SRS_DOMAIN_EVENT_LISTENER = "mod-linked-data-source-record-domain-event-listener";
   private static final String RECORD_TYPE = "folio.srs.recordType";
@@ -45,12 +46,10 @@ public class SourceRecordDomainEventListener implements LinkedDataListener<Sourc
     concurrency = "#{folioKafkaProperties.listener['source-record-domain-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['source-record-domain-event'].topicPattern}")
   public void handleSourceRecordDomainEvent(List<ConsumerRecord<String, SourceRecordDomainEvent>> consumerRecords) {
-    handle(consumerRecords, this::processRecord, linkedDataTenantService, log);
-  }
-
-  @Override
-  public String getEventId(SourceRecordDomainEvent event) {
-    return event.getId();
+    consumerRecords.forEach(consumerRecord -> {
+      var event = consumerRecord.value();
+      handleForExistedTenant(consumerRecord, event.getId(), linkedDataTenantService, log, this::processRecord);
+    });
   }
 
   private void processRecord(ConsumerRecord<String, SourceRecordDomainEvent> consumerRecord) {
