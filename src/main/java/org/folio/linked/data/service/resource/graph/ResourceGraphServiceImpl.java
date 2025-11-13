@@ -51,7 +51,7 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
                                                                    Resource resource) {
     var ies = resource.getIncomingEdges().stream()
       .map(ie -> {
-        var sourceModel = resourceModelMapper.toModel(ie.getSource());
+        var sourceModel = new org.folio.ld.dictionary.model.Resource().setId(ie.getSource().getId());
         var predicateModel = PredicateDictionary.fromUri(ie.getPredicate().getUri()).orElseThrow();
         return new org.folio.ld.dictionary.model.ResourceEdge(sourceModel, model, predicateModel);
       })
