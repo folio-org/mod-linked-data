@@ -36,21 +36,21 @@ public class KafkaListenerConfiguration {
   public ConcurrentKafkaListenerContainerFactory<String, SourceRecordDomainEvent> srsEventListenerContainerFactory(
     ConsumerFactory<String, SourceRecordDomainEvent> sourceRecordDomainEventConsumerFactory
   ) {
-    return concurrentKafkaBatchListenerContainerFactory(sourceRecordDomainEventConsumerFactory);
+    return concurrentKafkaBatchListenerContainerFactory(sourceRecordDomainEventConsumerFactory, true);
   }
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, InventoryInstanceEvent> inventoryEventListenerContainerFactory(
     ConsumerFactory<String, InventoryInstanceEvent> inventoryInstanceEventConsumerFactory
   ) {
-    return concurrentKafkaBatchListenerContainerFactory(inventoryInstanceEventConsumerFactory);
+    return concurrentKafkaBatchListenerContainerFactory(inventoryInstanceEventConsumerFactory, true);
   }
 
   @Bean
   public ConcurrentKafkaListenerContainerFactory<String, ImportOutputEvent> importOutputEventListenerContainerFactory(
     ConsumerFactory<String, ImportOutputEvent> ldImportOutputEventConsumerFactory
   ) {
-    return concurrentKafkaBatchListenerContainerFactory(ldImportOutputEventConsumerFactory);
+    return concurrentKafkaBatchListenerContainerFactory(ldImportOutputEventConsumerFactory, false);
   }
 
   @Bean
@@ -73,9 +73,9 @@ public class KafkaListenerConfiguration {
 
 
   private <V> ConcurrentKafkaListenerContainerFactory<String, V> concurrentKafkaBatchListenerContainerFactory(
-    ConsumerFactory<String, V> consumerFactory) {
+    ConsumerFactory<String, V> consumerFactory, boolean batch) {
     var factory = new ConcurrentKafkaListenerContainerFactory<String, V>();
-    factory.setBatchListener(true);
+    factory.setBatchListener(batch);
     factory.setConsumerFactory(consumerFactory);
     return factory;
   }
