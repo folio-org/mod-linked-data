@@ -22,7 +22,6 @@ import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.linked.data.util.ImportUtils;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,7 +56,6 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void importOutputEvent(ImportOutputEvent event) {
     var report = doImport(event.getResources());
     var importEventResult = importEventResultMapper.fromImportReport(event.getTs(), event.getJobInstanceId(), report);
