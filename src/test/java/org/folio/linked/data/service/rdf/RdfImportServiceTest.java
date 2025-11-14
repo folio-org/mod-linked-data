@@ -77,7 +77,7 @@ class RdfImportServiceTest {
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
     var saveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
-    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
 
     // when
     var result = rdfImportService.importFile(multipartFile);
@@ -99,7 +99,7 @@ class RdfImportServiceTest {
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
     var saveGraphResult = new SaveGraphResult(entity, Set.of(), Set.of(entity));
-    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
 
     // when
     var result = rdfImportService.importFile(multipartFile);
@@ -126,7 +126,7 @@ class RdfImportServiceTest {
 
     // then
     assertThat(result.getResources()).isEmpty();
-    verify(resourceGraphService, never()).saveMergingGraph(any());
+    verify(resourceGraphService, never()).saveMergingGraphInNewTransaction(any());
     verifyNoInteractions(resourceEventsPublisher);
   }
 
@@ -172,9 +172,9 @@ class RdfImportServiceTest {
     when(resourceModelMapper.toEntity(resource2)).thenReturn(entity2);
     doThrow(new RuntimeException()).when(resourceModelMapper).toEntity(resource3);
     var saveGraphResult1 = new SaveGraphResult(entity1, Set.of(entity1), Set.of());
-    when(resourceGraphService.saveMergingGraph(entity1)).thenReturn(saveGraphResult1);
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity1)).thenReturn(saveGraphResult1);
     var saveGraphResult2 = new SaveGraphResult(entity2, Set.of(), Set.of(entity2));
-    when(resourceGraphService.saveMergingGraph(entity2)).thenReturn(saveGraphResult2);
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity2)).thenReturn(saveGraphResult2);
     var ts = "123";
     var jobInstanceId = 456L;
     var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
