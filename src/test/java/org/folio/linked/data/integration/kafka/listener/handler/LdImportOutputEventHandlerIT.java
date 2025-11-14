@@ -15,7 +15,6 @@ import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.repo.ImportEventResultRepository;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.resource.ResourceTestRepository;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -35,8 +34,6 @@ class LdImportOutputEventHandlerIT {
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Autowired
   private ResourceTestRepository resourceRepository;
-  @Autowired
-  private ImportEventResultRepository eventResultRepository;
   @Autowired
   private JdbcTemplate jdbcTemplate;
   @Autowired
@@ -77,17 +74,6 @@ class LdImportOutputEventHandlerIT {
     var resourceSaved = resourceSavedOpt.get();
     assertThat(resourceSaved.getTypes()).isNotEmpty();
     assertThat(resourceSaved.getOutgoingEdges()).isNotEmpty();
-
-    var eventResultSavedOpt = tenantScopedExecutionService.execute(TENANT_ID,
-      () -> eventResultRepository.findById(1762182290977L)
-    );
-    assertThat(eventResultSavedOpt).isPresent();
-    var eventResultSaved = eventResultSavedOpt.get();
-    assertThat(eventResultSaved.getJobId()).isEqualTo(123L);
-    assertThat(eventResultSaved.getResourcesCount()).isEqualTo(1);
-    assertThat(eventResultSaved.getCreatedCount()).isEqualTo(1);
-    assertThat(eventResultSaved.getUpdatedCount()).isZero();
-    assertThat(eventResultSaved.getFailedCount()).isZero();
   }
 
   @SneakyThrows

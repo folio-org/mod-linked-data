@@ -19,15 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ImportEventResult;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.mapper.model.ImportEventResultMapper;
-import org.folio.linked.data.model.entity.imprt.ImportEventResult;
-import org.folio.linked.data.repo.ImportEventResultRepository;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.mapper.dto.ImportEventResultMapper;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.graph.SaveGraphResult;
@@ -52,8 +50,6 @@ class RdfImportServiceTest {
   @Mock
   private MetadataService metadataService;
   @Mock
-  private ResourceRepository resourceRepo;
-  @Mock
   private ResourceModelMapper resourceModelMapper;
   @Mock
   private ResourceGraphService resourceGraphService;
@@ -63,8 +59,6 @@ class RdfImportServiceTest {
   private RequestProcessingExceptionBuilder exceptionBuilder;
   @Mock
   private ImportEventResultMapper importEventResultMapper;
-  @Mock
-  private ImportEventResultRepository importEventResultRepository;
 
   @Test
   void importFile_createsResourcesAndPublishesEvents_whenValidFileProvided() throws IOException {
@@ -77,7 +71,7 @@ class RdfImportServiceTest {
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
     var saveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
-    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
+    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
 
     // when
     var result = rdfImportService.importFile(multipartFile);
@@ -99,7 +93,7 @@ class RdfImportServiceTest {
     when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
     when(resourceModelMapper.toEntity(any())).thenReturn(entity);
     var saveGraphResult = new SaveGraphResult(entity, Set.of(), Set.of(entity));
-    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
+    when(resourceGraphService.saveMergingGraph(entity)).thenReturn(saveGraphResult);
 
     // when
     var result = rdfImportService.importFile(multipartFile);
@@ -126,7 +120,7 @@ class RdfImportServiceTest {
 
     // then
     assertThat(result.getResources()).isEmpty();
-    verify(resourceGraphService, never()).saveMergingGraphInNewTransaction(any());
+    verify(resourceGraphService, never()).saveMergingGraph(any());
     verifyNoInteractions(resourceEventsPublisher);
   }
 
@@ -172,12 +166,12 @@ class RdfImportServiceTest {
     when(resourceModelMapper.toEntity(resource2)).thenReturn(entity2);
     doThrow(new RuntimeException()).when(resourceModelMapper).toEntity(resource3);
     var saveGraphResult1 = new SaveGraphResult(entity1, Set.of(entity1), Set.of());
-    when(resourceGraphService.saveMergingGraphInNewTransaction(entity1)).thenReturn(saveGraphResult1);
+    when(resourceGraphService.saveMergingGraph(entity1)).thenReturn(saveGraphResult1);
     var saveGraphResult2 = new SaveGraphResult(entity2, Set.of(), Set.of(entity2));
-    when(resourceGraphService.saveMergingGraphInNewTransaction(entity2)).thenReturn(saveGraphResult2);
+    when(resourceGraphService.saveMergingGraph(entity2)).thenReturn(saveGraphResult2);
     var ts = "123";
     var jobInstanceId = 456L;
-    var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
+    var expectedImportEventResult = new ImportEventResult().outputEventTs(ts);
     when(importEventResultMapper.fromImportReport(eq(ts), eq(jobInstanceId), any()))
       .thenReturn(expectedImportEventResult);
     var event = new ImportOutputEvent()
@@ -197,7 +191,6 @@ class RdfImportServiceTest {
 
     verifyNoMoreInteractions(metadataService);
     verifyNoMoreInteractions(resourceEventsPublisher);
-    verify(importEventResultRepository).save(expectedImportEventResult);
   }
 
 }

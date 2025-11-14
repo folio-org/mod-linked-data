@@ -18,7 +18,8 @@ public class LdImportOutputEventHandler implements ExternalEventHandler<ImportOu
 
   public void handle(ImportOutputEvent event) {
     log.info("Handling LD Import output event with Job ID {} and ts {}", event.getJobInstanceId(), event.getTs());
-    rdfImportService.importOutputEvent(event);
+    var importEventResult = rdfImportService.importOutputEvent(event);
+    log.info("ImportEventResult: {}", importEventResult);
   }
 
 }

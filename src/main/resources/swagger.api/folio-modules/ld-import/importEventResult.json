@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Linked Data Import output event result DTO",
+  "properties": {
+    "ts": {
+      "description": "Message timestamp",
+      "type": "string"
+    },
+    "outputEventTs": {
+      "description": "Output event message timestamp",
+      "type": "string"
+    },
+    "tenant": {
+      "description": "Tenant id",
+      "type": "string"
+    },
+    "jobInstanceId": {
+      "description": "Import Job Instance ID",
+      "type": "integer",
+      "format": "int64"
+    },
+    "resourcesCount": {
+      "description": "Processed resources count",
+      "type": "integer",
+      "format": "int16"
+    },
+    "createdCount": {
+      "description": "Created resources count",
+      "type": "integer",
+      "format": "int16"
+    },
+    "updatedCount": {
+      "description": "Updated resources count",
+      "type": "integer",
+      "format": "int16"
+    },
+    "failedCount": {
+      "description": "Failed resources count",
+      "type": "integer",
+      "format": "int16"
+    },
+    "failedResources": {
+      "description": "Array of failed resources",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "../../common/resourcePlaceholder.json"
+      }
+    }
+  },
+  "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage",
+  "required": ["ts", "outputEventTs", "tenant", "jobInstanceId", "resourcesCount", "createdCount", "updatedCount", "failedCount"]
+}

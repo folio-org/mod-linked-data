@@ -1,7 +1,7 @@
 {
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Linked Data Import result DTO",
+  "description": "Linked Data Import output event DTO",
   "properties": {
     "resources": {
       "description": "Array of imported resources",

@@ -34,3 +34,5 @@ components:
       $ref: folio-modules/configuration/configurations.json
     importOutputEvent:
       $ref: folio-modules/ld-import/importOutputEvent.json
+    importEventResult:
+      $ref: folio-modules/ld-import/importEventResult.json

@@ -10,12 +10,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ImportEventResult;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.mapper.model.ImportEventResultMapper;
-import org.folio.linked.data.repo.ImportEventResultRepository;
+import org.folio.linked.data.mapper.dto.ImportEventResultMapper;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
@@ -38,7 +38,6 @@ public class RdfImportServiceImpl implements RdfImportService {
   private final ImportEventResultMapper importEventResultMapper;
   private final ResourceEventsPublisher resourceEventsPublisher;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
-  private final ImportEventResultRepository importEventResultRepository;
 
   @Override
   public ImportFileResponseDto importFile(MultipartFile multipartFile) {
@@ -56,10 +55,9 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public void importOutputEvent(ImportOutputEvent event) {
+  public ImportEventResult importOutputEvent(ImportOutputEvent event) {
     var report = doImport(event.getResources());
-    var importEventResult = importEventResultMapper.fromImportReport(event.getTs(), event.getJobInstanceId(), report);
-    importEventResultRepository.save(importEventResult);
+    return importEventResultMapper.fromImportReport(event.getTs(), event.getJobInstanceId(), report);
   }
 
   private ImportUtils.ImportReport doImport(Collection<Resource> resources) {
@@ -68,7 +66,7 @@ public class RdfImportServiceImpl implements RdfImportService {
       try {
         var resource = resourceModelMapper.toEntity(resourceModel);
         metadataService.ensure(resource);
-        var saveGraphResult = resourceGraphService.saveMergingGraphInNewTransaction(resource);
+        var saveGraphResult = resourceGraphService.saveMergingGraph(resource);
         resourceEventsPublisher.emitEventsForCreateAndUpdate(saveGraphResult, null);
         var status = saveGraphResult.newResources().contains(resource) ? CREATED : UPDATED;
         report.addImport(new ImportUtils.ImportedResource(resourceModel, status, null));
