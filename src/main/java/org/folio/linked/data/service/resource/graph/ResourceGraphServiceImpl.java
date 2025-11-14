@@ -63,6 +63,10 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
 
   @Override
   @Transactional(propagation = REQUIRES_NEW)
+  public SaveGraphResult saveMergingGraphInNewTransaction(Resource resource) {
+    return saveMergingGraph(resource);
+  }
+
   public SaveGraphResult saveMergingGraph(Resource resource) {
     var result = saveMergingGraphSkippingAlreadySaved(resource, null);
 
