@@ -68,7 +68,7 @@ public class RdfImportServiceImpl implements RdfImportService {
       try {
         var resource = resourceModelMapper.toEntity(resourceModel);
         metadataService.ensure(resource);
-        var saveGraphResult = resourceGraphService.saveMergingGraph(resource);
+        var saveGraphResult = resourceGraphService.saveMergingGraphInNewTransaction(resource);
         resourceEventsPublisher.emitEventsForCreateAndUpdate(saveGraphResult, null);
         var status = saveGraphResult.newResources().contains(resource) ? CREATED : UPDATED;
         report.addImport(new ImportUtils.ImportedResource(resourceModel, status, null));

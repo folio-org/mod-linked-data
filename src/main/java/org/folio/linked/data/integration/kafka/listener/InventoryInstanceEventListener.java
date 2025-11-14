@@ -3,6 +3,7 @@ package org.folio.linked.data.integration.kafka.listener;
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class InventoryInstanceEventListener implements LinkedDataListener<InventoryInstanceEvent> {
+public class InventoryInstanceEventListener {
 
   private static final String INVENTORY_INSTANCE_EVENT_LISTENER = "mod-linked-data-inventory-instance-event-listener";
   private static final String INVENTORY_EVENT_LISTENER_CONTAINER_FACTORY = "inventoryEventListenerContainerFactory";
@@ -37,12 +38,10 @@ public class InventoryInstanceEventListener implements LinkedDataListener<Invent
     concurrency = "#{folioKafkaProperties.listener['inventory-instance-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['inventory-instance-event'].topicPattern}")
   public void handleInventoryInstanceEvent(List<ConsumerRecord<String, InventoryInstanceEvent>> consumerRecords) {
-    handle(consumerRecords, this::handleRecord, linkedDataTenantService, log);
-  }
-
-  @Override
-  public String getEventId(InventoryInstanceEvent event) {
-    return event.getId();
+    consumerRecords.forEach(consumerRecord -> {
+      var event = consumerRecord.value();
+      handleForExistedTenant(consumerRecord, event.getId(), linkedDataTenantService, log, this::handleRecord);
+    });
   }
 
   private void handleRecord(ConsumerRecord<String, InventoryInstanceEvent> consumerRecord) {
