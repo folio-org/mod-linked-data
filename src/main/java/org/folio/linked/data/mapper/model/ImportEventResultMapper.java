@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.model;
 
+import static java.util.Objects.nonNull;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
@@ -48,19 +48,19 @@ public abstract class ImportEventResultMapper {
   protected Set<ImportEventFailedResource> getFailedResources(ImportEventResult importEventResult,
                                                               List<ImportUtils.ImportedResource> imports) {
     return imports.stream()
-      .map(ImportUtils.ImportedResource::getFailedResource)
-      .filter(Objects::nonNull)
+      .filter(ir -> nonNull(ir.getFailedResource()))
       .map(ir -> {
+        var iefr = new ImportEventFailedResource()
+          .setImportEventResult(importEventResult)
+          .setReason(ir.getFailureReason());
         try {
-          return objectMapper.writeValueAsString(ir);
+          var rawResource = objectMapper.writeValueAsString(ir.getFailedResource());
+          iefr.setRawResource(rawResource);
         } catch (JsonProcessingException e) {
-          return "mapping to json failed: " + e.getMessage();
+          iefr.setRawResource("mapping to json failed: " + e.getMessage());
         }
+        return iefr;
       })
-      .map(s -> new ImportEventFailedResource()
-        .setImportEventResult(importEventResult)
-        .setRawResource(s)
-      )
       .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 }

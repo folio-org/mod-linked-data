@@ -35,13 +35,14 @@ class ImportEventResultMapperTest {
     var ir = new ImportUtils.ImportReport();
     ir.addImport(getImportedResource(1L, "created", CREATED, null));
     ir.addImport(getImportedResource(2L, "updated", UPDATED, null));
-    ir.addImport(getImportedResource(3L, "failed", FAILED, "failure reason"));
+    var failureReason = "failure reason";
+    ir.addImport(getImportedResource(3L, "failed", FAILED, failureReason));
     var expectedRawFailedResource = "expectedRawFailedResource";
     when(objectMapper.writeValueAsString(any())).thenReturn(expectedRawFailedResource);
     var eventTs = "12345";
     var jobId = 777L;
     var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
-    var startDate = LocalDateTime.now();
+    var startDate = LocalDateTime.now().minusMinutes(1);
 
     // when
     var result = mapper.fromImportReport(event, startDate, ir);
@@ -59,6 +60,7 @@ class ImportEventResultMapperTest {
     var importEventFailedResource = result.getFailedResources().iterator().next();
     assertThat(importEventFailedResource.getImportEventResult()).isEqualTo(result);
     assertThat(importEventFailedResource.getRawResource()).isEqualTo(expectedRawFailedResource);
+    assertThat(importEventFailedResource.getReason()).isEqualTo(failureReason);
   }
 
   @Test
