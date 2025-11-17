@@ -13,5 +13,5 @@
   <include file="tables/create-profile_additional_resource_types-table.sql" relativeToChangelogFile="true"/>
   <include file="tables/delete_all_resources.sql" relativeToChangelogFile="true" />
   <include file="tables/create-import_event_result-tables.sql" relativeToChangelogFile="true" />
-  <include file="tables/create-more-indexes.sql" relativeToChangelogFile="true" />
+  <include file="tables/create-resource_edges_source_hash_idx.sql" relativeToChangelogFile="true" />
 </databaseChangeLog>
