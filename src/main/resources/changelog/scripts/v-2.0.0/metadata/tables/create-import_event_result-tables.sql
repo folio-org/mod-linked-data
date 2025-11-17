@@ -5,6 +5,8 @@
 create table if not exists import_event_result (
     event_ts bigint not null,
     job_id bigint not null,
+    start_date timestamp not null,
+    end_date timestamp not null,
     resources_count int not null,
     created_count int not null,
     updated_count int not null,

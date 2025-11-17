@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -177,16 +178,17 @@ class RdfImportServiceTest {
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity2)).thenReturn(saveGraphResult2);
     var ts = "123";
     var jobInstanceId = 456L;
-    var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
-    when(importEventResultMapper.fromImportReport(eq(ts), eq(jobInstanceId), any()))
-      .thenReturn(expectedImportEventResult);
     var event = new ImportOutputEvent()
       .ts(ts)
       .jobInstanceId(jobInstanceId)
       .resources(List.of(resource1, resource2, resource3));
+    var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
+    when(importEventResultMapper.fromImportReport(eq(event), any(), any()))
+      .thenReturn(expectedImportEventResult);
+
 
     // when
-    rdfImportService.importOutputEvent(event);
+    rdfImportService.importOutputEvent(event, LocalDateTime.now());
 
     // then
     var inOrder = inOrder(metadataService, resourceEventsPublisher);

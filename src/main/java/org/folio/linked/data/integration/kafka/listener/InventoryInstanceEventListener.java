@@ -58,7 +58,7 @@ public class InventoryInstanceEventListener {
   private void runRetryableJob(InventoryInstanceEvent event, RetryContext retryContext) {
     ofNullable(retryContext.getLastThrowable())
       .ifPresent(ex -> logFailedEvent(event, ex, true));
-    inventoryInstanceEventHandler.handle(event);
+    inventoryInstanceEventHandler.handle(event, null);
   }
 
   private void logFailedEvent(InventoryInstanceEvent event, Throwable ex, boolean isRetrying) {

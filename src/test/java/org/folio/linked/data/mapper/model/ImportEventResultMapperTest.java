@@ -10,7 +10,10 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.util.ImportUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,13 +40,17 @@ class ImportEventResultMapperTest {
     when(objectMapper.writeValueAsString(any())).thenReturn(expectedRawFailedResource);
     var eventTs = "12345";
     var jobId = 777L;
+    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
+    var startDate = LocalDateTime.now();
 
     // when
-    var result = mapper.fromImportReport(eventTs, jobId, ir);
+    var result = mapper.fromImportReport(event, startDate, ir);
 
     // then
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
     assertThat(result.getJobId()).isEqualTo(jobId);
+    assertThat(result.getStartDate()).isEqualTo(Timestamp.valueOf(startDate));
+    assertThat(result.getEndDate().after(result.getStartDate())).isTrue();
     assertThat(result.getResourcesCount()).isEqualTo(3);
     assertThat(result.getCreatedCount()).isEqualTo(1);
     assertThat(result.getUpdatedCount()).isEqualTo(1);
@@ -59,10 +66,11 @@ class ImportEventResultMapperTest {
     // given
     var eventTs = "12345";
     var jobId = 777L;
+    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
     var ir = new ImportUtils.ImportReport();
 
     // when
-    var result = mapper.fromImportReport(eventTs, jobId, ir);
+    var result = mapper.fromImportReport(event, LocalDateTime.now(), ir);
 
     // then
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
@@ -83,9 +91,10 @@ class ImportEventResultMapperTest {
     when(objectMapper.writeValueAsString(any())).thenThrow(new JsonParseException("expectedJsonProcessingException"));
     var eventTs = "12345";
     var jobId = 777L;
+    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
 
     // when
-    var result = mapper.fromImportReport(eventTs, jobId, ir);
+    var result = mapper.fromImportReport(event, LocalDateTime.now(), ir);
 
     // then
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
