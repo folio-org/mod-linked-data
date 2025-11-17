@@ -2,8 +2,9 @@ package org.folio.linked.data.integration.kafka.listener;
 
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -21,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
-public class LdImportOutputEventListener implements LinkedDataListener<ImportOutputEvent> {
+public class LdImportOutputEventListener {
 
   private static final String LISTENER_ID = "mod-linked-data-ld-import-event-listener";
   private static final String CONTAINER_FACTORY = "importOutputEventListenerContainerFactory";
@@ -35,31 +36,27 @@ public class LdImportOutputEventListener implements LinkedDataListener<ImportOut
     groupId = "#{folioKafkaProperties.listener['ld-import-output-event'].groupId}",
     concurrency = "#{folioKafkaProperties.listener['ld-import-output-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['ld-import-output-event'].topicPattern}")
-  public void handleImportOutputEvent(List<ConsumerRecord<String, ImportOutputEvent>> consumerRecords) {
-    log.info("Received {} LD-Import output events", consumerRecords.size());
-    handle(consumerRecords, this::handleRecord, linkedDataTenantService, log);
-  }
-
-  @Override
-  public String getEventId(ImportOutputEvent event) {
-    return event.getTs();
+  public void handleImportOutputEvent(ConsumerRecord<String, ImportOutputEvent> consumerRecord) {
+    var event = consumerRecord.value();
+    handleForExistedTenant(consumerRecord, event.getTs(), linkedDataTenantService, log, this::handleRecord);
   }
 
   private void handleRecord(ConsumerRecord<String, ImportOutputEvent> consumerRecord) {
-    log.debug("Processing LD-Import output event with Job ID {} and ts {}",
+    log.info("Processing LD-Import output event with Job ID {} and ts {}",
       consumerRecord.value().getJobInstanceId(), consumerRecord.value().getTs());
     var event = consumerRecord.value();
+    var startTime = LocalDateTime.now();
     tenantScopedExecutionService.executeAsyncWithRetry(
       consumerRecord.headers(),
-      retryContext -> runRetryableJob(event, retryContext),
+      retryContext -> runRetryableJob(event, startTime, retryContext),
       ex -> logFailedEvent(event, ex, false)
     );
   }
 
-  private void runRetryableJob(ImportOutputEvent event, RetryContext retryContext) {
+  private void runRetryableJob(ImportOutputEvent event, LocalDateTime startTime, RetryContext retryContext) {
     ofNullable(retryContext.getLastThrowable())
       .ifPresent(ex -> logFailedEvent(event, ex, true));
-    ldImportOutputEventHandler.handle(event);
+    ldImportOutputEventHandler.handle(event, startTime);
   }
 
   private void logFailedEvent(ImportOutputEvent event, Throwable ex, boolean isRetrying) {

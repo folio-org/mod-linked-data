@@ -33,4 +33,6 @@ public class ImportEventFailedResource {
   private ImportEventResult importEventResult;
 
   private String rawResource;
+
+  private String reason;
 }

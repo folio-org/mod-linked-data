@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
+import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.Data;
@@ -27,6 +28,10 @@ public class ImportEventResult {
   private Long eventTs;
   @Column(nullable = false)
   private Long jobId;
+  @Column(nullable = false)
+  private Timestamp startDate;
+  @Column(nullable = false)
+  private Timestamp endDate;
   @Column(nullable = false)
   private Integer resourcesCount;
   @Column(nullable = false)

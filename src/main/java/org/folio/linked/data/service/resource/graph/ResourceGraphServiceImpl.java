@@ -7,6 +7,7 @@ import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.linked.data.util.ResourceUtils.isPreferred;
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedHashSet;
@@ -61,6 +62,11 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   }
 
   @Override
+  @Transactional(propagation = REQUIRES_NEW)
+  public SaveGraphResult saveMergingGraphInNewTransaction(Resource resource) {
+    return saveMergingGraph(resource);
+  }
+
   public SaveGraphResult saveMergingGraph(Resource resource) {
     var result = saveMergingGraphSkippingAlreadySaved(resource, null);
 

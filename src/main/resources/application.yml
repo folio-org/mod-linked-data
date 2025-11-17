@@ -66,7 +66,7 @@ folio:
         topic-pattern: ${KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)inventory.instance}
         group-id: ${folio.environment}-linked-data-inventory-instance-event-group
       ld-import-output-event:
-        concurrency: ${KAFKA_LD_IMPORT_OUTPUT_EVENT_CONCURRENCY:1}
+        concurrency: ${KAFKA_LD_IMPORT_OUTPUT_EVENT_CONCURRENCY:10}
         topic-pattern: ${KAFKA_LD_IMPORT_OUTPUT_EVENT_TOPIC_PATTERN:(${folio.environment}\.)(.*\.)linked_data_import.output}
         group-id: ${folio.environment}-linked-data-import-output-event-group
     retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}

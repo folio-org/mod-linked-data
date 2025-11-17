@@ -5,6 +5,7 @@ import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -56,9 +57,9 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public void importOutputEvent(ImportOutputEvent event) {
+  public void importOutputEvent(ImportOutputEvent event, LocalDateTime startTime) {
     var report = doImport(event.getResources());
-    var importEventResult = importEventResultMapper.fromImportReport(event.getTs(), event.getJobInstanceId(), report);
+    var importEventResult = importEventResultMapper.fromImportReport(event, startTime, report);
     importEventResultRepository.save(importEventResult);
   }
 
@@ -68,7 +69,7 @@ public class RdfImportServiceImpl implements RdfImportService {
       try {
         var resource = resourceModelMapper.toEntity(resourceModel);
         metadataService.ensure(resource);
-        var saveGraphResult = resourceGraphService.saveMergingGraph(resource);
+        var saveGraphResult = resourceGraphService.saveMergingGraphInNewTransaction(resource);
         resourceEventsPublisher.emitEventsForCreateAndUpdate(saveGraphResult, null);
         var status = saveGraphResult.newResources().contains(resource) ? CREATED : UPDATED;
         report.addImport(new ImportUtils.ImportedResource(resourceModel, status, null));

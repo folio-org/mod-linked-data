@@ -6,6 +6,8 @@ public interface ResourceGraphService {
 
   org.folio.ld.dictionary.model.Resource getResourceGraph(Long id);
 
+  SaveGraphResult saveMergingGraphInNewTransaction(Resource resource);
+
   SaveGraphResult saveMergingGraph(Resource resource);
 
   void breakEdgesAndDelete(Resource resource);
