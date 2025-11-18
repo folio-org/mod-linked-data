@@ -117,6 +117,7 @@ class ResourceCopyServiceImplTest {
     doc.put("http://bibfra.me/vocab/library/participantNote", List.of("participantNote"));
     doc.put("http://bibfra.me/vocab/library/citationCoverage", List.of("citationCoverage"));
     doc.put("http://bibfra.me/vocab/library/locationOfOriginalsDuplicates", List.of("locationOfOriginalsDuplicates"));
+    doc.put("http://bibfra.me/vocab/lite/link", List.of("instanceLink"));
     return doc;
   }
 
@@ -131,6 +132,7 @@ class ResourceCopyServiceImplTest {
     doc.put("http://bibfra.me/vocab/library/references", List.of("references"));
     doc.put("http://bibfra.me/vocab/library/otherEventInformation", List.of("otherEventInformation"));
     doc.put("http://bibfra.me/vocab/library/geographicCoverage", List.of("geographicCoverage"));
+    doc.put("http://bibfra.me/vocab/lite/link", List.of("workLink"));
     return doc;
   }
 }
