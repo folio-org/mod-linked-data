@@ -50,7 +50,7 @@ class InventoryInstanceEventListenerIT {
 
     // then
     awaitAndAssert(() -> verify(inventoryInstanceDomainEventHandler)
-      .handle(objectMapper.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class)));
+      .handle(objectMapper.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class), null));
   }
 
   @Test
@@ -66,14 +66,14 @@ class InventoryInstanceEventListenerIT {
       .type(ResourceIndexEventType.UPDATE);
     doThrow(new RuntimeException("An error occurred"))
       .doNothing()
-      .when(inventoryInstanceDomainEventHandler).handle(expectedEvent);
+      .when(inventoryInstanceDomainEventHandler).handle(expectedEvent, null);
 
     // when
     eventKafkaTemplate.send(eventProducerRecord);
 
     // then
     awaitAndAssert(() -> verify(inventoryInstanceDomainEventHandler, times(2))
-      .handle(expectedEvent));
+      .handle(expectedEvent, null));
   }
 
   @Test

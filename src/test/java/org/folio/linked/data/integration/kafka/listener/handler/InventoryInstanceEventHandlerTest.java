@@ -48,7 +48,7 @@ class InventoryInstanceEventHandlerTest {
     var event = getEventWithNoChangesInSuppressFlags();
 
     // when
-    handler.handle(event);
+    handler.handle(event, null);
 
     // then
     verifyNoReindexInteractions();
@@ -60,7 +60,7 @@ class InventoryInstanceEventHandlerTest {
     var event = getEventWithTypeCreate();
 
     // when
-    handler.handle(event);
+    handler.handle(event, null);
 
     // then
     verifyNoReindexInteractions();
@@ -72,7 +72,7 @@ class InventoryInstanceEventHandlerTest {
     var event = getEventWithNullableObject();
 
     // when
-    handler.handle(event);
+    handler.handle(event, null);
 
     // then
     verifyNoReindexInteractions();
@@ -84,7 +84,7 @@ class InventoryInstanceEventHandlerTest {
     var event = getEvent();
 
     // when
-    handler.handle(event);
+    handler.handle(event, null);
 
     // then
     verifyNoReindexInteractions();
@@ -100,7 +100,7 @@ class InventoryInstanceEventHandlerTest {
     when(folioMetadataRepository.save(metadataMock)).thenReturn(metadataMock);
 
     // when
-    handler.handle(event);
+    handler.handle(event, null);
 
     // then
     verify(metadataMock).setStaffSuppress(event.getNew().getStaffSuppress());

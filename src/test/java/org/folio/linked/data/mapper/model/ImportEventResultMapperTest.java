@@ -10,14 +10,19 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.util.ImportUtils;
+import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+@UnitTest
 @ExtendWith(MockitoExtension.class)
 class ImportEventResultMapperTest {
 
@@ -27,23 +32,28 @@ class ImportEventResultMapperTest {
   private ObjectMapper objectMapper;
 
   @Test
-  void shouldFullyMapGivenImportReport() throws JsonProcessingException {
+  void fromImportReport_shouldFullyMapGivenImportReport() throws JsonProcessingException {
     // given
     var ir = new ImportUtils.ImportReport();
     ir.addImport(getImportedResource(1L, "created", CREATED, null));
     ir.addImport(getImportedResource(2L, "updated", UPDATED, null));
-    ir.addImport(getImportedResource(3L, "failed", FAILED, "failure reason"));
+    var failureReason = "failure reason";
+    ir.addImport(getImportedResource(3L, "failed", FAILED, failureReason));
     var expectedRawFailedResource = "expectedRawFailedResource";
     when(objectMapper.writeValueAsString(any())).thenReturn(expectedRawFailedResource);
     var eventTs = "12345";
     var jobId = 777L;
+    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
+    var startDate = LocalDateTime.now().minusMinutes(1);
 
     // when
-    var result = mapper.fromImportReport(eventTs, jobId, ir);
+    var result = mapper.fromImportReport(event, startDate, ir);
 
     // then
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
     assertThat(result.getJobId()).isEqualTo(jobId);
+    assertThat(result.getStartDate()).isEqualTo(Timestamp.valueOf(startDate));
+    assertThat(result.getEndDate().after(result.getStartDate())).isTrue();
     assertThat(result.getResourcesCount()).isEqualTo(3);
     assertThat(result.getCreatedCount()).isEqualTo(1);
     assertThat(result.getUpdatedCount()).isEqualTo(1);
@@ -52,17 +62,19 @@ class ImportEventResultMapperTest {
     var importEventFailedResource = result.getFailedResources().iterator().next();
     assertThat(importEventFailedResource.getImportEventResult()).isEqualTo(result);
     assertThat(importEventFailedResource.getRawResource()).isEqualTo(expectedRawFailedResource);
+    assertThat(importEventFailedResource.getReason()).isEqualTo(failureReason);
   }
 
   @Test
-  void shouldNotFail_ifGivenImportReportIsEmpty() {
+  void fromImportReport_shouldNotFail_ifGivenImportReportIsEmpty() {
     // given
     var eventTs = "12345";
     var jobId = 777L;
+    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
     var ir = new ImportUtils.ImportReport();
 
     // when
-    var result = mapper.fromImportReport(eventTs, jobId, ir);
+    var result = mapper.fromImportReport(event, LocalDateTime.now(), ir);
 
     // then
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
@@ -75,17 +87,19 @@ class ImportEventResultMapperTest {
   }
 
   @Test
-  void shouldFullyMapGivenImportReport_whenFailedResourceNotCorrectJson() throws JsonProcessingException {
+  void fromImportReport_shouldFullyMapGivenReport_whenFailedResourceNotCorrectJson() throws JsonProcessingException {
     // given
     var ir = new ImportUtils.ImportReport();
-    ir.addImport(getImportedResource(1L, "failed", FAILED, "failure reason"));
+    var failureReason = "failure reason";
+    ir.addImport(getImportedResource(1L, "failed", FAILED, failureReason));
     var expectedJsonProcessingException = "expectedJsonProcessingException";
     when(objectMapper.writeValueAsString(any())).thenThrow(new JsonParseException("expectedJsonProcessingException"));
     var eventTs = "12345";
     var jobId = 777L;
+    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
 
     // when
-    var result = mapper.fromImportReport(eventTs, jobId, ir);
+    var result = mapper.fromImportReport(event, LocalDateTime.now(), ir);
 
     // then
     assertThat(result.getEventTs()).isEqualTo(Long.parseLong(eventTs));
@@ -99,6 +113,7 @@ class ImportEventResultMapperTest {
     assertThat(importEventFailedResource.getImportEventResult()).isEqualTo(result);
     assertThat(importEventFailedResource.getRawResource())
       .isEqualTo("mapping to json failed: " + expectedJsonProcessingException);
+    assertThat(importEventFailedResource.getReason()).isEqualTo(failureReason);
   }
 
   private ImportUtils.ImportedResource getImportedResource(Long id, String label,

@@ -5,6 +5,8 @@
 create table if not exists import_event_result (
     event_ts bigint not null,
     job_id bigint not null,
+    start_date timestamp not null,
+    end_date timestamp not null,
     resources_count int not null,
     created_count int not null,
     updated_count int not null,
@@ -18,6 +20,7 @@ create table if not exists import_event_failed_resource (
     id bigint not null,
     import_event_result_id bigint not null,
     raw_resource text not null,
+    reason text,
     constraint pk_import_event_failed_resource primary key (id),
     constraint fk_import_event_failed_resource_to_import_event_result foreign key (import_event_result_id) references import_event_result(event_ts) on delete cascade
 );
