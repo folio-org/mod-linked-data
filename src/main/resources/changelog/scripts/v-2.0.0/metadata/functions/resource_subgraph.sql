@@ -174,9 +174,9 @@ do $do$
     -- needs to be pulled in separately. It has no effect on the resource
     -- hash of the admin metadata resource.
     -- This will have no effect if the path to admin metadata does not
-    -- already exist, but the lack of admin metadata strongly suggests
-    -- neither the HRID nor UUID are currently known in the database.
-    -- They should have both been set at the same time.
+    -- already exist. The lack of an HRID in the graph implies the connection
+    -- between the resource and FOLIO Inventory is missing altogether
+    -- and wouldn't actually reach this point anyways.
     create or replace function %1$I.append_inventory_uuid(
       v_id bigint,
       v_subgraph jsonb
@@ -184,20 +184,25 @@ do $do$
     declare
       amended_subgraph jsonb;
     begin
-      select
-        jsonb_insert(
-          v_subgraph,
-          '{
-            outgoingEdges,
-            http://bibfra.me/vocab/library/adminMetadata,
-            0,
-            doc,
-            http://bibfra.me/vocab/library/controlNumber,
-            -1
-          }',
-          (select to_jsonb(inventory_id) from folio_metadata where resource_hash = v_id),
-          true
-        ) into amended_subgraph;
+      case
+        when jsonb_path_exists(v_subgraph, '$.outgoingEdges."http://bibfra.me/vocab/library/adminMetadata"[0].doc."http://bibfra.me/vocab/library/controlNumber"[0]')
+        then
+          select
+            jsonb_insert(
+              v_subgraph,
+              '{
+                outgoingEdges,
+                http://bibfra.me/vocab/library/adminMetadata,
+                0,
+                doc,
+                http://bibfra.me/vocab/marc/folioInventoryId
+              }',
+              (select jsonb_build_array(inventory_id) from folio_metadata where resource_hash = v_id),
+              true
+            ) into amended_subgraph;
+        else
+          select v_subgraph into amended_subgraph;
+      end case;
       return amended_subgraph;
     end $$
     language plpgsql;
