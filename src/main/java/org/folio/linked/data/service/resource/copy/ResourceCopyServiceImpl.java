@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.GOVERNING_ACCESS_NOTE;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_DUPLICATES;
 import static org.folio.ld.dictionary.PropertyDictionary.OTHER_EVENT_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
@@ -32,17 +33,19 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
 
   private static final Map<String, Set<String>> PROPERTIES_TO_BE_COPIED = Map.of(
     INSTANCE.getUri(), Set.of(
-      GOVERNING_ACCESS_NOTE.getValue(),
-      CREDITS_NOTE.getValue(),
-      PARTICIPANT_NOTE.getValue(),
       CITATION_COVERAGE.getValue(),
-      LOCATION_OF_ORIGINALS_DUPLICATES.getValue()
+      CREDITS_NOTE.getValue(),
+      GOVERNING_ACCESS_NOTE.getValue(),
+      LINK.getValue(),
+      LOCATION_OF_ORIGINALS_DUPLICATES.getValue(),
+      PARTICIPANT_NOTE.getValue()
     ),
     WORK.getUri(), Set.of(
-      REFERENCES.getValue(),
+      GEOGRAPHIC_COVERAGE.getValue(),
+      LINK.getValue(),
       OTHER_EVENT_INFORMATION.getValue(),
-      GEOGRAPHIC_COVERAGE.getValue()
-    )
+      REFERENCES.getValue()
+      )
   );
 
   private final ResourceEdgeService resourceEdgeService;
