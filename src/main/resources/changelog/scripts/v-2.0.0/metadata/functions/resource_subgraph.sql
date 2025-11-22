@@ -195,7 +195,7 @@ do $do$
                 http://bibfra.me/vocab/library/adminMetadata,
                 0,
                 doc,
-                http://bibfra.me/vocab/marc/folioInventoryId
+                http://bibfra.me/vocab/lite/folioInventoryId
               }',
               (select jsonb_build_array(inventory_id) from folio_metadata where resource_hash = v_id),
               true
