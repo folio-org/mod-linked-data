@@ -169,6 +169,44 @@ do $do$
     end $$
     language plpgsql;
 
+    -- A small wrapper method to insert the FOLIO inventory UUID into an
+    -- instance's admin metadata. This is not stored in the graph and
+    -- needs to be pulled in separately. It has no effect on the resource
+    -- hash of the admin metadata resource.
+    -- This will have no effect if the path to admin metadata does not
+    -- already exist. The lack of an HRID in the graph implies the connection
+    -- between the resource and FOLIO Inventory is missing altogether
+    -- and wouldn't actually reach this point anyways.
+    create or replace function %1$I.append_inventory_uuid(
+      v_id bigint,
+      v_subgraph jsonb
+    ) returns jsonb as $$
+    declare
+      amended_subgraph jsonb;
+    begin
+      case
+        when jsonb_path_exists(v_subgraph, '$.outgoingEdges."http://bibfra.me/vocab/library/adminMetadata"[0].doc."http://bibfra.me/vocab/library/controlNumber"[0]')
+        then
+          select
+            jsonb_insert(
+              v_subgraph,
+              '{
+                outgoingEdges,
+                http://bibfra.me/vocab/library/adminMetadata,
+                0,
+                doc,
+                http://bibfra.me/vocab/lite/folioInventoryId
+              }',
+              (select jsonb_build_array(inventory_id) from folio_metadata where resource_hash = v_id),
+              true
+            ) into amended_subgraph;
+        else
+          select v_subgraph into amended_subgraph;
+      end case;
+      return amended_subgraph;
+    end $$
+    language plpgsql;
+
     -- Primary function exporting a JSON subgraph starting with the given
     -- subject to the specified depth.
     create or replace function %1$I.export_subgraph(
@@ -215,20 +253,24 @@ do $do$
           r.resource_hash
       )
       select
-        jsonb_strip_nulls(%1$I.export_resource_edges(
+        %1$I.append_inventory_uuid(
           v_id,
-          1,
-          v_max_depth,
-          array[]::bigint[],
-          (select array_agg(row(id, label, types, doc)::%1$I.export_doc) from docs_set),
-          (select array_agg(row(subject, predicate, objects, depth)::%1$I.export_triple) from subgraph_set)
-        )) into subgraph_doc;
+          jsonb_strip_nulls(%1$I.export_resource_edges(
+            v_id,
+            1,
+            v_max_depth,
+            array[]::bigint[],
+            (select array_agg(row(id, label, types, doc)::%1$I.export_doc) from docs_set),
+            (select array_agg(row(subject, predicate, objects, depth)::%1$I.export_triple) from subgraph_set)
+          ))
+        ) into subgraph_doc;
       return subgraph_doc;
     end $$
     language plpgsql;
 
     comment on function %1$I.resource_subgraph(bigint, integer) is 'Recursively export the graph starting from id, to the depth max_depth, with no cycles, as a set';
     comment on function %1$I.export_resource_edges(bigint, integer, integer, bigint[], %1$I.export_doc[], %1$I.export_triple[]) is 'Recursive function to export as JSON a resource, its properties, and objects, calling itself on objects to a depth of max_depth, with no cycles';
+    comment on function %1$I.append_inventory_uuid(bigint, jsonb) is 'Insert FOLIO inventory UUID into final JSONB document';
     comment on function %1$I.export_subgraph(bigint, integer) is 'Export resource subgraph as an aggregated JSONB document';
   $format$, CURRENT_SCHEMA);
   end;
@@ -238,4 +280,5 @@ $do$;
 --rollback drop type if exists export_triple;
 --rollback drop function if exists resource_subgraph(bigint, integer);
 --rollback drop function if exists export_resource_edges(bigint, integer, integer, bigint[], export_doc[], export_triple[]);
+--rollback drop function if exists append_inventory_uuid(bigint, jsonb);
 --rollback drop function if exists export_subgraph(bigint, integer);
