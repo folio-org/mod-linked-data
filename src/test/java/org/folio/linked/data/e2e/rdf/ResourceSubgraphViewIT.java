@@ -37,7 +37,7 @@ class ResourceSubgraphViewIT {
   @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
-  protected HashService hashService;
+  private HashService hashService;
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
