@@ -142,28 +142,39 @@ do $do$
           subject,
           predicate,
           depth
+      ),
+      outgoing_edges_agg as (
+        select
+          d.id,
+          jsonb_object_agg(
+            eos.predicate, eos.expansion
+          ) filter (where eos.predicate is not null) as edges
+        from
+          unnest(v_docs) d
+            left outer join expanded_objects as eos
+            on d.id = eos.subject
+        where
+          d.id = v_id
+        group by
+          d.id
       )
       select
         jsonb_build_object(
           'id', d.id::text,
           'doc', d.doc,
           'label', d.label,
-          'types', d.types,
-          'outgoingEdges', coalesce(jsonb_object_agg(
-            eos.predicate, eos.expansion
-          ) filter (where eos.predicate is not null), '{}')
-        ) into local_doc
+          'types', d.types
+        ) || case
+          when oea.edges is not null and oea.edges != '{}'::jsonb
+          then jsonb_build_object('outgoingEdges', oea.edges)
+          else '{}'::jsonb
+        end into local_doc
       from
         unnest(v_docs) d
-          left outer join expanded_objects as eos
-          on d.id = eos.subject
+          left outer join outgoing_edges_agg as oea
+          on d.id = oea.id
       where
-        d.id = v_id
-      group by
-        d.id,
-        d.label,
-        d.types,
-        d.doc;
+        d.id = v_id;
       end if;
       return local_doc;
     end $$
@@ -238,7 +249,8 @@ do $do$
           inner join %1$I.type_lookup
             on rtm.type_hash = type_lookup.type_hash
         where
-          r.resource_hash in (
+          r.resource_hash = v_id
+          or r.resource_hash in (
             select
               distinct subject
             from

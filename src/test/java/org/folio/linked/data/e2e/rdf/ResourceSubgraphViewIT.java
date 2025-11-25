@@ -91,7 +91,7 @@ class ResourceSubgraphViewIT {
       .addTypes(ResourceTypeDictionary.TITLE)
       .setDoc(readTree(titleDoc))
       .setLabel(titleStr);
-    
+
     var adminMetadataDoc = """
         {
           "%controlNumber%": ["%HRID%"],

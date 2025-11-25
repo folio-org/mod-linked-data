@@ -6,8 +6,8 @@
     "resources": {
       "description": "Array of imported resources",
       "type": "array",
+      "uniqueItems": true,
       "items": {
-        "type": "object",
         "$ref": "../../common/resourcePlaceholder.json"
       }
     },

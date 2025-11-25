@@ -6,8 +6,8 @@ import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Resource;
@@ -17,9 +17,9 @@ import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.model.ImportEventResultMapper;
 import org.folio.linked.data.repo.ImportEventResultRepository;
-import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.linked.data.service.search.lccn.LccnResourceService;
 import org.folio.linked.data.util.ImportUtils;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.springframework.stereotype.Component;
@@ -34,10 +34,10 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private final Rdf4LdService rdf4LdService;
   private final MetadataService metadataService;
+  private final LccnResourceService lccnResourceService;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
   private final ImportEventResultMapper importEventResultMapper;
-  private final ResourceEventsPublisher resourceEventsPublisher;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ImportEventResultRepository importEventResultRepository;
 
@@ -63,14 +63,15 @@ public class RdfImportServiceImpl implements RdfImportService {
     importEventResultRepository.save(importEventResult);
   }
 
-  private ImportUtils.ImportReport doImport(Collection<Resource> resources) {
+  private ImportUtils.ImportReport doImport(Set<Resource> resources) {
     var report = new ImportUtils.ImportReport();
+    var mockResourcesSearchResult = lccnResourceService.findMockResources(resources);
     resources.forEach(resourceModel -> {
       try {
+        resourceModel = lccnResourceService.unMockLccnResource(resourceModel, mockResourcesSearchResult);
         var resource = resourceModelMapper.toEntity(resourceModel);
         metadataService.ensure(resource);
         var saveGraphResult = resourceGraphService.saveMergingGraphInNewTransaction(resource);
-        resourceEventsPublisher.emitEventsForCreateAndUpdate(saveGraphResult, null);
         var status = saveGraphResult.newResources().contains(resource) ? CREATED : UPDATED;
         report.addImport(new ImportUtils.ImportedResource(resourceModel, status, null));
       } catch (Exception e) {

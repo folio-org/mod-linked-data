@@ -1,54 +1,49 @@
 package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.ResourceModificationEventListener;
+import org.folio.linked.data.model.entity.FolioMetadata;
+import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.rdf.LccnResourceProvider;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.Environment;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
-class RdfImportIT {
+class RdfImportIT extends ITBase {
   private static final String IMPORT_ENDPOINT = "/linked-data/import/file";
-  @Autowired
-  private MockMvc mockMvc;
-  @Autowired
-  private Environment env;
   @Autowired
   private ResourceRepository resourceRepo;
   @MockitoSpyBean
   private ResourceModificationEventListener eventListener;
-  @MockitoBean
-  private LccnResourceProvider lccnResourceProvider;
 
   @Test
   void rdfImport_shouldSaveImportedResourceAndSendEventAndReturnId() throws Exception {
@@ -80,7 +75,7 @@ class RdfImportIT {
   }
 
   @Test
-  void rdfImport_shouldFetchAuthorityByLccn() throws Exception {
+  void rdfImport_shouldFetchAuthorityByLccnFromGraph() throws Exception {
     // given
     var fileName = "instance_work_agents_ids.json";
     var input = this.getClass().getResourceAsStream("/rdf/" + fileName);
@@ -90,9 +85,14 @@ class RdfImportIT {
       .file(multipartFile)
       .headers(defaultHeaders(env));
     var expectedId = -2124728439381748732L;
-    var lccn = "n2021004098";
-    var existedAuthority = new Resource().setId(123L).setLabel(lccn).addType(PERSON);
-    when(lccnResourceProvider.apply(lccn)).thenReturn(Optional.of(existedAuthority));
+    var existedAuthority = new Resource()
+      .setIdAndRefreshEdges(123L)
+      .setLabel("n2021004098")
+      .setDoc(getJsonNode(Map.of(PropertyDictionary.NAME.getValue(), List.of("name"))))
+      .addType(new ResourceTypeEntity(PERSON.getHash(), PERSON.getUri(), ""));
+    existedAuthority
+      .setFolioMetadata(new FolioMetadata(existedAuthority).setInventoryId("inv_id_00000000"));
+    resourceRepo.save(existedAuthority);
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -103,14 +103,45 @@ class RdfImportIT {
       .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
       .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
-    assertThat(resourceRepo.existsById(existedAuthority.getId())).isTrue();
+
+    var expectedEvents = List.of(
+      new ResourceTypeAndLabel(WORK, "Work Title"),
+      new ResourceTypeAndLabel(INSTANCE, "Instance Title"),
+      new ResourceTypeAndLabel(TITLE, "Instance Title"),
+      new ResourceTypeAndLabel(TITLE, "Work Title")
+    );
+    assertEvents(expectedEvents);
+  }
+
+  @Test
+  void rdfImport_shouldFetchAuthorityByLccnFromSrs() throws Exception {
+    // given
+    var fileName = "instance_work_agents_ids.json";
+    var input = this.getClass().getResourceAsStream("/rdf/" + fileName);
+    var multipartFile = new MockMultipartFile("fileName", fileName,
+      "application/ld+json", input);
+    var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+      .file(multipartFile)
+      .headers(defaultHeaders(env));
+    var expectedId = -2124728439381748732L;
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
+      .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
+    assertThat(resourceRepo.existsById(expectedId)).isTrue();
 
     var expectedEvents = List.of(
       new ResourceTypeAndLabel(WORK, "Work Title"),
       new ResourceTypeAndLabel(INSTANCE, "Instance Title"),
       new ResourceTypeAndLabel(TITLE, "Instance Title"),
       new ResourceTypeAndLabel(TITLE, "Work Title"),
-      new ResourceTypeAndLabel(PERSON, lccn)
+      new ResourceTypeAndLabel(PERSON, "Lccn resource fetched from SRS"),
+      new ResourceTypeAndLabel(ID_LCCN, "n2021004098")
     );
     assertEvents(expectedEvents);
   }
@@ -130,5 +161,6 @@ class RdfImportIT {
     assertThat(allEventsReceived).isTrue();
   }
 
-  record ResourceTypeAndLabel(ResourceTypeDictionary type, String label) {}
+  record ResourceTypeAndLabel(ResourceTypeDictionary type, String label) {
+  }
 }

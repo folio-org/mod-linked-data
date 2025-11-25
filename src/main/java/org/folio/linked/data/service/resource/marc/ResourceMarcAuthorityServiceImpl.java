@@ -69,7 +69,12 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   @Override
   public Optional<Resource> fetchAuthorityOrCreateByInventoryId(String inventoryId) {
     return resourceRepo.findByFolioMetadataInventoryId(inventoryId)
-      .or(() -> createResourceFromSrsByInventoryId(inventoryId));
+      .or(() -> fetchResourceFromSrsByInventoryId(inventoryId)
+        .map(resourceModelMapper::toEntity)
+        .filter(Resource::isAuthority)
+        .map(resourceGraphService::saveMergingGraph)
+        .map(SaveGraphResult::rootResource)
+      );
   }
 
   @Override
@@ -115,7 +120,9 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     try {
       return ofNullable(srsClient.getAuthorityBySrsId(srsId))
         .flatMap(this::contentAsJsonString)
-        .flatMap(this::firstAuthorityToEntity)
+        .flatMap(this::firstAuthorityToModel)
+        .map(resourceModelMapper::toEntity)
+        .filter(Resource::isAuthority)
         .map(resourceGraphService::saveMergingGraph)
         .map(SaveGraphResult::rootResource)
         .orElseThrow(() -> notFoundException(srsId));
@@ -125,13 +132,12 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     }
   }
 
-  private Optional<Resource> createResourceFromSrsByInventoryId(String inventoryId) {
+  @Override
+  public Optional<org.folio.ld.dictionary.model.Resource> fetchResourceFromSrsByInventoryId(String inventoryId) {
     try {
       return ofNullable(srsClient.getAuthorityByInventoryId(inventoryId))
         .flatMap(this::contentAsJsonString)
-        .flatMap(this::firstAuthorityToEntity)
-        .map(resourceGraphService::saveMergingGraph)
-        .map(SaveGraphResult::rootResource);
+        .flatMap(this::firstAuthorityToModel);
     } catch (FeignException.NotFound e) {
       log.error("Authority with inventoryId [{}] not found in SRS", inventoryId);
       return Optional.empty();
@@ -145,12 +151,10 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       .map(c -> writeValueAsString(c, objectMapper));
   }
 
-  private Optional<Resource> firstAuthorityToEntity(String marcJson) {
+  private Optional<org.folio.ld.dictionary.model.Resource> firstAuthorityToModel(String marcJson) {
     return ofNullable(marcJson)
       .map(marcAuthority2ldMapper::fromMarcJson)
-      .flatMap(resources -> resources.stream().findFirst())
-      .map(resourceModelMapper::toEntity)
-      .filter(Resource::isAuthority);
+      .flatMap(resources -> resources.stream().findFirst());
   }
 
   private RequestProcessingException notFoundException(String srsId) {
@@ -235,7 +239,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
 
   private Long saveAndPublishEvent(Resource resource, Function<Resource, ResourceEvent> resourceEventSupplier) {
     var saveGraphResult = resourceGraphService.saveMergingGraph(resource);
-    var newResource =  saveGraphResult.rootResource();
+    var newResource = saveGraphResult.rootResource();
     var event = resourceEventSupplier.apply(newResource);
     applicationEventPublisher.publishEvent(event);
     return newResource.getId();

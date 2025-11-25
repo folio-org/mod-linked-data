@@ -168,30 +168,6 @@ paths:
         '404':
           description: No resource id is found by its inventory id
 
-  /linked-data/resources/search:
-    post:
-      operationId: searchResources
-      tags:
-        - resource
-      description: Search resources in the linked data graph by identifiers. Returns a subgraph up to 7 levels deep. For advanced search, use mod-search.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "schema/searchResourcesRequestDto.json"
-      responses:
-        '200':
-          description: The response is an array of Resources
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: common/resourcePlaceholder.json
-                uniqueItems: true
-                description: Array of Resources.
-
   /linked-data/inventory-instance/{inventoryId}/import-supported:
     get:
       operationId: checkMarcBibImportableToGraph
