@@ -79,8 +79,8 @@ class LccnResourceServiceTest {
 
     // then
     assertThat(result).hasSize(2);
-    assertThat(result.get(lccn1)).isEqualTo(getLccnResourceSearchResult(foundSubgraph.getResourceSubgraph(), invId1));
-    assertThat(result.get(lccn2)).isEqualTo(new LccnResourceSearchResult(null, inventoryId2));
+    assertThat(result).containsEntry(lccn1, getLccnResourceSearchResult(foundSubgraph.getResourceSubgraph(), invId1));
+    assertThat(result).containsEntry(lccn2, new LccnResourceSearchResult(null, inventoryId2));
     assertThat(result.get(lccn3)).isNull();
   }
 
