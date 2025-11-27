@@ -208,7 +208,7 @@ do $do$
                 doc,
                 http://bibfra.me/vocab/lite/folioInventoryId
               }',
-              (select jsonb_build_array(inventory_id) from folio_metadata where resource_hash = v_id),
+              (select jsonb_build_array(inventory_id) from %1$I.folio_metadata where resource_hash = v_id),
               true
             ) into amended_subgraph;
         else
