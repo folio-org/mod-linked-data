@@ -71,8 +71,9 @@ class ObjectMapperConfigTest {
     assertThat(result.getTs()).isEqualTo("1762182290977");
     assertThat(result.getTenant()).isEqualTo("test_tenant");
     assertThat(result.getResources()).hasSize(1);
-    assertThat(result.getResources().getFirst().getTypes()).contains(INSTANCE);
-    assertThat(result.getResources().getFirst().getOutgoingEdges()).hasSize(2);
+    var resource = result.getResources().iterator().next();
+    assertThat(resource.getTypes()).contains(INSTANCE);
+    assertThat(resource.getOutgoingEdges()).hasSize(2);
   }
 
 }

@@ -56,7 +56,7 @@ class ResourceEdgeServiceTest {
     doReturn(mappedEdgeResource).when(resourceModelMapper).toEntity(edgeModel.getTarget());
     doReturn(new SaveGraphResult(mappedEdgeResource)).when(resourceGraphService).saveMergingGraph(mappedEdgeResource);
     when(resourceEdgeRepository.save(any(ResourceEdge.class)))
-      .thenAnswer(i -> i.getArguments()[0]);
+      .thenAnswer(i -> i.getArgument(0));
 
     // when
     var result = resourceEdgeService.saveNewResourceEdge(sourceId, edgeModel.getPredicate(), edgeModel.getTarget());

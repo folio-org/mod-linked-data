@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/source-storage/records/inv_id_00000000/formatted?idType=AUTHORITY"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n  \"parsedRecord\": {\n    \"content\": {\n  \"fields\" : [ {\n    \"010\": {\n      \"subfields\" : [ {\n        \"a\" : \"n2021004098\"\n      } ]\n    }\n  }, {\n    \"100\" : {\n      \"subfields\" : [ {\n        \"a\" : \"Lccn resource fetched from SRS\"\n      } ],\n      \"ind1\" : \" \",\n      \"ind2\" : \" \"\n    }\n  } ]\n}\n  }\n}"
+      }
+    }
+  ]
+}

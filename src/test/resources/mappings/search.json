@@ -12,6 +12,19 @@
         },
         "body": "{\n    \"indices\": [\n        \"folio_linked-data.work_public\"\n    ],\n    \"status\": \"success\"\n}"
       }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/search/authorities?query=lccn%20any%20%22n2021004098%22"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n  \"authorities\": [\n    {\n      \"id\": \"inv_id_00000000\",\n      \"naturalId\": \"n2021004098\"\n    }\n  ]\n}"
+      }
     }
   ]
 }

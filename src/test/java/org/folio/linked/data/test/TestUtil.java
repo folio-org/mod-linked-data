@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
+import static org.folio.linked.data.service.search.lccn.LccnResourceService.LccnResourceSearchResult;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
@@ -47,6 +48,7 @@ import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.ResourceModelMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceSubgraphView;
 import org.folio.linked.data.test.json.IdentifierFieldResponseDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
 import org.folio.linked.data.test.json.TitleFieldResponseDeserializer;
@@ -223,5 +225,11 @@ public class TestUtil {
     return IntStream.range(0, parametersCount)
       .mapToObj(i -> "message_part_" + i)
       .collect(Collectors.joining());
+  }
+
+  public static LccnResourceSearchResult getLccnResourceSearchResult(String resourceSubgraph, String inventoryId) {
+    return new LccnResourceSearchResult(
+      new ResourceSubgraphView().setResourceSubgraph(resourceSubgraph).setInventoryId(inventoryId), inventoryId
+    );
   }
 }

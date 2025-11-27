@@ -25,6 +25,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.util.JsonUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,7 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
   private final ResourceModelMapper resourceModelMapper;
+  private final ResourceEventsPublisher resourceEventsPublisher;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
   @Override
@@ -64,7 +66,9 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   @Override
   @Transactional(propagation = REQUIRES_NEW)
   public SaveGraphResult saveMergingGraphInNewTransaction(Resource resource) {
-    return saveMergingGraph(resource);
+    var result = saveMergingGraph(resource);
+    resourceEventsPublisher.emitEventsForCreateAndUpdate(result, null);
+    return result;
   }
 
   public SaveGraphResult saveMergingGraph(Resource resource) {

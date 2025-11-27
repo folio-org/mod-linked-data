@@ -7,14 +7,11 @@ import static org.springframework.http.HttpStatus.CREATED;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
-import org.folio.linked.data.domain.dto.SearchResourcesRequestDto;
 import org.folio.linked.data.rest.resource.ResourceApi;
 import org.folio.linked.data.service.rdf.RdfExportService;
 import org.folio.linked.data.service.resource.ResourceService;
@@ -85,11 +82,6 @@ public class ResourceController implements ResourceApi {
   @Override
   public ResponseEntity<String> exportInstanceToRdf(Long id) {
     return ResponseEntity.ok(rdfExportService.exportInstanceToRdf(id));
-  }
-
-  @Override
-  public ResponseEntity<Set<Resource>> searchResources(SearchResourcesRequestDto searchRequest) {
-    return ResponseEntity.ok(resourceService.searchResources(searchRequest));
   }
 
   @InitBinder

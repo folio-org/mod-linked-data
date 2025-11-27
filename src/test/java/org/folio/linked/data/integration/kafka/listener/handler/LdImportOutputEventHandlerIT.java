@@ -8,7 +8,7 @@ import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
 import lombok.SneakyThrows;
@@ -49,11 +49,7 @@ class LdImportOutputEventHandlerIT {
 
   @BeforeEach
   void clean() {
-    tenantScopedExecutionService.execute(TENANT_ID,
-      () -> {
-        cleanResourceTables(jdbcTemplate);
-      }
-    );
+    tenantScopedExecutionService.execute(TENANT_ID, () -> cleanResourceTables(jdbcTemplate));
   }
 
   @Test
@@ -66,9 +62,7 @@ class LdImportOutputEventHandlerIT {
     eventKafkaTemplate.send(ldImportOutputEvent);
 
     // then
-    awaitAndAssert(() -> assertTrue(
-      resourceRepository.existsById(id)
-    ));
+    awaitAndAssert(() -> assertFalse(eventResultRepository.findAll().isEmpty()));
 
     var resourceSavedOpt = tenantScopedExecutionService.execute(TENANT_ID,
       () -> resourceRepository.findByIdWithEdgesLoaded(id)
