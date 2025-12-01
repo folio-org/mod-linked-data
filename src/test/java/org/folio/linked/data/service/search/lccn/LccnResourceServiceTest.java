@@ -2,7 +2,6 @@ package org.folio.linked.data.service.search.lccn;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.linked.data.service.search.lccn.LccnResourceService.LccnResourceSearchResult;
 import static org.folio.linked.data.test.TestUtil.getLccnResourceSearchResult;
@@ -15,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -53,7 +53,7 @@ class LccnResourceServiceTest {
   private ResourceMarcAuthorityService resourceMarcAuthorityService;
 
   @Test
-  void shouldReturnResultsWithFoundResourceAndInventoryId() {
+  void findMockResources_shouldReturnResultsWithFoundResourceAndInventoryId() {
     // given
     var lccn1 = "lccnOfExistedResource";
     var lccn2 = "lccnOfNotExistedResourceButFoundInventoryId";
@@ -85,7 +85,7 @@ class LccnResourceServiceTest {
   }
 
   @Test
-  void shouldReturnNothing_ifNoGivenResources() {
+  void findMockResources_shouldReturnNothing_ifNoGivenResources() {
 
     // when
     var result = lccnResourceSearchService.findMockResources(new HashSet<>());
@@ -95,7 +95,7 @@ class LccnResourceServiceTest {
   }
 
   @Test
-  void shouldReturnNothing_ifNoMockLccnResources() {
+  void findMockResources_shouldReturnNothing_ifNoMockLccnResources() {
     // given
     var resources = Set.of(new Resource().setId(1L));
     var lccns = Set.of();
@@ -109,7 +109,7 @@ class LccnResourceServiceTest {
   }
 
   @Test
-  void unMockLccnResource_shouldReturnMappedResourceFromSearchResults_ifPresentedInGraph() {
+  void unMockLccnEdges_shouldMapEdgesFromSearchResults_ifPresentedInGraph() {
     // given
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
@@ -119,20 +119,18 @@ class LccnResourceServiceTest {
     var resource = new org.folio.ld.dictionary.model.Resource().setId(1L);
     doReturn(of(resource)).when(resourceSubgraphViewMapper).fromJson("1");
     var mockResource = new Resource().setId(2L);
-    when(mockLccnResourceService.unMockLccnResource(any(), any())).thenAnswer(inv -> {
-      var lccnProvider = (Function<String, Resource>) inv.getArgument(1);
-      return lccnProvider.apply(lccn);
-    });
+    when(mockLccnResourceService.unMockLccnEdges(any(), any()))
+      .thenAnswer(inv -> ((Function<String, Optional<Resource>>) inv.getArgument(1)).apply(lccn).get());
 
     // when
-    var result = lccnResourceSearchService.unMockLccnResource(mockResource, searchResults);
+    var result = lccnResourceSearchService.unMockLccnEdges(mockResource, searchResults);
 
     // then
     assertThat(result).isEqualTo(resource);
   }
 
   @Test
-  void unMockLccnResource_shouldReturnResourceFromResourceMarcAuthorityService_ifNotPresentedInGraph() {
+  void unMockLccnResource_shouldMapEdgesTakenFromMarcAuthorityService_ifNotPresentedInGraph() {
     // given
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
@@ -143,20 +141,18 @@ class LccnResourceServiceTest {
     var resource = new org.folio.ld.dictionary.model.Resource().setId(1L);
     doReturn(of(resource)).when(resourceMarcAuthorityService).fetchResourceFromSrsByInventoryId(inventoryId);
     var mockResource = new Resource().setId(2L);
-    when(mockLccnResourceService.unMockLccnResource(any(), any())).thenAnswer(inv -> {
-      var lccnProvider = (Function<String, Resource>) inv.getArgument(1);
-      return lccnProvider.apply(lccn);
-    });
+    when(mockLccnResourceService.unMockLccnEdges(any(), any()))
+      .thenAnswer(inv -> ((Function<String, Optional<Resource>>) inv.getArgument(1)).apply(lccn).get());
 
     // when
-    var result = lccnResourceSearchService.unMockLccnResource(mockResource, searchResults);
+    var result = lccnResourceSearchService.unMockLccnEdges(mockResource, searchResults);
 
     // then
     assertThat(result).isEqualTo(resource);
   }
 
   @Test
-  void unMockLccnResource_shouldThrowException_ifResourceNotFoundByResourceMarcAuthorityService() {
+  void unMockLccnResource_shouldNotMapAnything_ifNotFoundInMarcAuthorityService() {
     // given
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
@@ -166,36 +162,31 @@ class LccnResourceServiceTest {
     searchResults.put(lccn + "3", getLccnResourceSearchResult("3", null));
     doReturn(empty()).when(resourceMarcAuthorityService).fetchResourceFromSrsByInventoryId(inventoryId);
     var mockResource = new Resource().setId(2L);
-    when(mockLccnResourceService.unMockLccnResource(any(), any())).thenAnswer(inv -> {
-      var lccnProvider = (Function<String, Resource>) inv.getArgument(1);
-      return lccnProvider.apply(lccn);
-    });
+    when(mockLccnResourceService.unMockLccnEdges(any(), any()))
+      .thenAnswer(inv -> ((Function<String, Optional<Resource>>) inv.getArgument(1)).apply(lccn).orElse(null));
 
     // when
-    var result = assertThatThrownBy(() -> lccnResourceSearchService.unMockLccnResource(mockResource, searchResults));
+    var result = lccnResourceSearchService.unMockLccnEdges(mockResource, searchResults);
 
     // then
-    result.hasMessage("Resource presented only with LCCN [" + lccn
-      + "] is not found in SRS by inventoryId " + inventoryId);
+    assertThat(result).isNull();
   }
 
   @Test
-  void unMockLccnResource_shouldThrowException_ifResourceNotFoundBySearch() {
+  void unMockLccnResource_shouldNotMapAnything_ifEdgesNotFoundBySearch() {
     // given
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
     searchResults.put(lccn + "2", getLccnResourceSearchResult("2", null));
     searchResults.put(lccn + "3", getLccnResourceSearchResult("3", null));
     var mockResource = new Resource().setId(2L);
-    when(mockLccnResourceService.unMockLccnResource(any(), any())).thenAnswer(inv -> {
-      var lccnProvider = (Function<String, Resource>) inv.getArgument(1);
-      return lccnProvider.apply(lccn);
-    });
+    when(mockLccnResourceService.unMockLccnEdges(any(), any()))
+      .thenAnswer(inv -> ((Function<String, Optional<Resource>>) inv.getArgument(1)).apply(lccn).orElse(null));
 
     // when
-    var result = assertThatThrownBy(() -> lccnResourceSearchService.unMockLccnResource(mockResource, searchResults));
+    var result = lccnResourceSearchService.unMockLccnEdges(mockResource, searchResults);
 
     // then
-    result.hasMessage("Resource presented only with LCCN [" + lccn + "] is not found in Search");
+    assertThat(result).isNull();
   }
 }

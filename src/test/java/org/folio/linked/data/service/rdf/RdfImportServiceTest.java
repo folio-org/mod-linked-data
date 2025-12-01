@@ -73,7 +73,7 @@ class RdfImportServiceTest {
     var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
     when(lccnResourceService.findMockResources(resources)).thenReturn(searchResults);
     var unMockedResource = new Resource().setId(1L);
-    when(lccnResourceService.unMockLccnResource(any(), any())).thenReturn(unMockedResource);
+    when(lccnResourceService.unMockLccnEdges(any(), any())).thenReturn(unMockedResource);
     when(resourceModelMapper.toEntity(unMockedResource)).thenReturn(entity);
     var saveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
@@ -98,7 +98,7 @@ class RdfImportServiceTest {
     var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
     when(lccnResourceService.findMockResources(resources)).thenReturn(searchResults);
     var unMockedResource = new Resource().setId(1L);
-    when(lccnResourceService.unMockLccnResource(any(), any())).thenReturn(unMockedResource);
+    when(lccnResourceService.unMockLccnEdges(any(), any())).thenReturn(unMockedResource);
     when(resourceModelMapper.toEntity(unMockedResource)).thenReturn(entity);
     var saveGraphResult = new SaveGraphResult(entity, Set.of(), Set.of(entity));
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
@@ -183,7 +183,7 @@ class RdfImportServiceTest {
     var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
     when(importEventResultMapper.fromImportReport(eq(event), any(), any()))
       .thenReturn(expectedImportEventResult);
-    when(lccnResourceService.unMockLccnResource(any(), any()))
+    when(lccnResourceService.unMockLccnEdges(any(), any()))
       .thenAnswer(inv -> inv.getArgument(0));
 
 

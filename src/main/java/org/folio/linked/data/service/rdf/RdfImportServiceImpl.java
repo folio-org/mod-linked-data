@@ -68,7 +68,7 @@ public class RdfImportServiceImpl implements RdfImportService {
     var mockResourcesSearchResult = lccnResourceService.findMockResources(resources);
     resources.forEach(resourceModel -> {
       try {
-        resourceModel = lccnResourceService.unMockLccnResource(resourceModel, mockResourcesSearchResult);
+        resourceModel = lccnResourceService.unMockLccnEdges(resourceModel, mockResourcesSearchResult);
         var resource = resourceModelMapper.toEntity(resourceModel);
         metadataService.ensure(resource);
         var saveGraphResult = resourceGraphService.saveMergingGraphInNewTransaction(resource);

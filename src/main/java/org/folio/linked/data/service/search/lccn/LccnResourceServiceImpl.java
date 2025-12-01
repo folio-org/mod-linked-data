@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toMap;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.model.FolioMetadata;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class LccnResourceServiceImpl implements LccnResourceService {
-  private static final String NOT_FOUND_MESSAGE = "Resource presented only with LCCN [%s] is not found in %s";
   private final SearchClient searchClient;
   private final MockLccnResourceService mockLccnResourceService;
   private final ResourceSubgraphViewMapper resourceSubgraphViewMapper;
@@ -63,24 +63,20 @@ public class LccnResourceServiceImpl implements LccnResourceService {
   }
 
   @Override
-  public Resource unMockLccnResource(Resource resourceModel, Map<String, LccnResourceSearchResult> searchResults) {
-    return mockLccnResourceService.unMockLccnResource(resourceModel, lccn -> getLccnResource(lccn, searchResults));
+  public Resource unMockLccnEdges(Resource resource, Map<String, LccnResourceSearchResult> searchResults) {
+    return mockLccnResourceService.unMockLccnEdges(resource, lccn -> getLccnResource(lccn, searchResults));
   }
 
-  private Resource getLccnResource(String lccn, Map<String, LccnResourceSearchResult> searchResults) {
+  private Optional<Resource> getLccnResource(String lccn, Map<String, LccnResourceSearchResult> searchResults) {
     return ofNullable(searchResults.get(lccn))
-      .map(searchResult -> {
+      .flatMap(searchResult -> {
         var inventoryId = searchResult.inventoryId();
         return ofNullable(searchResult.subgraphView())
           .flatMap(rsw ->
             resourceSubgraphViewMapper.fromJson(rsw.getResourceSubgraph())
               .map(r -> r.setFolioMetadata(new FolioMetadata().setInventoryId(rsw.getInventoryId())))
           )
-          .or(() -> resourceMarcAuthorityService.fetchResourceFromSrsByInventoryId(inventoryId))
-          .orElseThrow(
-            () -> new RuntimeException(NOT_FOUND_MESSAGE.formatted(lccn, "SRS by inventoryId " + inventoryId))
-          );
-      })
-      .orElseThrow(() -> new RuntimeException(NOT_FOUND_MESSAGE.formatted(lccn, "Search")));
+          .or(() -> resourceMarcAuthorityService.fetchResourceFromSrsByInventoryId(inventoryId));
+      });
   }
 }
