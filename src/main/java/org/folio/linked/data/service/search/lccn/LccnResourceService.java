@@ -11,7 +11,7 @@ public interface LccnResourceService {
 
   Map<String, LccnResourceSearchResult> findMockResources(Set<Resource> resources);
 
-  Resource unMockLccnResource(Resource resourceModel, Map<String, LccnResourceSearchResult> searchResults);
+  Resource unMockLccnEdges(Resource resourceModel, Map<String, LccnResourceSearchResult> searchResults);
 
   record LccnResourceSearchResult(@Nullable ResourceSubgraphView subgraphView, @Nonnull String inventoryId) {
   }
