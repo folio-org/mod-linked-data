@@ -16,7 +16,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/search/authorities?query=lccn%20any%20%22n2021004098%22"
+        "url": "/search/authorities?query=lccn%3D%3D%22n2021004098%22"
       },
       "response": {
         "status": 200,

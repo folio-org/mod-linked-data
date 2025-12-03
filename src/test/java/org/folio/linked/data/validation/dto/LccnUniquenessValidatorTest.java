@@ -21,7 +21,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.service.SettingsService;
-import org.folio.linked.data.service.search.InstanceSearchService;
+import org.folio.linked.data.service.search.SearchService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,7 @@ class LccnUniquenessValidatorTest {
   private LccnUniquenessValidator validator;
 
   @Mock
-  private InstanceSearchService instanceSearchService;
+  private SearchService searchService;
   @Mock
   private FolioMetadataRepository folioMetadataRepository;
   @Mock
@@ -49,7 +49,7 @@ class LccnUniquenessValidatorTest {
   @Test
   void shouldThrowFailedDependency_ifSearchServiceThrownException() {
     // given
-    when(instanceSearchService.searchByLccnExcludingId(any(), any()))
+    when(searchService.getTotalInstancesByLccnExcludingSuppressedAndId(any(), any()))
       .thenThrow(new RuntimeException("msg"));
     when(exceptionBuilder.failedDependencyException(any(), any()))
       .thenReturn(new RequestProcessingException(HttpStatus.FAILED_DEPENDENCY.value(), "failed", null, "msg"));
@@ -117,7 +117,7 @@ class LccnUniquenessValidatorTest {
       .id(123L)
       .resource(new InstanceField().instance(createInstanceRequest(createLccnRequest())));
     when(folioMetadataRepository.findInventoryIdById(123L)).thenReturn(Optional.empty());
-    when(instanceSearchService.searchByLccnExcludingId(any(), any()))
+    when(searchService.getTotalInstancesByLccnExcludingSuppressedAndId(any(), any()))
       .thenReturn(new SearchResponseTotalOnly().totalRecords(0L));
     when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
 
@@ -127,7 +127,7 @@ class LccnUniquenessValidatorTest {
     // then
     assertTrue(isValid);
     verify(folioMetadataRepository).findInventoryIdById(123L);
-    verify(instanceSearchService).searchByLccnExcludingId(any(), any());
+    verify(searchService).getTotalInstancesByLccnExcludingSuppressedAndId(any(), any());
     verify(settingsService).isSettingEnabled(any(), any(), any());
   }
 
@@ -139,7 +139,7 @@ class LccnUniquenessValidatorTest {
       .resource(new InstanceField().instance(createInstanceRequest(createLccnRequest())));
     when(folioMetadataRepository.findInventoryIdById(123L))
       .thenReturn(Optional.of(() -> "6dcb9a08-9884-4a15-b990-89c879a8e999"));
-    when(instanceSearchService.searchByLccnExcludingId(any(), any()))
+    when(searchService.getTotalInstancesByLccnExcludingSuppressedAndId(any(), any()))
       .thenReturn(new SearchResponseTotalOnly().totalRecords(0L));
     when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
 
@@ -149,7 +149,7 @@ class LccnUniquenessValidatorTest {
     // then
     assertTrue(isValid);
     verify(folioMetadataRepository).findInventoryIdById(123L);
-    verify(instanceSearchService).searchByLccnExcludingId(any(), any());
+    verify(searchService).getTotalInstancesByLccnExcludingSuppressedAndId(any(), any());
     verify(settingsService).isSettingEnabled(any(), any(), any());
   }
 
@@ -161,7 +161,7 @@ class LccnUniquenessValidatorTest {
       .resource(new InstanceField().instance(createInstanceRequest(createLccnRequest())));
     when(folioMetadataRepository.findInventoryIdById(123L))
       .thenReturn(Optional.of(() -> "6dcb9a08-9884-4a15-b990-89c879a8e999"));
-    when(instanceSearchService.searchByLccnExcludingId(any(), any()))
+    when(searchService.getTotalInstancesByLccnExcludingSuppressedAndId(any(), any()))
       .thenReturn(new SearchResponseTotalOnly().totalRecords(1L));
     when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
 
@@ -171,7 +171,7 @@ class LccnUniquenessValidatorTest {
     // then
     assertFalse(isValid);
     verify(folioMetadataRepository).findInventoryIdById(123L);
-    verify(instanceSearchService).searchByLccnExcludingId(any(), any());
+    verify(searchService).getTotalInstancesByLccnExcludingSuppressedAndId(any(), any());
     verify(settingsService).isSettingEnabled(any(), any(), any());
   }
 
@@ -182,7 +182,7 @@ class LccnUniquenessValidatorTest {
       .id(123L)
       .resource(new InstanceField().instance(createInstanceRequest(createLccnRequest())));
     when(folioMetadataRepository.findInventoryIdById(123L)).thenReturn(Optional.empty());
-    when(instanceSearchService.searchByLccnExcludingId(any(), any()))
+    when(searchService.getTotalInstancesByLccnExcludingSuppressedAndId(any(), any()))
       .thenReturn(new SearchResponseTotalOnly().totalRecords(1L));
     when(settingsService.isSettingEnabled(any(), any(), any())).thenReturn(true);
 
@@ -192,7 +192,7 @@ class LccnUniquenessValidatorTest {
     // then
     assertFalse(isValid);
     verify(folioMetadataRepository).findInventoryIdById(123L);
-    verify(instanceSearchService).searchByLccnExcludingId(any(), any());
+    verify(searchService).getTotalInstancesByLccnExcludingSuppressedAndId(any(), any());
     verify(settingsService).isSettingEnabled(any(), any(), any());
   }
 

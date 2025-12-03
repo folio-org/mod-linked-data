@@ -8,7 +8,6 @@ import static org.folio.linked.data.test.TestUtil.getLccnResourceSearchResult;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,11 +20,11 @@ import java.util.function.Function;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.AuthorityItem;
 import org.folio.linked.data.domain.dto.AuthoritySearchResponse;
-import org.folio.linked.data.integration.client.SearchClient;
 import org.folio.linked.data.mapper.dto.ResourceSubgraphViewMapper;
 import org.folio.linked.data.model.entity.ResourceSubgraphView;
 import org.folio.linked.data.repo.ResourceSubgraphViewRepository;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.search.SearchService;
 import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +40,7 @@ class LccnResourceServiceTest {
   @InjectMocks
   private LccnResourceServiceImpl lccnResourceSearchService;
   @Mock
-  private SearchClient searchClient;
+  private SearchService searchService;
   @Mock
   private MockLccnResourceService mockLccnResourceService;
   @Mock
@@ -59,14 +57,13 @@ class LccnResourceServiceTest {
     var lccn2 = "lccnOfNotExistedResourceButFoundInventoryId";
     var lccn3 = "lccnOfNotExistedAndNotFoundInventoryIdResource";
     var lccns = new LinkedHashSet<>(List.of(lccn1, lccn2, lccn3));
-    var searchQuery = "lccn any \"" + lccn1 + " " + lccn2 + " " + lccn3 + "\"";
     var invId1 = "inventoryId1";
     var inventoryId2 = "inventoryId2";
-    var searchResponse = new ResponseEntity<>(new AuthoritySearchResponse().authorities(List.of(
+    var searchResponse = new AuthoritySearchResponse().authorities(List.of(
       new AuthorityItem().id(invId1).naturalId(lccn1),
       new AuthorityItem().id(inventoryId2).naturalId(lccn2)
-    )), OK);
-    doReturn(searchResponse).when(searchClient).searchAuthorities(searchQuery);
+    ));
+    doReturn(searchResponse).when(searchService).getAuthoritiesByLccn(lccns);
     var foundSubgraph = new ResourceSubgraphView()
       .setInventoryId(invId1)
       .setResourceSubgraph("lccnOfExistedResource subgraph");

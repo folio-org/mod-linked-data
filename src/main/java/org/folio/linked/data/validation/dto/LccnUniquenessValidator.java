@@ -17,7 +17,7 @@ import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.service.SettingsService;
-import org.folio.linked.data.service.search.InstanceSearchService;
+import org.folio.linked.data.service.search.SearchService;
 import org.folio.linked.data.util.LccnUtils;
 import org.folio.linked.data.validation.LccnUniqueConstraint;
 import org.springframework.stereotype.Component;
@@ -32,7 +32,7 @@ public class LccnUniquenessValidator implements ConstraintValidator<LccnUniqueCo
   private static final String DUPLICATE_CHECK_KEY = "lccn-duplicate-check";
   private static final String DUPLICATE_CHECK_PROPERTY = "duplicateLccnCheckingEnabled";
 
-  private final InstanceSearchService instanceSearchService;
+  private final SearchService searchService;
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final SettingsService settingsService;
@@ -79,7 +79,7 @@ public class LccnUniquenessValidator implements ConstraintValidator<LccnUniqueCo
 
   private SearchResponseTotalOnly findInstanceWithLccn(List<String> lccn, String inventoryId) {
     try {
-      return instanceSearchService.searchByLccnExcludingId(lccn, inventoryId);
+      return searchService.getTotalInstancesByLccnExcludingSuppressedAndId(lccn, inventoryId);
     } catch (Exception e) {
       log.error(e);
       throw exceptionBuilder.failedDependencyException(
