@@ -76,7 +76,7 @@
     <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
     <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
     <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
-    <maven-release-plugin.version>3.2.0</maven-release-plugin.version>
+    <maven-release-plugin.version>3.3.0</maven-release-plugin.version>
     <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
   </properties>
 
