@@ -4,9 +4,11 @@ import static java.util.Collections.emptyMap;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -42,18 +44,22 @@ public class LccnResourceServiceImpl implements LccnResourceService {
     var lccnsToInventoryIds = searchService.getAuthoritiesByLccn(lccns)
       .getAuthorities()
       .stream()
-      .filter(ai -> nonNull(ai.getId()))
-      .collect(toMap(AuthorityItem::getNaturalId, AuthorityItem::getId));
-    var foundSubgraphViews = subgraphViewRepository.findByInventoryIdIn(new HashSet<>(lccnsToInventoryIds.values()));
+      .filter(ai -> nonNull(ai.getId()) && nonNull(ai.getNaturalId()))
+      .collect(groupingBy(AuthorityItem::getNaturalId, mapping(AuthorityItem::getId, toSet())));
+    var allInventoryIds = lccnsToInventoryIds.values().stream()
+      .flatMap(Set::stream)
+      .collect(toSet());
+    var foundSubgraphViews = subgraphViewRepository.findByInventoryIdIn(allInventoryIds);
 
     return lccns.stream()
       .filter(lccnsToInventoryIds::containsKey)
       .collect(toMap(identity(), lccn -> {
-        var inventoryId = lccnsToInventoryIds.get(lccn);
-        var foundSgw = foundSubgraphViews.stream()
-          .filter(sgw -> sgw.getInventoryId().equals(inventoryId))
-          .findFirst();
-        return new LccnResourceSearchResult(foundSgw.orElse(null), inventoryId);
+        var inventoryIds = lccnsToInventoryIds.get(lccn);
+        return foundSubgraphViews.stream()
+          .filter(sgw -> inventoryIds.contains(sgw.getInventoryId()))
+          .findFirst()
+          .map(foundSgw -> new LccnResourceSearchResult(foundSgw, foundSgw.getInventoryId()))
+          .orElseGet(() -> new LccnResourceSearchResult(null, inventoryIds.iterator().next()));
       }));
   }
 

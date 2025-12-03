@@ -110,9 +110,12 @@ class LccnResourceServiceTest {
     // given
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
-    searchResults.put(lccn, getLccnResourceSearchResult("1", null));
-    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", null));
-    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", null));
+    var invId1 = UUID.randomUUID().toString();
+    var invId2 = UUID.randomUUID().toString();
+    var invId3 = UUID.randomUUID().toString();
+    searchResults.put(lccn, getLccnResourceSearchResult("1", invId1));
+    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", invId2));
+    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", invId3));
     var resource = new org.folio.ld.dictionary.model.Resource().setId(1L);
     doReturn(of(resource)).when(resourceSubgraphViewMapper).fromJson("1");
     var mockResource = new Resource().setId(2L);
@@ -132,9 +135,11 @@ class LccnResourceServiceTest {
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
     var inventoryId = UUID.randomUUID().toString();
+    var invId2 = UUID.randomUUID().toString();
+    var invId3 = UUID.randomUUID().toString();
     searchResults.put(lccn, new LccnResourceSearchResult(null, inventoryId));
-    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", null));
-    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", null));
+    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", invId2));
+    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", invId3));
     var resource = new org.folio.ld.dictionary.model.Resource().setId(1L);
     doReturn(of(resource)).when(resourceMarcAuthorityService).fetchResourceFromSrsByInventoryId(inventoryId);
     var mockResource = new Resource().setId(2L);
@@ -154,9 +159,11 @@ class LccnResourceServiceTest {
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
     var inventoryId = UUID.randomUUID().toString();
+    var invId2 = UUID.randomUUID().toString();
+    var invId3 = UUID.randomUUID().toString();
     searchResults.put(lccn, new LccnResourceSearchResult(null, inventoryId));
-    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", null));
-    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", null));
+    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", invId2));
+    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", invId3));
     doReturn(empty()).when(resourceMarcAuthorityService).fetchResourceFromSrsByInventoryId(inventoryId);
     var mockResource = new Resource().setId(2L);
     when(mockLccnResourceService.unMockLccnEdges(any(), any()))
@@ -174,8 +181,10 @@ class LccnResourceServiceTest {
     // given
     var lccn = UUID.randomUUID().toString();
     var searchResults = new HashMap<String, LccnResourceSearchResult>();
-    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", null));
-    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", null));
+    var invId2 = UUID.randomUUID().toString();
+    var invId3 = UUID.randomUUID().toString();
+    searchResults.put(lccn + "2", getLccnResourceSearchResult("2", invId2));
+    searchResults.put(lccn + "3", getLccnResourceSearchResult("3", invId3));
     var mockResource = new Resource().setId(2L);
     when(mockLccnResourceService.unMockLccnEdges(any(), any()))
       .thenAnswer(inv -> ((Function<String, Optional<Resource>>) inv.getArgument(1)).apply(lccn).orElse(null));
