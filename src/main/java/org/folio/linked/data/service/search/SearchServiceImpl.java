@@ -3,7 +3,7 @@ package org.folio.linked.data.service.search;
 import static java.util.Objects.isNull;
 import static org.folio.linked.data.util.SearchQueryUtils.AND;
 import static org.folio.linked.data.util.SearchQueryUtils.queryIdNotEquals;
-import static org.folio.linked.data.util.SearchQueryUtils.queryLccns;
+import static org.folio.linked.data.util.SearchQueryUtils.queryLccnsAuthorized;
 import static org.folio.linked.data.util.SearchQueryUtils.queryLccnsExcludingSuppressed;
 
 import java.util.Collection;
@@ -29,7 +29,7 @@ public class SearchServiceImpl implements SearchService {
 
   @Override
   public AuthoritySearchResponse getAuthoritiesByLccn(Collection<String> lccns) {
-    var searchQuery = queryLccns(lccns);
+    var searchQuery = queryLccnsAuthorized(lccns);
     return searchClient.searchAuthorities(searchQuery).getBody();
   }
 

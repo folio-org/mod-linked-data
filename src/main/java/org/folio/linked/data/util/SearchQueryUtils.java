@@ -14,9 +14,14 @@ public class SearchQueryUtils {
   private static final String LCCN_EQUALS = "lccn==\"%s\"";
   private static final String EXCLUDE_SUPPRESSED = "staffSuppress <> \"true\" and discoverySuppress <> \"true\"";
   private static final String ID_NOT_EQUALS = "id <> \"%s\"";
+  private static final String AUTHORIZED = "authRefType==(\"Authorized\")";
 
   public static String queryLccnsExcludingSuppressed(Collection<String> lccns) {
     return "(" + queryLccns(lccns) + ")" + AND + "(" + EXCLUDE_SUPPRESSED + ")";
+  }
+
+  public static String queryLccnsAuthorized(Collection<String> lccns) {
+    return "(" + queryLccns(lccns) + ")" + AND + "(" + AUTHORIZED + ")";
   }
 
   public static String queryLccns(Collection<String> lccns) {

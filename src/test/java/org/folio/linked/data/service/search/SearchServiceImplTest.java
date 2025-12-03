@@ -92,7 +92,7 @@ class SearchServiceImplTest {
     // given
     var lccns = List.of("12", "34");
     var expectedResponse = new AuthoritySearchResponse().authorities(List.of(new AuthorityItem().naturalId("lccn1")));
-    when(searchClient.searchAuthorities("lccn==\"12\" or lccn==\"34\""))
+    when(searchClient.searchAuthorities("(lccn==\"12\" or lccn==\"34\") and (authRefType==(\"Authorized\"))"))
       .thenReturn(new ResponseEntity<>(expectedResponse, OK));
 
     // when
