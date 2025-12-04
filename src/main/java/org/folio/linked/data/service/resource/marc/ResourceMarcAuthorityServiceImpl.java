@@ -21,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.AssignmentCheckResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.integration.client.SrsClient;
+import org.folio.linked.data.integration.rest.srs.SrsClient;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.dto.Identifiable;
 import org.folio.linked.data.model.entity.FolioMetadata;

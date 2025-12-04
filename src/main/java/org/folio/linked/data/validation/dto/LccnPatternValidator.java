@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
-import org.folio.linked.data.preprocessing.lccn.LccnNormalizer;
+import org.folio.linked.data.integration.rest.specification.SpecProvider;
+import org.folio.linked.data.service.lccn.normalization.LccnNormalizer;
 import org.folio.linked.data.validation.LccnPatternConstraint;
-import org.folio.linked.data.validation.spec.SpecProvider;
 import org.folio.rspec.domain.dto.SpecificationRuleDto;
 
 @RequiredArgsConstructor
