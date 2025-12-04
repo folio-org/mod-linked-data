@@ -13,11 +13,10 @@ import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.LccnField;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
-import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.integration.rest.search.SearchService;
+import org.folio.linked.data.integration.rest.settings.SettingsService;
 import org.folio.linked.data.repo.FolioMetadataRepository;
-import org.folio.linked.data.service.SettingsService;
-import org.folio.linked.data.service.search.InstanceSearchService;
 import org.folio.linked.data.util.LccnUtils;
 import org.folio.linked.data.validation.LccnUniqueConstraint;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,7 @@ public class LccnUniquenessValidator implements ConstraintValidator<LccnUniqueCo
   private static final String DUPLICATE_CHECK_KEY = "lccn-duplicate-check";
   private static final String DUPLICATE_CHECK_PROPERTY = "duplicateLccnCheckingEnabled";
 
-  private final InstanceSearchService instanceSearchService;
+  private final SearchService searchService;
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final SettingsService settingsService;
@@ -71,15 +70,14 @@ public class LccnUniquenessValidator implements ConstraintValidator<LccnUniqueCo
   }
 
   private boolean isUnique(List<String> lccn, String inventoryId) {
-    return ofNullable(findInstanceWithLccn(lccn, inventoryId))
-      .map(SearchResponseTotalOnly::getTotalRecords)
+    return ofNullable(countInstanceWithLccn(lccn, inventoryId))
       .map(count -> count == 0)
       .orElse(false);
   }
 
-  private SearchResponseTotalOnly findInstanceWithLccn(List<String> lccn, String inventoryId) {
+  private Long countInstanceWithLccn(List<String> lccn, String inventoryId) {
     try {
-      return instanceSearchService.searchByLccnExcludingId(lccn, inventoryId);
+      return searchService.countInstancesByLccnExcludingSuppressedAndId(lccn, inventoryId);
     } catch (Exception e) {
       log.error(e);
       throw exceptionBuilder.failedDependencyException(

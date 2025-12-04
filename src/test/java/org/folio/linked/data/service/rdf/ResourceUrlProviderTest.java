@@ -3,7 +3,7 @@ package org.folio.linked.data.service.rdf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.folio.linked.data.integration.ConfigurationService;
+import org.folio.linked.data.integration.rest.configuration.ConfigurationService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

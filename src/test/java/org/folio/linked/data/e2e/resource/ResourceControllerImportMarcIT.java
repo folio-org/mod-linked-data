@@ -14,7 +14,7 @@ import java.util.UUID;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.integration.client.SrsClient;
+import org.folio.linked.data.integration.rest.srs.SrsClient;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;

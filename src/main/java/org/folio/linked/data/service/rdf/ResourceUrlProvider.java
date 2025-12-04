@@ -2,7 +2,7 @@ package org.folio.linked.data.service.rdf;
 
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.integration.ConfigurationService;
+import org.folio.linked.data.integration.rest.configuration.ConfigurationService;
 import org.springframework.stereotype.Service;
 
 @Service

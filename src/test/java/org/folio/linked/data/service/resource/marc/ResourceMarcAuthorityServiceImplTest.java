@@ -29,7 +29,7 @@ import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.integration.client.SrsClient;
+import org.folio.linked.data.integration.rest.srs.SrsClient;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;

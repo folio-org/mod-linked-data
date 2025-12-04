@@ -82,6 +82,8 @@ folio:
 mod-linked-data:
   reindex:
     page-size: 1000
+  search:
+    max-params: ${SEARCH_MAX_PARAMS:100}
   kafka:
     topic:
       work-search-index: ${KAFKA_WORK_SEARCH_INDEX_TOPIC:linked-data.work}

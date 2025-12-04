@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.toCollection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
-import static org.folio.linked.data.service.search.lccn.LccnResourceService.LccnResourceSearchResult;
+import static org.folio.linked.data.service.lccn.LccnResourceService.LccnResourceSearchResult;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
