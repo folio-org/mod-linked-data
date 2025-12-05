@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.SourceRecordDomainEventDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.instance.IdentifierFieldDeserializer;
@@ -30,9 +31,11 @@ public class ObjectMapperConfig {
     var om = new ObjectMapper()
       .setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
       .configure(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID, true)
+      .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
       .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
       .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
       .addMixIn(MarcRecord.class, MarcRecordSerializationConfig.class);
+    om.registerModule(new JavaTimeModule());
     om.registerModule(monographModule(om, exceptionBuilder));
     return om;
   }

@@ -2,6 +2,7 @@ package org.folio.linked.data.integration.rest.search;
 
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.SearchQueryUtils.AND;
 import static org.folio.linked.data.util.SearchQueryUtils.queryIdNotEquals;
 import static org.folio.linked.data.util.SearchQueryUtils.queryLccnsAuthorized;
@@ -15,11 +16,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.ListUtils;
 import org.folio.linked.data.domain.dto.AuthorityItem;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SearchServiceImpl implements SearchService {
+@Profile("!" + STANDALONE_PROFILE)
+public class SearchServiceFolio implements SearchService {
   private final SearchClient searchClient;
 
   @Value("${mod-linked-data.search.max-params}")

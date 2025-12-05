@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.domain.dto.LinkedDataHub;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
@@ -61,6 +62,16 @@ public class KafkaProducerConfiguration {
   }
 
   @Bean
+  public FolioMessageProducer<ImportResultEvent> importResultEventProducer(
+    KafkaTemplate<String, ImportResultEvent> importResultEventTemplate
+  ) {
+    var producer = new FolioMessageProducer<>(importResultEventTemplate,
+      linkedDataTopicProperties::getLinkedDataImportResult);
+    producer.setKeyMapper(result -> String.valueOf(result.getJobInstanceId()));
+    return producer;
+  }
+
+  @Bean
   public KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventTemplate(
     ProducerFactory<String, ResourceIndexEvent> resourceIndexEventMessageProducerFactory) {
     return new KafkaTemplate<>(resourceIndexEventMessageProducerFactory);
@@ -74,12 +85,25 @@ public class KafkaProducerConfiguration {
   }
 
   @Bean
+  public KafkaTemplate<String, ImportResultEvent> importResultEventTemplate(
+    ProducerFactory<String, ImportResultEvent> importResultEventProducerFactory
+  ) {
+    return new KafkaTemplate<>(importResultEventProducerFactory);
+  }
+
+  @Bean
   public ProducerFactory<String, ResourceIndexEvent> resourceIndexEventProducerFactory(ObjectMapper objectMapper) {
     return getKafkaProducerFactory(objectMapper);
   }
 
   @Bean
   public ProducerFactory<String, InstanceIngressEvent> instanceIngressEventProducerFactory(ObjectMapper objectMapper) {
+    return getKafkaProducerFactory(objectMapper);
+  }
+
+  @Bean
+  public ProducerFactory<String, ImportResultEvent> importResultEventProducerFactory(
+    ObjectMapper objectMapper) {
     return getKafkaProducerFactory(objectMapper);
   }
 

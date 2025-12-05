@@ -8,6 +8,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Map;
 import java.util.Optional;
@@ -21,11 +22,13 @@ import org.folio.linked.data.mapper.dto.ResourceSubgraphViewMapper;
 import org.folio.linked.data.repo.ResourceSubgraphViewRepository;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class LccnResourceServiceImpl implements LccnResourceService {
+@Profile("!" + STANDALONE_PROFILE)
+public class LccnResourceServiceFolio implements LccnResourceService {
   private final SearchService searchService;
   private final MockLccnResourceService mockLccnResourceService;
   private final ResourceSubgraphViewMapper resourceSubgraphViewMapper;

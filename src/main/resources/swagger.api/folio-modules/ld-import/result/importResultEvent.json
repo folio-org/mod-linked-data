@@ -1,0 +1,60 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Result of Linked Data Import output event saving",
+  "properties": {
+    "originalEventTs": {
+      "description": "Original Linked Data Import output event timestamp",
+      "type": "string"
+    },
+    "jobInstanceId": {
+      "description": "Import Job Instance ID",
+      "type": "integer",
+      "format": "int64"
+    },
+    "startDate": {
+      "description": "Time of event handling start",
+      "type": "string",
+      "format": "date-time"
+    },
+    "endDate": {
+      "description": "Time of event handling start",
+      "type": "string",
+      "format": "date-time"
+    },
+    "resourcesCount": {
+      "description": "Total number of resources received",
+      "type": "integer",
+      "format": "int32"
+    },
+    "createdCount": {
+      "description": "Number of resources created",
+      "type": "integer",
+      "format": "int32"
+    },
+    "updatedCount": {
+      "description": "Number of resources updated",
+      "type": "integer",
+      "format": "int32"
+    },
+    "failedResources": {
+      "description": "Array of failed resource records",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "$ref": "failedResource.json"
+      }
+    },
+    "tenant": {
+      "description": "Tenant ID",
+      "type": "string"
+    },
+    "ts": {
+      "description": "Message timestamp",
+      "type": "string"
+    }
+  },
+  "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage",
+  "required": ["originalEventTs", "jobInstanceId", "startDate", "endDate", "resourcesCount", "createdCount", "updatedCount","resourcesWithLineNumbers"]
+}

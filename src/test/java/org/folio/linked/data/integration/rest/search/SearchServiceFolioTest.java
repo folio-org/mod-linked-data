@@ -28,14 +28,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class SearchServiceImplTest {
+class SearchServiceFolioTest {
 
   private static final String EXPECTED_QUERY =
     "(lccn==\"12\" or lccn==\"34\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")";
   private static final String EXPECTED_QUERY_ID_EXCLUDED = EXPECTED_QUERY + " and id <> \"1234\"";
 
   @InjectMocks
-  private SearchServiceImpl searchService;
+  private SearchServiceFolio searchService;
 
   @Mock
   private SearchClient searchClient;
