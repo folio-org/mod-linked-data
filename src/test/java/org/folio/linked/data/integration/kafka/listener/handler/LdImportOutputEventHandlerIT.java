@@ -15,8 +15,8 @@ import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.repo.ImportEventResultRepository;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
+import org.folio.linked.data.test.kafka.KafkaImportResultTopicListener;
 import org.folio.linked.data.test.resource.ResourceTestRepository;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,11 +36,11 @@ class LdImportOutputEventHandlerIT {
   @Autowired
   private ResourceTestRepository resourceRepository;
   @Autowired
-  private ImportEventResultRepository eventResultRepository;
-  @Autowired
   private JdbcTemplate jdbcTemplate;
   @Autowired
   private ResourceModelMapper resourceModelMapper;
+  @Autowired
+  private KafkaImportResultTopicListener importResultListener;
 
   @BeforeAll
   static void beforeAll(@Autowired KafkaAdminService kafkaAdminService) {
@@ -50,6 +50,7 @@ class LdImportOutputEventHandlerIT {
   @BeforeEach
   void clean() {
     tenantScopedExecutionService.execute(TENANT_ID, () -> cleanResourceTables(jdbcTemplate));
+    importResultListener.clear();
   }
 
   @Test
@@ -62,7 +63,7 @@ class LdImportOutputEventHandlerIT {
     eventKafkaTemplate.send(ldImportOutputEvent);
 
     // then
-    awaitAndAssert(() -> assertFalse(eventResultRepository.findAll().isEmpty()));
+    awaitAndAssert(() -> assertFalse(importResultListener.getMessages().isEmpty()));
 
     var resourceSavedOpt = tenantScopedExecutionService.execute(TENANT_ID,
       () -> resourceRepository.findByIdWithEdgesLoaded(id)
@@ -72,16 +73,15 @@ class LdImportOutputEventHandlerIT {
     assertThat(resourceSaved.getTypes()).isNotEmpty();
     assertThat(resourceSaved.getOutgoingEdges()).isNotEmpty();
 
-    var eventResultSavedOpt = tenantScopedExecutionService.execute(TENANT_ID,
-      () -> eventResultRepository.findById(1762182290977L)
-    );
-    assertThat(eventResultSavedOpt).isPresent();
-    var eventResultSaved = eventResultSavedOpt.get();
-    assertThat(eventResultSaved.getJobId()).isEqualTo(123L);
-    assertThat(eventResultSaved.getResourcesCount()).isEqualTo(1);
-    assertThat(eventResultSaved.getCreatedCount()).isEqualTo(1);
-    assertThat(eventResultSaved.getUpdatedCount()).isZero();
-    assertThat(eventResultSaved.getFailedCount()).isZero();
+    var importResultMessages = importResultListener.getMessages();
+    assertThat(importResultMessages).hasSize(1);
+
+    var eventResult = importResultMessages.getFirst();
+    assertThat(eventResult.getJobInstanceId()).isEqualTo(123L);
+    assertThat(eventResult.getResourcesCount()).isEqualTo(1);
+    assertThat(eventResult.getCreatedCount()).isEqualTo(1);
+    assertThat(eventResult.getUpdatedCount()).isZero();
+    assertThat(eventResult.getFailedResources()).isEmpty();
   }
 
   @SneakyThrows

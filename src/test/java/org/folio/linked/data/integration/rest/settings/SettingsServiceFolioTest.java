@@ -23,10 +23,10 @@ import org.springframework.http.ResponseEntity;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class SettingsServiceImplTest {
+class SettingsServiceFolioTest {
 
   @InjectMocks
-  private SettingsServiceImpl settingsService;
+  private SettingsServiceFolio settingsService;
 
   @Mock
   private SettingsClient settingsClient;

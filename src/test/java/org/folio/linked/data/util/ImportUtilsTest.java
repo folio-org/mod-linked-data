@@ -8,6 +8,7 @@ import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
 import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -19,16 +20,18 @@ class ImportUtilsTest {
   private static Stream<Arguments> resources() {
     return Stream.of(
       Arguments.of(
-        new ImportUtils.ImportedResource(new Resource().setId(1L).setLabel(""), CREATED, null),
+        new ImportUtils.ImportedResource(
+          new ResourceWithLineNumber(1L, new Resource().setId(1L).setLabel("")), CREATED, null),
         "ID,LABEL,STATUS,FAILURE_REASON\r\n1,,Created,\r\n"
       ),
       Arguments.of(
-        new ImportUtils.ImportedResource(new Resource().setId(692094L).setLabel("Some complexity, isn't \"missing\""),
-          UPDATED, null),
+        new ImportUtils.ImportedResource(new ResourceWithLineNumber(2L,
+          new Resource().setId(692094L).setLabel("Some complexity, isn't \"missing\"")), UPDATED, null),
         "ID,LABEL,STATUS,FAILURE_REASON\r\n692094,\"Some complexity, isn't \"\"missing\"\"\",Updated,\r\n"
       ),
       Arguments.of(
-        new ImportUtils.ImportedResource(new Resource().setId(5L).setLabel("No good"), FAILED, "Some, error"),
+        new ImportUtils.ImportedResource(new ResourceWithLineNumber(3L,
+          new Resource().setId(5L).setLabel("No good")), FAILED, "Some, error"),
         "ID,LABEL,STATUS,FAILURE_REASON\r\n5,No good,Failed,\"Some, error\"\r\n"
       )
     );

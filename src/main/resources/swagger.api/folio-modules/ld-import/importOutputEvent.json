@@ -1,14 +1,15 @@
 {
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Linked Data Import result DTO",
+  "description": "Linked Data Import output result DTO",
   "properties": {
-    "resources": {
-      "description": "Array of imported resources",
+    "resourcesWithLineNumbers": {
+      "description": "Array of mapped resources with their line numbers",
       "type": "array",
       "uniqueItems": true,
       "items": {
-        "$ref": "../../common/resourcePlaceholder.json"
+        "type": "object",
+        "$ref": "resourceWithLineNumber.json"
       }
     },
     "jobInstanceId": {
@@ -17,7 +18,7 @@
       "format": "int64"
     },
     "tenant": {
-      "description": "Tenant id",
+      "description": "Tenant ID",
       "type": "string"
     },
     "ts": {
@@ -26,5 +27,5 @@
     }
   },
   "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage",
-  "required": ["resources"]
+  "required": ["resourcesWithLineNumbers"]
 }

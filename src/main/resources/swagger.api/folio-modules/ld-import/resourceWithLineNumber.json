@@ -1,0 +1,19 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Resource with its line number from the RDF file",
+  "properties": {
+    "lineNumber": {
+      "description": "Line number from the RDF file",
+      "type": "integer",
+      "format": "int64"
+    },
+    "resource": {
+      "description": "Mapped resource",
+      "type": "object",
+      "$ref": "../../common/resourcePlaceholder.json"
+    }
+  },
+  "required": ["lineNumber", "resource"]
+}
+

@@ -22,13 +22,13 @@ import org.springframework.http.ResponseEntity;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class SpecProviderImplTest {
+class SpecProviderFolioTest {
 
   @Mock
   private SpecClient client;
 
   @InjectMocks
-  private SpecProviderImpl specProvider;
+  private SpecProviderFolio specProvider;
 
   @Test
   void shouldReturn_specRules_whenSpecificationStorageIsAvailable() {

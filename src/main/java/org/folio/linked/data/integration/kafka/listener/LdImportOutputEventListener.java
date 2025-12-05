@@ -4,7 +4,7 @@ import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -45,7 +45,7 @@ public class LdImportOutputEventListener {
     log.info("Processing LD-Import output event with Job ID {} and ts {}",
       consumerRecord.value().getJobInstanceId(), consumerRecord.value().getTs());
     var event = consumerRecord.value();
-    var startTime = LocalDateTime.now();
+    var startTime = OffsetDateTime.now();
     tenantScopedExecutionService.executeAsyncWithRetry(
       consumerRecord.headers(),
       retryContext -> runRetryableJob(event, startTime, retryContext),
@@ -53,7 +53,7 @@ public class LdImportOutputEventListener {
     );
   }
 
-  private void runRetryableJob(ImportOutputEvent event, LocalDateTime startTime, RetryContext retryContext) {
+  private void runRetryableJob(ImportOutputEvent event, OffsetDateTime startTime, RetryContext retryContext) {
     ofNullable(retryContext.getLastThrowable())
       .ifPresent(ex -> logFailedEvent(event, ex, true));
     ldImportOutputEventHandler.handle(event, startTime);

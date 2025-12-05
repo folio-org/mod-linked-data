@@ -12,30 +12,33 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
+import org.folio.linked.data.domain.dto.ImportResultEvent;
+import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.mapper.model.ImportEventResultMapper;
-import org.folio.linked.data.model.entity.imprt.ImportEventResult;
-import org.folio.linked.data.repo.ImportEventResultRepository;
+import org.folio.linked.data.mapper.kafka.ldimport.ImportEventResultMapper;
 import org.folio.linked.data.service.lccn.LccnResourceService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.graph.SaveGraphResult;
 import org.folio.linked.data.service.resource.meta.MetadataService;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.folio.spring.testing.type.UnitTest;
+import org.folio.spring.tools.kafka.FolioMessageProducer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @UnitTest
@@ -49,17 +52,22 @@ class RdfImportServiceTest {
   @Mock
   private MetadataService metadataService;
   @Mock
+  private LccnResourceService lccnResourceService;
+  @Mock
   private ResourceModelMapper resourceModelMapper;
   @Mock
   private ResourceGraphService resourceGraphService;
   @Mock
-  private RequestProcessingExceptionBuilder exceptionBuilder;
-  @Mock
   private ImportEventResultMapper importEventResultMapper;
   @Mock
-  private ImportEventResultRepository importEventResultRepository;
+  private RequestProcessingExceptionBuilder exceptionBuilder;
   @Mock
-  private LccnResourceService lccnResourceService;
+  private FolioMessageProducer<ImportResultEvent> importResultEventProducer;
+
+  @BeforeEach
+  void setUp() {
+    ReflectionTestUtils.setField(rdfImportService, "importResultEventProducer", importResultEventProducer);
+  }
 
   @Test
   void importFile_createsResources_whenValidFileProvided() throws IOException {
@@ -179,8 +187,12 @@ class RdfImportServiceTest {
     var event = new ImportOutputEvent()
       .ts(ts)
       .jobInstanceId(jobInstanceId)
-      .resources(Set.of(resource1, resource2, resource3));
-    var expectedImportEventResult = new ImportEventResult().setEventTs(Long.parseLong(ts));
+      .resourcesWithLineNumbers(Set.of(
+        new ResourceWithLineNumber(1L, resource1),
+        new ResourceWithLineNumber(2L, resource2),
+        new ResourceWithLineNumber(3L, resource3))
+      );
+    var expectedImportEventResult = new ImportResultEvent().originalEventTs(ts);
     when(importEventResultMapper.fromImportReport(eq(event), any(), any()))
       .thenReturn(expectedImportEventResult);
     when(lccnResourceService.unMockLccnEdges(any(), any()))
@@ -188,12 +200,12 @@ class RdfImportServiceTest {
 
 
     // when
-    rdfImportService.importOutputEvent(event, LocalDateTime.now());
+    rdfImportService.importOutputEvent(event, OffsetDateTime.now());
 
     // then
     verify(metadataService).ensure(entity1);
     verify(metadataService).ensure(entity2);
-    verify(importEventResultRepository).save(expectedImportEventResult);
+    verify(importResultEventProducer).sendMessages(List.of(expectedImportEventResult));
   }
 
 }

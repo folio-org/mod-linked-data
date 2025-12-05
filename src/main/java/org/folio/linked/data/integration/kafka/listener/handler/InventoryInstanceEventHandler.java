@@ -4,7 +4,7 @@ import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class InventoryInstanceEventHandler implements ExternalEventHandler<Inven
   private final WorkUpdateMessageSender workUpdateMessageSender;
 
   @Transactional
-  public void handle(InventoryInstanceEvent event, LocalDateTime startTime) {
+  public void handle(InventoryInstanceEvent event, OffsetDateTime startTime) {
     getOptionalReindexResource(event)
       .ifPresentOrElse(this::reindexResource,
         () -> log.debug(INSTANCE_REINDEX_NOT_REQUIRED, event.getId()));
