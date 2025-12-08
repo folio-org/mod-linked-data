@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.tenant;
 
 import static java.util.stream.Collectors.toMap;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.spring.tools.config.RetryTemplateConfiguration.DEFAULT_KAFKA_RETRY_TEMPLATE_NAME;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.scope.FolioExecutionContextSetter;
 import org.folio.spring.tools.context.ExecutionContextBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.support.RetryTemplate;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Profile("!" + STANDALONE_PROFILE)
 public class TenantScopedExecutionService {
   @Qualifier(DEFAULT_KAFKA_RETRY_TEMPLATE_NAME)
   private final RetryTemplate retryTemplate;

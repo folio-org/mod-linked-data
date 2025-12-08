@@ -37,7 +37,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class LccnResourceServiceTest {
 
   @InjectMocks
-  private LccnResourceServiceImpl lccnResourceSearchService;
+  private LccnResourceServiceFolio lccnResourceSearchService;
   @Mock
   private SearchService searchService;
   @Mock

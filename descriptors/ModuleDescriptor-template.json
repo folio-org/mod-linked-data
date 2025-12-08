@@ -348,6 +348,8 @@
       { "name": "KAFKA_SOURCE_RECORD_DOMAIN_EVENT_CONCURRENCY", "value": "1" },
       { "name": "KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN", "value": "(folio\\.)(.*\\.)inventory.instance" },
       { "name": "KAFKA_INVENTORY_INSTANCE_EVENT_CONCURRENCY", "value": "1" },
+      { "name": "KAFKA_LD_IMPORT_OUTPUT_EVENT_TOPIC_PATTERN", "value": "(folio\\.)(.*\\.)inventory.instance" },
+      { "name": "KAFKA_LD_IMPORT_OUTPUT_EVENT_CONCURRENCY", "value": "1" },
       { "name": "KAFKA_RETRY_INTERVAL_MS", "value": "2000" },
       { "name": "KAFKA_RETRY_DELIVERY_ATTEMPTS", "value": "6" },
       { "name": "KAFKA_WORK_SEARCH_INDEX_TOPIC", "value": "linked-data.work" },
@@ -357,6 +359,7 @@
       { "name": "KAFKA_HUB_SEARCH_INDEX_TOPIC_PARTITIONS", "value": "1" },
       { "name": "KAFKA_HUB_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR", "value": "" },
       { "name": "KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC", "value": "" },
+      { "name": "KAFKA_LINKED_DATA_IMPORT_RESULT_TOPIC", "value": "" },
       { "name": "CACHE_TTL_SPEC_RULES_MS", "value": "18000000" },
       { "name": "CACHE_TTL_SETTINGS_ENTRIES_MS", "value": "18000000" },
       { "name": "CACHE_TTL_MODULE_STATE_MS", "value": "18000000" }

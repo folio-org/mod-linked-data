@@ -1,16 +1,19 @@
 package org.folio.linked.data.integration.rest.settings;
 
 import static java.util.Optional.ofNullable;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.SettingsItem;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class SettingsServiceImpl implements SettingsService {
+@Profile("!" + STANDALONE_PROFILE)
+public class SettingsServiceFolio implements SettingsService {
 
   private static final String SCOPE_AND_KEY_PATTERN = "(scope==%s and key==%s)";
 

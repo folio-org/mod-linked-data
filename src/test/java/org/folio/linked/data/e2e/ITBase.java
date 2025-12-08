@@ -25,7 +25,7 @@ public abstract class ITBase {
   protected JdbcTemplate jdbcTemplate;
   @Autowired
   protected ResourceTestService resourceTestService;
-  @Autowired
+  @Autowired(required = false)
   protected TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach

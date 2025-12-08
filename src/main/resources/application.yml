@@ -89,6 +89,7 @@ mod-linked-data:
       work-search-index: ${KAFKA_WORK_SEARCH_INDEX_TOPIC:linked-data.work}
       hub-search-index: ${KAFKA_HUB_SEARCH_INDEX_TOPIC:linked-data.hub}
       instance-ingress: ${KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC:inventory.instance_ingress}
+      linked-data-import-result: ${KAFKA_LINKED_DATA_IMPORT_RESULT_TOPIC:linked_data_import.result}
   cache:
     ttl:
       spec-rules: ${CACHE_TTL_SPEC_RULES_MS:18000000}
