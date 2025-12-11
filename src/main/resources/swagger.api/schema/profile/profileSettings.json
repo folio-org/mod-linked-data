@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Workspace custom profile settings",
+  "type": "object",
+  "properties": {
+    "active": {
+      "type": "boolean",
+      "description": "True if settings are intended to be applied, false if intended to be ignored"
+    },
+    "children": {
+      "type": "array",
+      "description": "Profile block children",
+      "items": {
+        "$ref": "profileSettingsChild.json"
+      }
+    }
+  },
+  "required": [
+    "active",
+    "children"
+  ]
+}
