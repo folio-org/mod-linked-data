@@ -8,6 +8,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
@@ -219,6 +220,9 @@ public class Resource implements Persistable<Long> {
   @PrePersist
   void prePersist() {
     this.managed = true;
+    if (isEmpty(types)) {
+      throw new IllegalStateException("Cannot save resource [" + id + "] without types");
+    }
     if (nonNull(folioMetadata) && !isOfType(INSTANCE) && !isAuthority()) {
       throw new IllegalStateException("Cannot save resource [" + id + "] with types " + types + ". "
         + "Folio metadata can be set only for instance and authority resources");
