@@ -351,9 +351,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "schema/profile/profileSettingsResponseDto.json"
+                $ref: "schema/profile/customProfileSettingsResponseDto.json"
         '404':
-          description: No profile settings are found with a given profileId
+          description: No profile found with a given profileId
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
@@ -368,12 +368,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "schema/profile/profileSettingsRequestDto.json"
+              $ref: "schema/profile/customProfileSettingsRequestDto.json"
       responses:
         '204':
           description: Workspace profile settings created or updated successfully
         '400':
           $ref: '#/components/responses/badRequestResponse'
+        '404':
+          description: No profile found with a given profileId
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 

@@ -11,7 +11,7 @@
       "type": "array",
       "description": "Profile block children",
       "items": {
-        "$ref": "profileSettingsChild.json"
+        "$ref": "customProfileSettingsChild.json"
       }
     }
   },
