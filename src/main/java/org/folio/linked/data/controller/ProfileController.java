@@ -2,10 +2,10 @@ package org.folio.linked.data.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.CustomProfileSettingsRequestDto;
+import org.folio.linked.data.domain.dto.CustomProfileSettingsResponseDto;
 import org.folio.linked.data.domain.dto.PreferredProfileRequest;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
-import org.folio.linked.data.domain.dto.ProfileSettingsRequestDto;
-import org.folio.linked.data.domain.dto.ProfileSettingsResponseDto;
 import org.folio.linked.data.rest.resource.ProfileApi;
 import org.folio.linked.data.service.profile.PreferredProfileService;
 import org.folio.linked.data.service.profile.ProfileService;
@@ -49,12 +49,14 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
-  public ResponseEntity<ProfileSettingsResponseDto> getProfileSettings(Integer profileId) {
+  public ResponseEntity<CustomProfileSettingsResponseDto> getProfileSettings(Integer profileId) {
     return ResponseEntity.ok(profileSettingsService.getProfileSettings(profileId));
   }
 
   @Override
-  public ResponseEntity<Void> setProfileSettings(Integer profileId, ProfileSettingsRequestDto profileSettingsRequest) {
+  public ResponseEntity<Void> setProfileSettings(
+      Integer profileId,
+      CustomProfileSettingsRequestDto profileSettingsRequest) {
     profileSettingsService.setProfileSettings(profileId, profileSettingsRequest);
     return ResponseEntity.noContent().build();
   }
