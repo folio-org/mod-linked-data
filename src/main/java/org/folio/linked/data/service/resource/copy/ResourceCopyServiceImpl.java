@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.resource.copy;
 
 import static java.util.Collections.emptySet;
+import static org.folio.ld.dictionary.PropertyDictionary.ACCESSIBILITY_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.CITATION_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.CREDITS_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
@@ -33,6 +34,7 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
 
   private static final Map<String, Set<String>> PROPERTIES_TO_BE_COPIED = Map.of(
     INSTANCE.getUri(), Set.of(
+      ACCESSIBILITY_NOTE.getValue(),
       CITATION_COVERAGE.getValue(),
       CREDITS_NOTE.getValue(),
       GOVERNING_ACCESS_NOTE.getValue(),
