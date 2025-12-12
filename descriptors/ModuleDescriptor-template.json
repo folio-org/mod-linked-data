@@ -178,6 +178,16 @@
           "methods": [ "DELETE" ],
           "pathPattern": "/linked-data/profile/preferred",
           "permissionsRequired": [ "linked-data.profiles.preferred.delete" ]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/profile/settings/{id}",
+          "permissionsRequired": [ "linked-data.profiles.settings.get" ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/profile/settings/{id}",
+          "permissionsRequired": [ "linked-data.profiles.settings.post" ]
         }
       ]
     },
@@ -310,6 +320,16 @@
       "permissionName": "linked-data.profiles.preferred.delete",
       "displayName": "Linked Data: Delete the preferred profile for a resource type for the current user",
       "description": "Delete the preferred profile for a resource type for the current user"
+    },
+    {
+      "permissionName": "linked-data.profiles.settings.get",
+      "displayName": "Linked Data: Get the workspace profile settings for the profile for the current user",
+      "description": "Get the workspace profile settings for the profile for the current user"
+    },
+    {
+      "permissionName": "linked-data.profiles.settings.post",
+      "displayName": "Linked Data: Create or update the profile settings for the profile for the current user",
+      "description": "Create or update the profile settings for the profile for the current user"
     },
     {
       "permissionName": "linked-data.resources.rdf.get",
