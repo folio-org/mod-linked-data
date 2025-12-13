@@ -10,6 +10,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.folio.linked.data.model.entity.pk.ProfileSettingsPk;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Data
 @Entity
@@ -25,6 +27,7 @@ public class ProfileSettings {
   @JoinColumn(name = "profile_id", nullable = false)
   private Profile profile;
 
-  @Column(name = "settings", nullable = false)
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "settings", columnDefinition = "jsonb", nullable = false)
   private String settings;
 }

@@ -9,6 +9,7 @@ import org.folio.linked.data.domain.dto.CustomProfileSettings;
 import org.folio.linked.data.domain.dto.CustomProfileSettingsRequestDto;
 import org.folio.linked.data.domain.dto.CustomProfileSettingsResponseDto;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.model.entity.ProfileSettings;
 import org.folio.linked.data.model.entity.pk.ProfileSettingsPk;
 import org.folio.linked.data.repo.ProfileRepository;
@@ -41,10 +42,10 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   @Override
   public void setProfileSettings(Integer profileId, CustomProfileSettingsRequestDto profileSettingsRequest) {
     var userId = executionContext.getUserId();
-    profileRepository.findById(profileId)
+    var profile = profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
     try {
-      var settings = toEntity(profileId, userId, profileSettingsRequest);
+      var settings = toEntity(profile, userId, profileSettingsRequest);
       profileSettingsRepository.save(settings);
     } catch (JsonProcessingException e) {
       throw exceptionBuilder.badRequestException("Could not process settings", String.valueOf(profileId));
@@ -75,10 +76,11 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     }
   }
 
-  private ProfileSettings toEntity(Integer profileId, UUID userId, CustomProfileSettingsRequestDto requestDto)
+  private ProfileSettings toEntity(Profile profile, UUID userId, CustomProfileSettingsRequestDto requestDto)
       throws JsonProcessingException {
     return new ProfileSettings()
-      .setId(new ProfileSettingsPk(userId, profileId))
+      .setId(new ProfileSettingsPk(userId, profile.getId()))
+      .setProfile(profile)
       .setSettings(objectMapper.writeValueAsString(requestDto));
   }
 }
