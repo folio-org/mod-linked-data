@@ -31,7 +31,7 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     var userId = executionContext.getUserId();
     profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
-    var settings = profileSettingsRepository.getByIdUserIdProfileId(userId, profileId);
+    var settings = profileSettingsRepository.getByIdUserIdAndIdProfileId(userId, profileId);
     if (settings.isPresent()) {
       return toDto(profileId, userId, settings.get());
     }
