@@ -75,6 +75,7 @@
 - LdImportOutputEvent Listener and Handler introduced. Optimized ResourceEventsPublisher. [MODLD-873](https://folio-org.atlassian.net/browse/MODLD-873)
 - Gracefully handle missing LINK property of Hub resource [MODLD-884](https://folio-org.atlassian.net/browse/MODLD-884)
 - New DTO for workspace profile settings [MODLD-935](https://folio-org.atlassian.net/browse/MODLD-935)
+- New endpoints for workspace profile settings [MODLD-936](https://folio-org.atlassian.net/browse/MODLD-936)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
