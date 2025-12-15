@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e;
 
 import static java.util.UUID.randomUUID;
 import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -86,6 +87,7 @@ class ProfileSettingsIT {
     mockMvc.perform(getRequest)
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("$.active", is(true)));
+      .andExpect(jsonPath("$.active", is(true)))
+      .andExpect(jsonPath("$.children.length()", equalTo(1)));
   }
 }
