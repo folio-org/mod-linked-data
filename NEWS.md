@@ -74,7 +74,7 @@
 - Update HubReferenceMapperUnit to support RELATED_TO predicate. [MODLD-893](https://folio-org.atlassian.net/browse/MODLD-893)
 - LdImportOutputEvent Listener and Handler introduced. Optimized ResourceEventsPublisher. [MODLD-873](https://folio-org.atlassian.net/browse/MODLD-873)
 - Gracefully handle missing LINK property of Hub resource [MODLD-884](https://folio-org.atlassian.net/browse/MODLD-884)
-- Validation for Resource entity: saving a Resource without types now throws an IllegalStateException. [MODLDI-14](https://folio-org.atlassian.net/browse/MODLDI-14)
+- Validation for Resource type: saving a Resource without types now throws `required_resource_type` validation error. [MODLDI-14](https://folio-org.atlassian.net/browse/MODLDI-14)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

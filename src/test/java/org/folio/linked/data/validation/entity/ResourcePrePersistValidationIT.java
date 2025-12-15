@@ -33,15 +33,4 @@ class ResourcePrePersistValidationIT extends ITBase {
       .isThrownBy(() -> resourceRepository.save(nonInstanceResource))
       .withMessageContaining("Folio metadata can be set only for instance and authority resources");
   }
-
-  @Test
-  void shouldNotPersistResourceWithoutTypes() {
-    // given
-    var resourceWithoutTypes = new Resource().setIdAndRefreshEdges(999L);
-
-    // then
-    assertThatException()
-      .isThrownBy(() -> resourceRepository.save(resourceWithoutTypes))
-      .withMessageContaining("Cannot save resource [999] without types");
-  }
 }
