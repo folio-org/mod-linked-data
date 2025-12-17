@@ -17,6 +17,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
+import org.folio.linked.data.test.kafka.KafkaSearchHubIndexTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.rest.jaxrs.model.Record;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,8 @@ class ResourceControllerImportMarcIT extends ITBase {
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
   private KafkaSearchWorkIndexTopicListener searchWorkIndexTopicListener;
+  @Autowired
+  private KafkaSearchHubIndexTopicListener hubIndexTopicListener;
 
   @BeforeEach
   @Override
@@ -47,6 +50,7 @@ class ResourceControllerImportMarcIT extends ITBase {
     super.beforeEach();
     inventoryTopicListener.getMessages().clear();
     searchWorkIndexTopicListener.getMessages().clear();
+    hubIndexTopicListener.getMessages().clear();
   }
 
   @Test
@@ -64,6 +68,13 @@ class ResourceControllerImportMarcIT extends ITBase {
                         "ind1":" ",
                         "ind2":" ",
                         "subfields":[ { "a":"ResourceControllerImportMarcIT - Testing instance" } ]
+                     }
+                  },
+                  {
+                     "600":{
+                        "ind1":" ",
+                        "ind2":" ",
+                        "subfields":[ { "a":"Person name" }, { "t":"Title" }, { "z":"Geographic subdivision" } ]
                      }
                   }
                ],
@@ -104,6 +115,14 @@ class ResourceControllerImportMarcIT extends ITBase {
           .anyMatch(this::isExpectedSearchWorkMessage)
       )
     );
+
+    awaitAndAssert(
+      () -> assertTrue(
+        hubIndexTopicListener.getMessages()
+          .stream()
+          .anyMatch(this::isExpectedHubIndexMessage)
+      )
+    );
   }
 
   @SneakyThrows
@@ -121,5 +140,13 @@ class ResourceControllerImportMarcIT extends ITBase {
     return root.get("type").asText().equals("UPDATE")
       && root.get("resourceName").asText().equals("linked-data-work")
       && message.contains("ResourceControllerImportMarcIT - Testing instance");
+  }
+
+  @SneakyThrows
+  private boolean isExpectedHubIndexMessage(String message) {
+    var root = mapper.readTree(message);
+    return root.get("type").asText().equals("CREATE")
+      && root.get("resourceName").asText().equals("linked-data-hub")
+      && root.get("new").get("label").asText().contains("Person name. Title");
   }
 }
