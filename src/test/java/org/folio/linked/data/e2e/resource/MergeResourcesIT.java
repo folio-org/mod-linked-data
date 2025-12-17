@@ -1,6 +1,8 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
@@ -139,7 +141,7 @@ class MergeResourcesIT {
   void should_remove_replacedBy_edge_when_resource_becomes_preferred() {
     // given
     var replacedByTargetResource = createResource(2L, Map.of()).setDoc(getInitialDoc());
-    var lccnResource = new Resource().setIdAndRefreshEdges(3L);
+    var lccnResource = new Resource().setIdAndRefreshEdges(3L).addTypes(ID_LCCN);
     var sourceResource = createResource(1L,
       Map.of(
         PredicateDictionary.REPLACED_BY, List.of(replacedByTargetResource),
@@ -149,7 +151,7 @@ class MergeResourcesIT {
     resourceGraphService.saveMergingGraph(sourceResource);
 
     // when
-    var statusResource = new Resource().setIdAndRefreshEdges(4L);
+    var statusResource = new Resource().setIdAndRefreshEdges(4L).addTypes(STATUS);
     var newSourceResource = createResource(1L,
       Map.of(PredicateDictionary.STATUS, List.of(statusResource))
     ).setDoc(getNewDoc());
