@@ -44,6 +44,7 @@ import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.configuration.audit.LinkedDataAuditEntityListener;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
+import org.folio.linked.data.validation.ResourceTypeConstraint;
 import org.folio.marc4ld.util.ResourceKind;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -55,6 +56,7 @@ import org.springframework.data.domain.Persistable;
 @Data
 @NoArgsConstructor
 @PrimaryTitleConstraint
+@ResourceTypeConstraint
 @Accessors(chain = true)
 @Table(name = "resources")
 @EqualsAndHashCode(of = "id")
