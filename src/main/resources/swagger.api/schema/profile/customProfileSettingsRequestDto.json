@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Workspace custom profile settings request DTO",
+  "allOf": [
+    {
+      "$ref": "customProfileSettings.json"
+    }
+  ]
+}
