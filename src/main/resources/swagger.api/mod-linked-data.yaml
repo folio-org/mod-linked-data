@@ -336,6 +336,49 @@ paths:
           $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
+
+  /linked-data/profile/settings/{profileId}:
+    get:
+      operationId: getProfileSettings
+      tags:
+        - profile
+      description: Get the workspace profile settings for a profile for the current user
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Workspace profile settings for the current user
+          content:
+            application/json:
+              schema:
+                $ref: "schema/profile/customProfileSettingsResponseDto.json"
+        '404':
+          description: No profile found with a given profileId
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+    post:
+      operationId: setProfileSettings
+      tags:
+        - profile
+      description: Create or update the workspace profile settings for a profile for the current user
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "schema/profile/customProfileSettingsRequestDto.json"
+      responses:
+        '204':
+          description: Workspace profile settings created or updated successfully
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          description: No profile found with a given profileId
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/resource/{id}/graph:
     get:
       operationId: getResourceGraphById

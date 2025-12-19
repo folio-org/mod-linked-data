@@ -41,7 +41,7 @@ public class HubCreateMessageSender implements CreateMessageSender {
 
   @Override
   public Collection<Resource> apply(Resource resource) {
-    if (resource.isOfType(HUB)) {
+    if (resource.isOfType(HUB) && resource.getTypes().size() == 1) {
       return singletonList(resource);
     }
     return emptyList();

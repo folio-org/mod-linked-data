@@ -2,11 +2,14 @@ package org.folio.linked.data.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.linked.data.domain.dto.CustomProfileSettingsRequestDto;
+import org.folio.linked.data.domain.dto.CustomProfileSettingsResponseDto;
 import org.folio.linked.data.domain.dto.PreferredProfileRequest;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.rest.resource.ProfileApi;
 import org.folio.linked.data.service.profile.PreferredProfileService;
 import org.folio.linked.data.service.profile.ProfileService;
+import org.folio.linked.data.service.profile.ProfileSettingsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +19,7 @@ public class ProfileController implements ProfileApi {
 
   private final ProfileService profileService;
   private final PreferredProfileService preferredProfileService;
+  private final ProfileSettingsService profileSettingsService;
 
   @Override
   public ResponseEntity<String> getProfileById(Integer profileId) {
@@ -41,6 +45,19 @@ public class ProfileController implements ProfileApi {
   @Override
   public ResponseEntity<Void> deletePreferredProfile(String resourceTypeUri) {
     preferredProfileService.deletePreferredProfile(resourceTypeUri);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<CustomProfileSettingsResponseDto> getProfileSettings(Integer profileId) {
+    return ResponseEntity.ok(profileSettingsService.getProfileSettings(profileId));
+  }
+
+  @Override
+  public ResponseEntity<Void> setProfileSettings(
+      Integer profileId,
+      CustomProfileSettingsRequestDto profileSettingsRequest) {
+    profileSettingsService.setProfileSettings(profileId, profileSettingsRequest);
     return ResponseEntity.noContent().build();
   }
 }

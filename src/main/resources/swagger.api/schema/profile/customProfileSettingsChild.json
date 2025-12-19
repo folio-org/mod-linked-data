@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Workspace custom profile settings",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The child profile component's ID, from its id attribute"
+    },
+    "visible": {
+      "type": "boolean",
+      "description": "True if this profile component should be visible to the user"
+    },
+    "order": {
+      "type": "integer",
+      "description": "The rank order of the component, starting from 1 at the top"
+    }
+  },
+  "required": [
+    "id",
+    "visible",
+    "order"
+  ]
+}

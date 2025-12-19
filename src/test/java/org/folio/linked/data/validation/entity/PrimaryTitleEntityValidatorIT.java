@@ -1,6 +1,7 @@
 package org.folio.linked.data.validation.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,7 +30,8 @@ class PrimaryTitleEntityValidatorIT extends ITBase {
   void saveNotInstanceAndWorkResourceWithNoPrimaryMainTitle_shouldBeOk() {
     // given
     var resource = new Resource()
-      .setIdAndRefreshEdges(123L);
+      .setIdAndRefreshEdges(123L)
+      .addTypes(ID_ISBN);
 
     // when
     var result = resourceRepository.save(resource);
