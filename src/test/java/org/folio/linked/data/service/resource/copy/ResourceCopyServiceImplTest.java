@@ -118,6 +118,7 @@ class ResourceCopyServiceImplTest {
     doc.put("http://bibfra.me/vocab/library/citationCoverage", List.of("citationCoverage"));
     doc.put("http://bibfra.me/vocab/library/locationOfOriginalsDuplicates", List.of("locationOfOriginalsDuplicates"));
     doc.put("http://bibfra.me/vocab/lite/link", List.of("instanceLink"));
+    doc.put("http://bibfra.me/vocab/library/accessibilityNote", List.of("accessibilityNote"));
     return doc;
   }
 
