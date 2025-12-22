@@ -12,8 +12,8 @@
         "$ref": "resourceWithLineNumber.json"
       }
     },
-    "jobInstanceId": {
-      "description": "Import Job Instance ID",
+    "jobExecutionId": {
+      "description": "Import Job Execution ID",
       "type": "integer",
       "format": "int64"
     },

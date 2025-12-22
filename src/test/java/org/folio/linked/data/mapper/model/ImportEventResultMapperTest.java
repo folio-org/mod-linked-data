@@ -38,7 +38,7 @@ class ImportEventResultMapperTest {
     ir.addImport(getImportedResource(3L, "failed", 3L, FAILED, failureReason));
     var eventTs = "12345";
     var jobId = 777L;
-    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
+    var event = new ImportOutputEvent().ts(eventTs).jobExecutionId(jobId);
     var startDate = OffsetDateTime.now().minusMinutes(1);
 
     // when
@@ -46,7 +46,7 @@ class ImportEventResultMapperTest {
 
     // then
     assertThat(result.getOriginalEventTs()).isEqualTo(eventTs);
-    assertThat(result.getJobInstanceId()).isEqualTo(jobId);
+    assertThat(result.getJobExecutionId()).isEqualTo(jobId);
     assertThat(result.getStartDate()).isEqualTo(startDate);
     assertThat(result.getEndDate().isAfter(result.getStartDate())).isTrue();
     assertThat(result.getResourcesCount()).isEqualTo(3);
@@ -64,7 +64,7 @@ class ImportEventResultMapperTest {
     // given
     var eventTs = "12345";
     var jobId = 777L;
-    var event = new ImportOutputEvent().ts(eventTs).jobInstanceId(jobId);
+    var event = new ImportOutputEvent().ts(eventTs).jobExecutionId(jobId);
     var ir = new ImportUtils.ImportReport();
 
     // when
@@ -72,7 +72,7 @@ class ImportEventResultMapperTest {
 
     // then
     assertThat(result.getOriginalEventTs()).isEqualTo(eventTs);
-    assertThat(result.getJobInstanceId()).isEqualTo(jobId);
+    assertThat(result.getJobExecutionId()).isEqualTo(jobId);
     assertThat(result.getResourcesCount()).isZero();
     assertThat(result.getCreatedCount()).isZero();
     assertThat(result.getUpdatedCount()).isZero();

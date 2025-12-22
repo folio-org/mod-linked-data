@@ -7,8 +7,8 @@
       "description": "Original Linked Data Import output event timestamp",
       "type": "string"
     },
-    "jobInstanceId": {
-      "description": "Import Job Instance ID",
+    "jobExecutionId": {
+      "description": "Import Job Execution ID",
       "type": "integer",
       "format": "int64"
     },
@@ -56,5 +56,5 @@
     }
   },
   "x-implements": "org.folio.spring.tools.kafka.BaseKafkaMessage",
-  "required": ["originalEventTs", "jobInstanceId", "startDate", "endDate", "resourcesCount", "createdCount", "updatedCount","resourcesWithLineNumbers"]
+  "required": ["originalEventTs", "jobExecutionId", "startDate", "endDate", "resourcesCount", "createdCount", "updatedCount","resourcesWithLineNumbers"]
 }
