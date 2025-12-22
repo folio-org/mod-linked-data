@@ -66,7 +66,7 @@ class DictionaryServiceImplTest {
     var entityMock = mock(ResourceTypeEntity.class);
     when(resourceTypeMapper.toEntity(any(ResourceTypeDictionary.class)))
       .thenReturn(entityMock);
-    var expectedEntityCount = ResourceTypeDictionary.values().length;
+    var expectedEntityCount = ResourceTypeDictionary.values().length - 1;
 
     //when
     dictionaryService.init();

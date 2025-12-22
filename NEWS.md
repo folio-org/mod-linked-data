@@ -74,9 +74,10 @@
 - Update HubReferenceMapperUnit to support RELATED_TO predicate. [MODLD-893](https://folio-org.atlassian.net/browse/MODLD-893)
 - LdImportOutputEvent Listener and Handler introduced. Optimized ResourceEventsPublisher. [MODLD-873](https://folio-org.atlassian.net/browse/MODLD-873)
 - Gracefully handle missing LINK property of Hub resource [MODLD-884](https://folio-org.atlassian.net/browse/MODLD-884)
-- Validation for Resource type: saving a Resource without types now throws `required_resource_type` validation error. [MODLDI-14](https://folio-org.atlassian.net/browse/MODLDI-14)
+- Validation for Resource type: saving a Resource without types now throws `wrong_resource_type` validation error. [MODLDI-14](https://folio-org.atlassian.net/browse/MODLDI-14)
 - New DTO for workspace profile settings [MODLD-935](https://folio-org.atlassian.net/browse/MODLD-935)
 - New endpoints for workspace profile settings [MODLD-936](https://folio-org.atlassian.net/browse/MODLD-936)
+- MOCKED_RESOURCE type handling and validation [MODLD-789](https://folio-org.atlassian.net/browse/MODLD-789)
 - Preserve ACCESSIBILITY_NOTE (MARC 532) when an Instance is saved [MODLD-728](https://folio-org.atlassian.net/browse/MODLD-728)
 
 ## 1.0.4 (04-24-2025)

@@ -31,6 +31,6 @@ class ResourceTypeValidatorIT {
     var cve = (ConstraintViolationException) thrown.getCause().getCause();
     assertThat(cve.getConstraintViolations()).hasSize(1);
     assertThat(cve.getConstraintViolations().iterator().next().getMessage())
-      .isEqualTo("required_resource_type");
+      .isEqualTo("wrong_resource_type");
   }
 }
