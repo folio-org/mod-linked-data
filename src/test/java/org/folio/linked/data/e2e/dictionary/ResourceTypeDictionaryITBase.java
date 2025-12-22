@@ -1,6 +1,7 @@
 package org.folio.linked.data.e2e.dictionary;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.EnumSource.Mode.EXCLUDE;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ abstract class ResourceTypeDictionaryITBase {
 
     // when
     var countDb = JdbcTestUtils.countRowsInTable(jdbcTemplate, table);
-    var countLib = ResourceTypeDictionary.values().length;
+    var countLib = ResourceTypeDictionary.values().length - 1;
 
     //then
     assertThat(countDb)
@@ -46,7 +47,7 @@ abstract class ResourceTypeDictionaryITBase {
   }
 
   @ParameterizedTest
-  @EnumSource(value = ResourceTypeDictionary.class)
+  @EnumSource(value = ResourceTypeDictionary.class, mode = EXCLUDE, names = "MOCKED_RESOURCE")
   void valueInLib_shouldBeTheSameAsInDb(ResourceTypeDictionary type) {
     //given
     var uri = type.getUri();

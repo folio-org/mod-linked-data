@@ -1,10 +1,12 @@
 package org.folio.linked.data.service;
 
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.values;
+
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.dictionary.PredicateMapper;
 import org.folio.linked.data.mapper.dictionary.ResourceTypeMapper;
 import org.folio.linked.data.repo.PredicateRepository;
@@ -37,7 +39,8 @@ public class DictionaryServiceImpl implements DictionaryService {
   }
 
   private void initTypes() {
-    var types = Arrays.stream(ResourceTypeDictionary.values())
+    var types = Arrays.stream(values())
+      .filter(t -> t != MOCKED_RESOURCE)
       .map(resourceTypeMapper::toEntity)
       .toList();
     resourceTypeRepository.saveAll(types);
