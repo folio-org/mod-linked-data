@@ -8,7 +8,6 @@ import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.JsonUtils.hasElementByJsonPath;
-import static org.folio.linked.data.util.LccnUtils.hasLccn;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +47,7 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
     if (notProcessableEvent(event, recordType)) {
       return;
     }
-    if (isAuthorityEventWithLccn(event, recordType)) {
+    if (recordType == MARC_AUTHORITY) {
       saveAuthorities(event);
     } else if (isLinkedDataBibCreateEvent(event, recordType)) {
       saveAdminMetadata(event);
@@ -87,11 +86,6 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
       var id = resourceMarcAuthorityService.saveMarcAuthority(resource);
       log.info(EVENT_SAVED, event.getId(), MARC_AUTHORITY, id);
     }
-  }
-
-  private boolean isAuthorityEventWithLccn(SourceRecordDomainEvent event, SourceRecordType recordType) {
-    return recordType == MARC_AUTHORITY
-      && hasLccn(event.getEventPayload().getParsedRecord().getContent());
   }
 
   private boolean isLinkedDataBibCreateEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {

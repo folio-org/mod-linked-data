@@ -79,6 +79,7 @@
 - New endpoints for workspace profile settings [MODLD-936](https://folio-org.atlassian.net/browse/MODLD-936)
 - MOCKED_RESOURCE type handling and validation [MODLD-789](https://folio-org.atlassian.net/browse/MODLD-789)
 - Preserve ACCESSIBILITY_NOTE (MARC 532) when an Instance is saved [MODLD-728](https://folio-org.atlassian.net/browse/MODLD-728)
+- Allow Import of Authority Records Without LCCN [MODLD-940](https://folio-org.atlassian.net/browse/MODLD-940)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
