@@ -67,7 +67,7 @@
     <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
-    <maven-openapi-generator-plugin.version>7.17.0</maven-openapi-generator-plugin.version>
+    <maven-openapi-generator-plugin.version>7.18.0</maven-openapi-generator-plugin.version>
     <maven-copy-rename-plugin.version>1.0.1</maven-copy-rename-plugin.version>
     <maven-build-helper-plugin.version>3.6.1</maven-build-helper-plugin.version>
     <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
