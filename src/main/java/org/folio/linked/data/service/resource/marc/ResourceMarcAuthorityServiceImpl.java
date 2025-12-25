@@ -4,11 +4,9 @@ import static java.lang.Long.parseLong;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
-import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NO_LCCN;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.UNSUPPORTED_MARC;
 import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.JsonUtils.writeValueAsString;
-import static org.folio.linked.data.util.LccnUtils.hasLccn;
 import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -79,10 +77,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
 
   @Override
   public AssignmentCheckResponseDto validateAuthorityAssignment(String marc, AssignAuthorityTarget target) {
-    if (!hasLccn(marc)) {
-      return new AssignmentCheckResponseDto(false).invalidAssignmentReason(NO_LCCN);
-    }
-
     return marcAuthority2ldMapper.fromMarcJson(marc)
       .stream()
       .findFirst()

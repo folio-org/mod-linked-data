@@ -9,7 +9,7 @@
     },
     "invalidAssignmentReason": {
       "type": "string",
-      "enum": ["UNSUPPORTED_MARC", "NO_LCCN", "NOT_VALID_FOR_TARGET"],
+      "enum": ["UNSUPPORTED_MARC", "NOT_VALID_FOR_TARGET"],
       "description": "Indicates the reason why the assignment is not valid. Only present if 'validAssignment' is false."
     }
   },

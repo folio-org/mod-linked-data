@@ -39,6 +39,7 @@ class AuthorityAssignmentControllerIT {
     "samples/marc/authority_jurisdiction.json, true",
     "samples/marc/authority_concept_meeting.json, false",
     "samples/marc/non_authority.json, false",
+    "samples/marc/authority_person_fast.json, true",
   })
   void authorityAssignmentCheck(String marcFile, String expectedResponse) throws Exception {
     // given

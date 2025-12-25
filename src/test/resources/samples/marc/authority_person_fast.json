@@ -1,0 +1,27 @@
+{
+  "fields" : [ {
+    "001":"fst1234567890"
+  }, {
+    "100" : {
+      "subfields" : [ {
+        "a" : "aValue"
+      }, {
+        "b" : "bValue"
+      }, {
+        "c" : "cValue1"
+      }, {
+        "c" : "cValue2"
+      }, {
+        "d" : "dValue"
+      }, {
+        "j" : "jValue1"
+      }, {
+        "j" : "jValue2"
+      }, {
+        "q" : "qValue"
+      } ],
+      "ind1" : " ",
+      "ind2" : " "
+    }
+  } ]
+}

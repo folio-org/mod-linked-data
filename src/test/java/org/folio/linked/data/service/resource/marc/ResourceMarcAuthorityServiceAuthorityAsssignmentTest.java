@@ -5,7 +5,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
-import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NO_LCCN;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.UNSUPPORTED_MARC;
 import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.CREATOR_OF_WORK;
 import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.SUBJECT_OF_WORK;
@@ -92,17 +91,6 @@ class ResourceMarcAuthorityServiceAuthorityAsssignmentTest {
     assertThat(result.getInvalidAssignmentReason()).isEqualTo(UNSUPPORTED_MARC);
   }
 
-  @ParameterizedTest
-  @MethodSource("noLccnMarcRecords")
-  void validateAuthorityAssignment_shouldReturnFalse_ifNoLccn(String marc) {
-    // when
-    var result = resourceMarcAuthorityService.validateAuthorityAssignment(marc, CREATOR_OF_WORK);
-
-    // then
-    assertThat(result.getValidAssignment()).isFalse();
-    assertThat(result.getInvalidAssignmentReason()).isEqualTo(NO_LCCN);
-  }
-
   private static Stream<Arguments> authorityAssignmentArguments_validTargets() {
     return Stream.of(
       Arguments.of(Set.of(PERSON), CREATOR_OF_WORK),
@@ -116,26 +104,6 @@ class ResourceMarcAuthorityServiceAuthorityAsssignmentTest {
       Arguments.of(Set.of(CONCEPT, PERSON), CREATOR_OF_WORK),
       Arguments.of(Set.of(PERSON, FORM), SUBJECT_OF_WORK),
       Arguments.of(Set.of(CONCEPT, FORM, PERSON), SUBJECT_OF_WORK)
-    );
-  }
-
-  private static Stream<Arguments> noLccnMarcRecords() {
-    return Stream.of(
-      Arguments.of("""
-                {
-                   "fields":[
-                      { "100":{ "subfields":[ { "a":"Person with no LCCN" } ] } }
-                   ]
-                }
-              """),
-      Arguments.of("""
-                {
-                   "fields":[
-                      { "010":{ "subfields":[ { "z":"no2023016747" } ] } },
-                      { "100":{ "subfields":[ { "a":"Person with cancelled LCCN" } ] } }
-                   ]
-                }
-              """)
     );
   }
 }
