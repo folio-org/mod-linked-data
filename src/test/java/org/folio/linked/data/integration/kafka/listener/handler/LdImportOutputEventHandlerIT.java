@@ -77,7 +77,7 @@ class LdImportOutputEventHandlerIT {
     assertThat(importResultMessages).hasSize(1);
 
     var eventResult = importResultMessages.getFirst();
-    assertThat(eventResult.getJobInstanceId()).isEqualTo(123L);
+    assertThat(eventResult.getJobExecutionId()).isEqualTo(123L);
     assertThat(eventResult.getResourcesCount()).isEqualTo(1);
     assertThat(eventResult.getCreatedCount()).isEqualTo(1);
     assertThat(eventResult.getUpdatedCount()).isZero();

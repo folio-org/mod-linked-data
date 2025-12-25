@@ -43,7 +43,7 @@ public class LdImportOutputEventListener {
 
   private void handleRecord(ConsumerRecord<String, ImportOutputEvent> consumerRecord) {
     log.info("Processing LD-Import output event with Job ID {} and ts {}",
-      consumerRecord.value().getJobInstanceId(), consumerRecord.value().getTs());
+      consumerRecord.value().getJobExecutionId(), consumerRecord.value().getTs());
     var event = consumerRecord.value();
     var startTime = OffsetDateTime.now();
     tenantScopedExecutionService.executeAsyncWithRetry(

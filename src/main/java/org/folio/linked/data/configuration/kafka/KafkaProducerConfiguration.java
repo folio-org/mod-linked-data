@@ -67,7 +67,7 @@ public class KafkaProducerConfiguration {
   ) {
     var producer = new FolioMessageProducer<>(importResultEventTemplate,
       linkedDataTopicProperties::getLinkedDataImportResult);
-    producer.setKeyMapper(result -> String.valueOf(result.getJobInstanceId()));
+    producer.setKeyMapper(result -> String.valueOf(result.getJobExecutionId()));
     return producer;
   }
 

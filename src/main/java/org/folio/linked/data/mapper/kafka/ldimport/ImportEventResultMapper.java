@@ -21,7 +21,7 @@ import org.mapstruct.Mapping;
 public abstract class ImportEventResultMapper {
 
   @Mapping(target = "originalEventTs", source = "event.ts")
-  @Mapping(target = "jobInstanceId", source = "event.jobInstanceId")
+  @Mapping(target = "jobExecutionId", source = "event.jobExecutionId")
   @Mapping(target = "endDate", expression = "java(java.time.OffsetDateTime.now())")
   @Mapping(target = "resourcesCount", expression = "java(importReport.getImports().size())")
   @Mapping(target = "createdCount",

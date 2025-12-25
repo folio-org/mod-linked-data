@@ -183,10 +183,10 @@ class RdfImportServiceTest {
     var saveGraphResult2 = new SaveGraphResult(entity2, Set.of(), Set.of(entity2));
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity2)).thenReturn(saveGraphResult2);
     var ts = "123";
-    var jobInstanceId = 456L;
+    var jobExecutionId = 456L;
     var event = new ImportOutputEvent()
       .ts(ts)
-      .jobInstanceId(jobInstanceId)
+      .jobExecutionId(jobExecutionId)
       .resourcesWithLineNumbers(Set.of(
         new ResourceWithLineNumber(1L, resource1),
         new ResourceWithLineNumber(2L, resource2),
