@@ -26,6 +26,7 @@ import org.folio.rdf4ld.service.Rdf4LdService;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -63,6 +64,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void importOutputEvent(ImportOutputEvent event, OffsetDateTime startTime) {
     var report = doImport(event.getResourcesWithLineNumbers());
     var importEventResult = importEventResultMapper.fromImportReport(event, startTime, report);
