@@ -1,7 +1,7 @@
 package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
@@ -141,7 +141,7 @@ class RdfImportIT extends ITBase {
       new ResourceTypeAndLabel(TITLE, "Instance Title"),
       new ResourceTypeAndLabel(TITLE, "Work Title"),
       new ResourceTypeAndLabel(PERSON, "Lccn resource fetched from SRS"),
-      new ResourceTypeAndLabel(ID_LCCN, "n2021004098")
+      new ResourceTypeAndLabel(ID_LCNAF, "n2021004098")
     );
     assertEvents(expectedEvents);
   }
