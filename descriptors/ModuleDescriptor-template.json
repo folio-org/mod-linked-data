@@ -368,7 +368,7 @@
       { "name": "KAFKA_SOURCE_RECORD_DOMAIN_EVENT_CONCURRENCY", "value": "1" },
       { "name": "KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN", "value": "(folio\\.)(.*\\.)inventory.instance" },
       { "name": "KAFKA_INVENTORY_INSTANCE_EVENT_CONCURRENCY", "value": "1" },
-      { "name": "KAFKA_LD_IMPORT_OUTPUT_EVENT_TOPIC_PATTERN", "value": "(folio\\.)(.*\\.)inventory.instance" },
+      { "name": "KAFKA_LD_IMPORT_OUTPUT_EVENT_TOPIC_PATTERN", "value": "(folio\\.)(.*\\.)linked_data_import.output" },
       { "name": "KAFKA_LD_IMPORT_OUTPUT_EVENT_CONCURRENCY", "value": "1" },
       { "name": "KAFKA_RETRY_INTERVAL_MS", "value": "2000" },
       { "name": "KAFKA_RETRY_DELIVERY_ATTEMPTS", "value": "6" },
