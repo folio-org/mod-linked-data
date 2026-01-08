@@ -1,5 +1,6 @@
 package org.folio.linked.data.job;
 
+import static org.folio.linked.data.util.Constants.Cache.AUTHORITY_SOURCE_FILES;
 import static org.folio.linked.data.util.Constants.Cache.MODULE_STATE;
 import static org.folio.linked.data.util.Constants.Cache.SETTINGS_ENTRIES;
 import static org.folio.linked.data.util.Constants.Cache.SPEC_RULES;
@@ -30,5 +31,11 @@ public class CacheCleaningJob {
   @Scheduled(fixedRateString = "${mod-linked-data.cache.ttl.module-state}")
   public void emptyModuleState() {
     log.info(EMPTY_CACHE_MSG, MODULE_STATE);
+  }
+
+  @CacheEvict(value = AUTHORITY_SOURCE_FILES, allEntries = true)
+  @Scheduled(fixedRateString = "${mod-linked-data.cache.ttl.authority-source-files}")
+  public void emptyAuthoritySourceFiles() {
+    log.info(EMPTY_CACHE_MSG, AUTHORITY_SOURCE_FILES);
   }
 }

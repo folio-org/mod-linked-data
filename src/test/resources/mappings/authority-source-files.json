@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/authority-source-files?limit=50"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\"authoritySourceFiles\":[{\"codes\":[\"fst\"],\"baseUrl\":\"http://id.worldcat.org/fast/\"},{\"codes\":[\"sj\"],\"baseUrl\":\"http://id.loc.gov/authorities/childrensSubjects/\"},{\"codes\":[\"dg\"],\"baseUrl\":\"http://id.loc.gov/authorities/demographicTerms/\"},{\"codes\":[\"gf\"],\"baseUrl\":\"http://id.loc.gov/authorities/genreForms/\"},{\"codes\":[\"mp\"],\"baseUrl\":\"http://id.loc.gov/authorities/performanceMediums/\"},{\"codes\":[\"sh\"],\"baseUrl\":\"http://id.loc.gov/authorities/subjects/\"},{\"codes\":[\"n\",\"nb\",\"nr\",\"no\",\"ns\"],\"baseUrl\":\"http://id.loc.gov/authorities/names/\"}]}\n"
+      }
+    }
+  ]
+}

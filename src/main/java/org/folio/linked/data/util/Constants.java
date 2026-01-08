@@ -29,5 +29,6 @@ public class Constants {
     public static final String SETTINGS_ENTRIES = "settings-entries";
     public static final String MODULE_STATE = "module-state";
     public static final String PROFILES = "profiles";
+    public static final String AUTHORITY_SOURCE_FILES = "authority-source-files";
   }
 }

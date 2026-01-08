@@ -82,6 +82,8 @@ folio:
         replicationFactor: ${KAFKA_HUB_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR:}
 
 mod-linked-data:
+  authority-source-files:
+    limit: ${AUTHORITY_SOURCE_FILES_LIMIT:50}
   reindex:
     page-size: 1000
   search:
@@ -97,6 +99,7 @@ mod-linked-data:
       spec-rules: ${CACHE_TTL_SPEC_RULES_MS:18000000}
       settings-entries: ${CACHE_TTL_SETTINGS_ENTRIES_MS:18000000}
       module-state: ${CACHE_TTL_MODULE_STATE_MS:18000000}
+      authority-source-files: ${CACHE_TTL_AUTHORITY_SOURCE_FILES_MS:18000000}
 
 management:
   endpoints:
