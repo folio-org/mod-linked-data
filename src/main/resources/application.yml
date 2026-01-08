@@ -80,6 +80,9 @@ folio:
       - name: ${mod-linked-data.kafka.topic.hub-search-index}
         numPartitions: ${KAFKA_HUB_SEARCH_INDEX_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_HUB_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR:}
+  system-user:
+    username: mod-linked-data # This isn't actually used, but we get dependency injection errors from folio-spring-system-user if we don't have it
+    password: dummy # This isn't actually used, but we get dependency injection errors from folio-spring-system-user if we don't have it
 
 mod-linked-data:
   reindex:
