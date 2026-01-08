@@ -36,3 +36,5 @@ components:
       $ref: folio-modules/ld-import/importOutputEvent.json
     importResultEvent:
       $ref: folio-modules/ld-import/result/importResultEvent.json
+    authoritySourceFiles:
+      $ref: folio-modules/authority-sources/authoritySourceFiles.json

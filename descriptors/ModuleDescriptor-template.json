@@ -16,7 +16,8 @@
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
             "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
-            "mod-settings.entries.collection.get"
+            "mod-settings.entries.collection.get",
+            "inventory-storage.authority-source-files.collection.get"
           ]
         },
         {
@@ -53,7 +54,8 @@
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
             "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
-            "mod-settings.entries.collection.get"
+            "mod-settings.entries.collection.get",
+            "inventory-storage.authority-source-files.collection.get"
           ]
         },
         {
@@ -345,7 +347,9 @@
       { "name": "KAFKA_LINKED_DATA_IMPORT_RESULT_TOPIC", "value": "" },
       { "name": "CACHE_TTL_SPEC_RULES_MS", "value": "18000000" },
       { "name": "CACHE_TTL_SETTINGS_ENTRIES_MS", "value": "18000000" },
-      { "name": "CACHE_TTL_MODULE_STATE_MS", "value": "18000000" }
+      { "name": "CACHE_TTL_MODULE_STATE_MS", "value": "18000000" },
+      { "name": "CACHE_TTL_AUTHORITY_SOURCE_FILES_MS", "value": "18000000" },
+      { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value":  "50" }
     ]
   },
   "metadata": {
