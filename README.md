@@ -72,7 +72,6 @@ To run mod-linked-data in standalone mode, set the value of the environment vari
 | CACHE_TTL_MODULE_STATE_MS                           | 18000000                               | Specifies time to live for `module-state` cache                                                                                                                                       |
 | CACHE_TTL_AUTHORITY_SOURCE_FILES_MS                 | 18000000                               | Specifies time to live for `authority-source-files` cache                                                                                                                             |
 | AUTHORITY_SOURCE_FILES_LIMIT                        | 50                                     | Count of authority source files to be fetched from FOLIO for computing the base URI of an authority                                                                                   |
-
 * Applicable only in FOLIO mode
 ## REST API
 Full list of APIs are documented in [src/main/resources/swagger.api/mod-linked-data.yaml](https://github.com/folio-org/mod-linked-data/blob/master/src/main/resources/swagger.api/mod-linked-data.yaml).

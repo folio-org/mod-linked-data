@@ -349,7 +349,7 @@
       { "name": "CACHE_TTL_SETTINGS_ENTRIES_MS", "value": "18000000" },
       { "name": "CACHE_TTL_MODULE_STATE_MS", "value": "18000000" },
       { "name": "CACHE_TTL_AUTHORITY_SOURCE_FILES_MS", "value": "18000000" },
-      { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value":  "50" }
+      { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value": "50" }
     ]
   },
   "metadata": {

@@ -1,5 +1,6 @@
 package org.folio.linked.data.integration.rest.authoritysource;
 
+import static java.util.Objects.nonNull;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Optional;
@@ -23,8 +24,9 @@ public class AuthorityFileIdentifierUrlProvider implements IdentifierUrlProvider
     var authoritySourceFiles = authoritySourceFilesClient.getAuthoritySourceFiles(authoritySourceFilesLimit);
 
     return authoritySourceFiles.getAuthoritySourceFiles().stream()
-        .filter(source -> source.getCodes().stream().anyMatch(identifierPrefix::equals))
-        .map(AuthoritySourceFile::getBaseUrl)
-        .findFirst();
+      .filter(source -> nonNull(source.getCodes()))
+      .filter(source -> source.getCodes().stream().anyMatch(identifierPrefix::equals))
+      .map(AuthoritySourceFile::getBaseUrl)
+      .findFirst();
   }
 }
