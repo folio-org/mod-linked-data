@@ -5,6 +5,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -36,9 +37,11 @@ public class LdImportOutputEventListener {
     groupId = "#{folioKafkaProperties.listener['ld-import-output-event'].groupId}",
     concurrency = "#{folioKafkaProperties.listener['ld-import-output-event'].concurrency}",
     topicPattern = "#{folioKafkaProperties.listener['ld-import-output-event'].topicPattern}")
-  public void handleImportOutputEvent(ConsumerRecord<String, ImportOutputEvent> consumerRecord) {
-    var event = consumerRecord.value();
-    handleForExistedTenant(consumerRecord, event.getTs(), linkedDataTenantService, log, this::handleRecord);
+  public void handleImportOutputEvents(List<ConsumerRecord<String, ImportOutputEvent>> consumerRecords) {
+    consumerRecords.forEach(consumerRecord -> {
+      var event = consumerRecord.value();
+      handleForExistedTenant(consumerRecord, event.getTs(), linkedDataTenantService, log, this::handleRecord);
+    });
   }
 
   private void handleRecord(ConsumerRecord<String, ImportOutputEvent> consumerRecord) {
@@ -46,7 +49,7 @@ public class LdImportOutputEventListener {
       consumerRecord.value().getJobExecutionId(), consumerRecord.value().getTs());
     var event = consumerRecord.value();
     var startTime = OffsetDateTime.now();
-    tenantScopedExecutionService.executeAsyncWithRetry(
+    tenantScopedExecutionService.executeWithRetry(
       consumerRecord.headers(),
       retryContext -> runRetryableJob(event, startTime, retryContext),
       ex -> logFailedEvent(event, ex, false)

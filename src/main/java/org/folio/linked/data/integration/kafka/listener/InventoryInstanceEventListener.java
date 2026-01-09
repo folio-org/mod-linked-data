@@ -47,7 +47,7 @@ public class InventoryInstanceEventListener {
   private void handleRecord(ConsumerRecord<String, InventoryInstanceEvent> consumerRecord) {
     var event = consumerRecord.value();
     if (event.getType() == UPDATE) {
-      tenantScopedExecutionService.executeAsyncWithRetry(
+      tenantScopedExecutionService.executeWithRetry(
         consumerRecord.headers(),
         retryContext -> runRetryableJob(event, retryContext),
         ex -> logFailedEvent(event, ex, false)

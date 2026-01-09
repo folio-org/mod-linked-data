@@ -4,6 +4,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.folio.linked.data.util.ImportUtils.Status.CREATED;
 import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
@@ -29,7 +31,7 @@ class ImportEventResultMapperTest {
   private ObjectMapper objectMapper;
 
   @Test
-  void fromImportReport_shouldFullyMapGivenImportReport() {
+  void fromImportReport_shouldFullyMapGivenImportReport() throws Exception {
     // given
     var ir = new ImportUtils.ImportReport();
     ir.addImport(getImportedResource(1L, "created", 1L, CREATED, null));
@@ -40,6 +42,8 @@ class ImportEventResultMapperTest {
     var jobId = 777L;
     var event = new ImportOutputEvent().ts(eventTs).jobExecutionId(jobId);
     var startDate = OffsetDateTime.now().minusMinutes(1);
+    var expectedRawFailedResource = "{\"id\":3,\"label\":\"failed\"}";
+    when(objectMapper.writeValueAsString(any(Resource.class))).thenReturn(expectedRawFailedResource);
 
     // when
     var result = mapper.fromImportReport(event, startDate, ir);
@@ -56,7 +60,7 @@ class ImportEventResultMapperTest {
     var failedResource = result.getFailedResources().iterator().next();
     assertThat(failedResource.getLineNumber()).isEqualTo(3L);
     assertThat(failedResource.getDescription()).isEqualTo(failureReason);
-    assertThat(failedResource.getResource()).isEqualTo(new Resource().setId(3L).setLabel("failed"));
+    assertThat(failedResource.getResource()).isEqualTo(expectedRawFailedResource);
   }
 
   @Test

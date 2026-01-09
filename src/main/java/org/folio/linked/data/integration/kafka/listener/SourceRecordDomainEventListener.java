@@ -65,7 +65,7 @@ public class SourceRecordDomainEventListener {
       .orElseThrow();
 
     if (sourceRecordType == MARC_AUTHORITY || sourceRecordType == MARC_BIB) {
-      tenantScopedExecutionService.executeAsyncWithRetry(
+      tenantScopedExecutionService.executeWithRetry(
         consumerRecord.headers(),
         retryContext -> runRetryableJob(event, sourceRecordType, retryContext),
         ex -> logFailedEvent(event, sourceRecordType, ex, false)
