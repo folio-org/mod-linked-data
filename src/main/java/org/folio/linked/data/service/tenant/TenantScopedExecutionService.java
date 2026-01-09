@@ -16,6 +16,7 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.scope.FolioExecutionContextSetter;
+import org.folio.spring.service.SystemUserScopedExecutionService;
 import org.folio.spring.tools.context.ExecutionContextBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
@@ -32,6 +33,7 @@ public class TenantScopedExecutionService {
   @Qualifier(DEFAULT_KAFKA_RETRY_TEMPLATE_NAME)
   private final RetryTemplate retryTemplate;
   private final ExecutionContextBuilder contextBuilder;
+  private final SystemUserScopedExecutionService executionService;
 
   @SneakyThrows
   public <T> T execute(String tenantId, Callable<T> job) {
@@ -47,13 +49,28 @@ public class TenantScopedExecutionService {
   }
 
   @Async
-  public void executeAsyncWithRetry(Headers headers, Consumer<RetryContext> job, Consumer<Throwable> failureHandler) {
+  public void executeAsyncWithHeaders(Headers headers,
+                                      Consumer<RetryContext> job,
+                                      Consumer<Throwable> failureHandler) {
     try (var fex = new FolioExecutionContextSetter(kafkaFolioExecutionContext(headers))) {
       retryTemplate.execute(
         context -> runJob(job, context),
         context -> handleError(failureHandler, context)
       );
     }
+  }
+
+  @Async
+  public void executeAsyncWithSystemUser(String tenant,
+                                         Consumer<RetryContext> job,
+                                         Consumer<Throwable> failureHandler) {
+    executionService.executeSystemUserScoped(tenant, () -> {
+      retryTemplate.execute(
+        context -> runJob(job, context),
+        context -> handleError(failureHandler, context)
+      );
+      return null;
+    });
   }
 
   private boolean runJob(Consumer<RetryContext> job, RetryContext context) {

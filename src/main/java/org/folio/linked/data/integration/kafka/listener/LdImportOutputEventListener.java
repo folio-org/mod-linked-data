@@ -46,7 +46,7 @@ public class LdImportOutputEventListener {
       consumerRecord.value().getJobExecutionId(), consumerRecord.value().getTs());
     var event = consumerRecord.value();
     var startTime = OffsetDateTime.now();
-    tenantScopedExecutionService.executeAsyncWithRetry(
+    tenantScopedExecutionService.executeAsyncWithHeaders(
       consumerRecord.headers(),
       retryContext -> runRetryableJob(event, startTime, retryContext),
       ex -> logFailedEvent(event, ex, false)
