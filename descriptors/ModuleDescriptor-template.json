@@ -11,22 +11,8 @@
           "pathPattern": "/linked-data/resource",
           "permissionsRequired": [ "linked-data.resources.bib.post" ],
           "modulePermissions": [
-            "mapping-metadata.get",
-            "mapping-metadata.type.item.get",
-            "inventory-storage.instances.item.post",
-            "inventory-storage.instances.item.put",
-            "inventory-storage.instances.item.delete",
-            "inventory-storage.instance-types.item.post",
-            "inventory-storage.preceding-succeeding-titles.collection.get",
-            "inventory-storage.preceding-succeeding-titles.item.get",
-            "inventory-storage.preceding-succeeding-titles.item.post",
-            "inventory-storage.preceding-succeeding-titles.item.put",
-            "inventory-storage.preceding-succeeding-titles.item.delete",
             "search.instances.collection.get",
-            "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
-            "source-storage.records.post",
-            "source-storage.records.generation.item.put",
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
             "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
@@ -62,22 +48,8 @@
           "pathPattern": "/linked-data/resource/{id}",
           "permissionsRequired": [ "linked-data.resources.bib.put" ],
           "modulePermissions": [
-            "mapping-metadata.get",
-            "mapping-metadata.type.item.get",
-            "inventory-storage.instances.item.post",
-            "inventory-storage.instances.item.put",
-            "inventory-storage.instances.item.delete",
-            "inventory-storage.instance-types.item.post",
-            "inventory-storage.preceding-succeeding-titles.collection.get",
-            "inventory-storage.preceding-succeeding-titles.item.get",
-            "inventory-storage.preceding-succeeding-titles.item.post",
-            "inventory-storage.preceding-succeeding-titles.item.put",
-            "inventory-storage.preceding-succeeding-titles.item.delete",
             "search.instances.collection.get",
-            "source-storage.snapshots.post",
             "source-storage.records.formatted.item.get",
-            "source-storage.records.post",
-            "source-storage.records.generation.item.put",
             "specification-storage.specifications.collection.get",
             "specification-storage.specification.rules.collection.get",
             "mod-settings.global.read.ui-quick-marc.lccn-duplicate-check.manage",
@@ -100,35 +72,19 @@
           "methods": [ "GET" ],
           "pathPattern": "/linked-data/inventory-instance/{inventoryId}/import-supported",
           "permissionsRequired": [ "linked-data.resources.support-check.get" ],
-          "modulePermissions": ["source-storage.records.formatted.item.get"]
+          "modulePermissions": [ "source-storage.records.formatted.item.get" ]
         },
         {
           "methods": [ "GET" ],
           "pathPattern": "/linked-data/inventory-instance/{inventoryId}/preview",
           "permissionsRequired": [ "linked-data.resources.preview.get" ],
-          "modulePermissions": ["source-storage.records.formatted.item.get"]
+          "modulePermissions": [ "source-storage.records.formatted.item.get" ]
         },
         {
           "methods": [ "POST" ],
           "pathPattern": "/linked-data/inventory-instance/{inventoryId}/import",
           "permissionsRequired": [ "linked-data.resources.import.post" ],
-          "modulePermissions": [
-            "source-storage.records.formatted.item.get",
-            "mapping-metadata.get",
-            "mapping-metadata.type.item.get",
-            "inventory-storage.instances.item.post",
-            "inventory-storage.instances.item.put",
-            "inventory-storage.instances.item.delete",
-            "inventory-storage.instance-types.item.post",
-            "inventory-storage.preceding-succeeding-titles.collection.get",
-            "inventory-storage.preceding-succeeding-titles.item.get",
-            "inventory-storage.preceding-succeeding-titles.item.post",
-            "inventory-storage.preceding-succeeding-titles.item.put",
-            "inventory-storage.preceding-succeeding-titles.item.delete",
-            "source-storage.snapshots.post",
-            "source-storage.records.post",
-            "source-storage.records.generation.item.put"
-          ]
+          "modulePermissions": [ "source-storage.records.formatted.item.get" ]
         },
         {
           "methods": [ "PUT" ],
@@ -146,7 +102,10 @@
           "methods": [ "POST" ],
           "pathPattern": "/linked-data/import/file",
           "permissionsRequired": ["linked-data.import.file.post"],
-          "modulePermissions": []
+          "modulePermissions": [
+            "source-storage.records.formatted.item.get",
+            "search.authorities.collection.get"
+          ]
         }
       ]
     },
