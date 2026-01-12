@@ -28,7 +28,7 @@ public class AuthorityFileIdentifierLinkProvider implements IdentifierLinkProvid
 
     return authoritySourceFiles.getAuthoritySourceFiles().stream()
       .filter(source -> nonNull(source.getCodes()))
-      .filter(source -> source.getCodes().stream().anyMatch(prefix::equals))
+      .filter(source -> source.getCodes().stream().anyMatch(prefix::equalsIgnoreCase))
       .map(AuthoritySourceFile::getBaseUrl)
       .map(baseUrl -> this.createLink(baseUrl, identifier))
       .findFirst();

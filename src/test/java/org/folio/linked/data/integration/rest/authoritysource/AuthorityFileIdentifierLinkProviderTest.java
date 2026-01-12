@@ -81,4 +81,21 @@ class AuthorityFileIdentifierLinkProviderTest {
     // then
     assertThat(result).contains("http://example.com/xyz/xyz123456");
   }
+
+  @Test
+  void getBaseUrl_shouldMatchPrefixIgnoringCase() {
+    // given
+    var identifier = "AbC123456";
+    var file1 = new AuthoritySourceFile().codes(List.of("ABC", "def")).baseUrl("http://example.com/abc");
+    var files = new AuthoritySourceFiles(List.of(file1));
+    when(authoritySourceFilesClient.getAuthoritySourceFiles(50)).thenReturn(files);
+    when(identifierPrefixService.getIdentifierPrefix(identifier)).thenReturn("abc");
+
+    // when
+    var result = provider.getIdentifierLink(identifier);
+
+    // then
+    assertThat(result).contains("http://example.com/abc/AbC123456");
+  }
+
 }
