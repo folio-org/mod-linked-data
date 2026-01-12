@@ -11,12 +11,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.FailedResource;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+@Log4j2
 @Mapper(componentModel = SPRING, imports = Status.class)
 public abstract class ImportEventResultMapper {
 
@@ -43,8 +45,8 @@ public abstract class ImportEventResultMapper {
         new FailedResource()
           .description(ir.getFailureReason())
           .lineNumber(ir.getLineNumber())
-          .resource(ir.getFailedResource())
       )
       .collect(Collectors.toCollection(LinkedHashSet::new));
   }
+
 }

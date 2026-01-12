@@ -56,7 +56,6 @@ class ImportEventResultMapperTest {
     var failedResource = result.getFailedResources().iterator().next();
     assertThat(failedResource.getLineNumber()).isEqualTo(3L);
     assertThat(failedResource.getDescription()).isEqualTo(failureReason);
-    assertThat(failedResource.getResource()).isEqualTo(new Resource().setId(3L).setLabel("failed"));
   }
 
   @Test
