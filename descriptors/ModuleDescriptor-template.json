@@ -363,7 +363,7 @@
       { "name": "KAFKA_SSL_KEYSTORE_PASSWORD", "value": "" },
       { "name": "KAFKA_SSL_TRUSTSTORE_LOCATION", "value": "" },
       { "name": "KAFKA_SSL_TRUSTSTORE_PASSWORD", "value": "" },
-      { "name": "KAFKA_CONSUMER_MAX_POLL_RECORDS", "value": "200" },
+      { "name": "KAFKA_CONSUMER_MAX_POLL_RECORDS", "value": "10" },
       { "name": "KAFKA_SOURCE_RECORD_DOMAIN_EVENT_TOPIC_PATTERN", "value": "(folio\\.)(.*\\.)srs.source_records" },
       { "name": "KAFKA_SOURCE_RECORD_DOMAIN_EVENT_CONCURRENCY", "value": "1" },
       { "name": "KAFKA_INVENTORY_INSTANCE_EVENT_TOPIC_PATTERN", "value": "(folio\\.)(.*\\.)inventory.instance" },
