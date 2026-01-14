@@ -56,7 +56,7 @@ public class TenantScopedExecutionService {
     }
   }
 
-  public void executeAsyncWithSystemUser(String tenant,
+  public void executeWithRetrySystemUser(String tenant,
                                          Consumer<RetryContext> job,
                                          Consumer<Throwable> failureHandler) {
     executionService.executeSystemUserScoped(tenant, () -> {
