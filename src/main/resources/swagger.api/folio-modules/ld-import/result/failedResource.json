@@ -2,12 +2,12 @@
   "type": "object",
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Resource record failed during saving",
-  "allOf": [
-    {
-      "$ref": "../resourceWithLineNumber.json"
-    }
-  ],
   "properties": {
+    "lineNumber": {
+      "description": "Line number from the RDF file",
+      "type": "integer",
+      "format": "int64"
+    },
     "description": {
       "description": "Failure description",
       "type": "string"
