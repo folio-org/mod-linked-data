@@ -7,7 +7,6 @@ import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
@@ -75,13 +74,23 @@ class ResourceControllerSrsIT extends ITBase {
       .andExpect(jsonPath("$.types[0]", equalTo("PERSON")))
       .andExpect(jsonPath("$.label", equalTo("bValue, aValue, cValue, dValue")))
       .andExpect(jsonPath("$.outgoingEdges", hasSize(2)))
-      // First outgoing edge (ID_LCSH, IDENTIFIER)
-      .andExpect(jsonPath("$.outgoingEdges[0].target.types", containsInAnyOrder("ID_LCSH", "IDENTIFIER")))
-      .andExpect(jsonPath("$.outgoingEdges[0].target.label", equalTo("sh85121033")))
-      .andExpect(jsonPath("$.outgoingEdges[0].target.doc['http://bibfra.me/vocab/lite/link'][0]", equalTo("http://id.loc.gov/authorities/subjects/sh85121033")))
-      // Second outgoing edge (ID_LOCAL, IDENTIFIER)
-      .andExpect(jsonPath("$.outgoingEdges[1].target.types", containsInAnyOrder("ID_LOCAL", "IDENTIFIER")))
-      .andExpect(jsonPath("$.outgoingEdges[1].target.label", equalTo("aValue")));
+      // Assert LCCN (ID_LCSH, IDENTIFIER, label, and link)
+      .andExpect(jsonPath(
+        "$.outgoingEdges[?("
+          + "@.target.types[?(@ == 'ID_LCSH')] "
+          + "&& @.target.types[?(@ == 'IDENTIFIER')] "
+          + "&& @.target.label == 'sh85121033' "
+          + "&& @.target.doc['http://bibfra.me/vocab/lite/link'][0] == 'http://id.loc.gov/authorities/subjects/sh85121033'"
+          + ")]",
+        hasSize(1)))
+      // Assert LOCAL (ID_LOCAL, IDENTIFIER, label)
+      .andExpect(jsonPath(
+        "$.outgoingEdges[?("
+          + "@.target.types[?(@ == 'ID_LOCAL')] "
+          + "&& @.target.types[?(@ == 'IDENTIFIER')] "
+          + "&& @.target.label == 'aValue'"
+          + ")]",
+        hasSize(1)));
   }
 
   @Test
