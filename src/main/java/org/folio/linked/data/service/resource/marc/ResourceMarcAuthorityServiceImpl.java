@@ -121,7 +121,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
         .map(SaveGraphResult::rootResource)
         .orElseThrow(() -> notFoundException(srsId));
     } catch (FeignException.NotFound e) {
-      log.error("Authority with srsId [{}] not found in SRS", srsId);
+      log.error("Failed to convert authority with srsId [{}] into graph resource", srsId, e);
       throw notFoundException(srsId);
     }
   }

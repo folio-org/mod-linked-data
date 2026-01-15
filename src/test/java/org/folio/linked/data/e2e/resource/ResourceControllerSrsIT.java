@@ -3,19 +3,21 @@ package org.folio.linked.data.e2e.resource;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.INSTANCE_ID_PLACEHOLDER;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toCreatorReferenceId;
 import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
@@ -26,12 +28,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
 class ResourceControllerSrsIT extends ITBase {
 
   @MockitoBean
   private SrsClient srsClient;
+  private final ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @Test
   void createWorkWithInstanceRef_shouldCreateAuthorityFromSrs() throws Exception {
@@ -54,10 +58,39 @@ class ResourceControllerSrsIT extends ITBase {
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    resultActions
+    var resp = resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath(toCreatorReferenceId(), equalTo("-2642702223879770981")));
+      .andReturn().getResponse().getContentAsString();
+
+    var creatorResourceId = objectMapper.readTree(resp)
+      .path("resource")
+      .path("http://bibfra.me/vocab/lite/Work")
+      .path("_creatorReference").get(0)
+      .path("id").asLong();
+
+    getGraph(creatorResourceId)
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.types[0]", equalTo("PERSON")))
+      .andExpect(jsonPath("$.label", equalTo("bValue, aValue, cValue, dValue")))
+      .andExpect(jsonPath("$.outgoingEdges", hasSize(2)))
+      // Assert LCCN (ID_LCSH, IDENTIFIER, label, and link)
+      .andExpect(jsonPath(
+        "$.outgoingEdges[?("
+          + "@.target.types[?(@ == 'ID_LCSH')] "
+          + "&& @.target.types[?(@ == 'IDENTIFIER')] "
+          + "&& @.target.label == 'sh85121033' "
+          + "&& @.target.doc['http://bibfra.me/vocab/lite/link'][0] == 'http://id.loc.gov/authorities/subjects/sh85121033'"
+          + ")]",
+        hasSize(1)))
+      // Assert LOCAL (ID_LOCAL, IDENTIFIER, label)
+      .andExpect(jsonPath(
+        "$.outgoingEdges[?("
+          + "@.target.types[?(@ == 'ID_LOCAL')] "
+          + "&& @.target.types[?(@ == 'IDENTIFIER')] "
+          + "&& @.target.label == 'aValue'"
+          + ")]",
+        hasSize(1)));
   }
 
   @Test
@@ -94,5 +127,13 @@ class ResourceControllerSrsIT extends ITBase {
     var content = TestUtil.loadResourceAsString("samples/marc2ld/marc_authority.jsonl");
     var parsedRecord = new ParsedRecord().withContent(content);
     return new Record().withParsedRecord(parsedRecord);
+  }
+
+  private ResultActions getGraph(Long resourceId) throws Exception {
+    var requestBuilder = get("/linked-data/resource/" + resourceId + "/graph")
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    return mockMvc.perform(requestBuilder);
   }
 }

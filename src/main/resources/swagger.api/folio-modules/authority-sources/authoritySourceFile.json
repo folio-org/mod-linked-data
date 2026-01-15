@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Authority Source File Schema",
+  "description": "Schema for a single authority source file entry",
+  "type": "object",
+  "properties": {
+    "codes": {
+      "type": "array",
+      "description": "Authority source codes",
+      "items": {
+        "type": "string"
+      }
+    },
+    "baseUrl": {
+      "type": "string",
+      "description": "Base URL for the authority source"
+    }
+  },
+  "required": ["codes", "baseUrl"],
+  "additionalProperties": false
+}
