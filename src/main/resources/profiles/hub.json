@@ -1,0 +1,378 @@
+{
+  "id": 7,
+  "name": "Hubs",
+  "resourceType": "http://bibfra.me/vocab/lite/Hub",
+  "value": [
+    {
+      "type": "block",
+      "displayName": "Hub components",
+      "bfid": "lde:Profile:Hub",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Hub",
+      "children": [
+        "Profile:Hub:CreatorOfHub",
+        "Profile:Hub:TitleInformation",
+        "Profile:Hub:LanguageCode"
+      ],
+      "id": "Profile:Hub"
+    },
+    {
+      "type": "group",
+      "displayName": "Creator of Hub",
+      "uriBFLite": "_creatorReference",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bflc/PrimaryContribution"
+        }
+      },
+      "children": [
+        "Profile:Hub:CreatorOfHub:Name",
+        "Profile:Hub:CreatorOfHub:Subclass",
+        "Profile:Hub:CreatorOfHub:Relationship"
+      ],
+      "id": "Profile:Hub:CreatorOfHub"
+    },
+    {
+      "bfid": "lc:RT:bf2:search:name",
+      "type": "complex",
+      "displayName": "Name",
+      "uriBFLite": "_name",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://preprod.id.loc.gov/authorities/names"],
+        "valueDataType": {}
+      },
+      "layout": {
+        "api": "authorities",
+        "isNew": true,
+        "baseLabelType": "creator"
+      },
+      "linkedEntry": { "dependent": "Profile:Hub:CreatorOfHub:Subclass" },
+      "id": "Profile:Hub:CreatorOfHub:Name"
+    },
+    {
+      "type": "dropdown",
+      "displayName": "Subclass",
+      "uriBFLite": "_subclass",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bflc/PrimaryContribution"
+        }
+      },
+      "children": [
+        "Profile:Hub:CreatorOfHub:Subclass:Person",
+        "Profile:Hub:CreatorOfHub:Subclass:Family",
+        "Profile:Hub:CreatorOfHub:Subclass:CorporateBody",
+        "Profile:Hub:CreatorOfHub:Subclass:Jurisdiction",
+        "Profile:Hub:CreatorOfHub:Subclass:Conference"
+      ],
+      "layout": { "readOnly": true },
+      "dependsOn": "lc:RT:bf2:search:name",
+      "linkedEntry": { "controlledBy": "Profile:Hub:CreatorOfHub:Name" },
+      "id": "Profile:Hub:CreatorOfHub:Subclass"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Person",
+      "bfid": "lc:RT:bf2:Agent:bfPerson:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Person",
+      "children": [],
+      "id": "Profile:Hub:CreatorOfHub:Subclass:Person"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Family",
+      "bfid": "lc:RT:bf2:Agent:bfFamily:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Family",
+      "children": [],
+      "id": "Profile:Hub:CreatorOfHub:Subclass:Family"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Corporate Body",
+      "bfid": "lc:RT:bf2:Agent:bfCorp:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Organization",
+      "children": [],
+      "id": "Profile:Hub:CreatorOfHub:Subclass:CorporateBody"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Jurisdiction",
+      "bfid": "lc:RT:bf2:Agent:bfJurisdiction:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Jurisdiction",
+      "children": [],
+      "id": "Profile:Hub:CreatorOfHub:Subclass:Jurisdiction"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Conference",
+      "bfid": "lc:RT:bf2:Agent:bfConf:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Meeting",
+      "children": [],
+      "id": "Profile:Hub:CreatorOfHub:Subclass:Conference"
+    },
+    {
+      "type": "simple",
+      "displayName": "Relationship",
+      "uriBFLite": "roles",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [
+          "http://id.loc.gov/vocabulary/relators",
+          "https://id.loc.gov/vocabulary/rbmsrel"
+        ],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Role"
+        }
+      },
+      "id": "Profile:Hub:CreatorOfHub:Relationship"
+    },
+    {
+      "type": "dropdown",
+      "displayName": "Title Information",
+      "uriBFLite": "http://bibfra.me/vocab/library/title",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Profile:Hub:TitleInformation:PreferredTitle",
+        "Profile:Hub:TitleInformation:VariantTitle"
+      ],
+      "id": "Profile:Hub:TitleInformation"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Preferred Title",
+      "bfid": "lc:RT:bf2:PreferredTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/Title",
+      "children": [
+        "Profile:Hub:TitleInformation:PreferredTitle:MainTitle",
+        "Profile:Hub:TitleInformation:PreferredTitle:PartNumber",
+        "Profile:Hub:TitleInformation:PreferredTitle:PartName",
+        "Profile:Hub:TitleInformation:PreferredTitle:OtherTitleInformation"
+      ],
+      "id": "Profile:Hub:TitleInformation:PreferredTitle"
+    },
+    {
+      "type": "literal",
+      "displayName": "Main Title",
+      "uriBFLite": "http://bibfra.me/vocab/library/mainTitle",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:PreferredTitle:MainTitle"
+    },
+    {
+      "type": "literal",
+      "displayName": "Part number",
+      "uriBFLite": "http://bibfra.me/vocab/library/partNumber",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:PreferredTitle:PartNumber"
+    },
+    {
+      "type": "literal",
+      "displayName": "Part name",
+      "uriBFLite": "http://bibfra.me/vocab/library/partName",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:PreferredTitle:PartName"
+    },
+    {
+      "type": "literal",
+      "displayName": "Other Title Information",
+      "uriBFLite": "http://bibfra.me/vocab/library/subTitle",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:PreferredTitle:OtherTitleInformation"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Variant Title",
+      "bfid": "lc:RT:bf2:Title:VarTitle",
+      "uriBFLite": "http://bibfra.me/vocab/library/VariantTitle",
+      "children": [
+        "Profile:Hub:TitleInformation:VariantTitle:VariantTitle",
+        "Profile:Hub:TitleInformation:VariantTitle:PartNumber",
+        "Profile:Hub:TitleInformation:VariantTitle:PartName",
+        "Profile:Hub:TitleInformation:VariantTitle:OtherTitleInformation",
+        "Profile:Hub:TitleInformation:VariantTitle:Date",
+        "Profile:Hub:TitleInformation:VariantTitle:VariantTitleType",
+        "Profile:Hub:TitleInformation:VariantTitle:Note"
+      ],
+      "id": "Profile:Hub:TitleInformation:VariantTitle"
+    },
+    {
+      "type": "literal",
+      "displayName": "Variant Title",
+      "uriBFLite": "http://bibfra.me/vocab/library/mainTitle",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:VariantTitle:VariantTitle"
+    },
+    {
+      "type": "literal",
+      "displayName": "Part number",
+      "uriBFLite": "http://bibfra.me/vocab/library/partNumber",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:VariantTitle:PartNumber"
+    },
+    {
+      "type": "literal",
+      "displayName": "Part name",
+      "uriBFLite": "http://bibfra.me/vocab/library/partName",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:VariantTitle:PartName"
+    },
+    {
+      "type": "literal",
+      "displayName": "Other title information",
+      "uriBFLite": "http://bibfra.me/vocab/library/subTitle",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:VariantTitle:OtherTitleInformation"
+    },
+    {
+      "type": "literal",
+      "displayName": "Date",
+      "uriBFLite": "http://bibfra.me/vocab/lite/date",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:VariantTitle:Date"
+    },
+    {
+      "type": "literal",
+      "displayName": "Variant title type",
+      "uriBFLite": "http://bibfra.me/vocab/library/variantType",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:VariantTitle:VariantTitleType"
+    },
+    {
+      "type": "literal",
+      "displayName": "Note",
+      "uriBFLite": "http://bibfra.me/vocab/lite/note",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Hub:TitleInformation:VariantTitle:Note"
+    },
+    {
+      "type": "group",
+      "displayName": "Language code",
+      "uriBFLite": "_languages",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Profile:Hub:LanguageCode:Language"
+      ],
+      "id": "Profile:Hub:LanguageCode"
+    },
+    {
+      "type": "simple",
+      "displayName": "Language",
+      "uriBFLite": "_codes",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
+        "valueDataType": { "remark": "", "dataTypeURI": "" }
+      },
+      "id": "Profile:Hub:LanguageCode:Language"
+    }
+  ]
+}
