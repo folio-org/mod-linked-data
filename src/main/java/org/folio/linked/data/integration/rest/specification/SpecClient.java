@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "specification-storage")
 public interface SpecClient {
 
-  @Cacheable(cacheNames = "bib-marc-specs")
+  @Cacheable(cacheNames = "bib-marc-specs", key = "@folioExecutionContext.tenantId")
   @GetMapping(value = "/specifications?profile=bibliographic&family=MARC")
   ResponseEntity<SpecificationDtoCollection> getBibMarcSpecs();
 
-  @Cacheable(cacheNames = SPEC_RULES, key = "#specId")
+  @Cacheable(cacheNames = SPEC_RULES, key = "@folioExecutionContext.tenantId + '_' + #specId")
   @GetMapping(value = "/specifications/{specId}/rules")
   ResponseEntity<SpecificationRuleDtoCollection> getSpecRules(@PathVariable("specId") UUID specId);
 }

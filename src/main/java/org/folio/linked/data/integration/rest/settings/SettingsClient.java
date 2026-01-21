@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface SettingsClient {
 
   @SuppressWarnings("java:S7180")
-  @Cacheable(cacheNames = SETTINGS_ENTRIES, key = "#query")
+  @Cacheable(cacheNames = SETTINGS_ENTRIES, key = "@folioExecutionContext.tenantId + '_' + #query")
   @GetMapping("/entries")
   ResponseEntity<SettingsSearchResponse> getEntries(@RequestParam("query") String query);
 }
