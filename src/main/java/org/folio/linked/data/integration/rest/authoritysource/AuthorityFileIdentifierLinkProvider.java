@@ -5,6 +5,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.folio.linked.data.domain.dto.AuthoritySourceFile;
 import org.folio.marc4ld.service.marc2ld.authority.identifier.IdentifierLinkProvider;
 import org.folio.marc4ld.service.marc2ld.authority.identifier.IdentifierPrefixService;
@@ -30,6 +31,7 @@ public class AuthorityFileIdentifierLinkProvider implements IdentifierLinkProvid
       .filter(source -> nonNull(source.getCodes()))
       .filter(source -> source.getCodes().stream().anyMatch(prefix::equalsIgnoreCase))
       .map(AuthoritySourceFile::getBaseUrl)
+      .filter(StringUtils::isNotBlank)
       .map(baseUrl -> this.createLink(baseUrl, identifier))
       .findFirst();
   }

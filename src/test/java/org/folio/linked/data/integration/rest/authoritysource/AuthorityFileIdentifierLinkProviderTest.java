@@ -12,6 +12,9 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -96,6 +99,24 @@ class AuthorityFileIdentifierLinkProviderTest {
 
     // then
     assertThat(result).contains("http://example.com/abc/AbC123456");
+  }
+
+  @ParameterizedTest
+  @NullSource
+  @ValueSource(strings = {"", "   ", "\t", "\n"})
+  void getBaseUrl_shouldSkipBlankBaseUrl(String blankBaseUrl) {
+    // given
+    var identifier = "abc123456";
+    var file = new AuthoritySourceFile().codes(List.of("abc")).baseUrl(blankBaseUrl);
+    var files = new AuthoritySourceFiles(List.of(file));
+    when(authoritySourceFilesClient.getAuthoritySourceFiles(50)).thenReturn(files);
+    when(identifierPrefixService.getIdentifierPrefix(identifier)).thenReturn("abc");
+
+    // when
+    var result = provider.getIdentifierLink(identifier);
+
+    // then
+    assertThat(result).isEmpty();
   }
 
 }
