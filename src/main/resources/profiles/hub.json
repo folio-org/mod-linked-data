@@ -363,7 +363,7 @@
     {
       "type": "simple",
       "displayName": "Language",
-      "uriBFLite": "_codes",
+      "uriBFLite": "http://bibfra.me/vocab/lite/language",
       "constraints": {
         "repeatable": true,
         "editable": true,
