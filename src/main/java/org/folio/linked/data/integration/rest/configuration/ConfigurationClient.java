@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface ConfigurationClient {
 
   @SuppressWarnings("java:S7180")
-  @Cacheable(cacheNames = SETTINGS_ENTRIES, key = "#code")
+  @Cacheable(cacheNames = SETTINGS_ENTRIES, key = "@folioExecutionContext.tenantId + '_' + #code")
   @GetMapping("${config.client.path:/entries}?query=module=={moduleName} and code=={code}")
   Configurations lookupConfig(@PathVariable("moduleName") String moduleName,
                               @PathVariable("code") String code);

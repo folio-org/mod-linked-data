@@ -52,7 +52,7 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
-  @Cacheable(value = PROFILES, key = "#id")
+  @Cacheable(value = PROFILES, key = "@folioExecutionContext.tenantId + '_' + #id")
   public Profile getProfileById(Integer id) {
     return profileRepository.findById(id)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(id)));
