@@ -1,0 +1,77 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/specification-storage/specifications?profile=bibliographic&family=MARC",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "test_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n    \"specifications\": [\n        {\n            \"id\": \"aaa0e840-0e29-41d4-a716-446655440001\",\n            \"title\": \"Test Tenant MARC Spec\",\n            \"family\": \"MARC\",\n            \"profile\": \"bibliographic\"\n        }\n    ],\n    \"totalRecords\": 1\n}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/specification-storage/specifications?profile=bibliographic&family=MARC",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "another_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n    \"specifications\": [\n        {\n            \"id\": \"bbb1f951-1f30-52e5-b827-557766551002\",\n            \"title\": \"Another Tenant MARC Spec\",\n            \"family\": \"MARC\",\n            \"profile\": \"bibliographic\"\n        }\n    ],\n    \"totalRecords\": 1\n}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/specification-storage/specifications/[a-f0-9-]+/rules",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "test_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n    \"rules\": [\n        {\n            \"id\": \"ccc2e840-0e29-41d4-a716-446655440003\",\n            \"code\": \"001\",\n            \"description\": \"Test Tenant Rule\"\n        }\n    ],\n    \"totalRecords\": 1\n}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/specification-storage/specifications/[a-f0-9-]+/rules",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "another_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n    \"rules\": [\n        {\n            \"id\": \"ddd3f951-1f30-52e5-b827-557766551004\",\n            \"code\": \"002\",\n            \"description\": \"Another Tenant Rule\"\n        }\n    ],\n    \"totalRecords\": 1\n}"
+      }
+    }
+  ]
+}
+

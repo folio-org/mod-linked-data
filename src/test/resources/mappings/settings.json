@@ -1,0 +1,61 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/settings/entries\\?query=.*",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "test_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "items": [
+            {
+              "value": {
+                "enabled": true,
+                "host": "test-tenant-host.com"
+              }
+            }
+          ],
+          "totalRecords": 1
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/settings/entries\\?query=.*",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "another_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "items": [
+            {
+              "value": {
+                "enabled": false,
+                "host": "another-tenant-host.com"
+              }
+            }
+          ],
+          "totalRecords": 1
+        }
+      }
+    }
+  ]
+}
+
