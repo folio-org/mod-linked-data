@@ -9,7 +9,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,7 +51,7 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var variantTitle = ((VariantTitleField) dto).getVariantTitle();
     var resource = new Resource();
-    resource.setLabel(getLabel(getFirstValue(variantTitle::getMainTitle), getFirstValue(variantTitle::getSubTitle)));
+    resource.setLabel(getLabel(variantTitle));
     resource.addTypes(VARIANT_TITLE);
     resource.setDoc(getDoc(variantTitle));
     resource.setIdAndRefreshEdges(hashService.hash(resource));
