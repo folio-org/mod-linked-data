@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.AuthorityItem;
@@ -25,6 +26,7 @@ import org.folio.rdf4ld.service.lccn.MockLccnResourceService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
 @Profile("!" + STANDALONE_PROFILE)
@@ -37,10 +39,12 @@ public class LccnResourceServiceFolio implements LccnResourceService {
 
   @Override
   public Map<String, LccnResourceSearchResult> findMockResources(Set<Resource> resources) {
+    log.info("Finding mock resources: {}", resources);
     if (resources.isEmpty()) {
       return emptyMap();
     }
     var lccns = mockLccnResourceService.gatherLccns(resources);
+    log.info("Finding mock resources: lccns: {}", lccns);
     if (lccns.isEmpty()) {
       return emptyMap();
     }
@@ -48,12 +52,14 @@ public class LccnResourceServiceFolio implements LccnResourceService {
       .stream()
       .filter(ai -> nonNull(ai.getId()) && nonNull(ai.getNaturalId()))
       .collect(groupingBy(AuthorityItem::getNaturalId, mapping(AuthorityItem::getId, toSet())));
+    log.info("Finding mock resources: lccnsToInventoryIds: {}", lccnsToInventoryIds);
     var allInventoryIds = lccnsToInventoryIds.values().stream()
       .flatMap(Set::stream)
       .collect(toSet());
+    log.info("Finding mock resources: allInventoryIds: {}", allInventoryIds);
     var foundSubgraphViews = subgraphViewRepository.findByInventoryIdIn(allInventoryIds);
 
-    return lccns.stream()
+    var result = lccns.stream()
       .filter(lccnsToInventoryIds::containsKey)
       .collect(toMap(identity(), lccn -> {
         var inventoryIds = lccnsToInventoryIds.get(lccn);
@@ -63,11 +69,16 @@ public class LccnResourceServiceFolio implements LccnResourceService {
           .map(foundSgw -> new LccnResourceSearchResult(foundSgw, foundSgw.getInventoryId()))
           .orElseGet(() -> new LccnResourceSearchResult(null, inventoryIds.iterator().next()));
       }));
+    log.info("Finding mock resources: result: {}", result);
+    return result;
   }
 
   @Override
   public Resource unMockLccnEdges(Resource resource, Map<String, LccnResourceSearchResult> searchResults) {
-    return mockLccnResourceService.unMockLccnEdges(resource, lccn -> getLccnResource(lccn, searchResults));
+    log.info("unMockLccnEdges: {}", resource);
+    var unMocked = mockLccnResourceService.unMockLccnEdges(resource, lccn -> getLccnResource(lccn, searchResults));
+    log.info("unMockLccnEdges: result: {}", unMocked);
+    return unMocked;
   }
 
   private Optional<Resource> getLccnResource(String lccn, Map<String, LccnResourceSearchResult> searchResults) {
