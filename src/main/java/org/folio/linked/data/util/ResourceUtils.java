@@ -135,7 +135,14 @@ public class ResourceUtils {
       .filter(PrimaryTitleField.class::isInstance)
       .map(PrimaryTitleField.class::cast)
       .map(PrimaryTitleField::getPrimaryTitle)
-      .map(pt -> join(" ", getFirstValue(pt::getMainTitle), getFirstValue(pt::getSubTitle)))
+      .map(pt -> join(
+          " ",
+          getFirstValue(pt::getMainTitle),
+          getFirstValue(pt::getSubTitle),
+          getFirstValue(pt::getPartNumber),
+          getFirstValue(pt::getPartName)
+        )
+      )
       .map(String::trim)
       .toList();
   }

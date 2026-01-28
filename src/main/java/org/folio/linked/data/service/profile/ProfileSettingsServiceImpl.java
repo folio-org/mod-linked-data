@@ -59,16 +59,16 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
    * being used, whether for settings editing or editor rendering.
    */
   private CustomProfileSettingsResponseDto defaultToProfile(Integer profileId) {
-    return new CustomProfileSettingsResponseDto(false, null, profileId);
+    return new CustomProfileSettingsResponseDto(profileId, false, null);
   }
 
   private CustomProfileSettingsResponseDto toDto(Integer profileId, UUID userId, ProfileSettings settings) {
     try {
       var customProfileSettings = objectMapper.readValue(settings.getSettings(), CustomProfileSettings.class);
       return new CustomProfileSettingsResponseDto(
+        profileId,
         customProfileSettings.getActive(),
-        customProfileSettings.getChildren(),
-        profileId);
+        customProfileSettings.getChildren());
     } catch (JsonProcessingException e) {
       log.error("Could not read stored profile settings  (user: {}, profile: {}) - default to profile",
         userId, profileId);

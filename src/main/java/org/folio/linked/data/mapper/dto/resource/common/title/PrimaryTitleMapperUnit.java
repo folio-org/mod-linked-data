@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,7 +47,7 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var primaryTitle = ((PrimaryTitleField) dto).getPrimaryTitle();
     var resource = new Resource();
-    resource.setLabel(getLabel(getFirstValue(primaryTitle::getMainTitle), getFirstValue(primaryTitle::getSubTitle)));
+    resource.setLabel(getLabel(primaryTitle));
     resource.addTypes(TITLE);
     resource.setDoc(getDoc(primaryTitle));
     resource.setIdAndRefreshEdges(hashService.hash(resource));

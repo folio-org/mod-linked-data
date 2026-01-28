@@ -82,6 +82,7 @@
 - Allow Import of Authority Records Without LCCN [MODLD-940](https://folio-org.atlassian.net/browse/MODLD-940)
 - Set LINK of the identity resource based on FOLIO configuration [MODLD-923](https://folio-org.atlassian.net/browse/MODLD-923)
 - Include tenant ID in cache [MODLD-952](https://folio-org.atlassian.net/browse/MODLD-952)
+- Update label of the Title resource to include part number and part name [MODLD-962](https://folio-org.atlassian.net/browse/MODLD-962)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
