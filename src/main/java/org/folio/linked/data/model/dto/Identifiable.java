@@ -5,4 +5,6 @@ public interface Identifiable {
   String getId();
 
   String getSrsId();
+
+  String getRdfLink();
 }

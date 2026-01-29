@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Reference object",
+  "description": "Schema representing reference to a resource in the FOLIO graph or an external source from where the resource can be imported into FOLIO graph",
   "allOf": [
     {
       "$ref": "IdField.json"
@@ -13,11 +13,11 @@
         },
         "srsId": {
           "type": "string",
-          "description": "SRS ID of the resource"
+          "description": "ID of the MARC record in FOLIO's SRS system"
         },
-        "isPreferred": {
-          "type": "boolean",
-          "description": "Indicates whether resource is controlled or not"
+        "rdfLink": {
+          "type": "string",
+          "description": "Hyperlink to an RDF resource in Bibframe 2 ontology (https://id.loc.gov/ontologies/bibframe.html)"
         }
       }
     }

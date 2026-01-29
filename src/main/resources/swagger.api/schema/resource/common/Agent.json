@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Creator & Contributor info",
+  "description": "Schema representing an agent, including their type and roles.",
   "allOf": [
     {
       "$ref": "Reference.json"

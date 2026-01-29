@@ -28,14 +28,14 @@ class HubReferenceIT extends PostResourceIT {
               {
                 "_relation": "http://bibfra.me/vocab/lite/expressionOf",
                 "_hub": {
-                  "http://bibfra.me/vocab/lite/label": [ "hub label 1" ]
+                  "label": "hub label 1"
                 }
               },
               {
                 "_relation": "http://bibfra.me/vocab/relation/relatedTo",
                 "_hub": {
-                  "http://bibfra.me/vocab/lite/label": [ "hub label 2" ],
-                  "http://bibfra.me/vocab/lite/link": [ "hub link 2" ]
+                  "label": "hub label 2",
+                  "rdfLink": "hub link 2"
                 }
               }
             ]
@@ -71,8 +71,8 @@ class HubReferenceIT extends PostResourceIT {
     var expressionOfPath = workPath + "._hubs[?(@._relation=='http://bibfra.me/vocab/lite/expressionOf')]._hub";
 
     apiResponse
-      .andExpect(jsonPath(expressionOfPath + "['http://bibfra.me/vocab/lite/label'][0]").value("hub label 1"))
-      .andExpect(jsonPath(relatedToPath + "['http://bibfra.me/vocab/lite/label'][0]").value("hub label 2"))
-      .andExpect(jsonPath(relatedToPath + "['http://bibfra.me/vocab/lite/link'][0]").value("hub link 2"));
+      .andExpect(jsonPath(expressionOfPath + "['label']").value("hub label 1"))
+      .andExpect(jsonPath(relatedToPath + "['label']").value("hub label 2"))
+      .andExpect(jsonPath(relatedToPath + "['rdfLink']").value("hub link 2"));
   }
 }
