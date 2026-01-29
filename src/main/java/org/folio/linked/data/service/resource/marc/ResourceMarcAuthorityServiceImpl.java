@@ -65,17 +65,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   }
 
   @Override
-  public Optional<Resource> fetchAuthorityOrCreateByInventoryId(String inventoryId) {
-    return resourceRepo.findByFolioMetadataInventoryId(inventoryId)
-      .or(() -> fetchResourceFromSrsByInventoryId(inventoryId)
-        .map(resourceModelMapper::toEntity)
-        .filter(Resource::isAuthority)
-        .map(resourceGraphService::saveMergingGraph)
-        .map(SaveGraphResult::rootResource)
-      );
-  }
-
-  @Override
   public AssignmentCheckResponseDto validateAuthorityAssignment(String marc, AssignAuthorityTarget target) {
     return marcAuthority2ldMapper.fromMarcJson(marc)
       .stream()
