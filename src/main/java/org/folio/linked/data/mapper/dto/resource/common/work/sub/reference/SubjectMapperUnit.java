@@ -15,8 +15,8 @@ import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
+import org.folio.linked.data.service.reference.ReferenceService;
 import org.folio.linked.data.service.resource.hash.HashService;
-import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,13 +25,13 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
 
   private final HashService hashService;
 
-  public SubjectMapperUnit(ResourceMarcAuthorityService resourceMarcAuthorityService,
+  public SubjectMapperUnit(ReferenceService referenceService,
                            HashService hashService) {
     super((subject, destination) -> {
       if (destination instanceof WorkResponse work) {
         work.addSubjectsItem(subject);
       }
-    }, resourceMarcAuthorityService);
+    }, referenceService);
     this.hashService = hashService;
   }
 

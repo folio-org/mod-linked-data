@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.resource.marc;
 
-import static java.lang.Long.parseLong;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
@@ -17,7 +16,6 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.AssignmentCheckResponseDto;
-import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
@@ -33,7 +31,6 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.graph.SaveGraphResult;
-import org.folio.linked.data.util.ResourceUtils;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
@@ -57,12 +54,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   private final FolioMetadataRepository folioMetadataRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ApplicationEventPublisher applicationEventPublisher;
-
-  @Override
-  public Resource fetchAuthorityOrCreateFromSrsRecord(Reference reference) {
-    return fetchResourceFromRepo(reference)
-      .orElseGet(() -> createResourceFromSrs(reference.getSrsId()));
-  }
 
   @Override
   public AssignmentCheckResponseDto validateAuthorityAssignment(String marc, AssignAuthorityTarget target) {
@@ -91,15 +82,8 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       .invalidAssignmentReason(isCompatible ? null : NOT_VALID_FOR_TARGET);
   }
 
-  private Optional<Resource> fetchResourceFromRepo(Reference reference) {
-    return Optional.ofNullable(reference.getId())
-      .flatMap(id -> resourceRepo.findById(parseLong(id)))
-      .map(ResourceUtils::ensureLatestReplaced)
-      .or(() -> Optional.ofNullable(reference.getSrsId())
-        .flatMap(resourceRepo::findByFolioMetadataSrsId));
-  }
-
-  private Resource createResourceFromSrs(String srsId) {
+  @Override
+  public Resource importResourceFromSrs(String srsId) {
     try {
       return ofNullable(srsClient.getAuthorityBySrsId(srsId))
         .flatMap(this::contentAsJsonString)

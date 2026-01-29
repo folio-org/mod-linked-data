@@ -19,8 +19,8 @@ import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.service.reference.ReferenceService;
 import org.folio.linked.data.service.resource.hash.HashService;
-import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +37,7 @@ class SubjectMapperUnitTest {
   @Mock
   private HashService hashService;
   @Mock
-  private ResourceMarcAuthorityService resourceMarcAuthorityService;
+  private ReferenceService referenceService;
 
   @Test
   void toEntity_wrapsWithConcept_whenSubjectIsNotOfTypeConcept() {
@@ -49,7 +49,7 @@ class SubjectMapperUnitTest {
     var resource = new Resource().setLabel("Label").addTypes(PERSON).setDoc(doc);
     var subjectDto = new Reference()
       .srsId("123");
-    when(resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(subjectDto)).thenReturn(resource);
+    when(referenceService.resolveReference(subjectDto)).thenReturn(resource);
     when(hashService.hash(any(Resource.class))).thenReturn(123L);
 
     // when
@@ -76,7 +76,7 @@ class SubjectMapperUnitTest {
     var resource = new Resource().setLabel("Label").addTypes(CONCEPT, FORM);
     var subjectDto = new Reference()
       .srsId("123");
-    when(resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(subjectDto)).thenReturn(resource);
+    when(referenceService.resolveReference(subjectDto)).thenReturn(resource);
 
     // when
     var result = subjectMapperUnit.toEntity(subjectDto, new Resource());
