@@ -217,7 +217,7 @@
     },
     {
       "type": "literal",
-      "displayName": "Other Title Information",
+      "displayName": "Other title information",
       "uriBFLite": "http://bibfra.me/vocab/library/subTitle",
       "constraints": {
         "repeatable": false,
