@@ -19,6 +19,5 @@
         }
       }
     }
-  ],
-  "x-implements": "org.folio.linked.data.model.dto.Identifiable"
+  ]
 }
