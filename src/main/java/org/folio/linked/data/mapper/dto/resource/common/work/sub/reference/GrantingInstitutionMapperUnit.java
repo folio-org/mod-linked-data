@@ -8,6 +8,7 @@ import org.folio.linked.data.domain.dto.Dissertation;
 import org.folio.linked.data.domain.dto.DissertationResponse;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
+import org.folio.linked.data.mapper.dto.resource.common.ReferenceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.reference.ReferenceService;
 import org.springframework.stereotype.Component;
