@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.work.sub;
+package org.folio.linked.data.mapper.dto.resource.common.work.sub.reference;
 
 import static org.folio.ld.dictionary.PredicateDictionary.EXPRESSION_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.RELATED_TO;
@@ -30,13 +30,11 @@ import org.springframework.stereotype.Component;
 public class HubReferenceMapperUnit extends ReferenceMapperUnit {
   private final CoreMapper coreMapper;
   private final HashService hashService;
-  private final ReferenceService referenceService;
 
   public HubReferenceMapperUnit(ReferenceService referenceService, HashService hashService, CoreMapper coreMapper) {
     super(referenceService);
     this.hashService = hashService;
     this.coreMapper = coreMapper;
-    this.referenceService = referenceService;
   }
 
   @Override
@@ -48,7 +46,7 @@ public class HubReferenceMapperUnit extends ReferenceMapperUnit {
         .ifPresent(reference::setRdfLink);
       var referenceWithType = new HubReferenceWithType()
         .hub(reference)
-        .relation(HUB.getUri());
+        .relation(context.predicate().getUri());
       workDto.addHubsItem(referenceWithType);
     }
     return parentDto;
@@ -66,7 +64,7 @@ public class HubReferenceMapperUnit extends ReferenceMapperUnit {
       resource.setIdAndRefreshEdges(hashService.hash(resource));
       return resource;
     }
-    return referenceService.resolveReference(reference);
+    return super.toEntity(dto, parentEntity);
   }
 
   @Override
