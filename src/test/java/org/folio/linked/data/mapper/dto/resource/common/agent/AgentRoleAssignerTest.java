@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
-import org.folio.linked.data.domain.dto.Agent;
+import org.folio.linked.data.domain.dto.AgentResponse;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -24,14 +24,14 @@ class AgentRoleAssignerTest {
 
   @Test
   void shouldAssignRolesToAgent() {
-    var agent = new Agent().id("1");
+    var agent = new AgentResponse().id("1");
     testAssignRoles(agent);
     testAssignRoles(agent);
     testAssignRoles(agent);
     testAssignRoles(agent);
   }
 
-  private void testAssignRoles(Agent agent) {
+  private void testAssignRoles(AgentResponse agent) {
     // given
     var role1Predicate = "http://bibfra.me/vocab/relation/role1";
     var role2Predicate = "http://bibfra.me/vocab/relation/role2";

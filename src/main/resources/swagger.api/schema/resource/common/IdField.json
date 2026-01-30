@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Common fields on top of each resource",
+  "description": "Schema representing the ID of a resource in the graph",
   "type": "object",
   "properties": {
     "id": {

@@ -10,6 +10,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.domain.dto.Agent;
+import org.folio.linked.data.domain.dto.AgentResponse;
 import org.folio.linked.data.domain.dto.HubRequest;
 import org.folio.linked.data.domain.dto.HubResponse;
 import org.folio.linked.data.domain.dto.WorkRequest;
@@ -30,7 +31,7 @@ public abstract class AgentMapperUnit implements SingleResourceMapperUnit {
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof HasCreator dtoWithCreator) {
       resourceToConvert = ensureLatestReplaced(resourceToConvert);
-      var agent = new Agent()
+      var agent = new AgentResponse()
         .id(String.valueOf(resourceToConvert.getId()))
         .label(resourceToConvert.getLabel())
         .type(resourceToConvert.getTypes().iterator().next().getUri())

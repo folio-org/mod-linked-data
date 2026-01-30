@@ -13,8 +13,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.HubReference;
 import org.folio.linked.data.domain.dto.HubReferenceWithType;
+import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@MapperUnit(type = HUB, predicate = {EXPRESSION_OF, RELATED_TO}, requestDto = HubReference.class)
+@MapperUnit(type = HUB, predicate = {EXPRESSION_OF, RELATED_TO}, requestDto = Reference.class)
 public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final HashService hashService;
@@ -33,12 +33,12 @@ public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     if (parentDto instanceof WorkResponse workDto && resourceToConvert.getDoc() != null) {
       var doc = resourceToConvert.getDoc();
-      var hub = new HubReference()
-        .addLabelItem(doc.get(PropertyDictionary.LABEL.getValue()).get(0).asText())
+      var hub = new Reference()
+        .label(doc.get(PropertyDictionary.LABEL.getValue()).get(0).asText())
         .id(String.valueOf(resourceToConvert.getId()));
       var linkNode = doc.get(PropertyDictionary.LINK.getValue());
       if (linkNode != null && !linkNode.isEmpty()) {
-        hub.addLinkItem(linkNode.get(0).asText());
+        hub.rdfLink(linkNode.get(0).asText());
       }
       workDto.addHubsItem(
         new HubReferenceWithType()
@@ -51,19 +51,21 @@ public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var hub = (HubReference) dto;
+    var hub = (Reference) dto;
     var resource = new Resource();
     resource.addTypes(ResourceTypeDictionary.HUB);
     resource.setDoc(getDoc(hub));
-    resource.setLabel(hub.getLabel().getFirst());
+    resource.setLabel(hub.getLabel());
     resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 
-  private JsonNode getDoc(HubReference dto) {
+  private JsonNode getDoc(Reference dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, LABEL, dto.getLabel());
-    putProperty(map, LINK, dto.getLink());
+    putProperty(map, LABEL, List.of(dto.getLabel()));
+    if (dto.getRdfLink() != null) {
+      putProperty(map, LINK, List.of(dto.getRdfLink()));
+    }
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 }

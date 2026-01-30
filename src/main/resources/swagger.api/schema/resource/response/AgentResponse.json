@@ -1,9 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Response schema for a reference, extending the Reference definition with additional properties such as reference types and isPreferred flag.",
+  "description": "Response schema for an agent, extending the Agent definition with additional properties such as agent types and isPreferred flag.",
   "allOf": [
     {
-      "$ref": "../common/Reference.json"
+      "$ref": "../common/Agent.json"
     },
     {
       "type": "object",

@@ -9,7 +9,7 @@
           "type": "string"
         },
         "_hub": {
-          "$ref": "./HubReference.json"
+          "$ref": "Reference.json"
         }
       }
     }
