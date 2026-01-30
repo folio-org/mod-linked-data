@@ -55,7 +55,7 @@ public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var reference = (Reference) dto;
     if (reference.getRdfLink() != null) {
-      // TODO - Temporary workarond till MODLD-968 is implemented
+      // TODO - Temporary workaround till MODLD-968 is implemented
       var resource = new Resource();
       resource.addTypes(ResourceTypeDictionary.HUB);
       resource.setDoc(getDoc(reference));
