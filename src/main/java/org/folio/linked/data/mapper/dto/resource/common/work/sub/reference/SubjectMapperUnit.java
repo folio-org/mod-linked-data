@@ -27,11 +27,7 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
 
   public SubjectMapperUnit(ReferenceService referenceService,
                            HashService hashService) {
-    super((subject, destination) -> {
-      if (destination instanceof WorkResponse work) {
-        work.addSubjectsItem(subject);
-      }
-    }, referenceService);
+    super(referenceService);
     this.hashService = hashService;
   }
 
@@ -39,6 +35,15 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var subject = super.toEntity(dto, parentEntity);
     return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
+  }
+
+  @Override
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    if (parentDto instanceof WorkResponse workDto) {
+      var reference = toReference(resourceToConvert);
+      workDto.addSubjectsItem(reference);
+    }
+    return parentDto;
   }
 
   @Override

@@ -8,6 +8,7 @@ import org.folio.linked.data.domain.dto.Dissertation;
 import org.folio.linked.data.domain.dto.DissertationResponse;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.reference.ReferenceService;
 import org.springframework.stereotype.Component;
 
@@ -21,11 +22,16 @@ public class GrantingInstitutionMapperUnit extends ReferenceMapperUnit {
   );
 
   public GrantingInstitutionMapperUnit(ReferenceService referenceService) {
-    super((grantingInstitution, destination) -> {
-      if (destination instanceof DissertationResponse dissertation) {
-        dissertation.addGrantingInstitutionReferenceItem(grantingInstitution);
-      }
-    }, referenceService);
+    super(referenceService);
+  }
+
+  @Override
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    if (parentDto instanceof DissertationResponse dissertationDto) {
+      var reference = toReference(resourceToConvert);
+      dissertationDto.addGrantingInstitutionReferenceItem(reference);
+    }
+    return parentDto;
   }
 
   @Override
