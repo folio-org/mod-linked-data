@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.work.sub;
+package org.folio.linked.data.mapper.dto.resource.common.work.sub.reference;
 
 import static org.folio.ld.dictionary.PredicateDictionary.EXPRESSION_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.RELATED_TO;
@@ -48,7 +48,7 @@ public class HubReferenceMapperUnit extends ReferenceMapperUnit {
         .ifPresent(reference::setRdfLink);
       var referenceWithType = new HubReferenceWithType()
         .hub(reference)
-        .relation(HUB.getUri());
+        .relation(context.predicate().getUri());
       workDto.addHubsItem(referenceWithType);
     }
     return parentDto;
