@@ -154,56 +154,6 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void fetchAuthorityOrCreateByInventoryId_shouldFetchAuthority_ifExistsByInventoryId() {
-    // given
-    var id = "123";
-    var existingResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
-    when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(of(existingResource));
-
-    // when
-    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(id);
-
-    // then
-    assertThat(actualResource).isPresent().get().isEqualTo(existingResource);
-  }
-
-  @Test
-  void fetchAuthorityOrCreateByInventoryId_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
-    // given
-    var id = "123";
-    var createdResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
-    when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(empty());
-    when(srsClient.getAuthorityByInventoryId(id))
-      .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
-
-    var dictionaryModelMock = mock(org.folio.ld.dictionary.model.Resource.class);
-    when(marcAuthority2ldMapper.fromMarcJson(any())).thenReturn(List.of(dictionaryModelMock));
-    when(resourceModelMapper.toEntity(dictionaryModelMock)).thenReturn(createdResource);
-    doReturn(new SaveGraphResult(createdResource)).when(resourceGraphService).saveMergingGraph(createdResource);
-
-    // when
-    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(id);
-
-    // then
-    assertThat(actualResource).isPresent().get().isEqualTo(createdResource);
-    verify(resourceRepo).findByFolioMetadataInventoryId(id);
-    verify(srsClient).getAuthorityByInventoryId(id);
-    verify(resourceGraphService).saveMergingGraph(createdResource);
-  }
-
-  @Test
-  void fetchAuthorityOrCreateByInventoryId_shouldReturnEmptyOptional_ifRecordNotExistsInSrs() {
-    // given
-    var id = "123";
-    when(resourceRepo.findByFolioMetadataInventoryId(id)).thenReturn(empty());
-    when(srsClient.getAuthorityByInventoryId(id)).thenThrow(FeignException.NotFound.class);
-
-    // then
-    var result = resourceMarcAuthorityService.fetchAuthorityOrCreateByInventoryId(id);
-    assertThat(result).isEmpty();
-  }
-
-  @Test
   void saveMarcAuthority_shouldCreateNewAuthority_ifGivenModelDoesNotExistsBySrsId() {
     // given
     var id = randomLong();

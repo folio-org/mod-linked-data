@@ -11,8 +11,6 @@ public interface ResourceMarcAuthorityService {
 
   Resource fetchAuthorityOrCreateFromSrsRecord(Identifiable identifiable);
 
-  Optional<Resource> fetchAuthorityOrCreateByInventoryId(String  inventoryId);
-
   Optional<org.folio.ld.dictionary.model.Resource> fetchResourceFromSrsByInventoryId(String inventoryId);
 
   AssignmentCheckResponseDto validateAuthorityAssignment(String marc, AssignAuthorityTarget target);
