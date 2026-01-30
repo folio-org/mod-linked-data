@@ -101,7 +101,7 @@ class ResourceMarcAuthorityServiceImplTest {
   }
 
   @Test
-  void fetchAuthorityOrCreateFromSrsRecord_shouldThrowNotFound_ifRecordNotExistsInSrs() {
+  void importResourceFromSrs_shouldThrowNotFound_ifRecordNotExistsInSrs() {
     // given
     var id = "123";
     when(srsClient.getAuthorityBySrsId(id))
