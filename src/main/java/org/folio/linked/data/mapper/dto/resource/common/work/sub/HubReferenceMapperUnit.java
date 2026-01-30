@@ -19,6 +19,7 @@ import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.reference.ReferenceService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final HashService hashService;
+  private final ReferenceService referenceService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -51,13 +53,17 @@ public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
 
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
-    var hub = (Reference) dto;
-    var resource = new Resource();
-    resource.addTypes(ResourceTypeDictionary.HUB);
-    resource.setDoc(getDoc(hub));
-    resource.setLabel(hub.getLabel());
-    resource.setIdAndRefreshEdges(hashService.hash(resource));
-    return resource;
+    var reference = (Reference) dto;
+    if (reference.getRdfLink() != null) {
+      // TODO - Temporary workarond till MODLD-968 is implemented
+      var resource = new Resource();
+      resource.addTypes(ResourceTypeDictionary.HUB);
+      resource.setDoc(getDoc(reference));
+      resource.setLabel(reference.getLabel());
+      resource.setIdAndRefreshEdges(hashService.hash(resource));
+      return resource;
+    }
+    return referenceService.resolveReference(reference);
   }
 
   private JsonNode getDoc(Reference dto) {
