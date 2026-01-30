@@ -3,7 +3,9 @@ package org.folio.linked.data.mapper.dto.resource.common.work.sub.reference;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 
+import java.util.Set;
 import org.folio.linked.data.domain.dto.Reference;
+import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
@@ -25,5 +27,10 @@ public class GeographicCoverageMapperUnit extends ReferenceMapperUnit {
       workDto.addGeographicCoverageReferenceItem(reference);
     }
     return parentDto;
+  }
+
+  @Override
+  public Set<Class<?>> supportedParents() {
+    return Set.of(WorkRequest.class, WorkResponse.class);
   }
 }

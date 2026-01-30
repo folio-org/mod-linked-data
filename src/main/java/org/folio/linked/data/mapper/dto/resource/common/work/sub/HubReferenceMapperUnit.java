@@ -11,9 +11,11 @@ import static org.folio.linked.data.util.ResourceUtils.putProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.HubReferenceWithType;
 import org.folio.linked.data.domain.dto.Reference;
+import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
@@ -65,6 +67,11 @@ public class HubReferenceMapperUnit extends ReferenceMapperUnit {
       return resource;
     }
     return referenceService.resolveReference(reference);
+  }
+
+  @Override
+  public Set<Class<?>> supportedParents() {
+    return Set.of(WorkRequest.class, WorkResponse.class);
   }
 
   private JsonNode getDoc(Reference dto) {
