@@ -10,9 +10,12 @@ import static org.folio.linked.data.util.ResourceUtils.copyWithoutPreferred;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Optional;
+import java.util.Set;
 import org.folio.linked.data.domain.dto.Reference;
+import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
+import org.folio.linked.data.mapper.dto.resource.common.ReferenceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.service.reference.ReferenceService;
@@ -27,11 +30,7 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
 
   public SubjectMapperUnit(ReferenceService referenceService,
                            HashService hashService) {
-    super((subject, destination) -> {
-      if (destination instanceof WorkResponse work) {
-        work.addSubjectsItem(subject);
-      }
-    }, referenceService);
+    super(referenceService);
     this.hashService = hashService;
   }
 
@@ -39,6 +38,20 @@ public class SubjectMapperUnit extends ReferenceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var subject = super.toEntity(dto, parentEntity);
     return subject.isOfType(CONCEPT) ? subject : wrapWithConcept(subject);
+  }
+
+  @Override
+  public Set<Class<?>> supportedParents() {
+    return Set.of(WorkRequest.class, WorkResponse.class);
+  }
+
+  @Override
+  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+    if (parentDto instanceof WorkResponse workDto) {
+      var reference = toReference(resourceToConvert);
+      workDto.addSubjectsItem(reference);
+    }
+    return parentDto;
   }
 
   @Override
