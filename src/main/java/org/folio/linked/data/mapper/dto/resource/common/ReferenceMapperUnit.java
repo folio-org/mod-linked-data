@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.work.sub.reference;
+package org.folio.linked.data.mapper.dto.resource.common;
 
 import static org.folio.linked.data.util.ResourceUtils.ensureLatestReplaced;
 
