@@ -77,7 +77,6 @@ public class TestUtil {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper(EMPTY_EXCEPTION_BUILDER);
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
-  public static final String SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/simple_work.json");
   public static final ResourceModelMapper RESOURCE_MODEL_MAPPER = new ResourceModelMapperImpl();
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
