@@ -6,19 +6,19 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
-import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.reference.ReferenceService;
 import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = PLACE, predicate = GEOGRAPHIC_COVERAGE, requestDto = Reference.class)
 public class GeographicCoverageMapperUnit extends ReferenceMapperUnit {
 
-  public GeographicCoverageMapperUnit(ResourceMarcAuthorityService resourceMarcAuthorityService) {
+  public GeographicCoverageMapperUnit(ReferenceService referenceService) {
     super((geographicCoverage, destination) -> {
       if (destination instanceof WorkResponse work) {
         work.addGeographicCoverageReferenceItem(geographicCoverage);
       }
-    }, resourceMarcAuthorityService);
+    }, referenceService);
   }
 
 }

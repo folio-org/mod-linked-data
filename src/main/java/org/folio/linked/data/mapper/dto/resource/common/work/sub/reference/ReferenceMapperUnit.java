@@ -9,14 +9,14 @@ import org.folio.linked.data.domain.dto.ReferenceResponse;
 import org.folio.linked.data.mapper.dto.resource.common.work.sub.WorkSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.reference.ReferenceService;
 import org.folio.linked.data.util.ResourceUtils;
 
 @RequiredArgsConstructor
 public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
 
   private final BiConsumer<ReferenceResponse, Object> referenceConsumer;
-  private final ResourceMarcAuthorityService resourceMarcAuthorityService;
+  private final ReferenceService referenceService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -33,7 +33,7 @@ public class ReferenceMapperUnit implements WorkSubResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var reference = (Reference) dto;
-    return resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(reference);
+    return referenceService.resolveReference(reference);
   }
 
   protected boolean isPreferred(Resource resource) {

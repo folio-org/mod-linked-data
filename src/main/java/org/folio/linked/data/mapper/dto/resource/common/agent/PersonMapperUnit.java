@@ -6,7 +6,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 
 import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
-import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.reference.ReferenceService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class PersonMapperUnit extends AgentMapperUnit {
 
   public PersonMapperUnit(AgentRoleAssigner agentRoleAssigner,
-                          ResourceMarcAuthorityService resourceMarcAuthorityService) {
-    super(agentRoleAssigner, resourceMarcAuthorityService);
+                          ReferenceService referenceService) {
+    super(agentRoleAssigner, referenceService);
   }
 }
