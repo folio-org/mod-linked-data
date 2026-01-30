@@ -1,9 +1,12 @@
 package org.folio.linked.data.mapper.dto.resource.common.title;
 
-import static java.lang.String.join;
-import static org.apache.commons.lang3.StringUtils.isBlank;
+import static java.util.stream.Collectors.joining;
+import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 
 import java.util.Set;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
+import org.folio.linked.data.domain.dto.BaseTitle;
 import org.folio.linked.data.domain.dto.HubRequest;
 import org.folio.linked.data.domain.dto.HubResponse;
 import org.folio.linked.data.domain.dto.InstanceRequest;
@@ -28,7 +31,14 @@ public abstract class TitleMapperUnit implements SingleResourceMapperUnit {
     return SUPPORTED_PARENTS;
   }
 
-  protected String getLabel(String mainTitle, String subTitle) {
-    return isBlank(subTitle) ? mainTitle : join(" ", mainTitle, subTitle);
+  protected String getLabel(BaseTitle title) {
+    var mainTitle = getFirstValue(title::getMainTitle);
+    var subTitle = getFirstValue(title::getSubTitle);
+    var partNumber = getFirstValue(title::getPartNumber);
+    var partName = getFirstValue(title::getPartName);
+
+    return Stream.of(mainTitle, subTitle, partNumber, partName)
+      .filter(StringUtils::isNotBlank)
+      .collect(joining(" "));
   }
 }

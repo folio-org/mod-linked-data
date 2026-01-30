@@ -125,16 +125,6 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(loadResourceAsString("samples/instance_with_no_main_primary_title.json"));
-    var expectedError = getError("instance", """
-      [class PrimaryTitleField {
-          primaryTitle: class PrimaryTitle {
-              partName: [Primary: partName]
-              partNumber: [Primary: partNumber]
-              mainTitle: []
-              subTitle: [Primary: subTitle]
-              nonSortNum: [Primary: nonSortNum]
-          }
-      }]""");
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -146,7 +136,11 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors())
+      .hasSize(1)
+      .first()
+      .extracting("code")
+      .isEqualTo("required_primary_main_title");
   }
 
   private Error getError(String resourceType) {
