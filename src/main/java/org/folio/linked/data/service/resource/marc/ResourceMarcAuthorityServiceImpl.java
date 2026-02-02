@@ -17,11 +17,11 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.AssignmentCheckResponseDto;
+import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-import org.folio.linked.data.model.dto.Identifiable;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -59,9 +59,9 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   private final ApplicationEventPublisher applicationEventPublisher;
 
   @Override
-  public Resource fetchAuthorityOrCreateFromSrsRecord(Identifiable identifiable) {
-    return fetchResourceFromRepo(identifiable)
-      .orElseGet(() -> createResourceFromSrs(identifiable.getSrsId()));
+  public Resource fetchAuthorityOrCreateFromSrsRecord(Reference reference) {
+    return fetchResourceFromRepo(reference)
+      .orElseGet(() -> createResourceFromSrs(reference.getSrsId()));
   }
 
   @Override
@@ -91,11 +91,11 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       .invalidAssignmentReason(isCompatible ? null : NOT_VALID_FOR_TARGET);
   }
 
-  private Optional<Resource> fetchResourceFromRepo(Identifiable identifiable) {
-    return Optional.ofNullable(identifiable.getId())
+  private Optional<Resource> fetchResourceFromRepo(Reference reference) {
+    return Optional.ofNullable(reference.getId())
       .flatMap(id -> resourceRepo.findById(parseLong(id)))
       .map(ResourceUtils::ensureLatestReplaced)
-      .or(() -> Optional.ofNullable(identifiable.getSrsId())
+      .or(() -> Optional.ofNullable(reference.getSrsId())
         .flatMap(resourceRepo::findByFolioMetadataSrsId));
   }
 
