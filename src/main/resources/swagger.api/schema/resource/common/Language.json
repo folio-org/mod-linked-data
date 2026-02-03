@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Language object",
   "type": "object",
+  "x-from-string-field": "term",
   "allOf": [
     {
       "$ref": "IdField.json"

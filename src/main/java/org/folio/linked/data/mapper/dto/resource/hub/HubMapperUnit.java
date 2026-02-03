@@ -1,9 +1,11 @@
 package org.folio.linked.data.mapper.dto.resource.hub;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
@@ -18,6 +20,7 @@ import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.HubRequest;
 import org.folio.linked.data.domain.dto.HubResponse;
 import org.folio.linked.data.domain.dto.HubResponseField;
+import org.folio.linked.data.domain.dto.Language;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkRequest;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
@@ -55,7 +58,7 @@ public class HubMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getTitle(), TITLE);
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getCreatorReference(), CREATOR);
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getContributorReference(), CONTRIBUTOR);
-    coreMapper.addOutgoingEdges(hub, WorkRequest.class, hubDto.getLanguages(), PredicateDictionary.LANGUAGE);
+    coreMapper.addOutgoingEdges(hub, WorkRequest.class, standardLanguages(hubDto), PredicateDictionary.LANGUAGE);
 
     hub.setDoc(getDoc(hubDto));
     hub.setLabel(getLabel(hubDto));
@@ -66,10 +69,32 @@ public class HubMapperUnit extends TopResourceMapperUnit {
   private JsonNode getDoc(HubRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, LABEL, List.of(getLabel(dto)));
+    putProperty(map, LANGUAGE, nonStandardLanguages(dto));
     return coreMapper.toJson(map);
   }
 
   private String getLabel(HubRequest dto) {
     return getFirstValue(() -> getPrimaryMainTitles(dto.getTitle()));
+  }
+
+  private List<Language> standardLanguages(HubRequest dto) {
+    var languages = dto.getLanguages();
+    if (languages == null) {
+      return List.of();
+    }
+    return languages.stream()
+      .filter(lang -> !isEmpty(lang.getLink()))
+      .toList();
+  }
+
+  private List<String> nonStandardLanguages(HubRequest dto) {
+    var languages = dto.getLanguages();
+    if (languages == null) {
+      return List.of();
+    }
+    return languages.stream()
+      .filter(lang -> isEmpty(lang.getLink()))
+      .flatMap(language -> language.getTerm().stream())
+      .toList();
   }
 }
