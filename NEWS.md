@@ -83,6 +83,7 @@
 - Set LINK of the identity resource based on FOLIO configuration [MODLD-923](https://folio-org.atlassian.net/browse/MODLD-923)
 - Include tenant ID in cache [MODLD-952](https://folio-org.atlassian.net/browse/MODLD-952)
 - Handle free form language text values in HUBs in GET, PUT /resource APIs [MODLD-977](https://folio-org.atlassian.net/browse/MODLD-977)
+- Index modified Hubs in mod-search [MODLD-969](https://folio-org.atlassian.net/browse/MODLD-969)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
