@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/source-storage/records/srs_id_0001/formatted?idType=SRS_RECORD"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\"parsedRecord\":{\"content\":{\"fields\":[{\"001\":\"sh85121033\"},{\"010\":{\"subfields\":[{\"a\":\"aValue\"}]}},{\"100\":{\"subfields\":[{\"a\":\"aValue\"},{\"b\":\"bValue\"},{\"c\":\"cValue\"},{\"d\":\"dValue\"}],\"ind1\":\" \",\"ind2\":\" \"}}]}}}\n"
+      }
+    }
+  ]
+}

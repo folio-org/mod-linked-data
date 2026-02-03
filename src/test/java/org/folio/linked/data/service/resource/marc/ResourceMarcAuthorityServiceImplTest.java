@@ -1,6 +1,5 @@
 package org.folio.linked.data.service.resource.marc;
 
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.ld.dictionary.model.FolioMetadata;
-import org.folio.linked.data.domain.dto.Agent;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
@@ -81,43 +79,10 @@ class ResourceMarcAuthorityServiceImplTest {
   private ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @Test
-  void fetchAuthorityOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsById() {
-    // given
-    var existingResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
-    when(resourceRepo.findById(123L)).thenReturn(of(existingResource));
-
-    // when
-    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(new Agent().id("123"));
-
-    // then
-    assertThat(actualResource).isEqualTo(existingResource);
-    verify(resourceRepo).findById(123L);
-  }
-
-  @Test
-  void fetchAuthorityOrCreateFromSrsRecord_shouldFetchAuthority_ifExistsBySrsId() {
-    // given
-    var id = "123";
-    var existingResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
-    when(resourceRepo.findById(123L)).thenReturn(empty());
-    when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(of(existingResource));
-
-    // when
-    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(new Agent().id(id).srsId(id));
-
-    // then
-    assertThat(actualResource).isEqualTo(existingResource);
-    verify(resourceRepo).findById(123L);
-    verify(resourceRepo).findByFolioMetadataSrsId(id);
-  }
-
-  @Test
-  void fetchAuthorityOrCreateFromSrsRecord_shouldCreateAuthorityFromSrs_ifNotExistsInRepo() {
+  void importResourceFromSrs_shouldImportAuthorityFromSrs() {
     // given
     var id = "123";
     var createdResource = new Resource().setIdAndRefreshEdges(123L).setLabel("").addTypes(PERSON);
-    when(resourceRepo.findById(123L)).thenReturn(empty());
-    when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(empty());
     when(srsClient.getAuthorityBySrsId(id))
       .thenReturn(new ResponseEntity<>(createRecord(), HttpStatusCode.valueOf(200)));
 
@@ -127,29 +92,24 @@ class ResourceMarcAuthorityServiceImplTest {
     doReturn(new SaveGraphResult(createdResource)).when(resourceGraphService).saveMergingGraph(createdResource);
 
     // when
-    var actualResource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(new Agent().id(id).srsId(id));
+    var actualResource = resourceMarcAuthorityService.importResourceFromSrs(id);
 
     // then
     assertThat(actualResource).isEqualTo(createdResource);
-    verify(resourceRepo).findById(123L);
-    verify(resourceRepo).findByFolioMetadataSrsId(id);
     verify(srsClient).getAuthorityBySrsId(id);
     verify(resourceGraphService).saveMergingGraph(createdResource);
   }
 
   @Test
-  void fetchAuthorityOrCreateFromSrsRecord_shouldThrowNotFound_ifRecordNotExistsInSrs() {
+  void importResourceFromSrs_shouldThrowNotFound_ifRecordNotExistsInSrs() {
     // given
     var id = "123";
-    when(resourceRepo.findById(123L)).thenReturn(empty());
-    when(resourceRepo.findByFolioMetadataSrsId(id)).thenReturn(empty());
     when(srsClient.getAuthorityBySrsId(id))
       .thenThrow(FeignException.NotFound.class);
-    var agent = new Agent().id(id).srsId(id);
     when(exceptionBuilder.notFoundSourceRecordException(any(), any())).thenReturn(emptyRequestProcessingException());
 
     // then
-    assertThatThrownBy(() -> resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(agent))
+    assertThatThrownBy(() -> resourceMarcAuthorityService.importResourceFromSrs(id))
       .isInstanceOf(RequestProcessingException.class);
   }
 

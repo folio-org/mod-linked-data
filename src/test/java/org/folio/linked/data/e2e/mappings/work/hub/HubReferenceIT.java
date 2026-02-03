@@ -1,14 +1,28 @@
 package org.folio.linked.data.e2e.mappings.work.hub;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 class HubReferenceIT extends PostResourceIT {
+
+  public static final Long TEST_HUB_ID = 999L;
+
+  @Autowired
+  private ObjectMapper objectMapper;
+
+  @BeforeEach
+  void createAuthority() {
+    saveHub(TEST_HUB_ID);
+  }
 
   @Override
   protected String postPayload() {
@@ -28,6 +42,7 @@ class HubReferenceIT extends PostResourceIT {
               {
                 "_relation": "http://bibfra.me/vocab/lite/expressionOf",
                 "_hub": {
+                  "id": "$HUB_ID",
                   "label": "hub label 1"
                 }
               },
@@ -42,7 +57,8 @@ class HubReferenceIT extends PostResourceIT {
           }
         }
       }"""
-      .formatted("TEST: " + this.getClass().getSimpleName());
+      .formatted("TEST: " + this.getClass().getSimpleName())
+      .replace("$HUB_ID", TEST_HUB_ID.toString());
   }
 
   @Override
@@ -51,7 +67,7 @@ class HubReferenceIT extends PostResourceIT {
 
     var expressionOfHub = getFirstOutgoingResource(work, "http://bibfra.me/vocab/lite/expressionOf");
     validateResourceType(expressionOfHub, "http://bibfra.me/vocab/lite/Hub");
-    assertThat(expressionOfHub.getId()).isEqualTo(-2469667353235297183L);
+    assertThat(expressionOfHub.getId()).isEqualTo(TEST_HUB_ID);
     assertThat(expressionOfHub.getLabel()).isEqualTo("hub label 1");
     assertThat(getProperty(expressionOfHub, "http://bibfra.me/vocab/lite/label")).isEqualTo("hub label 1");
 
@@ -74,5 +90,16 @@ class HubReferenceIT extends PostResourceIT {
       .andExpect(jsonPath(expressionOfPath + "['label']").value("hub label 1"))
       .andExpect(jsonPath(relatedToPath + "['label']").value("hub label 2"))
       .andExpect(jsonPath(relatedToPath + "['rdfLink']").value("hub link 2"));
+  }
+
+  @SneakyThrows
+  private void saveHub(Long id) {
+    var hubLabel = "hub label 1";
+    var resource = new Resource()
+      .addTypes(HUB)
+      .setDoc(objectMapper.readTree("{\"http://bibfra.me/vocab/lite/label\": [\"%s\"]}".formatted(hubLabel)))
+      .setLabel(hubLabel)
+      .setIdAndRefreshEdges(id);
+    resourceTestService.saveGraph(resource);
   }
 }

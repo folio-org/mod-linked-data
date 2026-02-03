@@ -19,13 +19,13 @@ import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapperUnit;
 import org.folio.linked.data.model.dto.HasCreator;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
+import org.folio.linked.data.service.reference.ReferenceService;
 
 @RequiredArgsConstructor
 public abstract class AgentMapperUnit implements SingleResourceMapperUnit {
 
   private final AgentRoleAssigner agentRoleAssigner;
-  private final ResourceMarcAuthorityService resourceMarcAuthorityService;
+  private final ReferenceService referenceService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -51,7 +51,7 @@ public abstract class AgentMapperUnit implements SingleResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var agent = (Agent) dto;
-    var resource = resourceMarcAuthorityService.fetchAuthorityOrCreateFromSrsRecord(agent);
+    var resource = referenceService.resolveReference(agent);
     ofNullable(agent.getRoles())
       .ifPresent(roles -> roles.forEach(role -> PredicateDictionary.fromUri(role)
         .ifPresent(p -> parentEntity.addOutgoingEdge(new ResourceEdge(parentEntity, resource, p)))));
