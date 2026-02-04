@@ -1,20 +1,24 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchHubIndexTopicListener;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
-class ResourceControllerHubIT extends ITBase {
+class ResourceControllerPutHubIT extends ITBase {
 
   @Autowired
   private MockMvc mockMvc;
@@ -33,6 +37,8 @@ class ResourceControllerHubIT extends ITBase {
   private KafkaSearchHubIndexTopicListener searchIndexTopicListener;
   @Autowired
   private ObjectMapper objectMapper;
+  @Autowired
+  private ResourceRepository resourceRepository;
 
   @BeforeEach
   @Override
@@ -42,8 +48,13 @@ class ResourceControllerHubIT extends ITBase {
   }
 
   @Test
-  void shouldCreateHubAndEmitSearchIndexEvent() throws Exception {
-    var postRequest = post(RESOURCE_URL)
+  void shouldUpdateHubAndEmitSearchIndexEvents() throws Exception {
+    var existingHub = new Resource()
+      .setIdAndRefreshEdges(1L)
+      .addTypes(ResourceTypeDictionary.HUB);
+    resourceRepository.save(existingHub);
+
+    var putRequest = put(RESOURCE_URL + "/" + existingHub.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content("""
@@ -64,7 +75,7 @@ class ResourceControllerHubIT extends ITBase {
       );
 
     // when
-    var resultActions = mockMvc.perform(postRequest);
+    var resultActions = mockMvc.perform(putRequest);
 
     // then
     var responseJson = resultActions
@@ -78,6 +89,7 @@ class ResourceControllerHubIT extends ITBase {
       .path("http://bibfra.me/vocab/lite/Hub")
       .path("id")
       .asText();
+    checkSearchIndexMessage(existingHub.getId(), DELETE);
     checkSearchIndexMessage(Long.parseLong(hubIdStr), CREATE);
     checkIndexDate(hubIdStr);
   }
