@@ -9,6 +9,7 @@ import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.JsonUtils.hasElementByJsonPath;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -42,7 +43,7 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private final ResourceMarcBibService resourceMarcBibService;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
   private final MarcBib2ldMapper marcBib2ldMapper;
-
+  private final ObjectMapper mapper;
 
   @SuppressWarnings("java:S125")
   @Override
@@ -68,11 +69,13 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
 
   private String getElementByJsonPath(Object json, String jsonPath) {
     try {
-      Object result = com.jayway.jsonpath.JsonPath.read(json, jsonPath);
-      if (result instanceof String) {
-        return (String) result;
-      } else if (result instanceof java.util.List<?> list && !list.isEmpty()) {
-        return String.valueOf(list.get(0));
+      Object jsonObj = json;
+      if (json instanceof String jsonStr) {
+        jsonObj = mapper.readValue(jsonStr, java.util.Map.class);
+      }
+      Object result = com.jayway.jsonpath.JsonPath.read(jsonObj, jsonPath);
+      if (result instanceof String resultStr) {
+        return resultStr;
       }
       return null;
     } catch (Exception e) {
