@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -162,6 +163,23 @@ class SourceRecordDomainEventHandlerTest {
 
     // then
     verifyNoInteractions(resourceMarcBibService);
+    verifyNoInteractions(resourceMarcAuthorityService);
+  }
+
+  @Test
+  void shouldImportGraphResource_forMarcBibCreateEvent_ifToggleEnabled() {
+    // given
+    var marcJson = "{\"leader\":\"00247nam a2200073uc 4500\"}";
+    var event = new SourceRecordDomainEvent().id("9")
+      .eventType(SOURCE_RECORD_CREATED)
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marcJson)));
+    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoConvertBibToGraph", true);
+
+    // when
+    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
+
+    // then
+    verify(resourceMarcBibService).importGraphResourceFromMarc(marcJson);
     verifyNoInteractions(resourceMarcAuthorityService);
   }
 }
