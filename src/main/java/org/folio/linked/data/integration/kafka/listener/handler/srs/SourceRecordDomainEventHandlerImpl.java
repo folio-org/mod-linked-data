@@ -33,6 +33,8 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private static final String NO_MARC_EVENT = "SourceRecordDomainEvent [id {}] has no Marc record inside";
   private static final String UNSUPPORTED_TYPE = "Ignoring unsupported {} type [{}] in SourceRecordDomainEvent [id {}]";
   private static final String LINKED_DATA_ID_JSONPATH = "$.fields[*].999.subfields[*].l";
+  private static final String INVENTORY_ID_JSONPATH = "$.fields[*].999.subfields[*].i";
+
   private static final Set<SourceRecordType> SUPPORTED_RECORD_TYPES = Set.of(MARC_BIB, MARC_AUTHORITY);
   private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES =
     Set.of(SOURCE_RECORD_CREATED, SOURCE_RECORD_UPDATED);
@@ -40,6 +42,7 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private final ResourceMarcBibService resourceMarcBibService;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
   private final MarcBib2ldMapper marcBib2ldMapper;
+
 
   @SuppressWarnings("java:S125")
   @Override
@@ -51,8 +54,34 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
       saveAuthorities(event);
     } else if (isLinkedDataBibCreateEvent(event, recordType)) {
       saveAdminMetadata(event);
+    } else if (recordType == MARC_BIB && event.getEventType() == SOURCE_RECORD_CREATED) {
+      var inventoryId = getElementByJsonPath(
+        event.getEventPayload().getParsedRecord().getContent(), INVENTORY_ID_JSONPATH);
+      log.info("**Inventory ID [{}]", inventoryId);
+      var importable = resourceMarcBibService.checkMarcBibImportableToGraph(inventoryId);
+      if (importable) {
+        log.info("Importing inventory ID [{}] to graph database", inventoryId);
+        resourceMarcBibService.importMarcRecord(inventoryId, null);
+      }
     }
   }
+
+  private String getElementByJsonPath(Object json, String jsonPath) {
+    try {
+      Object result = com.jayway.jsonpath.JsonPath.read(json, jsonPath);
+      if (result instanceof String) {
+        return (String) result;
+      } else if (result instanceof java.util.List<?> list && !list.isEmpty()) {
+        return String.valueOf(list.get(0));
+      }
+      return null;
+    } catch (Exception e) {
+      log.warn("Failed to extract value by JSONPath [{}]: {}", jsonPath, e.getMessage());
+      return null;
+    }
+  }
+
+
 
   private boolean notProcessableEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {
     if (isEmpty(event.getEventPayload())
