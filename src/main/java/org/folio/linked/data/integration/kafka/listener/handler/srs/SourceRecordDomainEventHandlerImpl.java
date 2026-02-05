@@ -68,6 +68,7 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   }
 
   private String getElementByJsonPath(Object json, String jsonPath) {
+    ObjectMapper mapper = new ObjectMapper();
     try {
       Object jsonObj = json;
       if (json instanceof String jsonStr) {
@@ -77,9 +78,14 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
       if (result instanceof String resultStr) {
         return resultStr;
       }
+      if (result instanceof java.util.List<?> list && !list.isEmpty()) {
+        // Return first element if it's a string, else join all strings
+        if (list.get(0) instanceof String) {
+          return String.join(",", list.stream().map(Object::toString).toList());
+        }
+      }
       return null;
     } catch (Exception e) {
-      log.warn("Failed to extract value by JSONPath [{}]: {}", jsonPath, e.getMessage());
       return null;
     }
   }
