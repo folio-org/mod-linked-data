@@ -5,7 +5,6 @@ import static org.folio.linked.data.util.ImportUtils.Status.CREATED;
 import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
@@ -16,7 +15,6 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @UnitTest
@@ -25,8 +23,6 @@ class ImportEventResultMapperTest {
 
   @InjectMocks
   private ImportEventResultMapperImpl mapper;
-  @Mock
-  private ObjectMapper objectMapper;
 
   @Test
   void fromImportReport_shouldFullyMapGivenImportReport() {
@@ -84,6 +80,7 @@ class ImportEventResultMapperTest {
                                                            ImportUtils.Status status,
                                                            String failureReason) {
     var resource = new Resource().setId(id).setLabel(label);
-    return new ImportUtils.ImportedResource(new ResourceWithLineNumber(lineNumber, resource), status, failureReason);
+    var resourceWithLineNumber = new ResourceWithLineNumber(lineNumber, resource);
+    return new ImportUtils.ImportedResource(resourceWithLineNumber, status, failureReason, null);
   }
 }

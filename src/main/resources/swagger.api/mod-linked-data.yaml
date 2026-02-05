@@ -451,6 +451,26 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/hub:
+    get:
+      operationId: getHubPreviewByUri
+      tags:
+        - hub
+      description: Get the preview of a remote Hub resource
+      parameters:
+        - $ref: '#/components/parameters/hubUri'
+      responses:
+        '200':
+          description: Resource as json string
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceResponseDto.json
+        '404':
+          description: No Hub resource is found by Hub URI
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     id:
@@ -491,6 +511,13 @@ components:
       schema:
         type: integer
         format: int16
+    hubUri:
+      name: hubUri
+      in: query
+      required: true
+      description: URI of a remote Hub resource
+      schema:
+        type: string
   schemas:
     errorResponse:
       $ref: schema/error/errors.json

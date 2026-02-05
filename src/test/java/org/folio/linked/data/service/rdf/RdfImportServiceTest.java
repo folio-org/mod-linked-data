@@ -208,4 +208,70 @@ class RdfImportServiceTest {
     verify(importResultEventProducer).sendMessages(List.of(expectedImportEventResult));
   }
 
+  @Test
+  void importRdfJsonString_shouldConvertJsonToResourcesWithoutSaving() {
+    // given
+    var rdfJson = "{\"@context\":\"test\"}";
+    var resource1 = new Resource().setId(1L);
+    var resource2 = new Resource().setId(2L);
+    var entity1 = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(1L);
+    var entity2 = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(2L);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(Set.of(resource1, resource2));
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(any())).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(resource1, searchResults)).thenReturn(resource1);
+    when(lccnResourceService.unMockLccnEdges(resource2, searchResults)).thenReturn(resource2);
+    when(resourceModelMapper.toEntity(resource1)).thenReturn(entity1);
+    when(resourceModelMapper.toEntity(resource2)).thenReturn(entity2);
+
+    // when
+    var result = rdfImportService.importRdfJsonString(rdfJson, false);
+
+    // then
+    assertThat(result).hasSize(2);
+    assertThat(result).contains(entity1, entity2);
+    verify(metadataService).ensure(entity1);
+    verify(metadataService).ensure(entity2);
+    verify(resourceGraphService, never()).saveMergingGraphInNewTransaction(any());
+  }
+
+  @Test
+  void importRdfJsonString_shouldSaveResources_whenSaveIsTrue() {
+    // given
+    var rdfJson = "{\"@context\":\"test\"}";
+    var resource = new Resource().setId(1L);
+    var entity = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(1L);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(Set.of(resource));
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(any())).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(resource, searchResults)).thenReturn(resource);
+    when(resourceModelMapper.toEntity(resource)).thenReturn(entity);
+    var saveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
+
+    // when
+    var result = rdfImportService.importRdfJsonString(rdfJson, true);
+
+    // then
+    assertThat(result).hasSize(1);
+    assertThat(result).contains(entity);
+    verify(metadataService).ensure(entity);
+    verify(resourceGraphService).saveMergingGraphInNewTransaction(entity);
+  }
+
+  @Test
+  void importRdfJsonString_shouldThrowException_whenMappingFails() {
+    // given
+    var rdfJson = "{\"@context\":\"test\"}";
+    var mappingError = new RuntimeException("Mapping error");
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenThrow(mappingError);
+
+    // when & then
+    assertThatThrownBy(() -> rdfImportService.importRdfJsonString(rdfJson, false))
+      .isEqualTo(mappingError);
+  }
+
 }

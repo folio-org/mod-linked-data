@@ -108,6 +108,12 @@
             "source-storage.records.formatted.item.get",
             "search.authorities.collection.get"
           ]
+        },
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/hub",
+          "permissionsRequired": [ "linked-data.hub.preview.get" ],
+          "modulePermissions": []
         }
       ]
     },
@@ -300,6 +306,11 @@
       "permissionName": "linked-data.resources.rdf.get",
       "displayName": "Linked Data: Export an Instance to RDF JSON-LD",
       "description": "Export an Instance to RDF JSON-LD"
+    },
+    {
+      "permissionName": "linked-data.hub.preview.get",
+      "displayName": "Linked Data: Get the preview of a remote Hub resource",
+      "description": "Get the preview of a remote Hub resource by Hub URI"
     }
   ],
   "launchDescriptor": {

@@ -1,14 +1,25 @@
 package org.folio.linked.data.service.rdf;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toSet;
+import static org.folio.linked.data.util.ImportUtils.APPLICATION_LD_JSON_VALUE;
+import static org.folio.linked.data.util.ImportUtils.ImportReport;
+import static org.folio.linked.data.util.ImportUtils.ImportedResource;
+import static org.folio.linked.data.util.ImportUtils.Status;
+import static org.folio.linked.data.util.ImportUtils.Status.CONVERTED;
 import static org.folio.linked.data.util.ImportUtils.Status.CREATED;
 import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
+import static org.folio.linked.data.util.ImportUtils.toRdfMediaType;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ImportFileResponseDto;
@@ -18,10 +29,10 @@ import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.kafka.ldimport.ImportEventResultMapper;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.lccn.LccnResourceService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
-import org.folio.linked.data.util.ImportUtils;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +61,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   @Override
   public ImportFileResponseDto importFile(MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
-      var resources = rdf4LdService.mapBibframe2RdfToLd(is, ImportUtils.toRdfMediaType(multipartFile.getContentType()));
-      var resourcesWithLineNumbers = resources.stream().map(r -> new ResourceWithLineNumber(1L, r)).collect(toSet());
-      var importReport = doImport(resourcesWithLineNumbers);
+      var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), true);
       var reportCsv = importReport.toCsv();
       return new ImportFileResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
@@ -66,13 +75,35 @@ public class RdfImportServiceImpl implements RdfImportService {
   @Override
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void importOutputEvent(ImportOutputEvent event, OffsetDateTime startTime) {
-    var report = doImport(event.getResourcesWithLineNumbers());
+    var report = doImport(event.getResourcesWithLineNumbers(), true);
     var importEventResult = importEventResultMapper.fromImportReport(event, startTime, report);
     importResultEventProducer.sendMessages(List.of(importEventResult));
   }
 
-  private ImportUtils.ImportReport doImport(Set<ResourceWithLineNumber> resourcesWithLineNumbers) {
-    var report = new ImportUtils.ImportReport();
+  @Override
+  public Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
+    try (var inputStream = new ByteArrayInputStream(rdfJson.getBytes(UTF_8))) {
+      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, save);
+      return importReport.getImports().stream()
+        .map(ImportedResource::getResourceEntity)
+        .filter(Objects::nonNull)
+        .collect(toSet());
+    } catch (IOException e) {
+      throw exceptionBuilder.badRequestException("Rdf JSON import error", e.getMessage());
+    }
+  }
+
+  private ImportReport importInputStream(InputStream input, String contentType, Boolean save) {
+    var resources = rdf4LdService.mapBibframe2RdfToLd(input, contentType);
+    var lineNumber = new AtomicLong(1);
+    var resourcesWithLineNumbers = resources.stream()
+      .map(r -> new ResourceWithLineNumber(lineNumber.getAndIncrement(), r))
+      .collect(toSet());
+    return doImport(resourcesWithLineNumbers, save);
+  }
+
+  private ImportReport doImport(Set<ResourceWithLineNumber> resourcesWithLineNumbers, boolean save) {
+    var report = new ImportReport();
     var mockResourcesSearchResult = lccnResourceService.findMockResources(
       resourcesWithLineNumbers.stream().map(ResourceWithLineNumber::getResource).collect(toSet())
     );
@@ -82,12 +113,17 @@ public class RdfImportServiceImpl implements RdfImportService {
           mockResourcesSearchResult);
         var resource = resourceModelMapper.toEntity(resourceModel);
         metadataService.ensure(resource);
-        var saveGraphResult = resourceGraphService.saveMergingGraphInNewTransaction(resource);
-        var status = saveGraphResult.newResources().contains(resource) ? CREATED : UPDATED;
-        report.addImport(new ImportUtils.ImportedResource(resourceWithLineNumber, status, null));
+        Status status;
+        if (save) {
+          var saveGraphResult = resourceGraphService.saveMergingGraphInNewTransaction(resource);
+          status = saveGraphResult.newResources().contains(resource) ? CREATED : UPDATED;
+        } else {
+          status = CONVERTED;
+        }
+        report.addImport(new ImportedResource(resourceWithLineNumber, status, null, resource));
       } catch (Exception e) {
         log.debug("Exception during import of a resource from line {}", resourceWithLineNumber.getLineNumber(), e);
-        report.addImport(new ImportUtils.ImportedResource(resourceWithLineNumber, FAILED, e.getMessage()));
+        report.addImport(new ImportedResource(resourceWithLineNumber, FAILED, e.getMessage(), null));
       }
     });
     return report;

@@ -271,6 +271,10 @@ curl --location '{{ base-uri }}/linked-data/resource/{id}/graph' \
 --header 'x-okapi-tenant: {tenant}' \
 --header 'x-okapi-token: {token}'
 ```
+
+### Preview of a remote Hub resource
+A preview of a remote Hub resource can be retrieved by making a GET request to the `/linked-data/hub` endpoint with the Hub URI as a query parameter.
+
 # Integration with FOLIO
 When running in FOLIO mode, this module integrates with multiple Folio modules via Kafka.
 ## Search module
