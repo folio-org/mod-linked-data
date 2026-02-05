@@ -275,6 +275,9 @@ curl --location '{{ base-uri }}/linked-data/resource/{id}/graph' \
 ### Preview of a remote Hub resource
 A preview of a remote Hub resource can be retrieved by making a GET request to the `/linked-data/hub` endpoint with the Hub URI as a query parameter.
 
+### Save a remote Hub resource
+A remote Hub resource can be saved to the local database by making a POST request to the `/linked-data/hub` endpoint with the Hub URI as a query parameter. This will fetch the remote resource and persist it locally.
+
 # Integration with FOLIO
 When running in FOLIO mode, this module integrates with multiple Folio modules via Kafka.
 ## Search module

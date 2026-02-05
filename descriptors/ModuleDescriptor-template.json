@@ -114,6 +114,12 @@
           "pathPattern": "/linked-data/hub",
           "permissionsRequired": [ "linked-data.hub.preview.get" ],
           "modulePermissions": []
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/hub",
+          "permissionsRequired": [ "linked-data.hub.import.post" ],
+          "modulePermissions": []
         }
       ]
     },
@@ -311,6 +317,11 @@
       "permissionName": "linked-data.hub.preview.get",
       "displayName": "Linked Data: Get the preview of a remote Hub resource",
       "description": "Get the preview of a remote Hub resource by Hub URI"
+    },
+    {
+      "permissionName": "linked-data.hub.import.post",
+      "displayName": "Linked Data: Save a remote Hub resource",
+      "description": "Save a remote Hub resource by Hub URI"
     }
   ],
   "launchDescriptor": {

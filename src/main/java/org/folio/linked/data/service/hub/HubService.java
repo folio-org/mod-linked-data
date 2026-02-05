@@ -6,4 +6,6 @@ public interface HubService {
 
   ResourceResponseDto previewHub(String hubUri);
 
+  ResourceResponseDto saveHub(String hubUri);
+
 }
