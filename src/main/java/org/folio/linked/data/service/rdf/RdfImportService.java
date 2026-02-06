@@ -12,6 +12,6 @@ public interface RdfImportService {
 
   void importOutputEvent(ImportOutputEvent event, OffsetDateTime startTime);
 
-  Resource importRdfUrl(String rdfUrl, Boolean save);
+  Resource importRdfUrl(String rdfUrl, boolean save);
 
 }

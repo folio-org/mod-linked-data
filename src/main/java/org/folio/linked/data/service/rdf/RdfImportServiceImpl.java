@@ -87,7 +87,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public Resource importRdfUrl(String rdfUrl, Boolean save) {
+  public Resource importRdfUrl(String rdfUrl, boolean save) {
     var rdfJson = httpClient.downloadString(rdfUrl);
     var imported = importRdfJsonString(rdfJson, save);
     var id = substringBefore(substringAfterLast(rdfUrl, "/"), ".");

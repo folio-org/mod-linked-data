@@ -13,5 +13,8 @@ public interface SingleResourceMapperUnit {
   Set<Class<?>> supportedParents();
 
   record ResourceMappingContext(Resource parentResource, Predicate predicate) {
+    public static ResourceMappingContext forRoot() {
+      return new ResourceMappingContext(null, null);
+    }
   }
 }
