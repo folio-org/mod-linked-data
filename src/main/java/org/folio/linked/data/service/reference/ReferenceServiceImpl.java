@@ -10,6 +10,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.rdf.RdfImportService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.linked.data.util.ResourceUtils;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class ReferenceServiceImpl implements ReferenceService {
   private final ResourceRepository resourceRepo;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ResourceMarcAuthorityService marcAuthorityService;
+  private final RdfImportService rdfImportService;
 
   @Override
   public Resource resolveReference(Reference reference) {
@@ -35,7 +37,7 @@ public class ReferenceServiceImpl implements ReferenceService {
     }
 
     if (reference.getRdfLink() != null) {
-      // TODO: MODLD-968 - Fetch RDF from URL and then convert to Resource by using rdf4ld library
+      return rdfImportService.importRdfFromUrl(reference.getRdfLink(), true);
     }
 
     throw exceptionBuilder.badRequestException(
