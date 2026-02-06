@@ -20,9 +20,11 @@ class HubTitleIT extends PostResourceIT {
             "http://bibfra.me/vocab/library/title": [
               {
                 "http://bibfra.me/vocab/library/Title": {
-                  "http://bibfra.me/vocab/library/mainTitle": [
-                    "%s"
-                  ]
+                  "http://bibfra.me/vocab/library/mainTitle": [ "%s" ],
+                  "http://bibfra.me/vocab/library/partNumber": [ "part number" ],
+                  "http://bibfra.me/vocab/library/partName": [ "part name" ],
+                  "http://bibfra.me/vocab/bflc/nonSortNum": [ "non sort num" ],
+                  "http://bibfra.me/vocab/library/subTitle": [ "sub title" ]
                 }
               }
             ]
@@ -36,17 +38,20 @@ class HubTitleIT extends PostResourceIT {
   @SneakyThrows
   protected void validateApiResponse(ResultActions apiResponse) {
     var hubPath = "$.resource['http://bibfra.me/vocab/lite/Hub']";
+    var titlePath = hubPath + "['http://bibfra.me/vocab/library/title'][0]['http://bibfra.me/vocab/library/Title']";
 
     apiResponse
-      .andExpect(jsonPath(hubPath + "['id']").value("-1203724017859497624"))
-      .andExpect(jsonPath(hubPath + "['http://bibfra.me/vocab/library/title'][0]"
-        + "['http://bibfra.me/vocab/library/Title']['http://bibfra.me/vocab/library/mainTitle'][0]")
-        .value("TEST: HubTitleIT"));
+      .andExpect(jsonPath(hubPath + "['id']").value("-3606019457490474046"))
+      .andExpect(jsonPath(titlePath + "['http://bibfra.me/vocab/library/mainTitle'][0]").value("TEST: HubTitleIT"))
+      .andExpect(jsonPath(titlePath + "['http://bibfra.me/vocab/library/partNumber'][0]").value("part number"))
+      .andExpect(jsonPath(titlePath + "['http://bibfra.me/vocab/library/partName'][0]").value("part name"))
+      .andExpect(jsonPath(titlePath + "['http://bibfra.me/vocab/bflc/nonSortNum'][0]").value("non sort num"))
+      .andExpect(jsonPath(titlePath + "['http://bibfra.me/vocab/library/subTitle'][0]").value("sub title"));
   }
 
   @Override
   protected void validateGraph(Resource hub) {
-    var expectedHubLabel = "TEST: HubTitleIT";
+    var expectedHubLabel = "TEST: HubTitleIT sub title";
     validateResourceType(hub, "http://bibfra.me/vocab/lite/Hub");
     assertThat(hub.getLabel()).isEqualTo(expectedHubLabel);
     assertThat(getProperty(hub, "http://bibfra.me/vocab/lite/label")).isEqualTo(expectedHubLabel);
@@ -54,6 +59,10 @@ class HubTitleIT extends PostResourceIT {
     var title = getFirstOutgoingResource(hub, "http://bibfra.me/vocab/library/title");
     validateResourceType(title, "http://bibfra.me/vocab/library/Title");
     assertThat(getProperty(title, "http://bibfra.me/vocab/library/mainTitle")).isEqualTo("TEST: HubTitleIT");
-    assertThat(title.getLabel()).isEqualTo("TEST: HubTitleIT");
+    assertThat(getProperty(title, "http://bibfra.me/vocab/library/partNumber")).isEqualTo("part number");
+    assertThat(getProperty(title, "http://bibfra.me/vocab/library/partName")).isEqualTo("part name");
+    assertThat(getProperty(title, "http://bibfra.me/vocab/bflc/nonSortNum")).isEqualTo("non sort num");
+    assertThat(getProperty(title, "http://bibfra.me/vocab/library/subTitle")).isEqualTo("sub title");
+    assertThat(title.getLabel()).isEqualTo(expectedHubLabel);
   }
 }

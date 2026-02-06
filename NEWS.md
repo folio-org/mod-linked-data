@@ -86,6 +86,7 @@
 - Index modified Hubs in mod-search [MODLD-969](https://folio-org.atlassian.net/browse/MODLD-969)
 - Hub preview API [MODLD-957](https://folio-org.atlassian.net/browse/MODLD-957)
 - Hub save API [MODLD-514](https://folio-org.atlassian.net/browse/MODLD-514)
+-  Return Hub's variant and parallel titles in GET /resource/{id} API response [MODLD-981](https://folio-org.atlassian.net/browse/MODLD-981)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
