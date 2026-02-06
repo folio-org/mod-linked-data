@@ -75,17 +75,17 @@ class HubReferenceIT extends PostResourceIT {
 
     var relatedToHub = getFirstOutgoingResource(work, "http://bibfra.me/vocab/relation/relatedTo");
     validateResourceType(relatedToHub, "http://bibfra.me/vocab/lite/Hub");
-    assertThat(relatedToHub.getId()).isEqualTo(7500851124191297833L);
-    assertThat(relatedToHub.getLabel()).isEqualTo("Hub AAP");
-    assertThat(getProperty(relatedToHub, "http://bibfra.me/vocab/lite/label")).isEqualTo("Hub AAP");
+    assertThat(relatedToHub.getId()).isEqualTo(2624623618421380585L);
+    assertThat(relatedToHub.getLabel()).isEqualTo("Hub AAP 😊");
+    assertThat(getProperty(relatedToHub, "http://bibfra.me/vocab/lite/label")).isEqualTo("Hub AAP 😊");
     assertThat(getProperty(relatedToHub, "http://bibfra.me/vocab/lite/link"))
       .isEqualTo("http://localhost/some-hub-storage/150986.json");
 
     // verify relatedTo hub's title
     var relatedToHubTitle = getFirstOutgoingResource(relatedToHub, "http://bibfra.me/vocab/library/title");
     validateResourceType(relatedToHubTitle, "http://bibfra.me/vocab/library/Title");
-    assertThat(getProperty(relatedToHubTitle, "http://bibfra.me/vocab/library/mainTitle")).isEqualTo("Hub 150986 mainTitle");
-    assertThat(relatedToHubTitle.getLabel()).isEqualTo("Hub 150986 mainTitle");
+    assertThat(getProperty(relatedToHubTitle, "http://bibfra.me/vocab/library/mainTitle")).isEqualTo("Hub 150986 mainTitle 汉");
+    assertThat(relatedToHubTitle.getLabel()).isEqualTo("Hub 150986 mainTitle 汉");
   }
 
   @Override
@@ -99,7 +99,7 @@ class HubReferenceIT extends PostResourceIT {
       .andExpect(jsonPath(expressionOfPath + "['label']").value("hub label 1"))
       .andExpect(jsonPath(expressionOfPath + "['types'][0]").value("http://bibfra.me/vocab/lite/Hub"))
       .andExpect(jsonPath(expressionOfPath + "['isPreferred']").value(false))
-      .andExpect(jsonPath(relatedToPath + "['label']").value("Hub AAP"))
+      .andExpect(jsonPath(relatedToPath + "['label']").value("Hub AAP 😊"))
       .andExpect(jsonPath(relatedToPath + "['rdfLink']")
         .value("http://localhost/some-hub-storage/150986.json"))
       .andExpect(jsonPath(relatedToPath + "['types'][0]").value("http://bibfra.me/vocab/lite/Hub"))
