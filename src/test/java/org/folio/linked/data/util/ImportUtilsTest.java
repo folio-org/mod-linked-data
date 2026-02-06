@@ -21,17 +21,17 @@ class ImportUtilsTest {
     return Stream.of(
       Arguments.of(
         new ImportUtils.ImportedResource(
-          new ResourceWithLineNumber(1L, new Resource().setId(1L).setLabel("")), CREATED, null),
+          new ResourceWithLineNumber(1L, new Resource().setId(1L).setLabel("")), CREATED, null, null),
         "ID,LABEL,STATUS,FAILURE_REASON\r\n1,,Created,\r\n"
       ),
       Arguments.of(
         new ImportUtils.ImportedResource(new ResourceWithLineNumber(2L,
-          new Resource().setId(692094L).setLabel("Some complexity, isn't \"missing\"")), UPDATED, null),
+          new Resource().setId(692094L).setLabel("Some complexity, isn't \"missing\"")), UPDATED, null, null),
         "ID,LABEL,STATUS,FAILURE_REASON\r\n692094,\"Some complexity, isn't \"\"missing\"\"\",Updated,\r\n"
       ),
       Arguments.of(
         new ImportUtils.ImportedResource(new ResourceWithLineNumber(3L,
-          new Resource().setId(5L).setLabel("No good")), FAILED, "Some, error"),
+          new Resource().setId(5L).setLabel("No good")), FAILED, "Some, error", null),
         "ID,LABEL,STATUS,FAILURE_REASON\r\n5,No good,Failed,\"Some, error\"\r\n"
       )
     );

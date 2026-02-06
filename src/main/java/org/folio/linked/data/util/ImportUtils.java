@@ -15,8 +15,8 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
+import org.folio.linked.data.model.entity.Resource;
 
 @Log4j2
 @UtilityClass
@@ -55,6 +55,7 @@ public class ImportUtils {
   public enum Status {
     CREATED("Created"),
     UPDATED("Updated"),
+    CONVERTED("Converted"),
     FAILED("Failed");
 
     private final String value;
@@ -67,15 +68,18 @@ public class ImportUtils {
     private Long lineNumber;
     private Status status;
     private String failureReason;
-    private Resource failedResource;
+    private Resource resourceEntity;
 
-    public ImportedResource(ResourceWithLineNumber resourceWithLineNumber, Status status, String failureReason) {
+    public ImportedResource(ResourceWithLineNumber resourceWithLineNumber,
+                            Status status,
+                            String failureReason,
+                            Resource resourceEntity) {
       this.id = resourceWithLineNumber.getResource().getId();
       this.label = resourceWithLineNumber.getResource().getLabel();
       this.lineNumber = resourceWithLineNumber.getLineNumber();
       this.status = status;
       this.failureReason = failureReason;
-      this.failedResource = status == FAILED ? resourceWithLineNumber.getResource() : null;
+      this.resourceEntity = resourceEntity;
     }
   }
 

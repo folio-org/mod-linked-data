@@ -1,0 +1,86 @@
+package org.folio.linked.data.service.hub;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Set;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.integration.http.HttpClient;
+import org.folio.linked.data.mapper.dto.resource.hub.HubMapperUnit;
+import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.rdf.RdfImportService;
+import org.folio.spring.testing.type.UnitTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@UnitTest
+@ExtendWith(MockitoExtension.class)
+class HubServiceImplTest {
+
+  @InjectMocks
+  private HubServiceImpl hubService;
+
+  @Mock
+  private HttpClient httpClient;
+  @Mock
+  private HubMapperUnit hubMapperUnit;
+  @Mock
+  private RdfImportService rdfImportService;
+  @Mock
+  private RequestProcessingExceptionBuilder requestProcessingExceptionBuilder;
+
+  @Test
+  void previewHub_shouldDownloadAndConvertHub() {
+    // given
+    var hubUri = "https://example.com/hub.json";
+    var jsonString = "{\"@context\":\"test\"}";
+    var resource = new Resource();
+    var objectMapper = new ObjectMapper();
+    var doc = objectMapper.createObjectNode();
+    var linkArray = objectMapper.createArrayNode().add(hubUri);
+    doc.set(LINK.getValue(), linkArray);
+    resource.setDoc(doc);
+    var expectedResponse = new ResourceResponseDto();
+
+    when(httpClient.downloadString(hubUri)).thenReturn(jsonString);
+    when(rdfImportService.importRdfJsonString(jsonString, false)).thenReturn(Set.of(resource));
+    when(hubMapperUnit.toDto(eq(resource), any(ResourceResponseDto.class), any())).thenReturn(expectedResponse);
+
+    // when
+    var result = hubService.previewHub(hubUri);
+
+    // then
+    assertThat(result).isEqualTo(expectedResponse);
+    verify(httpClient).downloadString(hubUri);
+    verify(rdfImportService).importRdfJsonString(jsonString, false);
+  }
+
+  @Test
+  void previewHub_shouldThrowException_whenNoMatchingResource() {
+    // given
+    var hubUri = "https://example.com/hub.json";
+    var jsonString = "{\"@context\":\"test\"}";
+    var expectedException = new RequestProcessingException(404, "code", null, "message");
+
+    when(httpClient.downloadString(hubUri)).thenReturn(jsonString);
+    when(rdfImportService.importRdfJsonString(jsonString, false)).thenReturn(Set.of());
+    when(requestProcessingExceptionBuilder.notFoundHubByUriException(hubUri)).thenReturn(expectedException);
+
+    // when & then
+    assertThatThrownBy(() -> hubService.previewHub(hubUri))
+      .isEqualTo(expectedException);
+    verify(httpClient).downloadString(hubUri);
+    verify(rdfImportService).importRdfJsonString(jsonString, false);
+  }
+}
