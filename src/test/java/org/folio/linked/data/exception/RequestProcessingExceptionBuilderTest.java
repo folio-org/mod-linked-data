@@ -123,15 +123,15 @@ class RequestProcessingExceptionBuilderTest {
         "Source Record with instanceId=abc123 not found in Source Record storage"
       )),
       Arguments.of(new TestCase(
-        "notFoundRdfByUri",
+        "notFoundByRdfUri",
         new ErrorResponseConfig.Error(404, "notFound",
           List.of("resourceType", "idType", "idValue", "storage"), "%s with %s=%s not found in %s"),
         ErrorResponseConfig::getNotFound,
-        builder -> builder.notFoundByRdfUriException("https://example.com/hub.json"),
+        builder -> builder.notFoundResourceByUriException("https://example.com/hub.json"),
         404,
         "notFound",
-        Map.of("resourceType", "RDF", "idType", "URI", "idValue", "https://example.com/hub.json", "storage", "remote source"),
-        "RDF with URI=https://example.com/hub.json not found in remote source"
+        Map.of("resourceType", "Resource", "idType", "URI", "idValue", "https://example.com/hub.json", "storage", "remote source"),
+        "Resource with URI=https://example.com/hub.json not found in remote source"
       )),
       Arguments.of(new TestCase(
         "failedDependency",
