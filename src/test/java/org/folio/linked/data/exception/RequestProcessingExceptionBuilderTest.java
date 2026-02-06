@@ -127,7 +127,7 @@ class RequestProcessingExceptionBuilderTest {
         new ErrorResponseConfig.Error(404, "notFound",
           List.of("resourceType", "idType", "idValue", "storage"), "%s with %s=%s not found in %s"),
         ErrorResponseConfig::getNotFound,
-        builder -> builder.notFoundRdfByUriException("https://example.com/hub.json"),
+        builder -> builder.notFoundByRdfUriException("https://example.com/hub.json"),
         404,
         "notFound",
         Map.of("resourceType", "RDF", "idType", "URI", "idValue", "https://example.com/hub.json", "storage", "remote source"),

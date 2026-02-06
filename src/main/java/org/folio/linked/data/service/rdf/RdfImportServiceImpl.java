@@ -94,7 +94,7 @@ public class RdfImportServiceImpl implements RdfImportService {
     return imported.stream()
       .filter(r -> getPropertyValues(r, LINK).stream().anyMatch(p -> p.contains(id)))
       .findFirst()
-      .orElseThrow(() -> exceptionBuilder.notFoundRdfByUriException(rdfUrl));
+      .orElseThrow(() -> exceptionBuilder.notFoundByRdfUriException(rdfUrl));
   }
 
   private Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
