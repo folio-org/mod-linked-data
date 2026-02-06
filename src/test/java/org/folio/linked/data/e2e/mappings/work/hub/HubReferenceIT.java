@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.mappings.work.hub;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
+import static org.folio.linked.data.test.TestUtil.FOLIO_OKAPI_URL;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +51,7 @@ class HubReferenceIT extends PostResourceIT {
                 "_relation": "http://bibfra.me/vocab/relation/relatedTo",
                 "_hub": {
                   "label": "hub label 2",
-                  "rdfLink": "hub link 2"
+                  "rdfLink": "$RDF_LINK"
                 }
               }
             ]
@@ -58,7 +59,8 @@ class HubReferenceIT extends PostResourceIT {
         }
       }"""
       .formatted("TEST: " + this.getClass().getSimpleName())
-      .replace("$HUB_ID", TEST_HUB_ID.toString());
+      .replace("$HUB_ID", TEST_HUB_ID.toString())
+      .replace("$RDF_LINK", getHubUri());
   }
 
   @Override
@@ -73,10 +75,17 @@ class HubReferenceIT extends PostResourceIT {
 
     var relatedToHub = getFirstOutgoingResource(work, "http://bibfra.me/vocab/relation/relatedTo");
     validateResourceType(relatedToHub, "http://bibfra.me/vocab/lite/Hub");
-    assertThat(relatedToHub.getId()).isEqualTo(8331756295276184518L);
-    assertThat(relatedToHub.getLabel()).isEqualTo("hub label 2");
-    assertThat(getProperty(relatedToHub, "http://bibfra.me/vocab/lite/label")).isEqualTo("hub label 2");
-    assertThat(getProperty(relatedToHub, "http://bibfra.me/vocab/lite/link")).isEqualTo("hub link 2");
+    assertThat(relatedToHub.getId()).isEqualTo(7500851124191297833L);
+    assertThat(relatedToHub.getLabel()).isEqualTo("Hub AAP");
+    assertThat(getProperty(relatedToHub, "http://bibfra.me/vocab/lite/label")).isEqualTo("Hub AAP");
+    assertThat(getProperty(relatedToHub, "http://bibfra.me/vocab/lite/link"))
+      .isEqualTo("http://localhost/some-hub-storage/150986.json");
+
+    // verify relatedTo hub's title
+    var relatedToHubTitle = getFirstOutgoingResource(relatedToHub, "http://bibfra.me/vocab/library/title");
+    validateResourceType(relatedToHubTitle, "http://bibfra.me/vocab/library/Title");
+    assertThat(getProperty(relatedToHubTitle, "http://bibfra.me/vocab/library/mainTitle")).isEqualTo("Hub 150986 mainTitle");
+    assertThat(relatedToHubTitle.getLabel()).isEqualTo("Hub 150986 mainTitle");
   }
 
   @Override
@@ -88,8 +97,13 @@ class HubReferenceIT extends PostResourceIT {
 
     apiResponse
       .andExpect(jsonPath(expressionOfPath + "['label']").value("hub label 1"))
-      .andExpect(jsonPath(relatedToPath + "['label']").value("hub label 2"))
-      .andExpect(jsonPath(relatedToPath + "['rdfLink']").value("hub link 2"));
+      .andExpect(jsonPath(expressionOfPath + "['types'][0]").value("http://bibfra.me/vocab/lite/Hub"))
+      .andExpect(jsonPath(expressionOfPath + "['isPreferred']").value(false))
+      .andExpect(jsonPath(relatedToPath + "['label']").value("Hub AAP"))
+      .andExpect(jsonPath(relatedToPath + "['rdfLink']")
+        .value("http://localhost/some-hub-storage/150986.json"))
+      .andExpect(jsonPath(relatedToPath + "['types'][0]").value("http://bibfra.me/vocab/lite/Hub"))
+      .andExpect(jsonPath(relatedToPath + "['isPreferred']").value(false));
   }
 
   @SneakyThrows
@@ -101,5 +115,9 @@ class HubReferenceIT extends PostResourceIT {
       .setLabel(hubLabel)
       .setIdAndRefreshEdges(id);
     resourceTestService.saveGraph(resource);
+  }
+
+  private String getHubUri() {
+    return System.getProperty(FOLIO_OKAPI_URL) + "/some-hub-storage/150986.json";
   }
 }

@@ -45,7 +45,7 @@ class HubServiceImplTest {
     resource.setDoc(doc);
     var expectedResponse = new ResourceResponseDto();
 
-    when(rdfImportService.importRdfFromUrl(hubUri, false)).thenReturn(resource);
+    when(rdfImportService.importRdfUrl(hubUri, false)).thenReturn(resource);
     when(hubMapperUnit.toDto(eq(resource), any(ResourceResponseDto.class), any())).thenReturn(expectedResponse);
 
     // when
@@ -53,7 +53,7 @@ class HubServiceImplTest {
 
     // then
     assertThat(result).isEqualTo(expectedResponse);
-    verify(rdfImportService).importRdfFromUrl(hubUri, false);
+    verify(rdfImportService).importRdfUrl(hubUri, false);
   }
 
   @Test
@@ -62,11 +62,11 @@ class HubServiceImplTest {
     var hubUri = "https://example.com/hub.json";
     var expectedException = new RequestProcessingException(404, "code", null, "message");
 
-    when(rdfImportService.importRdfFromUrl(hubUri, false)).thenThrow(expectedException);
+    when(rdfImportService.importRdfUrl(hubUri, false)).thenThrow(expectedException);
 
     // when & then
     assertThatThrownBy(() -> hubService.previewHub(hubUri))
       .isEqualTo(expectedException);
-    verify(rdfImportService).importRdfFromUrl(hubUri, false);
+    verify(rdfImportService).importRdfUrl(hubUri, false);
   }
 }

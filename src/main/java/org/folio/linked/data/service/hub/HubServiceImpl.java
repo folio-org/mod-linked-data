@@ -26,7 +26,7 @@ public class HubServiceImpl implements HubService {
   }
 
   private ResourceResponseDto importHub(String hubUri, boolean save) {
-    var hubResource = rdfImportService.importRdfFromUrl(hubUri, save);
+    var hubResource = rdfImportService.importRdfUrl(hubUri, save);
     var rmc = new ResourceMappingContext(null, null);
     return hubMapperUnit.toDto(hubResource, new ResourceResponseDto(), rmc);
   }
