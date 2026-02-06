@@ -16,14 +16,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.VariantTitle;
 import org.folio.linked.data.domain.dto.VariantTitleField;
 import org.folio.linked.data.domain.dto.VariantTitleFieldResponse;
 import org.folio.linked.data.domain.dto.VariantTitleResponse;
-import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
+import org.folio.linked.data.model.dto.HasTitle;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -40,10 +39,9 @@ public class VariantTitleMapperUnit extends TitleMapperUnit {
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     var variantTitle = coreMapper.toDtoWithEdges(resourceToConvert, VariantTitleResponse.class, false);
     variantTitle.setId(String.valueOf(resourceToConvert.getId()));
-    if (parentDto instanceof InstanceResponse instance) {
-      instance.addTitleItem(new VariantTitleFieldResponse().variantTitle(variantTitle));
-    } else if (parentDto instanceof WorkResponse work) {
-      work.addTitleItem(new VariantTitleFieldResponse().variantTitle(variantTitle));
+    var titleField = new VariantTitleFieldResponse().variantTitle(variantTitle);
+    if (parentDto instanceof HasTitle dtoWithTitle) {
+      dtoWithTitle.addTitleItem(titleField);
     }
     return parentDto;
   }

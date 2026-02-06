@@ -15,14 +15,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.domain.dto.ParallelTitle;
 import org.folio.linked.data.domain.dto.ParallelTitleField;
 import org.folio.linked.data.domain.dto.ParallelTitleFieldResponse;
 import org.folio.linked.data.domain.dto.ParallelTitleResponse;
-import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
+import org.folio.linked.data.model.dto.HasTitle;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -39,10 +38,9 @@ public class ParallelTitleMapperUnit extends TitleMapperUnit {
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
     var parallelTitle = coreMapper.toDtoWithEdges(resourceToConvert, ParallelTitleResponse.class, false);
     parallelTitle.setId(String.valueOf(resourceToConvert.getId()));
-    if (parentDto instanceof InstanceResponse instance) {
-      instance.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));
-    } else if (parentDto instanceof WorkResponse work) {
-      work.addTitleItem(new ParallelTitleFieldResponse().parallelTitle(parallelTitle));
+    var titleField = new ParallelTitleFieldResponse().parallelTitle(parallelTitle);
+    if (parentDto instanceof HasTitle dtoWithTitle) {
+      dtoWithTitle.addTitleItem(titleField);
     }
     return parentDto;
   }
