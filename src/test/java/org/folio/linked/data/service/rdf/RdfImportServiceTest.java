@@ -213,7 +213,7 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importRdfFromUrl_shouldConvertJsonToResourcesWithoutSaving() {
+  void importRdfUrl_shouldConvertJsonToResourcesWithoutSaving() {
     // given
     var rdfJson = "{\"@context\":\"test\"}";
     var resource1 = new Resource().setId(1L);
@@ -236,7 +236,7 @@ class RdfImportServiceTest {
     when(resourceModelMapper.toEntity(resource2)).thenReturn(entity2);
 
     // when
-    var result = rdfImportService.importRdfFromUrl(rdfUrl, false);
+    var result = rdfImportService.importRdfUrl(rdfUrl, false);
 
     // then
     assertThat(result).isEqualTo(entity1);
@@ -247,7 +247,7 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importRdfFromUrl_shouldSaveResources_whenSaveIsTrue() {
+  void importRdfUrl_shouldSaveResources_whenSaveIsTrue() {
     // given
     var rdfUrl = "https://example.com/resource-123.json";
     var rdfJson = "{\"@context\":\"test\"}";
@@ -266,7 +266,7 @@ class RdfImportServiceTest {
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
 
     // when
-    var result = rdfImportService.importRdfFromUrl(rdfUrl, true);
+    var result = rdfImportService.importRdfUrl(rdfUrl, true);
 
     // then
     assertThat(result).isEqualTo(entity);
@@ -276,7 +276,7 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importRdfFromUrl_shouldThrowException_whenMappingFails() {
+  void importRdfUrl_shouldThrowException_whenMappingFails() {
     // given
     var rdfUrl = "https://example.com/resource.json";
     var rdfJson = "{\"@context\":\"test\"}";
@@ -286,7 +286,7 @@ class RdfImportServiceTest {
       .thenThrow(mappingError);
 
     // when & then
-    assertThatThrownBy(() -> rdfImportService.importRdfFromUrl(rdfUrl, false))
+    assertThatThrownBy(() -> rdfImportService.importRdfUrl(rdfUrl, false))
       .isEqualTo(mappingError);
   }
 

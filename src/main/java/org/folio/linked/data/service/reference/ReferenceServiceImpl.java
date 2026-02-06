@@ -37,7 +37,7 @@ public class ReferenceServiceImpl implements ReferenceService {
     }
 
     if (reference.getRdfLink() != null) {
-      return rdfImportService.importRdfFromUrl(reference.getRdfLink(), true);
+      return rdfImportService.importRdfUrl(reference.getRdfLink(), true);
     }
 
     throw exceptionBuilder.badRequestException(

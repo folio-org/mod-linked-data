@@ -87,14 +87,14 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public Resource importRdfFromUrl(String rdfUrl, Boolean save) {
+  public Resource importRdfUrl(String rdfUrl, Boolean save) {
     var rdfJson = httpClient.downloadString(rdfUrl);
     var imported = importRdfJsonString(rdfJson, save);
     var id = substringBefore(substringAfterLast(rdfUrl, "/"), ".");
     return imported.stream()
       .filter(r -> getPropertyValues(r, LINK).stream().anyMatch(p -> p.contains(id)))
       .findFirst()
-      .orElseThrow(() -> exceptionBuilder.notFoundHubByUriException(rdfUrl));
+      .orElseThrow(() -> exceptionBuilder.notFoundRdfByUriException(rdfUrl));
   }
 
   private Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
