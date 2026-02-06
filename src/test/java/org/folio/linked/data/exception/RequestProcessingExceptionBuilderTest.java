@@ -123,7 +123,7 @@ class RequestProcessingExceptionBuilderTest {
         "Source Record with instanceId=abc123 not found in Source Record storage"
       )),
       Arguments.of(new TestCase(
-        "notFoundByRdfUri",
+        "notFoundResourceByUri",
         new ErrorResponseConfig.Error(404, "notFound",
           List.of("resourceType", "idType", "idValue", "storage"), "%s with %s=%s not found in %s"),
         ErrorResponseConfig::getNotFound,
