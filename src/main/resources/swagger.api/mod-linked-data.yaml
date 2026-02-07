@@ -470,6 +470,24 @@ paths:
           description: No Hub resource is found by Hub URI
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
+    post:
+      operationId: saveHubByUri
+      tags:
+        - hub
+      description: Save a remote Hub resource
+      parameters:
+        - $ref: '#/components/parameters/hubUri'
+      responses:
+        '200':
+          description: Saved resource as json string
+          content:
+            application/json:
+              schema:
+                $ref: schema/resourceResponseDto.json
+        '404':
+          description: No Hub resource is found by Hub URI
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
 
 components:
   parameters:

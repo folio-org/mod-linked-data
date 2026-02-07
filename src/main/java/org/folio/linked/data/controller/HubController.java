@@ -18,4 +18,8 @@ public class HubController implements HubApi {
     return ResponseEntity.ok(hubService.previewHub(hubUri));
   }
 
+  @Override
+  public ResponseEntity<ResourceResponseDto> saveHubByUri(String hubUri) {
+    return ResponseEntity.ok(hubService.saveHub(hubUri));
+  }
 }
