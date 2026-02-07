@@ -2,6 +2,7 @@ package org.folio.linked.data.service.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -23,6 +24,7 @@ import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.integration.http.HttpClient;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.kafka.ldimport.ImportEventResultMapper;
 import org.folio.linked.data.service.lccn.LccnResourceService;
@@ -49,6 +51,8 @@ class RdfImportServiceTest {
   private RdfImportServiceImpl rdfImportService;
   @Mock
   private Rdf4LdService rdf4LdService;
+  @Mock
+  private HttpClient httpClient;
   @Mock
   private MetadataService metadataService;
   @Mock
@@ -209,13 +213,19 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importRdfJsonString_shouldConvertJsonToResourcesWithoutSaving() {
+  void importRdfUrl_shouldConvertJsonToResourcesWithoutSaving() {
     // given
     var rdfJson = "{\"@context\":\"test\"}";
     var resource1 = new Resource().setId(1L);
     var resource2 = new Resource().setId(2L);
-    var entity1 = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(1L);
-    var entity2 = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(2L);
+    var rdfUrl = "https://example.com/resource-123.json";
+    var entity1 = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(1L)
+      .setDoc(readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
+    var entity2 = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(2L)
+      .setDoc(readTree("{\"http://bibfra.me/vocab/lite/link\":[\"https://example.com/resource-456.json\"]}"));
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
     when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
       .thenReturn(Set.of(resource1, resource2));
     var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
@@ -226,22 +236,26 @@ class RdfImportServiceTest {
     when(resourceModelMapper.toEntity(resource2)).thenReturn(entity2);
 
     // when
-    var result = rdfImportService.importRdfJsonString(rdfJson, false);
+    var result = rdfImportService.importRdfUrl(rdfUrl, false);
 
     // then
-    assertThat(result).hasSize(2);
-    assertThat(result).contains(entity1, entity2);
+    assertThat(result).isEqualTo(entity1);
     verify(metadataService).ensure(entity1);
     verify(metadataService).ensure(entity2);
     verify(resourceGraphService, never()).saveMergingGraphInNewTransaction(any());
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
-  void importRdfJsonString_shouldSaveResources_whenSaveIsTrue() {
+  void importRdfUrl_shouldSaveResources_whenSaveIsTrue() {
     // given
+    var rdfUrl = "https://example.com/resource-123.json";
     var rdfJson = "{\"@context\":\"test\"}";
     var resource = new Resource().setId(1L);
-    var entity = new org.folio.linked.data.model.entity.Resource().setIdAndRefreshEdges(1L);
+    var entity = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(1L)
+      .setDoc(readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
     when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
       .thenReturn(Set.of(resource));
     var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
@@ -252,25 +266,27 @@ class RdfImportServiceTest {
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
 
     // when
-    var result = rdfImportService.importRdfJsonString(rdfJson, true);
+    var result = rdfImportService.importRdfUrl(rdfUrl, true);
 
     // then
-    assertThat(result).hasSize(1);
-    assertThat(result).contains(entity);
+    assertThat(result).isEqualTo(entity);
     verify(metadataService).ensure(entity);
     verify(resourceGraphService).saveMergingGraphInNewTransaction(entity);
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
-  void importRdfJsonString_shouldThrowException_whenMappingFails() {
+  void importRdfUrl_shouldThrowException_whenMappingFails() {
     // given
+    var rdfUrl = "https://example.com/resource.json";
     var rdfJson = "{\"@context\":\"test\"}";
     var mappingError = new RuntimeException("Mapping error");
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
     when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
       .thenThrow(mappingError);
 
     // when & then
-    assertThatThrownBy(() -> rdfImportService.importRdfJsonString(rdfJson, false))
+    assertThatThrownBy(() -> rdfImportService.importRdfUrl(rdfUrl, false))
       .isEqualTo(mappingError);
   }
 

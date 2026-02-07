@@ -48,9 +48,9 @@ public class RequestProcessingExceptionBuilder {
     return requestProcessingException(notFoundError, "Source Record", idType, idValue, "Source Record storage");
   }
 
-  public RequestProcessingException notFoundHubByUriException(String hubUri) {
+  public RequestProcessingException notFoundResourceByUriException(String rdfUri) {
     var notFoundError = errorResponseConfig.getNotFound();
-    return requestProcessingException(notFoundError, "Hub", "URI", hubUri, "remote source");
+    return requestProcessingException(notFoundError, "Resource", "URI", rdfUri, "remote source");
   }
 
   public RequestProcessingException failedDependencyException(String message, String reason) {
