@@ -92,7 +92,7 @@ public class RdfImportServiceImpl implements RdfImportService {
     var imported = importRdfJsonString(rdfJson, save);
     var id = substringBefore(substringAfterLast(rdfUrl, "/"), ".");
     return imported.stream()
-      .filter(r -> getPropertyValues(r, LINK).stream().anyMatch(p -> p.contains(id)))
+      .filter(r -> getPropertyValues(r, LINK).stream().anyMatch(p -> p.contains("/" + id)))
       .findFirst()
       .orElseThrow(() -> exceptionBuilder.notFoundResourceByUriException(rdfUrl));
   }
