@@ -53,15 +53,15 @@ public abstract class ResourceModelMapper {
 
   @NotForGeneration
   public org.folio.ld.dictionary.model.Resource toModel(Resource entity) {
-    return toModel(entity, new CyclicGraphContext(), new DepthContext(MAX_ENTITY_TO_MODEL_EDGE_DEPTH));
+    return toModel(entity, MAX_ENTITY_TO_MODEL_EDGE_DEPTH);
   }
 
   @NotForGeneration
-  public org.folio.ld.dictionary.model.Resource toModel(Resource entity, int depth) {
-    if (depth > MAX_ENTITY_TO_MODEL_EDGE_DEPTH) {
-      depth = MAX_ENTITY_TO_MODEL_EDGE_DEPTH;
+  public org.folio.ld.dictionary.model.Resource toModel(Resource entity, int outgoingEdgesDepth) {
+    if (outgoingEdgesDepth > MAX_ENTITY_TO_MODEL_EDGE_DEPTH) {
+      outgoingEdgesDepth = MAX_ENTITY_TO_MODEL_EDGE_DEPTH;
     }
-    return toModel(entity, new CyclicGraphContext(), new DepthContext(depth));
+    return toModel(entity, new CyclicGraphContext(), new DepthContext(outgoingEdgesDepth));
   }
 
   @Mapping(ignore = true, target = "incomingEdges")
@@ -75,7 +75,7 @@ public abstract class ResourceModelMapper {
                                   Resource source,
                                   @Context CyclicGraphContext cycleContext,
                                   @Context DepthContext depthContext) {
-    if (!depthContext.allowsOutgoingEdges()) {
+    if (!depthContext.allowsEdges()) {
       target.setOutgoingEdges(new LinkedHashSet<>());
       return;
     }
@@ -145,15 +145,12 @@ public abstract class ResourceModelMapper {
       this.depth = Math.max(depth, 0);
     }
 
-    private boolean allowsOutgoingEdges() {
+    private boolean allowsEdges() {
       return depth > 0;
     }
 
     private DepthContext nextDepth() {
-      if (depth <= 0) {
-        return this;
-      }
-      return new DepthContext(depth - 1);
+      return depth <= 0 ? this : new DepthContext(depth - 1);
     }
   }
 

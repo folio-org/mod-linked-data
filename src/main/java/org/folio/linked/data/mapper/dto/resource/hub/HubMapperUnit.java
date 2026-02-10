@@ -4,11 +4,8 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
-import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LANGUAGE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
-import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -70,13 +67,8 @@ public class HubMapperUnit extends TopResourceMapperUnit {
 
   private JsonNode getDoc(HubRequest dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, LABEL, List.of(getLabel(dto)));
     putProperty(map, LANGUAGE, nonStandardLanguages(dto));
     return coreMapper.toJson(map);
-  }
-
-  private String getLabel(HubRequest dto) {
-    return getFirstValue(() -> getPrimaryMainTitles(dto.getTitle()));
   }
 
   private List<Language> standardLanguages(HubRequest dto) {
