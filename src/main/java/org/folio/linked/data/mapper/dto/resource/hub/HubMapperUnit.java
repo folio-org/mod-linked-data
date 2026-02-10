@@ -27,6 +27,7 @@ import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.label.ResourceEntityLabelService;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,7 @@ public class HubMapperUnit extends TopResourceMapperUnit {
   private final ResourceProfileLinkingService resourceProfileService;
   private final CoreMapper coreMapper;
   private final HashService hashService;
+  private final ResourceEntityLabelService labelService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -61,7 +63,7 @@ public class HubMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(hub, WorkRequest.class, standardLanguages(hubDto), PredicateDictionary.LANGUAGE);
 
     hub.setDoc(getDoc(hubDto));
-    hub.setLabel(getLabel(hubDto));
+    labelService.assignLabelToResource(hub);
     hub.setIdAndRefreshEdges(hashService.hash(hub));
     return hub;
   }

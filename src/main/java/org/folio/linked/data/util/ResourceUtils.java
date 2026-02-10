@@ -141,11 +141,15 @@ public class ResourceUtils {
   }
 
   public static void setPreferred(Resource resource, boolean preferred) {
+    addProperty(resource, RESOURCE_PREFERRED, String.valueOf(preferred));
+  }
+
+  public static void addProperty(Resource resource, PropertyDictionary property, String value) {
     if (isNull(resource.getDoc())) {
       resource.setDoc(JsonNodeFactory.instance.objectNode());
     }
-    var arrayNode = JsonNodeFactory.instance.arrayNode().add(String.valueOf(preferred));
-    ((ObjectNode) resource.getDoc()).set(RESOURCE_PREFERRED.getValue(), arrayNode);
+    var arrayNode = JsonNodeFactory.instance.arrayNode().add(value);
+    ((ObjectNode) resource.getDoc()).set(property.getValue(), arrayNode);
   }
 
   public static boolean isPreferred(Resource resource) {

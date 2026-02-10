@@ -2,6 +2,7 @@ package org.folio.linked.data.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -260,6 +261,23 @@ class ResourceUtilsTest {
     assertThat(result).isNotNull();
     assertThat(result.has("otherProperty")).isTrue();
     assertThat(result.get("otherProperty").asText()).isEqualTo("value");
+  }
+
+  @Test
+  void addProperty_createsDocAndSetsArrayValue() {
+    // given
+    var resource = new Resource();
+    var labelText = "Test Label";
+
+    // when
+    ResourceUtils.addProperty(resource, LABEL, labelText);
+
+    // then
+    assertThat(resource.getDoc()).isNotNull();
+    var node = resource.getDoc().get(LABEL.getValue());
+    assertThat(node).isNotNull();
+    assertThat(node.isArray()).isTrue();
+    assertThat(node.get(0).asText()).isEqualTo(labelText);
   }
 
 }
