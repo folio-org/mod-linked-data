@@ -12,12 +12,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class ResourceEntityLabelServiceImpl implements ResourceEntityLabelService {
+
+  private static final int EDGES_DEPTH = 1;
   private final LabelGeneratorService labelGeneratorService;
   private final ResourceModelMapper resourceModelMapper;
 
   @Override
   public void assignLabelToResource(Resource resource) {
-    var resourceModel = resourceModelMapper.toModel(resource);
+    var resourceModel = resourceModelMapper.toModel(resource, EDGES_DEPTH);
     var label = labelGeneratorService.getLabel(resourceModel);
     resource.setLabel(label);
     addProperty(resource, LABEL, label);
