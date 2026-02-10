@@ -2,6 +2,9 @@ package org.folio.linked.data.service.rdf;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.StringUtils.substringAfterLast;
+import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.linked.data.util.ImportUtils.APPLICATION_LD_JSON_VALUE;
 import static org.folio.linked.data.util.ImportUtils.ImportReport;
 import static org.folio.linked.data.util.ImportUtils.ImportedResource;
@@ -11,6 +14,7 @@ import static org.folio.linked.data.util.ImportUtils.Status.CREATED;
 import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
 import static org.folio.linked.data.util.ImportUtils.toRdfMediaType;
+import static org.folio.linked.data.util.ResourceUtils.getPropertyValues;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -27,6 +31,7 @@ import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.integration.http.HttpClient;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.kafka.ldimport.ImportEventResultMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -47,6 +52,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class RdfImportServiceImpl implements RdfImportService {
 
+  private final HttpClient httpClient;
   private final Rdf4LdService rdf4LdService;
   private final MetadataService metadataService;
   private final LccnResourceService lccnResourceService;
@@ -81,7 +87,17 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
+  public Resource importRdfUrl(String rdfUrl, boolean save) {
+    var rdfJson = httpClient.downloadString(rdfUrl);
+    var imported = importRdfJsonString(rdfJson, save);
+    var id = substringBefore(substringAfterLast(rdfUrl, "/"), ".");
+    return imported.stream()
+      .filter(r -> getPropertyValues(r, LINK).stream().anyMatch(p -> p.contains("/" + id)))
+      .findFirst()
+      .orElseThrow(() -> exceptionBuilder.notFoundResourceByUriException(rdfUrl));
+  }
+
+  private Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
     try (var inputStream = new ByteArrayInputStream(rdfJson.getBytes(UTF_8))) {
       var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, save);
       return importReport.getImports().stream()

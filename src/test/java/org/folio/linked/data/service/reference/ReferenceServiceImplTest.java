@@ -15,6 +15,7 @@ import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.service.rdf.RdfImportService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,8 @@ class ReferenceServiceImplTest {
   private ResourceMarcAuthorityService marcAuthorityService;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
+  @Mock
+  private RdfImportService rdfImportService;
 
   @InjectMocks
   private ReferenceServiceImpl referenceService;
@@ -109,5 +112,20 @@ class ReferenceServiceImplTest {
 
     // then
     assertThat(result).isEqualTo(replacement);
+  }
+
+  @Test
+  void resolveReference_withRdfLink_importsFromUrl() {
+    // given
+    var rdfLink = "https://example.com/resource.json";
+    var ref = new Reference().rdfLink(rdfLink);
+    var resource = new Resource();
+    when(rdfImportService.importRdfUrl(rdfLink, true)).thenReturn(resource);
+
+    // when
+    var result = referenceService.resolveReference(ref);
+
+    // then
+    assertThat(result).isEqualTo(resource);
   }
 }
