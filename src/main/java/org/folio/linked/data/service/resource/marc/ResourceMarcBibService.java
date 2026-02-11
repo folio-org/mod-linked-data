@@ -15,6 +15,8 @@ public interface ResourceMarcBibService {
 
   ResourceIdDto importMarcRecord(String inventoryId, Integer profileId);
 
+  void importMarcRecordFromJson(String marcJson, Integer profileId);
+
   boolean saveAdminMetadata(Resource modelResource);
 
 }

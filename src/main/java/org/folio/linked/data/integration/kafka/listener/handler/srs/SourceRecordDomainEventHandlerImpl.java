@@ -10,6 +10,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.JsonUtils.hasElementByJsonPath;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +21,7 @@ import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcBibService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
+import org.folio.marc4ld.util.TypeUtil;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +36,6 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private static final String NO_MARC_EVENT = "SourceRecordDomainEvent [id {}] has no Marc record inside";
   private static final String UNSUPPORTED_TYPE = "Ignoring unsupported {} type [{}] in SourceRecordDomainEvent [id {}]";
   private static final String LINKED_DATA_ID_JSONPATH = "$.fields[*].999.subfields[*].l";
-  private static final String INVENTORY_ID_JSONPATH = "$.fields[*].999.subfields[*].i";
 
   private static final Set<SourceRecordType> SUPPORTED_RECORD_TYPES = Set.of(MARC_BIB, MARC_AUTHORITY);
   private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES =
@@ -56,40 +57,18 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
     } else if (isLinkedDataBibCreateEvent(event, recordType)) {
       saveAdminMetadata(event);
     } else if (recordType == MARC_BIB && event.getEventType() == SOURCE_RECORD_CREATED) {
-      var inventoryId = getElementByJsonPath(
-        event.getEventPayload().getParsedRecord().getContent(), INVENTORY_ID_JSONPATH);
-      log.info("**Inventory ID [{}]", inventoryId);
-      var importable = resourceMarcBibService.checkMarcBibImportableToGraph(inventoryId);
-      if (importable) {
-        log.info("Importing inventory ID [{}] to graph database", inventoryId);
-        resourceMarcBibService.importMarcRecord(inventoryId, null);
-      }
-    }
-  }
-
-  private String getElementByJsonPath(Object json, String jsonPath) {
-    ObjectMapper mapper = new ObjectMapper();
-    try {
-      Object jsonObj = json;
-      if (json instanceof String jsonStr) {
-        jsonObj = mapper.readValue(jsonStr, java.util.Map.class);
-      }
-      Object result = com.jayway.jsonpath.JsonPath.read(jsonObj, jsonPath);
-      if (result instanceof String resultStr) {
-        return resultStr;
-      }
-      if (result instanceof java.util.List<?> list && !list.isEmpty()) {
-        // Return first element if it's a string, else join all strings
-        if (list.get(0) instanceof String) {
-          return String.join(",", list.stream().map(Object::toString).toList());
+      try {
+        var content = event.getEventPayload().getParsedRecord().getContent();
+        Map<String, Object> map = mapper.readValue(content, Map.class);
+        var leader = (String) map.get("leader");
+        if (TypeUtil.isSupported(leader)) {
+          resourceMarcBibService.importMarcRecordFromJson(content, null);
         }
+      } catch (Exception e) {
+        log.error("Error processing SourceRecordDomainEvent [id {}]: {}", event.getId(), e.getMessage());
       }
-      return null;
-    } catch (Exception e) {
-      return null;
     }
   }
-
 
 
   private boolean notProcessableEvent(SourceRecordDomainEvent event, SourceRecordType recordType) {

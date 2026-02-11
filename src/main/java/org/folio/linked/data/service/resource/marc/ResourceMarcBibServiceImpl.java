@@ -120,6 +120,18 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   }
 
   @Override
+  public void importMarcRecordFromJson(String marcJson, Integer profileId) {
+    var resource = marcBib2ldMapper.fromMarcJson(marcJson)
+      .orElseThrow(() -> new RuntimeException("Error converting JSON to Resource " + marcJson));
+
+    resource.getFolioMetadata().setSource(LINKED_DATA);
+    var savedResource = saveAndPublishEvents(resource);
+    resourceProfileLinkingService.linkResourceToProfile(savedResource, profileId);
+
+    log.debug("MARC BIB record successfully imported to graph resource with ID: {}", savedResource.getId());
+  }
+
+  @Override
   public boolean saveAdminMetadata(org.folio.ld.dictionary.model.Resource modelResource) {
     if (isNull(modelResource.getFolioMetadata())) {
       log.info("Incoming Resource with id [{}] doesn't contain FolioMetadata", modelResource.getId());
