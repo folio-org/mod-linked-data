@@ -58,9 +58,7 @@ public abstract class ResourceModelMapper {
 
   @NotForGeneration
   public org.folio.ld.dictionary.model.Resource toModel(Resource entity, int outgoingEdgesDepth) {
-    if (outgoingEdgesDepth > MAX_ENTITY_TO_MODEL_EDGE_DEPTH) {
-      outgoingEdgesDepth = MAX_ENTITY_TO_MODEL_EDGE_DEPTH;
-    }
+    outgoingEdgesDepth = Math.min(outgoingEdgesDepth, MAX_ENTITY_TO_MODEL_EDGE_DEPTH);
     return toModel(entity, new CyclicGraphContext(), new DepthContext(outgoingEdgesDepth));
   }
 
@@ -76,7 +74,6 @@ public abstract class ResourceModelMapper {
                                   @Context CyclicGraphContext cycleContext,
                                   @Context DepthContext depthContext) {
     if (!depthContext.allowsEdges()) {
-      target.setOutgoingEdges(new LinkedHashSet<>());
       return;
     }
 
