@@ -88,6 +88,7 @@
 - Hub save API [MODLD-514](https://folio-org.atlassian.net/browse/MODLD-514)
 - Return Hub's variant and parallel titles in GET /resource/{id} API response [MODLD-981](https://folio-org.atlassian.net/browse/MODLD-981)
 - Create real HUB resource when work is connected to a remote HUB RDF via UI [MODLD-968](https://folio-org.atlassian.net/browse/MODLD-968)
+- Create ResourceEntityLabelService to generate labels for Resources [MODLD-970](https://folio-org.atlassian.net/browse/MODLD-970)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

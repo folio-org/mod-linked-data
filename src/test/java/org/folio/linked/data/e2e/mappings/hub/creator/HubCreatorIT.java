@@ -86,7 +86,7 @@ class HubCreatorIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource hub) {
-    var expectedHubLabel = "TEST: HubCreatorIT";
+    var expectedHubLabel = "UN General assembly meeting. TEST: HubCreatorIT";
     validateResourceType(hub, "http://bibfra.me/vocab/lite/Hub");
     assertThat(hub.getLabel()).isEqualTo(expectedHubLabel);
     assertThat(getProperty(hub, "http://bibfra.me/vocab/lite/label")).isEqualTo(expectedHubLabel);
