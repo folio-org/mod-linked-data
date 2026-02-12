@@ -1,11 +1,11 @@
 package org.folio.linked.data.mapper.dto.resource.base;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.Map;
 import lombok.NonNull;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.model.entity.Resource;
+import tools.jackson.databind.JsonNode;
 
 public interface CoreMapper {
 

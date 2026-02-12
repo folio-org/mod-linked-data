@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.dto.resource.base;
 
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -12,9 +12,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.node.StringNode;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -39,8 +36,6 @@ class CoreMapperTest {
 
   @InjectMocks
   private CoreMapperImpl coreMapper;
-  @Spy
-  private ObjectMapper objectMapper = OBJECT_MAPPER;
   @Mock
   private SingleResourceMapper singleResourceMapper;
 
@@ -76,7 +71,7 @@ class CoreMapperTest {
   }
 
   @Test
-  void toJson_shouldReturnCorrectJsonNodeFromMap() throws JsonProcessingException {
+  void toJson_shouldReturnCorrectJsonNodeFromMap() {
     // given
     var map = new HashMap<String, List<String>>();
     map.put("key1", List.of("value1.1", "value1.2"));
@@ -86,7 +81,7 @@ class CoreMapperTest {
     var jsonNode = coreMapper.toJson(map);
 
     // then
-    assertThat(OBJECT_MAPPER.writeValueAsString(jsonNode),
+    assertThat(TEST_JSON_MAPPER.writeValueAsString(jsonNode),
       is("{\"key1\":[\"value1.1\",\"value1.2\"],\"key2\":[\"value2.1\",\"value2.2\"]}"));
   }
 
@@ -178,9 +173,9 @@ class CoreMapperTest {
     var predicate = PredicateDictionary.MAP;
     var parent = InstanceResponse.class;
     var source = new Resource();
-    var expectedTarget1 = new Resource().setDoc(new TextNode("1")).setIdAndRefreshEdges(111L);
+    var expectedTarget1 = new Resource().setDoc(new StringNode("1")).setIdAndRefreshEdges(111L);
     doReturn(expectedTarget1).when(singleResourceMapper).toEntity(dto1, parent, predicate, source);
-    var expectedTarget2 = new Resource().setDoc(new TextNode("2")).setIdAndRefreshEdges(222L);
+    var expectedTarget2 = new Resource().setDoc(new StringNode("2")).setIdAndRefreshEdges(222L);
     doReturn(expectedTarget2).when(singleResourceMapper).toEntity(dto2, parent, predicate, source);
     var dtoList = List.of(dto1, dto2);
 

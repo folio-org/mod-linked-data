@@ -97,6 +97,7 @@ class SourceRecordDomainEventHandlerIT {
       () -> {
         cleanResourceTables(jdbcTemplate);
         kafkaSearchWorkIndexTopicListener.getMessages().clear();
+        return null;
       }
     );
   }
@@ -156,10 +157,10 @@ class SourceRecordDomainEventHandlerIT {
     assertThat(adminMetadataDoc).hasSize(2);
     assertThat(adminMetadataDoc.has(CONTROL_NUMBER.getValue())).isTrue();
     assertThat(adminMetadataDoc.get(CONTROL_NUMBER.getValue())).hasSize(1);
-    assertThat(adminMetadataDoc.get(CONTROL_NUMBER.getValue()).get(0).asText()).isEqualTo("#880524405##");
+    assertThat(adminMetadataDoc.get(CONTROL_NUMBER.getValue()).get(0).asString()).isEqualTo("#880524405##");
     assertThat(adminMetadataDoc.has(CREATED_DATE.getValue())).isTrue();
     assertThat(adminMetadataDoc.get(CREATED_DATE.getValue())).hasSize(1);
-    assertThat(adminMetadataDoc.get(CREATED_DATE.getValue()).get(0).asText()).isEqualTo("2019-06-07");
+    assertThat(adminMetadataDoc.get(CREATED_DATE.getValue()).get(0).asString()).isEqualTo("2019-06-07");
     verifyNoInteractions(instanceIngressMessageProducer);
   }
 

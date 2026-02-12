@@ -11,7 +11,6 @@ import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.ArrayList;
-import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -49,7 +48,10 @@ class LdImportOutputEventHandlerIT {
 
   @BeforeEach
   void clean() {
-    tenantScopedExecutionService.execute(TENANT_ID, () -> cleanResourceTables(jdbcTemplate));
+    tenantScopedExecutionService.execute(TENANT_ID, () -> {
+      cleanResourceTables(jdbcTemplate);
+      return null;
+    });
     importResultListener.clear();
   }
 
@@ -84,7 +86,6 @@ class LdImportOutputEventHandlerIT {
     assertThat(eventResult.getFailedResources()).isEmpty();
   }
 
-  @SneakyThrows
   private ProducerRecord<String, String> getImportOutputEventProducerRecord() {
     var headers = new ArrayList<>(defaultKafkaHeaders());
     var topic = getTenantTopicName(LD_IMPORT_OUTPUT_TOPIC, TENANT_ID);

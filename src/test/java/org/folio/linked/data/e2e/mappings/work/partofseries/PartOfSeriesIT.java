@@ -41,7 +41,7 @@ class PartOfSeriesIT extends PostResourceIT {
   @Override
   @SneakyThrows
   protected void validateApiResponse(ResultActions apiResponse) {
-    String path = "$.resource['http://bibfra.me/vocab/lite/Work']['http://bibfra.me/vocab/relation/isPartOf'][0]";
+    var path = "$.resource['http://bibfra.me/vocab/lite/Work']['http://bibfra.me/vocab/relation/isPartOf'][0]";
     apiResponse
       .andExpect(status().isOk())
       .andExpect(jsonPath(path + "['http://bibfra.me/vocab/lite/name'][0]").value("Title 1"))

@@ -49,6 +49,5 @@
       "x-json-property": "http://bibfra.me/vocab/library/title",
       "x-field-extra-annotation": "@org.folio.linked.data.validation.PrimaryTitleConstraint"
     }
-  },
-  "required": ["title"]
+  }
 }

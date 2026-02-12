@@ -7,7 +7,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
 
 @Component
 @RequiredArgsConstructor
@@ -34,11 +34,11 @@ public class HubReferenceMapperUnit implements WorkSubResourceMapperUnit {
     if (parentDto instanceof WorkResponse workDto && resourceToConvert.getDoc() != null) {
       var doc = resourceToConvert.getDoc();
       var hub = new HubReference()
-        .addLabelItem(doc.get(PropertyDictionary.LABEL.getValue()).get(0).asText())
+        .addLabelItem(doc.get(PropertyDictionary.LABEL.getValue()).get(0).asString())
         .id(String.valueOf(resourceToConvert.getId()));
       var linkNode = doc.get(PropertyDictionary.LINK.getValue());
       if (linkNode != null && !linkNode.isEmpty()) {
-        hub.addLinkItem(linkNode.get(0).asText());
+        hub.addLinkItem(linkNode.get(0).asString());
       }
       workDto.addHubsItem(
         new HubReferenceWithType()

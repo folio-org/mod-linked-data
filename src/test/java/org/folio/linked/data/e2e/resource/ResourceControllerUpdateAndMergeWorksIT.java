@@ -2,19 +2,17 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getWork;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
@@ -45,8 +43,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;
-  @Autowired
-  private ObjectMapper objectMapper;
   @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
@@ -165,11 +161,11 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
       .replace("%TITLE%", titleStr);
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(readTree(titleDoc))
+      .setDoc(TEST_JSON_MAPPER.readTree(titleDoc))
       .setLabel(titleStr);
     var instance = new Resource()
       .addTypes(ResourceTypeDictionary.INSTANCE)
-      .setDoc(readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(titleStr);
 
     instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
@@ -181,9 +177,8 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
     return instance;
   }
 
-  @SneakyThrows
   private <T> T parse(String json, Class<T> clazz) {
-    return objectMapper.readValue(json, clazz);
+    return TEST_JSON_MAPPER.readValue(json, clazz);
   }
 
   private boolean isExpectedSearchEvents(Set<ResourceIndexEvent> events, long deletedWorkId, long createdWorkId) {
@@ -212,7 +207,7 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
 
   private LinkedDataWork getWorkFromEvent(ResourceIndexEvent event) {
     var data = (Map<String, Object>) event.getNew();
-    return objectMapper.convertValue(data, LinkedDataWork.class);
+    return TEST_JSON_MAPPER.convertValue(data, LinkedDataWork.class);
   }
 
   private boolean isExpectedInventoryEvents(Set<InstanceIngressEvent> inventoryEventList) {

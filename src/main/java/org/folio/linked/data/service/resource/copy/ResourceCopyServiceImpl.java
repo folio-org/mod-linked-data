@@ -13,20 +13,18 @@ import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.edge.ResourceEdgeService;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
 
 @RequiredArgsConstructor
 @Service
@@ -51,7 +49,6 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
   );
 
   private final ResourceEdgeService resourceEdgeService;
-  private final ObjectMapper objectMapper;
 
   @Override
   public void copyEdgesAndProperties(Resource old, Resource updated) {
@@ -60,7 +57,6 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
     copyProperties(old, updated);
   }
 
-  @SneakyThrows
   private void copyProperties(Resource from, Resource to) {
     if (from.getDoc() == null) {
       return;
@@ -69,14 +65,14 @@ public class ResourceCopyServiceImpl implements ResourceCopyService {
     if (!properties.isEmpty()) {
       var toDoc = to.getDoc() == null
         ? new HashMap<String, List<String>>()
-        : objectMapper.treeToValue(to.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
+        : JSON_MAPPER.treeToValue(to.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
       properties.forEach(entry -> toDoc.put(entry.getKey(), entry.getValue()));
-      to.setDoc(objectMapper.convertValue(toDoc, JsonNode.class));
+      to.setDoc(JSON_MAPPER.convertValue(toDoc, JsonNode.class));
     }
   }
 
-  private List<Map.Entry<String, List<String>>> getProperties(Resource from) throws JsonProcessingException {
-    var fromDoc = objectMapper.treeToValue(from.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
+  private List<Map.Entry<String, List<String>>> getProperties(Resource from) {
+    var fromDoc = JSON_MAPPER.treeToValue(from.getDoc(), new TypeReference<HashMap<String, List<String>>>() {});
     var fromType = from.getTypes()
       .stream()
       .findFirst()

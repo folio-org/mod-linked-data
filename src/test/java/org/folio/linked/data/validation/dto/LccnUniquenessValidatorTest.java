@@ -196,12 +196,12 @@ class LccnUniquenessValidatorTest {
   }
 
   private InstanceRequest createInstanceRequest(IdentifierRequest lccnRequest) {
-    return new InstanceRequest(3, List.of())
+    return new InstanceRequest(3)
       .addMapItem(new LccnField().lccn(lccnRequest));
   }
 
   private InstanceRequest createInstanceRequest() {
-    return new InstanceRequest(3, List.of());
+    return new InstanceRequest(3);
   }
 
   private IdentifierRequest createLccnRequest() {

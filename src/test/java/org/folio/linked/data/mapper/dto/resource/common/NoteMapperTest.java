@@ -5,10 +5,9 @@ import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +18,10 @@ import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.databind.JsonNode;
 
 @UnitTest
 class NoteMapperTest {
-
-  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private final NoteMapper noteMapper = new NoteMapper();
 
   private static Stream<Arguments> provideDocAndExpectedNotes() {
@@ -40,7 +38,7 @@ class NoteMapperTest {
           createNote(List.of(NOTE.getValue()), "general note"))
       ),
       Arguments.of(
-        OBJECT_MAPPER.convertValue(Map.of(), JsonNode.class),
+        TEST_JSON_MAPPER.convertValue(Map.of(), JsonNode.class),
         List.of()
       )
     );
@@ -103,7 +101,7 @@ class NoteMapperTest {
   private static JsonNode createDocWithoutNotes() {
     var map = new HashMap<String, List<String>>();
     putProperty(map, DIMENSIONS, List.of("dimensions"));
-    return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+    return TEST_JSON_MAPPER.convertValue(map, JsonNode.class);
   }
 
   private static JsonNode createDocWithNotes() {
@@ -111,7 +109,7 @@ class NoteMapperTest {
     putProperty(map, DIMENSIONS, List.of("dimensions"));
     putProperty(map, NOTE, List.of("general note"));
     putProperty(map, ISSUANCE_NOTE, List.of("issuance note", "another issuance note"));
-    return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+    return TEST_JSON_MAPPER.convertValue(map, JsonNode.class);
   }
 
   private static Note createNote(List<String> types, String value) {

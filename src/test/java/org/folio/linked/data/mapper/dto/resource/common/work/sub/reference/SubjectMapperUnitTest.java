@@ -8,11 +8,10 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
-import static org.folio.linked.data.test.TestUtil.readTree;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.util.List;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.domain.dto.WorkResponse;
@@ -27,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -58,7 +58,7 @@ class SubjectMapperUnitTest {
     // then
     assertThat(result).isNotNull();
     assertThat(result.getDoc().has("http://library.link/vocab/resourcePreferred")).isFalse();
-    assertThat(result.getDoc().get("http://bibfra.me/vocab/lite/name").get(0).asText()).isEqualTo(name);
+    assertThat(result.getDoc().get("http://bibfra.me/vocab/lite/name").get(0).asString()).isEqualTo(name);
     assertThat(result.getTypes().stream().map(ResourceTypeEntity::getUri)).contains(CONCEPT.getUri());
     assertThat(result.getOutgoingEdges())
       .hasSize(1)
@@ -91,7 +91,7 @@ class SubjectMapperUnitTest {
     var label = "label string";
     var id = 1L;
     var resource = new Resource()
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
             "http://library.link/vocab/resourcePreferred": ["true"]
         }
@@ -118,7 +118,7 @@ class SubjectMapperUnitTest {
     var focus = new Resource()
       .setLabel("John Doe")
       .addTypes(PERSON)
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
             "http://library.link/vocab/resourcePreferred": ["true"]
         }
@@ -127,7 +127,7 @@ class SubjectMapperUnitTest {
     var subFocus = new Resource()
       .setLabel("Childhood")
       .addTypes(TOPIC)
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
             "http://library.link/vocab/resourcePreferred": ["true"]
         }
@@ -155,7 +155,7 @@ class SubjectMapperUnitTest {
     var focus = new Resource()
       .setLabel("John Doe")
       .addTypes(PERSON)
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
             "http://library.link/vocab/resourcePreferred": ["true"]
         }

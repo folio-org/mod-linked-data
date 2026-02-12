@@ -2,8 +2,8 @@ package org.folio.linked.data.mapper.dto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,7 +49,7 @@ class ResourceMarcViewDtoMapperTest {
     return new Resource()
       .setIdAndRefreshEdges(3856321131L)
       .setTypes(Set.of(new ResourceTypeEntity().setUri(PROVIDER_EVENT.getUri())))
-      .setDoc(new ObjectMapper().valueToTree(Map.of(
+      .setDoc(TEST_JSON_MAPPER.valueToTree(Map.of(
         "http://bibfra.me/vocab/lite/name", List.of("name $ 2023"),
         "http://bibfra.me/vocab/lite/providerDate", List.of("1981"),
         "http://bibfra.me/vocab/lite/place", List.of("Alaska")))

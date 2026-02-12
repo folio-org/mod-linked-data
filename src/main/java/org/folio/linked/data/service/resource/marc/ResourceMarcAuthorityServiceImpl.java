@@ -9,8 +9,6 @@ import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.JsonUtils.writeValueAsString;
 import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -41,6 +39,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Log4j2
 @Service
@@ -49,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthorityService {
 
   private final SrsClient srsClient;
-  private final ObjectMapper objectMapper;
   private final ResourceRepository resourceRepo;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
@@ -120,7 +118,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
         .map(resourceGraphService::saveMergingGraph)
         .map(SaveGraphResult::rootResource)
         .orElseThrow(() -> notFoundException(srsId));
-    } catch (FeignException.NotFound e) {
+    } catch (HttpClientErrorException e) {
       log.error("Failed to convert authority with srsId [{}] into graph resource", srsId, e);
       throw notFoundException(srsId);
     }
@@ -132,7 +130,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
       return ofNullable(srsClient.getAuthorityByInventoryId(inventoryId))
         .flatMap(this::contentAsJsonString)
         .flatMap(this::firstAuthorityToModel);
-    } catch (FeignException.NotFound e) {
+    } catch (HttpClientErrorException e) {
       log.error("Authority with inventoryId [{}] not found in SRS", inventoryId);
       return Optional.empty();
     }
@@ -142,7 +140,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     return ofNullable(response.getBody())
       .map(Record::getParsedRecord)
       .map(ParsedRecord::getContent)
-      .map(c -> writeValueAsString(c, objectMapper));
+      .map(c -> writeValueAsString(c));
   }
 
   private Optional<org.folio.ld.dictionary.model.Resource> firstAuthorityToModel(String marcJson) {

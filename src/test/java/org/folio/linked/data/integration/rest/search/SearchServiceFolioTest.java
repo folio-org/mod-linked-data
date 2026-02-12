@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 
-import feign.FeignException;
 import java.util.List;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.AuthorityItem;
@@ -25,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -55,11 +55,11 @@ class SearchServiceFolioTest {
   @Test
   void shouldReturnZeroTotalRecords_ifSearchClientThrowsNotFound() {
     // given
-    when(searchClient.searchInstances(any())).thenThrow(FeignException.NotFound.class);
+    when(searchClient.searchInstances(any())).thenThrow(HttpClientErrorException.NotFound.class);
     var lccn = List.of("");
 
     // expect
-    assertThrows(FeignException.NotFound.class, () ->
+    assertThrows(HttpClientErrorException.NotFound.class, () ->
       searchService.countInstancesByLccnExcludingSuppressedAndId(lccn, ""));
   }
 

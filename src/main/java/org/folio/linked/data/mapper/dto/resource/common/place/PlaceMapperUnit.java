@@ -7,7 +7,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +21,7 @@ import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.category.MarcCodeProvider;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
+import tools.jackson.databind.JsonNode;
 
 @RequiredArgsConstructor
 public abstract class PlaceMapperUnit implements SingleResourceMapperUnit, MarcCodeProvider {

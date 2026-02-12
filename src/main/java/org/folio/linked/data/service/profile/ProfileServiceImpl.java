@@ -3,10 +3,8 @@ package org.folio.linked.data.service.profile;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -25,6 +23,7 @@ import org.folio.linked.data.repo.ResourceTypeRepository;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ProfileServiceImpl implements ProfileService {
   private static final String PROFILE_DIRECTORY = "profiles";
-
   private final ProfileRepository profileRepository;
   private final ResourceTypeRepository typeRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
-  private final ObjectMapper objectMapper;
 
   @Override
   @Transactional
@@ -69,7 +66,7 @@ public class ProfileServiceImpl implements ProfileService {
 
   private void saveProfile(Path file) {
     try (var inputStream = Files.newInputStream(file)) {
-      var profile = objectMapper.readValue(inputStream, ProfileDto.class);
+      var profile = JSON_MAPPER.readValue(inputStream, ProfileDto.class);
       var profileEntity = toProfileEntity(profile);
       profileRepository.save(profileEntity);
     } catch (IOException e) {
@@ -77,9 +74,9 @@ public class ProfileServiceImpl implements ProfileService {
     }
   }
 
-  private Profile toProfileEntity(ProfileDto profileDto) throws JsonProcessingException {
+  private Profile toProfileEntity(ProfileDto profileDto) {
     var resourceType = typeRepository.findByUri(profileDto.resourceType());
-    var profileContent = objectMapper.writeValueAsString(profileDto.value());
+    var profileContent = JSON_MAPPER.writeValueAsString(profileDto.value());
     var additionalTypes = isEmpty(profileDto.additionalResourceTypes())
       ? Set.<ResourceTypeEntity>of()
       : profileDto.additionalResourceTypes().stream().map(typeRepository::findByUri).collect(toSet());

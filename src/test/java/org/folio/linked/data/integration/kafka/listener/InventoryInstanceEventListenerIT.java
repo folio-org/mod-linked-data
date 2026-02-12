@@ -1,6 +1,7 @@
 package org.folio.linked.data.integration.kafka.listener;
 
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getInventoryInstanceEventSampleProducerRecord;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
@@ -9,8 +10,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
@@ -28,9 +27,6 @@ class InventoryInstanceEventListenerIT {
 
   @Autowired
   private KafkaTemplate<String, String> eventKafkaTemplate;
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @MockitoSpyBean
   private InventoryInstanceEventHandler inventoryInstanceDomainEventHandler;
@@ -50,14 +46,14 @@ class InventoryInstanceEventListenerIT {
 
     // then
     awaitAndAssert(() -> verify(inventoryInstanceDomainEventHandler)
-      .handle(objectMapper.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class), null));
+      .handle(TEST_JSON_MAPPER.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class), null));
   }
 
   @Test
-  void shouldRetryIfErrorOccurs() throws JsonProcessingException {
+  void shouldRetryIfErrorOccurs() {
     // given
     var eventProducerRecord = getInventoryInstanceEventSampleProducerRecord();
-    var event = objectMapper.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class);
+    var event = TEST_JSON_MAPPER.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class);
     var expectedEvent = new InventoryInstanceEvent()
       .id(event.getId())
       ._new(event.getNew())

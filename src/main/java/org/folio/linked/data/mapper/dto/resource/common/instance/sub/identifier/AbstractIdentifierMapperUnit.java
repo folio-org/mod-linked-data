@@ -7,7 +7,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -19,6 +18,7 @@ import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.common.instance.sub.InstanceSubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
+import tools.jackson.databind.JsonNode;
 
 abstract class AbstractIdentifierMapperUnit implements InstanceSubResourceMapperUnit {
   private final CoreMapper coreMapper;

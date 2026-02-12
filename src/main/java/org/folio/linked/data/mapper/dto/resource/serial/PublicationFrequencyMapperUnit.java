@@ -8,7 +8,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.FREQUENCY;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +22,7 @@ import org.folio.linked.data.mapper.dto.resource.common.instance.sub.InstanceSub
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
 
 @Component
 @RequiredArgsConstructor

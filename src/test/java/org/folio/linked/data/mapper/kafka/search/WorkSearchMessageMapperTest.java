@@ -131,7 +131,7 @@ class WorkSearchMessageMapperTest {
   }
 
   private static String contributorName(Resource contributor) {
-    return contributor.getDoc().get(NAME.getValue()).get(0).textValue();
+    return contributor.getDoc().get(NAME.getValue()).get(0).stringValue();
   }
 
   private Resource getInstance(Long id, Resource work) {
@@ -206,7 +206,7 @@ class WorkSearchMessageMapperTest {
     assertThat(instanceIndex.getPublications().getFirst().getName()).isEqualTo("publication name");
     assertThat(instanceIndex.getEditionStatements()).hasSize(1);
     assertThat(instanceIndex.getEditionStatements().getFirst())
-      .isEqualTo(instance.getDoc().get(EDITION.getValue()).get(0).asText());
+      .isEqualTo(instance.getDoc().get(EDITION.getValue()).get(0).asString());
   }
 
   private void assertTitle(LinkedDataTitle titleInner, String value, LinkedDataTitle.TypeEnum type) {

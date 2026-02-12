@@ -1,6 +1,6 @@
 package org.folio.linked.data.e2e.resource;
 
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,9 +9,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
-import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
@@ -31,8 +29,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class ResourceControllerImportMarcIT extends ITBase {
-  private final ObjectMapper mapper = OBJECT_MAPPER;
-
   @MockitoBean
   private SrsClient srsClient;
   @Autowired
@@ -86,7 +82,7 @@ class ResourceControllerImportMarcIT extends ITBase {
 
 
     when(srsClient.getSourceStorageInstanceRecordById(instanceId))
-      .thenReturn(ResponseEntity.ok(mapper.readValue(sampleSrsResponse, Record.class)));
+      .thenReturn(ResponseEntity.ok(TEST_JSON_MAPPER.readValue(sampleSrsResponse, Record.class)));
 
     var requestBuilder = post("/linked-data/inventory-instance/{inventoryId}/import", instanceId)
       .contentType(APPLICATION_JSON)
@@ -98,7 +94,7 @@ class ResourceControllerImportMarcIT extends ITBase {
       .getResponse()
       .getContentAsString();
 
-    var resourceId = mapper.readTree(payload).get("id").asText();
+    var resourceId = TEST_JSON_MAPPER.readTree(payload).get("id").asString();
 
     awaitAndAssert(
       () -> assertTrue(
@@ -125,28 +121,25 @@ class ResourceControllerImportMarcIT extends ITBase {
     );
   }
 
-  @SneakyThrows
   private boolean isExpectedInventoryMessage(String message, String resourceId) {
-    var root = mapper.readTree(message);
-    return root.get("eventType").asText().equals("UPDATE_INSTANCE")
-      && root.get("eventPayload").get("sourceType").asText().equals("LINKED_DATA")
-      && root.get("eventPayload").get("linkedDataId").asText().equals(resourceId)
+    var root = TEST_JSON_MAPPER.readTree(message);
+    return root.get("eventType").asString().equals("UPDATE_INSTANCE")
+      && root.get("eventPayload").get("sourceType").asString().equals("LINKED_DATA")
+      && root.get("eventPayload").get("linkedDataId").asString().equals(resourceId)
       && message.contains("in00000000001");
   }
 
-  @SneakyThrows
   private boolean isExpectedSearchWorkMessage(String message) {
-    var root = mapper.readTree(message);
-    return root.get("type").asText().equals("UPDATE")
-      && root.get("resourceName").asText().equals("linked-data-work")
+    var root = TEST_JSON_MAPPER.readTree(message);
+    return root.get("type").asString().equals("UPDATE")
+      && root.get("resourceName").asString().equals("linked-data-work")
       && message.contains("ResourceControllerImportMarcIT - Testing instance");
   }
 
-  @SneakyThrows
   private boolean isExpectedHubIndexMessage(String message) {
-    var root = mapper.readTree(message);
-    return root.get("type").asText().equals("CREATE")
-      && root.get("resourceName").asText().equals("linked-data-hub")
-      && root.get("new").get("label").asText().contains("Person name. Title");
+    var root = TEST_JSON_MAPPER.readTree(message);
+    return root.get("type").asString().equals("CREATE")
+      && root.get("resourceName").asString().equals("linked-data-hub")
+      && root.get("new").get("label").asString().contains("Person name. Title");
   }
 }

@@ -3,8 +3,8 @@ package org.folio.linked.data.e2e.resource;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.INSTANCE_ID_PLACEHOLDER;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.SIMPLE_WORK_WITH_INSTANCE_REF_SAMPLE;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
 import static org.hamcrest.Matchers.equalTo;
@@ -17,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
@@ -35,7 +34,6 @@ class ResourceControllerSrsIT extends ITBase {
 
   @MockitoBean
   private SrsClient srsClient;
-  private final ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @Test
   void createWorkWithInstanceRef_shouldCreateAuthorityFromSrs() throws Exception {
@@ -63,7 +61,7 @@ class ResourceControllerSrsIT extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
 
-    var creatorResourceId = objectMapper.readTree(resp)
+    var creatorResourceId = TEST_JSON_MAPPER.readTree(resp)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
       .path("_creatorReference").get(0)
@@ -108,7 +106,7 @@ class ResourceControllerSrsIT extends ITBase {
       );
 
     when(srsClient.getAuthorityBySrsId("4f2220d5-ddf6-410a-a459-cd4b5e1b5ddd"))
-      .thenReturn(new ResponseEntity<>(null, HttpStatusCode.valueOf(404)));
+      .thenReturn(new ResponseEntity<>(HttpStatusCode.valueOf(404)));
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);

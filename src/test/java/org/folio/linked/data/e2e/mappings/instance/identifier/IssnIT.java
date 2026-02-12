@@ -1,18 +1,14 @@
 package org.folio.linked.data.e2e.mappings.instance.identifier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class IssnIT extends PostResourceIT {
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Override
   protected String postPayload() {
@@ -52,20 +48,20 @@ public class IssnIT extends PostResourceIT {
   protected void validateApiResponse(ResultActions apiResponse) {
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
 
-    var issnNode = objectMapper.readTree(responsePayload)
+    var issnNode = TEST_JSON_MAPPER.readTree(responsePayload)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Instance")
       .path("http://library.link/vocab/map").get(0)
       .path("http://library.link/identifier/ISSN");
 
     var issnValueNode = issnNode.path("http://bibfra.me/vocab/lite/name").get(0);
-    assertThat(issnValueNode.asText()).isEqualTo("1234567890");
+    assertThat(issnValueNode.asString()).isEqualTo("1234567890");
 
     var statusNode = issnNode.path("http://bibfra.me/vocab/library/status").get(0);
     var statusLink = statusNode.path("http://bibfra.me/vocab/lite/link").get(0);
     var statusLabel = statusNode.path("http://bibfra.me/vocab/lite/label").get(0);
-    assertThat(statusLink.asText()).isEqualTo("http://id.loc.gov/vocabulary/mstatus/current");
-    assertThat(statusLabel.asText()).isEqualTo("current");
+    assertThat(statusLink.asString()).isEqualTo("http://id.loc.gov/vocabulary/mstatus/current");
+    assertThat(statusLabel.asString()).isEqualTo("current");
   }
 
   @Override

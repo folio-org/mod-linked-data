@@ -165,6 +165,7 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
         resourceEdgeRepository.save(reTitle);
         resourceEdgeRepository.save(reAuthor);
         resourceEdgeRepository.save(reCreator);
+        return null;
       }
     );
     return work;

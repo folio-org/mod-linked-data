@@ -12,7 +12,6 @@ import static org.folio.linked.data.util.ResourceUtils.getPropertyValues;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.integration.kafka.sender.CreateMessageSender;
@@ -47,7 +46,6 @@ public class InstanceCreateMessageSender implements CreateMessageSender {
   }
 
   @Override
-  @SneakyThrows
   public void accept(Resource resource) {
     log.debug("Publishing CREATE_INSTANCE message to inventory for instance with ID [{}]", resource.getId());
     var message = instanceIngressMessageMapper.toInstanceIngressEvent(resource)

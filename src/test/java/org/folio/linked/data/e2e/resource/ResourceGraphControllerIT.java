@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -13,14 +14,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Set;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.MonographTestUtil;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -40,10 +39,6 @@ class ResourceGraphControllerIT extends ITBase {
   private Environment env;
   @Autowired
   private MockMvc mockMvc;
-  @Autowired
-  private ObjectMapper objectMapper;
-  @Autowired
-  private TenantScopedExecutionService tenantScopedExecutionService;
   @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
@@ -62,13 +57,13 @@ class ResourceGraphControllerIT extends ITBase {
       .andReturn().getResponse().getContentAsString();
 
     // then
-    var providerEventModel = objectMapper.readValue(providerEventResponse, Resource.class);
+    var providerEventModel = TEST_JSON_MAPPER.readValue(providerEventResponse, Resource.class);
     assertNotNull(providerEventModel.getId());
     assertThat(providerEventModel.getTypes()).isEqualTo(Set.of(PROVIDER_EVENT));
-    assertThat(providerEventModel.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("production name");
-    assertThat(providerEventModel.getDoc().get(PROVIDER_DATE.getValue()).get(0).asText())
+    assertThat(providerEventModel.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo("production name");
+    assertThat(providerEventModel.getDoc().get(PROVIDER_DATE.getValue()).get(0).asString())
       .isEqualTo("production provider date");
-    assertThat(providerEventModel.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asText())
+    assertThat(providerEventModel.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asString())
       .isEqualTo("production simple place");
     assertThat(providerEventModel.getIncomingEdges()).isEmpty();
     assertThat(providerEventModel.getOutgoingEdges()).hasSize(1);
@@ -79,7 +74,7 @@ class ResourceGraphControllerIT extends ITBase {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
-    var providerPlaceModel = objectMapper.readValue(providerPlaceResponse, Resource.class);
+    var providerPlaceModel = TEST_JSON_MAPPER.readValue(providerPlaceResponse, Resource.class);
     assertThat(providerPlaceModel.getOutgoingEdges()).isEmpty();
     assertThat(providerPlaceModel.getIncomingEdges()).hasSize(1);
     var providerPlaceSourceEdge = providerPlaceModel.getIncomingEdges().iterator().next();

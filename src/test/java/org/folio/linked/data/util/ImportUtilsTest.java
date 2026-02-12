@@ -6,7 +6,6 @@ import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
 import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
 
 import java.util.stream.Stream;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.spring.testing.type.UnitTest;
@@ -54,7 +53,6 @@ class ImportUtilsTest {
 
   @ParameterizedTest
   @MethodSource("resources")
-  @SneakyThrows
   void importReportToCsv_shouldGenerateCsv(ImportUtils.ImportedResource res, String expected) {
     var report = new ImportUtils.ImportReport();
     report.addImport(res);

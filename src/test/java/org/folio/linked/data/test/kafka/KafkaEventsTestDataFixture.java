@@ -3,15 +3,14 @@ package org.folio.linked.data.test.kafka;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.test.TestUtil.INVENTORY_INSTANCE_EVENT_TOPIC;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.RECORD_DOMAIN_EVENT_TOPIC;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultKafkaHeaders;
 import static org.folio.spring.tools.kafka.KafkaUtils.getTenantTopicName;
 
 import java.util.ArrayList;
 import java.util.Map;
-import lombok.SneakyThrows;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.domain.dto.ParsedRecord;
@@ -37,13 +36,12 @@ public class KafkaEventsTestDataFixture {
     return new ProducerRecord(topic, 0, "1", value, headers);
   }
 
-  @SneakyThrows
   public static ProducerRecord<String, String> getSrsDomainEventProducerRecord(String id,
                                                                                String marc,
                                                                                EventTypeEnum type,
                                                                                SourceRecordType recordType) {
     var topic = getTenantTopicName(RECORD_DOMAIN_EVENT_TOPIC, TENANT_ID);
-    var value = OBJECT_MAPPER.writeValueAsString(Map.of(
+    var value = TEST_JSON_MAPPER.writeValueAsString(Map.of(
         "id", id,
         "eventType", type,
         "eventPayload", new SourceRecord().parsedRecord(new ParsedRecord(marc))

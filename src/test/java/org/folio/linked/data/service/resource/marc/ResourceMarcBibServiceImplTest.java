@@ -7,7 +7,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.random;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -17,9 +17,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,6 +56,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -85,8 +83,6 @@ class ResourceMarcBibServiceImplTest {
   private ResourceEventsPublisher resourceEventsPublisher;
   @Mock
   private ResourceGraphService resourceGraphService;
-  @Mock
-  private ObjectMapper objectMapper = OBJECT_MAPPER;
   @Mock
   private SrsClient srsClient;
   @Mock
@@ -197,7 +193,7 @@ class ResourceMarcBibServiceImplTest {
     //given
     var inventoryId = UUID.randomUUID().toString();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
-      .thenThrow(FeignException.NotFound.class);
+      .thenThrow(HttpClientErrorException.NotFound.class);
     when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
 
@@ -207,17 +203,16 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void getResourcePreviewByInventoryId_shouldReturn_resourceResponseDto() throws JsonProcessingException {
+  void getResourcePreviewByInventoryId_shouldReturn_resourceResponseDto() {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord('a', 'm');
-    var marcJson = "";
+    var marcJson = TEST_JSON_MAPPER.writeValueAsString(marcRecord.getParsedRecord().getContent());
     var resourceModel = new org.folio.ld.dictionary.model.Resource();
     var resourceEntity = new Resource();
     var resourceDto = new ResourceResponseDto();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
-    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
     when(resourceModelMapper.toEntity(resourceModel)).thenReturn(resourceEntity);
     when(resourceDtoMapper.toDto(resourceEntity)).thenReturn(resourceDto);
@@ -234,7 +229,7 @@ class ResourceMarcBibServiceImplTest {
     // given
     var inventoryId = UUID.randomUUID().toString();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
-      .thenThrow(FeignException.NotFound.class);
+      .thenThrow(HttpClientErrorException.NotFound.class);
     when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
 
@@ -244,11 +239,11 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void importMarcRecord_shouldCreateResource() throws JsonProcessingException {
+  void importMarcRecord_shouldCreateResource() {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord('a', 'm');
-    var marcJson = "";
+    var marcJson = TEST_JSON_MAPPER.writeValueAsString(marcRecord.getParsedRecord().getContent());
     var unmappedMarc = "{}";
     var resourceId = 1L;
     var srsId = UUID.randomUUID().toString();
@@ -264,7 +259,6 @@ class ResourceMarcBibServiceImplTest {
     var saveGraphResult = new SaveGraphResult(resourceEntity);
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
-    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
     when(resourceModelMapper.toEntity(resourceModelCaptor.capture())).thenReturn(resourceEntity);
     when(resourceRepo.existsById(resourceId)).thenReturn(false);
@@ -291,7 +285,7 @@ class ResourceMarcBibServiceImplTest {
     //given
     var inventoryId = UUID.randomUUID().toString();
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
-      .thenThrow(FeignException.NotFound.class);
+      .thenThrow(HttpClientErrorException.NotFound.class);
     when(exceptionBuilder.notFoundSourceRecordException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
 
@@ -301,12 +295,11 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameIdExists()
-    throws JsonProcessingException {
+  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameIdExists() {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord('a', 'm');
-    var marcJson = "";
+    var marcJson = TEST_JSON_MAPPER.writeValueAsString(marcRecord.getParsedRecord().getContent());
     var resourceId = 1L;
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(resourceId)
@@ -314,7 +307,6 @@ class ResourceMarcBibServiceImplTest {
 
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
-    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
     when(resourceRepo.existsById(resourceId)).thenReturn(true);
     when(exceptionBuilder.alreadyExistsException(anyString(), anyString()))
@@ -326,12 +318,11 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameSrsIdExists()
-    throws JsonProcessingException {
+  void importMarcRecord_shouldThrowAlreadyExistsException_whenResourceWithSameSrsIdExists() {
     //given
     var inventoryId = UUID.randomUUID().toString();
     var marcRecord = createRecord('a', 'm');
-    var marcJson = "";
+    var marcJson = TEST_JSON_MAPPER.writeValueAsString(marcRecord.getParsedRecord().getContent());
     var resourceId = 1L;
     var srsId = UUID.randomUUID().toString();
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
@@ -340,7 +331,6 @@ class ResourceMarcBibServiceImplTest {
 
     when(srsClient.getSourceStorageInstanceRecordById(inventoryId))
       .thenReturn(new ResponseEntity<>(marcRecord, HttpStatusCode.valueOf(200)));
-    when(objectMapper.writeValueAsString(marcRecord.getParsedRecord().getContent())).thenReturn(marcJson);
     when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
     when(resourceRepo.existsById(resourceId)).thenReturn(false);
     when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(true);

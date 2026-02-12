@@ -33,7 +33,10 @@ public abstract class ITBase {
     if (isStandaloneTest(env)) {
       cleanResourceTables(jdbcTemplate);
     } else {
-      tenantScopedExecutionService.execute(TENANT_ID, () -> cleanResourceTables(jdbcTemplate));
+      tenantScopedExecutionService.execute(TENANT_ID, () -> {
+        cleanResourceTables(jdbcTemplate);
+        return null;
+      });
     }
   }
 }

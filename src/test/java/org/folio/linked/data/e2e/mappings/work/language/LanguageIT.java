@@ -1,8 +1,8 @@
 package org.folio.linked.data.e2e.mappings.work.language;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,13 +10,9 @@ import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class LanguageIT extends PostResourceIT {
-
-  @Autowired
-  private ObjectMapper mapper;
 
   @Override
   protected String postPayload() {
@@ -139,14 +135,13 @@ public class LanguageIT extends PostResourceIT {
   @SneakyThrows
   private List<LanguageWithType> getActualLanguages(ResultActions apiResponse) {
     var responseStr = apiResponse.andReturn().getResponse().getContentAsString();
-    var languagesNode = mapper.readTree(responseStr)
+    var languagesNode = TEST_JSON_MAPPER.readTree(responseStr)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
       .path("_languages");
 
-    return mapper.convertValue(
-      languagesNode,
-      mapper.getTypeFactory().constructCollectionType(List.class, LanguageWithType.class)
+    return TEST_JSON_MAPPER.convertValue(languagesNode,
+      TEST_JSON_MAPPER.getTypeFactory().constructCollectionType(List.class, LanguageWithType.class)
     );
   }
 

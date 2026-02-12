@@ -8,7 +8,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.MonographTestUtil.setCurrentStatus;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
 import static org.folio.linked.data.test.resource.ResourceSpecUtil.createSpecRules;
@@ -95,7 +95,7 @@ class ResourceControllerLccnPatternValidationIT extends ITBase {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(
-        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+        TEST_JSON_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
       );
     when(searchClient.searchInstances(any()))
       .thenReturn(new ResponseEntity<>(new SearchResponseTotalOnly().totalRecords(0L), HttpStatus.OK));
