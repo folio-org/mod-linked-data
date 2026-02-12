@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -54,6 +55,17 @@ class ResourceModelMapperTest {
     assertThat(child.getOutgoingEdges()).hasSize(1);
     var grandChild = child.getOutgoingEdges().iterator().next().getTarget();
     assertThat(grandChild.getOutgoingEdges()).isEmpty();
+  }
+
+  @Test
+  void toModel_depthGreaterThanMax_shouldThrow() {
+    // given
+    var root = buildThreeNodeGraph();
+
+    // when / then
+    assertThatThrownBy(() -> mapper.toModel(root, 8))
+      .isInstanceOf(IllegalArgumentException.class)
+      .hasMessage("Requested outgoing edges depth is too high: 8. Maximum allowed is 7");
   }
 
   private static Resource buildThreeNodeGraph() {

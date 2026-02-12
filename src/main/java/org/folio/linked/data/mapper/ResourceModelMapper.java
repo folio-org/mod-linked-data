@@ -13,7 +13,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.FolioMetadata;
@@ -30,7 +29,6 @@ import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
 
 @Mapper(componentModel = SPRING)
-@RequiredArgsConstructor
 public abstract class ResourceModelMapper {
 
   private static final int MAX_ENTITY_TO_MODEL_EDGE_DEPTH = 7;
