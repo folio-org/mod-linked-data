@@ -280,4 +280,28 @@ class ResourceUtilsTest {
     assertThat(node.get(0).asText()).isEqualTo(labelText);
   }
 
+  @Test
+  void addProperty_doesNothing_whenValueIsNull() {
+    // given
+    var resource = new Resource();
+
+    // when
+    ResourceUtils.addProperty(resource, LABEL, null);
+
+    // then
+    assertThat(resource.getDoc()).isNull();
+  }
+
+  @Test
+  void addProperty_doesNothing_whenValueIsBlank() {
+    // given
+    var resource = new Resource();
+
+    // when
+    ResourceUtils.addProperty(resource, LABEL, "   ");
+
+    // then
+    assertThat(resource.getDoc()).isNull();
+  }
+
 }

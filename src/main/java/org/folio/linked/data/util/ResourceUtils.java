@@ -145,6 +145,9 @@ public class ResourceUtils {
   }
 
   public static void addProperty(Resource resource, PropertyDictionary property, String value) {
+    if (StringUtils.isBlank(value)) {
+      return;
+    }
     if (isNull(resource.getDoc())) {
       resource.setDoc(JsonNodeFactory.instance.objectNode());
     }
