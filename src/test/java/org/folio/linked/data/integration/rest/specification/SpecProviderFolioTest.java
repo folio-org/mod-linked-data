@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import feign.FeignException;
 import java.util.List;
 import org.folio.rspec.domain.dto.SpecificationDto;
 import org.folio.rspec.domain.dto.SpecificationDtoCollection;
@@ -19,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +49,7 @@ class SpecProviderFolioTest {
   @Test
   void shouldReturn_emptyList_whenSpecificationStorageIsNotAvailable() {
     //given
-    when(client.getBibMarcSpecs()).thenThrow(FeignException.class);
+    when(client.getBibMarcSpecs()).thenThrow(HttpClientErrorException.TooManyRequests.class);
 
     //expect
     assertEquals(emptyList(), specProvider.getSpecRules());

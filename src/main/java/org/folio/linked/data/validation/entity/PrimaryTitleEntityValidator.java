@@ -8,13 +8,13 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.SERIES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
+import tools.jackson.databind.JsonNode;
 
 public class PrimaryTitleEntityValidator implements ConstraintValidator<PrimaryTitleConstraint, Resource> {
 

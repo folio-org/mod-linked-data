@@ -1,9 +1,8 @@
 package org.folio.linked.data.mapper.kafka.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.LinkedDataHub;
 import org.folio.linked.data.model.entity.Resource;
@@ -16,7 +15,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 @UnitTest
 class HubSearchMessageMapperTest {
   private final HubSearchMessageMapper mapper = new HubSearchMessageMapperImpl();
-  private final ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @ParameterizedTest
   @MethodSource("linkAndExpectedOriginalId")
@@ -25,7 +23,7 @@ class HubSearchMessageMapperTest {
     var resource = new Resource()
       .setIdAndRefreshEdges(123L)
       .setLabel("Test Hub")
-      .setDoc(objectMapper.readTree(String.format("""
+      .setDoc(TEST_JSON_MAPPER.readTree(String.format("""
         {
            "http://bibfra.me/vocab/lite/link": [ "%s" ]
         }

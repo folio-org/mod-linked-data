@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.ErrorResponse;
+import org.folio.linked.data.exception.JsonMappingException;
 import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.error.ConstraintViolationExceptionMapper;
 import org.folio.linked.data.mapper.error.EntityNotFoundExceptionMapper;
 import org.folio.linked.data.mapper.error.GenericBadRequestMapper;
@@ -29,11 +31,18 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class ApiExceptionHandler {
 
   private final GenericBadRequestMapper genericBadRequestMapper;
+  private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final GenericServerExceptionMapper genericServerExceptionMapper;
   private final EntityNotFoundExceptionMapper entityNotFoundExceptionMapper;
   private final RequestProcessingExceptionMapper requestProcessingExceptionMapper;
   private final ConstraintViolationExceptionMapper constraintViolationExceptionMapper;
   private final MethodArgumentNotValidExceptionMapper methodArgumentNotValidExceptionMapper;
+
+  @ExceptionHandler(JsonMappingException.class)
+  public ResponseEntity<ErrorResponse> handleRequestProcessingException(JsonMappingException exception) {
+    var rpe = exceptionBuilder.mappingException(exception.getDtoClass(), exception.getFieldName());
+    return handleRequestProcessingException(rpe);
+  }
 
   @ExceptionHandler(RequestProcessingException.class)
   public ResponseEntity<ErrorResponse> handleRequestProcessingException(RequestProcessingException exception) {
@@ -107,7 +116,7 @@ public class ApiExceptionHandler {
     return genericServerExceptionMapper.errorResponseEntity(exception);
   }
 
-  private static void logException(Exception exception) {
+  private void logException(Exception exception) {
     log.log(Level.WARN, "Handling exception", exception);
   }
 }

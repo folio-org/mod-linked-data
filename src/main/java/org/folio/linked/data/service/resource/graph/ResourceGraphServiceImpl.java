@@ -9,7 +9,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
@@ -29,6 +28,7 @@ import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.util.JsonUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
 
 @Log4j2
 @Service

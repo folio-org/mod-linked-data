@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -10,7 +11,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.folio.linked.data.domain.dto.Error;
 import org.folio.linked.data.domain.dto.ErrorResponse;
@@ -19,14 +19,10 @@ import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.spring.tools.kafka.KafkaAdminService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
 class ResourceControllerBaseValidationIT extends ITBase {
-
-  @Autowired
-  private ObjectMapper objectMapper;
   @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
@@ -48,7 +44,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
 
-    var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+    var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
     assertThat(errorResponse.getErrors()).containsOnly(expectedError);
   }
 
@@ -70,7 +66,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
 
-    var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+    var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
     assertThat(errorResponse.getErrors()).containsOnly(expectedError);
   }
 
@@ -92,7 +88,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
 
-    var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+    var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
     assertThat(errorResponse.getErrors()).containsOnly(expectedError);
   }
 
@@ -114,7 +110,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
 
-    var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+    var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
     assertThat(errorResponse.getErrors()).containsOnly(expectedError);
   }
 
@@ -135,7 +131,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
 
-    var errorResponse = objectMapper.readValue(response, ErrorResponse.class);
+    var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
     assertThat(errorResponse.getErrors())
       .hasSize(1)
       .first()

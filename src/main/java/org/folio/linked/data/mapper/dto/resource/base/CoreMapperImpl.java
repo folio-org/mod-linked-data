@@ -3,11 +3,8 @@ package org.folio.linked.data.mapper.dto.resource.base;
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -19,19 +16,19 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.NullNode;
 
 @Log4j2
 @Component
 public class CoreMapperImpl implements CoreMapper {
 
-  private final ObjectMapper jsonMapper;
   private final SingleResourceMapper singleResourceMapper;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
-  public CoreMapperImpl(ObjectMapper objectMapper,
-                        @Lazy SingleResourceMapper singleResourceMapper,
+  public CoreMapperImpl(@Lazy SingleResourceMapper singleResourceMapper,
                         RequestProcessingExceptionBuilder exceptionBuilder) {
-    this.jsonMapper = objectMapper;
     this.singleResourceMapper = singleResourceMapper;
     this.exceptionBuilder = exceptionBuilder;
   }
@@ -79,19 +76,19 @@ public class CoreMapperImpl implements CoreMapper {
 
   @Override
   public JsonNode toJson(Map<String, List<String>> map) {
-    var node = jsonMapper.convertValue(map, JsonNode.class);
-    return !(node instanceof NullNode) ? node : jsonMapper.createObjectNode();
+    var node = JSON_MAPPER.convertValue(map, JsonNode.class);
+    return !(node instanceof NullNode) ? node : JSON_MAPPER.createObjectNode();
   }
 
   private <T> T readDoc(JsonNode node, Class<T> dtoClass) {
     try {
       if (nonNull(node)) {
-        return jsonMapper.treeToValue(node, dtoClass);
+        return JSON_MAPPER.treeToValue(node, dtoClass);
       } else {
-        return jsonMapper.treeToValue(jsonMapper.createObjectNode(), dtoClass);
+        return JSON_MAPPER.treeToValue(JSON_MAPPER.createObjectNode(), dtoClass);
       }
-    } catch (JsonProcessingException e) {
-      log.error("JsonProcessingException during doc mapping to [{}]", dtoClass);
+    } catch (JacksonException e) {
+      log.error("JacksonException during doc mapping to [{}]", dtoClass);
       throw exceptionBuilder.mappingException(dtoClass.getSimpleName(), String.valueOf(node));
     }
   }

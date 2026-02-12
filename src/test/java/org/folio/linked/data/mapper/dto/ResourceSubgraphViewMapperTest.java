@@ -56,7 +56,7 @@ class ResourceSubgraphViewMapperTest {
     var resource = result.get();
     assertThat(resource.getId()).isEqualTo(123L);
     assertThat(resource.getLabel()).isEqualTo("test label");
-    assertThat(resource.getDoc().get("key1").get(0).asText()).isEqualTo("value1");
+    assertThat(resource.getDoc().get("key1").get(0).asString()).isEqualTo("value1");
     assertThat(resource.getTypes()).containsExactly(INSTANCE);
     assertThat(resource.getOutgoingEdges()).hasSize(1);
     var edge1 = resource.getOutgoingEdges().iterator().next();
@@ -65,7 +65,7 @@ class ResourceSubgraphViewMapperTest {
     var nested = edge1.getTarget();
     assertThat(nested.getId()).isEqualTo(456L);
     assertThat(nested.getLabel()).isEqualTo("nested label");
-    assertThat(nested.getDoc().get("nestedKey").get(0).asText()).isEqualTo("nestedValue");
+    assertThat(nested.getDoc().get("nestedKey").get(0).asString()).isEqualTo("nestedValue");
     assertThat(nested.getTypes()).containsExactly(TITLE);
     assertThat(nested.getOutgoingEdges()).isEmpty();
   }

@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
 
 @Component
 @RequiredArgsConstructor

@@ -15,7 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.folio.linked.data.domain.dto.InstanceField;
@@ -83,7 +82,7 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldPersistMappedResourceAndPublishResourceCreatedEvent() {
     // given
-    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3)));
     var work = new Resource().addTypes(WORK).setIdAndRefreshEdges(555L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
     var expectedResponse = new ResourceResponseDto();
@@ -105,9 +104,7 @@ class ResourceServiceImplTest {
     // given
     var profileId = 12;
     var request = new ResourceRequestDto().resource(
-      new WorkField().work(
-        new WorkRequest(2, List.of()).profileId(profileId)
-      )
+      new WorkField().work(new WorkRequest(2).profileId(profileId))
     );
     var work = new Resource().addTypes(WORK).setIdAndRefreshEdges(444L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(work);
@@ -129,7 +126,7 @@ class ResourceServiceImplTest {
   @Test
   void create_shouldNotPersistResourceAndThrowAlreadyExists_forExistedResource() {
     // given
-    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3, List.of())));
+    var request = new ResourceRequestDto().resource(new InstanceField().instance(new InstanceRequest(3)));
     var mapped = new Resource().setIdAndRefreshEdges(12345L);
     when(resourceDtoMapper.toEntity(request)).thenReturn(mapped);
     when(resourceRepo.existsById(mapped.getId())).thenReturn(true);
@@ -218,7 +215,7 @@ class ResourceServiceImplTest {
   void update_shouldSaveUpdatedResourceAndSendResourceUpdatedEvent_forResourceWithSameId() {
     // given
     var id = randomLong();
-    var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest(2, List.of())));
+    var workDto = new ResourceRequestDto().resource(new WorkField().work(new WorkRequest(2)));
     var oldWork = new Resource().setIdAndRefreshEdges(id).addTypes(WORK).setLabel("oldWork");
     when(resourceRepo.findById(id)).thenReturn(Optional.of(oldWork));
     var work = new Resource().setIdAndRefreshEdges(id).setLabel("saved").addTypes(WORK);
@@ -254,9 +251,7 @@ class ResourceServiceImplTest {
     when(resourceRepo.findById(oldId)).thenReturn(Optional.of(oldInstance));
     var mapped = new Resource().setIdAndRefreshEdges(newId).setLabel("mapped");
     var instanceDto = new ResourceRequestDto().resource(
-      new InstanceField().instance(
-        new InstanceRequest(3, List.of()).profileId(profileId)
-      )
+      new InstanceField().instance(new InstanceRequest(3).profileId(profileId))
     );
     when(resourceDtoMapper.toEntity(instanceDto)).thenReturn(mapped);
     var persisted = new Resource().setIdAndRefreshEdges(newId).setLabel("saved");

@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Date;
-import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEdgeRepository;
@@ -125,7 +124,6 @@ class ReIndexControllerIT extends ITBase {
     checkKafkaMessageSent(work);
   }
 
-  @SneakyThrows
   protected void checkKafkaMessageSent(Resource indexed) {
     if (nonNull(indexed)) {
       awaitAndAssert(() -> assertTrue(consumer.getMessages()

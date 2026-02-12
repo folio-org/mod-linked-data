@@ -1,11 +1,8 @@
 package org.folio.linked.data.util;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
@@ -14,13 +11,42 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.event.SourceRecordDomainEventDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.IdentifierFieldDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.title.TitleFieldRequestDeserializer;
+import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
+import org.folio.linked.data.domain.dto.IdentifierField;
+import org.folio.linked.data.domain.dto.MarcRecord;
+import org.folio.linked.data.domain.dto.ResourceRequestField;
+import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
+import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.ObjectNode;
 
 @Log4j2
 @UtilityClass
 public class JsonUtils {
+
+  public static final JsonMapper JSON_MAPPER = JsonMapper.builder()
+    .changeDefaultPropertyInclusion(incl -> incl.withValueInclusion(NON_EMPTY))
+    .configure(SerializationFeature.USE_EQUALITY_FOR_OBJECT_ID, true)
+    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+    .addMixIn(MarcRecord.class, MarcRecordSerializationConfig.class)
+    .addModule(new SimpleModule()
+      .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer())
+      .addDeserializer(TitleFieldRequestTitleInner.class, new TitleFieldRequestDeserializer())
+      .addDeserializer(IdentifierField.class, new IdentifierFieldDeserializer())
+      .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer()))
+    .build();
 
   private static final Configuration JSONPATH_CONFIG = Configuration.builder()
     .options(Option.SUPPRESS_EXCEPTIONS)
@@ -40,9 +66,8 @@ public class JsonUtils {
     return Optional.ofNullable(JsonPath.using(JSONPATH_CONFIG).parse(json).read(jsonPath, type));
   }
 
-  @SneakyThrows
-  public static String writeValueAsString(Object obj, ObjectMapper objectMapper) {
-    return obj instanceof String str ? str : objectMapper.writeValueAsString(obj);
+  public static String writeValueAsString(Object obj) {
+    return obj instanceof String str ? str : JSON_MAPPER.writeValueAsString(obj);
   }
 
   /**
@@ -88,10 +113,12 @@ public class JsonUtils {
     if (anyNonObject(existing, incoming)) {
       return existing;
     }
-    var copyOfExisting = existing.<ObjectNode>deepCopy();
-    incoming.fieldNames().forEachRemaining(incomingFieldName -> {
+    var copyOfExisting = (ObjectNode) existing.deepCopy();
+
+    incoming.properties().forEach(entry -> {
+      var incomingFieldName = entry.getKey();
+      var incomingField = entry.getValue();
       var existingField = copyOfExisting.get(incomingFieldName);
-      var incomingField = incoming.get(incomingFieldName);
       if (isNull(existingField) && nonNull(incomingField)) {
         copyOfExisting.set(incomingFieldName, incomingField.deepCopy());
       } else if (allArray(existingField, incomingField)) {
@@ -108,16 +135,16 @@ public class JsonUtils {
   }
 
   private static void addIfNotExist(ArrayNode array, JsonNode node) {
-    if (node.isTextual() && arrayNotContainsElement(array, node)) {
+    if (node.stringValue() != null && arrayNotContainsElement(array, node)) {
       array.add(node);
     }
   }
 
   private static boolean arrayNotContainsElement(ArrayNode array, JsonNode value) {
     return StreamSupport.stream(array.spliterator(), false)
-      .filter(JsonNode::isTextual)
-      .map(JsonNode::asText)
-      .noneMatch(text -> text.equals(value.asText()));
+      .filter(node -> node.stringValue() != null)
+      .map(JsonNode::textValue)
+      .noneMatch(text -> text.equals(value.stringValue()));
   }
 
   private static boolean allArray(JsonNode... nodes) {

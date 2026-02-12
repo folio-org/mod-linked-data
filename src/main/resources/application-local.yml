@@ -5,12 +5,6 @@ spring:
     password: folio_admin
   kafka:
     bootstrap-servers: localhost:29092
-  cloud:
-    openfeign:
-      client:
-        config:
-          search:
-            url: http://localhost:9130/search
 
 management:
   endpoints:

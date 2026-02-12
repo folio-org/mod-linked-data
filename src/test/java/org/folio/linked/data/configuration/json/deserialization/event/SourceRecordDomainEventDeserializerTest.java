@@ -3,7 +3,7 @@ package org.folio.linked.data.configuration.json.deserialization.event;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.domain.dto.SourceRecord.StateEnum.ACTUAL;
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum.SOURCE_RECORD_CREATED;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 
 import org.folio.spring.testing.type.UnitTest;
@@ -12,13 +12,12 @@ import org.junit.jupiter.api.Test;
 @UnitTest
 class SourceRecordDomainEventDeserializerTest {
 
-  private final SourceRecordDomainEventDeserializer deserializer =
-    new SourceRecordDomainEventDeserializer(OBJECT_MAPPER);
+  private final SourceRecordDomainEventDeserializer deserializer = new SourceRecordDomainEventDeserializer();
 
   @Test
-  void deserialize_shouldReturnCorrectlyMappedEvent() throws Exception {
+  void deserialize_shouldReturnCorrectlyMappedEvent() {
     // given
-    var jsonParser = OBJECT_MAPPER.createParser(loadResourceAsString("samples/srsDomainEvent.json"));
+    var jsonParser = TEST_JSON_MAPPER.createParser(loadResourceAsString("samples/srsDomainEvent.json"));
 
     // when
     var deserializedEvent = deserializer.deserialize(jsonParser, null);

@@ -7,9 +7,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import org.folio.linked.data.configuration.ErrorResponseConfig;
@@ -25,15 +24,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.type.TypeReference;
 
 @SpringBootTest(classes = ContentMapperUnit.class)
-@Import({CoreMapperImpl.class, ObjectMapper.class, RequestProcessingExceptionBuilder.class, ErrorResponseConfig.class})
+@Import({CoreMapperImpl.class, RequestProcessingExceptionBuilder.class, ErrorResponseConfig.class})
 @UnitTest
 class ContentMapperUnitTest {
   @Autowired
   private ContentMapperUnit contentMapperUnit;
-  @Autowired
-  private ObjectMapper objectMapper;
   @MockitoBean
   private HashService hashService;
 
@@ -52,7 +50,7 @@ class ContentMapperUnitTest {
     var resource = contentMapperUnit.toEntity(category, new Resource());
 
     // then
-    Map<String, List<String>> props = objectMapper.convertValue(resource.getDoc(), new TypeReference<>() {
+    Map<String, List<String>> props = TEST_JSON_MAPPER.convertValue(resource.getDoc(), new TypeReference<>() {
     });
     assertThat(props.get(LINK.getValue())).hasSize(1).contains(expectedLink);
     assertThat(props.get(TERM.getValue())).hasSize(1).contains(expectedTerm);
@@ -75,7 +73,7 @@ class ContentMapperUnitTest {
       .extracting(ResourceTypeEntity::getUri)
       .containsExactly(CATEGORY_SET.getUri());
 
-    Map<String, List<String>> targetProps = objectMapper.convertValue(target.getDoc(), new TypeReference<>() {
+    Map<String, List<String>> targetProps = TEST_JSON_MAPPER.convertValue(target.getDoc(), new TypeReference<>() {
     });
     assertThat(targetProps.get(LINK.getValue()))
       .hasSize(1)

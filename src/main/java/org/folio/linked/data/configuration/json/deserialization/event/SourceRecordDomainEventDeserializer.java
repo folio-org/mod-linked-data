@@ -1,26 +1,22 @@
 package org.folio.linked.data.configuration.json.deserialization.event;
 
 import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventTypeEnum;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ParsedRecord;
 import org.folio.linked.data.domain.dto.SourceRecord;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
 
 /**
  * Class responsible for deserializing the Kafka event from SRS module into {@link SourceRecordDomainEvent} object.
  */
 @Log4j2
-@RequiredArgsConstructor
-public class SourceRecordDomainEventDeserializer extends JsonDeserializer<SourceRecordDomainEvent> {
+public class SourceRecordDomainEventDeserializer extends ValueDeserializer<SourceRecordDomainEvent> {
 
   private static final String ID = "id";
   private static final String EVENT_TYPE = "eventType";
@@ -30,14 +26,12 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
   private static final String CONTENT = "content";
   private static final String NEW = "new";
 
-  private final ObjectMapper objectMapper;
-
   @Override
-  public SourceRecordDomainEvent deserialize(JsonParser jp, DeserializationContext context) throws IOException {
+  public SourceRecordDomainEvent deserialize(JsonParser jp, DeserializationContext context) {
     var event = new SourceRecordDomainEvent();
-    JsonNode node = jp.getCodec().readTree(jp);
+    JsonNode node = jp.readValueAsTree();
     if (node.has(ID)) {
-      event.setId(node.get(ID).textValue());
+      event.setId(node.get(ID).asString());
     }
     if (node.has(EVENT_TYPE)) {
       event.setEventType(getEventType(node));
@@ -49,7 +43,7 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
   }
 
   private EventTypeEnum getEventType(JsonNode node) {
-    var incoming = node.get(EVENT_TYPE).textValue();
+    var incoming = node.get(EVENT_TYPE).asString();
     try {
       return EventTypeEnum.fromValue(incoming);
     } catch (IllegalArgumentException illegalArgumentException) {
@@ -58,24 +52,30 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
     return null;
   }
 
-  private SourceRecord getSourceRecord(JsonNode node) throws JsonProcessingException {
-    if (node.isTextual()) {
-      node = objectMapper.readTree(node.textValue());
+  private SourceRecord getSourceRecord(JsonNode node) {
+    try {
+      if (node.isValueNode() && node.isString()) {
+        var jsonString = node.asString();
+        node = JSON_MAPPER.readTree(jsonString);
+      }
+      if (node.has(NEW)) {
+        node = node.get(NEW);
+      }
+      var sourceRecord = new SourceRecord();
+      if (node.has(ID)) {
+        sourceRecord.setId(node.get(ID).asString());
+      }
+      if (node.has(DELETED)) {
+        sourceRecord.setDeleted(node.get(DELETED).asBoolean());
+      }
+      if (node.has(PARSED_RECORD)) {
+        sourceRecord.setParsedRecord(getParsedRecord(node.get(PARSED_RECORD)));
+      }
+      return sourceRecord;
+    } catch (Exception e) {
+      log.error("Failed to deserialize source record", e);
+      return new SourceRecord();
     }
-    if (node.has(NEW)) {
-      node = node.get(NEW);
-    }
-    var sourceRecord = new SourceRecord();
-    if (node.has(ID)) {
-      sourceRecord.setId(node.get(ID).textValue());
-    }
-    if (node.has(DELETED)) {
-      sourceRecord.setDeleted(node.get(DELETED).asBoolean());
-    }
-    if (node.has(PARSED_RECORD)) {
-      sourceRecord.setParsedRecord(getParsedRecord(node.get(PARSED_RECORD)));
-    }
-    return sourceRecord;
   }
 
   private ParsedRecord getParsedRecord(JsonNode node) {
@@ -87,8 +87,8 @@ public class SourceRecordDomainEventDeserializer extends JsonDeserializer<Source
   }
 
   private String getContent(JsonNode node) {
-    if (node.isTextual()) {
-      return node.textValue();
+    if (node.isValueNode() && node.isString()) {
+      return node.asString();
     }
     return String.valueOf(node);
   }

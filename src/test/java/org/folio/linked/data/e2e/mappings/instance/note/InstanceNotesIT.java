@@ -1,19 +1,16 @@
 package org.folio.linked.data.e2e.mappings.instance.note;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class InstanceNotesIT extends PostResourceIT {
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Override
   protected String postPayload() {
@@ -62,7 +59,7 @@ public class InstanceNotesIT extends PostResourceIT {
   @SneakyThrows
   protected void validateApiResponse(ResultActions apiResponse) {
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
-    var notesResponse = objectMapper.readTree(responsePayload)
+    var notesResponse = TEST_JSON_MAPPER.readTree(responsePayload)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Instance")
       .path("_notes");
@@ -91,8 +88,8 @@ public class InstanceNotesIT extends PostResourceIT {
 
     var actualNotes = new HashMap<>();
     for (var note : notesResponse) {
-      String type = note.get("type").get(0).asText();
-      String value = note.get("value").get(0).asText();
+      String type = note.get("type").get(0).asString();
+      String value = note.get("value").get(0).asString();
       actualNotes.put(type, value);
     }
 

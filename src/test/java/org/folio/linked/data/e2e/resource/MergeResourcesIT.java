@@ -4,16 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
-import static org.folio.linked.data.test.TestUtil.readTree;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -31,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import tools.jackson.databind.JsonNode;
 
 @IntegrationTest
 class MergeResourcesIT {
@@ -42,16 +40,16 @@ class MergeResourcesIT {
   @Autowired
   private JdbcTemplate jdbcTemplate;
   @Autowired
-  private ObjectMapper objectMapper;
-  @Autowired
   private TenantScopedExecutionService tenantScopedExecutionService;
   @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
 
   @BeforeEach
   void beforeEach() {
-    tenantScopedExecutionService.execute(TENANT_ID, () ->
-      cleanResourceTables(jdbcTemplate)
+    tenantScopedExecutionService.execute(TENANT_ID, () -> {
+        cleanResourceTables(jdbcTemplate);
+        return null;
+      }
     );
   }
 
@@ -191,31 +189,27 @@ class MergeResourcesIT {
     assertThat(resource.getDoc()).isEqualTo(expected);
   }
 
-  @SneakyThrows
   private JsonNode getInitialDoc() {
     return getDocWithPreferredFlag("samples/json_merge/existing.jsonl", false);
   }
 
-  @SneakyThrows
   private JsonNode getNewDoc() {
     return getDocWithPreferredFlag("samples/json_merge/incoming.jsonl", true);
   }
 
-  @SneakyThrows
   private JsonNode getMergedDoc() {
     return getDocWithPreferredFlag("samples/json_merge/merged.jsonl", true);
   }
 
-  @SneakyThrows
   private JsonNode getDocWithPreferredFlag(String docFile, boolean isPreferred) {
     var preferredJson = """
-    {
-      "http://library.link/vocab/resourcePreferred": [
-        "$PREFERRED_FLAG"
-      ]
-    }
-  """.replace("$PREFERRED_FLAG", String.valueOf(isPreferred));
-    return JsonUtils.merge(readTree(loadResourceAsString(docFile)), objectMapper.readTree(preferredJson));
+        {
+          "http://library.link/vocab/resourcePreferred": [
+            "$PREFERRED_FLAG"
+          ]
+        }
+      """.replace("$PREFERRED_FLAG", String.valueOf(isPreferred));
+    return JsonUtils.merge(TEST_JSON_MAPPER.readTree(loadResourceAsString(docFile)), TEST_JSON_MAPPER.readTree(preferredJson));
   }
 
   private Resource createGraph1toto2() {
@@ -242,7 +236,6 @@ class MergeResourcesIT {
     return createResource(3L, Map.of(PredicateDictionary.EDITOR, List.of(fp1Resource, fp4Resource)));
   }
 
-  @SneakyThrows
   private Resource createGraph6toto1toto4to5() {
     // 6 -> [1, (4 -> 5)]
     var fp1Resource = createResource(1L, Map.of()).setDoc(getNewDoc());

@@ -2,10 +2,10 @@ package org.folio.linked.data.e2e.mappings.work.creator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
@@ -20,8 +20,6 @@ import org.springframework.test.web.servlet.ResultActions;
 class WorkCreatorIT extends PostResourceIT {
   @Autowired
   private ResourceTestService resourceTestService;
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @BeforeEach
   void createAuthority() {
@@ -114,11 +112,10 @@ class WorkCreatorIT extends PostResourceIT {
         .value("http://bibfra.me/vocab/lite/Family"));
   }
 
-  @SneakyThrows
   private void saveResource(Long id, String label, ResourceTypeDictionary type, String srsId) {
     var resource = new Resource()
       .addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()))
-      .setDoc(objectMapper.readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(label)
       .setIdAndRefreshEdges(id);
     resource.setFolioMetadata(new FolioMetadata(resource).setSrsId(srsId));

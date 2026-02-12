@@ -41,6 +41,7 @@ class InventoryInstanceEventHandlerIT {
         kafkaSearchWorkIndexTopicListener.getMessages().clear();
         folioMetadataRepository.deleteAll();
         resourceRepository.deleteAll();
+        return null;
       }
     );
   }

@@ -2,7 +2,7 @@ package org.folio.linked.data.e2e.base;
 
 import static java.util.Arrays.asList;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
-import static org.folio.linked.data.test.TestUtil.asJsonString;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -33,7 +33,9 @@ public class TenantInstallationExtension implements Extension, BeforeEachCallbac
       if (!asList(env.getActiveProfiles()).contains(STANDALONE_PROFILE)) {
         var mockMvc = context.getBean(MockMvc.class);
         mockMvc.perform(post(TENANT_ENDPOINT_URI, TENANT_ID)
-            .content(asJsonString(new TenantAttributes().moduleTo(env.getProperty("spring.application.name"))))
+            .content(TEST_JSON_MAPPER.writeValueAsString(
+              new TenantAttributes().moduleTo(env.getProperty("spring.application.name"))
+            ))
             .headers(defaultHeaders(env))
             .contentType(APPLICATION_JSON))
           .andExpect(status().isNoContent());

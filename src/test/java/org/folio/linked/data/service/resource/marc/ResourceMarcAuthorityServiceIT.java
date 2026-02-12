@@ -2,11 +2,10 @@ package org.folio.linked.data.service.resource.marc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.FolioMetadata;
 import org.folio.ld.dictionary.model.Resource;
@@ -21,21 +20,18 @@ class ResourceMarcAuthorityServiceIT {
   @Autowired
   private ResourceMarcAuthorityService resourceMarcAuthorityService;
   @Autowired
-  private ObjectMapper objectMapper;
-  @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
   private FolioMetadataRepository folioMetadataRepository;
 
   @Test
-  @SneakyThrows
   void testAuthorityPreferenceToggle_when_authority_is_reverted_back_to_original_state() {
     var srsId = "src_id_01";
 
     // save version 1 of the authority
     var v1Resource = new Resource()
       .setId(1L)
-      .setDoc(objectMapper.readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setTypes(Set.of(ResourceTypeDictionary.PERSON))
       .setLabel("label_01")
       .setFolioMetadata(new FolioMetadata().setSrsId(srsId));

@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/configurations/entries?query=module==USERSBL%20and%20code==FOLIO_HOST",
+        "url": "/configurations/entries?query=module%3D%3DUSERSBL%20and%20code%3D%3DFOLIO_HOST",
         "headers": {
           "X-Okapi-Tenant": {
             "equalTo": "test_tenant"
@@ -21,7 +21,7 @@
     {
       "request": {
         "method": "GET",
-        "url": "/configurations/entries?query=module==USERSBL%20and%20code==FOLIO_HOST",
+        "url": "/configurations/entries?query=module%3D%3DUSERSBL%20and%20code%3D%3DFOLIO_HOST",
         "headers": {
           "X-Okapi-Tenant": {
             "equalTo": "another_tenant"

@@ -8,7 +8,6 @@ import static org.apache.commons.collections4.CollectionUtils.union;
 import static org.folio.ld.dictionary.PropertyDictionary.fromValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import java.util.Set;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.Note;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
 
 @Component
 public class NoteMapper {
@@ -32,7 +32,7 @@ public class NoteMapper {
       .flatMap(entry ->
         stream(spliteratorUnknownSize(entry.getValue().iterator(), ORDERED), false)
           .map(value -> new Note()
-            .value(List.of(value.textValue()))
+            .value(List.of(value.stringValue()))
             .type(List.of(entry.getKey()))
           )
       )

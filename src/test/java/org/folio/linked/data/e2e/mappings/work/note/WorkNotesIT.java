@@ -1,8 +1,8 @@
 package org.folio.linked.data.e2e.mappings.work.note;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,13 +10,9 @@ import java.util.Set;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class WorkNotesIT extends PostResourceIT {
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Override
   protected String postPayload() {
@@ -60,16 +56,16 @@ public class WorkNotesIT extends PostResourceIT {
     );
 
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
-    var notes = objectMapper.readTree(responsePayload)
+    var notes = TEST_JSON_MAPPER.readTree(responsePayload)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
       .path("_notes");
 
     Map<String, Set<String>> actualNotes = new HashMap<>();
     notes.forEach(note -> {
-      var value = note.path("value").get(0).asText();
+      var value = note.path("value").get(0).asString();
       note.path("type").forEach(typeNode ->
-        actualNotes.computeIfAbsent(value, k -> new HashSet<>()).add(typeNode.asText())
+        actualNotes.computeIfAbsent(value, k -> new HashSet<>()).add(typeNode.asString())
       );
     });
 

@@ -90,9 +90,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.TestUtil.RESOURCE_MODEL_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
-import static org.folio.linked.data.test.TestUtil.readTree;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -679,11 +679,11 @@ public class MonographTestUtil {
       .replace("%SUMMARY_NOTE%", titleStr + "_summary_note");
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(readTree(titleDoc))
+      .setDoc(TEST_JSON_MAPPER.readTree(titleDoc))
       .setLabel(titleStr);
     var work = new Resource()
       .addTypes(WORK, BOOKS)
-      .setDoc(readTree(workDoc))
+      .setDoc(TEST_JSON_MAPPER.readTree(workDoc))
       .setLabel(titleStr);
 
     work.addOutgoingEdge(new ResourceEdge(work, title, TITLE));

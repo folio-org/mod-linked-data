@@ -9,7 +9,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 @UnitTest
 class ResourceUtilsTest {
@@ -260,7 +260,7 @@ class ResourceUtilsTest {
     // then
     assertThat(result).isNotNull();
     assertThat(result.has("otherProperty")).isTrue();
-    assertThat(result.get("otherProperty").asText()).isEqualTo("value");
+    assertThat(result.get("otherProperty").asString()).isEqualTo("value");
   }
 
   @Test

@@ -27,6 +27,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Qualifier;
 import org.mapstruct.TargetType;
+import tools.jackson.databind.JsonNode;
 
 @Mapper(componentModel = SPRING)
 public abstract class ResourceModelMapper {
@@ -99,6 +100,11 @@ public abstract class ResourceModelMapper {
 
   protected PredicateDictionary map(PredicateEntity predicateEntity) {
     return PredicateDictionary.fromUri(predicateEntity.getUri()).orElse(null);
+  }
+
+  protected JsonNode map(JsonNode jsonNode) {
+    // JsonNode is immutable, so we can return the same instance
+    return jsonNode;
   }
 
   @Mapping(source = "resource", target = "resource")

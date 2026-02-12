@@ -1,10 +1,10 @@
 package org.folio.linked.data.e2e.mappings.hub.creator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
@@ -20,8 +20,6 @@ class HubCreatorIT extends PostResourceIT {
 
   @Autowired
   private ResourceTestService resourceTestService;
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @BeforeEach
   void createAuthority() {
@@ -109,11 +107,10 @@ class HubCreatorIT extends PostResourceIT {
     assertThat(contributor).isEqualTo(sponsoringBody);
   }
 
-  @SneakyThrows
   private void saveResource(Long id, String label, ResourceTypeDictionary type, String srsId) {
     var resource = new Resource()
       .addType(new ResourceTypeEntity().setHash(type.getHash()).setUri(type.getUri()))
-      .setDoc(objectMapper.readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(label)
       .setIdAndRefreshEdges(id);
     resource.setFolioMetadata(new FolioMetadata(resource).setSrsId(srsId));

@@ -9,7 +9,6 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,6 +50,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.domain.Persistable;
+import tools.jackson.databind.JsonNode;
 
 @Entity
 @Data

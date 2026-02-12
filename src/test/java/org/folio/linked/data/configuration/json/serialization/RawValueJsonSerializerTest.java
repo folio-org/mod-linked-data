@@ -2,9 +2,6 @@ package org.folio.linked.data.configuration.json.serialization;
 
 import static org.mockito.Mockito.verify;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import java.io.IOException;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -22,12 +21,12 @@ class RawValueJsonSerializerTest {
   @Mock
   JsonGenerator gen;
   @Mock
-  SerializerProvider serializers;
+  SerializationContext ctx;
 
   @Test
-  void serializeNull_shouldWriteNull() throws IOException {
+  void serializeNull_shouldWriteNull() {
     //when
-    rawValueJsonSerializer.serialize(null, gen, serializers);
+    rawValueJsonSerializer.serialize(null, gen, ctx);
 
     //then
     verify(gen)
@@ -36,9 +35,9 @@ class RawValueJsonSerializerTest {
 
   @ParameterizedTest
   @ValueSource(strings = {"", " ", "some string"})
-  void serializeNonNull_shouldWriteValue(String value) throws IOException {
+  void serializeNonNull_shouldWriteValue(String value) {
     //when
-    rawValueJsonSerializer.serialize(value, gen, serializers);
+    rawValueJsonSerializer.serialize(value, gen, ctx);
 
     //then
     verify(gen)

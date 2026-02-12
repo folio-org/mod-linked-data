@@ -4,19 +4,19 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import org.folio.linked.data.domain.dto.AuthoritySearchResponse;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
 
-@FeignClient(name = "search")
 @Profile("!" + STANDALONE_PROFILE)
+@HttpExchange("search")
 public interface SearchClient {
 
-  @GetMapping("/instances")
+  @GetExchange("/instances")
   ResponseEntity<SearchResponseTotalOnly> searchInstances(@RequestParam("query") String query);
 
-  @GetMapping("/authorities")
+  @GetExchange("/authorities")
   ResponseEntity<AuthoritySearchResponse> searchAuthorities(@RequestParam("query") String query);
 }

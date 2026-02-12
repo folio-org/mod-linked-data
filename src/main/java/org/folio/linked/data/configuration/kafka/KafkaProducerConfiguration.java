@@ -1,8 +1,8 @@
 package org.folio.linked.data.configuration.kafka;
 
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
@@ -15,14 +15,14 @@ import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 
 @Configuration
 @RequiredArgsConstructor
@@ -92,25 +92,24 @@ public class KafkaProducerConfiguration {
   }
 
   @Bean
-  public ProducerFactory<String, ResourceIndexEvent> resourceIndexEventProducerFactory(ObjectMapper objectMapper) {
-    return getKafkaProducerFactory(objectMapper);
+  public ProducerFactory<String, ResourceIndexEvent> resourceIndexEventProducerFactory() {
+    return getKafkaProducerFactory();
   }
 
   @Bean
-  public ProducerFactory<String, InstanceIngressEvent> instanceIngressEventProducerFactory(ObjectMapper objectMapper) {
-    return getKafkaProducerFactory(objectMapper);
+  public ProducerFactory<String, InstanceIngressEvent> instanceIngressEventProducerFactory() {
+    return getKafkaProducerFactory();
   }
 
   @Bean
-  public ProducerFactory<String, ImportResultEvent> importResultEventProducerFactory(
-    ObjectMapper objectMapper) {
-    return getKafkaProducerFactory(objectMapper);
+  public ProducerFactory<String, ImportResultEvent> importResultEventProducerFactory() {
+    return getKafkaProducerFactory();
   }
 
-  private @NotNull <T> DefaultKafkaProducerFactory<String, T> getKafkaProducerFactory(ObjectMapper objectMapper) {
-    var properties = new HashMap<>(kafkaProperties.buildProducerProperties(null));
+  private @NotNull <T> DefaultKafkaProducerFactory<String, T> getKafkaProducerFactory() {
+    var properties = new HashMap<>(kafkaProperties.buildProducerProperties());
     Supplier<Serializer<String>> keySerializer = StringSerializer::new;
-    Supplier<Serializer<T>> valueSerializer = () -> new JsonSerializer<>(objectMapper);
+    Supplier<Serializer<T>> valueSerializer = () -> new JacksonJsonSerializer<>(JSON_MAPPER);
     return new DefaultKafkaProducerFactory<>(properties, keySerializer, valueSerializer);
   }
 }

@@ -34,7 +34,6 @@ import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +66,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
+import tools.jackson.databind.JsonNode;
 
 @Log4j2
 @Mapper(componentModel = SPRING, imports = {WorkMapperUnit.class, UUID.class})
@@ -263,7 +263,7 @@ public abstract class WorkSearchMessageMapper {
     if (nonNull(doc)) {
       for (String value : values) {
         if (doc.has(value) && !doc.get(value).isEmpty()) {
-          return doc.get(value).get(0).asText();
+          return doc.get(value).get(0).asString();
         }
       }
     }
