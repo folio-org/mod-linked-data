@@ -45,8 +45,8 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private final ResourceMarcBibService resourceMarcBibService;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
   private final MarcBib2ldMapper marcBib2ldMapper;
-  @Value("${AUTO_CONVERT_MARC_BIB_TO_GRAPH:false}")
-  private boolean autoConvertBibToGraph;
+  @Value("${mod-linked-data.auto-save-marc-bib-as-graph:false}")
+  private boolean autoSaveMarcBibAsGraph;
 
   @SuppressWarnings("java:S125")
   @Override
@@ -58,7 +58,7 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
       saveAuthorities(event);
     } else if (isLinkedDataBibCreateEvent(event, recordType)) {
       saveAdminMetadata(event);
-    } else if (autoConvertBibToGraph && recordType == MARC_BIB && event.getEventType() == SOURCE_RECORD_CREATED) {
+    } else if (autoSaveMarcBibAsGraph && recordType == MARC_BIB && event.getEventType() == SOURCE_RECORD_CREATED) {
       var marcJson = event.getEventPayload().getParsedRecord().getContent();
       var leader = getElementByJsonPath(marcJson, LEADER_JSONPATH, String.class).orElse("");
       if (TypeUtil.isSupported(leader)) {

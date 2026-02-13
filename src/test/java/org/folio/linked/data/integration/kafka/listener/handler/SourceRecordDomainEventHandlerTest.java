@@ -173,7 +173,7 @@ class SourceRecordDomainEventHandlerTest {
     var event = new SourceRecordDomainEvent().id("9")
       .eventType(SOURCE_RECORD_CREATED)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marcJson)));
-    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoConvertBibToGraph", true);
+    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoSaveMarcBibAsGraph", true);
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
@@ -190,7 +190,7 @@ class SourceRecordDomainEventHandlerTest {
     var event = new SourceRecordDomainEvent().id("11")
       .eventType(SOURCE_RECORD_CREATED)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marcJson)));
-    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoConvertBibToGraph", true);
+    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoSaveMarcBibAsGraph", true);
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
