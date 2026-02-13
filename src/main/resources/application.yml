@@ -103,6 +103,7 @@ mod-linked-data:
       settings-entries: ${CACHE_TTL_SETTINGS_ENTRIES_MS:18000000}
       module-state: ${CACHE_TTL_MODULE_STATE_MS:18000000}
       authority-source-files: ${CACHE_TTL_AUTHORITY_SOURCE_FILES_MS:18000000}
+  auto-save-marc-bib-as-graph: ${AUTO_SAVE_MARC_BIB_AS_GRAPH:false}
 
 management:
   endpoints:

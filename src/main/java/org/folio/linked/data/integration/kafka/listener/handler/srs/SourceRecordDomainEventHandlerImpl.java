@@ -7,6 +7,7 @@ import static org.folio.linked.data.domain.dto.SourceRecordDomainEvent.EventType
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_AUTHORITY;
 import static org.folio.linked.data.domain.dto.SourceRecordType.MARC_BIB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.JsonUtils.getElementByJsonPath;
 import static org.folio.linked.data.util.JsonUtils.hasElementByJsonPath;
 
 import java.util.Set;
@@ -19,6 +20,8 @@ import org.folio.linked.data.service.resource.marc.ResourceMarcAuthorityService;
 import org.folio.linked.data.service.resource.marc.ResourceMarcBibService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.marc4ld.service.marc2ld.bib.MarcBib2ldMapper;
+import org.folio.marc4ld.util.TypeUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +36,8 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private static final String NO_MARC_EVENT = "SourceRecordDomainEvent [id {}] has no Marc record inside";
   private static final String UNSUPPORTED_TYPE = "Ignoring unsupported {} type [{}] in SourceRecordDomainEvent [id {}]";
   private static final String LINKED_DATA_ID_JSONPATH = "$.fields[*].999.subfields[*].l";
+  private static final String LEADER_JSONPATH = "$.leader";
+
   private static final Set<SourceRecordType> SUPPORTED_RECORD_TYPES = Set.of(MARC_BIB, MARC_AUTHORITY);
   private static final Set<SourceRecordDomainEvent.EventTypeEnum> SUPPORTED_EVENT_TYPES =
     Set.of(SOURCE_RECORD_CREATED, SOURCE_RECORD_UPDATED);
@@ -40,6 +45,8 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
   private final ResourceMarcBibService resourceMarcBibService;
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
   private final MarcBib2ldMapper marcBib2ldMapper;
+  @Value("${mod-linked-data.auto-save-marc-bib-as-graph:false}")
+  private boolean autoSaveMarcBibAsGraph;
 
   @SuppressWarnings("java:S125")
   @Override
@@ -51,6 +58,12 @@ public class SourceRecordDomainEventHandlerImpl implements SourceRecordDomainEve
       saveAuthorities(event);
     } else if (isLinkedDataBibCreateEvent(event, recordType)) {
       saveAdminMetadata(event);
+    } else if (autoSaveMarcBibAsGraph && recordType == MARC_BIB && event.getEventType() == SOURCE_RECORD_CREATED) {
+      var marcJson = event.getEventPayload().getParsedRecord().getContent();
+      var leader = getElementByJsonPath(marcJson, LEADER_JSONPATH, String.class).orElse("");
+      if (TypeUtil.isSupported(leader)) {
+        resourceMarcBibService.importGraphResourceFromMarc(marcJson);
+      }
     }
   }
 

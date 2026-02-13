@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -156,6 +157,40 @@ class SourceRecordDomainEventHandlerTest {
     var event = new SourceRecordDomainEvent().id("7")
       .eventType(SOURCE_RECORD_UPDATED)
       .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord("{ \"key\": \"value\"}")));
+
+    // when
+    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
+
+    // then
+    verifyNoInteractions(resourceMarcBibService);
+    verifyNoInteractions(resourceMarcAuthorityService);
+  }
+
+  @Test
+  void shouldImportGraphResource_forMarcBibCreateEvent_ifToggleEnabled() {
+    // given
+    var marcJson = "{\"leader\":\"00247nam a2200073uc 4500\"}";
+    var event = new SourceRecordDomainEvent().id("9")
+      .eventType(SOURCE_RECORD_CREATED)
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marcJson)));
+    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoSaveMarcBibAsGraph", true);
+
+    // when
+    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
+
+    // then
+    verify(resourceMarcBibService).importGraphResourceFromMarc(marcJson);
+    verifyNoInteractions(resourceMarcAuthorityService);
+  }
+
+  @Test
+  void shouldNotImportGraphResource_whenToggleEnabledButLeaderUnsupported() {
+    // given
+    var marcJson = "{\"leader\":\"marc with unsupported leader\"}";
+    var event = new SourceRecordDomainEvent().id("11")
+      .eventType(SOURCE_RECORD_CREATED)
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marcJson)));
+    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoSaveMarcBibAsGraph", true);
 
     // when
     sourceRecordDomainEventHandler.handle(event, MARC_BIB);
