@@ -182,4 +182,21 @@ class SourceRecordDomainEventHandlerTest {
     verify(resourceMarcBibService).importGraphResourceFromMarc(marcJson);
     verifyNoInteractions(resourceMarcAuthorityService);
   }
+
+  @Test
+  void shouldNotImportGraphResource_whenToggleEnabledButLeaderUnsupported() {
+    // given
+    var marcJson = "{\"leader\":\"marc with unsupported leader\"}";
+    var event = new SourceRecordDomainEvent().id("11")
+      .eventType(SOURCE_RECORD_CREATED)
+      .eventPayload(new SourceRecord().parsedRecord(new ParsedRecord(marcJson)));
+    ReflectionTestUtils.setField(sourceRecordDomainEventHandler, "autoConvertBibToGraph", true);
+
+    // when
+    sourceRecordDomainEventHandler.handle(event, MARC_BIB);
+
+    // then
+    verifyNoInteractions(resourceMarcBibService);
+    verifyNoInteractions(resourceMarcAuthorityService);
+  }
 }
