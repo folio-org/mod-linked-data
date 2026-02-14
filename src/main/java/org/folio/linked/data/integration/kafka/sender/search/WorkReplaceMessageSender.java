@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
+import static org.folio.linked.data.util.ResourceUtils.isNonLightResourceOfType;
 
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,10 @@ public class WorkReplaceMessageSender implements ReplaceMessageSender {
 
   @Override
   public Collection<Pair<Resource, Resource>> apply(Resource previous, Resource current) {
-    if (current.isOfType(WORK)) {
+    if (isNonLightResourceOfType(current, WORK)) {
       return singletonList(Pair.of(previous, current));
     }
-    if (current.isOfType(INSTANCE)) {
+    if (isNonLightResourceOfType(current, INSTANCE)) {
       triggerParentWorkUpdate(current);
     }
     return emptyList();

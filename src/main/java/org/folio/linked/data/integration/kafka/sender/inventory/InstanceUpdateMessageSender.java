@@ -1,5 +1,6 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.ResourceUtils.extractInstancesFromWork;
@@ -27,7 +28,12 @@ public class InstanceUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public Collection<Resource> apply(Resource resource) {
-    return extractInstancesFromWork(resource);
+    if (resource.isOfType(LIGHT_RESOURCE)) {
+      return List.of();
+    }
+    return extractInstancesFromWork(resource).stream()
+      .filter(r -> r.isNotOfType(LIGHT_RESOURCE))
+      .toList();
   }
 
   @Override

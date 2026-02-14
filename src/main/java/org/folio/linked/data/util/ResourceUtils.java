@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.time.format.DateTimeFormatter;
@@ -27,6 +28,7 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.model.entity.Resource;
@@ -192,4 +194,7 @@ public class ResourceUtils {
       .anyMatch(re -> predicate.getUri().equals(re.getPredicate().getUri()));
   }
 
+  public static boolean isNonLightResourceOfType(Resource resource, ResourceTypeDictionary type) {
+    return resource.isNotOfType(LIGHT_RESOURCE) && resource.isOfType(type);
+  }
 }

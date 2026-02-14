@@ -5,6 +5,7 @@ import static java.util.Collections.singletonList;
 import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.ResourceUtils.getPropertyValues;
@@ -34,7 +35,7 @@ public class InstanceCreateMessageSender implements CreateMessageSender {
 
   @Override
   public Collection<Resource> apply(Resource resource) {
-    if (!resource.isOfType(INSTANCE)) {
+    if (resource.isOfType(LIGHT_RESOURCE) || !resource.isOfType(INSTANCE)) {
       return emptyList();
     }
     if (instanceExistInInventory(resource)) {

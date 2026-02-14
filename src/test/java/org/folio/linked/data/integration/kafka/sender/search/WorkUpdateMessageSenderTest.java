@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -47,6 +48,30 @@ class WorkUpdateMessageSenderTest {
 
     // when
     producer.produce(resource);
+
+    // then
+    verifyNoInteractions(eventPublisher, resourceMessageProducer);
+  }
+
+  @Test
+  void produce_shouldNotSendMessageAndIndexEvent_ifGivenInstanceIsLightResource() {
+    // given
+    var lightInstance = new Resource().addTypes(INSTANCE, LIGHT_RESOURCE);
+
+    // when
+    producer.produce(lightInstance);
+
+    // then
+    verifyNoInteractions(eventPublisher, resourceMessageProducer);
+  }
+
+  @Test
+  void produce_shouldNotSendMessageAndIndexEvent_ifGivenWorkIsLightResource() {
+    // given
+    var lightWork = new Resource().addTypes(WORK, LIGHT_RESOURCE);
+
+    // when
+    producer.produce(lightWork);
 
     // then
     verifyNoInteractions(eventPublisher, resourceMessageProducer);

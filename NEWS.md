@@ -91,6 +91,7 @@
 - Create real HUB resource when work is connected to a remote HUB RDF via UI [MODLD-968](https://folio-org.atlassian.net/browse/MODLD-968)
 - Create ResourceEntityLabelService to generate labels for Resources [MODLD-970](https://folio-org.atlassian.net/browse/MODLD-970)
 - Update `mandatory` profile field values [MODLD-985](https://folio-org.atlassian.net/browse/MODLD-985)
+- Exclude Light Work/Instance resources from mod-inventory and mod-search kafka messages [MODLD-980](https://folio-org.atlassian.net/browse/MODLD-980)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
