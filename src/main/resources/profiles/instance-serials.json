@@ -68,7 +68,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -83,7 +83,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -98,7 +98,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -113,7 +113,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -128,7 +128,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -159,7 +159,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -174,7 +174,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -189,7 +189,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -204,7 +204,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -219,7 +219,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -234,7 +234,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -249,7 +249,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -279,7 +279,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -294,7 +294,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -309,7 +309,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -324,7 +324,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -339,7 +339,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -354,7 +354,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -369,7 +369,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -384,7 +384,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -399,7 +399,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -434,7 +434,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -449,7 +449,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/countries"],
         "valueDataType": {
@@ -466,7 +466,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -481,7 +481,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -496,7 +496,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -525,7 +525,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -540,7 +540,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/countries"],
         "valueDataType": {
@@ -557,7 +557,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -572,7 +572,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -587,7 +587,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -616,7 +616,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -631,7 +631,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/countries"],
         "valueDataType": {
@@ -648,7 +648,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -663,7 +663,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -678,7 +678,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -707,7 +707,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -722,7 +722,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/countries"],
         "valueDataType": {
@@ -739,7 +739,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -754,7 +754,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -769,7 +769,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -784,7 +784,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -799,7 +799,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/issuance"],
         "valueDataType": {
@@ -816,7 +816,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -849,7 +849,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -864,7 +864,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
         "valueDataType": {
@@ -894,7 +894,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -909,7 +909,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -924,7 +924,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
         "valueDataType": {
@@ -953,7 +953,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -968,7 +968,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
         "valueDataType": {
@@ -998,7 +998,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1013,7 +1013,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1028,7 +1028,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
         "valueDataType": {
@@ -1058,7 +1058,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1073,7 +1073,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1088,7 +1088,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
         "valueDataType": {
@@ -1105,7 +1105,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1123,7 +1123,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1138,7 +1138,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
         "valueDataType": {}
@@ -1152,7 +1152,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1170,7 +1170,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1184,7 +1184,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1198,7 +1198,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/mediaTypes"],
         "valueDataType": {
@@ -1215,7 +1215,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1233,7 +1233,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1262,7 +1262,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1277,7 +1277,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/carriers"],
         "valueDataType": {
@@ -1294,7 +1294,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1312,7 +1312,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1327,7 +1327,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1342,7 +1342,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/frequencies"],
         "valueDataType": {
@@ -1359,7 +1359,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1381,7 +1381,7 @@
       "constraints": {
         "repeatable": false,
         "editable": false,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1396,7 +1396,7 @@
       "constraints": {
         "repeatable": false,
         "editable": false,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1411,7 +1411,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1426,7 +1426,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
         "valueDataType": { "remark": "", "dataTypeURI": ""}
@@ -1441,7 +1441,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -1456,7 +1456,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
