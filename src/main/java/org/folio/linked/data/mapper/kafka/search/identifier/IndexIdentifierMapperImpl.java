@@ -57,7 +57,7 @@ public class IndexIdentifierMapperImpl implements IndexIdentifierMapper {
       .map(doc::get)
       .filter(node -> !node.isEmpty())
       .map(value -> value.get(0))
-      .map(JsonNode::asText)
+      .map(JsonNode::asString)
       .findFirst();
   }
 

@@ -3,22 +3,18 @@ package org.folio.linked.data.e2e.mappings.work.hub;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.test.TestUtil.FOLIO_OKAPI_URL;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 class HubReferenceIT extends PostResourceIT {
 
   public static final Long TEST_HUB_ID = 999L;
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @BeforeEach
   void createAuthority() {
@@ -111,7 +107,7 @@ class HubReferenceIT extends PostResourceIT {
     var hubLabel = "hub label 1";
     var resource = new Resource()
       .addTypes(HUB)
-      .setDoc(objectMapper.readTree("{\"http://bibfra.me/vocab/lite/label\": [\"%s\"]}".formatted(hubLabel)))
+      .setDoc(TEST_JSON_MAPPER.readTree("{\"http://bibfra.me/vocab/lite/label\": [\"%s\"]}".formatted(hubLabel)))
       .setLabel(hubLabel)
       .setIdAndRefreshEdges(id);
     resourceTestService.saveGraph(resource);

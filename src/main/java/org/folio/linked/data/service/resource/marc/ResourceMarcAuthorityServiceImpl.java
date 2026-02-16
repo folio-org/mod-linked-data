@@ -5,7 +5,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.UNSUPPORTED_MARC;
 import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
-import static org.folio.linked.data.util.JsonUtils.writeValueAsString;
 import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
 import java.util.Objects;
@@ -29,6 +28,7 @@ import org.folio.linked.data.repo.FolioMetadataRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.graph.SaveGraphResult;
+import org.folio.linked.data.util.JsonUtils;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
 import org.folio.rest.jaxrs.model.ParsedRecord;
 import org.folio.rest.jaxrs.model.Record;
@@ -113,7 +113,7 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     return ofNullable(response.getBody())
       .map(Record::getParsedRecord)
       .map(ParsedRecord::getContent)
-      .map(c -> writeValueAsString(c));
+      .map(JsonUtils::writeValueAsString);
   }
 
   private Optional<org.folio.ld.dictionary.model.Resource> firstAuthorityToModel(String marcJson) {

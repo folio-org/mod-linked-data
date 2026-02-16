@@ -102,7 +102,7 @@ public abstract class PostResourceIT extends ITBase {
 
   protected Set<String> getProperties(Resource resource, String property) {
     return stream(resource.getDoc().get(property).spliterator(), false)
-      .map(JsonNode::asText)
+      .map(JsonNode::asString)
       .collect(toSet());
   }
 

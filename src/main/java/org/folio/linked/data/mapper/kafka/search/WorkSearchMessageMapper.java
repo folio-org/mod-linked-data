@@ -180,7 +180,7 @@ public abstract class WorkSearchMessageMapper {
       .stream()
       .flatMap(d -> Arrays.stream(properties)
         .filter(p -> d.has(p) && !d.get(p).isEmpty())
-        .flatMap(p -> StreamSupport.stream(doc.get(p).spliterator(), true).map(JsonNode::asText)));
+        .flatMap(p -> StreamSupport.stream(doc.get(p).spliterator(), true).map(JsonNode::asString)));
   }
 
   protected List<LinkedDataWorkOnlyClassificationsInner> extractClassifications(Resource resource) {

@@ -2,14 +2,13 @@ package org.folio.linked.data.service.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
-import static org.folio.linked.data.test.TestUtil.executeAsyncWithContext;
-import static org.folio.linked.data.test.TestUtil.executeWithContext;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Profile;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ResourceTypeRepository;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.spring.tools.context.ExecutionContextBuilder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,18 +23,16 @@ class ProfileServiceCacheIT {
 
   @Autowired
   private ProfileService profileService;
-
   @Autowired
   private ProfileRepository profileRepository;
-
   @Autowired
   private ResourceTypeRepository resourceTypeRepository;
-
   @Autowired
   private ExecutionContextBuilder contextBuilder;
-
   @Autowired
   private CacheManager cacheManager;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach
   void setUp() {
@@ -53,13 +50,13 @@ class ProfileServiceCacheIT {
     // given
     var tenant1 = TENANT_ID;
     var profileId = TEST_PROFILE_ID;
-    executeAsyncWithContext(contextBuilder, tenant1, () -> createTestProfile(profileId, "Tenant1 Profile"));
+    tenantScopedExecutionService.execute(tenant1, () -> createTestProfile(profileId, "Tenant1 Profile"));
 
     // Clear cache to ensure fresh start
     clearCache();
 
     // when - populate cache for tenant1
-    var profile1 = executeWithContext(contextBuilder, tenant1, () -> profileService.getProfileById(profileId));
+    var profile1 = tenantScopedExecutionService.execute(tenant1, () -> profileService.getProfileById(profileId));
 
     // Verify tenant1 has cache entry
     var cache = cacheManager.getCache(PROFILES);
@@ -80,10 +77,10 @@ class ProfileServiceCacheIT {
     // then - tenant2 should not have any cached value yet
     assertThat(tenant2CacheValue).isNull();
     // Create profile for tenant2
-    executeAsyncWithContext(contextBuilder, tenant2, () -> createTestProfile(profileId, "Tenant2 Profile"));
+    tenantScopedExecutionService.execute(tenant2, () -> createTestProfile(profileId, "Tenant2 Profile"));
 
     // when - make call for tenant2
-    var profile2 = executeWithContext(contextBuilder, tenant2, () -> profileService.getProfileById(profileId));
+    var profile2 = tenantScopedExecutionService.execute(tenant2, () -> profileService.getProfileById(profileId));
 
     // then - now tenant2 should have its own cache entry
     assertThat(cache.get(tenant2CacheKey)).isNotNull();
@@ -97,7 +94,7 @@ class ProfileServiceCacheIT {
     assertThat(cache.get(tenant2CacheKey)).isNotNull();
   }
 
-  private void createTestProfile(int id, String name) {
+  private Profile createTestProfile(int id, String name) {
     // Get existing resource type (Work type exists in test data)
     var resourceType = resourceTypeRepository.findByUri("http://bibfra.me/vocab/lite/Work");
     if (resourceType == null) {
@@ -110,13 +107,19 @@ class ProfileServiceCacheIT {
       .setResourceType(resourceType)
       .setValue("{\"profile\": \"" + name + "\"}");
 
-    profileRepository.save(profile);
+    return profileRepository.save(profile);
   }
 
   private void cleanupTestProfiles() {
     // Delete profile with same ID from both tenant schemas
-    executeAsyncWithContext(contextBuilder, TENANT_ID, () -> profileRepository.deleteById(TEST_PROFILE_ID));
-    executeAsyncWithContext(contextBuilder, "another_tenant", () -> profileRepository.deleteById(TEST_PROFILE_ID));
+    tenantScopedExecutionService.execute(TENANT_ID, () -> {
+      profileRepository.deleteById(TEST_PROFILE_ID);
+      return null;
+    });
+    tenantScopedExecutionService.execute("another_tenant", () -> {
+      profileRepository.deleteById(TEST_PROFILE_ID);
+      return null;
+    });
   }
 
   private void clearCache() {

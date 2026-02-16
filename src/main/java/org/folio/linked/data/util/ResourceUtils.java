@@ -183,7 +183,7 @@ public class ResourceUtils {
   public static List<String> getPropertyValues(Resource resource, PropertyDictionary property) {
     return ofNullable(resource.getDoc())
       .map(doc -> doc.get(property.getValue()))
-      .map(node -> stream(node.spliterator(), false).map(JsonNode::asText).toList())
+      .map(node -> stream(node.spliterator(), false).map(JsonNode::asString).toList())
       .orElse(List.of());
   }
 

@@ -452,7 +452,7 @@ abstract class ResourceControllerITBase extends ITBase {
         .map(Resource::getDoc)
         .map(jsonNode -> jsonNode.get(TERM.getValue()))
         .map(jsonNode -> jsonNode.get(0))
-        .map(JsonNode::asText)
+        .map(JsonNode::asString)
     ).contains("Russian");
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
@@ -871,7 +871,7 @@ abstract class ResourceControllerITBase extends ITBase {
   private void validateLiterals(Resource resource, String field, List<String> expectedValues) {
     var actualValues = resource.getDoc().get(field);
     assertThat(actualValues.size()).isEqualTo(expectedValues.size());
-    assertThat(stream(spliteratorUnknownSize(actualValues.iterator(), ORDERED), false).map(JsonNode::asText).toList())
+    assertThat(stream(spliteratorUnknownSize(actualValues.iterator(), ORDERED), false).map(JsonNode::asString).toList())
       .hasSameElementsAs(expectedValues);
   }
 

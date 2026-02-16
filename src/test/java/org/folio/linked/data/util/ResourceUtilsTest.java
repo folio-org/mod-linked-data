@@ -277,7 +277,7 @@ class ResourceUtilsTest {
     var node = resource.getDoc().get(LABEL.getValue());
     assertThat(node).isNotNull();
     assertThat(node.isArray()).isTrue();
-    assertThat(node.get(0).asText()).isEqualTo(labelText);
+    assertThat(node.get(0).asString()).isEqualTo(labelText);
   }
 
   @Test

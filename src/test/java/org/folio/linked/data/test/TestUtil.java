@@ -48,9 +48,6 @@ import org.folio.linked.data.model.entity.ResourceSubgraphView;
 import org.folio.linked.data.test.json.IdentifierFieldResponseDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
 import org.folio.linked.data.test.json.TitleFieldResponseDeserializer;
-import org.folio.spring.FolioExecutionContext;
-import org.folio.spring.scope.FolioExecutionContextSetter;
-import org.folio.spring.tools.context.ExecutionContextBuilder;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
@@ -220,29 +217,4 @@ public class TestUtil {
     );
   }
 
-  public static <T> T executeWithContext(ExecutionContextBuilder contextBuilder, String tenantId,
-                                         java.util.concurrent.Callable<T> callable) {
-    var context = buildContext(contextBuilder, tenantId);
-    try (@SuppressWarnings("unused") var fex = new FolioExecutionContextSetter(context)) {
-      return callable.call();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to execute with context", e);
-    }
-  }
-
-  public static void executeAsyncWithContext(ExecutionContextBuilder contextBuilder, String tenantId,
-                                             Runnable runnable) {
-    var context = buildContext(contextBuilder, tenantId);
-    try (@SuppressWarnings("unused") var fex = new FolioExecutionContextSetter(context)) {
-      runnable.run();
-    }
-  }
-
-  private static FolioExecutionContext buildContext(ExecutionContextBuilder contextBuilder, String tenantId) {
-    var okapiUrl = getProperty(FOLIO_OKAPI_URL);
-    return contextBuilder.builder()
-      .withTenantId(tenantId)
-      .withOkapiUrl(okapiUrl)
-      .build();
-  }
 }
