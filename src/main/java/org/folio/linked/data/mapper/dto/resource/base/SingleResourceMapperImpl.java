@@ -11,14 +11,13 @@ import static org.folio.linked.data.util.Constants.AND;
 import static org.folio.linked.data.util.Constants.IS_NOT_SUPPORTED_FOR;
 import static org.folio.linked.data.util.Constants.PREDICATE;
 import static org.folio.linked.data.util.Constants.RIGHT_SQUARE_BRACKET;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -32,11 +31,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SingleResourceMapperImpl implements SingleResourceMapper {
 
-  private final ObjectMapper objectMapper;
   private final List<SingleResourceMapperUnit> mapperUnits;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
 
-  @SneakyThrows
   @Override
   public <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentRequestDto, Predicate predicate,
                                Resource parentEntity) {
@@ -52,8 +49,8 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
     } catch (Exception e) {
       log.warn("Exception during toEntity mapping", e);
       throw exceptionBuilder.mappingException(dto.getClass().getSimpleName()
-        + ofNullable(predicate).map(p -> " under Predicate: " + p.getUri()).orElse(""),
-        objectMapper.writeValueAsString(dto));
+          + ofNullable(predicate).map(p -> " under Predicate: " + p.getUri()).orElse(""),
+        JSON_MAPPER.writeValueAsString(dto));
     }
   }
 
@@ -79,7 +76,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
   }
 
   private Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentResponseDto,
-                                                          Class<?> requestDto) {
+                                                           Class<?> requestDto) {
     return mapperUnits.stream()
       .filter(m -> isNull(parentResponseDto) || m.supportedParents().contains(parentResponseDto))
       .filter(m -> {

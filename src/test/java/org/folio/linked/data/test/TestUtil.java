@@ -12,6 +12,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.linked.data.service.lccn.LccnResourceService.LccnResourceSearchResult;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
 import static org.folio.spring.integration.XOkapiHeaders.USER_ID;
@@ -23,9 +24,6 @@ import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_SECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 import static org.testcontainers.shaded.org.awaitility.Durations.TWO_MINUTES;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +37,10 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.configuration.ErrorResponseConfig;
-import org.folio.linked.data.configuration.json.ObjectMapperConfig;
 import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
 import org.folio.linked.data.exception.RequestProcessingException;
-import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.mapper.ResourceModelMapperImpl;
 import org.folio.linked.data.model.entity.Resource;
@@ -52,9 +48,6 @@ import org.folio.linked.data.model.entity.ResourceSubgraphView;
 import org.folio.linked.data.test.json.IdentifierFieldResponseDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
 import org.folio.linked.data.test.json.TitleFieldResponseDeserializer;
-import org.folio.spring.FolioExecutionContext;
-import org.folio.spring.scope.FolioExecutionContextSetter;
-import org.folio.spring.tools.context.ExecutionContextBuilder;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.springframework.core.env.Environment;
@@ -63,6 +56,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.testcontainers.shaded.org.awaitility.core.ThrowingRunnable;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 @UtilityClass
 public class TestUtil {
@@ -72,9 +68,12 @@ public class TestUtil {
   public static final String RECORD_DOMAIN_EVENT_TOPIC = "srs.source_records";
   public static final String INVENTORY_INSTANCE_EVENT_TOPIC = "inventory.instance";
   public static final String LD_IMPORT_OUTPUT_TOPIC = "linked_data_import.output";
-  public static final RequestProcessingExceptionBuilder EMPTY_EXCEPTION_BUILDER
-    = new RequestProcessingExceptionBuilder(new ErrorResponseConfig());
-  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapperConfig().objectMapper(EMPTY_EXCEPTION_BUILDER);
+  public static final JsonMapper TEST_JSON_MAPPER = JSON_MAPPER.rebuild()
+    .addModule(new SimpleModule()
+      .addDeserializer(ResourceResponseField.class, new ResourceResponseFieldDeserializer())
+      .addDeserializer(TitleFieldResponseTitleInner.class, new TitleFieldResponseDeserializer())
+      .addDeserializer(IdentifierFieldResponse.class, new IdentifierFieldResponseDeserializer()))
+    .build();
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
   public static final ResourceModelMapper RESOURCE_MODEL_MAPPER = new ResourceModelMapperImpl();
@@ -83,24 +82,9 @@ public class TestUtil {
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
 
   static {
-    OBJECT_MAPPER.registerModule(new SimpleModule()
-      .addDeserializer(ResourceResponseField.class, new ResourceResponseFieldDeserializer())
-      .addDeserializer(TitleFieldResponseTitleInner.class, new TitleFieldResponseDeserializer())
-      .addDeserializer(IdentifierFieldResponse.class, new IdentifierFieldResponseDeserializer())
-    );
     PARAMETERS.excludeField(named("id"));
     PARAMETERS.randomizationDepth(3);
     PARAMETERS.scanClasspathForConcreteTypes(true);
-  }
-
-  @SneakyThrows
-  public static String asJsonString(Object value) {
-    return OBJECT_MAPPER.writeValueAsString(value);
-  }
-
-  @SneakyThrows
-  public static JsonNode readTree(String value) {
-    return OBJECT_MAPPER.readTree(value);
   }
 
   public static HttpHeaders defaultHeaders(Environment env) {
@@ -136,14 +120,12 @@ public class TestUtil {
     return IOUtils.toString(is, StandardCharsets.UTF_8);
   }
 
-  @SneakyThrows
   public static Map<String, Object> getSampleInstanceDtoMap() {
-    return OBJECT_MAPPER.readValue(INSTANCE_WITH_WORK_REF_SAMPLE, Map.class);
+    return TEST_JSON_MAPPER.readValue(INSTANCE_WITH_WORK_REF_SAMPLE, Map.class);
   }
 
-  @SneakyThrows
   public static Map<String, Object> getSampleWorkDtoMap() {
-    return OBJECT_MAPPER.readValue(WORK_WITH_INSTANCE_REF_SAMPLE, Map.class);
+    return TEST_JSON_MAPPER.readValue(WORK_WITH_INSTANCE_REF_SAMPLE, Map.class);
   }
 
   public static <T> T random(Class<T> clazz) {
@@ -159,7 +141,7 @@ public class TestUtil {
   }
 
   public static JsonNode getJsonNode(Map<String, ?> map) {
-    return OBJECT_MAPPER.convertValue(map, JsonNode.class);
+    return TEST_JSON_MAPPER.convertValue(map, JsonNode.class);
   }
 
   public static void awaitAndAssert(ThrowingRunnable throwingRunnable) {
@@ -235,29 +217,4 @@ public class TestUtil {
     );
   }
 
-  public static <T> T executeWithContext(ExecutionContextBuilder contextBuilder, String tenantId,
-                                         java.util.concurrent.Callable<T> callable) {
-    var context = buildContext(contextBuilder, tenantId);
-    try (@SuppressWarnings("unused") var fex = new FolioExecutionContextSetter(context)) {
-      return callable.call();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to execute with context", e);
-    }
-  }
-
-  public static void executeAsyncWithContext(ExecutionContextBuilder contextBuilder, String tenantId,
-                                             Runnable runnable) {
-    var context = buildContext(contextBuilder, tenantId);
-    try (@SuppressWarnings("unused") var fex = new FolioExecutionContextSetter(context)) {
-      runnable.run();
-    }
-  }
-
-  private static FolioExecutionContext buildContext(ExecutionContextBuilder contextBuilder, String tenantId) {
-    var okapiUrl = getProperty(FOLIO_OKAPI_URL);
-    return contextBuilder.builder()
-      .withTenantId(tenantId)
-      .withOkapiUrl(okapiUrl)
-      .build();
-  }
 }

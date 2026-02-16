@@ -1,7 +1,7 @@
 package org.folio.linked.data.service.profile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
+
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,6 +16,7 @@ import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ProfileSettingsRepository;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.stereotype.Service;
+import tools.jackson.core.JacksonException;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +26,6 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   private final ProfileRepository profileRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final FolioExecutionContext executionContext;
-  private final ObjectMapper objectMapper;
 
   @Override
   public CustomProfileSettingsResponseDto getProfileSettings(Integer profileId) {
@@ -33,10 +33,8 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
     var settings = profileSettingsRepository.getByIdUserIdAndIdProfileId(userId, profileId);
-    if (settings.isPresent()) {
-      return toDto(profileId, userId, settings.get());
-    }
-    return defaultToProfile(profileId);
+    return settings.map(profileSettings -> toDto(profileId, userId, profileSettings))
+      .orElseGet(() -> defaultToProfile(profileId));
   }
 
   @Override
@@ -47,7 +45,7 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     try {
       var settings = toEntity(profile, userId, profileSettingsRequest);
       profileSettingsRepository.save(settings);
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       throw exceptionBuilder.badRequestException("Could not process settings", String.valueOf(profileId));
     }
   }
@@ -64,23 +62,22 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
 
   private CustomProfileSettingsResponseDto toDto(Integer profileId, UUID userId, ProfileSettings settings) {
     try {
-      var customProfileSettings = objectMapper.readValue(settings.getSettings(), CustomProfileSettings.class);
+      var customProfileSettings = JSON_MAPPER.readValue(settings.getSettings(), CustomProfileSettings.class);
       return new CustomProfileSettingsResponseDto(
         profileId,
         customProfileSettings.getActive(),
         customProfileSettings.getChildren());
-    } catch (JsonProcessingException e) {
+    } catch (JacksonException e) {
       log.error("Could not read stored profile settings  (user: {}, profile: {}) - default to profile",
         userId, profileId);
       return defaultToProfile(profileId);
     }
   }
 
-  private ProfileSettings toEntity(Profile profile, UUID userId, CustomProfileSettingsRequestDto requestDto)
-      throws JsonProcessingException {
+  private ProfileSettings toEntity(Profile profile, UUID userId, CustomProfileSettingsRequestDto requestDto) {
     return new ProfileSettings()
       .setId(new ProfileSettingsPk(userId, profile.getId()))
       .setProfile(profile)
-      .setSettings(objectMapper.writeValueAsString(requestDto));
+      .setSettings(JSON_MAPPER.writeValueAsString(requestDto));
   }
 }

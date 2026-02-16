@@ -3,21 +3,13 @@ package org.folio.linked.data.service.resource.copy;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -28,10 +20,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JsonNode;
 
 @ExtendWith(MockitoExtension.class)
 @UnitTest
@@ -42,8 +35,6 @@ class ResourceCopyServiceImplTest {
 
   @Mock
   private ResourceEdgeService resourceEdgeService;
-  @Mock
-  private ObjectMapper objectMapper;
 
   @Test
   void copyEdgesAndProperties_shouldRetainUnmappedMarc_whenUpdatedResourceIsInstance() {
@@ -69,18 +60,21 @@ class ResourceCopyServiceImplTest {
     service.copyEdgesAndProperties(old, updated);
 
     // then
-    verifyNoInteractions(objectMapper);
     verify(resourceEdgeService).copyOutgoingEdges(old, updated);
   }
 
   private static Stream<Arguments> dataProvider() {
     return Stream.of(
-      arguments(new Resource()
-          .addType(new ResourceTypeEntity().setUri(INSTANCE.getUri())).setDoc(new ArrayNode(new JsonNodeFactory(true))),
-        new Resource(), getOldInstanceDoc(), getUpdatedInstanceDoc()),
-      arguments(new Resource()
-          .addType(new ResourceTypeEntity().setUri(WORK.getUri())).setDoc(new ArrayNode(new JsonNodeFactory(true))),
-        new Resource(), getOldWorkDoc(), getUpdatedWorkDoc())
+      arguments(
+        createResourceWithDoc(INSTANCE.getUri(), getOldInstanceDoc()),
+        new Resource(),
+        getUpdatedInstanceDoc()
+      ),
+      arguments(
+        createResourceWithDoc(WORK.getUri(), getOldWorkDoc()),
+        new Resource(),
+        getUpdatedWorkDoc()
+      )
     );
   }
 
@@ -88,20 +82,23 @@ class ResourceCopyServiceImplTest {
   @MethodSource("dataProvider")
   void copyEdgesAndProperties_shouldRetainProperties_thatAreNotSupportedOnUi(Resource old,
                                                                              Resource updated,
-                                                                             HashMap<String, List<String>> fromDoc,
-                                                                             HashMap<String, List<String>> expectedDoc)
-    throws JsonProcessingException {
-    // given
-    when(objectMapper.treeToValue(eq(old.getDoc()), any(TypeReference.class))).thenReturn(fromDoc);
-
+                                                                             Map<String, List<String>> expectedDoc) {
     // when
     service.copyEdgesAndProperties(old, updated);
 
     // then
-    var docCaptor = ArgumentCaptor.forClass(HashMap.class);
-    verify(objectMapper).convertValue(docCaptor.capture(), eq(JsonNode.class));
-    assertThat(docCaptor.getValue()).isEqualTo(expectedDoc);
+    var actualDoc = TEST_JSON_MAPPER.treeToValue(updated.getDoc(),
+      new TypeReference<HashMap<String, List<String>>>() {}
+    );
+    assertThat(actualDoc).isEqualTo(expectedDoc);
     verify(resourceEdgeService).copyOutgoingEdges(old, updated);
+  }
+
+  private static Resource createResourceWithDoc(String typeUri, HashMap<String, List<String>> doc) {
+    JsonNode docNode = TEST_JSON_MAPPER.convertValue(doc, JsonNode.class);
+    return new Resource()
+      .addType(new ResourceTypeEntity().setUri(typeUri))
+      .setDoc(docNode);
   }
 
   private static HashMap<String, List<String>> getOldInstanceDoc() {

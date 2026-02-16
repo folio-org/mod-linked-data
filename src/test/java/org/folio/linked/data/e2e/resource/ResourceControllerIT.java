@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -43,7 +42,6 @@ class ResourceControllerIT extends ResourceControllerITBase {
     inventoryTopicListener.getMessages().clear();
   }
 
-  @SneakyThrows
   @Override
   protected void checkSearchIndexMessage(Long id, ResourceIndexEventType eventType) {
     awaitAndAssert(() ->

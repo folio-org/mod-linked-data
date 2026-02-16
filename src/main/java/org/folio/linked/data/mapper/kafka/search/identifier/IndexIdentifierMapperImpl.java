@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +17,7 @@ import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.stereotype.Service;
+import tools.jackson.databind.JsonNode;
 
 @Log4j2
 @Service
@@ -57,7 +57,7 @@ public class IndexIdentifierMapperImpl implements IndexIdentifierMapper {
       .map(doc::get)
       .filter(node -> !node.isEmpty())
       .map(value -> value.get(0))
-      .map(JsonNode::asText)
+      .map(JsonNode::asString)
       .findFirst();
   }
 

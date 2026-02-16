@@ -3,12 +3,12 @@ package org.folio.linked.data.service.hub;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.mapper.dto.resource.hub.HubMapperUnit;
@@ -38,9 +38,8 @@ class HubServiceImplTest {
     // given
     var hubUri = "https://example.com/hub.json";
     var resource = new Resource();
-    var objectMapper = new ObjectMapper();
-    var doc = objectMapper.createObjectNode();
-    var linkArray = objectMapper.createArrayNode().add(hubUri);
+    var doc = TEST_JSON_MAPPER.createObjectNode();
+    var linkArray = TEST_JSON_MAPPER.createArrayNode().add(hubUri);
     doc.set(LINK.getValue(), linkArray);
     resource.setDoc(doc);
     var expectedResponse = new ResourceResponseDto();

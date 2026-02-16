@@ -7,7 +7,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.MonographTestUtil.setCurrentStatus;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getSampleInstanceDtoMap;
 import static org.folio.linked.data.test.resource.ResourceUtils.setExistingResourcesIds;
@@ -93,7 +93,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(
-        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+        TEST_JSON_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
           .replace("lccn value", "nn0123456789")
       );
     var query = "(lccn==\"nn0123456789\") and (staffSuppress <> \"true\" and discoverySuppress <> \"true\")"

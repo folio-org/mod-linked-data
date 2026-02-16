@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -11,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -31,8 +31,6 @@ class ResourceControllerPostHubIT extends ITBase {
   private MockMvc mockMvc;
   @Autowired
   private KafkaSearchHubIndexTopicListener searchIndexTopicListener;
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @BeforeEach
   @Override
@@ -73,11 +71,11 @@ class ResourceControllerPostHubIT extends ITBase {
       .andReturn().getResponse()
       .getContentAsString();
 
-    var hubIdStr = objectMapper.readTree(responseJson)
+    var hubIdStr = TEST_JSON_MAPPER.readTree(responseJson)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Hub")
       .path("id")
-      .asText();
+      .asString();
     checkSearchIndexMessage(Long.parseLong(hubIdStr), CREATE);
     checkIndexDate(hubIdStr);
   }

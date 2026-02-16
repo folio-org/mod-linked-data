@@ -4,9 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import org.folio.linked.data.configuration.ErrorResponseConfig;
@@ -21,16 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import tools.jackson.core.type.TypeReference;
 
 @SpringBootTest(classes = OriginPlaceMapperUnit.class)
-@Import({CoreMapperImpl.class, ObjectMapper.class, RequestProcessingExceptionBuilder.class, ErrorResponseConfig.class})
+@Import({CoreMapperImpl.class, RequestProcessingExceptionBuilder.class, ErrorResponseConfig.class})
 @UnitTest
 class OriginPlaceMapperUnitTest {
 
   @Autowired
   private OriginPlaceMapperUnit originPlaceMapperUnit;
-  @Autowired
-  private ObjectMapper objectMapper;
   @MockitoBean
   private HashService hashService;
 
@@ -49,7 +47,7 @@ class OriginPlaceMapperUnitTest {
     var resource = originPlaceMapperUnit.toEntity(place, new Resource());
 
     //then
-    var props = objectMapper.convertValue(resource.getDoc(), new TypeReference<Map<String, List<String>>>() {});
+    var props = TEST_JSON_MAPPER.convertValue(resource.getDoc(), new TypeReference<Map<String, List<String>>>() {});
     assertThat(props.get(CODE.getValue())).hasSize(1).contains(expectedMarcCode);
     assertThat(props.get(LINK.getValue())).hasSize(1).contains(expectedLink);
     assertThat(props.get(NAME.getValue())).hasSize(1).contains(expectedName);

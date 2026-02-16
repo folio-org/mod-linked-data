@@ -96,7 +96,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.MonographTestUtil.getSubjectFormNotPreferred;
 import static org.folio.linked.data.test.MonographTestUtil.getSubjectPersonPreferred;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.assertResourceMetadata;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
@@ -224,14 +224,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum;
@@ -253,6 +251,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
+import tools.jackson.databind.JsonNode;
 
 abstract class ResourceControllerITBase extends ITBase {
 
@@ -297,7 +296,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andReturn().getResponse().getContentAsString();
     validateInstanceResponse(resultActions, toInstance());
 
-    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
     assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
@@ -333,7 +332,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andReturn().getResponse().getContentAsString();
     validateWorkResponse(resultActions, toWork());
 
-    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
     validateWork(workResource, true);
@@ -361,7 +360,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(
-        OBJECT_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+        TEST_JSON_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
       );
 
     // when
@@ -374,13 +373,13 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath(toInstance(), notNullValue()))
       .andReturn().getResponse().getContentAsString();
-    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var instanceDto = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var updatedInstance = resourceTestService.getResourceById(instanceDto.getId(), 1);
     assertThat(updatedInstance.getId()).isNotNull();
     assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
     assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asText()).isEqualTo("200 m");
+    assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asString()).isEqualTo("200 m");
     assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
 
     var updatedFolioMetadata = updatedInstance.getFolioMetadata();
@@ -421,7 +420,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var updateRequest = put(RESOURCE_URL + "/" + originalWork.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(OBJECT_MAPPER.writeValueAsString(updateDto)
+      .content(TEST_JSON_MAPPER.writeValueAsString(updateDto)
         .replaceAll(INSTANCE_ID_PLACEHOLDER, instance.getId().toString())
       );
 
@@ -436,7 +435,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWork(), notNullValue()))
       .andExpect(jsonPath(toInstanceReferenceArray(toWork()), hasSize(1)))
       .andReturn().getResponse().getContentAsString();
-    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
 
     var updatedWork = resourceTestService.getResourceById(id, 1);
@@ -453,7 +452,7 @@ abstract class ResourceControllerITBase extends ITBase {
         .map(Resource::getDoc)
         .map(jsonNode -> jsonNode.get(TERM.getValue()))
         .map(jsonNode -> jsonNode.get(0))
-        .map(JsonNode::asText)
+        .map(JsonNode::asString)
     ).contains("Russian");
     assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
@@ -478,7 +477,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var response = mockMvc.perform(requestBuilder)
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString();
-    var resourceResponse = OBJECT_MAPPER.readValue(response, ResourceResponseDto.class);
+    var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var originalWorkId = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
     var originalWorkResource = resourceTestService.getResourceById(originalWorkId, 4);
 
@@ -499,13 +498,13 @@ abstract class ResourceControllerITBase extends ITBase {
     var updateRequest = put(RESOURCE_URL + "/" + originalWorkId)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeadersWithUserId(env, updatedById.toString()))
-      .content(OBJECT_MAPPER.writeValueAsString(updateDto)
+      .content(TEST_JSON_MAPPER.writeValueAsString(updateDto)
         .replaceAll(INSTANCE_ID_PLACEHOLDER, instanceForReference.getId().toString())
       );
 
     // then
     var updatedResponse = mockMvc.perform(updateRequest).andReturn().getResponse().getContentAsString();
-    var updatedResourceResponse = OBJECT_MAPPER.readValue(updatedResponse, ResourceResponseDto.class);
+    var updatedResourceResponse = TEST_JSON_MAPPER.readValue(updatedResponse, ResourceResponseDto.class);
     var updatedWorkId = ((WorkResponseField) updatedResourceResponse.getResource()).getWork().getId();
     var updatedWorkResource = resourceTestService.getResourceById(updatedWorkId, 4);
     compareResourceMetadataOfOriginalAndUpdated(originalWorkResource, updatedWorkResource, updatedById);
@@ -866,13 +865,13 @@ abstract class ResourceControllerITBase extends ITBase {
 
   private void validateLiteral(Resource resource, String field, String value) {
     assertThat(resource.getDoc().get(field).size()).isEqualTo(1);
-    assertThat(resource.getDoc().get(field).get(0).asText()).isEqualTo(value);
+    assertThat(resource.getDoc().get(field).get(0).asString()).isEqualTo(value);
   }
 
   private void validateLiterals(Resource resource, String field, List<String> expectedValues) {
     var actualValues = resource.getDoc().get(field);
     assertThat(actualValues.size()).isEqualTo(expectedValues.size());
-    assertThat(stream(spliteratorUnknownSize(actualValues.iterator(), ORDERED), false).map(JsonNode::asText).toList())
+    assertThat(stream(spliteratorUnknownSize(actualValues.iterator(), ORDERED), false).map(JsonNode::asString).toList())
       .hasSameElementsAs(expectedValues);
   }
 
@@ -882,7 +881,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().size()).isEqualTo(5);
     assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).get(0).asText()).isEqualTo("Primary: nonSortNum");
+    assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).get(0).asString()).isEqualTo("Primary: nonSortNum");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
@@ -892,9 +891,9 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().size()).isEqualTo(6);
     assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("Parallel: date");
+    assertThat(title.getDoc().get(DATE.getValue()).get(0).asString()).isEqualTo("Parallel: date");
     assertThat(title.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asText()).isEqualTo("Parallel: noteLabel");
+    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asString()).isEqualTo("Parallel: noteLabel");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
@@ -904,11 +903,11 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().size()).isEqualTo(7);
     assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("Variant: date");
+    assertThat(title.getDoc().get(DATE.getValue()).get(0).asString()).isEqualTo("Variant: date");
     assertThat(title.getDoc().get(VARIANT_TYPE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(VARIANT_TYPE.getValue()).get(0).asText()).isEqualTo("Variant: variantType");
+    assertThat(title.getDoc().get(VARIANT_TYPE.getValue()).get(0).asString()).isEqualTo("Variant: variantType");
     assertThat(title.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asText()).isEqualTo("Variant: noteLabel");
+    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asString()).isEqualTo("Variant: noteLabel");
     assertThat(title.getOutgoingEdges()).isEmpty();
   }
 
@@ -921,13 +920,13 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(title.getTypes().iterator().next().getUri()).isEqualTo(type.getUri());
     assertThat(title.getId()).isEqualTo(hashService.hash(title));
     assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asText()).isEqualTo(prefix + "partName");
+    assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asString()).isEqualTo(prefix + "partName");
     assertThat(title.getDoc().get(PART_NUMBER.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(PART_NUMBER.getValue()).get(0).asText()).isEqualTo(prefix + "partNumber");
+    assertThat(title.getDoc().get(PART_NUMBER.getValue()).get(0).asString()).isEqualTo(prefix + "partNumber");
     assertThat(title.getDoc().get(MAIN_TITLE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).get(0).asText()).isEqualTo(prefix + "mainTitle");
+    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).get(0).asString()).isEqualTo(prefix + "mainTitle");
     assertThat(title.getDoc().get(SUBTITLE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(SUBTITLE.getValue()).get(0).asText()).isEqualTo(prefix + "subTitle");
+    assertThat(title.getDoc().get(SUBTITLE.getValue()).get(0).asString()).isEqualTo(prefix + "subTitle");
   }
 
   private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate,
@@ -942,13 +941,14 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(providerEvent.getId()).isEqualTo(hashService.hash(providerEvent));
     assertThat(providerEvent.getDoc().size()).isEqualTo(4);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo(type + " date");
+    assertThat(providerEvent.getDoc().get(DATE.getValue()).get(0).asString()).isEqualTo(type + " date");
     assertThat(providerEvent.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo(type + " name");
+    assertThat(providerEvent.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo(type + " name");
     assertThat(providerEvent.getDoc().get(PROVIDER_DATE.getValue()).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(PROVIDER_DATE.getValue()).get(0).asText()).isEqualTo(type + " provider date");
+    assertThat(providerEvent.getDoc().get(PROVIDER_DATE.getValue()).get(0).asString())
+      .isEqualTo(type + " provider date");
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).size()).isEqualTo(1);
-    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asText()).isEqualTo(type + " simple place");
+    assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asString()).isEqualTo(type + " simple place");
     assertThat(providerEvent.getOutgoingEdges()).hasSize(1);
     validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, expectedCode,
       expectedLabel);
@@ -964,11 +964,11 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(place.getId()).isEqualTo(hashService.hash(place));
     assertThat(place.getDoc().size()).isEqualTo(3);
     assertThat(place.getDoc().get(CODE.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(CODE.getValue()).get(0).asText()).isEqualTo(expectedCode);
+    assertThat(place.getDoc().get(CODE.getValue()).get(0).asString()).isEqualTo(expectedCode);
     assertThat(place.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(expectedLabel);
+    assertThat(place.getDoc().get(LABEL.getValue()).get(0).asString()).isEqualTo(expectedLabel);
     assertThat(place.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(place.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo(
+    assertThat(place.getDoc().get(LINK.getValue()).get(0).asString()).isEqualTo(
       "http://id.loc.gov/vocabulary/countries/" + expectedCode);
     assertThat(place.getOutgoingEdges()).isEmpty();
   }
@@ -985,7 +985,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(lccn.getId()).isEqualTo(hashService.hash(lccn));
     assertThat(lccn.getDoc().size()).isEqualTo(1);
     assertThat(lccn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(lccn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("lccn value");
+    assertThat(lccn.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo("lccn value");
     assertThat(lccn.getOutgoingEdges()).hasSize(1);
     validateStatus(lccn.getOutgoingEdges().iterator().next(), lccn, "lccn");
   }
@@ -1003,9 +1003,9 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(isbn.getId()).isEqualTo(hashService.hash(isbn));
     assertThat(isbn.getDoc().size()).isEqualTo(2);
     assertThat(isbn.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(isbn.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("isbn value");
+    assertThat(isbn.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo("isbn value");
     assertThat(isbn.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
-    assertThat(isbn.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("isbn qualifier");
+    assertThat(isbn.getDoc().get(QUALIFIER.getValue()).get(0).asString()).isEqualTo("isbn qualifier");
     assertThat(isbn.getOutgoingEdges()).hasSize(1);
     validateStatus(isbn.getOutgoingEdges().iterator().next(), isbn, "isbn");
   }
@@ -1023,9 +1023,9 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(ian.getId()).isEqualTo(hashService.hash(ian));
     assertThat(ian.getDoc().size()).isEqualTo(2);
     assertThat(ian.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(ian.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("ian value");
+    assertThat(ian.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo("ian value");
     assertThat(ian.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
-    assertThat(ian.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("ian qualifier");
+    assertThat(ian.getDoc().get(QUALIFIER.getValue()).get(0).asString()).isEqualTo("ian qualifier");
     assertThat(ian.getOutgoingEdges()).isEmpty();
   }
 
@@ -1042,9 +1042,9 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(otherId.getId()).isEqualTo(hashService.hash(otherId));
     assertThat(otherId.getDoc().size()).isEqualTo(2);
     assertThat(otherId.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
-    assertThat(otherId.getDoc().get(NAME.getValue()).get(0).asText()).isEqualTo("otherId value");
+    assertThat(otherId.getDoc().get(NAME.getValue()).get(0).asString()).isEqualTo("otherId value");
     assertThat(otherId.getDoc().get(QUALIFIER.getValue()).size()).isEqualTo(1);
-    assertThat(otherId.getDoc().get(QUALIFIER.getValue()).get(0).asText()).isEqualTo("otherId qualifier");
+    assertThat(otherId.getDoc().get(QUALIFIER.getValue()).get(0).asString()).isEqualTo("otherId qualifier");
     assertThat(otherId.getOutgoingEdges()).isEmpty();
   }
 
@@ -1058,9 +1058,9 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(status.getId()).isEqualTo(hashService.hash(status));
     assertThat(status.getDoc().size()).isEqualTo(2);
     assertThat(status.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(status.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("http://id/" + prefix);
+    assertThat(status.getDoc().get(LINK.getValue()).get(0).asString()).isEqualTo("http://id/" + prefix);
     assertThat(status.getDoc().get(LABEL.getValue()).size()).isEqualTo(1);
-    assertThat(status.getDoc().get(LABEL.getValue()).get(0).asText()).isEqualTo(prefix + " status value");
+    assertThat(status.getDoc().get(LABEL.getValue()).get(0).asString()).isEqualTo(prefix + " status value");
     assertThat(status.getOutgoingEdges()).isEmpty();
   }
 
@@ -1115,9 +1115,9 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(locator.getId()).isEqualTo(hashService.hash(locator));
     assertThat(locator.getDoc().size()).isEqualTo(2);
     assertThat(locator.getDoc().get(LINK.getValue()).size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(LINK.getValue()).get(0).asText()).isEqualTo("accessLocation value");
+    assertThat(locator.getDoc().get(LINK.getValue()).get(0).asString()).isEqualTo("accessLocation value");
     assertThat(locator.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
-    assertThat(locator.getDoc().get(NOTE.getValue()).get(0).asText()).isEqualTo("accessLocation note");
+    assertThat(locator.getDoc().get(NOTE.getValue()).get(0).asString()).isEqualTo("accessLocation note");
     assertThat(locator.getOutgoingEdges()).isEmpty();
   }
 
@@ -1365,7 +1365,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(copyrightEvent.getId()).isEqualTo(hashService.hash(copyrightEvent));
     assertThat(copyrightEvent.getDoc().size()).isEqualTo(1);
     assertThat(copyrightEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
-    assertThat(copyrightEvent.getDoc().get(DATE.getValue()).get(0).asText()).isEqualTo("copyright date value");
+    assertThat(copyrightEvent.getDoc().get(DATE.getValue()).get(0).asString()).isEqualTo("copyright date value");
     assertThat(copyrightEvent.getOutgoingEdges()).isEmpty();
   }
 
@@ -1381,7 +1381,7 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(types).containsOnly(CONCEPT.getUri(), expectedSubject.getTypes().iterator().next().getUri());
     assertThat(subjectConcept.getLabel()).isEqualTo(expectedConcept.getLabel());
     assertThat(subjectConcept.getDoc().size()).isEqualTo(1);
-    validateLiteral(subjectConcept, NAME.getValue(), expectedConcept.getDoc().get(NAME.getValue()).get(0).asText());
+    validateLiteral(subjectConcept, NAME.getValue(), expectedConcept.getDoc().get(NAME.getValue()).get(0).asString());
     assertThat(subjectConcept.getOutgoingEdges()).hasSize(1);
     var subjectEdge = subjectConcept.getOutgoingEdges().iterator().next();
     validateResourceEdge(subjectEdge, subjectConcept, expectedSubject, FOCUS.getUri());
@@ -1422,14 +1422,13 @@ abstract class ResourceControllerITBase extends ITBase {
     return resourceTestService.saveGraph(resource);
   }
 
-  @SneakyThrows
   private Resource createResource(Long id, String label, String doc, ResourceTypeDictionary... types) {
     var resource = new Resource();
     Arrays.stream(types)
       .map(t -> new ResourceTypeEntity().setHash(t.getHash()).setUri(t.getUri()))
       .forEach(resource::addType);
     resource.setLabel(label);
-    resource.setDoc(OBJECT_MAPPER.readTree(doc));
+    resource.setDoc(TEST_JSON_MAPPER.readTree(doc));
     resource.setIdAndRefreshEdges(id);
     return resource;
   }

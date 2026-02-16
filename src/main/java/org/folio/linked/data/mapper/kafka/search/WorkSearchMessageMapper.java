@@ -21,6 +21,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_PARALLEL;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VARIANT;
@@ -34,7 +35,6 @@ import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -63,10 +63,11 @@ import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMappe
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.util.ResourceUtils;
+import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
+import tools.jackson.databind.JsonNode;
 
 @Log4j2
 @Mapper(componentModel = SPRING, imports = {WorkMapperUnit.class, UUID.class})
@@ -133,7 +134,7 @@ public abstract class WorkSearchMessageMapper {
   }
 
   @Nullable
-  protected LinkedDataTitle.TypeEnum getIndexTitleType(ResourceTypeDictionary type, PropertyDictionary property) {
+  protected TypeEnum getIndexTitleType(ResourceTypeDictionary type, PropertyDictionary property) {
     var isMain = property.equals(MAIN_TITLE);
     return switch (type) {
       case TITLE -> isMain ? MAIN : SUB;
@@ -180,7 +181,7 @@ public abstract class WorkSearchMessageMapper {
       .stream()
       .flatMap(d -> Arrays.stream(properties)
         .filter(p -> d.has(p) && !d.get(p).isEmpty())
-        .flatMap(p -> StreamSupport.stream(doc.get(p).spliterator(), true).map(JsonNode::asText)));
+        .flatMap(p -> StreamSupport.stream(doc.get(p).spliterator(), true).map(JsonNode::asString)));
   }
 
   protected List<LinkedDataWorkOnlyClassificationsInner> extractClassifications(Resource resource) {
@@ -263,7 +264,7 @@ public abstract class WorkSearchMessageMapper {
     if (nonNull(doc)) {
       for (String value : values) {
         if (doc.has(value) && !doc.get(value).isEmpty()) {
-          return doc.get(value).get(0).asText();
+          return doc.get(value).get(0).asString();
         }
       }
     }

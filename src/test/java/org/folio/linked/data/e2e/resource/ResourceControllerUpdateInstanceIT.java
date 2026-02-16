@@ -4,17 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.ITBase;
@@ -29,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import tools.jackson.databind.JsonNode;
 
 @IntegrationTest
 @SpringBootTest()
@@ -38,8 +36,6 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
   private ResourceTestService resourceTestService;
   @Autowired
   private RawMarcRepository rawMarcRepository;
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Test
   void update_should_reject_if_instance_with_same_id_exists_and_connected_to_different_work() throws Exception {
@@ -149,9 +145,8 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
       .isEqualTo(unmappedMarc);
   }
 
-  @SneakyThrows
   private long getInstanceId(String postResponse) {
-    JsonNode rootNode = objectMapper.readTree(postResponse);
+    JsonNode rootNode = TEST_JSON_MAPPER.readTree(postResponse);
     return rootNode
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Instance")
@@ -168,11 +163,11 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
       .replace("%TITLE%", titleStr);
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(readTree(titleDoc))
+      .setDoc(TEST_JSON_MAPPER.readTree(titleDoc))
       .setLabel(titleStr);
     var instance = new Resource()
       .addTypes(ResourceTypeDictionary.INSTANCE)
-      .setDoc(readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(titleStr);
 
     instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));

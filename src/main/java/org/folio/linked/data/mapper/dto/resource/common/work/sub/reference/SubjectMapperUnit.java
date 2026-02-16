@@ -8,7 +8,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.linked.data.util.ResourceUtils.copyWithoutPreferred;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Optional;
 import java.util.Set;
 import org.folio.linked.data.domain.dto.Reference;
@@ -21,6 +20,7 @@ import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.service.reference.ReferenceService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
+import tools.jackson.databind.JsonNode;
 
 @Component
 @MapperUnit(type = CONCEPT, predicate = SUBJECT, requestDto = Reference.class)

@@ -1,9 +1,8 @@
 package org.folio.linked.data.e2e.mappings.work.characteristic;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +10,8 @@ import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
+import tools.jackson.core.type.TypeReference;
 
 class CharacteristicIT extends PostResourceIT {
   private static final long BLOG_ID = 4634629703061696745L;
@@ -27,9 +26,6 @@ class CharacteristicIT extends PostResourceIT {
   private static final long PERIODICAL_ID = 2688342640394376770L;
   private static final long REPOSITORY_ID = -4707533701123454052L;
   private static final long WEBSITE_ID = 2549344889486893314L;
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Override
   protected String postPayload() {
@@ -98,7 +94,7 @@ class CharacteristicIT extends PostResourceIT {
     for (var resource : characteristicResources) {
       validateResourceType(resource, "http://bibfra.me/vocab/lite/Category");
 
-      var actualDoc = objectMapper.convertValue(resource.getDoc(), new TypeReference<Map<String, Object>>() {});
+      var actualDoc = TEST_JSON_MAPPER.convertValue(resource.getDoc(), new TypeReference<Map<String, Object>>() {});
       var expectedDoc = expectedCharacteristics.get(resource.getId());
       assertThat(actualDoc).isEqualTo(expectedDoc);
     }
@@ -129,12 +125,12 @@ class CharacteristicIT extends PostResourceIT {
       .toList();
 
     var responseJson = apiResponse.andReturn().getResponse().getContentAsString();
-    var characteristicsNode = objectMapper.readTree(responseJson)
+    var characteristicsNode = TEST_JSON_MAPPER.readTree(responseJson)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
       .path("http://bibfra.me/vocab/library/characteristic");
 
-    var actual = objectMapper.convertValue(characteristicsNode, new TypeReference<List<Map<String, Object>>>() {});
+    var actual = TEST_JSON_MAPPER.convertValue(characteristicsNode, new TypeReference<List<Map<String, Object>>>() {});
 
     assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
   }

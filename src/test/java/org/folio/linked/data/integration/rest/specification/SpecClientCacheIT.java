@@ -2,12 +2,11 @@ package org.folio.linked.data.integration.rest.specification;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
-import static org.folio.linked.data.test.TestUtil.executeAsyncWithContext;
 import static org.folio.linked.data.util.Constants.Cache.SPEC_RULES;
 
 import java.util.UUID;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.spring.tools.context.ExecutionContextBuilder;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,12 +18,10 @@ class SpecClientCacheIT {
 
   @Autowired
   private SpecClient specClient;
-
-  @Autowired
-  private ExecutionContextBuilder contextBuilder;
-
   @Autowired
   private CacheManager cacheManager;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach
   void setUp() {
@@ -43,7 +40,7 @@ class SpecClientCacheIT {
     var specId = UUID.fromString("bbb1f951-1f30-52e5-b827-557766551002");
 
     // when - populate cache for tenant1
-    executeAsyncWithContext(contextBuilder, tenant1, () -> specClient.getSpecRules(specId));
+    tenantScopedExecutionService.execute(tenant1, () -> specClient.getSpecRules(specId));
 
     // Verify tenant1 has cache entry
     var cache = cacheManager.getCache(SPEC_RULES);
@@ -60,7 +57,7 @@ class SpecClientCacheIT {
     assertThat(tenant2CacheValue).isNull();
 
     // when - make call for tenant2
-    executeAsyncWithContext(contextBuilder, tenant2, () -> specClient.getSpecRules(specId));
+    tenantScopedExecutionService.execute(tenant2, () -> specClient.getSpecRules(specId));
 
     // then - now tenant2 should have its own cache entry
     assertThat(cache.get(tenant2CacheKey)).isNotNull();

@@ -1,7 +1,7 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -20,8 +19,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
 class ResourceControllerSrsIT extends ITBase {
-
-  private final ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @Test
   void createWorkWithInstanceRef_shouldCreateAuthorityFromSrs() throws Exception {
@@ -42,7 +39,7 @@ class ResourceControllerSrsIT extends ITBase {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
 
-    var creatorResourceId = objectMapper.readTree(resp)
+    var creatorResourceId = TEST_JSON_MAPPER.readTree(resp)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
       .path("_creatorReference").get(0)

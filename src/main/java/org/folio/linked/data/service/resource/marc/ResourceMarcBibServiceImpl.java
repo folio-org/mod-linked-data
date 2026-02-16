@@ -8,15 +8,13 @@ import static org.folio.ld.dictionary.model.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.util.Constants.IS_NOT_FOUND;
 import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
 import static org.folio.linked.data.util.Constants.RESOURCE_WITH_GIVEN_ID;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceMarcViewDto;
@@ -45,6 +43,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 @Log4j2
 @Service
@@ -53,7 +52,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
 
   private final SrsClient srsClient;
-  private final ObjectMapper objectMapper;
   private final Ld2MarcMapper ld2MarcMapper;
   private final ResourceRepository resourceRepo;
   private final ResourceEdgeRepository edgeRepo;
@@ -176,7 +174,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
   private Optional<ResponseEntity<Record>> getRecord(String inventoryId) {
     try {
       return Optional.of(srsClient.getSourceStorageInstanceRecordById(inventoryId));
-    } catch (FeignException.NotFound e) {
+    } catch (HttpClientErrorException e) {
       return Optional.empty();
     }
   }
@@ -190,9 +188,8 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
       .flatMap(marcBib2ldMapper::fromMarcJson);
   }
 
-  @SneakyThrows
   private String toJsonString(Object content) {
-    return objectMapper.writeValueAsString(content);
+    return JSON_MAPPER.writeValueAsString(content);
   }
 
   private Resource saveAndPublishEvents(org.folio.ld.dictionary.model.Resource modelResource) {

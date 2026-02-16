@@ -1,18 +1,14 @@
 package org.folio.linked.data.e2e.mappings.instance.publicationfrequency;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class PublicationFrequencyIT extends PostResourceIT {
-
-  @Autowired
-  private ObjectMapper objectMapper;
 
   @Override
   protected String postPayload() {
@@ -44,16 +40,16 @@ public class PublicationFrequencyIT extends PostResourceIT {
   @SneakyThrows
   protected void validateApiResponse(ResultActions apiResponse) {
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
-    var publicationFrequency = objectMapper.readTree(responsePayload)
+    var publicationFrequency = TEST_JSON_MAPPER.readTree(responsePayload)
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Instance")
       .path("http://bibfra.me/vocab/library/publicationFrequency").get(0);
     var labelNode = publicationFrequency.path("http://bibfra.me/vocab/lite/label").get(0);
     var linkNode = publicationFrequency.path("http://bibfra.me/vocab/lite/link").get(0);
     var codeNote = publicationFrequency.path("http://bibfra.me/vocab/library/code").get(0);
-    assertThat(labelNode.asText()).isEqualTo("annual");
-    assertThat(linkNode.asText()).isEqualTo("http://id.loc.gov/vocabulary/frequencies/ann");
-    assertThat(codeNote.asText()).isEqualTo("a");
+    assertThat(labelNode.asString()).isEqualTo("annual");
+    assertThat(linkNode.asString()).isEqualTo("http://id.loc.gov/vocabulary/frequencies/ann");
+    assertThat(codeNote.asString()).isEqualTo("a");
   }
 
   @Override

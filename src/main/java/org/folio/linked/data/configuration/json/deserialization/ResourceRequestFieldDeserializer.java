@@ -1,19 +1,17 @@
 package org.folio.linked.data.configuration.json.deserialization;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import java.io.IOException;
 import java.util.Map;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.WorkField;
-import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.util.DtoDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-public class ResourceRequestFieldDeserializer extends JsonDeserializer<ResourceRequestField> {
+public class ResourceRequestFieldDeserializer extends ValueDeserializer<ResourceRequestField> {
 
   private static final Map<String, Class<? extends ResourceRequestField>> IDENDTITY_MAP = Map.of(
     ResourceTypeDictionary.INSTANCE.getUri(), InstanceField.class,
@@ -22,12 +20,12 @@ public class ResourceRequestFieldDeserializer extends JsonDeserializer<ResourceR
   );
   private final DtoDeserializer<ResourceRequestField> dtoDeserializer;
 
-  public ResourceRequestFieldDeserializer(RequestProcessingExceptionBuilder exceptionBuilder) {
-    dtoDeserializer = new DtoDeserializer<>(ResourceRequestField.class, IDENDTITY_MAP, exceptionBuilder);
+  public ResourceRequestFieldDeserializer() {
+    dtoDeserializer = new DtoDeserializer<>(ResourceRequestField.class, IDENDTITY_MAP);
   }
 
   @Override
-  public ResourceRequestField deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
-    return dtoDeserializer.deserialize(jp);
+  public ResourceRequestField deserialize(JsonParser jp, DeserializationContext dc) {
+    return dtoDeserializer.deserialize(jp, dc);
   }
 }

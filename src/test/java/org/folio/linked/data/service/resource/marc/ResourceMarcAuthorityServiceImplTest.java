@@ -8,7 +8,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.test.TestUtil.OBJECT_MAPPER;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.test.TestUtil.randomString;
@@ -18,8 +17,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import feign.FeignException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,11 +43,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -75,8 +72,6 @@ class ResourceMarcAuthorityServiceImplTest {
   private SrsClient srsClient;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
-  @Spy
-  private ObjectMapper objectMapper = OBJECT_MAPPER;
 
   @Test
   void importResourceFromSrs_shouldImportAuthorityFromSrs() {
@@ -104,8 +99,7 @@ class ResourceMarcAuthorityServiceImplTest {
   void importResourceFromSrs_shouldThrowNotFound_ifRecordNotExistsInSrs() {
     // given
     var id = "123";
-    when(srsClient.getAuthorityBySrsId(id))
-      .thenThrow(FeignException.NotFound.class);
+    when(srsClient.getAuthorityBySrsId(id)).thenThrow(HttpClientErrorException.NotFound.class);
     when(exceptionBuilder.notFoundSourceRecordException(any(), any())).thenReturn(emptyRequestProcessingException());
 
     // then
@@ -178,8 +172,8 @@ class ResourceMarcAuthorityServiceImplTest {
     // then
     assertThat(actualId).isEqualTo(newAuthority.getId());
     assertThat(newAuthority.getOutgoingEdges()).isEmpty();
-    assertThat(newAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
-    assertThat(existedAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("false");
+    assertThat(newAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("true");
+    assertThat(existedAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("false");
   }
 
   @Test
@@ -206,11 +200,11 @@ class ResourceMarcAuthorityServiceImplTest {
     // then
     assertThat(result).isEqualTo(id);
     assertThat(existed.isActive()).isFalse();
-    assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("false");
+    assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("false");
     assertThat(existed.getFolioMetadata()).isNull();
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped.getId()));
-    assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).textValue()).isEqualTo("true");
+    assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("true");
     assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REPLACED_BY));
   }
 

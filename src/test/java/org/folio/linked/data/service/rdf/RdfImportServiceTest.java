@@ -2,7 +2,7 @@ package org.folio.linked.data.service.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.folio.linked.data.test.TestUtil.readTree;
+import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -221,10 +221,10 @@ class RdfImportServiceTest {
     var rdfUrl = "https://example.com/resource-123.json";
     var entity1 = new org.folio.linked.data.model.entity.Resource()
       .setIdAndRefreshEdges(1L)
-      .setDoc(readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
+      .setDoc(JSON_MAPPER.readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
     var entity2 = new org.folio.linked.data.model.entity.Resource()
       .setIdAndRefreshEdges(2L)
-      .setDoc(readTree("{\"http://bibfra.me/vocab/lite/link\":[\"https://example.com/resource-456.json\"]}"));
+      .setDoc(JSON_MAPPER.readTree("{\"http://bibfra.me/vocab/lite/link\":[\"https://example.com/resource-456.json\"]}"));
     when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
     when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
       .thenReturn(Set.of(resource1, resource2));
@@ -254,7 +254,7 @@ class RdfImportServiceTest {
     var resource = new Resource().setId(1L);
     var entity = new org.folio.linked.data.model.entity.Resource()
       .setIdAndRefreshEdges(1L)
-      .setDoc(readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
+      .setDoc(JSON_MAPPER.readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
     when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
     when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
       .thenReturn(Set.of(resource));

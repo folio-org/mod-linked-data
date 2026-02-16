@@ -13,9 +13,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
@@ -35,6 +32,9 @@ import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 @Log4j2
 @UtilityClass
@@ -183,7 +183,7 @@ public class ResourceUtils {
   public static List<String> getPropertyValues(Resource resource, PropertyDictionary property) {
     return ofNullable(resource.getDoc())
       .map(doc -> doc.get(property.getValue()))
-      .map(node -> stream(node.spliterator(), false).map(JsonNode::asText).toList())
+      .map(node -> stream(node.spliterator(), false).map(JsonNode::asString).toList())
       .orElse(List.of());
   }
 

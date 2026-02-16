@@ -12,19 +12,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Date;
-import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
 @IntegrationTest
@@ -37,15 +33,9 @@ class ReIndexControllerIT extends ITBase {
   @Autowired
   private ResourceRepository resourceRepo;
   @Autowired
-  private ResourceEdgeRepository resourceEdgeRepository;
-  @Autowired
   private Environment env;
   @Autowired
   private KafkaSearchWorkIndexTopicListener consumer;
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
-  @Autowired
-  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach
   @Override
@@ -125,7 +115,6 @@ class ReIndexControllerIT extends ITBase {
     checkKafkaMessageSent(work);
   }
 
-  @SneakyThrows
   protected void checkKafkaMessageSent(Resource indexed) {
     if (nonNull(indexed)) {
       awaitAndAssert(() -> assertTrue(consumer.getMessages()

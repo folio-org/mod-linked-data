@@ -2,11 +2,10 @@ package org.folio.linked.data.integration.rest.settings;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
-import static org.folio.linked.data.test.TestUtil.executeAsyncWithContext;
 import static org.folio.linked.data.util.Constants.Cache.SETTINGS_ENTRIES;
 
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.spring.tools.context.ExecutionContextBuilder;
+import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,12 +17,10 @@ class SettingsClientCacheIT {
 
   @Autowired
   private SettingsClient settingsClient;
-
-  @Autowired
-  private ExecutionContextBuilder contextBuilder;
-
   @Autowired
   private CacheManager cacheManager;
+  @Autowired
+  private TenantScopedExecutionService tenantScopedExecutionService;
 
   @BeforeEach
   void setUp() {
@@ -42,7 +39,7 @@ class SettingsClientCacheIT {
     var query = "key==test.setting";
 
     // when - populate cache for tenant1
-    executeAsyncWithContext(contextBuilder, tenant1, () -> settingsClient.getEntries(query));
+    tenantScopedExecutionService.execute(tenant1, () -> settingsClient.getEntries(query));
 
     // Verify tenant1 has cache entry
     var cache = cacheManager.getCache(SETTINGS_ENTRIES);
@@ -59,7 +56,7 @@ class SettingsClientCacheIT {
     assertThat(tenant2CacheValue).isNull();
 
     // when - make call for tenant2
-    executeAsyncWithContext(contextBuilder, tenant2, () -> settingsClient.getEntries(query));
+    tenantScopedExecutionService.execute(tenant2, () -> settingsClient.getEntries(query));
 
     // then - now tenant2 should have its own cache entry
     assertThat(cache.get(tenant2CacheKey)).isNotNull();

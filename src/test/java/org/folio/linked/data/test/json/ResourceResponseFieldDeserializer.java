@@ -1,29 +1,26 @@
 package org.folio.linked.data.test.json;
 
-import static org.folio.linked.data.test.TestUtil.EMPTY_EXCEPTION_BUILDER;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import java.io.IOException;
 import java.util.Map;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.WorkResponseField;
 import org.folio.linked.data.util.DtoDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-public class ResourceResponseFieldDeserializer extends JsonDeserializer<ResourceResponseField> {
+public class ResourceResponseFieldDeserializer extends ValueDeserializer<ResourceResponseField> {
 
   private static final Map<String, Class<? extends ResourceResponseField>> IDENDTITY_MAP = Map.of(
     ResourceTypeDictionary.INSTANCE.getUri(), InstanceResponseField.class,
     ResourceTypeDictionary.WORK.getUri(), WorkResponseField.class
   );
   private final DtoDeserializer<ResourceResponseField> dtoDeserializer =
-    new DtoDeserializer<>(ResourceResponseField.class, IDENDTITY_MAP, EMPTY_EXCEPTION_BUILDER);
+    new DtoDeserializer<>(ResourceResponseField.class, IDENDTITY_MAP);
 
   @Override
-  public ResourceResponseField deserialize(JsonParser jp, DeserializationContext dc) throws IOException {
-    return dtoDeserializer.deserialize(jp);
+  public ResourceResponseField deserialize(JsonParser jp, DeserializationContext dc) {
+    return dtoDeserializer.deserialize(jp, dc);
   }
 }

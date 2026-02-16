@@ -1,6 +1,5 @@
 package org.folio.linked.data.integration.kafka.listener;
 
-import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
 
@@ -9,14 +8,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.logging.log4j.Level;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.integration.kafka.listener.handler.ExternalEventHandler;
 import org.folio.linked.data.service.tenant.LinkedDataTenantService;
 import org.folio.linked.data.service.tenant.TenantScopedExecutionService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.retry.RetryContext;
 import org.springframework.stereotype.Component;
 
 @Log4j2
@@ -51,20 +48,12 @@ public class LdImportOutputEventListener {
     var startTime = OffsetDateTime.now();
     tenantScopedExecutionService.executeWithRetry(
       consumerRecord.headers(),
-      retryContext -> runRetryableJob(event, startTime, retryContext),
-      ex -> logFailedEvent(event, ex, false)
+      () -> {
+        ldImportOutputEventHandler.handle(event, startTime);
+        return null;
+      },
+      ex -> log.error("Failed to handle LD-Import output event with id {}. Retrying: {}", event.getTs(), ex)
     );
   }
 
-  private void runRetryableJob(ImportOutputEvent event, OffsetDateTime startTime, RetryContext retryContext) {
-    ofNullable(retryContext.getLastThrowable())
-      .ifPresent(ex -> logFailedEvent(event, ex, true));
-    ldImportOutputEventHandler.handle(event, startTime);
-  }
-
-  private void logFailedEvent(ImportOutputEvent event, Throwable ex, boolean isRetrying) {
-    var logLevel = isRetrying ? Level.INFO : Level.ERROR;
-    log.log(logLevel, "Failed to handle LD-Import output event with id {}. Retrying: {}",
-      event.getTs(), isRetrying, ex);
-  }
 }

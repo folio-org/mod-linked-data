@@ -7,8 +7,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.FOLIO_INVENTORY_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
-import static org.folio.linked.data.test.TestUtil.readTree;
 
 import java.util.List;
 import java.util.Map;
@@ -60,9 +60,9 @@ class ResourceSubgraphViewIT extends ITBase {
     var props = amEdge.get().getTarget().getDoc();
     assertThat(props).isNotNull();
     assertThat(props.has(FOLIO_INVENTORY_ID.getValue())).isTrue();
-    assertThat(props.get(FOLIO_INVENTORY_ID.getValue()).get(0).textValue()).isEqualTo(inventoryId);
+    assertThat(props.get(FOLIO_INVENTORY_ID.getValue()).get(0).stringValue()).isEqualTo(inventoryId);
     assertThat(props.has(CONTROL_NUMBER.getValue())).isTrue();
-    assertThat(props.get(CONTROL_NUMBER.getValue()).get(0).textValue()).isEqualTo(hrId);
+    assertThat(props.get(CONTROL_NUMBER.getValue()).get(0).stringValue()).isEqualTo(hrId);
   }
 
   private String createInventoriedInstance(String titleStr, String hrid) {
@@ -75,7 +75,7 @@ class ResourceSubgraphViewIT extends ITBase {
       .replace("%TITLE%", titleStr);
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(readTree(titleDoc))
+      .setDoc(TEST_JSON_MAPPER.readTree(titleDoc))
       .setLabel(titleStr);
 
     var adminMetadataDoc = """
@@ -89,13 +89,13 @@ class ResourceSubgraphViewIT extends ITBase {
         .replace("%createdDate%", CREATED_DATE.getValue());
     var adminMetadata = new Resource()
       .addTypes(ResourceTypeDictionary.ANNOTATION)
-      .setDoc(readTree(adminMetadataDoc))
+      .setDoc(TEST_JSON_MAPPER.readTree(adminMetadataDoc))
       .setLabel(hrid);
 
     var inventoryId = UUID.randomUUID().toString();
     var resource = new Resource()
       .addTypes(INSTANCE)
-      .setDoc(readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(titleStr)
       .setIdAndRefreshEdges(456L);
     resource.setFolioMetadata(new FolioMetadata(resource).setInventoryId(inventoryId));

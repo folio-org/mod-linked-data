@@ -1,20 +1,24 @@
 package org.folio.linked.data.integration.rest.srs;
 
-import org.folio.rest.jaxrs.model.Record;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
-@FeignClient(name = "source-storage")
+import org.folio.rest.jaxrs.model.Record;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+
+@Profile("!" + STANDALONE_PROFILE)
+@HttpExchange("source-storage")
 public interface SrsClient {
 
-  @GetMapping(value = "/records/{inventoryId}/formatted?idType=INSTANCE")
+  @GetExchange("/records/{inventoryId}/formatted?idType=INSTANCE")
   ResponseEntity<Record> getSourceStorageInstanceRecordById(@PathVariable("inventoryId") String inventoryId);
 
-  @GetMapping(value = "/records/{srsId}/formatted?idType=SRS_RECORD")
+  @GetExchange("/records/{srsId}/formatted?idType=SRS_RECORD")
   ResponseEntity<Record> getAuthorityBySrsId(@PathVariable("srsId") String srsId);
 
-  @GetMapping(value = "/records/{inventoryId}/formatted?idType=AUTHORITY")
+  @GetExchange("/records/{inventoryId}/formatted?idType=AUTHORITY")
   ResponseEntity<Record> getAuthorityByInventoryId(@PathVariable("inventoryId") String inventoryId);
 }

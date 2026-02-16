@@ -1,5 +1,7 @@
 package org.folio.linked.data.e2e;
 
+import static org.folio.linked.data.domain.dto.AssignmentCheckDto.TargetEnum.CREATOR_OF_WORK;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import static org.hamcrest.Matchers.equalTo;
@@ -8,7 +10,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.folio.linked.data.domain.dto.AssignmentCheckDto;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,9 +29,6 @@ class AuthorityAssignmentControllerIT {
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  private ObjectMapper objectMapper;
-
   @ParameterizedTest
   @CsvSource({
     "samples/marc/authority_person.json, true",
@@ -47,11 +45,9 @@ class AuthorityAssignmentControllerIT {
       .accept(APPLICATION_JSON)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(
-        objectMapper.writeValueAsString(
-          new AssignmentCheckDto(
-            loadResourceAsString(marcFile),
-            AssignmentCheckDto.TargetEnum.CREATOR_OF_WORK))
+      .content(TEST_JSON_MAPPER.writeValueAsString(
+          new AssignmentCheckDto(loadResourceAsString(marcFile), CREATOR_OF_WORK)
+        )
       );
 
     // when

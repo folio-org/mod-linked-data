@@ -1,14 +1,12 @@
 package org.folio.linked.data.integration.kafka.listener.handler;
 
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Optional;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
@@ -27,9 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @UnitTest
 @ExtendWith(MockitoExtension.class)
 class InventoryInstanceEventHandlerTest {
-
-  private static final ObjectMapper MAPPER = new ObjectMapper()
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @Mock
   private WorkUpdateMessageSender workUpdateMessageSender;
@@ -134,10 +129,6 @@ class InventoryInstanceEventHandlerTest {
 
   private InventoryInstanceEvent getEvent() {
     var eventSource = TestUtil.loadResourceAsString("samples/inventoryInstanceEvent.json");
-    try {
-      return MAPPER.readValue(eventSource, InventoryInstanceEvent.class);
-    } catch (JsonProcessingException e) {
-      throw new IllegalArgumentException(e);
-    }
+    return TEST_JSON_MAPPER.readValue(eventSource, InventoryInstanceEvent.class);
   }
 }

@@ -11,18 +11,15 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
-import static org.folio.linked.data.test.TestUtil.readTree;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.SneakyThrows;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.e2e.ITBase;
@@ -39,14 +36,13 @@ import org.junit.jupiter.api.Test;
 import org.marc4j.marc.DataField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import tools.jackson.databind.JsonNode;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class ResourceControllerUpdateWorkIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;
-  @Autowired
-  private ObjectMapper objectMapper;
   @Autowired
   private KafkaInventoryTopicListener inventoryTopicListener;
   @Autowired
@@ -138,7 +134,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
   private Resource getWork(String label) {
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
           "http://bibfra.me/vocab/library/mainTitle": ["%s"]
         }
@@ -146,7 +142,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       .setLabel(label);
     var work = new Resource()
       .addTypes(WORK, BOOKS)
-      .setDoc(readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(label);
 
     work.addOutgoingEdge(new ResourceEdge(work, title, TITLE));
@@ -160,7 +156,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
   private Resource getInstance(Resource work) {
     var title = new Resource()
       .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
           "http://bibfra.me/vocab/library/mainTitle": ["simple_instance"]
         }
@@ -168,7 +164,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       .setLabel("simple_instance");
     var instance = new Resource()
       .addTypes(INSTANCE)
-      .setDoc(readTree("{}"))
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel("simple_instance");
 
     instance.addOutgoingEdge(new ResourceEdge(instance, title, TITLE));
@@ -183,7 +179,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
   private Resource getPerson() {
     var person = new Resource()
       .addTypes(PERSON)
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
           "http://bibfra.me/vocab/lite/name": ["Person name"]
         }
@@ -192,7 +188,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
 
     var lccn = new Resource()
       .addTypes(ID_LCCN, IDENTIFIER)
-      .setDoc(readTree("""
+      .setDoc(TEST_JSON_MAPPER.readTree("""
         {
           "http://bibfra.me/vocab/lite/link": ["n123456789"]
         }
@@ -208,9 +204,8 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     return person;
   }
 
-  @SneakyThrows
   private <T> T parse(String json, Class<T> clazz) {
-    return objectMapper.readValue(json, clazz);
+    return TEST_JSON_MAPPER.readValue(json, clazz);
   }
 
   private boolean isExpectedEvent(String eventStr, long linkedDataId) {
@@ -245,7 +240,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     var response = mockMvc.perform(requestBuilder)
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString();
-    return objectMapper.readValue(response, org.folio.ld.dictionary.model.Resource.class);
+    return TEST_JSON_MAPPER.readValue(response, org.folio.ld.dictionary.model.Resource.class);
   }
 
   private JsonNode putResource(Long resourceId, String dto) throws Exception {
@@ -256,6 +251,6 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     var response = mockMvc.perform(updateRequest)
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString();
-    return objectMapper.readTree(response);
+    return TEST_JSON_MAPPER.readTree(response);
   }
 }
