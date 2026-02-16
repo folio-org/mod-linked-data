@@ -84,7 +84,7 @@ class JsonUtilsTest {
   void testSetProperty() {
     // given
     ObjectNode node = JsonNodeFactory.instance.objectNode();
-    JsonNode value = JsonNodeFactory.instance.textNode("newValue");
+    JsonNode value = JsonNodeFactory.instance.stringNode("newValue");
 
     // when
     JsonUtils.setProperty(node, "newProperty", value);
@@ -98,7 +98,7 @@ class JsonUtilsTest {
     // given
     ObjectNode node = JsonNodeFactory.instance.objectNode();
     node.put("existingProperty", "oldValue");
-    JsonNode value = JsonNodeFactory.instance.textNode("newValue");
+    JsonNode value = JsonNodeFactory.instance.stringNode("newValue");
 
     // when
     JsonUtils.setProperty(node, "existingProperty", value);

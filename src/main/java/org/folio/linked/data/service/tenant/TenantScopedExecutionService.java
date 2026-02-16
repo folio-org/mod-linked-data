@@ -65,8 +65,8 @@ public class TenantScopedExecutionService {
         retryTemplate.execute(
           () -> retryTemplate.execute(retryable)
         );
-      } catch (Throwable t) {
-        failureHandler.accept(t);
+      } catch (Exception e) {
+        failureHandler.accept(e);
       }
       return null;
     });

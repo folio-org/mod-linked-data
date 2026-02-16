@@ -21,6 +21,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_PARALLEL;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VARIANT;
@@ -62,10 +63,10 @@ import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMappe
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.util.ResourceUtils;
+import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
 import tools.jackson.databind.JsonNode;
 
 @Log4j2
@@ -133,7 +134,7 @@ public abstract class WorkSearchMessageMapper {
   }
 
   @Nullable
-  protected LinkedDataTitle.TypeEnum getIndexTitleType(ResourceTypeDictionary type, PropertyDictionary property) {
+  protected TypeEnum getIndexTitleType(ResourceTypeDictionary type, PropertyDictionary property) {
     var isMain = property.equals(MAIN_TITLE);
     return switch (type) {
       case TITLE -> isMain ? MAIN : SUB;

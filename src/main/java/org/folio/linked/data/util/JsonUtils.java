@@ -143,7 +143,7 @@ public class JsonUtils {
   private static boolean arrayNotContainsElement(ArrayNode array, JsonNode value) {
     return StreamSupport.stream(array.spliterator(), false)
       .filter(node -> node.stringValue() != null)
-      .map(JsonNode::textValue)
+      .map(JsonNode::asString)
       .noneMatch(text -> text.equals(value.stringValue()));
   }
 
