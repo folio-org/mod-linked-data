@@ -22,7 +22,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {
@@ -44,7 +44,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://preprod.id.loc.gov/authorities/names"],
         "valueDataType": {}
@@ -64,7 +64,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {
@@ -130,7 +130,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [
           "http://id.loc.gov/vocabulary/relators",
@@ -180,7 +180,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -194,7 +194,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -208,7 +208,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -222,7 +222,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -252,7 +252,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -266,7 +266,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -280,7 +280,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -294,7 +294,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -308,7 +308,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -322,7 +322,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -336,7 +336,7 @@
       "constraints": {
         "repeatable": false,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -350,7 +350,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": [],
         "valueDataType": {}
@@ -367,7 +367,7 @@
       "constraints": {
         "repeatable": true,
         "editable": true,
-        "mandatory": true,
+        "mandatory": false,
         "defaults": [],
         "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
         "valueDataType": { "remark": "", "dataTypeURI": "" }
