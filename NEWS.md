@@ -1,4 +1,5 @@
 ## 2.0.0 (IN PROGRESS)
+- Upgrade module to SpringBoot4.0 and Spring7.0 [MODLD-943] (https://folio-org.atlassian.net/browse/MODLD-943)
 - Created new API GET /profile/{id} [MODLD-713](https://folio-org.atlassian.net/browse/MODLD-713)
 - Created new API POST /import/file [MODLD-729](https://folio-org.atlassian.net/browse/MODLD-729), [MODLD-740](https://folio-org.atlassian.net/browse/MODLD-740)
 - Updated API to support Extent [MODLD-390](https://folio-org.atlassian.net/browse/MODLD-390)

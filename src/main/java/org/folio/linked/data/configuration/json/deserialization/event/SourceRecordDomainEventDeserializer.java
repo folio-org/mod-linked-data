@@ -53,29 +53,24 @@ public class SourceRecordDomainEventDeserializer extends ValueDeserializer<Sourc
   }
 
   private SourceRecord getSourceRecord(JsonNode node) {
-    try {
-      if (node.isValueNode() && node.isString()) {
-        var jsonString = node.asString();
-        node = JSON_MAPPER.readTree(jsonString);
-      }
-      if (node.has(NEW)) {
-        node = node.get(NEW);
-      }
-      var sourceRecord = new SourceRecord();
-      if (node.has(ID)) {
-        sourceRecord.setId(node.get(ID).asString());
-      }
-      if (node.has(DELETED)) {
-        sourceRecord.setDeleted(node.get(DELETED).asBoolean());
-      }
-      if (node.has(PARSED_RECORD)) {
-        sourceRecord.setParsedRecord(getParsedRecord(node.get(PARSED_RECORD)));
-      }
-      return sourceRecord;
-    } catch (Exception e) {
-      log.error("Failed to deserialize source record", e);
-      return new SourceRecord();
+    if (node.isValueNode() && node.isString()) {
+      var jsonString = node.asString();
+      node = JSON_MAPPER.readTree(jsonString);
     }
+    if (node.has(NEW)) {
+      node = node.get(NEW);
+    }
+    var sourceRecord = new SourceRecord();
+    if (node.has(ID)) {
+      sourceRecord.setId(node.get(ID).asString());
+    }
+    if (node.has(DELETED)) {
+      sourceRecord.setDeleted(node.get(DELETED).asBoolean());
+    }
+    if (node.has(PARSED_RECORD)) {
+      sourceRecord.setParsedRecord(getParsedRecord(node.get(PARSED_RECORD)));
+    }
+    return sourceRecord;
   }
 
   private ParsedRecord getParsedRecord(JsonNode node) {

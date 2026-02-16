@@ -9,14 +9,10 @@ public class RawValueJsonSerializer extends ValueSerializer<String> {
 
   @Override
   public void serialize(String value, JsonGenerator gen, SerializationContext ctx) {
-    try {
-      if (Objects.nonNull(value)) {
-        gen.writeRawValue(value);
-      } else {
-        gen.writeNull();
-      }
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to serialize raw value", e);
+    if (Objects.nonNull(value)) {
+      gen.writeRawValue(value);
+    } else {
+      gen.writeNull();
     }
   }
 }
