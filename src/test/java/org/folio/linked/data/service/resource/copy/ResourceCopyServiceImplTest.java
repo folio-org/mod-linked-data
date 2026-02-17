@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.resource.copy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
@@ -47,7 +48,7 @@ class ResourceCopyServiceImplTest {
 
     // then
     verify(resourceEdgeService).copyOutgoingEdges(old, updated);
-    verify(resourceEdgeService).copyOutgoingEdges(old, updated);
+    verify(resourceEdgeService).copyIncomingEdges(old, updated);
   }
 
   @Test
@@ -74,6 +75,11 @@ class ResourceCopyServiceImplTest {
         createResourceWithDoc(WORK.getUri(), getOldWorkDoc()),
         new Resource(),
         getUpdatedWorkDoc()
+      ),
+      arguments(
+        createResourceWithDoc(HUB.getUri(), getOldHubDoc()),
+        new Resource(),
+        getUpdatedHubDoc()
       )
     );
   }
@@ -131,6 +137,18 @@ class ResourceCopyServiceImplTest {
     doc.put("http://bibfra.me/vocab/library/otherEventInformation", List.of("otherEventInformation"));
     doc.put("http://bibfra.me/vocab/library/geographicCoverage", List.of("geographicCoverage"));
     doc.put("http://bibfra.me/vocab/lite/link", List.of("workLink"));
+    return doc;
+  }
+
+  private static HashMap<String, List<String>> getOldHubDoc() {
+    var doc = getUpdatedHubDoc();
+    doc.put("http://bibfra.me/vocab/lite/note", List.of("generalNote"));
+    return doc;
+  }
+
+  private static HashMap<String, List<String>> getUpdatedHubDoc() {
+    var doc = new HashMap<String, List<String>>();
+    doc.put("http://bibfra.me/vocab/lite/link", List.of("hubLink"));
     return doc;
   }
 }
