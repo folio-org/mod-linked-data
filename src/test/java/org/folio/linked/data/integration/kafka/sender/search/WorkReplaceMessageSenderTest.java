@@ -3,6 +3,7 @@ package org.folio.linked.data.integration.kafka.sender.search;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -37,6 +38,32 @@ class WorkReplaceMessageSenderTest {
 
     // when
     producer.produce(old, resource);
+
+    // then
+    verifyNoInteractions(workDeleteMessageSender, workUpdateMessageSender, workCreateMessageSender);
+  }
+
+  @Test
+  void produce_shouldDoNothing_ifGivenNewInstanceIsLightResource() {
+    // given
+    var old = new Resource();
+    var lightInstance = new Resource().addTypes(INSTANCE, LIGHT_RESOURCE);
+
+    // when
+    producer.produce(old, lightInstance);
+
+    // then
+    verifyNoInteractions(workDeleteMessageSender, workUpdateMessageSender, workCreateMessageSender);
+  }
+
+  @Test
+  void produce_shouldDoNothing_ifGivenNewWorkIsLightResource() {
+    // given
+    var old = new Resource();
+    var lightWork = new Resource().addTypes(WORK, LIGHT_RESOURCE);
+
+    // when
+    producer.produce(old, lightWork);
 
     // then
     verifyNoInteractions(workDeleteMessageSender, workUpdateMessageSender, workCreateMessageSender);

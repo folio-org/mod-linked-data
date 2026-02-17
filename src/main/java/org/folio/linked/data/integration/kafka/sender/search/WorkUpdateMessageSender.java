@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
+import static org.folio.linked.data.util.ResourceUtils.isNonLightResourceOfType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,10 +39,10 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public Collection<Resource> apply(Resource resource) {
-    if (resource.isOfType(WORK)) {
+    if (isNonLightResourceOfType(resource, WORK)) {
       return singletonList(resource);
     }
-    if (resource.isOfType(INSTANCE)) {
+    if (isNonLightResourceOfType(resource, INSTANCE)) {
       return selectParentWorkForUpdate(resource);
     }
     return emptyList();

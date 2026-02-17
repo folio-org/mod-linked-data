@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
@@ -302,6 +303,42 @@ class ResourceUtilsTest {
 
     // then
     assertThat(resource.getDoc()).isNull();
+  }
+
+  @Test
+  void isNonLightResourceOfType_returnsTrue_whenResourceHasRequestedTypeAndIsNotLight() {
+    // given
+    var resource = new Resource().addTypes(WORK);
+
+    // when
+    var result = ResourceUtils.isNonLightResourceOfType(resource, WORK);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void isNonLightResourceOfType_returnsFalse_whenResourceIsLight() {
+    // given
+    var resource = new Resource().addTypes(WORK, LIGHT_RESOURCE);
+
+    // when
+    var result = ResourceUtils.isNonLightResourceOfType(resource, WORK);
+
+    // then
+    assertThat(result).isFalse();
+  }
+
+  @Test
+  void isNonLightResourceOfType_returnsFalse_whenResourceDoesNotHaveRequestedType() {
+    // given
+    var resource = new Resource().addTypes(INSTANCE);
+
+    // when
+    var result = ResourceUtils.isNonLightResourceOfType(resource, WORK);
+
+    // then
+    assertThat(result).isFalse();
   }
 
 }

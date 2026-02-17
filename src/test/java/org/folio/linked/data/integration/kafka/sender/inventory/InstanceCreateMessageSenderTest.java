@@ -1,12 +1,14 @@
 package org.folio.linked.data.integration.kafka.sender.inventory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
@@ -33,7 +35,7 @@ class InstanceCreateMessageSenderTest {
   @Test
   void produce_shouldDoNothing_ifGivenResourceIsNotInstance() {
     // given
-    var resource = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.FAMILY);
+    var resource = new Resource().setIdAndRefreshEdges(123L).addTypes(FAMILY);
 
     // when
     producer.produce(resource);
@@ -43,9 +45,21 @@ class InstanceCreateMessageSenderTest {
   }
 
   @Test
+  void produce_shouldDoNothing_ifGivenInstanceIsLightResource() {
+    // given
+    var lightInstance = new Resource().setIdAndRefreshEdges(123L).addTypes(INSTANCE, LIGHT_RESOURCE);
+
+    // when
+    producer.produce(lightInstance);
+
+    // then
+    verifyNoInteractions(instanceIngressMessageProducer);
+  }
+
+  @Test
   void produce_shouldSendExpectedMessage() {
     // given
-    var instance = new Resource().setIdAndRefreshEdges(123L).addTypes(ResourceTypeDictionary.INSTANCE);
+    var instance = new Resource().setIdAndRefreshEdges(123L).addTypes(INSTANCE);
     var instanceIngressEvent = new InstanceIngressEvent().id(String.valueOf(instance.getId()));
     when(instanceIngressMessageMapper.toInstanceIngressEvent(instance)).thenReturn(instanceIngressEvent);
 

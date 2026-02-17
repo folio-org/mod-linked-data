@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -65,6 +66,18 @@ class HubCreateMessageSenderTest {
 
     // when
     producer.produce(resource);
+
+    // then
+    verifyNoInteractions(eventPublisher, hubIndexMessageProducer);
+  }
+
+  @Test
+  void shouldNotSendMessageAndIndexEvent_ifGivenHubIsLight() {
+    // given
+    var lightHub = new Resource().addTypes(HUB, LIGHT_RESOURCE);
+
+    // when
+    producer.produce(lightHub);
 
     // then
     verifyNoInteractions(eventPublisher, hubIndexMessageProducer);
