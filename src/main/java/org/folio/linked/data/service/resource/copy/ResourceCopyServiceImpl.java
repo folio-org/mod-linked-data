@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.LOCATION_OF_ORIGINALS_D
 import static org.folio.ld.dictionary.PropertyDictionary.OTHER_EVENT_INFORMATION;
 import static org.folio.ld.dictionary.PropertyDictionary.PARTICIPANT_NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.REFERENCES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
@@ -31,6 +32,9 @@ import tools.jackson.databind.JsonNode;
 public class ResourceCopyServiceImpl implements ResourceCopyService {
 
   private static final Map<String, Set<String>> PROPERTIES_TO_BE_COPIED = Map.of(
+    HUB.getUri(), Set.of(
+      LINK.getValue()
+    ),
     INSTANCE.getUri(), Set.of(
       ACCESSIBILITY_NOTE.getValue(),
       CITATION_COVERAGE.getValue(),
