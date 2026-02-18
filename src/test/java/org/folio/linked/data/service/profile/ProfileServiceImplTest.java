@@ -39,7 +39,7 @@ class ProfileServiceImplTest {
     profile.setId(id);
     profile.setValue(value);
 
-    when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    when(profileRepository.findByIdWithAdditionalResourceTypes(id)).thenReturn(Optional.of(profile));
 
     //when
     var result = profileService.getProfileById(id).getValue();
@@ -52,7 +52,7 @@ class ProfileServiceImplTest {
   void getProfileById_shouldThrowNotFoundException_ifNoProfileExistsWithSpecifiedId() {
     //given
     var id = 3;
-    when(profileRepository.findById(id)).thenReturn(Optional.empty());
+    when(profileRepository.findByIdWithAdditionalResourceTypes(id)).thenReturn(Optional.empty());
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
 
