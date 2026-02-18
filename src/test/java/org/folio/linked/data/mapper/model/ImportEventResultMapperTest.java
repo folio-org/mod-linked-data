@@ -1,16 +1,16 @@
 package org.folio.linked.data.mapper.model;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.folio.linked.data.util.ImportUtils.Status.CREATED;
-import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
-import static org.folio.linked.data.util.ImportUtils.Status.UPDATED;
+import static org.folio.linked.data.util.ImportUtil.Status.CREATED;
+import static org.folio.linked.data.util.ImportUtil.Status.FAILED;
+import static org.folio.linked.data.util.ImportUtil.Status.UPDATED;
 
 import java.time.OffsetDateTime;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.mapper.kafka.ldimport.ImportEventResultMapperImpl;
-import org.folio.linked.data.util.ImportUtils;
+import org.folio.linked.data.util.ImportUtil;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ class ImportEventResultMapperTest {
   @Test
   void fromImportReport_shouldFullyMapGivenImportReport() {
     // given
-    var ir = new ImportUtils.ImportReport();
+    var ir = new ImportUtil.ImportReport();
     ir.addImport(getImportedResource(1L, "created", 1L, CREATED, null));
     ir.addImport(getImportedResource(2L, "updated", 2L, UPDATED, null));
     var failureReason = "failure reason";
@@ -60,7 +60,7 @@ class ImportEventResultMapperTest {
     var eventTs = "12345";
     var jobId = 777L;
     var event = new ImportOutputEvent().ts(eventTs).jobExecutionId(jobId);
-    var ir = new ImportUtils.ImportReport();
+    var ir = new ImportUtil.ImportReport();
 
     // when
     var result = mapper.fromImportReport(event, OffsetDateTime.now(), ir);
@@ -74,13 +74,13 @@ class ImportEventResultMapperTest {
     assertThat(result.getFailedResources()).isEmpty();
   }
 
-  private ImportUtils.ImportedResource getImportedResource(Long id,
-                                                           String label,
-                                                           Long lineNumber,
-                                                           ImportUtils.Status status,
-                                                           String failureReason) {
+  private ImportUtil.ImportedResource getImportedResource(Long id,
+                                                          String label,
+                                                          Long lineNumber,
+                                                          ImportUtil.Status status,
+                                                          String failureReason) {
     var resource = new Resource().setId(id).setLabel(label);
     var resourceWithLineNumber = new ResourceWithLineNumber(lineNumber, resource);
-    return new ImportUtils.ImportedResource(resourceWithLineNumber, status, failureReason, null);
+    return new ImportUtil.ImportedResource(resourceWithLineNumber, status, failureReason, null);
   }
 }

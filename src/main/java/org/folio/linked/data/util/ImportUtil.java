@@ -1,26 +1,33 @@
 package org.folio.linked.data.util;
 
-import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.linked.data.util.ResourceUtils.getTypeName;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_PLAIN_VALUE;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.model.entity.Resource;
+import org.jspecify.annotations.NonNull;
 
 @Log4j2
 @UtilityClass
-public class ImportUtils {
+public class ImportUtil {
   public static final String APPLICATION_LD_JSON_VALUE = "application/ld+json";
   public static final String TEXT_TURTLE_VALUE = "text/turtle";
 
@@ -46,6 +53,7 @@ public class ImportUtils {
 
   private enum ReportHeader {
     ID,
+    TYPE,
     LABEL,
     STATUS,
     FAILURE_REASON;
@@ -64,6 +72,7 @@ public class ImportUtils {
   @Data
   public static class ImportedResource {
     private Long id;
+    private Set<ResourceTypeDictionary> types;
     private String label;
     private Long lineNumber;
     private Status status;
@@ -75,6 +84,7 @@ public class ImportUtils {
                             String failureReason,
                             Resource resourceEntity) {
       this.id = resourceWithLineNumber.getResource().getId();
+      this.types = resourceWithLineNumber.getResource().getTypes();
       this.label = resourceWithLineNumber.getResource().getLabel();
       this.lineNumber = resourceWithLineNumber.getLineNumber();
       this.status = status;
@@ -85,6 +95,11 @@ public class ImportUtils {
 
   @Data
   public static class ImportReport {
+    private static final CSVFormat FORMAT = CSVFormat.EXCEL.builder()
+      .setHeader(ReportHeader.class)
+      .setDelimiter(';')
+      .setRecordSeparator("\n")
+      .get();
     private List<ImportedResource> imports = new ArrayList<>();
 
     public void addImport(ImportedResource resource) {
@@ -93,13 +108,11 @@ public class ImportUtils {
 
     public String toCsv() {
       var sw = new StringWriter();
-      var format = CSVFormat.EXCEL.builder()
-        .setHeader(ReportHeader.class)
-        .get();
-      try (var printer = new CSVPrinter(sw, format)) {
+      try (var printer = new CSVPrinter(sw, FORMAT)) {
         for (var resource : imports) {
           printer.printRecord(
             resource.getId(),
+            printType(resource),
             resource.getLabel(),
             resource.getStatus().value,
             resource.getFailureReason()
@@ -109,6 +122,19 @@ public class ImportUtils {
         log.warn("I/O error while generating CSV report", e);
       }
       return sw.toString();
+    }
+
+    private @NonNull String printType(ImportedResource ir) {
+      if (isEmpty(ir.getTypes())) {
+        return EMPTY;
+      }
+      if (ir.getTypes().contains(INSTANCE)) {
+        return getTypeName(INSTANCE);
+      }
+      if (ir.getTypes().contains(HUB)) {
+        return getTypeName(HUB);
+      }
+      return EMPTY;
     }
 
     public List<String> getIdsWithStatus(Status... statuses) {
