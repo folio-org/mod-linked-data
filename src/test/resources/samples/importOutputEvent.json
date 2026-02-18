@@ -24,7 +24,7 @@
           "id" : -31246595065653152,
           "label" : "NOV_3_DEMO_2_1",
           "createdDate" : 1762182290961,
-          "types" : [ "WORK" ],
+          "types" : [ "WORK", "BOOKS" ],
           "outgoingEdges" : [ {
             "source" : -31246595065653152,
             "target" : 8510951411829723076,

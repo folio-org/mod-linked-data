@@ -1,6 +1,7 @@
 package org.folio.linked.data.validation.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -65,7 +66,7 @@ class PrimaryTitleEntityValidatorIT extends ITBase {
     // given
     var resource = new Resource()
       .setIdAndRefreshEdges(789L)
-      .addTypes(WORK);
+      .addTypes(WORK, BOOKS);
 
     // when
     var thrown = assertThrows(TransactionSystemException.class,
