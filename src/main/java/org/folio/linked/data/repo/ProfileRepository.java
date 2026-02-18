@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 public interface ProfileRepository extends CrudRepository<Profile, Integer> {
   @EntityGraph(attributePaths = {"resourceType", "additionalResourceTypes"})
   @Query("SELECT p FROM Profile p WHERE p.id = :id")
-  Optional<Profile> findByIdWithAdditionalResourceTypes(@Param("id") Integer id);
+  Optional<Profile> findByIdWithResourceTypes(@Param("id") Integer id);
 
   List<Profile> findByResourceTypeUriOrderByIdAsc(String resourceTypeUri);
 }
