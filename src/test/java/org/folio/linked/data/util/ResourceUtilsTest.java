@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;
@@ -339,6 +340,33 @@ class ResourceUtilsTest {
 
     // then
     assertThat(result).isFalse();
+  }
+
+  @ParameterizedTest(name = "[{index}] {1} should return ''{2}''")
+  @MethodSource("provideResourceTypesForGetTypeName")
+  void getTypeName_shouldExtractTypeNameFromUri(
+    ResourceTypeDictionary type,
+    String description,
+    String expectedTypeName
+  ) {
+    // when
+    var result = ResourceUtils.getTypeName(type);
+
+    // then
+    assertThat(result)
+      .as(description)
+      .isEqualTo(expectedTypeName);
+  }
+
+  private static Stream<Arguments> provideResourceTypesForGetTypeName() {
+    return Stream.of(
+      Arguments.of(INSTANCE, "INSTANCE type", "Instance"),
+      Arguments.of(WORK, "WORK type", "Work"),
+      Arguments.of(CONCEPT, "CONCEPT type", "Concept"),
+      Arguments.of(PERSON, "PERSON type", "Person"),
+      Arguments.of(JURISDICTION, "JURISDICTION type", "Jurisdiction"),
+      Arguments.of(LIGHT_RESOURCE, "LIGHT_RESOURCE type", "LightResource")
+    );
   }
 
 }

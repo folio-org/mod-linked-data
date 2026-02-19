@@ -197,4 +197,8 @@ public class ResourceUtils {
   public static boolean isNonLightResourceOfType(Resource resource, ResourceTypeDictionary type) {
     return resource.isNotOfType(LIGHT_RESOURCE) && resource.isOfType(type);
   }
+
+  public static String getTypeName(ResourceTypeDictionary type) {
+    return type.getUri().substring(type.getUri().lastIndexOf('/') + 1);
+  }
 }

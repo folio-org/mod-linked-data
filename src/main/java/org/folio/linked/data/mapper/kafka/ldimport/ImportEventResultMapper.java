@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.kafka.ldimport;
 
-import static org.folio.linked.data.util.ImportUtils.ImportReport;
-import static org.folio.linked.data.util.ImportUtils.ImportedResource;
-import static org.folio.linked.data.util.ImportUtils.Status;
-import static org.folio.linked.data.util.ImportUtils.Status.FAILED;
+import static org.folio.linked.data.util.ImportUtil.ImportReport;
+import static org.folio.linked.data.util.ImportUtil.ImportedResource;
+import static org.folio.linked.data.util.ImportUtil.Status;
+import static org.folio.linked.data.util.ImportUtil.Status.FAILED;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import java.time.OffsetDateTime;
@@ -27,10 +27,10 @@ public abstract class ImportEventResultMapper {
   @Mapping(target = "endDate", expression = "java(java.time.OffsetDateTime.now())")
   @Mapping(target = "resourcesCount", expression = "java(importReport.getImports().size())")
   @Mapping(target = "createdCount",
-    expression = "java(importReport.getIdsWithStatus(ImportUtils.Status.CREATED).size())"
+    expression = "java(importReport.getIdsWithStatus(ImportUtil.Status.CREATED).size())"
   )
   @Mapping(target = "updatedCount",
-    expression = "java(importReport.getIdsWithStatus(ImportUtils.Status.UPDATED).size())"
+    expression = "java(importReport.getIdsWithStatus(ImportUtil.Status.UPDATED).size())"
   )
   @Mapping(target = "failedResources",
     expression = "java(getFailedResources(importReport.getImports()))"
