@@ -1,5 +1,6 @@
 package org.folio.linked.data.controller;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.rest.resource.AdminApi;
 import org.springframework.cache.Cache;
@@ -18,13 +19,8 @@ public class AdminController implements AdminApi {
     cacheManager.getCacheNames()
       .stream()
       .map(cacheManager::getCache)
-      .forEach(this::clearCache);
+      .filter(Objects::nonNull)
+      .forEach(Cache::clear);
     return ResponseEntity.noContent().build();
-  }
-
-  private void clearCache(Cache cache) {
-    if (cache != null) {
-      cache.clear();
-    }
   }
 }
