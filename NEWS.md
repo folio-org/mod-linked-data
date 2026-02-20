@@ -95,6 +95,7 @@
 - Eagerly fetch `additionalResourceTypes` when fetching `Profile` entity [MODLD-993](https://folio-org.atlassian.net/browse/MODLD-993)
 - Retain HUB's LINK property after editing [MODLD-990](https://folio-org.atlassian.net/browse/MODLD-990)
 - WORK types validation and type column added to import results CSV[MODLD-983](https://folio-org.atlassian.net/browse/MODLD-983)
+- New API to clear cache [MODLD-995](https://folio-org.atlassian.net/browse/MODLD-995)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
