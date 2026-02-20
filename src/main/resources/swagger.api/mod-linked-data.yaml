@@ -489,6 +489,18 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/admin/caches:
+    delete:
+      operationId: clearCaches
+      tags:
+        - admin
+      description: Clear all application caches
+      responses:
+        '204':
+          description: Application caches cleared
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
 components:
   parameters:
     id:
