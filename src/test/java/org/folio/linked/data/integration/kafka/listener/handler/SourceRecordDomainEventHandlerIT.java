@@ -190,7 +190,7 @@ class SourceRecordDomainEventHandlerIT {
     );
 
     assertThat(found).isPresent();
-    var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
+    var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- xValue -- zValue -- yValue -- vValue";
     assertAuthority(found.get(), expectedLabel, true, true, null);
   }
 
@@ -227,7 +227,7 @@ class SourceRecordDomainEventHandlerIT {
     assertThat(found).hasSize(2);
     var createdResource = found.get(1);
     var updatedResource = found.getFirst();
-    var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
+    var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- xValue -- zValue -- yValue -- vValue";
     var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
     assertAuthority(createdResource, expectedLabelCreated, false, false, updatedResource);
     assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);

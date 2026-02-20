@@ -120,7 +120,7 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
         .toList()
     );
     assertThat(authoritiesFromDb).hasSize(2);
-    var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- vValue -- xValue -- yValue -- zValue";
+    var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- xValue -- zValue -- yValue -- vValue";
     var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
     assertAuthority(authoritiesFromDb.getFirst(), expectedLabelCreated, false, false, authoritiesFromDb.get(1));
     assertAuthority(authoritiesFromDb.get(1), expectedLabelUpdated, true, true, null);
