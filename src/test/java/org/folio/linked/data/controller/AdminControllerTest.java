@@ -1,42 +1,34 @@
 package org.folio.linked.data.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.util.Constants.Cache.PROFILES;
-import static org.folio.linked.data.util.Constants.Cache.SPEC_RULES;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.folio.linked.data.service.CacheService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @UnitTest
+@ExtendWith(MockitoExtension.class)
 class AdminControllerTest {
 
+  @Mock
+  private CacheService cacheService;
+
   @Test
-  void clearCaches_shouldClearAllCachesAndReturnNoContent() throws Exception {
+  void clearCaches_shouldDelegateToServiceAndReturnNoContent() throws Exception {
     // given
-    var cacheManager = new CaffeineCacheManager();
-
-    var specRulesCache = cacheManager.getCache("spec-rules");
-    assertThat(specRulesCache).isNotNull();
-    specRulesCache.put(SPEC_RULES, "rule-value");
-    assertThat(specRulesCache.get(SPEC_RULES)).isNotNull();
-
-    var profilesCache = cacheManager.getCache("profiles");
-    assertThat(profilesCache).isNotNull();
-    profilesCache.put(PROFILES, "profile-value");
-    assertThat(profilesCache.get(PROFILES)).isNotNull();
-
-    var mockMvc = MockMvcBuilders.standaloneSetup(new AdminController(cacheManager)).build();
+    var mockMvc = MockMvcBuilders.standaloneSetup(new AdminController(cacheService)).build();
 
     // when
     mockMvc.perform(delete("/linked-data/admin/caches"))
       .andExpect(status().isNoContent());
 
     // then
-    assertThat(specRulesCache.get(SPEC_RULES)).isNull();
-    assertThat(profilesCache.get(PROFILES)).isNull();
+    verify(cacheService).clearCaches();
   }
 }
