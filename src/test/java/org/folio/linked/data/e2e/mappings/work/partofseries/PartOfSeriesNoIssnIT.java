@@ -49,14 +49,16 @@ class PartOfSeriesNoIssnIT extends PostResourceIT {
 
   @Override
   protected void validateGraph(Resource work) {
-    final var expectedWorkSeriesId = 2682672826857410386L;
+    final var expectedWorkSeriesId = 7431251934277040730L;
     final var expectedSeriesId = -2005579814488946952L;
-    final var expectedInstanceId = -9140089661914221986L;
+    final var expectedInstanceId = 7755608337346592869L;
 
     var workSeries = getFirstOutgoingResource(work, "http://bibfra.me/vocab/relation/isPartOf");
     assertThat(workSeries.getId()).isEqualTo(expectedWorkSeriesId);
     validateResourceType(workSeries,
-      "http://bibfra.me/vocab/lite/Work", "http://bibfra.me/vocab/lite/Series");
+      "http://bibfra.me/vocab/lite/Work",
+      "http://bibfra.me/vocab/lite/Series",
+      "http://bibfra.me/vocab/lite/LightResource");
     assertThat(getProperty(workSeries, "http://bibfra.me/vocab/lite/name")).isEqualTo("Title 1");
     assertThat(getProperty(workSeries, "http://bibfra.me/vocab/library/volume")).isEqualTo("Volume 1");
     assertThat(getProperty(workSeries, "http://bibfra.me/vocab/lite/label"))
@@ -72,7 +74,9 @@ class PartOfSeriesNoIssnIT extends PostResourceIT {
     var instanceSeries = getFirstIncomingResource(series, "http://bibfra.me/vocab/lite/instantiates");
     assertThat(instanceSeries.getId()).isEqualTo(expectedInstanceId);
     validateResourceType(instanceSeries,
-      "http://bibfra.me/vocab/lite/Instance", "http://bibfra.me/vocab/lite/Series");
+      "http://bibfra.me/vocab/lite/Instance",
+      "http://bibfra.me/vocab/lite/Series",
+      "http://bibfra.me/vocab/lite/LightResource");
     assertThat(getProperty(instanceSeries, "http://bibfra.me/vocab/lite/name")).isEqualTo("Title 1");
     assertThat(getProperty(instanceSeries, "http://bibfra.me/vocab/lite/label")).isEqualTo("Title 1");
     assertThat(hasNoIssnOutgoingEdge(instanceSeries)).isTrue();
