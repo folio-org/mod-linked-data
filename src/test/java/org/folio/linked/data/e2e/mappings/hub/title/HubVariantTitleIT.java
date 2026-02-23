@@ -94,7 +94,7 @@ class HubVariantTitleIT extends PostResourceIT {
       .isEqualTo("note text");
     assertThat(getProperty(variantTitle, "http://bibfra.me/vocab/lite/date"))
       .isEqualTo("2026");
-    assertThat(variantTitle.getLabel()).isEqualTo("variant title sub title");
+    assertThat(variantTitle.getLabel()).isEqualTo("variant title sub title part number part name");
   }
 
   private Resource getVariantTitle(List<Resource> titles) {

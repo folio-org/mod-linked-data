@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import java.util.HashMap;
@@ -21,6 +20,7 @@ import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.dto.HasTitle;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.label.ResourceEntityLabelService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -32,6 +32,7 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
+  private final ResourceEntityLabelService labelService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -48,9 +49,9 @@ public class PrimaryTitleMapperUnit extends TitleMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var primaryTitle = ((PrimaryTitleField) dto).getPrimaryTitle();
     var resource = new Resource();
-    resource.setLabel(getLabel(getFirstValue(primaryTitle::getMainTitle), getFirstValue(primaryTitle::getSubTitle)));
     resource.addTypes(TITLE);
     resource.setDoc(getDoc(primaryTitle));
+    labelService.assignLabelToResource(resource);
     resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }

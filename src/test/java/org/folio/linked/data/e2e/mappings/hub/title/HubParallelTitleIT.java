@@ -102,7 +102,7 @@ class HubParallelTitleIT extends PostResourceIT {
       .isEqualTo("note text");
     assertThat(getProperty(parallelTitle, "http://bibfra.me/vocab/lite/date"))
       .isEqualTo("2026");
-    assertThat(parallelTitle.getLabel()).isEqualTo("parallel title sub title");
+    assertThat(parallelTitle.getLabel()).isEqualTo("parallel title sub title part number part name");
   }
 
   private Resource getTitleByType(List<Resource> titles, ResourceTypeDictionary type) {
