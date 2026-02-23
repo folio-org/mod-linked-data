@@ -1,14 +1,21 @@
 package org.folio.linked.data.e2e.mappings.instance.publicationfrequency;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FREQUENCY;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
+import java.util.Set;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class PublicationFrequencyIT extends PostResourceIT {
+
+  @Override
+  protected Set<Set<String>> excludedFingerprintValidationTypes() {
+    return Set.of(Set.of(FREQUENCY.name())); // use all properties for fingerprinting
+  }
 
   @Override
   protected String postPayload() {

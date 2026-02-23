@@ -244,10 +244,12 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.test.resource.FingerprintRuleGraphValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.ResultActions;
@@ -265,6 +267,8 @@ abstract class ResourceControllerITBase extends ITBase {
   private SpecClient specClient;
 
   private LookupResources lookupResources;
+  @Autowired
+  private FingerprintRuleGraphValidator fingerprintRuleGraphValidator;
 
   @BeforeEach
   @Override
@@ -299,6 +303,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
+    var excludedFingerprintTypes = Set.of(Set.of(ResourceTypeDictionary.SUPPLEMENTARY_CONTENT.name()));
+    fingerprintRuleGraphValidator.validateFingerprintRuleExists(instanceResource, excludedFingerprintTypes);
     assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
     validateInstance(instanceResource, true);
     var workId = instanceResponse.getWorkReference().getFirst().getId();
@@ -335,6 +341,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
+    fingerprintRuleGraphValidator.validateFingerprintRuleExists(workResource);
     validateWork(workResource, true);
     checkSearchIndexMessage(workResource.getId(), CREATE);
     checkIndexDate(workResource.getId().toString());
