@@ -21,53 +21,6 @@
               "Primary: subTitle"
             ]
           }
-        },
-        {
-          "http://bibfra.me/vocab/library/ParallelTitle": {
-            "http://bibfra.me/vocab/library/partName": [
-              "Parallel: partName"
-            ],
-            "http://bibfra.me/vocab/library/partNumber": [
-              "Parallel: partNumber"
-            ],
-            "http://bibfra.me/vocab/library/mainTitle": [
-              "Parallel: mainTitle"
-            ],
-            "http://bibfra.me/vocab/lite/note": [
-              "Parallel: noteLabel"
-            ],
-            "http://bibfra.me/vocab/lite/date": [
-              "Parallel: date"
-            ],
-            "http://bibfra.me/vocab/library/subTitle": [
-              "Parallel: subTitle"
-            ]
-          }
-        },
-        {
-          "http://bibfra.me/vocab/library/VariantTitle": {
-            "http://bibfra.me/vocab/library/partName": [
-              "Variant: partName"
-            ],
-            "http://bibfra.me/vocab/library/partNumber": [
-              "Variant: partNumber"
-            ],
-            "http://bibfra.me/vocab/library/mainTitle": [
-              "Variant: mainTitle"
-            ],
-            "http://bibfra.me/vocab/lite/note": [
-              "Variant: noteLabel"
-            ],
-            "http://bibfra.me/vocab/lite/date": [
-              "Variant: date"
-            ],
-            "http://bibfra.me/vocab/library/subTitle": [
-              "Variant: subTitle"
-            ],
-            "http://bibfra.me/vocab/library/variantType": [
-              "Variant: variantType"
-            ]
-          }
         }
       ],
       "http://bibfra.me/vocab/library/summary": [
