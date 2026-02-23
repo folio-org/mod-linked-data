@@ -55,7 +55,7 @@ class RdfImportIT extends ITBase {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = -6100541528157108314L;
+    var expectedId = -8733405874785680909L;
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -84,7 +84,7 @@ class RdfImportIT extends ITBase {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = -2124728439381748732L;
+    var expectedId = -6960648989710467939L;
     var existedAuthority = new Resource()
       .setIdAndRefreshEdges(123L)
       .setLabel("n2021004098")
@@ -123,7 +123,7 @@ class RdfImportIT extends ITBase {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = -2124728439381748732L;
+    var expectedId = -6960648989710467939L;
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);

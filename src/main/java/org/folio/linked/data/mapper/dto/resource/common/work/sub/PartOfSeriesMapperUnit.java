@@ -13,6 +13,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.VOLUME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISSN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SERIES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
@@ -60,12 +61,12 @@ public class PartOfSeriesMapperUnit implements WorkSubResourceMapperUnit {
     var work = createResource(
       getWorkSeriesDoc(partOfSeries),
       join(" ", getFirstValue(partOfSeries::getName), getFirstValue(partOfSeries::getVolume)),
-      WORK, SERIES
+      WORK, SERIES, LIGHT_RESOURCE
     );
     var instance = createResource(
       getInstanceOrSeriesDoc(partOfSeries),
       getFirstValue(partOfSeries::getName),
-      INSTANCE, SERIES
+      INSTANCE, SERIES, LIGHT_RESOURCE
     );
     var series = createResource(getInstanceOrSeriesDoc(partOfSeries), getFirstValue(partOfSeries::getName), SERIES);
     var issnOpt = ofNullable(partOfSeries.getIssn())
