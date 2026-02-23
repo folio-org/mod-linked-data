@@ -5,6 +5,7 @@ import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.ObjectUtils.allNull;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
@@ -149,11 +150,11 @@ public abstract class WorkSearchMessageMapper {
       .filter(re -> CREATOR.getUri().equals(re.getPredicate().getUri())
         || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
       .map(re -> new LinkedDataContributor()
-        .name(getValue(re.getTarget().getDoc(), NAME.getValue()))
+        .name(re.getTarget().getLabel())
         .type(toContributorType(re.getTarget()).orElse(null))
         .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
-      .filter(ic -> nonNull(ic.getName()))
+      .filter(ic -> isNotBlank(ic.getName()))
       .distinct()
       .toList();
   }
