@@ -1,6 +1,7 @@
 package org.folio.linked.data.mapper.kafka.search;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
 import java.util.stream.Stream;
@@ -30,12 +31,13 @@ class HubSearchMessageMapperTest {
         """, link)));
 
     // When
-    var indexEvent = mapper.toIndex(resource);
+    var indexEvent = mapper.toIndex(resource, CREATE);
 
     // Then
     assertThat(indexEvent).isNotNull();
     assertThat(indexEvent.getId()).isNotNull();
     assertThat(indexEvent.getResourceName()).isEqualTo("linked-data-hub");
+    assertThat(indexEvent.getType()).isEqualTo(CREATE);
     var hub = (LinkedDataHub) indexEvent.getNew();
     assertThat(hub).isNotNull();
     assertThat(hub.getId()).isEqualTo("123");
@@ -45,7 +47,7 @@ class HubSearchMessageMapperTest {
 
   @Test
   void testToIndex_nullResourceReturnsNull() {
-    assertThat(mapper.toIndex(null)).isNull();
+    assertThat(mapper.toIndex(null, null)).isNull();
   }
 
   private static Stream<Arguments> linkAndExpectedOriginalId() {

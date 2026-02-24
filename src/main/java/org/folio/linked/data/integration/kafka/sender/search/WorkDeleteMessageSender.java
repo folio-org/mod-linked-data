@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
 @Profile("!" + STANDALONE_PROFILE)
 public class WorkDeleteMessageSender implements DeleteMessageSender {
 
-  @Qualifier("bibliographicMessageProducer")
-  private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
+  @Qualifier("workIndexMessageProducer")
+  private final FolioMessageProducer<ResourceIndexEvent> workIndexMessageProducer;
   private final WorkSearchMessageMapper workSearchMessageMapper;
   private final WorkUpdateMessageSender workUpdateMessageSender;
 
@@ -47,9 +47,8 @@ public class WorkDeleteMessageSender implements DeleteMessageSender {
   @Override
   public void accept(Resource resource) {
     var onlyIdResource = new Resource().setIdAndRefreshEdges(resource.getId());
-    var message = workSearchMessageMapper.toIndex(onlyIdResource)
-      .type(DELETE);
-    bibliographicMessageProducer.sendMessages(List.of(message));
+    var message = workSearchMessageMapper.toIndex(onlyIdResource, DELETE);
+    workIndexMessageProducer.sendMessages(List.of(message));
   }
 
   private void triggerParentWorkUpdate(Resource instance) {

@@ -2,6 +2,7 @@ package org.folio.linked.data.integration.kafka.sender.search;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -35,14 +36,14 @@ class HubDeleteMessageSenderTest {
     var resource = new Resource().addTypes(HUB).setIdAndRefreshEdges(456L);
     var onlyIdResource = new Resource().setIdAndRefreshEdges(resource.getId());
     var expectedMessage = new ResourceIndexEvent().id(String.valueOf(resource.getId()));
-    when(mapper.toIndex(onlyIdResource)).thenReturn(expectedMessage);
+    when(mapper.toIndex(onlyIdResource, DELETE)).thenReturn(expectedMessage);
 
     // when
     sender.produce(resource);
 
     // then
     verify(hubIndexMessageProducer).sendMessages(List.of(expectedMessage));
-    verify(mapper).toIndex(onlyIdResource);
+    verify(mapper).toIndex(onlyIdResource, DELETE);
   }
 
   @Test

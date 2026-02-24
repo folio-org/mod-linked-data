@@ -86,7 +86,7 @@ class WorkCreateMessageSenderTest {
     var resource = new Resource().addTypes(WORK).setIdAndRefreshEdges(randomLong());
     var expectedMessage = new ResourceIndexEvent()
       .id(String.valueOf(resource.getId()));
-    when(workSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
+    when(workSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(expectedMessage);
 
     // when
     producer.produce(resource);
@@ -95,7 +95,6 @@ class WorkCreateMessageSenderTest {
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
     assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
-    assertThat(expectedMessage.getType()).isEqualTo(CREATE);
     var expectedIndexEvent = new ResourceIndexedEvent(parseLong(expectedMessage.getId()));
     verify(eventPublisher).publishEvent(expectedIndexEvent);
     verifyNoInteractions(workUpdateMessageSender);

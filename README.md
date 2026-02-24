@@ -72,6 +72,8 @@ To run mod-linked-data in standalone mode, set the value of the environment vari
 | CACHE_TTL_MODULE_STATE_MS                           | 18000000                               | Specifies time to live for `module-state` cache                                                                                                                                                                                      |
 | CACHE_TTL_AUTHORITY_SOURCE_FILES_MS                 | 18000000                               | Specifies time to live for `authority-source-files` cache                                                                                                                                                                            |
 | AUTHORITY_SOURCE_FILES_LIMIT                        | 50                                     | Count of authority source files to be fetched from FOLIO for computing the base URI of an authority                                                                                                                                  |
+| REINDEX_POOL_SIZE                                   | 10                                     | Thread pool size for reindexing batch job processing                                                                                                                                                                                 |
+| REINDEX_CHUNK_SIZE                                  | 100                                    | Number of resources to process in a single chunk during reindexing                                                                                                                                                                   |
 | AUTO_SAVE_MARC_BIB_AS_GRAPH`*`                      | false                                  | TEMPORARY VARIABLE: If true, bibliographic records will be automatically converted to the graph & saved when it is created in SRS. This env variable is added to facilitate performance testing and will be removed before release.  |
 * Applicable only in FOLIO mode
 ## REST API
@@ -278,6 +280,44 @@ A preview of a remote Hub resource can be retrieved by making a GET request to t
 
 ### Save a remote Hub resource
 A remote Hub resource can be saved to the local database by making a POST request to the `/linked-data/hub` endpoint with the Hub URI as a query parameter. This will fetch the remote resource and persist it locally.
+
+### Full reindexing
+Resources can be fully reindexed in mod-search by making a POST request to the `/linked-data/reindex/full` endpoint. This will start a full reindex of all resources in the database. All resources will be reindexed regardless of their current index state.
+
+The endpoint returns a job instance ID that can be used to track the reindex job's progress. The reindexing process executes asynchronously in the background.
+
+Optionally, you can specify a `resourceType` query parameter (HUB or WORK) to reindex only resources of a specific type:
+
+```bash
+curl --location --request POST '{{ base-uri }}/linked-data/reindex/full?resourceType=WORK' \
+--header 'x-okapi-tenant: {tenant}' \
+--header 'x-okapi-token: {token}'
+```
+
+Example response:
+```
+12345
+```
+
+The returned job instance ID can be used to monitor the job's status.
+
+### Incremental reindexing
+Resources that have not been indexed yet can be incrementally reindexed by making a POST request to the `/linked-data/reindex/incremental` endpoint. This will only reindex resources that have not been indexed yet (indexDate is null).
+
+Similar to full reindex, the endpoint returns a job instance ID for tracking the asynchronous reindexing process. You can specify a `resourceType` query parameter:
+
+```bash
+curl --location --request POST '{{ base-uri }}/linked-data/reindex/incremental?resourceType=WORK' \
+--header 'x-okapi-tenant: {tenant}' \
+--header 'x-okapi-token: {token}'
+```
+
+Example response:
+```
+12346
+```
+
+The returned job instance ID can be used to monitor the job's status.
 
 # Integration with FOLIO
 When running in FOLIO mode, this module integrates with multiple Folio modules via Kafka.

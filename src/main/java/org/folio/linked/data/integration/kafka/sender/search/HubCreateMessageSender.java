@@ -34,8 +34,7 @@ public class HubCreateMessageSender implements CreateMessageSender {
   @Override
   public void accept(Resource resource) {
     log.debug("Publishing Index create message for HUB with ID [{}]", resource.getId());
-    var message = mapper.toIndex(resource)
-      .type(CREATE);
+    var message = mapper.toIndex(resource, CREATE);
     hubIndexMessageProducer.sendMessages(singletonList(message));
     publishIndexEvent(resource);
   }

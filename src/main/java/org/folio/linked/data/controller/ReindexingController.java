@@ -1,10 +1,11 @@
 package org.folio.linked.data.controller;
 
+import static java.lang.String.valueOf;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.rest.resource.ReindexApi;
-import org.folio.linked.data.service.index.ReindexService;
+import org.folio.linked.data.service.batch.ReindexJobService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,11 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("!" + STANDALONE_PROFILE)
 public class ReindexingController implements ReindexApi {
 
-  private final ReindexService reIndexService;
+  private final ReindexJobService reindexJobService;
 
   @Override
-  public ResponseEntity<Void> reindex(Boolean full) {
-    reIndexService.reindexWorks(full);
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<String> fullReindex(String resourceType) {
+    var jobExecutionId = valueOf(reindexJobService.start(true, resourceType));
+    return ResponseEntity.ok(jobExecutionId);
+  }
+
+  @Override
+  public ResponseEntity<String> incrementalReindex(String resourceType) {
+    var jobExecutionId = valueOf(reindexJobService.start(false, resourceType));
+    return ResponseEntity.ok(jobExecutionId);
   }
 }

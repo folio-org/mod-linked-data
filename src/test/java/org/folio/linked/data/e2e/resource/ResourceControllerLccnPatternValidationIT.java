@@ -51,7 +51,7 @@ class ResourceControllerLccnPatternValidationIT extends ITBase {
     when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
     when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
 
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
     var requestBuilder = post(RESOURCE_URL)
@@ -88,7 +88,7 @@ class ResourceControllerLccnPatternValidationIT extends ITBase {
     instance.remove("inventoryId");
     instance.remove("srsId");
     setCurrentStatus(instance);
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
 
     var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())

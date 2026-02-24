@@ -73,6 +73,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
@@ -89,7 +90,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTE
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.test.TestUtil.RESOURCE_MODEL_MAPPER;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
@@ -99,6 +99,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import lombok.experimental.UtilityClass;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
@@ -112,11 +113,11 @@ import org.folio.linked.data.service.resource.hash.HashService;
 public class MonographTestUtil {
 
   public static Resource getSampleInstanceResource() {
-    return getSampleInstanceResource(null, getSampleWork(null));
+    return getSampleInstanceResource(null, getSampleWork());
   }
 
   public static Resource getSampleInstanceResource(Long id) {
-    return getSampleInstanceResource(id, getSampleWork(null));
+    return getSampleInstanceResource(id, getSampleWork());
   }
 
   public static Resource getSampleInstanceResource(Long id, Resource linkedWork) {
@@ -313,6 +314,10 @@ public class MonographTestUtil {
     ).setLabel(mainTitle + " " + subTitle);
   }
 
+  public static Resource getSampleWork() {
+    return getSampleWork(null);
+  }
+
   public static Resource getSampleWork(Resource linkedInstance) {
     var primaryTitle = createPrimaryTitle(null);
 
@@ -418,6 +423,20 @@ public class MonographTestUtil {
     }
     work.setLabel(primaryTitle.getLabel());
     return work;
+  }
+
+  public static Resource getSampleHub() {
+    var primaryTitle = createPrimaryTitle(null);
+
+    var hub = createResource(
+      Map.ofEntries(
+        entry(LINK, List.of(UUID.randomUUID().toString()))
+      ),
+      Set.of(HUB),
+      Map.of()
+    );
+    hub.setLabel(primaryTitle.getLabel());
+    return hub;
   }
 
   public static Resource getSubjectPersonPreferred() {
@@ -692,33 +711,5 @@ public class MonographTestUtil {
     work.setIdAndRefreshEdges(hashService.hash(work));
 
     return work;
-  }
-
-  public static org.folio.ld.dictionary.model.Resource getSimpleInstanceModel(Long id) {
-    var primaryTitle = createPrimaryTitle(id);
-    var lccn = createResource(
-      Map.of(NAME, List.of("lccn value")),
-      Set.of(IDENTIFIER, ID_LCCN),
-      Map.of(STATUS, List.of(status("lccn")))
-    ).setLabel("lccn value");
-
-    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
-    pred2OutgoingResources.put(TITLE, List.of(primaryTitle, createParallelTitle(), createVariantTitle()));
-    pred2OutgoingResources.put(MAP, List.of(lccn));
-
-    var instance = createResource(
-      Map.ofEntries(
-        entry(DIMENSIONS, List.of("20 cm")),
-        entry(EDITION, List.of("edition statement")),
-        entry(PROJECTED_PROVISION_DATE, List.of("projected provision date")),
-        entry(ISSUANCE, List.of("single unit")),
-        entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility"))
-      ),
-      Set.of(INSTANCE),
-      pred2OutgoingResources
-    );
-    instance.setLabel(primaryTitle.getLabel());
-
-    return RESOURCE_MODEL_MAPPER.toModel(instance);
   }
 }

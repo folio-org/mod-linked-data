@@ -8,14 +8,14 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.folio.spring.testing.type.UnitTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @UnitTest
-public class KafkaUtilsTest {
+class KafkaUtilsTest {
 
   @Test
-  public void getHeaderValueByName_shouldReturnEmptyOptional_ifMessageContainsNoExpectedHeader() {
+  void getHeaderValueByName_shouldReturnEmptyOptional_ifMessageContainsNoExpectedHeader() {
     // given
     var headerKey = "headerKey";
     var consumerRecord = new ConsumerRecord<>("topic", 1, 1, "key", "value");
@@ -28,7 +28,7 @@ public class KafkaUtilsTest {
   }
 
   @Test
-  public void getHeaderValueByName_shouldReturnOptionalWithHeader_ifMessageContainsExpectedHeader() {
+  void getHeaderValueByName_shouldReturnOptionalWithHeader_ifMessageContainsExpectedHeader() {
     // given
     var headerKey = "headerKey";
     var headerValue = UUID.randomUUID().toString();

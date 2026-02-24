@@ -30,7 +30,7 @@ public class HubDeleteMessageSender implements DeleteMessageSender {
   public void accept(Resource resource) {
     log.debug("Publishing Index delete message for HUB with ID [{}]", resource.getId());
     var onlyIdResource = new Resource().setIdAndRefreshEdges(resource.getId());
-    var indexMessage = mapper.toIndex(onlyIdResource).type(DELETE);
+    var indexMessage = mapper.toIndex(onlyIdResource, DELETE);
     hubIndexMessageProducer.sendMessages(List.of(indexMessage));
   }
 

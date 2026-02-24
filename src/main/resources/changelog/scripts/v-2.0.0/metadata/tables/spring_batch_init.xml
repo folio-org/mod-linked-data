@@ -1,0 +1,21 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+  <changeSet id="spring_batch_init" author="Pavel Bobylev">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists tableName="batch_job_instance"/>
+      </not>
+    </preConditions>
+    <sqlFile path="org/springframework/batch/core/schema-postgresql.sql"
+             relativeToChangelogFile="false" splitStatements="true" stripComments="true"/>
+    <rollback>
+      <sqlFile path="org/springframework/batch/core/schema-drop-postgresql.sql"
+               relativeToChangelogFile="false" splitStatements="true" stripComments="true"/>
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

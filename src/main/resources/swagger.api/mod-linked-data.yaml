@@ -5,17 +5,41 @@ info:
   description: Linked Data service API
 
 paths:
-  /linked-data/reindex:
-    put:
-      operationId: reindex
+  /linked-data/reindex/full:
+    post:
+      operationId: fullReindex
       tags:
         - reindex
-      description: Start the process of reindexing of resources in the database
+      description: Start the process of full reindexing of all resources in the database. All resources will be reindexed regardless of their current index state.
       parameters:
-        - $ref: '#/components/parameters/full'
+        - $ref: '#/components/parameters/resourceType'
       responses:
-        '204':
-          description: Started the process of reindex
+        '200':
+          description: ID of Reindex job instance started
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /linked-data/reindex/incremental:
+    post:
+      operationId: incrementalReindex
+      tags:
+        - reindex
+      description: Start the process of incremental reindexing of resources in the database. Only resources that have not been indexed yet (indexDate is null) will be reindexed.
+      parameters:
+        - $ref: '#/components/parameters/resourceType'
+      responses:
+        '200':
+          description: ID of Reindex job instance started
+          content:
+            text/plain:
+              schema:
+                type: string
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
@@ -518,13 +542,13 @@ components:
       description: Inventory ID (999 $i) of the MARC record in SRS
       schema:
         type: string
-    full:
-      name: full
+    resourceType:
+      name: resourceType
       in: query
       required: false
-      description: Reindex all records if true, otherwise only not indexed
+      description: 'The specified resource type to be re-indexed. Available options: HUB, WORK'
       schema:
-        type: boolean
+        type: string
     profileId:
       name: profileId
       in: path

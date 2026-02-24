@@ -1,7 +1,5 @@
 package org.folio.linked.data.integration.kafka.sender.search;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
@@ -33,8 +31,8 @@ import org.springframework.stereotype.Service;
 @Profile("!" + STANDALONE_PROFILE)
 public class WorkCreateMessageSender implements CreateMessageSender {
 
-  @Qualifier("bibliographicMessageProducer")
-  private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
+  @Qualifier("workIndexMessageProducer")
+  private final FolioMessageProducer<ResourceIndexEvent> workIndexMessageProducer;
   private final WorkSearchMessageMapper workSearchMessageMapper;
   private final ApplicationEventPublisher eventPublisher;
   private final WorkUpdateMessageSender workUpdateMessageSender;
@@ -59,23 +57,12 @@ public class WorkCreateMessageSender implements CreateMessageSender {
       }, () -> log.error("Instance [id {}] created, but parent work wasn't found!", instance.getId()));
   }
 
-  public void acceptWithoutIndexDateUpdate(Resource resource) {
-    this.accept(resource, FALSE);
-  }
-
   @Override
   public void accept(Resource resource) {
-    this.accept(resource, TRUE);
-  }
-
-  private void accept(Resource resource, Boolean putIndexDate) {
     log.debug("Publishing Index create message for work with ID [{}]", resource.getId());
-    var message = workSearchMessageMapper.toIndex(resource)
-      .type(CREATE);
-    bibliographicMessageProducer.sendMessages(List.of(message));
-    if (TRUE.equals(putIndexDate)) {
-      publishIndexEvent(resource);
-    }
+    var message = workSearchMessageMapper.toIndex(resource, CREATE);
+    workIndexMessageProducer.sendMessages(List.of(message));
+    publishIndexEvent(resource);
   }
 
   private void publishIndexEvent(Resource resource) {

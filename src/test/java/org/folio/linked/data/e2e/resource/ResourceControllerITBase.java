@@ -278,7 +278,7 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     final var defaultWorkProfileId = 2;
     final var instanceMonographProfileId = 3;
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
     var requestBuilder = post(RESOURCE_URL)
@@ -348,7 +348,7 @@ abstract class ResourceControllerITBase extends ITBase {
     when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
     when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
 
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     var updateDto = getSampleInstanceDtoMap();
     var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
@@ -589,7 +589,7 @@ abstract class ResourceControllerITBase extends ITBase {
   @Test
   void deleteResourceById_shouldDeleteRootInstanceAndRootEdges_reindexWork() throws Exception {
     // given
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
     assertThat(resourceTestService.countResources()).isEqualTo(53);

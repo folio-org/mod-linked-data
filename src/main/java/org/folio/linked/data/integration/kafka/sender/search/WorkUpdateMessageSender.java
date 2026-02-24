@@ -32,8 +32,8 @@ import org.springframework.stereotype.Service;
 @Profile("!" + STANDALONE_PROFILE)
 public class WorkUpdateMessageSender implements UpdateMessageSender {
 
-  @Qualifier("bibliographicMessageProducer")
-  private final FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer;
+  @Qualifier("workIndexMessageProducer")
+  private final FolioMessageProducer<ResourceIndexEvent> workIndexMessageProducer;
   private final WorkSearchMessageMapper workSearchMessageMapper;
   private final ApplicationEventPublisher eventPublisher;
 
@@ -50,9 +50,8 @@ public class WorkUpdateMessageSender implements UpdateMessageSender {
 
   @Override
   public void accept(Resource resource) {
-    var message = workSearchMessageMapper.toIndex(resource)
-      .type(UPDATE);
-    bibliographicMessageProducer.sendMessages(List.of(message));
+    var message = workSearchMessageMapper.toIndex(resource, UPDATE);
+    workIndexMessageProducer.sendMessages(List.of(message));
     publishIndexEvent(resource);
   }
 
