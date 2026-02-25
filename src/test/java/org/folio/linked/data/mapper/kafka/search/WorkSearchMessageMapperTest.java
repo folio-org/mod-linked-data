@@ -32,7 +32,6 @@ import static org.folio.linked.data.test.TestUtil.randomLong;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.LinkedDataContributor;
 import org.folio.linked.data.domain.dto.LinkedDataIdentifier;
@@ -96,10 +95,10 @@ class WorkSearchMessageMapperTest {
   void toIndex_shouldReturnCorrectlyMappedIndex_fromWork() {
     // given
     var work = getSampleWork(null);
-    var wrongContributor = getContributor(ANNOTATION);
+    var wrongContributor = getContributor(ANNOTATION, "wrong contributor");
     var emptyContributor = new Resource();
-    var creatorPerson = getContributor(ResourceTypeDictionary.PERSON);
-    var contributorOrg = getContributor(ResourceTypeDictionary.ORGANIZATION);
+    var creatorPerson = getContributor(ResourceTypeDictionary.PERSON, "creator person");
+    var contributorOrg = getContributor(ResourceTypeDictionary.ORGANIZATION, "contributor organization");
     work.addOutgoingEdge(new ResourceEdge(work, creatorPerson, CREATOR));
     work.addOutgoingEdge(new ResourceEdge(work, contributorOrg, CONTRIBUTOR));
     work.addOutgoingEdge(new ResourceEdge(work, wrongContributor, CONTRIBUTOR));
@@ -122,16 +121,12 @@ class WorkSearchMessageMapperTest {
       .isInstanceOf(LinkedDataWork.class);
     var linkedDataWork = (LinkedDataWork) result.getNew();
     validateWork(linkedDataWork, work, 2);
-    assertContributor(linkedDataWork.getContributors().getFirst(), contributorName(creatorPerson), PERSON, true);
-    assertContributor(linkedDataWork.getContributors().get(1), contributorName(contributorOrg), ORGANIZATION, false);
-    assertContributor(linkedDataWork.getContributors().get(2), contributorName(wrongContributor), null, false);
+    assertContributor(linkedDataWork.getContributors().getFirst(), creatorPerson.getLabel(), PERSON, true);
+    assertContributor(linkedDataWork.getContributors().get(1), contributorOrg.getLabel(), ORGANIZATION, false);
+    assertContributor(linkedDataWork.getContributors().get(2), wrongContributor.getLabel(), null, false);
     assertThat(linkedDataWork.getContributors()).hasSize(3);
     validateInstance(linkedDataWork.getInstances().getFirst(), instance1);
     validateInstance(linkedDataWork.getInstances().get(1), instance2);
-  }
-
-  private static String contributorName(Resource contributor) {
-    return contributor.getDoc().get(NAME.getValue()).get(0).stringValue();
   }
 
   private Resource getInstance(Long id, Resource work) {
@@ -155,12 +150,11 @@ class WorkSearchMessageMapperTest {
     return id;
   }
 
-  private Resource getContributor(ResourceTypeDictionary type) {
-    var contributor = new Resource();
-    contributor.setIdAndRefreshEdges(randomLong());
-    contributor.setDoc(getJsonNode(Map.of(NAME.getValue(), List.of(UUID.randomUUID().toString()))));
-    contributor.addTypes(type);
-    return contributor;
+  private Resource getContributor(ResourceTypeDictionary type, String label) {
+    return new Resource()
+      .setIdAndRefreshEdges(randomLong())
+      .addTypes(type)
+      .setLabel(label);
   }
 
   private void validateWork(LinkedDataWork result, Resource work, int instancesExpected) {
