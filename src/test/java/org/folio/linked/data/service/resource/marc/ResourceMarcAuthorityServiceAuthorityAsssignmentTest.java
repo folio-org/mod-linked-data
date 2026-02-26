@@ -3,6 +3,7 @@ package org.folio.linked.data.service.resource.marc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.UNSUPPORTED_MARC;
@@ -95,7 +96,8 @@ class ResourceMarcAuthorityServiceAuthorityAsssignmentTest {
     return Stream.of(
       Arguments.of(Set.of(PERSON), CREATOR_OF_WORK),
       Arguments.of(Set.of(FORM), SUBJECT_OF_WORK),
-      Arguments.of(Set.of(CONCEPT, FORM), SUBJECT_OF_WORK)
+      Arguments.of(Set.of(CONCEPT, FORM), SUBJECT_OF_WORK),
+      Arguments.of(Set.of(HUB), SUBJECT_OF_WORK)
     );
   }
 
@@ -103,7 +105,8 @@ class ResourceMarcAuthorityServiceAuthorityAsssignmentTest {
     return Stream.of(
       Arguments.of(Set.of(CONCEPT, PERSON), CREATOR_OF_WORK),
       Arguments.of(Set.of(PERSON, FORM), SUBJECT_OF_WORK),
-      Arguments.of(Set.of(CONCEPT, FORM, PERSON), SUBJECT_OF_WORK)
+      Arguments.of(Set.of(CONCEPT, FORM, PERSON), SUBJECT_OF_WORK),
+      Arguments.of(Set.of(HUB), CREATOR_OF_WORK)
     );
   }
 }

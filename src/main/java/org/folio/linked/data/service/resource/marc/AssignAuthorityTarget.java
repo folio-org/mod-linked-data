@@ -5,6 +5,7 @@ import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
@@ -24,7 +25,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 public enum AssignAuthorityTarget {
 
   CREATOR_OF_WORK(Set.of(PERSON, FAMILY, ORGANIZATION, JURISDICTION, MEETING), Set.of()),
-  SUBJECT_OF_WORK(Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE),
+  SUBJECT_OF_WORK(Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE, HUB),
     Set.of(CONCEPT));
 
   private static final int TYPES_MAX_SIZE = 2;
