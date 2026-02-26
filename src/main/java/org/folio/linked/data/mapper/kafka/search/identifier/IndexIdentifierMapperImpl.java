@@ -1,9 +1,9 @@
 package org.folio.linked.data.mapper.kafka.search.identifier;
 
 import static java.util.Objects.isNull;
-import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.linked.data.domain.dto.LinkedDataIdentifier.TypeEnum;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_MAP;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ public class IndexIdentifierMapperImpl implements IndexIdentifierMapper {
   public List<LinkedDataIdentifier> extractIdentifiers(Resource resource) {
     return resource.getOutgoingEdges()
       .stream()
-      .filter(re -> MAP.getUri().equals(re.getPredicate().getUri()))
+      .filter(re -> INDEXABLE_MAP.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(this::mapToIdentifier)
       .flatMap(Optional::stream)

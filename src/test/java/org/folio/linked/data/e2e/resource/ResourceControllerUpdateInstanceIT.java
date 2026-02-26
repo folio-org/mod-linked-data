@@ -6,6 +6,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getInstanceRequestDto;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -179,28 +180,5 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
     FolioMetadata metadata = new FolioMetadata(instance)
       .setInventoryId(titleStr + "_inventoryId").setSrsId(titleStr + "_srsId");
     return instance.setFolioMetadata(metadata);
-  }
-
-  private String getInstanceRequestDto(Long workId, String title) {
-    return """
-      {
-        "resource": {
-          "http://bibfra.me/vocab/lite/Instance": {
-            "profileId":  3,
-            "http://bibfra.me/vocab/library/title": [
-                {
-                  "http://bibfra.me/vocab/library/Title": {
-                      "http://bibfra.me/vocab/library/mainTitle": [ "%TITLE%" ]
-                  }
-                }
-            ],
-            "http://bibfra.me/vocab/library/summary": ["new summary"],
-            "_workReference": [ { "id": "%WORK_ID%"} ]
-          }
-        }
-      }
-      """
-      .replace("%WORK_ID%", workId.toString())
-      .replace("%TITLE%", title);
   }
 }

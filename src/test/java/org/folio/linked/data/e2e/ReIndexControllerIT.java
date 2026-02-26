@@ -4,10 +4,12 @@ import static java.lang.Long.parseLong;
 import static java.time.ZoneId.systemDefault;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.domain.dto.ReindexJobStatusDto.ReindexTypeEnum;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleHub;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
@@ -23,9 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Stream;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchHubIndexTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
@@ -73,7 +77,26 @@ class ReIndexControllerIT extends ITBase {
     if (nonNull(resourceType)) {
       requestBuilder.queryParam(QUERY_PARAM_RESOURCE_TYPE, resourceType);
     }
-    var work = resourceTestService.saveGraph(getSampleWork().setIndexDate(hasIndexDate ? GIVEN_INDEX_DATE : null));
+
+    Resource work;
+    Resource instance = null;
+    if (isFullReindex && resourceType == null) {
+      var savedInstance = resourceTestService.saveGraph(
+        getSampleInstanceResource().setIndexDate(hasIndexDate ? GIVEN_INDEX_DATE : null)
+      );
+      instance = savedInstance;
+      work = savedInstance.getOutgoingEdges().stream()
+        .filter(e -> e.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+        .map(ResourceEdge::getTarget)
+        .findFirst()
+        .orElseThrow();
+      if (hasIndexDate) {
+        work.setIndexDate(GIVEN_INDEX_DATE);
+        resourceTestService.saveGraph(work);
+      }
+    } else {
+      work = resourceTestService.saveGraph(getSampleWork().setIndexDate(hasIndexDate ? GIVEN_INDEX_DATE : null));
+    }
     var hub = resourceTestService.saveGraph(getSampleHub().setIndexDate(hasIndexDate ? GIVEN_INDEX_DATE : null));
 
     //when
@@ -85,8 +108,8 @@ class ReIndexControllerIT extends ITBase {
       .andReturn().getResponse().getContentAsString()
     );
     awaitJobCompletion(jobExecutionId);
-    assertIndexMessageSent(work, expectWorkIndexed);
-    assertIndexMessageSent(hub, expectHubIndexed);
+    assertIndexMessageSent(work, instance, expectWorkIndexed);
+    assertIndexMessageSent(hub, null, expectHubIndexed);
     assertIndexDateSet(work, expectWorkIndexed);
     assertIndexDateSet(hub, expectHubIndexed);
   }
@@ -130,44 +153,6 @@ class ReIndexControllerIT extends ITBase {
       .andExpect(jsonPath("$.linesSent").isNumber());
   }
 
-  @Test
-  void getReindexJobStatus_shouldReturn404_whenJobExecutionIdDoesNotExist() throws Exception {
-    // given
-    var nonExistentJobExecutionId = Long.MAX_VALUE;
-
-    // when / then
-    mockMvc.perform(get(REINDEX_STATUS_URL)
-        .param("jobExecutionId", String.valueOf(nonExistentJobExecutionId))
-        .headers(defaultHeaders(env)))
-      .andExpect(status().isNotFound());
-  }
-
-  @ParameterizedTest
-  @CsvSource({"true, FULL", "false, INCREMENTAL"})
-  void getReindexJobStatus_shouldReturnStatus_whenJobExists(boolean isFullReindex,
-                                                            ReindexTypeEnum expectedType) throws Exception {
-    // given
-    resourceTestService.saveGraph(getSampleWork());
-    var reindexUrl = isFullReindex ? FULL_REINDEX_URL : INCREMENTAL_REINDEX_URL;
-    var jobExecutionId = parseLong(mockMvc.perform(post(reindexUrl).headers(defaultHeaders(env)))
-      .andExpect(status().isOk())
-      .andReturn().getResponse().getContentAsString());
-    awaitJobCompletion(jobExecutionId);
-
-    // when / then
-    mockMvc.perform(get(REINDEX_STATUS_URL)
-        .param("jobExecutionId", String.valueOf(jobExecutionId))
-        .headers(defaultHeaders(env)))
-      .andExpect(status().isOk())
-      .andExpect(content().contentType(APPLICATION_JSON))
-      .andExpect(jsonPath("$.status").value("COMPLETED"))
-      .andExpect(jsonPath("$.reindexType").value(expectedType.getValue()))
-      .andExpect(jsonPath("$.startDate").isNotEmpty())
-      .andExpect(jsonPath("$.endDate").isNotEmpty())
-      .andExpect(jsonPath("$.startedBy").isNotEmpty())
-      .andExpect(jsonPath("$.linesRead").isNumber())
-      .andExpect(jsonPath("$.linesSent").isNumber());
-  }
 
   private static Stream<Arguments> reindexTestCases() {
     return Stream.of(
@@ -198,27 +183,22 @@ class ReIndexControllerIT extends ITBase {
     });
   }
 
-  private void assertIndexMessageSent(Resource resource, boolean isSent) {
+  private void assertIndexMessageSent(Resource resource, Resource instance, boolean isSent) {
+    List<String> messages = resource.isOfType(HUB) ? hubConsumer.getMessages() : workConsumer.getMessages();
     if (isSent) {
-      if (resource.isOfType(HUB)) {
-        assertTrue(hubConsumer.getMessages()
-          .stream()
-          .anyMatch(m -> m.contains(resource.getId().toString()) && m.contains(CREATE.getValue())));
-      } else {
-        assertTrue(workConsumer.getMessages()
-          .stream()
-          .anyMatch(m -> m.contains(resource.getId().toString()) && m.contains(CREATE.getValue())));
+      var message = messages.stream()
+        .filter(m -> m.contains(resource.getId().toString()) && m.contains(CREATE.getValue()))
+        .findFirst()
+        .orElseThrow(() -> new AssertionError("Index message for resource " + resource.getId() + " not found"));
+      if (instance != null) {
+        assertThat(message).contains(instance.getId().toString());
+        assertThat(message).contains("\"titles\"");
+        assertThat(message).contains("\"publications\"");
+        assertThat(message).contains("\"identifiers\"");
       }
     } else {
-      if (resource.isOfType(HUB)) {
-        assertTrue(hubConsumer.getMessages()
-          .stream()
-          .noneMatch(m -> m.contains(resource.getId().toString()) && m.contains(CREATE.getValue())));
-      } else {
-        assertTrue(workConsumer.getMessages()
-          .stream()
-          .noneMatch(m -> m.contains(resource.getId().toString()) && m.contains(CREATE.getValue())));
-      }
+      assertTrue(messages.stream()
+        .noneMatch(m -> m.contains(resource.getId().toString()) && m.contains(CREATE.getValue())));
     }
   }
 

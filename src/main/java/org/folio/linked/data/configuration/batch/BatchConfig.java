@@ -147,10 +147,10 @@ public class BatchConfig {
     @Value("#{jobParameters['" + JOB_PARAM_IS_FULL_REINDEX + "']}") String isFullReindex,
     @Value("#{jobParameters['" + JOB_PARAM_RESOURCE_TYPE + "']}") String resourceType,
     @Value("${mod-linked-data.reindex.chunk-size}") int chunkSize,
-    EntityManagerFactory entityManagerFactory
+    DataSource dataSource
   ) {
     var isFullReindexBool = parseBoolean(isFullReindex);
-    var reader = new ResourceReader(entityManagerFactory, chunkSize, isFullReindexBool, resourceType);
+    var reader = new ResourceReader(dataSource, chunkSize, isFullReindexBool, resourceType);
     return new SynchronizedItemStreamReader<>(reader);
   }
 
