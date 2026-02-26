@@ -32,7 +32,7 @@ public class KafkaProducerConfiguration {
   private final LinkedDataTopicProperties linkedDataTopicProperties;
 
   @Bean
-  public FolioMessageProducer<ResourceIndexEvent> bibliographicMessageProducer(
+  public FolioMessageProducer<ResourceIndexEvent> workIndexMessageProducer(
     KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
   ) {
     var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,

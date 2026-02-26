@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.linked.data.domain.dto.LinkedDataHub;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
+import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.model.entity.Resource;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -22,7 +23,7 @@ public abstract class HubSearchMessageMapper {
   @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "resourceName", constant = SEARCH_HUB_RESOURCE_NAME)
   @Mapping(target = "_new", expression = "java(toLinkedDataHub(resource))")
-  public abstract ResourceIndexEvent toIndex(Resource resource);
+  public abstract ResourceIndexEvent toIndex(Resource resource, ResourceIndexEventType type);
 
   @Mapping(target = "originalId", expression = "java(getOriginalId(resource))")
   protected abstract LinkedDataHub toLinkedDataHub(Resource resource);

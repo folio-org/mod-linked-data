@@ -1,6 +1,11 @@
 spring:
   application:
     name: mod-linked-data
+  batch:
+    jdbc:
+      initialize-schema: never
+    job:
+      enabled: false
   datasource:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
@@ -16,7 +21,6 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         event:
           merge:
             entity_copy_observer: allow
@@ -87,7 +91,8 @@ mod-linked-data:
   authority-source-files:
     limit: ${AUTHORITY_SOURCE_FILES_LIMIT:50}
   reindex:
-    page-size: 1000
+    pool-size: ${REINDEX_POOL_SIZE:10}
+    chunk-size: ${REINDEX_CHUNK_SIZE:100}
   search:
     max-params: ${SEARCH_MAX_PARAMS:100}
   kafka:

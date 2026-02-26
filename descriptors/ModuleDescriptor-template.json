@@ -89,9 +89,15 @@
           "modulePermissions": [ "source-storage.records.formatted.item.get" ]
         },
         {
-          "methods": [ "PUT" ],
-          "pathPattern": "/linked-data/reindex",
-          "permissionsRequired": [ "linked-data.resources.reindex.post" ],
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/reindex/full",
+          "permissionsRequired": [ "linked-data.resources.reindex.full.post" ],
+          "modulePermissions": [ "search.index.inventory.reindex.post" ]
+        },
+        {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/reindex/incremental",
+          "permissionsRequired": [ "linked-data.resources.reindex.incremental.post" ],
           "modulePermissions": []
         },
         {
@@ -241,9 +247,14 @@
       "description": "Delete a bibliographic (Work or Instance) linked-data resource"
     },
     {
-      "permissionName": "linked-data.resources.reindex.post",
-      "displayName": "Linked Data: Reindex resources in mod-search index",
-      "description": "Reindex linked-data resources in mod-search index"
+      "permissionName": "linked-data.resources.reindex.full.post",
+      "displayName": "Linked Data: Start full reindexing of resources in mod-search index",
+      "description": "Start the process of full reindexing of all resources in the database. All resources will be reindexed regardless of their current index state."
+    },
+    {
+      "permissionName": "linked-data.resources.reindex.incremental.post",
+      "displayName": "Linked Data: Start incremental reindexing of resources in mod-search index",
+      "description": "Start the process of incremental reindexing of resources in the database. Only resources that have not been indexed yet (indexDate is null) will be reindexed."
     },
     {
       "permissionName": "linked-data.admin.caches.delete",
@@ -389,7 +400,9 @@
       { "name": "CACHE_TTL_MODULE_STATE_MS", "value": "18000000" },
       { "name": "CACHE_TTL_AUTHORITY_SOURCE_FILES_MS", "value": "18000000" },
       { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value": "50" },
-      { "name": "AUTO_SAVE_MARC_BIB_AS_GRAPH", "value": "false" }
+      { "name": "AUTO_SAVE_MARC_BIB_AS_GRAPH", "value": "false" },
+      { "name": "REINDEX_POOL_SIZE", "value": "10" },
+      { "name": "REINDEX_CHUNK_SIZE", "value": "100" }
     ]
   },
   "metadata": {

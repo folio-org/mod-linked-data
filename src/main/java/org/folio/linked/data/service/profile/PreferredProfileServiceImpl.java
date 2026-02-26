@@ -16,7 +16,7 @@ import org.folio.linked.data.repo.PreferredProfileRepository;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ResourceTypeRepository;
 import org.folio.spring.FolioExecutionContext;
-import org.springframework.lang.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

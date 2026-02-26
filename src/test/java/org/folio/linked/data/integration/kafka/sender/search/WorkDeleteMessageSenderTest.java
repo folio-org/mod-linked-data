@@ -58,7 +58,7 @@ class WorkDeleteMessageSenderTest {
     var id = 1L;
     var work = new Resource().setIdAndRefreshEdges(id).addTypes(ResourceTypeDictionary.WORK);
     var expectedMessage = new ResourceIndexEvent().id(String.valueOf(id));
-    doReturn(expectedMessage).when(workSearchMessageMapper).toIndex(work);
+    doReturn(expectedMessage).when(workSearchMessageMapper).toIndex(work, DELETE);
 
     // when
     producer.produce(work);
@@ -67,7 +67,6 @@ class WorkDeleteMessageSenderTest {
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(resourceMessageProducer).sendMessages(messageCaptor.capture());
     assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
-    assertThat(expectedMessage.getType()).isEqualTo(DELETE);
     verifyNoMoreInteractions(workUpdateMessageSender);
   }
 

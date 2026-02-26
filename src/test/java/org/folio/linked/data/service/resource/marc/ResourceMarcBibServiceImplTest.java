@@ -139,7 +139,7 @@ class ResourceMarcBibServiceImplTest {
   void getResourceMarcView_shouldThrowException_ifNotInstance() {
     // given
     var notExistedId = randomLong();
-    var existedResource = getSampleWork(null);
+    var existedResource = getSampleWork();
     when(resourceRepo.findById(notExistedId))
       .thenReturn(Optional.of(existedResource));
     when(exceptionBuilder.notSupportedException(anyString(), anyString()))

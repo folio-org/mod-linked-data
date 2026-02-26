@@ -6,16 +6,17 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.test.TestUtil.FOLIO_OKAPI_URL;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.data.domain.Pageable.unpaged;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Set;
 import org.folio.linked.data.e2e.base.IntegrationTest;
-import org.folio.linked.data.repo.ResourceRepository;
+import org.folio.linked.data.test.resource.ResourceTestRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -28,12 +29,13 @@ class HubControllerIT {
   @Autowired
   private MockMvc mockMvc;
   @Autowired
-  private ResourceRepository resourceRepository;
+  private ResourceTestRepository resourceRepository;
 
   @Test
   void previewHub_shouldReturnHubResource_whenValidUriProvided() throws Exception {
     //given
-    var hubCountBefore = resourceRepository.findAllByType(HUB.getUri(), Pageable.unpaged()).getTotalElements();
+    var hubCountBefore = resourceRepository.findAllByTypeWithEdgesLoaded(Set.of(HUB.getUri()), 1, unpaged())
+      .getTotalElements();
     var requestBuilder = MockMvcRequestBuilders.get(HUB_ENDPOINT)
       .param("hubUri", getHubUri())
       .headers(defaultHeaders(env));
@@ -48,14 +50,16 @@ class HubControllerIT {
       .andReturn().getResponse().getContentAsString();
     assertThat(result).contains("Hub 150986 mainTitle");
 
-    var hubCountAfter = resourceRepository.findAllByType(HUB.getUri(), Pageable.unpaged()).getTotalElements();
+    var hubCountAfter = resourceRepository.findAllByTypeWithEdgesLoaded(Set.of(HUB.getUri()), 1, unpaged())
+      .getTotalElements();
     assertEquals(hubCountBefore, hubCountAfter);
   }
 
   @Test
   void saveHub_shouldSaveAndReturnHubResource_whenValidUriProvided() throws Exception {
     //given
-    var hubCountBefore = resourceRepository.findAllByType(HUB.getUri(), Pageable.unpaged()).getTotalElements();
+    var hubCountBefore = resourceRepository.findAllByTypeWithEdgesLoaded(Set.of(HUB.getUri()), 1, unpaged())
+      .getTotalElements();
     var requestBuilder = MockMvcRequestBuilders.post(HUB_ENDPOINT)
       .param("hubUri", getHubUri())
       .headers(defaultHeaders(env));
@@ -70,7 +74,8 @@ class HubControllerIT {
       .andReturn().getResponse().getContentAsString();
     assertThat(result).contains("Hub 150986 mainTitle");
 
-    var hubCountAfter = resourceRepository.findAllByType(HUB.getUri(), Pageable.unpaged()).getTotalElements();
+    var hubCountAfter = resourceRepository.findAllByTypeWithEdgesLoaded(Set.of(HUB.getUri()), 1, unpaged())
+      .getTotalElements();
     assertThat(hubCountAfter).isEqualTo(hubCountBefore + 1);
   }
 

@@ -14,4 +14,5 @@
   <include file="tables/delete_all_resources.sql" relativeToChangelogFile="true" />
   <include file="tables/create-resource_edges_source_hash_idx.sql" relativeToChangelogFile="true" />
   <include file="tables/user_profile_settings.sql" relativeToChangelogFile="true" />
+  <include file="tables/spring_batch_init.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

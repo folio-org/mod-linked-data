@@ -57,6 +57,7 @@ import org.folio.linked.data.domain.dto.LinkedDataTitle;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.LinkedDataWorkOnlyClassificationsInner;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
+import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.resource.common.instance.InstanceMapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.work.WorkMapperUnit;
@@ -85,7 +86,7 @@ public abstract class WorkSearchMessageMapper {
   @Mapping(target = "id", expression = "java(UUID.randomUUID().toString())")
   @Mapping(target = "resourceName", constant = SEARCH_WORK_RESOURCE_NAME)
   @Mapping(target = "_new", expression = "java(toLinkedDataWork(resource))")
-  public abstract ResourceIndexEvent toIndex(Resource resource);
+  public abstract ResourceIndexEvent toIndex(Resource resource, ResourceIndexEventType type);
 
   @Mapping(target = "classifications", source = "resource")
   @Mapping(target = "contributors", source = "resource")

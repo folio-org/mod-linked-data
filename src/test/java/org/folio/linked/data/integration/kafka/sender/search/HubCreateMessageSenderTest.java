@@ -44,7 +44,7 @@ class HubCreateMessageSenderTest {
     // given
     var resource = new Resource().addTypes(HUB).setIdAndRefreshEdges(123L);
     var expectedMessage = new ResourceIndexEvent().id(String.valueOf(resource.getId()));
-    when(hubSearchMessageMapper.toIndex(resource)).thenReturn(expectedMessage);
+    when(hubSearchMessageMapper.toIndex(resource, CREATE)).thenReturn(expectedMessage);
 
     // when
     producer.produce(resource);
@@ -53,7 +53,6 @@ class HubCreateMessageSenderTest {
     var messageCaptor = ArgumentCaptor.forClass(List.class);
     verify(hubIndexMessageProducer).sendMessages(messageCaptor.capture());
     assertThat(messageCaptor.getValue()).containsOnly(expectedMessage);
-    assertThat(expectedMessage.getType()).isEqualTo(CREATE);
     assertThat(expectedMessage.getId()).isNotNull();
     var expectedIndexEvent = new ResourceIndexedEvent(parseLong(expectedMessage.getId()));
     verify(eventPublisher).publishEvent(expectedIndexEvent);

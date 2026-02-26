@@ -15,6 +15,15 @@
     },
     {
       "request": {
+        "method": "POST",
+        "url": "/search/index/inventory/reindex"
+      },
+      "response": {
+        "status": 204
+      }
+    },
+    {
+      "request": {
         "method": "GET",
         "url": "/search/authorities?query=%28lccn%3D%3D%22n2021004098%22%29%20and%20%28authRefType%3D%3D%28%22Authorized%22%29%29"
       },

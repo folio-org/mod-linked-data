@@ -1,0 +1,20 @@
+{
+  "description": "mod-search re-index request",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "recreateIndex": {
+      "type": "boolean",
+      "description": "drop and recreate index flag"
+    },
+    "resourceName": {
+      "type": "string",
+      "enum": [
+        "linked-data-instance",
+        "linked-data-hub",
+        "linked-data-work"
+      ],
+      "description": "mod-search resource name "
+    }
+  }
+}

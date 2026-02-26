@@ -50,7 +50,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
   @Test
   void createInstanceWithWorkRef_shouldReturn400_ifLccnIsNotUnique() throws Exception {
     // given
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
     var requestBuilder = post(RESOURCE_URL)
@@ -86,7 +86,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
     instance.remove("inventoryId");
     instance.remove("srsId");
     setCurrentStatus(instance);
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
 
     var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())
@@ -117,7 +117,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
   @Test
   void createInstanceWithWorkRef_shouldSuccess_ifLccnDeduplicationDisabled() throws Exception {
     // given
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
     var requestBuilder = post(RESOURCE_URL)
@@ -142,7 +142,7 @@ class ResourceControllerLccnUniquenessValidationIT extends ITBase {
   @Test
   void createInstanceWithWorkRef_shouldReturn424_ifSearchServiceThrownException() throws Exception {
     // given
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     setExistingResourcesIds(work, hashService);
     resourceTestService.saveGraph(work);
     var requestBuilder = post(RESOURCE_URL)

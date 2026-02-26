@@ -25,6 +25,7 @@ import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VAR
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_PARALLEL;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_VARIANT;
+import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
@@ -69,13 +70,14 @@ class WorkSearchMessageMapperTest {
     var resource = new Resource().setIdAndRefreshEdges(randomLong());
 
     // when
-    var result = workSearchMessageMapper.toIndex(resource);
+    var result = workSearchMessageMapper.toIndex(resource, CREATE);
 
     // then
     assertThat(result)
-      .hasAllNullFieldsOrPropertiesExcept("id", "resourceName", "_new")
+      .hasAllNullFieldsOrPropertiesExcept("id", "resourceName", "type", "_new")
       .hasFieldOrProperty("id")
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
+      .hasFieldOrPropertyWithValue("type", CREATE)
       .extracting("_new")
       .isInstanceOf(LinkedDataWork.class);
     var linkedDataWork = (LinkedDataWork) result.getNew();
@@ -94,7 +96,7 @@ class WorkSearchMessageMapperTest {
   @Test
   void toIndex_shouldReturnCorrectlyMappedIndex_fromWork() {
     // given
-    var work = getSampleWork(null);
+    var work = getSampleWork();
     var wrongContributor = getContributor(ANNOTATION, "wrong contributor");
     var emptyContributor = new Resource();
     var creatorPerson = getContributor(ResourceTypeDictionary.PERSON, "creator person");
@@ -111,12 +113,13 @@ class WorkSearchMessageMapperTest {
     work.addIncomingEdge(edge);
 
     // when
-    var result = workSearchMessageMapper.toIndex(work);
+    var result = workSearchMessageMapper.toIndex(work, CREATE);
 
     // then
     assertThat(result)
       .hasFieldOrProperty("id")
       .hasFieldOrPropertyWithValue("resourceName", "linked-data-work")
+      .hasFieldOrPropertyWithValue("type", CREATE)
       .extracting("_new")
       .isInstanceOf(LinkedDataWork.class);
     var linkedDataWork = (LinkedDataWork) result.getNew();

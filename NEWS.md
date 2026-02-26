@@ -1,5 +1,4 @@
 ## 2.0.0 (IN PROGRESS)
-- Upgrade module to SpringBoot4.0 and Spring7.0 [MODLD-943] (https://folio-org.atlassian.net/browse/MODLD-943)
 - Created new API GET /profile/{id} [MODLD-713](https://folio-org.atlassian.net/browse/MODLD-713)
 - Created new API POST /import/file [MODLD-729](https://folio-org.atlassian.net/browse/MODLD-729), [MODLD-740](https://folio-org.atlassian.net/browse/MODLD-740)
 - Updated API to support Extent [MODLD-390](https://folio-org.atlassian.net/browse/MODLD-390)
@@ -97,6 +96,8 @@
 - WORK types validation and type column added to import results CSV[MODLD-983](https://folio-org.atlassian.net/browse/MODLD-983)
 - New API to clear caches [MODLD-995](https://folio-org.atlassian.net/browse/MODLD-995)
 - Include full label of the creator in Work search index message [MODLD-950](https://folio-org.atlassian.net/browse/MODLD-950)
+- Upgrade module to SpringBoot4.0 and Spring7.0 [MODLD-943](https://folio-org.atlassian.net/browse/MODLD-943)
+- Spring Batch based reindexing API [MODLD-908](https://folio-org.atlassian.net/browse/MODLD-908)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
