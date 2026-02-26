@@ -21,6 +21,7 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.test.resource.FingerprintRuleGraphValidator;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,18 @@ public abstract class PostResourceIT extends ITBase {
   private Environment env;
   @Autowired
   private ResourceTestService resourceService;
+  @Autowired
+  private FingerprintRuleGraphValidator fingerprintRuleGraphValidator;
 
   protected abstract String postPayload();
 
   protected abstract void validateApiResponse(ResultActions apiResponse);
 
   protected abstract void validateGraph(Resource resource);
+
+  protected Set<Set<String>> excludedFingerprintValidationTypes() {
+    return Set.of();
+  }
 
   @Test
   void testPostRequest() throws Exception {
@@ -68,6 +75,7 @@ public abstract class PostResourceIT extends ITBase {
     validateApiResponse(postResponse);
     var resourceId = getResourceId(postResponse);
     var resource = resourceService.getResourceById(resourceId, RESOURCE_FETCH_DEPTH);
+    fingerprintRuleGraphValidator.validateFingerprintRuleExists(resource, excludedFingerprintValidationTypes());
     validateGraph(resource);
 
     var getRequest = get(RESOURCE_URL + "/" + resourceId)
