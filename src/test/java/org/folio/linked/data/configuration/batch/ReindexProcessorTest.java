@@ -103,8 +103,5 @@ class ReindexProcessorTest {
     verify(hubSearchMessageMapper).toIndex(resource, CREATE);
     verifyNoInteractions(workSearchMessageMapper);
   }
+
 }
-
-
-
-

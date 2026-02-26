@@ -161,8 +161,5 @@ class ReindexWriterTest {
     ));
     verify(hubIndexMessageProducer).sendMessages(List.of());
   }
+
 }
-
-
-
-

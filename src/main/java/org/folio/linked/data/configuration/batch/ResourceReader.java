@@ -48,7 +48,7 @@ public class ResourceReader extends AbstractItemStreamItemReader<Resource> {
         .map(ResourceTypeDictionary::getUri)
         .toList();
     }
-    return List.of(ResourceTypeDictionary.valueOf(resourceType).getUri());
+    return List.of(ResourceTypeDictionary.valueOf(resourceType.toUpperCase()).getUri());
   }
 
   @Override

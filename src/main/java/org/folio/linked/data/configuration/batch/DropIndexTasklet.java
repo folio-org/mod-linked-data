@@ -58,10 +58,10 @@ public class DropIndexTasklet implements Tasklet {
   }
 
   private ReindexRequest.ResourceNameEnum getSearchResourceType(String resourceType) {
-    if (HUB.name().equals(resourceType)) {
+    if (HUB.name().equalsIgnoreCase(resourceType)) {
       return LINKED_DATA_HUB;
     }
-    if (WORK.name().equals(resourceType)) {
+    if (WORK.name().equalsIgnoreCase(resourceType)) {
       return LINKED_DATA_WORK;
     }
     return null;

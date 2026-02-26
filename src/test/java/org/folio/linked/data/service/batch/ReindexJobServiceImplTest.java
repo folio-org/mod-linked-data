@@ -176,20 +176,5 @@ class ReindexJobServiceImplTest {
     assertThat(thrown.getMessage()).isEqualTo("Job launch exception");
     assertThat(thrown.getCause()).isInstanceOf(JobExecutionException.class);
   }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
