@@ -3,6 +3,7 @@ package org.folio.linked.data.service.resource.marc;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
@@ -43,19 +44,23 @@ class AssignAuthorityTargetTest {
         Set.of(), false),
       Arguments.of(
         SUBJECT_OF_WORK,
-        Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE),
+        Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE, HUB),
         Set.of(CONCEPT), true),
       Arguments.of(
         SUBJECT_OF_WORK,
-        Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE),
+        Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE, HUB),
         Set.of(), true),
       Arguments.of(
         SUBJECT_OF_WORK,
-        getAllTypesExcluding(Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE)),
+        getAllTypesExcluding(
+          Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE, HUB)
+        ),
         Set.of(), false),
       Arguments.of(
         SUBJECT_OF_WORK,
-        getAllTypesExcluding(Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE)),
+        getAllTypesExcluding(
+          Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE, HUB)
+        ),
         Set.of(CONCEPT), false)
     );
   }
@@ -66,14 +71,14 @@ class AssignAuthorityTargetTest {
                                  Set<ResourceTypeDictionary> allowed,
                                  Set<ResourceTypeDictionary> any,
                                  boolean expected) {
-    var isCompatible = allowed.stream()
-      .allMatch(e -> {
-        var combined = new HashSet<>(any);
-        combined.add(e);
-        return target.isCompatibleWith(combined);
-      });
-
-    assertEquals(expected, isCompatible);
+    allowed.forEach(e -> {
+      var combined = new HashSet<>(any);
+      combined.add(e);
+      assertEquals(expected, target.isCompatibleWith(combined),
+        () -> "Unexpected compatibility for item: " + e
+          + ", target: " + target
+          + ", combined types: " + combined);
+    });
   }
 
   private static Set<ResourceTypeDictionary> getAllTypesExcluding(Set<ResourceTypeDictionary> allowed) {

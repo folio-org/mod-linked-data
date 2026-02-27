@@ -98,6 +98,7 @@
 - Include full label of the creator in Work search index message [MODLD-950](https://folio-org.atlassian.net/browse/MODLD-950)
 - Upgrade module to SpringBoot4.0 and Spring7.0 [MODLD-943](https://folio-org.atlassian.net/browse/MODLD-943)
 - Spring Batch based reindexing API [MODLD-908](https://folio-org.atlassian.net/browse/MODLD-908)
+- Add HUB as a valid type for SUBJECT_OF_WORK [MODLD-510](https://folio-org.atlassian.net/browse/MODLD-510)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
