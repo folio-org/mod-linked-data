@@ -118,8 +118,8 @@ public class BatchConfig {
     @Value("${mod-linked-data.reindex.pool-size}") int poolSize
   ) {
     var exec = new ThreadPoolTaskExecutor();
+    exec.setCorePoolSize(poolSize);
     exec.setMaxPoolSize(poolSize);
-    exec.setQueueCapacity(poolSize);
     exec.setThreadNamePrefix("reindex-");
     exec.initialize();
     return exec;
