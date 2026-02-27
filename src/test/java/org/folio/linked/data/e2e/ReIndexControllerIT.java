@@ -91,6 +91,33 @@ class ReIndexControllerIT extends ITBase {
     assertIndexDateSet(hub, expectHubIndexed);
   }
 
+  @ParameterizedTest
+  @CsvSource({"true, FULL", "false, INCREMENTAL"})
+  void getReindexJobStatus_shouldReturnStatus_whenJobExists(boolean isFullReindex,
+                                                            ReindexTypeEnum expectedType) throws Exception {
+    // given
+    resourceTestService.saveGraph(getSampleWork());
+    var reindexUrl = isFullReindex ? FULL_REINDEX_URL : INCREMENTAL_REINDEX_URL;
+    var jobExecutionId = parseLong(mockMvc.perform(post(reindexUrl).headers(defaultHeaders(env)))
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString());
+    awaitJobCompletion(jobExecutionId);
+
+    // when / then
+    mockMvc.perform(get(REINDEX_STATUS_URL)
+        .param("jobExecutionId", String.valueOf(jobExecutionId))
+        .headers(defaultHeaders(env)))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.status").value("COMPLETED"))
+      .andExpect(jsonPath("$.reindexType").value(expectedType.getValue()))
+      .andExpect(jsonPath("$.startDate").isNotEmpty())
+      .andExpect(jsonPath("$.endDate").isNotEmpty())
+      .andExpect(jsonPath("$.startedBy").isNotEmpty())
+      .andExpect(jsonPath("$.linesRead").isNumber())
+      .andExpect(jsonPath("$.linesSent").isNumber());
+  }
+
   @Test
   void getReindexJobStatus_shouldReturn404_whenJobExecutionIdDoesNotExist() throws Exception {
     // given
