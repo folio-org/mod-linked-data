@@ -43,6 +43,7 @@ public class BatchConfig {
   public static final String JOB_PARAM_RESOURCE_TYPE = "resourceType";
   public static final String JOB_PARAM_STARTED_BY = "startedBy";
   public static final String JOB_PARAM_RUN_TIMESTAMP = "run.timestamp";
+  public static final String REINDEX_STEP_NAME = "reindexStep";
 
   @Bean
   public BeanFactoryPostProcessor jobAndStepScopeConfigurer() {
@@ -131,7 +132,7 @@ public class BatchConfig {
                           ReindexWriter reindexWriter,
                           @Value("${mod-linked-data.reindex.chunk-size}") int chunkSize,
                           AsyncTaskExecutor reindexTaskExecutor) {
-    return new StepBuilder("reindexStep", jobRepository)
+    return new StepBuilder(REINDEX_STEP_NAME, jobRepository)
       .<Resource, ResourceIndexEvent>chunk(chunkSize)
       .reader(resourceReader)
       .processor(reindexProcessor)

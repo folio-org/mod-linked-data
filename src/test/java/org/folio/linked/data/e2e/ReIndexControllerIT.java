@@ -5,6 +5,7 @@ import static java.time.ZoneId.systemDefault;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
+import static org.folio.linked.data.domain.dto.ReindexJobStatusDto.ReindexTypeEnum;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleHub;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
@@ -13,7 +14,11 @@ import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -27,6 +32,7 @@ import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -35,6 +41,7 @@ class ReIndexControllerIT extends ITBase {
 
   private static final String FULL_REINDEX_URL = "/linked-data/reindex/full";
   private static final String INCREMENTAL_REINDEX_URL = "/linked-data/reindex/incremental";
+  private static final String REINDEX_STATUS_URL = "/linked-data/reindex/status";
   private static final String QUERY_PARAM_RESOURCE_TYPE = "resourceType";
   private static final Date GIVEN_INDEX_DATE = Date.from(LocalDate.of(1986, 9, 15)
     .atStartOfDay(systemDefault()).toInstant());
@@ -72,15 +79,42 @@ class ReIndexControllerIT extends ITBase {
     var resultActions = mockMvc.perform(requestBuilder);
 
     //then
-    var jobInstanceId = parseLong(resultActions
+    var jobExecutionId = parseLong(resultActions
       .andExpect(status().isOk())
       .andReturn().getResponse().getContentAsString()
     );
-    awaitJobCompletion(jobInstanceId);
+    awaitJobCompletion(jobExecutionId);
     assertIndexMessageSent(work, expectWorkIndexed);
     assertIndexMessageSent(hub, expectHubIndexed);
     assertIndexDateSet(work, expectWorkIndexed);
     assertIndexDateSet(hub, expectHubIndexed);
+  }
+
+  @ParameterizedTest
+  @CsvSource({"true, FULL", "false, INCREMENTAL"})
+  void getReindexJobStatus_shouldReturnStatus_whenJobExists(boolean isFullReindex,
+                                                            ReindexTypeEnum expectedType) throws Exception {
+    // given
+    resourceTestService.saveGraph(getSampleWork());
+    var reindexUrl = isFullReindex ? FULL_REINDEX_URL : INCREMENTAL_REINDEX_URL;
+    var jobExecutionId = parseLong(mockMvc.perform(post(reindexUrl).headers(defaultHeaders(env)))
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString());
+    awaitJobCompletion(jobExecutionId);
+
+    // when / then
+    mockMvc.perform(get(REINDEX_STATUS_URL)
+        .param("jobExecutionId", String.valueOf(jobExecutionId))
+        .headers(defaultHeaders(env)))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.status").value("COMPLETED"))
+      .andExpect(jsonPath("$.reindexType").value(expectedType.getValue()))
+      .andExpect(jsonPath("$.startDate").isNotEmpty())
+      .andExpect(jsonPath("$.endDate").isNotEmpty())
+      .andExpect(jsonPath("$.startedBy").isNotEmpty())
+      .andExpect(jsonPath("$.linesRead").isNumber())
+      .andExpect(jsonPath("$.linesSent").isNumber());
   }
 
   private static Stream<Arguments> reindexTestCases() {
@@ -101,12 +135,12 @@ class ReIndexControllerIT extends ITBase {
     );
   }
 
-  private void awaitJobCompletion(Long jobInstanceId) {
+  private void awaitJobCompletion(Long jobExecutionId) {
     awaitAndAssert(() -> {
       var status = tenantScopedExecutionService.execute(TENANT_ID, () -> jdbcTemplate.queryForObject(
-        "SELECT STATUS FROM batch_job_execution WHERE JOB_INSTANCE_ID = ? ORDER BY JOB_EXECUTION_ID DESC LIMIT 1",
+        "SELECT STATUS FROM batch_job_execution WHERE JOB_EXECUTION_ID = ?",
         String.class,
-        jobInstanceId
+        jobExecutionId
       ));
       assertEquals("COMPLETED", status);
     });
