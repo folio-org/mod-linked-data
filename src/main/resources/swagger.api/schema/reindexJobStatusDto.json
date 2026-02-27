@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Reindex job status DTO",
+  "type": "object",
+  "properties": {
+    "startDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time when the reindex job was started"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time when the reindex job finished"
+    },
+    "startedBy": {
+      "type": "string",
+      "description": "ID of the user who started the reindex job"
+    },
+    "reindexType": {
+      "type": "string",
+      "enum": ["FULL", "INCREMENTAL"],
+      "description": "Type of reindex: full or incremental"
+    },
+    "linesRead": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Total number of resources read during reindexing"
+    },
+    "linesSent": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Total number of resources sent to index during reindexing"
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the reindex job (e.g. STARTED, COMPLETED, FAILED)"
+    }
+  }
+}
+

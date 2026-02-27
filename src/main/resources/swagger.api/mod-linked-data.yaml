@@ -15,7 +15,7 @@ paths:
         - $ref: '#/components/parameters/resourceType'
       responses:
         '200':
-          description: ID of Reindex job instance started
+          description: ID of Reindex job execution
           content:
             text/plain:
               schema:
@@ -35,11 +35,33 @@ paths:
         - $ref: '#/components/parameters/resourceType'
       responses:
         '200':
-          description: ID of Reindex job instance started
+          description: ID of Reindex job execution
           content:
             text/plain:
               schema:
                 type: string
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /linked-data/reindex/status:
+    get:
+      operationId: getReindexJobStatus
+      tags:
+        - reindex
+      description: Get the status of a reindex job by its execution ID.
+      parameters:
+        - $ref: '#/components/parameters/jobExecutionId'
+      responses:
+        '200':
+          description: Reindex job status
+          content:
+            application/json:
+              schema:
+                $ref: schema/reindexJobStatusDto.json
+        '404':
+          description: No reindex job found for the given ID
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '500':
@@ -572,6 +594,14 @@ components:
       description: URI of a remote Hub resource
       schema:
         type: string
+    jobExecutionId:
+      name: jobExecutionId
+      in: query
+      required: true
+      description: The ID of the job execution
+      schema:
+        type: integer
+        format: int64
   schemas:
     errorResponse:
       $ref: schema/error/errors.json

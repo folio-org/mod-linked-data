@@ -319,6 +319,28 @@ Example response:
 
 The returned job instance ID can be used to monitor the job's status.
 
+### Reindex job status
+The status of a reindex job can be retrieved by making a GET request to the `/linked-data/reindex/status` endpoint with the `jobExecutionId` query parameter:
+
+```bash
+curl --location --request GET '{{ base-uri }}/linked-data/reindex/status?jobExecutionId=12345' \
+--header 'x-okapi-tenant: {tenant}' \
+--header 'x-okapi-token: {token}'
+```
+
+Example response:
+```json
+{
+  "startDate": "2026-02-27T10:00:00",
+  "endDate": "2026-02-27T10:05:00",
+  "startedBy": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "reindexType": "FULL",
+  "linesRead": 50000,
+  "linesSent": 49998,
+  "status": "COMPLETED"
+}
+```
+
 # Integration with FOLIO
 When running in FOLIO mode, this module integrates with multiple Folio modules via Kafka.
 ## Search module
