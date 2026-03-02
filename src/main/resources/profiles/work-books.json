@@ -895,13 +895,16 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "children": ["Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF"],
+      "children": [
+        "Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF",
+        "Profile:Work:SubjectOfTheWork:Subclass"],
       "id": "Profile:Work:SubjectOfTheWork"
     },
     {
       "type": "complex",
       "displayName": "Search LCSH/LCNAF",
       "uriBFLite": "label",
+      "bfid": "lc:RT:bf2:search:lcsh",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -920,6 +923,115 @@
       },
       "id": "Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF",
       "marc": "6XX, 61X, 65X"
+    },
+    {
+      "type": "dropdown",
+      "displayName": "Subclass",
+      "uriBFLite": "_subclass",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": []
+      },
+      "children": [
+        "Profile:Work:SubjectOfTheWork:Subclass:Person",
+        "Profile:Work:SubjectOfTheWork:Subclass:Family",
+        "Profile:Work:SubjectOfTheWork:Subclass:Meeting",
+        "Profile:Work:SubjectOfTheWork:Subclass:Jurisdiction",
+        "Profile:Work:SubjectOfTheWork:Subclass:Organization",
+        "Profile:Work:SubjectOfTheWork:Subclass:Form",
+        "Profile:Work:SubjectOfTheWork:Subclass:Temporal",
+        "Profile:Work:SubjectOfTheWork:Subclass:Topic",
+        "Profile:Work:SubjectOfTheWork:Subclass:Place",
+        "Profile:Work:SubjectOfTheWork:Subclass:Hub"
+      ],
+      "layout": { "readOnly": true },
+      "dependsOn": "lc:RT:bf2:search:lcsh",
+      "linkedEntry": { "controlledBy": "Profile:Work:SubjectOfTheWork:SearchLCSHLCNAF" },
+      "id": "Profile:Work:SubjectOfTheWork:Subclass",
+      "marc": ""
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Person",
+      "bfid": "lc:RT:bf2:Agent:bfPerson:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Person",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Person"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Family",
+      "bfid": "lc:RT:bf2:Agent:bfFamily:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Family",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Family"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Meeting",
+      "bfid": "lc:RT:bf2:Agent:bfMeeting:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Meeting",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Meeting"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Jurisdiction",
+      "bfid": "lc:RT:bf2:Agent:bfJurisdiction:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Jurisdiction",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Jurisdiction"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Organization",
+      "bfid": "lc:RT:bf2:Agent:bfOrganization:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Organization",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Organization"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Form",
+      "bfid": "lc:RT:bf2:Agent:bfForm:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Form",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Form"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Temporal",
+      "bfid": "lc:RT:bf2:Agent:bfTemporal:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Temporal",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Temporal"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Topic",
+      "bfid": "lc:RT:bf2:Agent:bfTopic:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Topic",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Topic"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Place",
+      "bfid": "lc:RT:bf2:Agent:bfPlace:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Place",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Place"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Hub",
+      "bfid": "lc:RT:bf2:Agent:bfHub:v2",
+      "uriBFLite": "http://bibfra.me/vocab/lite/Hub",
+      "children": [],
+      "id": "Profile:Work:SubjectOfTheWork:Subclass:Hub"
     },
     {
       "type": "dropdown",
