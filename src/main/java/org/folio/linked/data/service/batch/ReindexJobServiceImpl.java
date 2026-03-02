@@ -13,7 +13,10 @@ import java.util.HashSet;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.ReindexJobStatusDto;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
+import org.folio.linked.data.mapper.dto.ReindexJobStatusMapper;
+import org.folio.linked.data.repo.BatchJobExecutionRepository;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecutionException;
@@ -32,6 +35,8 @@ public class ReindexJobServiceImpl implements ReindexJobService {
   private final TaskExecutorJobOperator jobOperator;
   private final FolioExecutionContext folioExecutionContext;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final BatchJobExecutionRepository batchJobExecutionRepository;
+  private final ReindexJobStatusMapper reindexJobStatusMapper;
 
   @Override
   public Long start(boolean isFullReindex, String resourceType) {
@@ -53,10 +58,17 @@ public class ReindexJobServiceImpl implements ReindexJobService {
     params.add(new JobParameter<>(JOB_PARAM_RUN_TIMESTAMP, System.currentTimeMillis(), Long.class));
 
     try {
-      return jobOperator.start(reindexJob, new JobParameters(params)).getJobInstanceId();
+      return jobOperator.start(reindexJob, new JobParameters(params)).getId();
     } catch (JobExecutionException e) {
       throw new IllegalArgumentException("Job launch exception", e);
     }
+  }
+
+  @Override
+  public ReindexJobStatusDto getStatus(Long jobExecutionId) {
+    return batchJobExecutionRepository.findById(jobExecutionId)
+      .map(reindexJobStatusMapper::toDto)
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("JobExecution", valueOf(jobExecutionId)));
   }
 
   private ResourceTypeDictionary getResourceTypeDictionary(String resourceType) {

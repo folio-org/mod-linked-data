@@ -284,7 +284,7 @@ A remote Hub resource can be saved to the local database by making a POST reques
 ### Full reindexing
 Resources can be fully reindexed in mod-search by making a POST request to the `/linked-data/reindex/full` endpoint. This will start a full reindex of all resources in the database. All resources will be reindexed regardless of their current index state.
 
-The endpoint returns a job instance ID that can be used to track the reindex job's progress. The reindexing process executes asynchronously in the background.
+The endpoint returns a job execution ID that can be used to track the reindex job's progress. The reindexing process executes asynchronously in the background.
 
 Optionally, you can specify a `resourceType` query parameter (HUB or WORK) to reindex only resources of a specific type:
 
@@ -299,12 +299,12 @@ Example response:
 12345
 ```
 
-The returned job instance ID can be used to monitor the job's status.
+The returned job execution ID can be used to monitor the job's status.
 
 ### Incremental reindexing
 Resources that have not been indexed yet can be incrementally reindexed by making a POST request to the `/linked-data/reindex/incremental` endpoint. This will only reindex resources that have not been indexed yet (indexDate is null).
 
-Similar to full reindex, the endpoint returns a job instance ID for tracking the asynchronous reindexing process. You can specify a `resourceType` query parameter:
+Similar to full reindex, the endpoint returns a job execution ID for tracking the asynchronous reindexing process. You can specify a `resourceType` query parameter:
 
 ```bash
 curl --location --request POST '{{ base-uri }}/linked-data/reindex/incremental?resourceType=WORK' \
@@ -317,7 +317,29 @@ Example response:
 12346
 ```
 
-The returned job instance ID can be used to monitor the job's status.
+The returned job execution ID can be used to monitor the job's status.
+
+### Reindex job status
+The status of a reindex job can be retrieved by making a GET request to the `/linked-data/reindex/status` endpoint with the `jobExecutionId` query parameter:
+
+```bash
+curl --location --request GET '{{ base-uri }}/linked-data/reindex/status?jobExecutionId=12345' \
+--header 'x-okapi-tenant: {tenant}' \
+--header 'x-okapi-token: {token}'
+```
+
+Example response:
+```json
+{
+  "startDate": "2026-02-27T10:00:00",
+  "endDate": "2026-02-27T10:05:00",
+  "startedBy": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "reindexType": "FULL",
+  "linesRead": 50000,
+  "linesSent": 49998,
+  "status": "COMPLETED"
+}
+```
 
 # Integration with FOLIO
 When running in FOLIO mode, this module integrates with multiple Folio modules via Kafka.
