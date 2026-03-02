@@ -30,6 +30,7 @@ import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.test.kafka.KafkaSearchHubIndexTopicListener;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -88,6 +89,18 @@ class ReIndexControllerIT extends ITBase {
     assertIndexMessageSent(hub, expectHubIndexed);
     assertIndexDateSet(work, expectWorkIndexed);
     assertIndexDateSet(hub, expectHubIndexed);
+  }
+
+  @Test
+  void getReindexJobStatus_shouldReturn404_whenJobExecutionIdDoesNotExist() throws Exception {
+    // given
+    var nonExistentJobExecutionId = Long.MAX_VALUE;
+
+    // when / then
+    mockMvc.perform(get(REINDEX_STATUS_URL)
+        .param("jobExecutionId", String.valueOf(nonExistentJobExecutionId))
+        .headers(defaultHeaders(env)))
+      .andExpect(status().isNotFound());
   }
 
   @ParameterizedTest
