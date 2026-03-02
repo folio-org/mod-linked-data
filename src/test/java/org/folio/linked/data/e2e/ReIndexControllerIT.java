@@ -91,6 +91,18 @@ class ReIndexControllerIT extends ITBase {
     assertIndexDateSet(hub, expectHubIndexed);
   }
 
+  @Test
+  void getReindexJobStatus_shouldReturn404_whenJobExecutionIdDoesNotExist() throws Exception {
+    // given
+    var nonExistentJobExecutionId = Long.MAX_VALUE;
+
+    // when / then
+    mockMvc.perform(get(REINDEX_STATUS_URL)
+        .param("jobExecutionId", String.valueOf(nonExistentJobExecutionId))
+        .headers(defaultHeaders(env)))
+      .andExpect(status().isNotFound());
+  }
+
   @ParameterizedTest
   @CsvSource({"true, FULL", "false, INCREMENTAL"})
   void getReindexJobStatus_shouldReturnStatus_whenJobExists(boolean isFullReindex,
