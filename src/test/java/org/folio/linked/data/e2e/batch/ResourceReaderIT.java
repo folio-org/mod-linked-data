@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.folio.linked.data.configuration.batch.ResourceReader;
+import org.folio.linked.data.configuration.batch.reader.ResourceReader;
 import org.folio.linked.data.e2e.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;

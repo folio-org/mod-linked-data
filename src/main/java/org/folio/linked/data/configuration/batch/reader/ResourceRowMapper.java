@@ -1,25 +1,24 @@
-package org.folio.linked.data.configuration.batch;
+package org.folio.linked.data.configuration.batch.reader;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toMap;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.COL_DOC;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.COL_INCOMING_EDGES;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.COL_LABEL;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.COL_OUTGOING_EDGES;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.COL_RESOURCE_HASH;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.COL_TYPE_HASHES;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_PREDICATE_HASH;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_SOURCE_DOC;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_SOURCE_HASH;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_SOURCE_LABEL;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_SOURCE_OUTGOING;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_SOURCE_TYPES;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_TARGET_DOC;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_TARGET_HASH;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_TARGET_LABEL;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.EDGE_TARGET_TYPES;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.INDEXABLE_INCOMING_PREDICATES;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.INDEXABLE_OUTGOING_PREDICATES;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MOCKED_RESOURCE;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.COL_DOC;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.COL_INCOMING_EDGES;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.COL_LABEL;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.COL_OUTGOING_EDGES;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.COL_RESOURCE_HASH;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.COL_TYPE_HASHES;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_PREDICATE_HASH;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_SOURCE_DOC;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_SOURCE_HASH;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_SOURCE_LABEL;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_SOURCE_OUTGOING;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_SOURCE_TYPES;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_TARGET_DOC;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_TARGET_HASH;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_TARGET_LABEL;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.EDGE_TARGET_TYPES;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
 import java.sql.Array;
@@ -37,6 +36,7 @@ import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
+import org.folio.linked.data.util.IndexableEdges;
 import org.springframework.jdbc.core.RowMapper;
 import tools.jackson.databind.JsonNode;
 
@@ -44,22 +44,15 @@ import tools.jackson.databind.JsonNode;
 public class ResourceRowMapper {
 
   private static final Map<Long, ResourceTypeEntity> TYPE_ENTITY_BY_HASH = stream(ResourceTypeDictionary.values())
+    .filter(t -> t != MOCKED_RESOURCE)
     .collect(toMap(ResourceTypeDictionary::getHash,
       t -> new ResourceTypeEntity(t.getHash(), t.getUri(), null)
     ));
 
   private static final Map<Long, PredicateEntity> PREDICATE_ENTITY_BY_HASH = Stream.concat(
-      INDEXABLE_OUTGOING_PREDICATES.stream(),
-      INDEXABLE_INCOMING_PREDICATES.stream()
-    )
-    .distinct()
-    .collect(toMap(
-      hash -> hash,
-      hash -> stream(PredicateDictionary.values())
-        .filter(p -> hash.equals(p.getHash()))
-        .map(p -> new PredicateEntity(p.getHash(), p.getUri()))
-        .findFirst()
-        .orElseThrow()
+      IndexableEdges.OUTGOING.stream(), IndexableEdges.INCOMING.stream())
+    .collect(toMap(PredicateDictionary::getHash,
+      p -> new PredicateEntity(p.getHash(), p.getUri())
     ));
 
   public static RowMapper<Resource> instance() {

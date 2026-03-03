@@ -91,7 +91,7 @@ mod-linked-data:
   authority-source-files:
     limit: ${AUTHORITY_SOURCE_FILES_LIMIT:50}
   reindex:
-    chunk-size: ${REINDEX_CHUNK_SIZE:100}
+    chunk-size: ${REINDEX_CHUNK_SIZE:1000}
   search:
     max-params: ${SEARCH_MAX_PARAMS:100}
   kafka:

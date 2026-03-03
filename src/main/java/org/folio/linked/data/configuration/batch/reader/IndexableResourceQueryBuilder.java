@@ -1,4 +1,4 @@
-package org.folio.linked.data.configuration.batch;
+package org.folio.linked.data.configuration.batch.reader;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
@@ -27,7 +27,6 @@ public class IndexableResourceQueryBuilder {
   static final Set<Long> INDEXABLE_INCOMING_PREDICATES = IndexableEdges.INCOMING.stream()
     .map(PredicateDictionary::getHash)
     .collect(toSet());
-
 
   static final String COL_RESOURCE_HASH = "resource_hash";
   static final String COL_LABEL = "label";

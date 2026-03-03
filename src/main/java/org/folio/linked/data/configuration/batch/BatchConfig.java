@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManagerFactory;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.configuration.batch.reader.ResourceReader;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.batch.core.configuration.JobRegistry;

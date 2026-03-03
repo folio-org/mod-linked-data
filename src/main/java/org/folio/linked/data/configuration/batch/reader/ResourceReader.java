@@ -1,7 +1,7 @@
-package org.folio.linked.data.configuration.batch;
+package org.folio.linked.data.configuration.batch.reader;
 
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.buildParameterValues;
-import static org.folio.linked.data.configuration.batch.IndexableResourceQueryBuilder.buildQueryProvider;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.buildParameterValues;
+import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.buildQueryProvider;
 
 import javax.sql.DataSource;
 import lombok.NonNull;
@@ -34,7 +34,6 @@ public class ResourceReader extends AbstractItemStreamItemReader<Resource> {
       throw new IllegalStateException("Failed to initialize JdbcPagingItemReader", e);
     }
   }
-
 
   @Override
   public void open(@NonNull ExecutionContext executionContext) throws ItemStreamException {
