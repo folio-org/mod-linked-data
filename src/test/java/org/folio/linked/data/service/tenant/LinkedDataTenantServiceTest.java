@@ -36,7 +36,8 @@ class LinkedDataTenantServiceTest {
   @Mock
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Mock
-  private PrepareSystemUserService  prepareSystemUserService;
+  @SuppressWarnings({"removal"})
+  private PrepareSystemUserService prepareSystemUserService;
 
   private LinkedDataTenantService tenantService;
   private final String tenantId = "tenant-01";
@@ -97,7 +98,7 @@ class LinkedDataTenantServiceTest {
   }
 
   @Test
-  void shouldPrepareSystemUser__afterTenantUpdate() {
+  void shouldPrepareSystemUser_afterTenantUpdate() {
     //given
     var attributes = mock(TenantAttributes.class);
 

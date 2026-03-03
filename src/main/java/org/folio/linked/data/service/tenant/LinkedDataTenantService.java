@@ -28,7 +28,8 @@ public class LinkedDataTenantService extends TenantService {
   private final List<TenantServiceWorker> workers;
   private final CacheCleaningJob cacheCleaningJob;
   private final TenantScopedExecutionService tenantScopedExecutionService;
-  private final PrepareSystemUserService  prepareSystemUserService;
+  @SuppressWarnings({"removal"})
+  private final PrepareSystemUserService prepareSystemUserService;
 
   @Autowired
   public LinkedDataTenantService(
@@ -38,6 +39,7 @@ public class LinkedDataTenantService extends TenantService {
     List<TenantServiceWorker> workers,
     CacheCleaningJob cacheCleaningJob,
     TenantScopedExecutionService tenantScopedExecutionService,
+    @SuppressWarnings({"removal"})
     PrepareSystemUserService prepareSystemUserService
   ) {
     super(jdbcTemplate, context, folioSpringLiquibase);
