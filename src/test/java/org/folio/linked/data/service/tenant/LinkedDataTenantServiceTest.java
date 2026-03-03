@@ -9,6 +9,7 @@ import org.folio.linked.data.job.CacheCleaningJob;
 import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
+import org.folio.spring.service.PrepareSystemUserService;
 import org.folio.spring.testing.type.UnitTest;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +35,8 @@ class LinkedDataTenantServiceTest {
   private CacheCleaningJob cacheCleaningJob;
   @Mock
   private TenantScopedExecutionService tenantScopedExecutionService;
+  @Mock
+  private PrepareSystemUserService  prepareSystemUserService;
 
   private LinkedDataTenantService tenantService;
   private final String tenantId = "tenant-01";
@@ -46,7 +49,8 @@ class LinkedDataTenantServiceTest {
       folioSpringLiquibase,
       List.of(testWorker),
       cacheCleaningJob,
-      tenantScopedExecutionService
+      tenantScopedExecutionService,
+      prepareSystemUserService
     );
     when(context.getTenantId()).thenReturn(tenantId);
   }
@@ -90,5 +94,17 @@ class LinkedDataTenantServiceTest {
     verify(testWorker)
       .afterTenantDeletion(tenantId);
     verify(cacheCleaningJob).emptyModuleState();
+  }
+
+  @Test
+  void shouldPrepareSystemUser__afterTenantUpdate() {
+    //given
+    var attributes = mock(TenantAttributes.class);
+
+    //when
+    tenantService.afterTenantUpdate(attributes);
+
+    //then
+    verify(prepareSystemUserService).setupSystemUser();
   }
 }
