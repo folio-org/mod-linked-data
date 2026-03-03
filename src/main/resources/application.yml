@@ -91,7 +91,6 @@ mod-linked-data:
   authority-source-files:
     limit: ${AUTHORITY_SOURCE_FILES_LIMIT:50}
   reindex:
-    pool-size: ${REINDEX_POOL_SIZE:10}
     chunk-size: ${REINDEX_CHUNK_SIZE:100}
   search:
     max-params: ${SEARCH_MAX_PARAMS:100}

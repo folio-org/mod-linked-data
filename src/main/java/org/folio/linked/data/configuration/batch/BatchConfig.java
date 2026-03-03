@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -114,30 +113,18 @@ public class BatchConfig {
   }
 
   @Bean
-  public AsyncTaskExecutor reindexTaskExecutor(
-    @Value("${mod-linked-data.reindex.pool-size}") int poolSize
-  ) {
-    var exec = new ThreadPoolTaskExecutor();
-    exec.setCorePoolSize(poolSize);
-    exec.setMaxPoolSize(poolSize);
-    exec.setThreadNamePrefix("reindex-");
-    exec.initialize();
-    return exec;
-  }
-
-  @Bean
   public Step reindexStep(JobRepository jobRepository,
                           SynchronizedItemStreamReader<Resource> resourceReader,
                           ReindexProcessor reindexProcessor,
                           ReindexWriter reindexWriter,
                           @Value("${mod-linked-data.reindex.chunk-size}") int chunkSize,
-                          AsyncTaskExecutor reindexTaskExecutor) {
+                          AsyncTaskExecutor taskExecutor) {
     return new StepBuilder(REINDEX_STEP_NAME, jobRepository)
       .<Resource, ResourceIndexEvent>chunk(chunkSize)
       .reader(resourceReader)
       .processor(reindexProcessor)
       .writer(reindexWriter)
-      .taskExecutor(reindexTaskExecutor)
+      .taskExecutor(taskExecutor)
       .build();
   }
 

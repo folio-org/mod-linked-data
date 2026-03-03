@@ -1,8 +1,8 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
-import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
@@ -36,7 +36,7 @@ class ResourceControllerCreateInstanceIT extends ITBase {
   }
 
   @Test
-  void createInstance_shouldIncludeBothInstances_inWorkSearchIndexMessage_whenSecondInstanceAddedToExistingWork()
+  void createInstance_shouldIncludeBothInstancesInWorkSearchIndexMessage_whenSecondInstanceAddedToExistingWork()
     throws Exception {
     // given
     var work = getWork("simple_work", hashService);
