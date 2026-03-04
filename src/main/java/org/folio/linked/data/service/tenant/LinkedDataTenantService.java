@@ -9,6 +9,7 @@ import org.folio.linked.data.job.CacheCleaningJob;
 import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
+import org.folio.spring.service.PrepareSystemUserService;
 import org.folio.spring.service.TenantService;
 import org.folio.tenant.domain.dto.TenantAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class LinkedDataTenantService extends TenantService {
   private final List<TenantServiceWorker> workers;
   private final CacheCleaningJob cacheCleaningJob;
   private final TenantScopedExecutionService tenantScopedExecutionService;
+  @SuppressWarnings({"removal"})
+  private final PrepareSystemUserService prepareSystemUserService;
 
   @Autowired
   public LinkedDataTenantService(
@@ -35,12 +38,15 @@ public class LinkedDataTenantService extends TenantService {
     FolioSpringLiquibase folioSpringLiquibase,
     List<TenantServiceWorker> workers,
     CacheCleaningJob cacheCleaningJob,
-    TenantScopedExecutionService tenantScopedExecutionService
+    TenantScopedExecutionService tenantScopedExecutionService,
+    @SuppressWarnings({"removal"})
+    PrepareSystemUserService prepareSystemUserService
   ) {
     super(jdbcTemplate, context, folioSpringLiquibase);
     this.workers = workers;
     this.cacheCleaningJob = cacheCleaningJob;
     this.tenantScopedExecutionService = tenantScopedExecutionService;
+    this.prepareSystemUserService = prepareSystemUserService;
   }
 
   @Override
@@ -52,6 +58,7 @@ public class LinkedDataTenantService extends TenantService {
   @Override
   public void afterTenantUpdate(TenantAttributes tenantAttributes) {
     log.info("Start after update actions for the tenant [{}]", context.getTenantId());
+    prepareSystemUserService.setupSystemUser();
     workers.forEach(worker -> worker.afterTenantUpdate(context.getTenantId(), tenantAttributes));
     cacheCleaningJob.emptyModuleState();
   }
