@@ -418,8 +418,7 @@
       { "name": "CACHE_TTL_AUTHORITY_SOURCE_FILES_MS", "value": "18000000" },
       { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value": "50" },
       { "name": "AUTO_SAVE_MARC_BIB_AS_GRAPH", "value": "false" },
-      { "name": "REINDEX_POOL_SIZE", "value": "10" },
-      { "name": "REINDEX_CHUNK_SIZE", "value": "100" }
+      { "name": "REINDEX_CHUNK_SIZE", "value": "1000" }
     ]
   },
   "metadata": {

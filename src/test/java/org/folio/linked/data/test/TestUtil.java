@@ -217,4 +217,24 @@ public class TestUtil {
     );
   }
 
+  public static String getInstanceRequestDto(Long workId, String title) {
+    return """
+      {
+        "resource": {
+          "http://bibfra.me/vocab/lite/Instance": {
+            "profileId": 3,
+            "http://bibfra.me/vocab/library/title": [
+              {
+                "http://bibfra.me/vocab/library/Title": {
+                  "http://bibfra.me/vocab/library/mainTitle": [ "%s" ]
+                }
+              }
+            ],
+            "_workReference": [ { "id": "%s" } ]
+          }
+        }
+      }
+      """.formatted(title, workId);
+  }
+
 }

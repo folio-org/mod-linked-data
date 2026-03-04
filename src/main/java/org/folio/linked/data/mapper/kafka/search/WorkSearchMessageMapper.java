@@ -6,13 +6,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.ObjectUtils.allNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
-import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
-import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
-import static org.folio.ld.dictionary.PredicateDictionary.LANGUAGE;
-import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
-import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
-import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
@@ -22,6 +15,9 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_PARALLEL;
@@ -29,10 +25,18 @@ import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.MAIN_VAR
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_PARALLEL;
 import static org.folio.linked.data.domain.dto.LinkedDataTitle.TypeEnum.SUB_VARIANT;
+import static org.folio.linked.data.mapper.dto.resource.common.instance.InstanceMapperUnit.SUPPORTED_NOTES;
 import static org.folio.linked.data.util.Constants.MSG_UNKNOWN_TYPES;
 import static org.folio.linked.data.util.Constants.SEARCH_WORK_RESOURCE_NAME;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_CLASSIFICATION;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_CONTRIBUTOR;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_CREATOR;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_INSTANTIATES;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_LANGUAGE;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_PE_PUBLICATION;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_SUBJECT;
+import static org.folio.linked.data.util.IndexableEdges.INDEXABLE_TITLE;
 import static org.folio.linked.data.util.ResourceUtils.cleanDate;
-import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
@@ -59,12 +63,10 @@ import org.folio.linked.data.domain.dto.LinkedDataWorkOnlyClassificationsInner;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
-import org.folio.linked.data.mapper.dto.resource.common.instance.InstanceMapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.work.WorkMapperUnit;
 import org.folio.linked.data.mapper.kafka.search.identifier.IndexIdentifierMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
-import org.folio.linked.data.util.ResourceUtils;
 import org.jspecify.annotations.Nullable;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -99,7 +101,7 @@ public abstract class WorkSearchMessageMapper {
 
   protected List<LinkedDataTitle> extractTitles(Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(re -> TITLE.getUri().equals(re.getPredicate().getUri()))
+      .filter(re -> INDEXABLE_TITLE.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .flatMap(t -> {
         var titles = new ArrayList<LinkedDataTitle>();
@@ -125,12 +127,12 @@ public abstract class WorkSearchMessageMapper {
   @Nullable
   protected ResourceTypeDictionary getTitleType(Resource title) {
     var typeUris = getTypeUris(title);
-    if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.TITLE.getUri().equals(uri))) {
-      return ResourceTypeDictionary.TITLE;
-    } else if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.PARALLEL_TITLE.getUri().equals(uri))) {
-      return ResourceTypeDictionary.PARALLEL_TITLE;
-    } else if (typeUris.stream().anyMatch(uri -> ResourceTypeDictionary.VARIANT_TITLE.getUri().equals(uri))) {
-      return ResourceTypeDictionary.VARIANT_TITLE;
+    if (typeUris.stream().anyMatch(uri -> TITLE.getUri().equals(uri))) {
+      return TITLE;
+    } else if (typeUris.stream().anyMatch(uri -> PARALLEL_TITLE.getUri().equals(uri))) {
+      return PARALLEL_TITLE;
+    } else if (typeUris.stream().anyMatch(uri -> VARIANT_TITLE.getUri().equals(uri))) {
+      return VARIANT_TITLE;
     }
     return null;
   }
@@ -148,12 +150,12 @@ public abstract class WorkSearchMessageMapper {
 
   protected List<LinkedDataContributor> extractContributors(Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(re -> CREATOR.getUri().equals(re.getPredicate().getUri())
-        || CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
+      .filter(re -> INDEXABLE_CREATOR.getUri().equals(re.getPredicate().getUri())
+        || INDEXABLE_CONTRIBUTOR.getUri().equals(re.getPredicate().getUri()))
       .map(re -> new LinkedDataContributor()
         .name(re.getTarget().getLabel())
         .type(toContributorType(re.getTarget()).orElse(null))
-        .isCreator(CREATOR.getUri().equals(re.getPredicate().getUri()))
+        .isCreator(INDEXABLE_CREATOR.getUri().equals(re.getPredicate().getUri()))
       )
       .filter(ic -> isNotBlank(ic.getName()))
       .distinct()
@@ -163,7 +165,7 @@ public abstract class WorkSearchMessageMapper {
   protected List<String> extractLanguages(Resource work) {
     return work.getOutgoingEdges()
       .stream()
-      .filter(re -> LANGUAGE.getUri().equals(re.getPredicate().getUri()))
+      .filter(re -> INDEXABLE_LANGUAGE.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(Resource::getDoc)
       .flatMap(d -> getPropertyValues(d, CODE.getValue()))
@@ -186,9 +188,9 @@ public abstract class WorkSearchMessageMapper {
         .flatMap(p -> StreamSupport.stream(doc.get(p).spliterator(), true).map(JsonNode::asString)));
   }
 
-  protected List<LinkedDataWorkOnlyClassificationsInner> extractClassifications(Resource resource) {
-    return resource.getOutgoingEdges().stream()
-      .filter(re -> CLASSIFICATION.getUri().equals(re.getPredicate().getUri()))
+  protected List<LinkedDataWorkOnlyClassificationsInner> extractClassifications(Resource work) {
+    return work.getOutgoingEdges().stream()
+      .filter(re -> INDEXABLE_CLASSIFICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(tr -> new LinkedDataWorkOnlyClassificationsInner()
         .type(getValue(tr.getDoc(), SOURCE.getValue()))
@@ -199,22 +201,19 @@ public abstract class WorkSearchMessageMapper {
       .toList();
   }
 
-  protected List<String> extractSubjects(Resource resource) {
-    return resource.getOutgoingEdges().stream()
-      .filter(re -> SUBJECT.getUri().equals(re.getPredicate().getUri()))
+  protected List<String> extractSubjects(Resource work) {
+    return work.getOutgoingEdges().stream()
+      .filter(re -> INDEXABLE_SUBJECT.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(Resource::getLabel)
       .distinct()
       .toList();
   }
 
-  protected List<LinkedDataInstanceOnly> extractInstances(Resource resource) {
-    var allInstances = extractWorkFromInstance(resource)
-      .map(ResourceUtils::extractInstancesFromWork)
-      .orElseGet(List::of);
-
-    return allInstances
-      .stream()
+  protected List<LinkedDataInstanceOnly> extractInstances(Resource work) {
+    return work.getIncomingEdges().stream()
+      .filter(re -> INDEXABLE_INSTANTIATES.getUri().equals(re.getPredicate().getUri()))
+      .map(ResourceEdge::getSource)
       .map(this::toInstanceDto)
       .flatMap(Optional::stream)
       .distinct()
@@ -226,15 +225,15 @@ public abstract class WorkSearchMessageMapper {
       .id(String.valueOf(instance.getId()))
       .titles(extractTitles(instance))
       .identifiers(indexIdentifierMapper.extractIdentifiers(instance))
-      .notes(mapNotes(instance.getDoc(), InstanceMapperUnit.SUPPORTED_NOTES))
+      .notes(mapNotes(instance.getDoc(), SUPPORTED_NOTES))
       .contributors(extractContributors(instance))
       .publications(extractPublications(instance))
       .suppress(extractSuppress(instance))
       .editionStatements(getPropertyValues(instance.getDoc(), EDITION.getValue()).toList());
 
     if (isNotEmpty(instanceDto.getTitles()) || isNotEmpty(instanceDto.getIdentifiers())
-        || isNotEmpty(instanceDto.getContributors()) || isNotEmpty(instanceDto.getPublications())
-        || isNotEmpty(instanceDto.getEditionStatements())) {
+      || isNotEmpty(instanceDto.getContributors()) || isNotEmpty(instanceDto.getPublications())
+      || isNotEmpty(instanceDto.getEditionStatements())) {
       return Optional.of(instanceDto);
     }
     return Optional.empty();
@@ -252,7 +251,7 @@ public abstract class WorkSearchMessageMapper {
 
   protected List<LinkedDataInstanceOnlyPublicationsInner> extractPublications(Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(re -> PE_PUBLICATION.getUri().equals(re.getPredicate().getUri()))
+      .filter(re -> INDEXABLE_PE_PUBLICATION.getUri().equals(re.getPredicate().getUri()))
       .map(ResourceEdge::getTarget)
       .map(ir -> new LinkedDataInstanceOnlyPublicationsInner()
         .name(getValue(ir.getDoc(), NAME.getValue()))

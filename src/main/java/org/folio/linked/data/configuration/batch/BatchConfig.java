@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManagerFactory;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.configuration.batch.reader.ResourceReader;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.batch.core.configuration.JobRegistry;
@@ -31,7 +32,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -114,30 +114,18 @@ public class BatchConfig {
   }
 
   @Bean
-  public AsyncTaskExecutor reindexTaskExecutor(
-    @Value("${mod-linked-data.reindex.pool-size}") int poolSize
-  ) {
-    var exec = new ThreadPoolTaskExecutor();
-    exec.setCorePoolSize(poolSize);
-    exec.setMaxPoolSize(poolSize);
-    exec.setThreadNamePrefix("reindex-");
-    exec.initialize();
-    return exec;
-  }
-
-  @Bean
   public Step reindexStep(JobRepository jobRepository,
                           SynchronizedItemStreamReader<Resource> resourceReader,
                           ReindexProcessor reindexProcessor,
                           ReindexWriter reindexWriter,
                           @Value("${mod-linked-data.reindex.chunk-size}") int chunkSize,
-                          AsyncTaskExecutor reindexTaskExecutor) {
+                          AsyncTaskExecutor taskExecutor) {
     return new StepBuilder(REINDEX_STEP_NAME, jobRepository)
       .<Resource, ResourceIndexEvent>chunk(chunkSize)
       .reader(resourceReader)
       .processor(reindexProcessor)
       .writer(reindexWriter)
-      .taskExecutor(reindexTaskExecutor)
+      .taskExecutor(taskExecutor)
       .build();
   }
 
@@ -147,10 +135,10 @@ public class BatchConfig {
     @Value("#{jobParameters['" + JOB_PARAM_IS_FULL_REINDEX + "']}") String isFullReindex,
     @Value("#{jobParameters['" + JOB_PARAM_RESOURCE_TYPE + "']}") String resourceType,
     @Value("${mod-linked-data.reindex.chunk-size}") int chunkSize,
-    EntityManagerFactory entityManagerFactory
+    DataSource dataSource
   ) {
     var isFullReindexBool = parseBoolean(isFullReindex);
-    var reader = new ResourceReader(entityManagerFactory, chunkSize, isFullReindexBool, resourceType);
+    var reader = new ResourceReader(dataSource, chunkSize, isFullReindexBool, resourceType);
     return new SynchronizedItemStreamReader<>(reader);
   }
 
