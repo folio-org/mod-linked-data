@@ -1,7 +1,11 @@
 package org.folio.linked.data.mapper.dto.resource.common.work.sub.reference;
 
+import static org.folio.ld.dictionary.PredicateDictionary.ADAPTED_AS_MOTION_PICTURE;
 import static org.folio.ld.dictionary.PredicateDictionary.EXPRESSION_OF;
-import static org.folio.ld.dictionary.PredicateDictionary.RELATED_TO;
+import static org.folio.ld.dictionary.PredicateDictionary.IS_TRANSLATION_OF;
+import static org.folio.ld.dictionary.PredicateDictionary.RELATED_WORK;
+import static org.folio.ld.dictionary.PredicateDictionary.SEQUEL;
+import static org.folio.ld.dictionary.PredicateDictionary.SEQUEL_TO;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.util.ResourceUtils.getPropertyValues;
@@ -18,7 +22,11 @@ import org.folio.linked.data.service.reference.ReferenceService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = HUB, predicate = {EXPRESSION_OF, RELATED_TO}, requestDto = Reference.class)
+@MapperUnit(
+  type = HUB,
+  predicate = {ADAPTED_AS_MOTION_PICTURE, EXPRESSION_OF, IS_TRANSLATION_OF, RELATED_WORK, SEQUEL, SEQUEL_TO},
+  requestDto = Reference.class
+)
 public class HubReferenceMapperUnit extends ReferenceMapperUnit {
 
   public HubReferenceMapperUnit(ReferenceService referenceService) {

@@ -535,10 +535,21 @@
         }
       },
       "children": [
+        "Profile:Work:Hubs:Relationship:AdaptedAsMotionPicture",
         "Profile:Work:Hubs:Relationship:ExpressionOf",
-        "Profile:Work:Hubs:Relationship:RelatedTo"
+        "Profile:Work:Hubs:Relationship:IsTranslationOf",
+        "Profile:Work:Hubs:Relationship:RelatedWork",
+        "Profile:Work:Hubs:Relationship:Sequel",
+        "Profile:Work:Hubs:Relationship:SequelTo"
       ],
       "id": "Profile:Work:Hubs:Relationship"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Adapted As Motion Picture",
+      "uriBFLite": "https://bibfra.me/vocab/relation/adaptedAsMotionPicture",
+      "children": [],
+      "id": "Profile:Work:Hubs:Relationship:AdaptedAsMotionPicture"
     },
     {
       "type": "dropdownOption",
@@ -549,10 +560,31 @@
     },
     {
       "type": "dropdownOption",
-      "displayName": "Related To",
-      "uriBFLite": "http://bibfra.me/vocab/relation/relatedTo",
+      "displayName": "Is Translation Of",
+      "uriBFLite": "https://bibfra.me/vocab/relation/isTranslationOf",
       "children": [],
-      "id": "Profile:Work:Hubs:Relationship:RelatedTo"
+      "id": "Profile:Work:Hubs:Relationship:IsTranslationOf"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Related Work",
+      "uriBFLite": "https://bibfra.me/vocab/relation/relatedwork",
+      "children": [],
+      "id": "Profile:Work:Hubs:Relationship:RelatedWork"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Sequel",
+      "uriBFLite": "https://bibfra.me/vocab/relation/sequel",
+      "children": [],
+      "id": "Profile:Work:Hubs:Relationship:Sequel"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Sequel To",
+      "uriBFLite": "https://bibfra.me/vocab/relation/sequelTo",
+      "children": [],
+      "id": "Profile:Work:Hubs:Relationship:SequelTo"
     },
     {
       "type": "simple",
