@@ -18,7 +18,7 @@ abstract class AbstractHubReferenceRelationIT extends PostResourceIT {
   protected abstract Long hubId();
 
   @BeforeEach
-  void createAuthority() {
+  void createHub() {
     saveHub(hubId());
   }
 
