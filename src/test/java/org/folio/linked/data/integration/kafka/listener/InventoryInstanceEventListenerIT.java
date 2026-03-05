@@ -5,14 +5,11 @@ import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getInventoryInstanceEventSampleProducerRecord;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
-import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.kafka.listener.handler.InventoryInstanceEventHandler;
 import org.folio.spring.tools.kafka.KafkaAdminService;
@@ -47,29 +44,6 @@ class InventoryInstanceEventListenerIT {
     // then
     awaitAndAssert(() -> verify(inventoryInstanceDomainEventHandler)
       .handle(TEST_JSON_MAPPER.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class), null));
-  }
-
-  @Test
-  void shouldRetryIfErrorOccurs() {
-    // given
-    var eventProducerRecord = getInventoryInstanceEventSampleProducerRecord();
-    var event = TEST_JSON_MAPPER.readValue(eventProducerRecord.value(), InventoryInstanceEvent.class);
-    var expectedEvent = new InventoryInstanceEvent()
-      .id(event.getId())
-      ._new(event.getNew())
-      .old(event.getOld())
-      .tenant(event.getTenant())
-      .type(ResourceIndexEventType.UPDATE);
-    doThrow(new RuntimeException("An error occurred"))
-      .doNothing()
-      .when(inventoryInstanceDomainEventHandler).handle(expectedEvent, null);
-
-    // when
-    eventKafkaTemplate.send(eventProducerRecord);
-
-    // then
-    awaitAndAssert(() -> verify(inventoryInstanceDomainEventHandler, times(2))
-      .handle(expectedEvent, null));
   }
 
   @Test

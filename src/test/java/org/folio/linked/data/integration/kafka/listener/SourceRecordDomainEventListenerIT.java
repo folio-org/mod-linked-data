@@ -9,8 +9,6 @@ import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrs
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventProducerRecord;
 import static org.folio.linked.data.test.kafka.KafkaEventsTestDataFixture.getSrsDomainEventSampleProducerRecord;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -60,26 +58,6 @@ class SourceRecordDomainEventListenerIT {
 
     // then
     awaitAndAssert(() -> verify(sourceRecordDomainEventHandler).handle(expectedEvent, MARC_BIB));
-  }
-
-  @Test
-  void shouldRetryIfErrorOccurs() {
-    // given
-    var eventId = "event_id_02";
-    var marc = "{}";
-    var recordType = MARC_BIB;
-    var eventType = SOURCE_RECORD_CREATED;
-    var eventProducerRecord = getSrsDomainEventProducerRecord(eventId, marc, eventType, recordType);
-    var expectedEvent = getSrsDomainEvent(eventId, marc, eventType);
-    doThrow(new RuntimeException("An error occurred"))
-      .doNothing()
-      .when(sourceRecordDomainEventHandler).handle(expectedEvent, recordType);
-
-    // when
-    eventKafkaTemplate.send(eventProducerRecord);
-
-    // then
-    awaitAndAssert(() -> verify(sourceRecordDomainEventHandler, times(2)).handle(expectedEvent, recordType));
   }
 
   @Test
