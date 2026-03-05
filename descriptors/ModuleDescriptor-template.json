@@ -118,6 +118,18 @@
       ]
     },
     {
+      "id": "linked-data-vocabularies",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/vocabularies/{vocabularyName}",
+          "permissionsRequired": [ "linked-data.vocabularies.item.get" ],
+          "modulePermissions": []
+        }
+      ]
+    },
+    {
       "id": "linked-data-profile",
       "version": "1.0",
       "handlers": [
@@ -367,6 +379,11 @@
       "permissionName": "linked-data.hub.import.post",
       "displayName": "Linked Data: Save a remote Hub resource",
       "description": "Save a remote Hub resource by Hub URI"
+    },
+    {
+      "permissionName": "linked-data.vocabularies.item.get",
+      "displayName": "Linked Data: Get vocabulary JSON by vocabulary name",
+      "description": "Get vocabulary JSON by vocabulary name"
     }
   ],
   "launchDescriptor": {
