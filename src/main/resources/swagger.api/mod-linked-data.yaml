@@ -535,6 +535,26 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/vocabularies/{vocabularyName}:
+    get:
+      operationId: getVocabularyByName
+      tags:
+        - vocabulary
+      description: Get vocabulary JSON by vocabulary name
+      parameters:
+        - $ref: '#/components/parameters/vocabularyName'
+      responses:
+        '200':
+          description: Vocabulary as json string
+          content:
+            application/json:
+              schema:
+                type: string
+        '404':
+          description: No vocabulary is found by vocabulary name
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/admin/caches:
     delete:
       operationId: clearCaches
@@ -602,6 +622,13 @@ components:
       schema:
         type: integer
         format: int64
+    vocabularyName:
+      name: vocabularyName
+      in: path
+      required: true
+      description: Vocabulary name
+      schema:
+        type: string
   schemas:
     errorResponse:
       $ref: schema/error/errors.json
