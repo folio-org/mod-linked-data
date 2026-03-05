@@ -1,0 +1,437 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/p",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "prepublication"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "p"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/incmp",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "incomplete"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "incmp"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/nuba",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "not used by assigner"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "nuba"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/ceased",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "ceased"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ceased"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/current",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "current"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "current"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "canceled or invalid"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cancinv"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/u",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "unknown"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "u"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/uba",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "used by assigner"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "uba"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/former",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "former"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "former"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/part",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "partial"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "part"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/c",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "changed"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "c"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/tr",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "traced"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tr"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/s",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "suppressed"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "s"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/d",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "deleted"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "d"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/incorrect",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "incorrect"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "incorrect"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/earliest",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "earliest"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "earliest"
+      }
+    ]
+  },
+  {
+    "@id": "_:b118iddOtlocdOtgovvocabularymstatus",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2020-08-25T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Status codes"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "Codes and term sources to indicate the status of a resource"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/c"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/ceased"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/current"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/d"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/earliest"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/former"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/incmp"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/incorrect"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/n"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/nuba"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/p"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/part"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/s"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/t"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/tr"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/u"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus/uba"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b118iddOtlocdOtgovvocabularymstatus"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "Codes and term sources to indicate the status of a resource"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b133iddOtlocdOtgovvocabularymstatus"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/n",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "new"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "n"
+      }
+    ]
+  },
+  {
+    "@id": "_:b133iddOtlocdOtgovvocabularymstatus",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mstatus"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2020-08-25T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/t",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "transcribed"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "t"
+      }
+    ]
+  }
+]
