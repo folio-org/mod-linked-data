@@ -62,9 +62,7 @@ public class TenantScopedExecutionService {
     //noinspection removal
     executionService.executeSystemUserScoped(tenant, () -> {
       try {
-        retryTemplate.execute(
-          () -> retryTemplate.execute(retryable)
-        );
+        retryTemplate.execute(retryable);
       } catch (Exception e) {
         failureHandler.accept(e);
       }
