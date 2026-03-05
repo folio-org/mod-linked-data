@@ -1,0 +1,1159 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/nn",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "flipchart"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "nn"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/nz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other unmediated carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "nz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/eh",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "stereograph card"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "eh"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/sb",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audio belt"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sb"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/he",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microfiche"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "he"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/ha",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "aperture card"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ha"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/se",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audio cylinder"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "se"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/gt",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "overhead transparency"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "gt"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/gd",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "filmslip"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "gd"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/cb",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer chip cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cb"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/na",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "roll"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "na"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hh",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microfilm slip"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hh"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/nr",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "object"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "nr"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/ce",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer disc cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ce"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microfiche cassette"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hf"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/no",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "card"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "no"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/ck",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer card"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ck"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/gc",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "filmstrip cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "gc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/gs",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "slide"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "gs"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/mr",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "film reel"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mr"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/vc",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "video cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "vc"
+      }
+    ]
+  },
+  {
+    "@id": "_:b346iddOtlocdOtgovvocabularycarriers",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2014-01-23T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/vz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other video carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "vz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/sd",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audio disc"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sd"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/gf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "filmstrip"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "gf"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/ch",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer tape reel"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ch"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/vf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "videocassette"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "vf"
+      }
+    ]
+  },
+  {
+    "@id": "_:b361iddOtlocdOtgovvocabularycarriers",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2014-01-23T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/cr",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "online resource"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cr"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/nb",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "sheet"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "nb"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/ca",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer tape cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ca"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hg",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microopaque"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hg"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/sg",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audio cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sg"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/sw",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audio wire reel"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sw"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hj",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microfilm roll"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hj"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other microform carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/ez",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other stereographic carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ez"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/mc",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "film cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/cd",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer disc"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cd"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "film roll"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/vd",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "videodisc"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "vd"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/pp",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microscope slide"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "pp"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/mf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "film cassette"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mf"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/st",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audiotape reel"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "st"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/sq",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audio roll"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sq"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hc",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microfilm cassette"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Carriers Scheme"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "Values representing the format of the storage medium and housing of a carrier in combination with the type of intermediation device required to views, play, run, etc., the content of a resource"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/sg"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/se"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/sd"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/si"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/sq"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/ss"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/st"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/sw"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/sb"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/sz"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/ck"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/cb"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/cd"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/ce"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/ca"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/cf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/ch"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/cr"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/cz"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/ha"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/he"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hb"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hc"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hd"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hj"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hh"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hg"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/hz"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/pp"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/pz"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/mc"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/mf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/mr"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/gd"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/gf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/gc"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/gt"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/gs"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/mz"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/eh"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/es"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/ez"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/no"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/nn"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/na"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/nb"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/nc"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/nr"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/nz"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/vc"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/vf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/vd"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/vr"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/carriers/vz"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b346iddOtlocdOtgovvocabularycarriers"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "Values representing the format of the storage medium and housing of a carrier in combination with the type of intermediation device required to views, play, run, etc., the content of a resource"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b361iddOtlocdOtgovvocabularycarriers"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/nc",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "volume"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "nc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/ss",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audiocassette"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ss"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/pz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other microscopic carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "pz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/mz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other projected carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/vr",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "videotape reel"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "vr"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/cz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other computer carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/cf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer tape cassette"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cf"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/sz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other audio carrier"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/es",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "stereograph disc"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "es"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hd",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microfilm reel"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hd"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/hb",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microfilm cartridge"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "hb"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/carriers/si",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "sound track reel"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "si"
+      }
+    ]
+  }
+]

@@ -1,0 +1,361 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/techinstruments",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "technical/historical information on instruments"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "techinstruments"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/thematicindex",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "thematic index"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "thematicindex"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/index",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "index"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "index"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/film",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "filmography"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "film"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Supplementary Content"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "The types of content that complement the primary content of the resource. It may accompany or be inside the resource"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/discography"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/bibliography"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/thematicindex"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/libretto"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/creatorbio"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/performerhistory"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/techinstruments"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/techmusic"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/historicalinfo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/ethnologicinfo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/instructmaterial"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/music"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/index"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont/film"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b94iddOtlocdOtgovvocabularymsupplcont"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "The types of content that complement the primary content of the resource. It may accompany or be inside the resource"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b109iddOtlocdOtgovvocabularymsupplcont"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/ethnologicinfo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "ethnologic information"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ethnologicinfo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/historicalinfo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "historical information"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "historicalinfo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/bibliography",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "bibliography"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "bibliography"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/libretto",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "libretto or text"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "libretto"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/creatorbio",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "biography of creator"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "creatorbio"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/performerhistory",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "history of performer or ensemble"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "performerhistory"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/techmusic",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "technical information on music"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "techmusic"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/music",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "music"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "music"
+      }
+    ]
+  },
+  {
+    "@id": "_:b94iddOtlocdOtgovvocabularymsupplcont",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2010-01-23T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "_:b109iddOtlocdOtgovvocabularymsupplcont",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/msupplcont"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2010-01-23T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/discography",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "discography"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "discography"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/msupplcont/instructmaterial",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "instructional materials"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "instructmaterial"
+      }
+    ]
+  }
+]

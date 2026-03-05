@@ -1,0 +1,380 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/map",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "maps"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "map"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/gnt",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "genealogical tables"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "gnt"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/pht",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "photographs"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "pht"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/ilm",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "illuminations"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ilm"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/sam",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "samples"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sam"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/por",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "portraits"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "por"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Illustrative Content"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "Presence of image content that accompanies the primary content of a resource."
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/ill"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/map"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/por"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/chr"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/pln"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/plt"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/mus"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/fac"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/coa"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/gnt"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/for"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/sam"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/pho"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/pht"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus/ilm"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b100iddOtlocdOtgovvocabularymillus"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "Presence of image content that accompanies the primary content of a resource."
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b115iddOtlocdOtgovvocabularymillus"
+      }
+    ]
+  },
+  {
+    "@id": "_:b100iddOtlocdOtgovvocabularymillus",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2017-01-23T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/ill",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "illustrations"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ill"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/mus",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "music"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mus"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/pho",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "phonodisc"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "pho"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/plt",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "plates"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "plt"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/pln",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "plans"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "pln"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/coa",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "coats of arms"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "coa"
+      }
+    ]
+  },
+  {
+    "@id": "_:b115iddOtlocdOtgovvocabularymillus",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/millus"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2017-01-23T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/chr",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "charts"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "chr"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/fac",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "facsimiles"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "fac"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/millus/for",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "forms"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "for"
+      }
+    ]
+  }
+]
