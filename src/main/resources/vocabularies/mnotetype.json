@@ -1,0 +1,915 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/addphys",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "additional physical form"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "addphys"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/lang",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "language"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "lang"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/repro",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "reproduction version"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "repro"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/descsource",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "description source"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "descsource"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/exhibit",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "exhibition"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "exhibit"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/index",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "index"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "index"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/issuing",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "issuing body"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "issuing"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/issuance",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "issuance information"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "issuance"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/action",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "action"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "action"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/coverage",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "coverage"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "coverage"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/loc",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "location"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "loc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/orig",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "original version"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "orig"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/alternative",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "alternative"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "alternative"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/award",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "award"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "award"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/physical",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "physical details"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "physical"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/report",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "report type"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "report"
+      }
+    ]
+  },
+  {
+    "@id": "_:b297iddOtlocdOtgovvocabularymnotetype",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2021-05-24T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/biogdata",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "biographical data"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "biogdata"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/freq",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "frequency"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "freq"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/fundinfo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "funding information"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "fundinfo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/accmat",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "accompanying material"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "accmat"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/participants",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "participants"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "participants"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/finding",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "finding aid"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "finding"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/credits",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "credits"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "credits"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Note Type"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "Codes and terms for note type fields"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/accmat"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/action"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/addphys"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/adminhist"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/alternative"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/award"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/biblio"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/binding"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/biogdata"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/citeas"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/coverage"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/credits"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/datanf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/datasource"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/descsource"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/doc"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/doubling"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/exhibit"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/finding"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/freq"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/fundinfo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/index"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/internal"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/issuance"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/issuing"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/lang"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/loc"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/metaentry"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/number"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/orig"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/participants"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/physical"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/refcitation"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/related"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/relnote"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/report"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/repro"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/computer"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/source"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/suppl"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype/with"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b297iddOtlocdOtgovvocabularymnotetype"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "Codes and terms for note type fields"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b312iddOtlocdOtgovvocabularymnotetype"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/biblio",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "bibliography"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "biblio"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/relnote",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "related note"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "relnote"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/datanf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "data not found"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "datanf"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/citeas",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "cite as"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "citeas"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/doc",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "documentation"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "doc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/source",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "source consulted"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "source"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/datasource",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "data source"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "datasource"
+      }
+    ]
+  },
+  {
+    "@id": "_:b312iddOtlocdOtgovvocabularymnotetype",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mnotetype"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2021-05-24T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/with",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "with"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "with"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/adminhist",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "administrative history"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "adminhist"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/related",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "related material"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "related"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/refcitation",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "reference citation"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "refcitation"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/binding",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "binding"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "binding"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/metaentry",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "metadata entry convention"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "metaentry"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/computer",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "type of computer data"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "computer"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/doubling",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "doubling"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "doubling"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/internal",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "internal"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "internal"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/number",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "numbering"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "number"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mnotetype/suppl",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Note"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "supplement"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "suppl"
+      }
+    ]
+  }
+]

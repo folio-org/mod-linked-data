@@ -1,0 +1,305 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Media Types Schemes"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "The Media Types Scheme is derived from a controlled list of values reflecting the general type of intermediation device required to view, play, run, etc., the content of a resource, which is principally used in RDA cataloging."
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/s"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/c"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/h"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/p"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/x"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/g"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/e"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/n"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/z"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes/v"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b90iddOtlocdOtgovvocabularymediaTypes"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "The Media Types Scheme is derived from a controlled list of values reflecting the general type of intermediation device required to view, play, run, etc., the content of a resource, which is principally used in RDA cataloging."
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b105iddOtlocdOtgovvocabularymediaTypes"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/g",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "projected"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "g"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/p",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microscopic"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "p"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/x",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "x"
+      }
+    ]
+  },
+  {
+    "@id": "_:b105iddOtlocdOtgovvocabularymediaTypes",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mediaTypes"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2021-08-13T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "_:b90iddOtlocdOtgovvocabularymediaTypes",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2021-08-13T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/h",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "microform"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "h"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/e",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "stereographic"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "e"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/s",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "audio"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "s"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/c",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "c"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/z",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "unspecified"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "z"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/v",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "video"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "v"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mediaTypes/n",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "unmediated"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "n"
+      }
+    ]
+  }
+]
