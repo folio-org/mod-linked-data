@@ -42,7 +42,9 @@
           "methods": [ "GET" ],
           "pathPattern": "/linked-data/resource/{id}/rdf",
           "permissionsRequired": [ "linked-data.resources.rdf.get" ],
-          "modulePermissions": []
+          "modulePermissions": [
+            "base-url.item.get"
+          ]
         },
         {
           "methods": [ "PUT" ],
@@ -242,11 +244,15 @@
     },
     {
       "id": "settings",
-      "version": "1.1"
+      "version": "1.2"
     },
     {
       "id": "authority-source-files",
       "version": "2.2"
+    },
+    {
+      "id": "base-url",
+      "version": "1.0"
     }
   ],
   "permissionSets": [
