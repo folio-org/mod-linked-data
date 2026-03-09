@@ -1,0 +1,247 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Government Publication Type"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "Value indicating that a resource is published or produced by or for an international, national, state, provincial, or local government agency, or by any subdivision of such a body."
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/a"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/c"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/f"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/g"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/i"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/l"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/m"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/s"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b58iddOtlocdOtgovvocabularymgovtpubtype"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "Value indicating that a resource is published or produced by or for an international, national, state, provincial, or local government agency, or by any subdivision of such a body."
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b73iddOtlocdOtgovvocabularymgovtpubtype"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/c",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "multilocal"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "c"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/g",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "government"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "g"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/a",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "autonomous"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "a"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/i",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "international intergovernmental"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "i"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/f",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "federal or national"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "f"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/l",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "local"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "l"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/s",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "state"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "s"
+      }
+    ]
+  },
+  {
+    "@id": "_:b73iddOtlocdOtgovvocabularymgovtpubtype",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mgovtpubtype"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2020-03-09T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mgovtpubtype/m",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "multistate"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "m"
+      }
+    ]
+  },
+  {
+    "@id": "_:b58iddOtlocdOtgovvocabularymgovtpubtype",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2020-03-09T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  }
+]

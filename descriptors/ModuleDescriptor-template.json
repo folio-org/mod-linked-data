@@ -118,6 +118,18 @@
       ]
     },
     {
+      "id": "linked-data-vocabularies",
+      "version": "1.0",
+      "handlers": [
+        {
+          "methods": [ "GET" ],
+          "pathPattern": "/linked-data/vocabularies/{vocabularyName}",
+          "permissionsRequired": [ "linked-data.vocabularies.item.get" ],
+          "modulePermissions": []
+        }
+      ]
+    },
+    {
       "id": "linked-data-profile",
       "version": "1.0",
       "handlers": [
@@ -367,6 +379,11 @@
       "permissionName": "linked-data.hub.import.post",
       "displayName": "Linked Data: Save a remote Hub resource",
       "description": "Save a remote Hub resource by Hub URI"
+    },
+    {
+      "permissionName": "linked-data.vocabularies.item.get",
+      "displayName": "Linked Data: Get vocabulary JSON by vocabulary name",
+      "description": "Get vocabulary JSON by vocabulary name"
     }
   ],
   "launchDescriptor": {
@@ -416,6 +433,7 @@
       { "name": "CACHE_TTL_SETTINGS_ENTRIES_MS", "value": "18000000" },
       { "name": "CACHE_TTL_MODULE_STATE_MS", "value": "18000000" },
       { "name": "CACHE_TTL_AUTHORITY_SOURCE_FILES_MS", "value": "18000000" },
+      { "name": "CACHE_TTL_VOCABULARIES_MS", "value": "18000000" },
       { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value": "50" },
       { "name": "AUTO_SAVE_MARC_BIB_AS_GRAPH", "value": "false" },
       { "name": "REINDEX_CHUNK_SIZE", "value": "1000" }

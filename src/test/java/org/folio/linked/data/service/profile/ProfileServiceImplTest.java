@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +30,8 @@ class ProfileServiceImplTest {
   private ProfileRepository profileRepository;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
+  @Mock
+  private ResourcePatternResolver resourcePatternResolver;
 
   @Test
   void getProfileById_shouldReturnProfileWithSpecifiedId() {

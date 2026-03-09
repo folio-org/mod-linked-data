@@ -4,6 +4,7 @@ import static org.folio.linked.data.util.Constants.Cache.AUTHORITY_SOURCE_FILES;
 import static org.folio.linked.data.util.Constants.Cache.MODULE_STATE;
 import static org.folio.linked.data.util.Constants.Cache.SETTINGS_ENTRIES;
 import static org.folio.linked.data.util.Constants.Cache.SPEC_RULES;
+import static org.folio.linked.data.util.Constants.Cache.VOCABULARIES;
 import static org.folio.linked.data.util.Constants.EMPTY_CACHE_MSG;
 
 import lombok.extern.log4j.Log4j2;
@@ -37,5 +38,11 @@ public class CacheCleaningJob {
   @Scheduled(fixedRateString = "${mod-linked-data.cache.ttl.authority-source-files}")
   public void emptyAuthoritySourceFiles() {
     log.info(EMPTY_CACHE_MSG, AUTHORITY_SOURCE_FILES);
+  }
+
+  @CacheEvict(value = VOCABULARIES, allEntries = true)
+  @Scheduled(fixedRateString = "${mod-linked-data.cache.ttl.vocabularies}")
+  public void emptyVocabularies() {
+    log.info(EMPTY_CACHE_MSG, VOCABULARIES);
   }
 }

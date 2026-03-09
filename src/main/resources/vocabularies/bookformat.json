@@ -1,0 +1,392 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/18mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "18mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "18mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/4to",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "4to"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "4to"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/96mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "96mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "96mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/12mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "12mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "12mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/16mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "16mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "16mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/128mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "128mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "128mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/24mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "24mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "24mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/64mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "64mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "64mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/48mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "48mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "48mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/8vo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "8vo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "8vo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/72mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "72mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "72mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/full",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "full-sheet"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "full"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/32mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "32mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "32mo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/folio",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "folio"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "folio"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Book Format"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "Relationship between a whole sheet and individual leaves in printing"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#historyNote": [
+      {
+        "@language": "en",
+        "@value": "MARC bib: 340 $m"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/4to"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/8vo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/12mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/16mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/18mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/24mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/32mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/36mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/48mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/64mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/72mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/96mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/128mo"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/folio"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat/full"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b102iddOtlocdOtgovvocabularybookformat"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "Relationship between a whole sheet and individual leaves in printing"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#historyNote": [
+      {
+        "@language": "en",
+        "@value": "MARC bib: 340 $m"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b119iddOtlocdOtgovvocabularybookformat"
+      }
+    ]
+  },
+  {
+    "@id": "_:b102iddOtlocdOtgovvocabularybookformat",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2022-05-24T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/bookformat/36mo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "36mo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "36mo"
+      }
+    ]
+  },
+  {
+    "@id": "_:b119iddOtlocdOtgovvocabularybookformat",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/bookformat"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2022-05-24T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  }
+]

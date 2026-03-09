@@ -35,6 +35,7 @@ class ProfileControllerIT {
     "4, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
     "5, lde:Profile:Instance, http://bibfra.me/vocab/lite/Instance",
     "6, lde:Profile:Work,     http://bibfra.me/vocab/lite/Work",
+    "7, lde:Profile:Hub,      http://bibfra.me/vocab/lite/Hub"
   })
   void getProfileById_returnsProfile(long id, String expectedId, String expectedResourceType) throws Exception {
     //given

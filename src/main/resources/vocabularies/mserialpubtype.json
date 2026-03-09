@@ -1,0 +1,304 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/database",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "database"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "database"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/monoseries",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "monographic series"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "monoseries"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/periodical",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "periodical"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "periodical"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/newsletter",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "newsletter"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "newsletter"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/blog",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "blog"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "blog"
+      }
+    ]
+  },
+  {
+    "@id": "_:b91iddOtlocdOtgovvocabularymserialpubtype",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2020-03-18T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/direct",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "directory"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "direct"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Serial Publication Type"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "The type of continuing resource which describes the item."
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/blog"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/database"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/direct"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/journal"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/looseleaf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/mag"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/monoseries"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/newsletter"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/newspaper"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/periodical"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/mserialpubtype/repo"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b76iddOtlocdOtgovvocabularymserialpubtype"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "The type of continuing resource which describes the item."
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b91iddOtlocdOtgovvocabularymserialpubtype"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/looseleaf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "loose leaf"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "looseleaf"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/newspaper",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "newspaper"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "newspaper"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/repo",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "repository"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "repo"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/mag",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "magazine"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mag"
+      }
+    ]
+  },
+  {
+    "@id": "_:b76iddOtlocdOtgovvocabularymserialpubtype",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2020-03-18T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mserialpubtype/journal",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "journal"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "journal"
+      }
+    ]
+  }
+]

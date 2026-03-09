@@ -1,0 +1,618 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/crt",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "cartographic tactile image"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "crt"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/crd",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "cartographic dataset"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "crd"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/cop",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer program"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cop"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/snd",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "sounds"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "snd"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tct",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "tactile text"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tct"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tci",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "tactile image"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tci"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/cod",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "computer dataset"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cod"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tdm",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "three-dimensional moving image"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tdm"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/sti",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "still image"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "sti"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/crn",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "cartographic tactile three-dimensional form"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "crn"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/cri",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "cartographic image"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cri"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/ntv",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "notated movement"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ntv"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/ntm",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "notated music"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "ntm"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tcm",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "tactile notated music"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tcm"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tdf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "three-dimensional form"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tdf"
+      }
+    ]
+  },
+  {
+    "@id": "_:b223iddOtlocdOtgovvocabularycontentTypes",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2021-08-13T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/spw",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "spoken word"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "spw"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/xxx",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "other"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "xxx"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/prm",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "performed music"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "prm"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/crf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "cartographic three-dimensional form"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "crf"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tdi",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "two-dimensional moving image"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tdi"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/txt",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "text"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "txt"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/crm",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "cartographic moving image"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "crm"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/zzz",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "unspecified"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "zzz"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tcn",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "tactile notated movement"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tcn"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes/tcf",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://www.w3.org/2002/07/owl#Class",
+      "http://bibframe.org/vocab/Category"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "tactile three-dimensional form"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "tcf"
+      }
+    ]
+  },
+  {
+    "@id": "_:b208iddOtlocdOtgovvocabularycontentTypes",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2021-08-13T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/contentTypes",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Content Types Scheme"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "The Content Types Scheme is derived from a controlled list of values representing the form of communication through which a work is expressed, which is principally used in RDA cataloging."
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/crd"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/cri"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/crm"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/crt"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/crn"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/crf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/cod"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/cop"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/ntv"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/ntm"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/xxx"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/prm"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/snd"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/spw"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/sti"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tci"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tcn"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tcm"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tct"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tcf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/txt"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tdf"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tdm"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/tdi"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/contentTypes/zzz"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b208iddOtlocdOtgovvocabularycontentTypes"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "The Content Types Scheme is derived from a controlled list of values representing the form of communication through which a work is expressed, which is principally used in RDA cataloging."
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b223iddOtlocdOtgovvocabularycontentTypes"
+      }
+    ]
+  }
+]

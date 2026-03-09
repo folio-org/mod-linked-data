@@ -1,0 +1,171 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/issuance/mono",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "single unit"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mono"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/issuance/mulm",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "multipart monograph"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "mulm"
+      }
+    ]
+  },
+  {
+    "@id": "_:b34iddOtlocdOtgovvocabularyissuance",
+    "@type": [
+      "http://id.loc.gov/ontologies/RecordInfo#RecordInfo"
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordStatus": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordChangeDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2017-01-23T00:00:00"
+      }
+    ],
+    "http://id.loc.gov/ontologies/RecordInfo#recordContentSource": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ]
+  },
+  {
+    "@id": "_:b49iddOtlocdOtgovvocabularyissuance",
+    "@type": [
+      "http://purl.org/vocab/changeset/schema#ChangeSet"
+    ],
+    "http://purl.org/vocab/changeset/schema#subjectOfChange": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/issuance"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#creatorName": [
+      {
+        "@id": "https://id.loc.gov/vocabulary/organizations/dlc"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#createdDate": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2017-01-23T00:00:00"
+      }
+    ],
+    "http://purl.org/vocab/changeset/schema#changeReason": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#string",
+        "@value": "new"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/issuance",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#MADSScheme",
+      "http://www.w3.org/2004/02/skos/core#ConceptScheme"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@language": "en",
+        "@value": "Issuance"
+      }
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": ""
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#definitionNote": [
+      {
+        "@language": "en",
+        "@value": "Categorization reflecting whether a resource is issued in one or more parts, the way it is updated, and whether its termination is predetermined or not."
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#hasMADSSchemeMember": [
+      {
+        "@id": "http://id.loc.gov/vocabulary/issuance/mono"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/issuance/mulm"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/issuance/serl"
+      },
+      {
+        "@id": "http://id.loc.gov/vocabulary/issuance/intg"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#adminMetadata": [
+      {
+        "@id": "_:b34iddOtlocdOtgovvocabularyissuance"
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#definition": [
+      {
+        "@language": "en",
+        "@value": "Categorization reflecting whether a resource is issued in one or more parts, the way it is updated, and whether its termination is predetermined or not."
+      }
+    ],
+    "http://www.w3.org/2004/02/skos/core#changeNote": [
+      {
+        "@id": "_:b49iddOtlocdOtgovvocabularyissuance"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/issuance/serl",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "serial"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "serl"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/issuance/intg",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "integrating resource"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "intg"
+      }
+    ]
+  }
+]
