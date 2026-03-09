@@ -1,0 +1,40 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/base-url",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "test_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n  \"baseUrl\": \"https://folio-etesting-snapshot-diku.ci.folio.org\"\n}"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/base-url",
+        "headers": {
+          "X-Okapi-Tenant": {
+            "equalTo": "another_tenant"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\n  \"baseUrl\": \"https://another-tenant-folio.example.com\"\n}"
+      }
+    }
+  ]
+}
