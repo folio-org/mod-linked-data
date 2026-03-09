@@ -6,10 +6,6 @@ import static org.folio.linked.data.util.Constants.Cache.PROFILES;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +17,8 @@ import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ResourceTypeRepository;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
@@ -30,21 +28,27 @@ import tools.jackson.databind.JsonNode;
 @Log4j2
 @Transactional(readOnly = true)
 public class ProfileServiceImpl implements ProfileService {
-  private static final String PROFILE_DIRECTORY = "profiles";
+  private static final String PROFILES_PATTERN = "classpath*:profiles/*.json";
   private final ProfileRepository profileRepository;
   private final ResourceTypeRepository typeRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ResourcePatternResolver resourcePatternResolver;
 
   @Override
   @Transactional
   public void saveAllProfiles() {
-    var profilesDirectory = getClass().getClassLoader().getResource(PROFILE_DIRECTORY);
-    try (var files = Files.list(Paths.get(profilesDirectory.toURI()))) {
-      files
-        .filter(Files::isRegularFile)
-        .forEach(this::saveProfile);
-    } catch (IOException | URISyntaxException | UnsupportedOperationException e) {
-      log.error("Failed to read profiles from directory: {}", PROFILE_DIRECTORY, e);
+    try {
+      var resources = resourcePatternResolver.getResources(PROFILES_PATTERN);
+      if (resources.length == 0) {
+        log.error("Profile files not found: {}", PROFILES_PATTERN);
+        return;
+      }
+
+      for (var resource : resources) {
+        saveProfile(resource);
+      }
+    } catch (IOException e) {
+      log.error("Failed to read profiles with pattern: {}", PROFILES_PATTERN, e);
     }
   }
 
@@ -64,13 +68,13 @@ public class ProfileServiceImpl implements ProfileService {
       .toList();
   }
 
-  private void saveProfile(Path file) {
-    try (var inputStream = Files.newInputStream(file)) {
+  private void saveProfile(Resource resource) {
+    try (var inputStream = resource.getInputStream()) {
       var profile = JSON_MAPPER.readValue(inputStream, ProfileDto.class);
       var profileEntity = toProfileEntity(profile);
       profileRepository.save(profileEntity);
     } catch (IOException e) {
-      log.error("Failed to process file: {}", file, e);
+      log.error("Failed to process profile resource: {}", resource, e);
     }
   }
 

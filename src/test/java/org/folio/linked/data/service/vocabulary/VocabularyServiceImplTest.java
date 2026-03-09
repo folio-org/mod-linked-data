@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +28,8 @@ class VocabularyServiceImplTest {
   private VocabularyRepository vocabularyRepository;
   @Mock
   private RequestProcessingExceptionBuilder exceptionBuilder;
+  @Mock
+  private ResourcePatternResolver resourcePatternResolver;
 
   @Test
   void getVocabularyByName_shouldReturnVocabularyJsonWhenFound() {
