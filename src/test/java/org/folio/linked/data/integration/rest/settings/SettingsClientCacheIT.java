@@ -62,9 +62,9 @@ class SettingsClientCacheIT {
     assertThat(cache.get(tenant2CacheKey)).isNotNull();
 
     // Verify both tenants have separate cache entries with different keys
-    assertThat(cache.get(tenant1CacheKey)).isNotNull();
-    assertThat(cache.get(tenant2CacheKey)).isNotNull();
-    assertThat(cache.get(tenant1CacheKey)).isNotEqualTo(cache.get(tenant2CacheKey));
+    assertThat(cache.get(tenant1CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant2CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant1CacheKey).get()).isNotEqualTo(cache.get(tenant2CacheKey).get());
   }
 
   private void clearCache() {
