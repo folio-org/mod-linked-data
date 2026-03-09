@@ -39,11 +39,6 @@ public class VocabularyServiceImpl implements VocabularyService {
   public void saveAllVocabularies() {
     try {
       var resources = resourcePatternResolver.getResources(VOCABULARIES_PATTERN);
-      if (resources.length == 0) {
-        log.error("Vocabulary files not found: {}", VOCABULARIES_PATTERN);
-        return;
-      }
-
       for (var resource : resources) {
         saveVocabulary(resource);
       }
@@ -55,11 +50,6 @@ public class VocabularyServiceImpl implements VocabularyService {
   private void saveVocabulary(Resource resource) {
     try (var inputStream = resource.getInputStream()) {
       var fileName = resource.getFilename();
-      if (fileName == null || !fileName.endsWith(".json")) {
-        log.warn("Skipping vocabulary resource with invalid filename: {}", resource);
-        return;
-      }
-
       var vocabularyName = fileName.substring(0, fileName.length() - ".json".length());
       var vocabularyJson = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 

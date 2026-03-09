@@ -39,11 +39,6 @@ public class ProfileServiceImpl implements ProfileService {
   public void saveAllProfiles() {
     try {
       var resources = resourcePatternResolver.getResources(PROFILES_PATTERN);
-      if (resources.length == 0) {
-        log.error("Profile files not found: {}", PROFILES_PATTERN);
-        return;
-      }
-
       for (var resource : resources) {
         saveProfile(resource);
       }
