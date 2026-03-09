@@ -3,7 +3,8 @@ package org.folio.linked.data.service.rdf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.folio.linked.data.integration.rest.configuration.ConfigurationService;
+import org.folio.linked.data.domain.dto.BaseUrlDto;
+import org.folio.linked.data.integration.rest.settings.BaseUrlClient;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,11 @@ class ResourceUrlProviderTest {
   @InjectMocks
   private ResourceUrlProvider resourceUrlProvider;
   @Mock
-  private ConfigurationService configurationService;
+  private BaseUrlClient baseUrlClient;
 
   @BeforeEach
   void setUp() {
-    when(configurationService.getFolioHost()).thenReturn("http://localhost");
+    when(baseUrlClient.getBaseUrl()).thenReturn(new BaseUrlDto().baseUrl("http://localhost"));
   }
 
   @Test

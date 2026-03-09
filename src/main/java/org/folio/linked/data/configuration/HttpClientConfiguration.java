@@ -1,8 +1,8 @@
 package org.folio.linked.data.configuration;
 
 import org.folio.linked.data.integration.rest.authoritysource.AuthoritySourceFilesClient;
-import org.folio.linked.data.integration.rest.configuration.ConfigurationClient;
 import org.folio.linked.data.integration.rest.search.SearchClient;
+import org.folio.linked.data.integration.rest.settings.BaseUrlClient;
 import org.folio.linked.data.integration.rest.settings.SettingsClient;
 import org.folio.linked.data.integration.rest.specification.SpecClient;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
@@ -19,8 +19,8 @@ public class HttpClientConfiguration {
   }
 
   @Bean
-  public ConfigurationClient configurationClient(HttpServiceProxyFactory factory) {
-    return factory.createClient(ConfigurationClient.class);
+  public BaseUrlClient baseUrlClient(HttpServiceProxyFactory factory) {
+    return factory.createClient(BaseUrlClient.class);
   }
 
   @Bean

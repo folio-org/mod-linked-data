@@ -104,6 +104,7 @@
 - Create `GET /vocabularies/{name}` API to return a vocabulary used by UI. [MODLD-982](https://folio-org.atlassian.net/browse/MODLD-982)
 - Include subTitle (OtherTitleInformation) in work profile [MODLD-1009](https://folio-org.atlassian.net/browse/MODLD-1009)
 - Improve export resource query performance [MODLD-1010](https://folio-org.atlassian.net/browse/MODLD-1010)
+- Retrieve FOLIO base-url from `GET /base-url` API [MODLD-804](https://folio-org.atlassian.net/browse/MODLD-804)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
