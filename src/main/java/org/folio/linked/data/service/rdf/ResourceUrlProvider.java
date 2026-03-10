@@ -4,7 +4,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.function.LongFunction;
 import lombok.RequiredArgsConstructor;
-import org.folio.linked.data.integration.rest.settings.BaseUrlClient;
+import org.folio.linked.data.integration.rest.settings.SettingsClient;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 public class ResourceUrlProvider implements LongFunction<String> {
 
   private static final String URL_PATTERN = "%s/linked-data-editor/resources/%s";
-  private final BaseUrlClient baseUrlClient;
+  private final SettingsClient settingsClient;
 
   @Override
   public String apply(long id) {
-    var baseUrl = normalizeBaseUrl(baseUrlClient.getBaseUrl().getBaseUrl());
+    var baseUrl = normalizeBaseUrl(settingsClient.getBaseUrl().getBaseUrl());
     return String.format(URL_PATTERN, baseUrl, id);
   }
 
