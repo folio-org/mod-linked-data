@@ -190,7 +190,8 @@
         "Profile:Work:TitleInformation:WorkTitle:NonSortCharacterCount",
         "Profile:Work:TitleInformation:WorkTitle:PreferredTitleForWork",
         "Profile:Work:TitleInformation:WorkTitle:PartNumber",
-        "Profile:Work:TitleInformation:WorkTitle:PartName"
+        "Profile:Work:TitleInformation:WorkTitle:PartName",
+        "Profile:Work:TitleInformation:WorkTitle:OtherTitleInformation"
       ],
       "id": "Profile:Work:TitleInformation:WorkTitle"
     },
@@ -253,6 +254,21 @@
       },
       "id": "Profile:Work:TitleInformation:WorkTitle:PartName",
       "marc": "245 $p"
+    },
+    {
+      "type": "literal",
+      "displayName": "Other title information",
+      "uriBFLite": "http://bibfra.me/vocab/library/subTitle",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Work:TitleInformation:WorkTitle:OtherTitleInformation",
+      "marc": "245 $b"
     },
     {
       "type": "dropdownOption",
