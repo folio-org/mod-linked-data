@@ -6,7 +6,7 @@ create or replace view export_resources as
   select
     r.resource_hash,
     fm.inventory_id,
-    export_subgraph(r.resource_hash, 7) as resource_subgraph
+    export_subgraph(r.resource_hash, 5) as resource_subgraph
   from
     resources r
       left outer join folio_metadata as fm

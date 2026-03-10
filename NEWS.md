@@ -102,6 +102,7 @@
 - Use PrepareSystemUserService to create system user when module is enabled for a tenant [MODLD-1005](https://folio-org.atlassian.net/browse/MODLD-1005)
 - Remove nested retries while processing kafka events; set default retry-delivery-attempts to 0 [MODLD-1007](https://folio-org.atlassian.net/browse/MODLD-1007)
 - Create `GET /vocabularies/{name}` API to return a vocabulary used by UI. [MODLD-982](https://folio-org.atlassian.net/browse/MODLD-982)
+- Improve export resource query performance [MODLD-1010](https://folio-org.atlassian.net/browse/MODLD-1010)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
