@@ -40,4 +40,18 @@ class ResourceUrlProviderTest {
     assertThat(result).isEqualTo(expectedUrl);
   }
 
+  @Test
+  void returnsCorrectUrlWhenBaseUrlHasTrailingSlash() {
+    // given
+    when(baseUrlClient.getBaseUrl()).thenReturn(new BaseUrlDto().baseUrl("http://localhost/"));
+    var id = 123L;
+    var expectedUrl = "http://localhost/linked-data-editor/resources/123";
+
+    // when
+    var result = resourceUrlProvider.apply(id);
+
+    // then
+    assertThat(result).isEqualTo(expectedUrl);
+  }
+
 }
