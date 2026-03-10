@@ -24,7 +24,7 @@ class ResourceUrlProviderTest {
 
   @BeforeEach
   void setUp() {
-    when(settingsClient.getBaseUrl()).thenReturn(new BaseUrlDto().value("http://localhost"));
+    when(settingsClient.getBaseUrl()).thenReturn(new BaseUrlDto().baseUrl("http://localhost"));
   }
 
   @Test
@@ -43,7 +43,7 @@ class ResourceUrlProviderTest {
   @Test
   void returnsCorrectUrlWhenBaseUrlHasTrailingSlash() {
     // given
-    when(settingsClient.getBaseUrl()).thenReturn(new BaseUrlDto().value("http://localhost/"));
+    when(settingsClient.getBaseUrl()).thenReturn(new BaseUrlDto().baseUrl("http://localhost/"));
     var id = 123L;
     var expectedUrl = "http://localhost/linked-data-editor/resources/123";
 
