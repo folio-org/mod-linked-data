@@ -236,6 +236,19 @@ do $do$
         from
           %1$I.resource_subgraph(v_id, v_max_depth) as subgraph
       ),
+      doc_hashes as (
+        select v_id as doc_hash
+        union
+        select
+          distinct subject
+        from
+          subgraph_set
+        union
+        select
+          distinct unnest(objects)
+        from
+          subgraph_set
+      ),
       docs_set as (
         select
           r.resource_hash as id,
@@ -243,24 +256,13 @@ do $do$
           r.label,
           jsonb_agg(type_lookup.type_uri) as types
         from
-          %1$I.resources r
+          doc_hashes dh
+          join %1$I.resources r
+            on r.resource_hash = dh.doc_hash
           inner join %1$I.resource_type_map as rtm
             on rtm.resource_hash = r.resource_hash
           inner join %1$I.type_lookup
             on rtm.type_hash = type_lookup.type_hash
-        where
-          r.resource_hash = v_id
-          or r.resource_hash in (
-            select
-              distinct subject
-            from
-              subgraph_set
-            union
-            select
-              distinct unnest(objects)
-            from
-              subgraph_set
-          )
         group by
           r.resource_hash
       )
