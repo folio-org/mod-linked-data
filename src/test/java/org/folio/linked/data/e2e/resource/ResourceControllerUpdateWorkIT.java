@@ -213,7 +213,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     var eventPayload = event.getEventPayload();
     var marc = eventPayload.getSourceRecordObject();
     return event.getEventType() == InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE
-      && eventPayload.getAdditionalProperties().get("linkedDataId").equals(linkedDataId)
+      && eventPayload.getLinkedDataId().equals(linkedDataId)
       && isExpectedMarc(marc);
   }
 
