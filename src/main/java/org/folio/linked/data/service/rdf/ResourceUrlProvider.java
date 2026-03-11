@@ -19,7 +19,7 @@ public class ResourceUrlProvider implements LongFunction<String> {
   @Override
   public String apply(long id) {
     var baseUrlResponse = settingsClient.getBaseUrl();
-    var baseUrl = normalizeBaseUrl(baseUrlResponse.getBaseUrl());
+    var baseUrl = normalizeBaseUrl(baseUrlResponse.getValue());
     return String.format(URL_PATTERN, baseUrl, id);
   }
 

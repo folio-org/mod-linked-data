@@ -22,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SuppressWarnings("java:S6813")
 public abstract class InstanceIngressMessageMapper {
 
-  private static final String LINKED_DATA_ID = "linkedDataId";
-  private static final String INSTANCE_ID = "instanceId";
   @Autowired
   protected Ld2MarcMapper ld2MarcMapper;
   @Autowired
@@ -45,9 +43,9 @@ public abstract class InstanceIngressMessageMapper {
 
   @AfterMapping
   protected void afterMappingPayload(@MappingTarget InstanceIngressPayload payload, Resource resource) {
-    payload.putAdditionalProperty(LINKED_DATA_ID, resource.getId());
+    payload.setLinkedDataId(resource.getId());
     ofNullable(resource.getFolioMetadata())
       .map(FolioMetadata::getInventoryId)
-      .ifPresent(invId -> payload.putAdditionalProperty(INSTANCE_ID, invId));
+      .ifPresent(payload::setInstanceId);
   }
 }

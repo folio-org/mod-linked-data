@@ -2,7 +2,6 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "description": "Record Type Enum",
   "type": "string",
-  "additionalProperties": false,
   "enum": [
     "MARC_BIB",
     "MARC_AUTHORITY",

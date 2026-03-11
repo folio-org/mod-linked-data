@@ -15,9 +15,17 @@
       "type": "string",
       "enum": ["FOLIO", "LINKED_DATA", "MARC"],
       "description": "Source type"
+    },
+    "linkedDataId": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Linked data resource identifier"
+    },
+    "instanceId": {
+      "type": "string",
+      "description": "Inventory instance identifier"
     }
   },
-  "additionalProperties": true,
   "required": [
     "sourceRecordObject",
     "sourceType"

@@ -5,7 +5,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.mockito.Mockito.doReturn;
 
-import java.util.Map;
 import java.util.UUID;
 import org.folio.linked.data.domain.dto.InstanceIngressPayload;
 import org.folio.linked.data.mapper.ResourceModelMapper;
@@ -59,9 +58,8 @@ class InstanceIngressMessageMapperTest {
       .hasFieldOrPropertyWithValue("sourceRecordIdentifier", srsId)
       .hasFieldOrPropertyWithValue("sourceType", InstanceIngressPayload.SourceTypeEnum.LINKED_DATA)
       .hasFieldOrPropertyWithValue("sourceRecordObject", marcString)
-      .hasFieldOrPropertyWithValue("additionalProperties",
-        Map.of("linkedDataId", instance.getId(), "instanceId", inventoryId)
-      );
+      .hasFieldOrPropertyWithValue("linkedDataId", instance.getId())
+      .hasFieldOrPropertyWithValue("instanceId", inventoryId);
   }
 
 }

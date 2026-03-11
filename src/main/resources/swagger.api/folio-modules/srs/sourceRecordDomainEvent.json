@@ -3,7 +3,6 @@
   "description": "Source record domain event data model",
   "javaType": "org.folio.rest.jaxrs.model.SourceRecordDomainEvent",
   "type": "object",
-  "additionalProperties": false,
   "properties": {
     "id": {
       "description": "UUID",

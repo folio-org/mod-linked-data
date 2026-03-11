@@ -33,7 +33,6 @@
       "type": "string"
     }
   },
-  "additionalProperties": false,
   "required": [
     "createdDate"
   ]
