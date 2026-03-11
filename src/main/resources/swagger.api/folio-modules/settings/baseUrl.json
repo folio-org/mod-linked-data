@@ -3,13 +3,13 @@
   "type": "object",
   "description": "Base URL response",
   "properties": {
-    "baseUrl": {
+    "value": {
       "type": "string",
-      "description": "FOLIO front-end URL"
+      "description": "FOLIO front-end URL",
+      "x-json-property": "baseUrl"
     }
   },
-  "additionalProperties": false,
   "required": [
-    "baseUrl"
+    "value"
   ]
 }
