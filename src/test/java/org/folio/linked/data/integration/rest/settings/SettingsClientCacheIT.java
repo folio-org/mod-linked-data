@@ -33,7 +33,7 @@ class SettingsClientCacheIT {
   }
 
   @Test
-  void shouldNotShareCacheAcrossTenants() {
+  void shouldNotShareEntriesCacheAcrossTenants() {
     // given
     var tenant1 = TENANT_ID;
     var query = "key==test.setting";
@@ -62,11 +62,43 @@ class SettingsClientCacheIT {
     assertThat(cache.get(tenant2CacheKey)).isNotNull();
 
     // Verify both tenants have separate cache entries with different keys
+    assertThat(cache.get(tenant1CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant2CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant1CacheKey).get()).isNotEqualTo(cache.get(tenant2CacheKey).get());
+  }
+
+  @Test
+  void shouldNotShareBaseUrlCacheAcrossTenants() {
+    // given
+    var tenant1 = TENANT_ID;
+
+    // when - populate cache for tenant1
+    tenantScopedExecutionService.execute(tenant1, () -> settingsClient.getBaseUrl());
+
+    // Verify tenant1 has cache entry
+    var cache = cacheManager.getCache(SETTINGS_ENTRIES);
+    assertThat(cache).isNotNull();
+    var tenant1CacheKey = tenant1 + "_base-url";
     assertThat(cache.get(tenant1CacheKey)).isNotNull();
+
+    // when - check tenant2 cache before any call
+    var tenant2 = "another_tenant";
+    var tenant2CacheKey = tenant2 + "_base-url";
+    var tenant2CacheValue = cache.get(tenant2CacheKey);
+
+    // then - tenant2 should not have any cached value yet
+    assertThat(tenant2CacheValue).isNull();
+
+    // when - make call for tenant2
+    tenantScopedExecutionService.execute(tenant2, () -> settingsClient.getBaseUrl());
+
+    // then - now tenant2 should have its own cache entry
     assertThat(cache.get(tenant2CacheKey)).isNotNull();
 
-    // Verify that the cache keys are indeed different
-    assertThat(tenant1CacheKey).isNotEqualTo(tenant2CacheKey);
+    // Verify both tenants have separate cache entries
+    assertThat(cache.get(tenant1CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant2CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant1CacheKey).get()).isNotEqualTo(cache.get(tenant2CacheKey).get());
   }
 
   private void clearCache() {
@@ -76,4 +108,3 @@ class SettingsClientCacheIT {
     }
   }
 }
-

@@ -3,7 +3,8 @@ package org.folio.linked.data.service.rdf;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import org.folio.linked.data.integration.rest.configuration.ConfigurationService;
+import org.folio.linked.data.domain.dto.BaseUrlDto;
+import org.folio.linked.data.integration.rest.settings.SettingsClient;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,16 +20,30 @@ class ResourceUrlProviderTest {
   @InjectMocks
   private ResourceUrlProvider resourceUrlProvider;
   @Mock
-  private ConfigurationService configurationService;
+  private SettingsClient settingsClient;
 
   @BeforeEach
   void setUp() {
-    when(configurationService.getFolioHost()).thenReturn("http://localhost");
+    when(settingsClient.getBaseUrl()).thenReturn(new BaseUrlDto("http://localhost"));
   }
 
   @Test
   void returnsCorrectUrlForValidId() {
     // given
+    var id = 123L;
+    var expectedUrl = "http://localhost/linked-data-editor/resources/123";
+
+    // when
+    var result = resourceUrlProvider.apply(id);
+
+    // then
+    assertThat(result).isEqualTo(expectedUrl);
+  }
+
+  @Test
+  void returnsCorrectUrlWhenBaseUrlHasTrailingSlash() {
+    // given
+    when(settingsClient.getBaseUrl()).thenReturn(new BaseUrlDto("http://localhost/"));
     var id = 123L;
     var expectedUrl = "http://localhost/linked-data-editor/resources/123";
 

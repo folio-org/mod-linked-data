@@ -529,6 +529,7 @@
               <generateModelTests>false</generateModelTests>
               <generateSupportingFiles>false</generateSupportingFiles>
               <generateModelDocumentation>false</generateModelDocumentation>
+              <templateDirectory>${project.basedir}/src/main/resources/swagger.api/templates</templateDirectory>
               <configOptions>
                 <java8>true</java8>
                 <dateLibrary>java8</dateLibrary>

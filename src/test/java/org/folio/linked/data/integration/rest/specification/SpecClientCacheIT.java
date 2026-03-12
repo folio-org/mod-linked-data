@@ -63,11 +63,10 @@ class SpecClientCacheIT {
     assertThat(cache.get(tenant2CacheKey)).isNotNull();
 
     // Verify both tenants have separate cache entries with different keys
-    assertThat(cache.get(tenant1CacheKey)).isNotNull();
-    assertThat(cache.get(tenant2CacheKey)).isNotNull();
-
-    // Verify that the cache keys are indeed different
     assertThat(tenant1CacheKey).isNotEqualTo(tenant2CacheKey);
+    assertThat(cache.get(tenant1CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant2CacheKey).get()).isNotNull();
+    assertThat(cache.get(tenant1CacheKey).get()).isNotEqualTo(cache.get(tenant2CacheKey).get());
   }
 
   private void clearCaches() {
@@ -81,4 +80,3 @@ class SpecClientCacheIT {
     }
   }
 }
-

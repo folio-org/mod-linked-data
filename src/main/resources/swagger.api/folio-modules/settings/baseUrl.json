@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "description": "Base URL response",
+  "properties": {
+    "value": {
+      "type": "string",
+      "description": "FOLIO front-end URL",
+      "x-json-property": "baseUrl"
+    }
+  },
+  "required": [
+    "value"
+  ]
+}
