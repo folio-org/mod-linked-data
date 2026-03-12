@@ -52,7 +52,7 @@ class HubCreatorIT extends PostResourceIT {
             "_contributorReference":[
               {
                 "id":"2",
-                "roles":[ "http://bibfra.me/vocab/relation/sponsoringbody" ]
+                "roles":[ "http://bibfra.me/vocab/relation/sponsoringBody" ]
               }
             ]
           }
@@ -79,7 +79,7 @@ class HubCreatorIT extends PostResourceIT {
       .andExpect(jsonPath(hubPath + "['_contributorReference'][0]['type']")
         .value("http://bibfra.me/vocab/lite/Jurisdiction"))
       .andExpect(jsonPath(hubPath + "['_contributorReference'][0]['roles']", containsInAnyOrder(
-        "http://bibfra.me/vocab/relation/sponsoringbody")));
+        "http://bibfra.me/vocab/relation/sponsoringBody")));
   }
 
   @Override
@@ -103,7 +103,7 @@ class HubCreatorIT extends PostResourceIT {
     assertThat(contributor.getId()).isEqualTo(2L);
     assertThat(contributor.getLabel()).isEqualTo("United States");
 
-    var sponsoringBody = getFirstOutgoingResource(hub, "http://bibfra.me/vocab/relation/sponsoringbody");
+    var sponsoringBody = getFirstOutgoingResource(hub, "http://bibfra.me/vocab/relation/sponsoringBody");
     assertThat(contributor).isEqualTo(sponsoringBody);
   }
 
