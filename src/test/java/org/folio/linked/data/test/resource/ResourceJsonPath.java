@@ -49,14 +49,11 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
-import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import lombok.experimental.UtilityClass;
@@ -179,71 +176,6 @@ public class ResourceJsonPath {
 
   public static String toStatementOfResponsibility() {
     return join(".", toInstance(), arrayPath(STATEMENT_OF_RESPONSIBILITY.getValue()));
-  }
-
-  public static String toParallelTitlePartName(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(PART_NAME.getValue()));
-  }
-
-  public static String toParallelTitlePartNumber(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(PART_NUMBER.getValue()));
-  }
-
-  public static String toParallelTitleMain(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(MAIN_TITLE.getValue()));
-  }
-
-  public static String toParallelTitleDate(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(DATE.getValue()));
-  }
-
-  public static String toParallelTitleSubtitle(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(SUBTITLE.getValue()));
-  }
-
-  public static String toParallelTitleNote(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(PARALLEL_TITLE.getUri()),
-      arrayPath(NOTE.getValue()));
-  }
-
-  public static String toVariantTitlePartName(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(PART_NAME.getValue()));
-  }
-
-  public static String toVariantTitlePartNumber(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(PART_NUMBER.getValue()));
-  }
-
-  public static String toVariantTitleMain(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(MAIN_TITLE.getValue()));
-  }
-
-  public static String toVariantTitleDate(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(DATE.getValue()));
-  }
-
-  public static String toVariantTitleSubtitle(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(SUBTITLE.getValue()));
-  }
-
-  public static String toVariantTitleType(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(VARIANT_TYPE.getValue()));
-  }
-
-  public static String toVariantTitleNote(String instanceBase) {
-    return join(".", instanceBase, dynamicArrayPath(TITLE.getUri()), path(VARIANT_TITLE.getUri()),
-      arrayPath(NOTE.getValue()));
   }
 
   public static String toProviderEventDate(PredicateDictionary predicate) {
