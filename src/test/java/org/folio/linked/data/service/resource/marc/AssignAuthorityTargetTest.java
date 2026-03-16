@@ -12,6 +12,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.CREATOR_OF_WORK;
+import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.DEGREE_GRANTING_INSTITUTION;
 import static org.folio.linked.data.service.resource.marc.AssignAuthorityTarget.SUBJECT_OF_WORK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -61,7 +62,9 @@ class AssignAuthorityTargetTest {
         getAllTypesExcluding(
           Set.of(FAMILY, ORGANIZATION, JURISDICTION, MEETING, PERSON, FORM, TOPIC, TEMPORAL, PLACE, HUB)
         ),
-        Set.of(CONCEPT), false)
+        Set.of(CONCEPT), false),
+      Arguments.of(DEGREE_GRANTING_INSTITUTION, Set.of(ORGANIZATION), Set.of(), true),
+      Arguments.of(DEGREE_GRANTING_INSTITUTION, getAllTypesExcluding(Set.of(ORGANIZATION)), Set.of(), false)
     );
   }
 
