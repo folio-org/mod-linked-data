@@ -32,7 +32,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.SUPPLEMENTARY_CONTENT;
-import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
@@ -65,7 +64,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.SUBTITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
-import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
@@ -81,10 +79,8 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.domain.dto.InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
@@ -155,12 +151,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaTerm;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toOtherIdQualifier;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toOtherIdValue;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleDate;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleMain;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleNote;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitlePartName;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitlePartNumber;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toParallelTitleSubtitle;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitleMain;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitleNonSortNum;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toPrimaryTitlePartName;
@@ -178,13 +168,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toProviderEve
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toStatementOfResponsibility;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toSupplementaryContentLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toSupplementaryContentName;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleDate;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleMain;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleNote;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitlePartName;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitlePartNumber;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleSubtitle;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toVariantTitleType;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWork;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentLink;
@@ -300,7 +283,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var instanceResponse = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var instanceResource = resourceTestService.getResourceById(instanceResponse.getId(), 4);
     assertThat(instanceResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
-    validateInstance(instanceResource, true);
+    validateInstance(instanceResource, work.getId());
     var workId = instanceResponse.getWorkReference().getFirst().getId();
     assertThat(instanceResponse.getProfileId()).isEqualTo(instanceMonographProfileId);
     assertThat(instanceResponse.getWorkReference().getFirst().getProfileId()).isEqualTo(defaultWorkProfileId);
@@ -314,7 +297,7 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     var instanceForReference = getSampleInstanceResource(null, null);
     setExistingResourcesIds(instanceForReference, hashService);
-    resourceTestService.saveGraph(instanceForReference);
+    var instanceId = resourceTestService.saveGraph(instanceForReference).getId();
     var requestBuilder = post(RESOURCE_URL)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeadersWithUserId(env, USER_ID.toString()))
@@ -335,7 +318,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
     var id = ((WorkResponseField) resourceResponse.getResource()).getWork().getId();
     var workResource = resourceTestService.getResourceById(id, 4);
-    validateWork(workResource, true);
+    validateWork(workResource, instanceId);
     checkSearchIndexMessage(workResource.getId(), CREATE);
     checkIndexDate(workResource.getId().toString());
     assertResourceMetadata(workResource, USER_ID, null);
@@ -377,10 +360,9 @@ abstract class ResourceControllerITBase extends ITBase {
     var instanceDto = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var updatedInstance = resourceTestService.getResourceById(instanceDto.getId(), 1);
     assertThat(updatedInstance.getId()).isNotNull();
-    assertThat(updatedInstance.getLabel()).isEqualTo(originalInstance.getLabel());
+    assertThat(updatedInstance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asString()).isEqualTo("200 m");
-    assertThat(updatedInstance.getOutgoingEdges()).hasSize(originalInstance.getOutgoingEdges().size());
 
     var updatedFolioMetadata = updatedInstance.getFolioMetadata();
     var originalFolioMetadata = originalInstance.getFolioMetadata();
@@ -440,7 +422,7 @@ abstract class ResourceControllerITBase extends ITBase {
 
     var updatedWork = resourceTestService.getResourceById(id, 1);
     assertThat(updatedWork.getId()).isNotNull();
-    assertThat(updatedWork.getLabel()).isEqualTo(originalWork.getLabel());
+    assertThat(updatedWork.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(updatedWork.getTypes().stream().map(ResourceTypeEntity::getUri).collect(toSet()))
       .isEqualTo(Set.of(WORK, BOOKS).stream().map(ResourceTypeDictionary::getUri).collect(toSet()));
     assertThat(
@@ -454,7 +436,6 @@ abstract class ResourceControllerITBase extends ITBase {
         .map(jsonNode -> jsonNode.get(0))
         .map(JsonNode::asString)
     ).contains("Russian");
-    assertThat(updatedWork.getOutgoingEdges()).hasSize(originalWork.getOutgoingEdges().size());
     assertThat(updatedWork.getIncomingEdges()).hasSize(originalWork.getIncomingEdges().size());
     checkSearchIndexMessage(originalWork.getId(), DELETE);
     checkSearchIndexMessage(Long.valueOf(id), CREATE);
@@ -681,20 +662,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toPrimaryTitlePartNumber(instanceBase), equalTo(List.of("Primary: partNumber"))))
       .andExpect(jsonPath(toPrimaryTitleMain(instanceBase), equalTo(List.of("Primary: mainTitle"))))
       .andExpect(jsonPath(toPrimaryTitleNonSortNum(instanceBase), equalTo(List.of("Primary: nonSortNum"))))
-      .andExpect(jsonPath(toPrimaryTitleSubtitle(instanceBase), equalTo(List.of("Primary: subTitle"))))
-      .andExpect(jsonPath(toParallelTitlePartName(instanceBase), equalTo(List.of("Parallel: partName"))))
-      .andExpect(jsonPath(toParallelTitlePartNumber(instanceBase), equalTo(List.of("Parallel: partNumber"))))
-      .andExpect(jsonPath(toParallelTitleMain(instanceBase), equalTo(List.of("Parallel: mainTitle"))))
-      .andExpect(jsonPath(toParallelTitleNote(instanceBase), equalTo(List.of("Parallel: noteLabel"))))
-      .andExpect(jsonPath(toParallelTitleDate(instanceBase), equalTo(List.of("Parallel: date"))))
-      .andExpect(jsonPath(toParallelTitleSubtitle(instanceBase), equalTo(List.of("Parallel: subTitle"))))
-      .andExpect(jsonPath(toVariantTitlePartName(instanceBase), equalTo(List.of("Variant: partName"))))
-      .andExpect(jsonPath(toVariantTitlePartNumber(instanceBase), equalTo(List.of("Variant: partNumber"))))
-      .andExpect(jsonPath(toVariantTitleMain(instanceBase), equalTo(List.of("Variant: mainTitle"))))
-      .andExpect(jsonPath(toVariantTitleNote(instanceBase), equalTo(List.of("Variant: noteLabel"))))
-      .andExpect(jsonPath(toVariantTitleDate(instanceBase), equalTo(List.of("Variant: date"))))
-      .andExpect(jsonPath(toVariantTitleSubtitle(instanceBase), equalTo(List.of("Variant: subTitle"))))
-      .andExpect(jsonPath(toVariantTitleType(instanceBase), equalTo(List.of("Variant: variantType"))));
+      .andExpect(jsonPath(toPrimaryTitleSubtitle(instanceBase), equalTo(List.of("Primary: subTitle"))));
     if (instanceBase.equals(toInstance())) {
       resultActions
         .andExpect(jsonPath(toSupplementaryContentLink(), equalTo("supplementaryContent link")))
@@ -822,7 +790,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkGenreIsPreferred(workBase), containsInAnyOrder(true, false)));
   }
 
-  private void validateInstance(Resource instance, boolean validateFullWork) {
+  private void validateInstance(Resource instance, Long workId) {
     assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
     assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
@@ -832,24 +800,19 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
     validateLiteral(instance, STATEMENT_OF_RESPONSIBILITY.getValue(), "statement of responsibility");
-    assertThat(instance.getOutgoingEdges()).hasSize(18);
+    assertThat(instance.getOutgoingEdges()).hasSize(16);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
     validateSupplementaryContent(edgeIterator.next(), instance);
-    validateVariantTitle(edgeIterator.next(), instance);
     validateCategory(edgeIterator.next(), instance, MEDIA, "http://id.loc.gov/vocabulary/mediaTypes/s", "s");
     validateCategory(edgeIterator.next(), instance, CARRIER, "http://id.loc.gov/vocabulary/carriers/ha", "ha");
     validateLccn(edgeIterator.next(), instance);
-    validateParallelTitle(edgeIterator.next(), instance);
     validateExtent(edgeIterator.next(), instance);
     var edge = edgeIterator.next();
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(instance);
     assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
-    var work = edge.getTarget();
-    if (validateFullWork) {
-      validateWork(work, false);
-    }
+    assertThat(edge.getTarget().getId()).isEqualTo(workId);
     validateAccessLocation(edgeIterator.next(), instance);
     validateIan(edgeIterator.next(), instance);
     validateProviderEvent(edgeIterator.next(), instance, PE_DISTRIBUTION, "dz", "Algeria");
@@ -876,57 +839,23 @@ abstract class ResourceControllerITBase extends ITBase {
   }
 
   private void validatePrimaryTitle(ResourceEdge edge, Resource source) {
-    validateSampleTitleBase(edge, source, ResourceTypeDictionary.TITLE, "Primary: ");
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getPredicate().getUri()).isEqualTo(PredicateDictionary.TITLE.getUri());
     var title = edge.getTarget();
+    assertThat(edge.getSource()).isEqualTo(source);
+    assertThat(title.getTypes().iterator().next().getUri()).isEqualTo(ResourceTypeDictionary.TITLE.getUri());
     assertThat(title.getId()).isEqualTo(hashService.hash(title));
-    assertThat(title.getDoc().size()).isEqualTo(5);
+    assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asString()).isEqualTo("Primary: partName");
+    assertThat(title.getDoc().get(PART_NUMBER.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(PART_NUMBER.getValue()).get(0).asString()).isEqualTo("Primary: partNumber");
+    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).get(0).asString()).contains("Primary: mainTitle");
+    assertThat(title.getDoc().get(SUBTITLE.getValue()).size()).isEqualTo(1);
+    assertThat(title.getDoc().get(SUBTITLE.getValue()).get(0).asString()).isEqualTo("Primary: subTitle");
     assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).size()).isEqualTo(1);
     assertThat(title.getDoc().get(NON_SORT_NUM.getValue()).get(0).asString()).isEqualTo("Primary: nonSortNum");
     assertThat(title.getOutgoingEdges()).isEmpty();
-  }
-
-  private void validateParallelTitle(ResourceEdge edge, Resource source) {
-    validateSampleTitleBase(edge, source, PARALLEL_TITLE, "Parallel: ");
-    var title = edge.getTarget();
-    assertThat(title.getId()).isEqualTo(hashService.hash(title));
-    assertThat(title.getDoc().size()).isEqualTo(6);
-    assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(DATE.getValue()).get(0).asString()).isEqualTo("Parallel: date");
-    assertThat(title.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asString()).isEqualTo("Parallel: noteLabel");
-    assertThat(title.getOutgoingEdges()).isEmpty();
-  }
-
-  private void validateVariantTitle(ResourceEdge edge, Resource source) {
-    validateSampleTitleBase(edge, source, VARIANT_TITLE, "Variant: ");
-    var title = edge.getTarget();
-    assertThat(title.getId()).isEqualTo(hashService.hash(title));
-    assertThat(title.getDoc().size()).isEqualTo(7);
-    assertThat(title.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(DATE.getValue()).get(0).asString()).isEqualTo("Variant: date");
-    assertThat(title.getDoc().get(VARIANT_TYPE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(VARIANT_TYPE.getValue()).get(0).asString()).isEqualTo("Variant: variantType");
-    assertThat(title.getDoc().get(NOTE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(NOTE.getValue()).get(0).asString()).isEqualTo("Variant: noteLabel");
-    assertThat(title.getOutgoingEdges()).isEmpty();
-  }
-
-  private void validateSampleTitleBase(ResourceEdge edge, Resource source, ResourceTypeDictionary type, String prefix) {
-    assertThat(edge.getId()).isNotNull();
-    assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(TITLE.getUri());
-    var title = edge.getTarget();
-    assertThat(title.getLabel()).isEqualTo(prefix + "mainTitle" + " " + prefix + "subTitle");
-    assertThat(title.getTypes().iterator().next().getUri()).isEqualTo(type.getUri());
-    assertThat(title.getId()).isEqualTo(hashService.hash(title));
-    assertThat(title.getDoc().get(PART_NAME.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(PART_NAME.getValue()).get(0).asString()).isEqualTo(prefix + "partName");
-    assertThat(title.getDoc().get(PART_NUMBER.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(PART_NUMBER.getValue()).get(0).asString()).isEqualTo(prefix + "partNumber");
-    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(MAIN_TITLE.getValue()).get(0).asString()).isEqualTo(prefix + "mainTitle");
-    assertThat(title.getDoc().get(SUBTITLE.getValue()).size()).isEqualTo(1);
-    assertThat(title.getDoc().get(SUBTITLE.getValue()).get(0).asString()).isEqualTo(prefix + "subTitle");
   }
 
   private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate,
@@ -1175,7 +1104,7 @@ abstract class ResourceControllerITBase extends ITBase {
       .containsOnly(CATEGORY_SET.getUri());
   }
 
-  private void validateWork(Resource work, boolean validateFullInstance) {
+  private void validateWork(Resource work, Long instanceId) {
     assertThat(work.getId()).isEqualTo(hashService.hash(work));
     assertThat(work.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
     assertThat(work.getTypes().stream().map(ResourceTypeEntity::getUri).collect(toSet()))
@@ -1186,7 +1115,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
-    validateVariantTitle(outgoingEdgeIterator.next(), work);
     validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "Illustrations",
       Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/ill", CODE.getValue(), "a"),
       "Illustrative Content"
@@ -1197,7 +1125,6 @@ abstract class ResourceControllerITBase extends ITBase {
     );
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
-    validateParallelTitle(outgoingEdgeIterator.next(), work);
     validateLanguage(outgoingEdgeIterator.next(), work);
     validateDissertation(outgoingEdgeIterator.next(), work);
     validateDdcClassification(outgoingEdgeIterator.next(), work);
@@ -1213,15 +1140,14 @@ abstract class ResourceControllerITBase extends ITBase {
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().getFirst(),
       GEOGRAPHIC_COVERAGE.getUri());
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
-    if (validateFullInstance) {
-      var incomingEdgeIterator = work.getIncomingEdges().iterator();
-      var edge = incomingEdgeIterator.next();
-      assertThat(edge.getId()).isNotNull();
-      assertThat(edge.getTarget()).isEqualTo(work);
-      assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
-      validateInstance(edge.getSource(), false);
-      assertThat(incomingEdgeIterator.hasNext()).isFalse();
-    }
+
+    var incomingEdgeIterator = work.getIncomingEdges().iterator();
+    var edge = incomingEdgeIterator.next();
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getTarget()).isEqualTo(work);
+    assertThat(edge.getSource().getId()).isEqualTo(instanceId);
+    assertThat(edge.getPredicate().getUri()).isEqualTo(INSTANTIATES.getUri());
+    assertThat(incomingEdgeIterator.hasNext()).isFalse();
   }
 
   private void validateDdcClassification(ResourceEdge edge, Resource source) {
@@ -1393,16 +1319,16 @@ abstract class ResourceControllerITBase extends ITBase {
     var unitedStates = saveResource(7109832602847218134L, "United States",
       "{\"http://bibfra.me/vocab/lite/name\": [\"United States\"], \"http://bibfra.me/vocab/library/geographicAreaCode\": [\"n-us\"], "
         + "\"http://bibfra.me/vocab/library/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/n-us\"]}", PLACE);
-    var europe = saveResource(- 4654600487710655316L, "Europe",
+    var europe = saveResource(-4654600487710655316L, "Europe",
       "{\"http://bibfra.me/vocab/lite/name\": [\"Europe\"], \"http://bibfra.me/vocab/library/geographicAreaCode\": [\"e\"], "
         + "\"http://bibfra.me/vocab/library/geographicCoverage\": [\"http://id.loc.gov/vocabulary/geographicAreas/e\"]}", PLACE);
-    var genre1 = saveResource(- 9064822434663187463L, "genre 1", FORM,
+    var genre1 = saveResource(-9064822434663187463L, "genre 1", FORM,
       "{\"http://bibfra.me/vocab/lite/name\": [\"genre 1\"]}", "8138e88f-4278-45ba-838c-816b80544f82");
-    var genre2 = saveResource(- 4816872480602594231L, "genre 2", "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}", FORM);
+    var genre2 = saveResource(-4816872480602594231L, "genre 2", "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}", FORM);
     var assigningAgency = saveResource(4932783899755316479L, "assigning agency", "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}", ORGANIZATION);
     var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", "{\"http://bibfra.me/vocab/lite/name\": [\"United States, Library of Congress\"]}", ORGANIZATION);
     var grantingInstitution1 = saveResource(5481852630377445080L, "granting institution 1", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 1\"]}", ORGANIZATION);
-    var grantingInstitution2 = saveResource(- 6468470931408362304L, "granting institution 2", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 2\"]}", ORGANIZATION);
+    var grantingInstitution2 = saveResource(-6468470931408362304L, "granting institution 2", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 2\"]}", ORGANIZATION);
     return new LookupResources(
       List.of(subjectPerson, subjectForm),
       List.of(unitedStates, europe),

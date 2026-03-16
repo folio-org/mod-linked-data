@@ -265,18 +265,20 @@ public class MonographTestUtil {
   public static Resource createPrimaryTitle(Long id) {
     var primaryTitleValue = "Primary: mainTitle" + (nonNull(id) ? id : "");
     var subTitleValue = "Primary: subTitle";
+    var partNumberValue = "Primary: partNumber";
+    var partNameValue = "Primary: partName";
 
     return createResource(
       Map.of(
-        PART_NAME, List.of("Primary: partName"),
-        PART_NUMBER, List.of("Primary: partNumber"),
+        PART_NAME, List.of(partNameValue),
+        PART_NUMBER, List.of(partNumberValue),
         MAIN_TITLE, List.of(primaryTitleValue),
         NON_SORT_NUM, List.of("Primary: nonSortNum"),
         SUBTITLE, List.of(subTitleValue)
       ),
       Set.of(ResourceTypeDictionary.TITLE),
       emptyMap()
-    ).setLabel(primaryTitleValue + " " + subTitleValue);
+    ).setLabel(primaryTitleValue + " " + subTitleValue + " " + partNumberValue + " " + partNameValue);
   }
 
   private static Resource createParallelTitle() {
