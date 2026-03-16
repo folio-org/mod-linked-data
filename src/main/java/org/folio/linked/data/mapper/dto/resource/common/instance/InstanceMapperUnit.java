@@ -43,8 +43,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.TYPE_OF_REPORT;
 import static org.folio.ld.dictionary.PropertyDictionary.WITH_NOTE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
-import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
@@ -66,6 +64,7 @@ import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.label.ResourceEntityLabelService;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -87,6 +86,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
   private final FolioMetadataMapper folioMetadataMapper;
   private final HashService hashService;
   private final ResourceProfileLinkingService resourceProfileService;
+  private final ResourceEntityLabelService labelService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -110,7 +110,6 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     var instance = new Resource();
     instance.addTypes(INSTANCE);
     instance.setDoc(getDoc(instanceDto));
-    instance.setLabel(getFirstValue(() -> getPrimaryMainTitles(instanceDto.getTitle())));
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getTitle(), TITLE);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getProduction(), PE_PRODUCTION);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getPublication(), PE_PUBLICATION);
@@ -129,6 +128,7 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getPublicationFrequency(),
       PUBLICATION_FREQUENCY);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getAdminMetadata(), ADMIN_METADATA);
+    labelService.assignLabelToResource(instance);
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setIdAndRefreshEdges(hashService.hash(instance));
     return instance;

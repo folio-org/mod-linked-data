@@ -1,18 +1,23 @@
 package org.folio.linked.data.service.resource;
 
+import static java.util.Objects.isNull;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
-import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.InstanceField;
+import org.folio.linked.data.domain.dto.PrimaryTitle;
+import org.folio.linked.data.domain.dto.PrimaryTitleField;
 import org.folio.linked.data.domain.dto.ResourceIdDto;
 import org.folio.linked.data.domain.dto.ResourceRequestDto;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
+import org.folio.linked.data.domain.dto.TitleFieldRequestTitleInner;
 import org.folio.linked.data.domain.dto.WorkField;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.dto.resource.ResourceDtoMapper;
@@ -174,5 +179,17 @@ public class ResourceServiceImpl implements ResourceService {
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
+  }
+
+  private List<String> getPrimaryMainTitles(List<TitleFieldRequestTitleInner> titles) {
+    if (isNull(titles)) {
+      return new ArrayList<>();
+    }
+    return titles.stream()
+      .filter(PrimaryTitleField.class::isInstance)
+      .map(PrimaryTitleField.class::cast)
+      .map(PrimaryTitleField::getPrimaryTitle)
+      .map(PrimaryTitle::toString)
+      .toList();
   }
 }

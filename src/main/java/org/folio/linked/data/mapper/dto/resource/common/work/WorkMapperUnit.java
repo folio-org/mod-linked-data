@@ -27,8 +27,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUMMARY;
 import static org.folio.ld.dictionary.PropertyDictionary.TABLE_OF_CONTENTS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
-import static org.folio.linked.data.util.ResourceUtils.getPrimaryMainTitles;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -57,6 +55,7 @@ import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.NoteMapper;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.label.ResourceEntityLabelService;
 import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
@@ -77,6 +76,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final ProfileService profileService;
   private final ResourceProfileLinkingService resourceProfileService;
+  private final ResourceEntityLabelService labelService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -96,7 +96,6 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
     var work = new Resource();
     assignTypes(work, workDto.getProfileId());
     work.setDoc(getDoc(workDto));
-    work.setLabel(getFirstValue(() -> getPrimaryMainTitles(workDto.getTitle())));
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getTitle(), TITLE);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getClassification(), CLASSIFICATION);
     coreMapper.addOutgoingEdges(work, WorkRequest.class, workDto.getContent(), CONTENT);
@@ -123,6 +122,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
         coreMapper.addOutgoingEdges(work, WorkRequest.class, List.of(hub.getHub()), getHubPredicate(hub).get())
       );
 
+    labelService.assignLabelToResource(work);
     work.setIdAndRefreshEdges(hashService.hash(work));
     return work;
   }

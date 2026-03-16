@@ -105,6 +105,7 @@
 - Include subTitle (OtherTitleInformation) in work profile [MODLD-1009](https://folio-org.atlassian.net/browse/MODLD-1009)
 - Improve export resource query performance [MODLD-1010](https://folio-org.atlassian.net/browse/MODLD-1010)
 - Retrieve FOLIO base-url from `GET /base-url` API [MODLD-804](https://folio-org.atlassian.net/browse/MODLD-804)
+- Use LabelGeneratorService to compute the label of WORK, INSTANCE and TITLE resources [MODLD-998](https://folio-org.atlassian.net/browse/MODLD-998)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
