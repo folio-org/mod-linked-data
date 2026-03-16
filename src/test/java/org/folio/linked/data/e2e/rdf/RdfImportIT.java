@@ -55,7 +55,7 @@ class RdfImportIT extends ITBase {
     var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
       .file(multipartFile)
       .headers(defaultHeaders(env));
-    var expectedId = -8733405874785680909L;
+    var expectedId = -1677400301769626518L;
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -68,8 +68,8 @@ class RdfImportIT extends ITBase {
     assertThat(resourceRepo.existsById(expectedId)).isTrue();
 
     var expectedEvents = List.of(
-      new ResourceTypeAndLabel(INSTANCE, "Title mainTitle, Title subtitle"),
-      new ResourceTypeAndLabel(TITLE, "Title mainTitle, Title subtitle")
+      new ResourceTypeAndLabel(INSTANCE, "Title mainTitle Title subtitle"),
+      new ResourceTypeAndLabel(TITLE, "Title mainTitle Title subtitle")
     );
     assertEvents(expectedEvents);
   }
