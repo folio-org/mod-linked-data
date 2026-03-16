@@ -1,12 +1,12 @@
 package org.folio.linked.data.mapper.dto.resource.common.work.sub;
 
+import static org.folio.ld.dictionary.PredicateDictionary.DEGREE_GRANTING_INSTITUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
-import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
+import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
 import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
-import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
+import static org.folio.ld.dictionary.PropertyDictionary.NOTE;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import java.util.HashMap;
@@ -19,6 +19,7 @@ import org.folio.linked.data.domain.dto.WorkResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.label.ResourceEntityLabelService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -30,6 +31,7 @@ public class DissertationMapperUnit implements WorkSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
+  private final ResourceEntityLabelService labelService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -48,17 +50,18 @@ public class DissertationMapperUnit implements WorkSubResourceMapperUnit {
     resource.addTypes(ResourceTypeDictionary.DISSERTATION);
     resource.setDoc(getDoc(dissertation));
     coreMapper.addOutgoingEdges(resource, Dissertation.class,
-      dissertation.getGrantingInstitutionReference(), GRANTING_INSTITUTION);
+      dissertation.getGrantingInstitutionReference(), DEGREE_GRANTING_INSTITUTION);
+    labelService.assignLabelToResource(resource);
     resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
   }
 
   private JsonNode getDoc(Dissertation dto) {
     var map = new HashMap<String, List<String>>();
-    putProperty(map, LABEL, dto.getLabel());
+    putProperty(map, NOTE, dto.getNote());
     putProperty(map, DEGREE, dto.getDegree());
-    putProperty(map, DISSERTATION_YEAR, dto.getDissertationYear());
-    putProperty(map, DISSERTATION_NOTE, dto.getDissertationNote());
+    putProperty(map, DATE, dto.getDate());
+    putProperty(map, MISC_INFO, dto.getMiscInfo());
     putProperty(map, DISSERTATION_ID, dto.getDissertationID());
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }

@@ -11,7 +11,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -36,11 +35,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
-import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
@@ -112,13 +107,6 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toClassificat
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toClassificationSources;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toCopyrightDate;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toDimensions;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationDegree;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationGrantingInstitutionIds;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationGrantingInstitutionLabels;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationId;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationLabel;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationNote;
-import static org.folio.linked.data.test.resource.ResourceJsonPath.toDissertationYear;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanQualifier;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEanValue;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toEditionStatement;
@@ -575,8 +563,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var work = getSampleWork();
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(50);
+    assertThat(resourceTestService.countEdges()).isEqualTo(49);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -587,9 +575,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(49);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(34);
+    assertThat(resourceTestService.countEdges()).isEqualTo(31);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -599,8 +587,8 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(53);
-    assertThat(resourceTestService.countEdges()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(50);
+    assertThat(resourceTestService.countEdges()).isEqualTo(49);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -611,9 +599,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countResources()).isEqualTo(49);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(33);
+    assertThat(resourceTestService.countEdges()).isEqualTo(31);
     checkSearchIndexMessage(existed.getId(), DELETE);
   }
 
@@ -756,15 +744,6 @@ abstract class ResourceControllerITBase extends ITBase {
         "8752404686183471966")))
       .andExpect(jsonPath(toClassificationAssigningSourceLabels(workBase), containsInAnyOrder("assigning agency",
         "United States, Library of Congress")))
-      .andExpect(jsonPath(toDissertationLabel(workBase), equalTo("label")))
-      .andExpect(jsonPath(toDissertationDegree(workBase), equalTo("degree")))
-      .andExpect(jsonPath(toDissertationYear(workBase), equalTo("dissertation year")))
-      .andExpect(jsonPath(toDissertationNote(workBase), equalTo("dissertation note")))
-      .andExpect(jsonPath(toDissertationId(workBase), equalTo("dissertation id")))
-      .andExpect(jsonPath(toDissertationGrantingInstitutionIds(workBase), containsInAnyOrder("5481852630377445080",
-        "-6468470931408362304")))
-      .andExpect(jsonPath(toDissertationGrantingInstitutionLabels(workBase),
-        containsInAnyOrder("granting institution 1", "granting institution 2")))
       .andExpect(jsonPath(toWorkContentLink(workBase), equalTo("http://id.loc.gov/vocabulary/contentTypes/txt")))
       .andExpect(jsonPath(toWorkContentCode(workBase), equalTo("txt")))
       .andExpect(jsonPath(toWorkContentTerm(workBase), equalTo("text")))
@@ -1133,7 +1112,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validateWorkContentType(outgoingEdgeIterator.next(), work);
     validateWorkGovernmentPublication(outgoingEdgeIterator.next(), work);
     validateLanguage(outgoingEdgeIterator.next(), work);
-    validateDissertation(outgoingEdgeIterator.next(), work);
     validateDdcClassification(outgoingEdgeIterator.next(), work);
     validateLcClassification(outgoingEdgeIterator.next(), work);
     validatePrimaryTitle(outgoingEdgeIterator.next(), work);
@@ -1232,26 +1210,6 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiterals(governmentPublication, LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mgovtpubtype/a"));
   }
 
-  private void validateDissertation(ResourceEdge edge, Resource source) {
-    assertThat(edge.getId()).isNotNull();
-    assertThat(edge.getSource()).isEqualTo(source);
-    assertThat(edge.getPredicate().getUri()).isEqualTo(DISSERTATION.getUri());
-    var dissertation = edge.getTarget();
-    assertThat(dissertation.getId()).isEqualTo(hashService.hash(dissertation));
-    var types = dissertation.getTypes().stream().map(ResourceTypeEntity::getUri).toList();
-    assertThat(types).contains(ResourceTypeDictionary.DISSERTATION.getUri());
-    assertThat(dissertation.getDoc().size()).isEqualTo(5);
-    validateLiteral(dissertation, LABEL.getValue(), "label");
-    validateLiteral(dissertation, DEGREE.getValue(), "degree");
-    validateLiteral(dissertation, DISSERTATION_YEAR.getValue(), "dissertation year");
-    validateLiteral(dissertation, DISSERTATION_NOTE.getValue(), "dissertation note");
-    validateLiteral(dissertation, DISSERTATION_ID.getValue(), "dissertation id");
-    var iterator = dissertation.getOutgoingEdges().iterator();
-    var grantingInstitutionEdge = iterator.next();
-    validateResourceEdge(grantingInstitutionEdge, dissertation, grantingInstitutionEdge.getTarget(),
-      PredicateDictionary.GRANTING_INSTITUTION.getUri());
-  }
-
   private void validateLanguage(ResourceEdge edge, Resource source) {
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
@@ -1334,14 +1292,11 @@ abstract class ResourceControllerITBase extends ITBase {
     var genre2 = saveResource(-4816872480602594231L, "genre 2", "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}", FORM);
     var assigningAgency = saveResource(4932783899755316479L, "assigning agency", "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}", ORGANIZATION);
     var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", "{\"http://bibfra.me/vocab/lite/name\": [\"United States, Library of Congress\"]}", ORGANIZATION);
-    var grantingInstitution1 = saveResource(5481852630377445080L, "granting institution 1", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 1\"]}", ORGANIZATION);
-    var grantingInstitution2 = saveResource(-6468470931408362304L, "granting institution 2", "{\"http://bibfra.me/vocab/lite/name\": [\"granting institution 2\"]}", ORGANIZATION);
     return new LookupResources(
       List.of(subjectPerson, subjectForm),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
-      List.of(assigningAgency, libraryOfCongress),
-      List.of(grantingInstitution1, grantingInstitution2)
+      List.of(assigningAgency, libraryOfCongress)
     );
   }
 
@@ -1370,8 +1325,7 @@ abstract class ResourceControllerITBase extends ITBase {
     List<Resource> subjects,
     List<Resource> geographicCoverages,
     List<Resource> genres,
-    List<Resource> assigningSources,
-    List<Resource> grantingInstitutions
+    List<Resource> assigningSources
   ) {
   }
 }
