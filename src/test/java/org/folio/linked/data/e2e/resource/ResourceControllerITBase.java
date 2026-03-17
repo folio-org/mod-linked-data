@@ -360,7 +360,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var instanceDto = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
     var updatedInstance = resourceTestService.getResourceById(instanceDto.getId(), 1);
     assertThat(updatedInstance.getId()).isNotNull();
-    assertThat(updatedInstance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
+    assertThat(updatedInstance.getLabel())
+      .isEqualTo("Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
     assertThat(updatedInstance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
     assertThat(updatedInstance.getDoc().get(DIMENSIONS.getValue()).get(0).asString()).isEqualTo("200 m");
 
@@ -422,7 +423,8 @@ abstract class ResourceControllerITBase extends ITBase {
 
     var updatedWork = resourceTestService.getResourceById(id, 1);
     assertThat(updatedWork.getId()).isNotNull();
-    assertThat(updatedWork.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
+    assertThat(updatedWork.getLabel())
+      .isEqualTo("Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
     assertThat(updatedWork.getTypes().stream().map(ResourceTypeEntity::getUri).collect(toSet()))
       .isEqualTo(Set.of(WORK, BOOKS).stream().map(ResourceTypeDictionary::getUri).collect(toSet()));
     assertThat(
@@ -792,14 +794,17 @@ abstract class ResourceControllerITBase extends ITBase {
 
   private void validateInstance(Resource instance, Long workId) {
     assertThat(instance.getId()).isEqualTo(hashService.hash(instance));
-    assertThat(instance.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
+    assertThat(instance.getLabel())
+      .isEqualTo("Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
     assertThat(instance.getTypes().iterator().next().getUri()).isEqualTo(INSTANCE.getUri());
-    assertThat(instance.getDoc().size()).isEqualTo(5);
+    assertThat(instance.getDoc().size()).isEqualTo(6);
     validateLiteral(instance, DIMENSIONS.getValue(), "20 cm");
     validateLiteral(instance, EDITION.getValue(), "edition statement");
     validateLiteral(instance, PROJECTED_PROVISION_DATE.getValue(), "projected provision date");
     validateLiteral(instance, ISSUANCE.getValue(), "single unit");
     validateLiteral(instance, STATEMENT_OF_RESPONSIBILITY.getValue(), "statement of responsibility");
+    validateLiteral(instance, LABEL.getValue(),
+      "Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
     assertThat(instance.getOutgoingEdges()).hasSize(16);
 
     var edgeIterator = instance.getOutgoingEdges().iterator();
@@ -1106,14 +1111,16 @@ abstract class ResourceControllerITBase extends ITBase {
 
   private void validateWork(Resource work, Long instanceId) {
     assertThat(work.getId()).isEqualTo(hashService.hash(work));
-    assertThat(work.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle");
+    assertThat(work.getLabel()).isEqualTo("Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
     assertThat(work.getTypes().stream().map(ResourceTypeEntity::getUri).collect(toSet()))
       .isEqualTo(Set.of(WORK, BOOKS).stream().map(ResourceTypeDictionary::getUri).collect(toSet()));
-    assertThat(work.getDoc().size()).isEqualTo(4);
+    assertThat(work.getDoc().size()).isEqualTo(5);
     validateLiterals(work, DATE_START.getValue(), List.of("2024"));
     validateLiterals(work, DATE_END.getValue(), List.of("2025"));
     validateLiteral(work, SUMMARY.getValue(), "summary text");
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
+    validateLiteral(work, LABEL.getValue(),
+      "Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
     var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
     validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "Illustrations",
       Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/ill", CODE.getValue(), "a"),
