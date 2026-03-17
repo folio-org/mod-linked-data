@@ -12,7 +12,7 @@ class WorkTitleIT extends AbstractTitleIT {
 
   @Override
   protected String resourceId() {
-    return "-6951430452351645375";
+    return "-5922785341204753106";
   }
 
   @Override

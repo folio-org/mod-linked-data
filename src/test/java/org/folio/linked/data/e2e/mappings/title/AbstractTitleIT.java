@@ -71,7 +71,7 @@ public abstract class AbstractTitleIT extends PostResourceIT {
   }
 
   protected String expectedResourceLabel() {
-    return expectedMainTitle() + " sub title";
+    return expectedMainTitle() + " sub title part number part name";
   }
 
   protected String expectedTitleLabel() {
