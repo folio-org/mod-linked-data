@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import org.folio.ld.dictionary.model.Resource;
-import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
+import org.folio.linked.data.domain.dto.ImportResponseDto;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.exception.RequestProcessingException;
@@ -166,7 +166,7 @@ class RdfImportServiceTest {
     var result = rdfImportService.importFile(multipartFile);
 
     // then
-    assertThat(result).isEqualTo(new ImportFileResponseDto(List.of(), message));
+    assertThat(result).isEqualTo(new ImportResponseDto(List.of(), message));
   }
 
   @Test

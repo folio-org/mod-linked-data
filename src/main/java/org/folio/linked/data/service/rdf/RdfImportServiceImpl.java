@@ -6,9 +6,6 @@ import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.linked.data.util.ImportUtil.APPLICATION_LD_JSON_VALUE;
-import static org.folio.linked.data.util.ImportUtil.ImportReport;
-import static org.folio.linked.data.util.ImportUtil.ImportedResource;
-import static org.folio.linked.data.util.ImportUtil.Status;
 import static org.folio.linked.data.util.ImportUtil.Status.CONVERTED;
 import static org.folio.linked.data.util.ImportUtil.Status.CREATED;
 import static org.folio.linked.data.util.ImportUtil.Status.FAILED;
@@ -26,8 +23,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.ImportFileResponseDto;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
+import org.folio.linked.data.domain.dto.ImportResponseDto;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
@@ -38,6 +35,9 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.lccn.LccnResourceService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.linked.data.util.ImportUtil.ImportReport;
+import org.folio.linked.data.util.ImportUtil.ImportedResource;
+import org.folio.linked.data.util.ImportUtil.Status;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,16 +65,28 @@ public class RdfImportServiceImpl implements RdfImportService {
   private FolioMessageProducer<ImportResultEvent> importResultEventProducer;
 
   @Override
-  public ImportFileResponseDto importFile(MultipartFile multipartFile) {
+  public ImportResponseDto importFile(MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
       var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), true);
       var reportCsv = importReport.toCsv();
-      return new ImportFileResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
+      return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf import incoming file reading error", e.getMessage());
     } catch (Exception e) {
       log.error("Rdf import error", e);
-      return new ImportFileResponseDto(List.of(), e.getMessage());
+      return new ImportResponseDto(List.of(), e.getMessage());
+    }
+  }
+
+  @Override
+  public ImportResponseDto importUrl(String url) {
+    var rdfJson = httpClient.downloadString(url);
+    try (var inputStream = new ByteArrayInputStream(rdfJson.getBytes(UTF_8))) {
+      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, true);
+      var reportCsv = importReport.toCsv();
+      return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
+    } catch (IOException e) {
+      throw exceptionBuilder.badRequestException("Rdf JSON import error", e.getMessage());
     }
   }
 
