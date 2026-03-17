@@ -127,8 +127,12 @@ public class InstanceMapperUnit extends TopResourceMapperUnit {
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, standardBookFormats(instanceDto), BOOK_FORMAT);
     coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getPublicationFrequency(),
       PUBLICATION_FREQUENCY);
-    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getAdminMetadata(), ADMIN_METADATA);
+
     labelService.assignLabelToResource(instance);
+
+    // adminMetadata's label contains instance label. Hence, create adminMetadata resource after setting instance label
+    coreMapper.addOutgoingEdges(instance, InstanceRequest.class, instanceDto.getAdminMetadata(), ADMIN_METADATA);
+
     instance.setFolioMetadata(new FolioMetadata(instance).setSource(LINKED_DATA));
     instance.setIdAndRefreshEdges(hashService.hash(instance));
     return instance;
