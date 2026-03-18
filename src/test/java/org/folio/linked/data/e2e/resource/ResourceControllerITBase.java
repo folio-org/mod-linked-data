@@ -208,7 +208,7 @@ import org.folio.linked.data.domain.dto.InstanceResponseField;
 import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.domain.dto.WorkResponseField;
-import org.folio.linked.data.e2e.ITBase;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.integration.rest.specification.SpecClient;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;

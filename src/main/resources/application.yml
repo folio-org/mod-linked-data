@@ -95,6 +95,9 @@ mod-linked-data:
     limit: ${AUTHORITY_SOURCE_FILES_LIMIT:50}
   reindex:
     chunk-size: ${REINDEX_CHUNK_SIZE:1000}
+  graph-cleaning:
+    chunk-size: ${GRAPH_CLEANING_CHUNK_SIZE:1000}
+    schedule: ${GRAPH_CLEANING_SCHEDULE:0 0 3 * * ?}
   search:
     max-params: ${SEARCH_MAX_PARAMS:100}
   kafka:

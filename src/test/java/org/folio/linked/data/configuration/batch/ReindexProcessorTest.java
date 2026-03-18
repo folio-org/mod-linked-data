@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import org.folio.linked.data.configuration.batch.reindex.ReindexProcessor;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
 import org.folio.linked.data.mapper.kafka.search.HubSearchMessageMapper;
 import org.folio.linked.data.mapper.kafka.search.WorkSearchMessageMapper;

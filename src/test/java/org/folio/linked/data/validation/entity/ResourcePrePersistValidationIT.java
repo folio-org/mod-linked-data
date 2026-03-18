@@ -3,7 +3,7 @@ package org.folio.linked.data.validation.entity;
 import static org.assertj.core.api.Assertions.assertThatException;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
-import org.folio.linked.data.e2e.ITBase;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;

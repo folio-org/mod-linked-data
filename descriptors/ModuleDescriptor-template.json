@@ -173,7 +173,7 @@
       ]
     },
     {
-      "id": "linked-data-reindex",
+      "id": "linked-data-batch-job",
       "version": "1.0",
       "handlers": [
         {
@@ -190,8 +190,8 @@
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/linked-data/reindex/status",
-          "permissionsRequired": [ "linked-data.resources.reindex.status.get" ],
+          "pathPattern": "/linked-data/batch/status",
+          "permissionsRequired": [ "linked-data.resources.batch.status.get" ],
           "modulePermissions": []
         }
       ]
@@ -287,7 +287,7 @@
       "description": "Start the process of incremental reindexing of resources in the database. Only resources that have not been indexed yet (indexDate is null) will be reindexed."
     },
     {
-      "permissionName": "linked-data.resources.reindex.status.get",
+      "permissionName": "linked-data.resources.batch.status.get",
       "displayName": "Linked Data: Get reindex job status",
       "description": "Get the status of a reindex job by its execution ID."
     },
@@ -442,7 +442,9 @@
       { "name": "CACHE_TTL_VOCABULARIES_MS", "value": "18000000" },
       { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value": "50" },
       { "name": "AUTO_SAVE_MARC_BIB_AS_GRAPH", "value": "false" },
-      { "name": "REINDEX_CHUNK_SIZE", "value": "1000" }
+      { "name": "REINDEX_CHUNK_SIZE", "value": "1000" },
+      { "name": "GRAPH_CLEANING_CHUNK_SIZE", "value": "1000" },
+      { "name": "GRAPH_CLEANING_SCHEDULE", "value": "0 0 3 * * ?" }
     ]
   },
   "metadata": {
