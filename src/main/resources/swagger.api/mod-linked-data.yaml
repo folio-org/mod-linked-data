@@ -514,8 +514,6 @@ paths:
                 $ref: schema/importResponseDto.json
         '400':
           $ref: '#/components/responses/badRequestResponse'
-        '404':
-          description: Requested import URL is not found
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
