@@ -80,13 +80,15 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   @Override
   public ImportResponseDto importUrl(String url) {
-    var rdfJson = httpClient.downloadString(url);
-    try (var inputStream = new ByteArrayInputStream(rdfJson.getBytes(UTF_8))) {
+    try (var inputStream = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
       var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, true);
       var reportCsv = importReport.toCsv();
       return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf JSON import error", e.getMessage());
+    } catch (Exception e) {
+      log.error("Rdf import error", e);
+      return new ImportResponseDto(List.of(), e.getMessage());
     }
   }
 
