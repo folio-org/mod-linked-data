@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
@@ -21,11 +20,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
-import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
@@ -71,7 +66,6 @@ public class ResourceJsonPath {
   private static final String GEOGRAPHIC_COVERAGE_REF = "_geographicCoverageReference";
   private static final String GENRE_REF = "_genreReference";
   private static final String ASSIGNING_SOURCE_REF = "_assigningSourceReference";
-  private static final String GRANTING_INSTITUTION_REF = "_grantingInstitutionReference";
   private static final String LANGUAGES_PROPERTY = "_languages";
   private static final String LANGUAGE_CODES_PROPERTY = "_codes";
   private static final String LANGUAGE_TYPES_PROPERTY = "_types";
@@ -369,46 +363,12 @@ public class ResourceJsonPath {
       dynamicArrayPath(ASSIGNING_SOURCE_REF), path(LABEL_PROPERTY));
   }
 
-  public static String toDissertationLabel(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(LABEL.getValue()));
-  }
-
-  public static String toDissertationDegree(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DEGREE.getValue()));
-  }
-
-  public static String toDissertationYear(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_YEAR.getValue()));
-  }
-
-  public static String toDissertationNote(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_NOTE.getValue()));
-  }
-
-  public static String toDissertationId(String workBase) {
-    return join(".", workBase, arrayPath(DISSERTATION.getUri()), arrayPath(DISSERTATION_ID.getValue()));
-  }
-
-  public static String toDissertationGrantingInstitutionIds(String workBase) {
-    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
-      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(ID_PROPERTY));
-  }
-
-  public static String toDissertationGrantingInstitutionLabels(String workBase) {
-    return join(".", join(".", workBase, dynamicArrayPath(DISSERTATION.getUri())),
-      dynamicArrayPath(GRANTING_INSTITUTION_REF), path(LABEL_PROPERTY));
-  }
-
   public static String toWorkContentTerm(String workBase) {
     return join(".", workBase, arrayPath(CONTENT.getUri()), arrayPath(TERM.getValue()));
   }
 
   public static String toWorkSubjectLabel(String workBase) {
     return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path(LABEL_PROPERTY));
-  }
-
-  public static String toWorkSubjectIsPreferred(String workBase) {
-    return join(".", workBase, dynamicArrayPath(SUBJECT.getUri()), path(IS_PREFERRED_PROPERTY));
   }
 
   public static String toWorkGeographicCoverageLabel(String workBase) {

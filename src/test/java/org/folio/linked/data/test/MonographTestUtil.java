@@ -9,12 +9,10 @@ import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
-import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
@@ -34,11 +32,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
-import static org.folio.ld.dictionary.PropertyDictionary.DEGREE;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_ID;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_NOTE;
-import static org.folio.ld.dictionary.PropertyDictionary.DISSERTATION_YEAR;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_AREA_CODE;
@@ -403,7 +397,6 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(GENRE, List.of(genre1, genre2));
     pred2OutgoingResources.put(GOVERNMENT_PUBLICATION, List.of(governmentPublication));
     pred2OutgoingResources.put(ORIGIN_PLACE, List.of(originPlace));
-    pred2OutgoingResources.put(DISSERTATION, List.of(createDissertation()));
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
     pred2OutgoingResources.put(ILLUSTRATIONS, List.of(createIllustrations()));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(createSupplementaryContent()));
@@ -519,40 +512,6 @@ public class MonographTestUtil {
       Map.of(
         PredicateDictionary.ASSIGNING_SOURCE, List.of(assigningSource),
         STATUS, List.of(status("lc"))
-      )
-    );
-  }
-
-  private static Resource createDissertation() {
-    var grantingInstitution1 = createResource(
-      Map.of(
-        NAME, List.of("granting institution 1")
-      ),
-      Set.of(ORGANIZATION),
-      emptyMap()
-    ).setLabel("granting institution 1")
-      .setIdAndRefreshEdges(5481852630377445080L);
-
-    var grantingInstitution2 = createResource(
-      Map.of(
-        NAME, List.of("granting institution 2")
-      ),
-      Set.of(ORGANIZATION),
-      emptyMap()
-    ).setLabel("granting institution 2")
-      .setIdAndRefreshEdges(-6468470931408362304L);
-
-    return createResource(
-      Map.of(
-        LABEL, List.of("label"),
-        DEGREE, List.of("degree"),
-        DISSERTATION_YEAR, List.of("dissertation year"),
-        DISSERTATION_NOTE, List.of("dissertation note"),
-        DISSERTATION_ID, List.of("dissertation id")
-      ),
-      Set.of(ResourceTypeDictionary.DISSERTATION),
-      Map.of(
-        GRANTING_INSTITUTION, List.of(grantingInstitution1, grantingInstitution2)
       )
     );
   }

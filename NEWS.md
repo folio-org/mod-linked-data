@@ -106,6 +106,7 @@
 - Improve export resource query performance [MODLD-1010](https://folio-org.atlassian.net/browse/MODLD-1010)
 - Retrieve FOLIO base-url from `GET /base-url` API [MODLD-804](https://folio-org.atlassian.net/browse/MODLD-804)
 - Use LabelGeneratorService to compute the label of WORK, INSTANCE and TITLE resources [MODLD-998](https://folio-org.atlassian.net/browse/MODLD-998)
+- Update DissertationMapperUnit based on the updated mapping rules [MODLD-1014](https://folio-org.atlassian.net/browse/MODLD-1014)
 - Add import URL feature to instance import [MODLD-1019](https://folio-org.atlassian.net/browse/MODLD-1019)
 
 ## 1.0.4 (04-24-2025)
