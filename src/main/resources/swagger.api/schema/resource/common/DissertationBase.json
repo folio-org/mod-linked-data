@@ -5,12 +5,12 @@
     {
       "type": "object",
       "properties": {
-        "label": {
+        "note": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/lite/label"
+          "x-json-property": "http://bibfra.me/vocab/lite/note"
         },
         "degree": {
           "type": "array",
@@ -19,19 +19,19 @@
           },
           "x-json-property": "http://bibfra.me/vocab/library/degree"
         },
-        "dissertationYear": {
+        "date": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/library/dissertationYear"
+          "x-json-property": "http://bibfra.me/vocab/lite/date"
         },
-        "dissertationNote": {
+        "miscInfo": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/library/dissertationNote"
+          "x-json-property": "http://bibfra.me/vocab/library/miscInfo"
         },
         "dissertationID": {
           "type": "array",

@@ -1,6 +1,6 @@
 package org.folio.linked.data.mapper.dto.resource.common.work.sub.reference;
 
-import static org.folio.ld.dictionary.PredicateDictionary.GRANTING_INSTITUTION;
+import static org.folio.ld.dictionary.PredicateDictionary.DEGREE_GRANTING_INSTITUTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 
 import java.util.Set;
@@ -14,7 +14,7 @@ import org.folio.linked.data.service.reference.ReferenceService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = ORGANIZATION, predicate = GRANTING_INSTITUTION, requestDto = Reference.class)
+@MapperUnit(type = ORGANIZATION, predicate = DEGREE_GRANTING_INSTITUTION, requestDto = Reference.class)
 public class GrantingInstitutionMapperUnit extends ReferenceMapperUnit {
 
   private static final Set<Class<?>> SUPPORTED_PARENTS = Set.of(
