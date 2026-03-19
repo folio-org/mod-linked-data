@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Set;
 import org.folio.linked.data.service.batch.BatchJobService;
 import org.folio.spring.testing.type.UnitTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.batch.core.job.JobExecution;
@@ -27,10 +27,17 @@ import org.springframework.beans.factory.ObjectProvider;
 @ExtendWith(MockitoExtension.class)
 class GraphCleaningJobListenerTest {
 
-  @InjectMocks
-  private GraphCleaningJobListener listener;
+  private static final int MAX_ROUNDS = 5;
+
   @Mock
   private ObjectProvider<BatchJobService> batchJobServiceProvider;
+
+  private GraphCleaningJobListener listener;
+
+  @BeforeEach
+  void setUp() {
+    listener = new GraphCleaningJobListener(batchJobServiceProvider, MAX_ROUNDS);
+  }
 
   @Test
   void afterJob_shouldStartNextRound_whenItemsWereWritten() {
@@ -104,6 +111,32 @@ class GraphCleaningJobListenerTest {
     // then
     verify(batchJobService, never()).startGraphCleaning(anyInt());
     verify(batchJobServiceProvider, never()).getIfAvailable();
+  }
+
+  @Test
+  void afterJob_shouldNotStartNextRound_whenMaxRoundsExceeded() {
+    // given
+    var jobExecution = jobExecutionWithWriteCount(5L, executionRoundParams(MAX_ROUNDS));
+
+    // when
+    listener.afterJob(jobExecution);
+
+    // then
+    verify(batchJobServiceProvider, never()).getIfAvailable();
+  }
+
+  @Test
+  void afterJob_shouldStartLastAllowedRound_whenNextRoundEqualsMaxRounds() {
+    // given
+    var batchJobService = mock(BatchJobService.class);
+    when(batchJobServiceProvider.getIfAvailable()).thenReturn(batchJobService);
+    var jobExecution = jobExecutionWithWriteCount(5L, executionRoundParams(MAX_ROUNDS - 1));
+
+    // when
+    listener.afterJob(jobExecution);
+
+    // then
+    verify(batchJobService).startGraphCleaning(MAX_ROUNDS);
   }
 
   private JobExecution jobExecutionWithWriteCount(long writeCount, JobParameters params) {

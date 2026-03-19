@@ -18,6 +18,7 @@ import org.springframework.beans.factory.ObjectProvider;
 public class GraphCleaningJobListener implements JobExecutionListener {
 
   private final ObjectProvider<BatchJobService> batchJobServiceProvider;
+  private final int maxRounds;
 
   @Override
   public void afterJob(JobExecution jobExecution) {
@@ -27,8 +28,12 @@ public class GraphCleaningJobListener implements JobExecutionListener {
 
     if (totalWritten > 0) {
       int nextRound = increaseExecutionRound(jobExecution.getJobParameters());
-      log.info("GraphCleaningJob wrote {} item(s), launching next round [{}]", totalWritten, nextRound);
-      batchJobServiceProvider.getIfAvailable().startGraphCleaning(nextRound);
+      if (nextRound > maxRounds) {
+        log.info("GraphCleaningJob round exceeded maxRounds setting ({}), no further round to be executed", maxRounds);
+      } else {
+        log.info("GraphCleaningJob wrote {} item(s), launching next round [{}]", totalWritten, nextRound);
+        batchJobServiceProvider.getIfAvailable().startGraphCleaning(nextRound);
+      }
     } else {
       log.info("GraphCleaningJob wrote 0 items, no further run needed");
     }

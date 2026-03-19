@@ -34,8 +34,10 @@ public class GraphCleaningBatchJobConfig {
   }
 
   @Bean
-  public GraphCleaningJobListener graphCleaningJobListener(ObjectProvider<BatchJobService> batchJobServiceProvider) {
-    return new GraphCleaningJobListener(batchJobServiceProvider);
+  public GraphCleaningJobListener graphCleaningJobListener(
+    ObjectProvider<BatchJobService> batchJobServiceProvider,
+    @Value("${mod-linked-data.graph-cleaning.max-rounds}") int maxRounds) {
+    return new GraphCleaningJobListener(batchJobServiceProvider, maxRounds);
   }
 
   @Bean
