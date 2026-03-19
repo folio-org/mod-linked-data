@@ -282,7 +282,7 @@ class RdfImportServiceTest {
         new ResourceWithLineNumber(3L, resource3)))
       .ts(ts)
       .jobExecutionId(jobExecutionId);
-    var expectedImportEventResult = new ImportResultEvent().originalEventTs(ts);
+    var expectedImportEventResult = new ImportResultEvent(ts, 1L, OffsetDateTime.now(), OffsetDateTime.now(), 1, 1, 1);
     when(importEventResultMapper.fromImportReport(eq(event), any(), any()))
       .thenReturn(expectedImportEventResult);
     when(lccnResourceService.unMockLccnEdges(any(), any()))
