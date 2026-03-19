@@ -131,7 +131,12 @@ public class RdfImportServiceImpl implements RdfImportService {
     return importInputStream(input, contentType, Optional.empty(), save);
   }
 
-  private ImportReport importInputStream(InputStream input, String contentType, Optional<ResourceTypeDictionary> workType, Boolean save) {
+  private ImportReport importInputStream(
+    InputStream input,
+    String contentType,
+    Optional<ResourceTypeDictionary> workType,
+    Boolean save
+  ) {
     var resources = rdf4LdService.mapBibframe2RdfToLd(input, contentType);
     var lineNumber = new AtomicLong(1);
     var resourcesWithLineNumbers = resources.stream()
@@ -149,8 +154,8 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   private org.folio.ld.dictionary.model.Resource assignType(
-      org.folio.ld.dictionary.model.Resource resource,
-      Optional<ResourceTypeDictionary> workType
+    org.folio.ld.dictionary.model.Resource resource,
+    Optional<ResourceTypeDictionary> workType
   ) {
     if (shouldAssignType(resource) && workType.isPresent()) {
       resource.getOutgoingEdges().stream()
