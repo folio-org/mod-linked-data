@@ -4,6 +4,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.linked.data.util.ImportUtil.APPLICATION_LD_JSON_VALUE;
 import static org.folio.linked.data.util.ImportUtil.Status.CONVERTED;
@@ -19,10 +20,12 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.ImportResponseDto;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
@@ -65,7 +68,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   private FolioMessageProducer<ImportResultEvent> importResultEventProducer;
 
   @Override
-  public ImportResponseDto importFile(MultipartFile multipartFile) {
+  public ImportResponseDto importFile(String filterType, MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
       var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), true);
       var reportCsv = importReport.toCsv();
@@ -79,9 +82,10 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   @Override
-  public ImportResponseDto importUrl(String url) {
+  public ImportResponseDto importUrl(String url, String filterType, String defaultWorkType) {
     try (var inputStream = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
-      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, true);
+      var workType = ResourceTypeDictionary.fromUri(defaultWorkType).orElse(ResourceTypeDictionary.BOOKS);
+      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, Optional.of(workType), true);
       var reportCsv = importReport.toCsv();
       return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
@@ -124,12 +128,36 @@ public class RdfImportServiceImpl implements RdfImportService {
   }
 
   private ImportReport importInputStream(InputStream input, String contentType, Boolean save) {
+    return importInputStream(input, contentType, Optional.empty(), save);
+  }
+
+  private ImportReport importInputStream(InputStream input, String contentType, Optional<ResourceTypeDictionary> workType, Boolean save) {
     var resources = rdf4LdService.mapBibframe2RdfToLd(input, contentType);
     var lineNumber = new AtomicLong(1);
     var resourcesWithLineNumbers = resources.stream()
+      .map(r -> assignType(r, workType))
       .map(r -> new ResourceWithLineNumber(lineNumber.getAndIncrement(), r))
       .collect(toSet());
     return doImport(resourcesWithLineNumbers, save);
+  }
+
+  private boolean shouldAssignType(org.folio.ld.dictionary.model.Resource resource) {
+    return resource.getOutgoingEdges().stream()
+      .filter(p -> p.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+      .filter(r -> r.getTarget().getTypes().size() == 1 && r.getTarget().isOfType(ResourceTypeDictionary.WORK))
+      .anyMatch(t -> true);
+  }
+
+  private org.folio.ld.dictionary.model.Resource assignType(
+      org.folio.ld.dictionary.model.Resource resource,
+      Optional<ResourceTypeDictionary> workType
+  ) {
+    if (shouldAssignType(resource) && workType.isPresent()) {
+      resource.getOutgoingEdges().stream()
+        .filter(p -> p.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+        .forEach(r -> r.getTarget().addType(workType.get()));
+    }
+    return resource;
   }
 
   private ImportReport doImport(Set<ResourceWithLineNumber> resourcesWithLineNumbers, boolean save) {

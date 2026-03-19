@@ -8,9 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface RdfImportService {
 
-  ImportResponseDto importFile(MultipartFile multipartFile);
+  ImportResponseDto importFile(String filterType, MultipartFile multipartFile);
 
-  ImportResponseDto importUrl(String url);
+  ImportResponseDto importUrl(String url, String filterType, String defaultWorkType);
 
   void importOutputEvent(ImportOutputEvent event, OffsetDateTime startTime);
 

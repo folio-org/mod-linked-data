@@ -14,12 +14,12 @@ public class ImportController implements ImportApi {
   private final RdfImportService rdfImportService;
 
   @Override
-  public ResponseEntity<ImportResponseDto> importFile(MultipartFile multipartFile) {
-    return ResponseEntity.ok(rdfImportService.importFile(multipartFile));
+  public ResponseEntity<ImportResponseDto> importFile(String filterType, MultipartFile multipartFile) {
+    return ResponseEntity.ok(rdfImportService.importFile(filterType, multipartFile));
   }
 
   @Override
-  public ResponseEntity<ImportResponseDto> importUrl(String url) {
-    return ResponseEntity.ok(rdfImportService.importUrl(url));
+  public ResponseEntity<ImportResponseDto> importUrl(String url, String filterType, String defaultWorkType) {
+    return ResponseEntity.ok(rdfImportService.importUrl(url, filterType, defaultWorkType));
   }
 }

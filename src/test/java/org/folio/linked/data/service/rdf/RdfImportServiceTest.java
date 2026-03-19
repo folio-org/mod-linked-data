@@ -92,7 +92,7 @@ class RdfImportServiceTest {
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
 
     // when
-    var result = rdfImportService.importFile(multipartFile);
+    var result = rdfImportService.importFile(null, multipartFile);
 
     // then
     assertThat(result.getResources()).hasSize(1);
@@ -116,7 +116,7 @@ class RdfImportServiceTest {
     var saveGraphResult = new SaveGraphResult(entity, Set.of(), Set.of(entity));
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
     // when
-    var result = rdfImportService.importFile(multipartFile);
+    var result = rdfImportService.importFile(null, multipartFile);
 
     // then
     assertThat(result.getResources()).hasSize(1);
@@ -134,7 +134,7 @@ class RdfImportServiceTest {
     when(resourceModelMapper.toEntity(any())).thenThrow(new RuntimeException());
 
     // when
-    var result = rdfImportService.importFile(multipartFile);
+    var result = rdfImportService.importFile(null, multipartFile);
 
     // then
     assertThat(result.getResources()).isEmpty();
@@ -150,7 +150,7 @@ class RdfImportServiceTest {
     when(exceptionBuilder.badRequestException(any(), any())).thenReturn(expectedException);
 
     // when
-    assertThatThrownBy(() -> rdfImportService.importFile(multipartFile))
+    assertThatThrownBy(() -> rdfImportService.importFile(null, multipartFile))
       // then
       .isEqualTo(expectedException);
   }
@@ -163,7 +163,7 @@ class RdfImportServiceTest {
     when(multipartFile.getInputStream()).thenThrow(new RuntimeException(message));
 
     // when
-    var result = rdfImportService.importFile(multipartFile);
+    var result = rdfImportService.importFile(null, multipartFile);
 
     // then
     assertThat(result).isEqualTo(new ImportResponseDto(List.of(), message));
@@ -189,7 +189,7 @@ class RdfImportServiceTest {
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
 
     // when
-    var result = rdfImportService.importUrl(rdfUrl);
+    var result = rdfImportService.importUrl(rdfUrl, null, null);
 
     // then
     assertThat(result.getResources()).hasSize(1);
@@ -216,7 +216,7 @@ class RdfImportServiceTest {
     when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(saveGraphResult);
 
     // when
-    var result = rdfImportService.importUrl(rdfUrl);
+    var result = rdfImportService.importUrl(rdfUrl, null, null);
 
     // then
     assertThat(result.getResources()).hasSize(1);
@@ -236,7 +236,7 @@ class RdfImportServiceTest {
     when(resourceModelMapper.toEntity(any())).thenThrow(new RuntimeException());
 
     // when
-    var result = rdfImportService.importUrl(rdfUrl);
+    var result = rdfImportService.importUrl(rdfUrl, null, null);
 
     // then
     assertThat(result.getResources()).isEmpty();
@@ -251,7 +251,7 @@ class RdfImportServiceTest {
     when(httpClient.downloadString(rdfUrl)).thenThrow(new RuntimeException(message));
 
     // when
-    var result = rdfImportService.importUrl(rdfUrl);
+    var result = rdfImportService.importUrl(rdfUrl, null, null);
 
     // then
     assertThat(result).isEqualTo(new ImportResponseDto(List.of(), message));
