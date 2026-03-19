@@ -3,6 +3,10 @@
   "description": "Batch job status DTO",
   "type": "object",
   "properties": {
+    "jobName": {
+      "type": "string",
+      "description": "Spring Batch Job name - ReindexJob or GraphCleaningJob"
+    },
     "startDate": {
       "type": "string",
       "format": "date-time",

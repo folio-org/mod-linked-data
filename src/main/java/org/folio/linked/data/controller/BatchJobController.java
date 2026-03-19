@@ -33,6 +33,12 @@ public class BatchJobController implements BatchJobApi {
   }
 
   @Override
+  public ResponseEntity<String> graphCleaning() {
+    var jobExecutionId = valueOf(batchJobService.startGraphCleaning(1));
+    return ResponseEntity.ok(jobExecutionId);
+  }
+
+  @Override
   public ResponseEntity<BatchJobStatusDto> getBatchJobStatus(Long jobExecutionId) {
     return ResponseEntity.ok(batchJobService.getStatus(jobExecutionId));
   }

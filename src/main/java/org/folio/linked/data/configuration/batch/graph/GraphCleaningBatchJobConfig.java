@@ -19,6 +19,7 @@ import org.springframework.core.task.AsyncTaskExecutor;
 @Configuration
 public class GraphCleaningBatchJobConfig {
 
+  public static final String GRAPH_CLEANING_JOB = "graphCleaningJob";
   public static final String JOB_PARAM_EXECUTION_ROUND = "executionRound";
   public static final String GRAPH_CLEANING_STEP_NAME = "graphCleaningStep";
 
@@ -26,7 +27,7 @@ public class GraphCleaningBatchJobConfig {
   public Job graphCleaningJob(JobRepository jobRepository,
                               Step graphCleaningStep,
                               GraphCleaningJobListener graphCleaningJobListener) {
-    return new JobBuilder("graphCleaningJob", jobRepository)
+    return new JobBuilder(GRAPH_CLEANING_JOB, jobRepository)
       .start(graphCleaningStep)
       .listener(graphCleaningJobListener)
       .build();

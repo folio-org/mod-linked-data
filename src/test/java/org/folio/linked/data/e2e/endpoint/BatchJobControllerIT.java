@@ -145,6 +145,7 @@ class BatchJobControllerIT extends ITBase {
         .headers(defaultHeaders(env)))
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.jobName").value("reindexJob"))
       .andExpect(jsonPath("$.status").value("COMPLETED"))
       .andExpect(jsonPath("$.reindexType").value(expectedType.getValue()))
       .andExpect(jsonPath("$.startDate").isNotEmpty())

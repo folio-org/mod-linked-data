@@ -29,6 +29,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Profile("!" + STANDALONE_PROFILE)
 public class ReindexBatchJobConfig {
 
+  public static final String REINDEX_JOB = "reindexJob";
   public static final Set<ResourceTypeDictionary> SUPPORTED_TYPES = Set.of(HUB, WORK);
   public static final String JOB_PARAM_STARTED_BY = "startedBy";
   public static final String JOB_PARAM_IS_FULL_REINDEX = "isFullReindex";
@@ -39,7 +40,7 @@ public class ReindexBatchJobConfig {
   public Job reindexJob(JobRepository jobRepository,
                         Step dropIndexStep,
                         Step reindexStep) {
-    return new JobBuilder("reindexJob", jobRepository)
+    return new JobBuilder(REINDEX_JOB, jobRepository)
       .start(dropIndexStep)
       .next(reindexStep)
       .build();

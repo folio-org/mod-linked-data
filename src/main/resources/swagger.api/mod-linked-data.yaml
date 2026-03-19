@@ -45,6 +45,22 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+  /linked-data/graphCleaning:
+    post:
+      operationId: graphCleaning
+      tags:
+        - batchJob
+      description: Start the process of cleaning the graph from orphaned nodes.
+      responses:
+        '200':
+          description: ID of GraphCleaning job execution
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/batch/status:
     get:
       operationId: getBatchJobStatus

@@ -11,9 +11,9 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleHub;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.sql.DataSource;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.configuration.batch.graph.reader.GraphCleaningReader;
@@ -71,13 +71,13 @@ class GraphCleaningReaderIT extends ITBase {
         createResource(Map.of(), of(CATEGORY), Map.of()).setLabel("orphanResource2")
       );
 
-      return List.of(orphanResource1.getId(), orphanResource2.getId());
+      return Set.of(orphanResource1.getId(), orphanResource2.getId());
     });
 
     // when
     var result = tenantScopedExecutionService.execute(TENANT_ID, () -> {
       var reader = new GraphCleaningReader(dataSource, 100);
-      var ids = new ArrayList<Long>();
+      var ids = new HashSet<Long>();
       reader.open(new ExecutionContext());
       Long id;
       while ((id = reader.read()) != null) {

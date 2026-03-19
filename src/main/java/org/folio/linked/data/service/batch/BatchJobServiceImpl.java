@@ -4,11 +4,13 @@ import static java.lang.String.valueOf;
 import static java.util.Objects.isNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.linked.data.configuration.batch.BatchConfig.JOB_PARAM_RUN_TIMESTAMP;
+import static org.folio.linked.data.configuration.batch.graph.GraphCleaningBatchJobConfig.GRAPH_CLEANING_JOB;
 import static org.folio.linked.data.configuration.batch.graph.GraphCleaningBatchJobConfig.GRAPH_CLEANING_STEP_NAME;
 import static org.folio.linked.data.configuration.batch.graph.GraphCleaningBatchJobConfig.JOB_PARAM_EXECUTION_ROUND;
 import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_IS_FULL_REINDEX;
 import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_RESOURCE_TYPE;
 import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_STARTED_BY;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.REINDEX_JOB;
 import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.REINDEX_STEP_NAME;
 import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.SUPPORTED_TYPES;
 
@@ -82,8 +84,9 @@ public class BatchJobServiceImpl implements BatchJobService {
   public BatchJobStatusDto getStatus(Long jobExecutionId) {
     return batchJobExecutionRepository.findById(jobExecutionId)
       .map(execution -> {
+        var jobName = isNull(execution.getExecutionRound()) ? REINDEX_JOB : GRAPH_CLEANING_JOB;
         var stepName = isNull(execution.getExecutionRound()) ? REINDEX_STEP_NAME : GRAPH_CLEANING_STEP_NAME;
-        return batchJobStatusMapper.toDto(execution, stepName);
+        return batchJobStatusMapper.toDto(execution, jobName, stepName);
       })
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("JobExecution", valueOf(jobExecutionId)));
   }

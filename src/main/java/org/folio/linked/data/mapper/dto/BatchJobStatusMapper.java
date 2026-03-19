@@ -24,7 +24,7 @@ public interface BatchJobStatusMapper {
   @Mapping(target = "reindexType", source = "execution.isFullReindex")
   @Mapping(target = "linesRead", expression = "java(linesRead(execution.getStepExecutions(), stepName))")
   @Mapping(target = "linesSent", expression = "java(linesSent(execution.getStepExecutions(), stepName))")
-  BatchJobStatusDto toDto(BatchJobExecution execution, String stepName);
+  BatchJobStatusDto toDto(BatchJobExecution execution, String jobName, String stepName);
 
   default OffsetDateTime toOffsetDateTime(LocalDateTime localDateTime) {
     return ofNullable(localDateTime).map(ldt -> ldt.atOffset(ZoneOffset.UTC)).orElse(null);

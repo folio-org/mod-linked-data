@@ -97,6 +97,7 @@ class GraphCleaningJobIT extends ITBase {
         .headers(defaultHeaders(env)))
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.jobName").value("graphCleaningJob"))
       .andExpect(jsonPath("$.status").value("COMPLETED"))
       .andExpect(jsonPath("$.startDate").isNotEmpty())
       .andExpect(jsonPath("$.endDate").isNotEmpty())

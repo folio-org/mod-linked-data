@@ -254,14 +254,14 @@ class BatchJobServiceImplTest {
     execution.setExecutionRound(1);
     var expectedDto = new BatchJobStatusDto().status("COMPLETED");
     when(batchJobExecutionRepository.findById(jobExecutionId)).thenReturn(Optional.of(execution));
-    when(batchJobStatusMapper.toDto(execution, GRAPH_CLEANING_STEP_NAME)).thenReturn(expectedDto);
+    when(batchJobStatusMapper.toDto(execution, "graphCleaningJob", GRAPH_CLEANING_STEP_NAME)).thenReturn(expectedDto);
 
     // when
     var result = reindexJobService.getStatus(jobExecutionId);
 
     // then
     assertThat(result).isEqualTo(expectedDto);
-    verify(batchJobStatusMapper).toDto(execution, GRAPH_CLEANING_STEP_NAME);
+    verify(batchJobStatusMapper).toDto(execution, "graphCleaningJob", GRAPH_CLEANING_STEP_NAME);
   }
 
   @Test
@@ -271,7 +271,7 @@ class BatchJobServiceImplTest {
     var execution = new BatchJobExecution();
     var expectedDto = new BatchJobStatusDto().status("COMPLETED");
     when(batchJobExecutionRepository.findById(jobExecutionId)).thenReturn(Optional.of(execution));
-    when(batchJobStatusMapper.toDto(execution, REINDEX_STEP_NAME)).thenReturn(expectedDto);
+    when(batchJobStatusMapper.toDto(execution, "reindexJob", REINDEX_STEP_NAME)).thenReturn(expectedDto);
 
     // when
     var result = reindexJobService.getStatus(jobExecutionId);
