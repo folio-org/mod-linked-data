@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg13
+    container_name: mod-linked-data-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: okapi_modules
+      POSTGRES_USER: folio_admin
+      POSTGRES_PASSWORD: folio_admin
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db-init:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

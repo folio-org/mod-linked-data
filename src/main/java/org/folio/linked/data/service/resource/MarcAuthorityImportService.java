@@ -1,27 +1,29 @@
 package org.folio.linked.data.service.resource;
+
 import static org.folio.linked.data.repo.ResourceEmbeddingRepositoryCustom.SimilarResourceWithScore;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.folio.linked.data.embedding.ResourceEmbeddingService;
 import org.folio.linked.data.mapper.ResourceModelMapper;
-
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.ResourceEmbeddingRepositoryCustom;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.marc4ld.service.marc2ld.authority.MarcAuthority2ldMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class MarcAuthorityImportService {
-  private static final Double SIMILARITY_THRESHOLD = 0.85;
-
   private final MarcAuthority2ldMapper marcAuthority2ldMapper;
   private final ResourceEmbeddingService embeddingService;
   private final ResourceEmbeddingRepositoryCustom resourceEmbeddingRepository;
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceGraphService resourceGraphService;
+
+  @Value("${mod-linked-data.marc-authority.similarity-threshold:0.90}")
+  private double similarityThreshold;
 
   @SneakyThrows
   public ImportResult importMarcAuthority(String marc, boolean force) {
@@ -36,7 +38,7 @@ public class MarcAuthorityImportService {
       var embedding = embeddingService.embedResource(entity);
 
       if (!embedding.isEmpty()) {
-        var similar = resourceEmbeddingRepository.findSimilarAuthority(embedding, SIMILARITY_THRESHOLD);
+        var similar = resourceEmbeddingRepository.findSimilarAuthority(embedding, similarityThreshold);
         if (similar.isPresent()) {
           return ImportResult.failure(similar.get());
         }
@@ -61,4 +63,3 @@ public class MarcAuthorityImportService {
     }
   }
 }
-

@@ -12,8 +12,6 @@ import java.util.Map;
 @RequestMapping("/graph/import")
 @RequiredArgsConstructor
 public class MarcAuthorityImportController {
-  private static final Double SIMILARITY_THRESHOLD = 0.80;
-
   private final MarcAuthorityImportService marcAuthorityImportService;
 
   @PostMapping("/from-marc-authority")

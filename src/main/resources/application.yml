@@ -111,6 +111,8 @@ mod-linked-data:
       authority-source-files: ${CACHE_TTL_AUTHORITY_SOURCE_FILES_MS:18000000}
       vocabularies: ${CACHE_TTL_VOCABULARIES_MS:18000000}
   auto-save-marc-bib-as-graph: ${AUTO_SAVE_MARC_BIB_AS_GRAPH:false}
+  marc-authority:
+    similarity-threshold: ${MOD_LINKED_DATA_MARC_AUTHORITY_SIMILARITY_THRESHOLD:0.90}
 
 management:
   endpoints:
