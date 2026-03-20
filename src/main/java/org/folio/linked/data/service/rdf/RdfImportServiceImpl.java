@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Log4j2
@@ -84,16 +85,16 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   @Override
   public ImportResponseDto importUrl(String url, String filterType, String defaultWorkType) {
-    try (var inputStream = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
+    try (var is = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
       var workType = ResourceTypeDictionary.fromUri(defaultWorkType).orElse(ResourceTypeDictionary.BOOKS);
       var filter = ResourceTypeDictionary.fromUri(filterType);
-      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, filter, Optional.of(workType), true);
+      var importReport = importInputStream(is, APPLICATION_LD_JSON_VALUE, filter, Optional.of(workType), true);
       var reportCsv = importReport.toCsv();
       return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
-    } catch (IOException e) {
-      throw exceptionBuilder.badRequestException("Rdf JSON import error", e.getMessage());
+    } catch (RestClientResponseException e) {
+      throw exceptionBuilder.badRequestException("Error while retrieving RDF from URL", e.getMessage());
     } catch (Exception e) {
-      log.error("Rdf import error", e);
+      log.error("RDF import error", e);
       return new ImportResponseDto(List.of(), e.getMessage());
     }
   }
@@ -157,8 +158,8 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private boolean shouldAssignType(org.folio.ld.dictionary.model.Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(p -> p.getPredicate().getUri().equals(INSTANTIATES.getUri()))
-      .filter(r -> r.getTarget().getTypes().size() == 1 && r.getTarget().isOfType(ResourceTypeDictionary.WORK))
+      .filter(s -> s.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+      .filter(s -> s.getTarget().getTypes().size() == 1 && s.getTarget().isOfType(ResourceTypeDictionary.WORK))
       .anyMatch(t -> true);
   }
 
@@ -168,8 +169,8 @@ public class RdfImportServiceImpl implements RdfImportService {
   ) {
     if (shouldAssignType(resource) && workType.isPresent()) {
       resource.getOutgoingEdges().stream()
-        .filter(p -> p.getPredicate().getUri().equals(INSTANTIATES.getUri()))
-        .forEach(r -> r.getTarget().addType(workType.get()));
+        .filter(s -> s.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+        .forEach(s -> s.getTarget().addType(workType.get()));
     }
     return resource;
   }
