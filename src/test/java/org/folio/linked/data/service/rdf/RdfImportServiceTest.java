@@ -3,6 +3,7 @@ package org.folio.linked.data.service.rdf;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.ImportResponseDto;
@@ -41,7 +43,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 @UnitTest
@@ -170,6 +174,89 @@ class RdfImportServiceTest {
   }
 
   @Test
+  void importFile_withUnknownFilterType_importsAll() throws IOException {
+    // given
+    var multipartFile = mock(MultipartFile.class);
+    var inputStream = mock(InputStream.class);
+    var instance = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var hub = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.HUB));
+    var resources = Set.of(instance, hub);
+    var instanceEntity = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(instance.getId())
+      .addTypes(ResourceTypeDictionary.INSTANCE);
+    var hubEntity = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(hub.getId())
+      .addTypes(ResourceTypeDictionary.HUB);
+    when(multipartFile.getInputStream()).thenReturn(inputStream);
+    when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(resources)).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(lccnResourceService.unMockLccnEdges(hub, searchResults)).thenReturn(hub);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(instanceEntity);
+    when(resourceModelMapper.toEntity(hub)).thenReturn(hubEntity);
+    var instanceSaveGraphResult = new SaveGraphResult(instanceEntity, Set.of(instanceEntity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(instanceEntity)).thenReturn(instanceSaveGraphResult);
+    var hubSaveGraphResult = new SaveGraphResult(hubEntity, Set.of(hubEntity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(hubEntity)).thenReturn(hubSaveGraphResult);
+
+    // when
+    var result = rdfImportService.importFile("http://unknown.example", multipartFile);
+
+    // then
+    assertThat(result.getResources()).hasSize(2);
+    verify(metadataService).ensure(instanceEntity);
+    verify(metadataService).ensure(hubEntity);
+  }
+
+  @Test
+  void importFile_withUnmatchedFilterType_importsNone() throws IOException {
+    // given
+    var multipartFile = mock(MultipartFile.class);
+    var inputStream = mock(InputStream.class);
+    var instance = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var hub = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.HUB));
+    var resources = Set.of(instance, hub);
+    when(multipartFile.getInputStream()).thenReturn(inputStream);
+    when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
+
+    // when
+    var result = rdfImportService.importFile(ResourceTypeDictionary.FAMILY.getUri(), multipartFile);
+
+    // then
+    assertThat(result.getResources()).isEmpty();
+    verify(resourceGraphService, never()).saveMergingGraphInNewTransaction(any());
+  }
+
+  @Test
+  void importFile_withFilterType_importsOnlyMatchingResources() throws IOException {
+    // given
+    var multipartFile = mock(MultipartFile.class);
+    var inputStream = mock(InputStream.class);
+    var instance = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var hub = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.HUB));
+    var resources = Set.of(instance, hub);
+    var instanceEntity = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(instance.getId())
+      .addTypes(ResourceTypeDictionary.INSTANCE);
+    when(multipartFile.getInputStream()).thenReturn(inputStream);
+    when(rdf4LdService.mapBibframe2RdfToLd(inputStream, multipartFile.getContentType())).thenReturn(resources);
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(Set.of(instance))).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(instanceEntity);
+    var instanceSaveGraphResult = new SaveGraphResult(instanceEntity, Set.of(instanceEntity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(instanceEntity)).thenReturn(instanceSaveGraphResult);
+
+    // when
+    var result = rdfImportService.importFile(ResourceTypeDictionary.INSTANCE.getUri(), multipartFile);
+
+    // then
+    assertThat(result.getResources()).hasSize(1);
+    verify(metadataService).ensure(instanceEntity);
+  }
+
+  @Test
   void importUrl_createsResources_whenValidUrlProvided() {
     // given
     var rdfUrl = "https://example.com/resource.json";
@@ -244,17 +331,153 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importUrl_returnsEmptyResult_whenDownloadFails() {
+  void importUrl_throwsException_whenDownloadFails() {
     // given
     var rdfUrl = "https://example.com/resource.json";
     var message = "mapping exception";
-    when(httpClient.downloadString(rdfUrl)).thenThrow(new RuntimeException(message));
+    when(httpClient.downloadString(rdfUrl)).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    var expectedException = new RequestProcessingException(400, "code", new HashMap<>(), message);
+    when(exceptionBuilder.badRequestException(any(), any())).thenReturn(expectedException);
 
     // when
-    var result = rdfImportService.importUrl(rdfUrl, null, null);
+    assertThatThrownBy(() -> rdfImportService.importUrl(rdfUrl, null, null))
+      // then
+      .isEqualTo(expectedException);
+  }
+
+  @Test
+  void importUrl_withUnknownFilterType_importsAll() {
+    // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var instance = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var hub = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.HUB));
+    var resources = Set.of(instance, hub);
+    var instanceEntity = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(instance.getId())
+      .addTypes(ResourceTypeDictionary.INSTANCE)
+      .setDoc(JSON_MAPPER.readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
+    var hubEntity = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(hub.getId())
+      .addTypes(ResourceTypeDictionary.HUB)
+      .setDoc(JSON_MAPPER.readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(resources);
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(any())).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(lccnResourceService.unMockLccnEdges(hub, searchResults)).thenReturn(hub);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(instanceEntity);
+    when(resourceModelMapper.toEntity(hub)).thenReturn(hubEntity);
+    var instanceSaveGraphResult = new SaveGraphResult(instanceEntity, Set.of(instanceEntity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(instanceEntity)).thenReturn(instanceSaveGraphResult);
+    var hubSaveGraphResult = new SaveGraphResult(hubEntity, Set.of(hubEntity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(hubEntity)).thenReturn(hubSaveGraphResult);
+
+    // when
+    var result = rdfImportService.importUrl(rdfUrl, "http://unknown.example", null);
 
     // then
-    assertThat(result).isEqualTo(new ImportResponseDto(List.of(), message));
+    assertThat(result.getResources()).hasSize(2);
+    verify(metadataService).ensure(instanceEntity);
+    verify(metadataService).ensure(hubEntity);
+    verify(httpClient).downloadString(rdfUrl);
+  }
+
+  @Test
+  void importUrl_withUnmatchedFilterType_importsNone() {
+    // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var instance = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var hub = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.HUB));
+    var resources = Set.of(instance, hub);
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(resources);
+
+    // when
+    var result = rdfImportService.importUrl(rdfUrl, ResourceTypeDictionary.PLACE.getUri(), null);
+
+    // then
+    assertThat(result.getResources()).isEmpty();
+    verify(resourceGraphService, never()).saveMergingGraphInNewTransaction(any());
+  }
+
+  @Test
+  void importUrl_withFilterType_importsOnlyMatchingResources() {
+    // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var instance = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.INSTANCE));
+    var hub = new Resource().setId(randomLong()).setTypes(Set.of(ResourceTypeDictionary.HUB));
+    var resources = Set.of(instance, hub);
+    var instanceEntity = new org.folio.linked.data.model.entity.Resource()
+      .setIdAndRefreshEdges(instance.getId())
+      .addTypes(ResourceTypeDictionary.INSTANCE)
+      .setDoc(JSON_MAPPER.readTree("{\"http://bibfra.me/vocab/lite/link\":[\"" + rdfUrl + "\"]}"));
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(resources);
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(Set.of(instance))).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(instanceEntity);
+    var instanceSaveGraphResult = new SaveGraphResult(instanceEntity, Set.of(instanceEntity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(instanceEntity)).thenReturn(instanceSaveGraphResult);
+
+    // when
+    var result = rdfImportService.importUrl(rdfUrl, ResourceTypeDictionary.INSTANCE.getUri(), null);
+
+    // then
+    assertThat(result.getResources()).hasSize(1);
+    verify(metadataService).ensure(instanceEntity);
+  }
+
+  @Test
+  void importUrl_withoutDefaultWorkType_importsInvalidWorksAsBooks() {
+    // given
+
+    // when
+
+    // then
+  }
+
+  @Test
+  void importUrl_withoutDefaultWorkType_importsValidWorks() {
+    // given
+
+    // when
+
+    // then
+  }
+
+  @Test
+  void importUrl_withDefaultWorkType_importsInvalidWorksAsDefaultWorkType() {
+    // given
+
+    // when
+
+    // then
+  }
+
+  @Test
+  void importUrl_withDefaultWorkType_importsValidWorksAsDeclared() {
+    // given
+
+    // when
+
+    // then
+  }
+
+  @Test
+  void importUrl_withUnknownDefaultWorkType_importsInvalidWorksAsBooks() {
+    // given
+
+    // when
+
+    // then
   }
 
   @Test
