@@ -16,11 +16,15 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Resource;
+import org.folio.ld.dictionary.model.ResourceEdge;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
 import org.folio.linked.data.domain.dto.ImportResponseDto;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
@@ -403,6 +407,7 @@ class RdfImportServiceTest {
     // then
     assertThat(result.getResources()).isEmpty();
     verify(resourceGraphService, never()).saveMergingGraphInNewTransaction(any());
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
@@ -433,51 +438,164 @@ class RdfImportServiceTest {
     // then
     assertThat(result.getResources()).hasSize(1);
     verify(metadataService).ensure(instanceEntity);
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
   void importUrl_withoutDefaultWorkType_importsInvalidWorksAsBooks() {
     // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var work = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.WORK)));
+    var instance = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.INSTANCE)));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
+    var entity = mock(org.folio.linked.data.model.entity.Resource.class);
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(Set.of(instance));
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(Set.of(instance))).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(entity);
+    var instanceSaveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(instanceSaveGraphResult);
 
     // when
+    var result = rdfImportService.importUrl(rdfUrl, null, null);
 
     // then
+    assertThat(result.getResources()).hasSize(1);
+    assertThat(work.isOfType(ResourceTypeDictionary.BOOKS));
+    verify(metadataService).ensure(entity);
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
-  void importUrl_withoutDefaultWorkType_importsValidWorks() {
+  void importUrl_withoutDefaultWorkType_importsValidWorksAsDeclared() {
     // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var work = new Resource().setId(randomLong()).setTypes(new HashSet<>(Arrays.asList(
+        ResourceTypeDictionary.WORK,
+        ResourceTypeDictionary.CONTINUING_RESOURCES)));
+    var instance = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.INSTANCE)));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
+    var entity = mock(org.folio.linked.data.model.entity.Resource.class);
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(Set.of(instance));
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(Set.of(instance))).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(entity);
+    var instanceSaveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(instanceSaveGraphResult);
 
     // when
+    var result = rdfImportService.importUrl(rdfUrl, null, null);
 
     // then
+    assertThat(result.getResources()).hasSize(1);
+    assertThat(work.isOfType(ResourceTypeDictionary.BOOKS)).isFalse();
+    verify(metadataService).ensure(entity);
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
   void importUrl_withDefaultWorkType_importsInvalidWorksAsDefaultWorkType() {
     // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var work = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.WORK)));
+    var instance = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.INSTANCE)));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
+    var entity = mock(org.folio.linked.data.model.entity.Resource.class);
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(Set.of(instance));
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(Set.of(instance))).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(entity);
+    var instanceSaveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(instanceSaveGraphResult);
 
     // when
+    var result = rdfImportService.importUrl(rdfUrl, null, ResourceTypeDictionary.CONTINUING_RESOURCES.getUri());
 
     // then
+    assertThat(result.getResources()).hasSize(1);
+    assertThat(work.isOfType(ResourceTypeDictionary.CONTINUING_RESOURCES));
+    verify(metadataService).ensure(entity);
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
   void importUrl_withDefaultWorkType_importsValidWorksAsDeclared() {
     // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var work = new Resource().setId(randomLong()).setTypes(new HashSet<>(Arrays.asList(
+      ResourceTypeDictionary.WORK,
+      ResourceTypeDictionary.BOOKS)));
+    var instance = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.INSTANCE)));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
+    var entity = mock(org.folio.linked.data.model.entity.Resource.class);
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(Set.of(instance));
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(Set.of(instance))).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(entity);
+    var instanceSaveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(instanceSaveGraphResult);
 
     // when
+    var result = rdfImportService.importUrl(rdfUrl, null, ResourceTypeDictionary.CONTINUING_RESOURCES.getUri());
 
     // then
+    assertThat(result.getResources()).hasSize(1);
+    assertThat(work.isOfType(ResourceTypeDictionary.CONTINUING_RESOURCES)).isFalse();
+    verify(metadataService).ensure(entity);
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test
   void importUrl_withUnknownDefaultWorkType_importsInvalidWorksAsBooks() {
     // given
+    var rdfUrl = "https://example.com/resource.json";
+    var rdfJson = "{\"@context\":\"test\"}";
+    var work = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.WORK)));
+    var instance = new Resource().setId(randomLong())
+      .setTypes(new HashSet<>(Arrays.asList(ResourceTypeDictionary.INSTANCE)));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
+    var entity = mock(org.folio.linked.data.model.entity.Resource.class);
+    when(httpClient.downloadString(rdfUrl)).thenReturn(rdfJson);
+    when(rdf4LdService.mapBibframe2RdfToLd(any(InputStream.class), eq("application/ld+json")))
+      .thenReturn(Set.of(instance));
+    var searchResults = new HashMap<String, LccnResourceService.LccnResourceSearchResult>();
+    when(lccnResourceService.findMockResources(Set.of(instance))).thenReturn(searchResults);
+    when(lccnResourceService.unMockLccnEdges(instance, searchResults)).thenReturn(instance);
+    when(resourceModelMapper.toEntity(instance)).thenReturn(entity);
+    var instanceSaveGraphResult = new SaveGraphResult(entity, Set.of(entity), Set.of());
+    when(resourceGraphService.saveMergingGraphInNewTransaction(entity)).thenReturn(instanceSaveGraphResult);
 
     // when
+    var result = rdfImportService.importUrl(rdfUrl, null, "http://example.unknown");
 
     // then
+    assertThat(result.getResources()).hasSize(1);
+    assertThat(work.isOfType(ResourceTypeDictionary.BOOKS));
+    verify(metadataService).ensure(entity);
+    verify(httpClient).downloadString(rdfUrl);
   }
 
   @Test

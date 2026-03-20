@@ -158,7 +158,7 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private boolean shouldAssignType(org.folio.ld.dictionary.model.Resource resource) {
     return resource.getOutgoingEdges().stream()
-      .filter(s -> s.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+      .filter(s -> s.getPredicate().equals(INSTANTIATES))
       .filter(s -> s.getTarget().getTypes().size() == 1 && s.getTarget().isOfType(ResourceTypeDictionary.WORK))
       .anyMatch(t -> true);
   }
@@ -169,7 +169,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   ) {
     if (shouldAssignType(resource) && workType.isPresent()) {
       resource.getOutgoingEdges().stream()
-        .filter(s -> s.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+        .filter(s -> s.getPredicate().equals(INSTANTIATES))
         .forEach(s -> s.getTarget().addType(workType.get()));
     }
     return resource;
