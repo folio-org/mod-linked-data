@@ -335,10 +335,10 @@ class RdfImportServiceTest {
   }
 
   @Test
-  void importUrl_throwsException_whenDownloadFails() {
+  void importUrl_throwsException_whenDownloadHttpError() {
     // given
     var rdfUrl = "https://example.com/resource.json";
-    var message = "mapping exception";
+    var message = "HTTP error";
     when(httpClient.downloadString(rdfUrl)).thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
     var expectedException = new RequestProcessingException(400, "code", new HashMap<>(), message);
     when(exceptionBuilder.badRequestException(any(), any())).thenReturn(expectedException);
@@ -347,6 +347,20 @@ class RdfImportServiceTest {
     assertThatThrownBy(() -> rdfImportService.importUrl(rdfUrl, null, null))
       // then
       .isEqualTo(expectedException);
+  }
+
+  @Test
+  void importUrl_returnsEmptyResult_whenDownloadFails() {
+    // given
+    var rdfUrl = "https://example.com/resource.json";
+    var message = "failure";
+    when(httpClient.downloadString(rdfUrl)).thenThrow(new RuntimeException(message));
+
+    // when
+    var result = rdfImportService.importUrl(rdfUrl, null, null);
+
+    // then
+    assertThat(result).isEqualTo(new ImportResponseDto(List.of(), message));
   }
 
   @Test
