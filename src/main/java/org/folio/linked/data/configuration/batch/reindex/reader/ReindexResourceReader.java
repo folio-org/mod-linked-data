@@ -1,7 +1,7 @@
-package org.folio.linked.data.configuration.batch.reader;
+package org.folio.linked.data.configuration.batch.reindex.reader;
 
-import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.buildParameterValues;
-import static org.folio.linked.data.configuration.batch.reader.IndexableResourceQueryBuilder.buildQueryProvider;
+import static org.folio.linked.data.configuration.batch.reindex.reader.IndexableResourceQueryBuilder.buildParameterValues;
+import static org.folio.linked.data.configuration.batch.reindex.reader.IndexableResourceQueryBuilder.buildQueryProvider;
 
 import javax.sql.DataSource;
 import lombok.NonNull;
@@ -13,21 +13,21 @@ import org.springframework.batch.infrastructure.item.database.JdbcPagingItemRead
 import org.springframework.batch.infrastructure.item.support.AbstractItemStreamItemReader;
 
 @Log4j2
-public class ResourceReader extends AbstractItemStreamItemReader<Resource> {
+public class ReindexResourceReader extends AbstractItemStreamItemReader<Resource> {
 
   private final JdbcPagingItemReader<Resource> delegate;
 
-  public ResourceReader(DataSource dataSource,
-                        int chunkSize,
-                        boolean isFullReindex,
-                        String resourceType) {
+  public ReindexResourceReader(DataSource dataSource,
+                               int chunkSize,
+                               boolean isFullReindex,
+                               String resourceType) {
     log.info("Initializing ResourceReader: isFullReindex={}, resourceType={}, chunkSize={}",
       isFullReindex, resourceType, chunkSize);
     this.delegate = new JdbcPagingItemReader<>(dataSource, buildQueryProvider(isFullReindex));
     this.delegate.setParameterValues(buildParameterValues(resourceType));
     this.delegate.setPageSize(chunkSize);
     this.delegate.setRowMapper(ResourceRowMapper.instance());
-    this.delegate.setName("databaseResourceReader");
+    this.delegate.setName(this.getClass().getSimpleName());
     try {
       this.delegate.afterPropertiesSet();
     } catch (Exception e) {

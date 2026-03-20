@@ -1,4 +1,4 @@
-package org.folio.linked.data.configuration.batch;
+package org.folio.linked.data.configuration.batch.reindex;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;

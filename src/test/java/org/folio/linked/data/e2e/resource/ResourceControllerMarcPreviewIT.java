@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.folio.linked.data.e2e.ITBase;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.RawMarc;
 import org.folio.linked.data.repo.RawMarcRepository;

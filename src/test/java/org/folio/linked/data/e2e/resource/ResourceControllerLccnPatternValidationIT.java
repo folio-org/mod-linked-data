@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.LinkedHashMap;
 import org.folio.linked.data.domain.dto.SearchResponseTotalOnly;
-import org.folio.linked.data.e2e.ITBase;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.integration.rest.search.SearchClient;
 import org.folio.linked.data.integration.rest.specification.SpecClient;

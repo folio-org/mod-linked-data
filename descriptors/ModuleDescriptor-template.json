@@ -182,25 +182,30 @@
       ]
     },
     {
-      "id": "linked-data-reindex",
+      "id": "linked-data-batch-job",
       "version": "1.0",
       "handlers": [
         {
           "methods": [ "POST" ],
           "pathPattern": "/linked-data/reindex/full",
-          "permissionsRequired": [ "linked-data.resources.reindex.full.post" ],
+          "permissionsRequired": [ "linked-data.batch.reindex.full.post" ],
           "modulePermissions": [ "search.index.inventory.reindex.post" ]
         },
         {
           "methods": [ "POST" ],
           "pathPattern": "/linked-data/reindex/incremental",
-          "permissionsRequired": [ "linked-data.resources.reindex.incremental.post" ],
+          "permissionsRequired": [ "linked-data.batch.reindex.incremental.post" ],
+          "modulePermissions": []
+        },{
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/graphCleaning",
+          "permissionsRequired": [ "linked-data.batch.graph.cleaning.post" ],
           "modulePermissions": []
         },
         {
           "methods": [ "GET" ],
-          "pathPattern": "/linked-data/reindex/status",
-          "permissionsRequired": [ "linked-data.resources.reindex.status.get" ],
+          "pathPattern": "/linked-data/batch/status",
+          "permissionsRequired": [ "linked-data.batch.status.get" ],
           "modulePermissions": []
         }
       ]
@@ -230,6 +235,25 @@
         {
           "methods": [ "DELETE", "GET" ],
           "pathPattern": "/_/tenant/{id}"
+        }
+      ]
+    },
+    {
+      "id": "_timer",
+      "version": "1.0",
+      "interfaceType": "system",
+      "handlers": [
+        {
+          "methods": [
+            "POST"
+          ],
+          "pathPattern": "/linked-data/graphCleaning",
+          "modulePermissions": [
+            "linked-data.batch.graph.cleaning.post"
+          ],
+          "schedule": {
+            "cron": "0 0 3 * * ?"
+          }
         }
       ]
     }
@@ -286,19 +310,24 @@
       "description": "Delete a bibliographic (Work or Instance) linked-data resource"
     },
     {
-      "permissionName": "linked-data.resources.reindex.full.post",
+      "permissionName": "linked-data.batch.reindex.full.post",
       "displayName": "Linked Data: Start full reindexing of resources in mod-search index",
       "description": "Start the process of full reindexing of all resources in the database. All resources will be reindexed regardless of their current index state."
     },
     {
-      "permissionName": "linked-data.resources.reindex.incremental.post",
+      "permissionName": "linked-data.batch.reindex.incremental.post",
       "displayName": "Linked Data: Start incremental reindexing of resources in mod-search index",
       "description": "Start the process of incremental reindexing of resources in the database. Only resources that have not been indexed yet (indexDate is null) will be reindexed."
     },
     {
-      "permissionName": "linked-data.resources.reindex.status.get",
-      "displayName": "Linked Data: Get reindex job status",
-      "description": "Get the status of a reindex job by its execution ID."
+      "permissionName": "linked-data.batch.graph.cleaning.post",
+      "displayName": "Linked Data: Start the process of cleaning the graph from orphaned nodes",
+      "description": "Start the process of cleaning the graph from orphaned nodes (not top resources with no incoming edges and no FolioMetadata)"
+    },
+    {
+      "permissionName": "linked-data.batch.status.get",
+      "displayName": "Linked Data: Get batch job status",
+      "description": "Get the status of a batch job by its execution ID."
     },
     {
       "permissionName": "linked-data.admin.caches.delete",
@@ -456,7 +485,9 @@
       { "name": "CACHE_TTL_VOCABULARIES_MS", "value": "18000000" },
       { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value": "50" },
       { "name": "AUTO_SAVE_MARC_BIB_AS_GRAPH", "value": "false" },
-      { "name": "REINDEX_CHUNK_SIZE", "value": "1000" }
+      { "name": "REINDEX_CHUNK_SIZE", "value": "1000" },
+      { "name": "GRAPH_CLEANING_CHUNK_SIZE", "value": "1000" },
+      { "name": "GRAPH_CLEANING_MAX_ROUNDS", "value": "10" }
     ]
   },
   "metadata": {

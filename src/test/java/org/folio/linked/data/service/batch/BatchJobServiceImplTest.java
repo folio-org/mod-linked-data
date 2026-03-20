@@ -1,14 +1,18 @@
 package org.folio.linked.data.service.batch;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.configuration.batch.BatchConfig.JOB_PARAM_IS_FULL_REINDEX;
-import static org.folio.linked.data.configuration.batch.BatchConfig.JOB_PARAM_RESOURCE_TYPE;
 import static org.folio.linked.data.configuration.batch.BatchConfig.JOB_PARAM_RUN_TIMESTAMP;
-import static org.folio.linked.data.configuration.batch.BatchConfig.JOB_PARAM_STARTED_BY;
+import static org.folio.linked.data.configuration.batch.graph.GraphCleaningBatchJobConfig.GRAPH_CLEANING_STEP_NAME;
+import static org.folio.linked.data.configuration.batch.graph.GraphCleaningBatchJobConfig.JOB_PARAM_EXECUTION_ROUND;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_IS_FULL_REINDEX;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_RESOURCE_TYPE;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_STARTED_BY;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.REINDEX_STEP_NAME;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -17,10 +21,10 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.folio.linked.data.domain.dto.ReindexJobStatusDto;
+import org.folio.linked.data.domain.dto.BatchJobStatusDto;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
-import org.folio.linked.data.mapper.dto.ReindexJobStatusMapper;
+import org.folio.linked.data.mapper.dto.BatchJobStatusMapper;
 import org.folio.linked.data.model.entity.batch.BatchJobExecution;
 import org.folio.linked.data.repo.BatchJobExecutionRepository;
 import org.folio.spring.FolioExecutionContext;
@@ -39,12 +43,14 @@ import org.springframework.batch.core.launch.support.TaskExecutorJobOperator;
 
 @UnitTest
 @ExtendWith(MockitoExtension.class)
-class ReindexJobServiceImplTest {
+class BatchJobServiceImplTest {
 
   @InjectMocks
-  private ReindexJobServiceImpl reindexJobService;
+  private BatchJobServiceImpl reindexJobService;
   @Mock
   private Job reindexJob;
+  @Mock
+  private Job graphCleaningJob;
   @Mock
   private TaskExecutorJobOperator jobOperator;
   @Mock
@@ -54,24 +60,24 @@ class ReindexJobServiceImplTest {
   @Mock
   private BatchJobExecutionRepository batchJobExecutionRepository;
   @Mock
-  private ReindexJobStatusMapper reindexJobStatusMapper;
+  private BatchJobStatusMapper batchJobStatusMapper;
 
   @Test
-  void start_shouldStartJobWithFullReindexAndResourceType() throws JobExecutionException {
+  void startReindex_shouldStartReindexJobWithFullReindexAndResourceType() throws JobExecutionException {
     // given
     var userId = UUID.randomUUID();
     var expectedJobExecutionId = 1L;
     var jobExecution = mock(JobExecution.class);
     when(jobExecution.getId()).thenReturn(expectedJobExecutionId);
     when(folioExecutionContext.getUserId()).thenReturn(userId);
-    when(jobOperator.start(eq(reindexJob), any(JobParameters.class))).thenReturn(jobExecution);
+    doReturn(jobExecution).when(jobOperator).start(any(Job.class), any(JobParameters.class));
 
     // when
-    var result = reindexJobService.start(true, "WORK");
+    var result = reindexJobService.startReindex(true, "WORK");
 
     // then
     assertThat(result).isEqualTo(expectedJobExecutionId);
-    verify(jobOperator).start(eq(reindexJob), argThat(params -> {
+    verify(jobOperator).start(any(Job.class), argThat(params -> {
       var isFullReindex = params.getString(JOB_PARAM_IS_FULL_REINDEX);
       var resourceType = params.getString(JOB_PARAM_RESOURCE_TYPE);
       var startedBy = params.getString(JOB_PARAM_STARTED_BY);
@@ -84,21 +90,21 @@ class ReindexJobServiceImplTest {
   }
 
   @Test
-  void start_shouldStartJobWithoutResourceType() throws JobExecutionException {
+  void startReindex_shouldStartReindexJobWithoutResourceType() throws JobExecutionException {
     // given
     var userId = UUID.randomUUID();
     var expectedJobExecutionId = 2L;
     var jobExecution = mock(JobExecution.class);
     when(jobExecution.getId()).thenReturn(expectedJobExecutionId);
     when(folioExecutionContext.getUserId()).thenReturn(userId);
-    when(jobOperator.start(eq(reindexJob), any(JobParameters.class))).thenReturn(jobExecution);
+    doReturn(jobExecution).when(jobOperator).start(any(Job.class), any(JobParameters.class));
 
     // when
-    var result = reindexJobService.start(false, null);
+    var result = reindexJobService.startReindex(false, null);
 
     // then
     assertThat(result).isEqualTo(expectedJobExecutionId);
-    verify(jobOperator).start(eq(reindexJob), argThat(params -> {
+    verify(jobOperator).start(any(Job.class), argThat(params -> {
       var isFullReindex = params.getString(JOB_PARAM_IS_FULL_REINDEX);
       var resourceType = params.getString(JOB_PARAM_RESOURCE_TYPE);
       var startedBy = params.getString(JOB_PARAM_STARTED_BY);
@@ -111,27 +117,27 @@ class ReindexJobServiceImplTest {
   }
 
   @Test
-  void start_shouldUseUnknownWhenUserIdIsNull() throws JobExecutionException {
+  void startReindex_shouldUseUnknownWhenUserIdIsNull() throws JobExecutionException {
     // given
     var expectedJobExecutionId = 3L;
     var jobExecution = mock(JobExecution.class);
     when(jobExecution.getId()).thenReturn(expectedJobExecutionId);
     when(folioExecutionContext.getUserId()).thenReturn(null);
-    when(jobOperator.start(eq(reindexJob), any(JobParameters.class))).thenReturn(jobExecution);
+    doReturn(jobExecution).when(jobOperator).start(any(Job.class), any(JobParameters.class));
 
     // when
-    var result = reindexJobService.start(true, "HUB");
+    var result = reindexJobService.startReindex(true, "HUB");
 
     // then
     assertThat(result).isEqualTo(expectedJobExecutionId);
-    verify(jobOperator).start(eq(reindexJob), argThat(params -> {
+    verify(jobOperator).start(any(Job.class), argThat(params -> {
       var startedBy = params.getString(JOB_PARAM_STARTED_BY);
       return "unknown".equals(startedBy);
     }));
   }
 
   @Test
-  void start_shouldThrowExceptionForUnsupportedResourceType() throws Exception {
+  void startReindex_shouldThrowExceptionForUnsupportedResourceType() throws Exception {
     // given
     var userId = UUID.randomUUID();
     when(folioExecutionContext.getUserId()).thenReturn(userId);
@@ -142,15 +148,15 @@ class ReindexJobServiceImplTest {
 
     // when
     var thrown = assertThrows(RequestProcessingException.class,
-      () -> reindexJobService.start(true, "INSTANCE"));
+      () -> reindexJobService.startReindex(true, "INSTANCE"));
 
     // then
     assertThat(thrown).isEqualTo(expectedException);
-    verify(jobOperator, never()).start(eq(reindexJob), any(JobParameters.class));
+    verify(jobOperator, never()).start(any(Job.class), any(JobParameters.class));
   }
 
   @Test
-  void start_shouldThrowExceptionForInvalidResourceType() throws Exception {
+  void startReindex_shouldThrowExceptionForInvalidResourceType() throws Exception {
     // given
     var userId = UUID.randomUUID();
     when(folioExecutionContext.getUserId()).thenReturn(userId);
@@ -161,28 +167,101 @@ class ReindexJobServiceImplTest {
 
     // when
     var thrown = assertThrows(RequestProcessingException.class,
-      () -> reindexJobService.start(false, "INVALID"));
+      () -> reindexJobService.startReindex(false, "INVALID"));
 
     // then
     assertThat(thrown).isEqualTo(expectedException);
-    verify(jobOperator, never()).start(eq(reindexJob), any(JobParameters.class));
+    verify(jobOperator, never()).start(any(Job.class), any(JobParameters.class));
   }
 
   @Test
-  void start_shouldThrowIllegalArgumentExceptionWhenJobExecutionFails() throws JobExecutionException {
+  void startReindex_shouldThrowIllegalArgumentExceptionWhenJobExecutionFails() throws JobExecutionException {
     // given
     var userId = UUID.randomUUID();
     when(folioExecutionContext.getUserId()).thenReturn(userId);
-    when(jobOperator.start(eq(reindexJob), any(JobParameters.class)))
-      .thenThrow(new InvalidJobParametersException("Job execution failed"));
+    doThrow(new InvalidJobParametersException("Job execution failed"))
+      .when(jobOperator).start(any(Job.class), any(JobParameters.class));
 
     // when
     var thrown = assertThrows(IllegalArgumentException.class,
-      () -> reindexJobService.start(true, "WORK"));
+      () -> reindexJobService.startReindex(true, "WORK"));
 
     // then
-    assertThat(thrown.getMessage()).isEqualTo("Job launch exception");
+    assertThat(thrown.getMessage()).isEqualTo("Reindex Job launch exception");
     assertThat(thrown.getCause()).isInstanceOf(JobExecutionException.class);
+  }
+
+  @Test
+  void startGraphCleaning_shouldStartGraphCleaningJobWithExecutionRound() throws JobExecutionException {
+    // given
+    var executionRound = 1;
+    var expectedJobExecutionId = 10L;
+    var jobExecution = mock(JobExecution.class);
+    when(jobExecution.getId()).thenReturn(expectedJobExecutionId);
+    doReturn(jobExecution).when(jobOperator).start(any(Job.class), any(JobParameters.class));
+
+    // when
+    var result = reindexJobService.startGraphCleaning(executionRound);
+
+    // then
+    assertThat(result).isEqualTo(expectedJobExecutionId);
+    verify(jobOperator).start(any(Job.class), argThat(params -> {
+      var roundParam = params.getParameter(JOB_PARAM_EXECUTION_ROUND);
+      var timestamp = params.getLong(JOB_PARAM_RUN_TIMESTAMP);
+      return roundParam != null && executionRound == (Integer) roundParam.value() && timestamp != null;
+    }));
+  }
+
+  @Test
+  void startGraphCleaning_shouldNotPassReindexParams() throws JobExecutionException {
+    // given
+    var executionRound = 2;
+    var jobExecution = mock(JobExecution.class);
+    when(jobExecution.getId()).thenReturn(11L);
+    doReturn(jobExecution).when(jobOperator).start(any(Job.class), any(JobParameters.class));
+
+    // when
+    reindexJobService.startGraphCleaning(executionRound);
+
+    // then
+    verify(jobOperator).start(any(Job.class), argThat(params ->
+      params.getString(JOB_PARAM_IS_FULL_REINDEX) == null
+        && params.getString(JOB_PARAM_STARTED_BY) == null
+        && params.getString(JOB_PARAM_RESOURCE_TYPE) == null
+    ));
+  }
+
+  @Test
+  void startGraphCleaning_shouldThrowIllegalArgumentExceptionWhenJobExecutionFails() throws JobExecutionException {
+    // given
+    doThrow(new InvalidJobParametersException("Job execution failed"))
+      .when(jobOperator).start(any(Job.class), any(JobParameters.class));
+
+    // when
+    var thrown = assertThrows(IllegalArgumentException.class,
+      () -> reindexJobService.startGraphCleaning(1));
+
+    // then
+    assertThat(thrown.getMessage()).isEqualTo("GraphCleaning Job launch exception");
+    assertThat(thrown.getCause()).isInstanceOf(JobExecutionException.class);
+  }
+
+  @Test
+  void getStatus_shouldUseGraphCleaningStepName_whenExecutionRoundIsPresent() {
+    // given
+    var jobExecutionId = 55L;
+    var execution = new BatchJobExecution();
+    execution.setExecutionRound(1);
+    var expectedDto = new BatchJobStatusDto().status("COMPLETED");
+    when(batchJobExecutionRepository.findById(jobExecutionId)).thenReturn(Optional.of(execution));
+    when(batchJobStatusMapper.toDto(execution, "graphCleaningJob", GRAPH_CLEANING_STEP_NAME)).thenReturn(expectedDto);
+
+    // when
+    var result = reindexJobService.getStatus(jobExecutionId);
+
+    // then
+    assertThat(result).isEqualTo(expectedDto);
+    verify(batchJobStatusMapper).toDto(execution, "graphCleaningJob", GRAPH_CLEANING_STEP_NAME);
   }
 
   @Test
@@ -190,9 +269,9 @@ class ReindexJobServiceImplTest {
     // given
     var jobExecutionId = 42L;
     var execution = new BatchJobExecution();
-    var expectedDto = new ReindexJobStatusDto().status("COMPLETED");
+    var expectedDto = new BatchJobStatusDto().status("COMPLETED");
     when(batchJobExecutionRepository.findById(jobExecutionId)).thenReturn(Optional.of(execution));
-    when(reindexJobStatusMapper.toDto(execution)).thenReturn(expectedDto);
+    when(batchJobStatusMapper.toDto(execution, "reindexJob", REINDEX_STEP_NAME)).thenReturn(expectedDto);
 
     // when
     var result = reindexJobService.getStatus(jobExecutionId);

@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.endpoint;
 
 import static java.util.UUID.randomUUID;
 import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
@@ -79,7 +79,7 @@ class ProfileSettingsIT {
     mockMvc.perform(postRequest)
       .andExpect(status().isNoContent());
 
-    // when 
+    // when
     var getRequest = get(PROFILE_SETTINGS_URL + "2")
       .headers(headers);
 
