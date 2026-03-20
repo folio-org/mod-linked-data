@@ -5,7 +5,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.job.CacheCleaningJob;
+import org.folio.linked.data.service.scheduled.CacheCleaningSchedule;
 import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class LinkedDataTenantService extends TenantService {
 
   private final List<TenantServiceWorker> workers;
-  private final CacheCleaningJob cacheCleaningJob;
+  private final CacheCleaningSchedule cacheCleaningSchedule;
   private final TenantScopedExecutionService tenantScopedExecutionService;
   @SuppressWarnings({"removal"})
   private final PrepareSystemUserService prepareSystemUserService;
@@ -37,14 +37,14 @@ public class LinkedDataTenantService extends TenantService {
     FolioExecutionContext context,
     FolioSpringLiquibase folioSpringLiquibase,
     List<TenantServiceWorker> workers,
-    CacheCleaningJob cacheCleaningJob,
+    CacheCleaningSchedule cacheCleaningSchedule,
     TenantScopedExecutionService tenantScopedExecutionService,
     @SuppressWarnings({"removal"})
     PrepareSystemUserService prepareSystemUserService
   ) {
     super(jdbcTemplate, context, folioSpringLiquibase);
     this.workers = workers;
-    this.cacheCleaningJob = cacheCleaningJob;
+    this.cacheCleaningSchedule = cacheCleaningSchedule;
     this.tenantScopedExecutionService = tenantScopedExecutionService;
     this.prepareSystemUserService = prepareSystemUserService;
   }
@@ -60,14 +60,14 @@ public class LinkedDataTenantService extends TenantService {
     log.info("Start after update actions for the tenant [{}]", context.getTenantId());
     prepareSystemUserService.setupSystemUser();
     workers.forEach(worker -> worker.afterTenantUpdate(context.getTenantId(), tenantAttributes));
-    cacheCleaningJob.emptyModuleState();
+    cacheCleaningSchedule.emptyModuleState();
   }
 
   @Override
   public void afterTenantDeletion(TenantAttributes tenantAttributes) {
     log.info("Start after delete actions for the tenant [{}]", context.getTenantId());
     workers.forEach(worker -> worker.afterTenantDeletion(context.getTenantId()));
-    cacheCleaningJob.emptyModuleState();
+    cacheCleaningSchedule.emptyModuleState();
   }
 
   @Cacheable(cacheNames = MODULE_STATE)

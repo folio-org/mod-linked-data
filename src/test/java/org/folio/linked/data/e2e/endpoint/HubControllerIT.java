@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.endpoint;
 
 import static java.lang.System.getProperty;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;

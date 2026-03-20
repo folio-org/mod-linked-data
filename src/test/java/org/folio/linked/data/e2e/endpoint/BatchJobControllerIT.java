@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.endpoint;
 
 import static java.lang.Long.parseLong;
 import static java.time.ZoneId.systemDefault;
@@ -6,7 +6,7 @@ import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
-import static org.folio.linked.data.domain.dto.ReindexJobStatusDto.ReindexTypeEnum;
+import static org.folio.linked.data.domain.dto.BatchJobStatusDto.ReindexTypeEnum;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleHub;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -42,11 +43,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @IntegrationTest
-class ReIndexControllerIT extends ITBase {
+class BatchJobControllerIT extends ITBase {
 
   private static final String FULL_REINDEX_URL = "/linked-data/reindex/full";
   private static final String INCREMENTAL_REINDEX_URL = "/linked-data/reindex/incremental";
-  private static final String REINDEX_STATUS_URL = "/linked-data/reindex/status";
+  private static final String REINDEX_STATUS_URL = "/linked-data/batch/status";
   private static final String QUERY_PARAM_RESOURCE_TYPE = "resourceType";
   private static final Date GIVEN_INDEX_DATE = Date.from(LocalDate.of(1986, 9, 15)
     .atStartOfDay(systemDefault()).toInstant());
@@ -144,13 +145,15 @@ class ReIndexControllerIT extends ITBase {
         .headers(defaultHeaders(env)))
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.jobName").value("reindexJob"))
       .andExpect(jsonPath("$.status").value("COMPLETED"))
       .andExpect(jsonPath("$.reindexType").value(expectedType.getValue()))
       .andExpect(jsonPath("$.startDate").isNotEmpty())
       .andExpect(jsonPath("$.endDate").isNotEmpty())
       .andExpect(jsonPath("$.startedBy").isNotEmpty())
       .andExpect(jsonPath("$.linesRead").isNumber())
-      .andExpect(jsonPath("$.linesSent").isNumber());
+      .andExpect(jsonPath("$.linesSent").isNumber())
+      .andExpect(jsonPath("$.executionRound").doesNotExist());
   }
 
 

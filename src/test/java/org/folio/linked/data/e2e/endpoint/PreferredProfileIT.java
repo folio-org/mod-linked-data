@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.endpoint;
 
 import static java.util.UUID.randomUUID;
 import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;

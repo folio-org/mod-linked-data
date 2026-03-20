@@ -1,12 +1,12 @@
-package org.folio.linked.data.configuration.batch;
+package org.folio.linked.data.configuration.batch.reindex;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.util.Objects.isNull;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
-import static org.folio.linked.data.configuration.batch.BatchConfig.JOB_PARAM_IS_FULL_REINDEX;
-import static org.folio.linked.data.configuration.batch.BatchConfig.JOB_PARAM_RESOURCE_TYPE;
-import static org.folio.linked.data.configuration.batch.BatchConfig.SUPPORTED_TYPES;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_IS_FULL_REINDEX;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.JOB_PARAM_RESOURCE_TYPE;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.SUPPORTED_TYPES;
 import static org.folio.linked.data.domain.dto.ReindexRequest.ResourceNameEnum.LINKED_DATA_HUB;
 import static org.folio.linked.data.domain.dto.ReindexRequest.ResourceNameEnum.LINKED_DATA_WORK;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;

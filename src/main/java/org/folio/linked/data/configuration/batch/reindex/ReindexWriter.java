@@ -1,4 +1,4 @@
-package org.folio.linked.data.configuration.batch;
+package org.folio.linked.data.configuration.batch.reindex;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
