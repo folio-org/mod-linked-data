@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "description": "Responds to a file import with a list of imported resources and an activity log",
+  "description": "Responds to an import with a list of imported resources and an activity log",
   "type": "object",
   "properties": {
     "resources": {

@@ -4,11 +4,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.substringAfterLast;
 import static org.apache.commons.lang3.StringUtils.substringBefore;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
 import static org.folio.linked.data.util.ImportUtil.APPLICATION_LD_JSON_VALUE;
-import static org.folio.linked.data.util.ImportUtil.ImportReport;
-import static org.folio.linked.data.util.ImportUtil.ImportedResource;
-import static org.folio.linked.data.util.ImportUtil.Status;
 import static org.folio.linked.data.util.ImportUtil.Status.CONVERTED;
 import static org.folio.linked.data.util.ImportUtil.Status.CREATED;
 import static org.folio.linked.data.util.ImportUtil.Status.FAILED;
@@ -26,8 +24,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.linked.data.domain.dto.ImportFileResponseDto;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ImportOutputEvent;
+import org.folio.linked.data.domain.dto.ImportResponseDto;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.folio.linked.data.domain.dto.ResourceWithLineNumber;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
@@ -38,12 +37,16 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.lccn.LccnResourceService;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
+import org.folio.linked.data.util.ImportUtil.ImportReport;
+import org.folio.linked.data.util.ImportUtil.ImportedResource;
+import org.folio.linked.data.util.ImportUtil.Status;
 import org.folio.rdf4ld.service.Rdf4LdService;
 import org.folio.spring.tools.kafka.FolioMessageProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.multipart.MultipartFile;
 
 @Log4j2
@@ -65,16 +68,33 @@ public class RdfImportServiceImpl implements RdfImportService {
   private FolioMessageProducer<ImportResultEvent> importResultEventProducer;
 
   @Override
-  public ImportFileResponseDto importFile(MultipartFile multipartFile) {
+  public ImportResponseDto importFile(String filterType, MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
-      var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), true);
+      var filter = ResourceTypeDictionary.fromUri(filterType).orElse(null);
+      var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), filter, true);
       var reportCsv = importReport.toCsv();
-      return new ImportFileResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
+      return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (IOException e) {
       throw exceptionBuilder.badRequestException("Rdf import incoming file reading error", e.getMessage());
     } catch (Exception e) {
       log.error("Rdf import error", e);
-      return new ImportFileResponseDto(List.of(), e.getMessage());
+      return new ImportResponseDto(List.of(), e.getMessage());
+    }
+  }
+
+  @Override
+  public ImportResponseDto importUrl(String url, String filterType, String defaultWorkType) {
+    try (var is = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
+      var workType = ResourceTypeDictionary.fromUri(defaultWorkType).orElse(ResourceTypeDictionary.BOOKS);
+      var filter = ResourceTypeDictionary.fromUri(filterType).orElse(null);
+      var importReport = importInputStream(is, APPLICATION_LD_JSON_VALUE, filter, workType, true);
+      var reportCsv = importReport.toCsv();
+      return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
+    } catch (RestClientResponseException e) {
+      throw exceptionBuilder.badRequestException("Error while retrieving RDF from URL", e.getMessage());
+    } catch (Exception e) {
+      log.error("RDF import error", e);
+      return new ImportResponseDto(List.of(), e.getMessage());
     }
   }
 
@@ -99,7 +119,7 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
     try (var inputStream = new ByteArrayInputStream(rdfJson.getBytes(UTF_8))) {
-      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, save);
+      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, null, save);
       return importReport.getImports().stream()
         .map(ImportedResource::getResourceEntity)
         .filter(Objects::nonNull)
@@ -109,13 +129,49 @@ public class RdfImportServiceImpl implements RdfImportService {
     }
   }
 
-  private ImportReport importInputStream(InputStream input, String contentType, Boolean save) {
+  private ImportReport importInputStream(
+    InputStream input,
+    String contentType,
+    ResourceTypeDictionary filterType,
+    Boolean save
+  ) {
+    return importInputStream(input, contentType, filterType, null, save);
+  }
+
+  private ImportReport importInputStream(
+    InputStream input,
+    String contentType,
+    ResourceTypeDictionary filterType,
+    ResourceTypeDictionary workType,
+    Boolean save
+  ) {
     var resources = rdf4LdService.mapBibframe2RdfToLd(input, contentType);
     var lineNumber = new AtomicLong(1);
     var resourcesWithLineNumbers = resources.stream()
+      .filter(filterType != null ? r -> r.isOfType(filterType) : r -> true)
+      .map(r -> assignType(r, workType))
       .map(r -> new ResourceWithLineNumber(lineNumber.getAndIncrement(), r))
       .collect(toSet());
     return doImport(resourcesWithLineNumbers, save);
+  }
+
+  private boolean shouldAssignType(org.folio.ld.dictionary.model.Resource resource) {
+    return resource.getOutgoingEdges().stream()
+      .filter(s -> s.getPredicate().equals(INSTANTIATES))
+      .filter(s -> s.getTarget().getTypes().size() == 1 && s.getTarget().isOfType(ResourceTypeDictionary.WORK))
+      .anyMatch(t -> true);
+  }
+
+  private org.folio.ld.dictionary.model.Resource assignType(
+    org.folio.ld.dictionary.model.Resource resource,
+    ResourceTypeDictionary workType
+  ) {
+    if (shouldAssignType(resource) && workType != null) {
+      resource.getOutgoingEdges().stream()
+        .filter(s -> s.getPredicate().equals(INSTANTIATES))
+        .forEach(s -> s.getTarget().addType(workType));
+    }
+    return resource;
   }
 
   private ImportReport doImport(Set<ResourceWithLineNumber> resourcesWithLineNumbers, boolean save) {

@@ -106,6 +106,15 @@
           ]
         },
         {
+          "methods": [ "POST" ],
+          "pathPattern": "/linked-data/import/url",
+          "permissionsRequired": ["linked-data.import.url.post"],
+          "modulePermissions": [
+            "source-storage.records.formatted.item.get",
+            "search.authorities.collection.get"
+          ]
+        },
+        {
           "methods": [ "GET" ],
           "pathPattern": "/linked-data/hub",
           "permissionsRequired": [ "linked-data.hub.preview.get" ],
@@ -364,6 +373,11 @@
       "permissionName": "linked-data.import.file.post",
       "displayName": "Linked Data: Import a file containing resources into the graph",
       "description": "Import a file containing resources into the graph"
+    },
+    {
+      "permissionName": "linked-data.import.url.post",
+      "displayName": "Linked Data: Import from a URL containing resources into the graph",
+      "description": "Import from a URL containing resources into the graph"
     },
     {
       "permissionName": "linked-data.profiles.item.get",
