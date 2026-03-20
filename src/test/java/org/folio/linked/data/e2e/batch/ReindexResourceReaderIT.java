@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.folio.linked.data.configuration.batch.reader.ResourceReader;
-import org.folio.linked.data.e2e.ITBase;
+import org.folio.linked.data.configuration.batch.reindex.reader.ReindexResourceReader;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -37,7 +37,7 @@ import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @IntegrationTest
-class ResourceReaderIT extends ITBase {
+class ReindexResourceReaderIT extends ITBase {
 
   private static final Set<String> EXPECTED_OUTGOING_PREDICATE_URIS = Set.of(
     TITLE.getUri(), CREATOR.getUri(), CONTRIBUTOR.getUri(),
@@ -69,7 +69,7 @@ class ResourceReaderIT extends ITBase {
 
     // when
     var results = tenantScopedExecutionService.execute(TENANT_ID, () -> {
-      var reader = new ResourceReader(dataSource, 100, true, null);
+      var reader = new ReindexResourceReader(dataSource, 100, true, null);
       var list = new ArrayList<Resource>();
       reader.open(new ExecutionContext());
       Resource r;

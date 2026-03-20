@@ -17,7 +17,7 @@ import java.util.UUID;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.e2e.ITBase;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.mapper.dto.ResourceSubgraphViewMapper;
 import org.folio.linked.data.model.entity.FolioMetadata;

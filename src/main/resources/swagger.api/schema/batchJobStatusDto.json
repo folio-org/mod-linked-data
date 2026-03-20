@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Batch job status DTO",
+  "type": "object",
+  "properties": {
+    "jobName": {
+      "type": "string",
+      "description": "Spring Batch Job name - ReindexJob or GraphCleaningJob"
+    },
+    "startDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time when the batch job was started"
+    },
+    "endDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time when the batch job finished"
+    },
+    "startedBy": {
+      "type": "string",
+      "description": "ID of the user who started the batch job"
+    },
+    "reindexType": {
+      "type": "string",
+      "enum": ["FULL", "INCREMENTAL"],
+      "description": "Type of reindex: full or incremental"
+    },
+    "executionRound": {
+      "type": "integer",
+      "format": "int32",
+      "description": "Job execution round"
+    },
+    "linesRead": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Total number of resources read during job execution"
+    },
+    "linesSent": {
+      "type": "integer",
+      "format": "int64",
+      "description": "Total number of resources written during job execution"
+    },
+    "status": {
+      "type": "string",
+      "description": "Current status of the batch job (e.g. STARTED, COMPLETED, FAILED)"
+    }
+  }
+}

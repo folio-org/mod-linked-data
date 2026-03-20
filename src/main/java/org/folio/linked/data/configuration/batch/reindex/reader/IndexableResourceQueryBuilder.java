@@ -1,11 +1,12 @@
-package org.folio.linked.data.configuration.batch.reader;
+package org.folio.linked.data.configuration.batch.reindex.reader;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.valueOf;
-import static org.folio.linked.data.configuration.batch.BatchConfig.SUPPORTED_TYPES;
+import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.SUPPORTED_TYPES;
+import static org.folio.linked.data.util.JdbcUtil.COL_RESOURCE_HASH;
+import static org.folio.linked.data.util.JdbcUtil.toSqlLiterals;
 import static org.springframework.batch.infrastructure.item.database.Order.ASCENDING;
 
 import java.util.List;
@@ -28,7 +29,6 @@ public class IndexableResourceQueryBuilder {
     .map(PredicateDictionary::getHash)
     .collect(toSet());
 
-  static final String COL_RESOURCE_HASH = "resource_hash";
   static final String COL_LABEL = "label";
   static final String COL_DOC = "doc";
   static final String COL_TYPE_HASHES = "type_hashes";
@@ -115,7 +115,6 @@ public class IndexableResourceQueryBuilder {
   private static final String WHERE_NOT_INDEXED =
     "r.index_date IS NULL AND rtm.type_hash IN (:" + TYPE_HASHES_PARAM + ")";
   private static final String GROUP_BY_CLAUSE = "r.resource_hash";
-  private static final String SORT_KEY = "resource_hash";
 
   public static PostgresPagingQueryProvider buildQueryProvider(boolean isFullReindex) {
     var provider = new PostgresPagingQueryProvider();
@@ -123,7 +122,7 @@ public class IndexableResourceQueryBuilder {
     provider.setFromClause(FROM_CLAUSE);
     provider.setWhereClause(isFullReindex ? WHERE_FULL : WHERE_NOT_INDEXED);
     provider.setGroupClause(GROUP_BY_CLAUSE);
-    provider.setSortKeys(Map.of(SORT_KEY, ASCENDING));
+    provider.setSortKeys(Map.of(COL_RESOURCE_HASH, ASCENDING));
     return provider;
   }
 
@@ -140,9 +139,4 @@ public class IndexableResourceQueryBuilder {
     return List.of(valueOf(resourceType.toUpperCase()).getHash());
   }
 
-  private static String toSqlLiterals(Set<Long> hashes) {
-    return hashes.stream()
-      .map(String::valueOf)
-      .collect(joining(", "));
-  }
 }

@@ -14,7 +14,7 @@ import jakarta.persistence.RollbackException;
 import jakarta.validation.ConstraintViolationException;
 import java.util.stream.Stream;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.e2e.ITBase;
+import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;

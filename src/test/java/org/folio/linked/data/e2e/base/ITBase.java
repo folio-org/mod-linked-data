@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.base;
 
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;

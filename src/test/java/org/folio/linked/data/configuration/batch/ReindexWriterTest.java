@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Set;
+import org.folio.linked.data.configuration.batch.reindex.ReindexWriter;
 import org.folio.linked.data.domain.dto.LinkedDataHub;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;

@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import org.folio.linked.data.job.CacheCleaningJob;
+import org.folio.linked.data.service.scheduled.CacheCleaningSchedule;
 import org.folio.linked.data.service.tenant.worker.TenantServiceWorker;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.liquibase.FolioSpringLiquibase;
@@ -32,7 +32,7 @@ class LinkedDataTenantServiceTest {
   @Mock
   private TenantServiceWorker testWorker;
   @Mock
-  private CacheCleaningJob cacheCleaningJob;
+  private CacheCleaningSchedule cacheCleaningSchedule;
   @Mock
   private TenantScopedExecutionService tenantScopedExecutionService;
   @Mock
@@ -49,7 +49,7 @@ class LinkedDataTenantServiceTest {
       context,
       folioSpringLiquibase,
       List.of(testWorker),
-      cacheCleaningJob,
+      cacheCleaningSchedule,
       tenantScopedExecutionService,
       prepareSystemUserService
     );
@@ -80,7 +80,7 @@ class LinkedDataTenantServiceTest {
     //then
     verify(testWorker)
       .afterTenantUpdate(tenantId, attributes);
-    verify(cacheCleaningJob).emptyModuleState();
+    verify(cacheCleaningSchedule).emptyModuleState();
   }
 
   @Test
@@ -94,7 +94,7 @@ class LinkedDataTenantServiceTest {
     //then
     verify(testWorker)
       .afterTenantDeletion(tenantId);
-    verify(cacheCleaningJob).emptyModuleState();
+    verify(cacheCleaningSchedule).emptyModuleState();
   }
 
   @Test

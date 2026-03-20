@@ -1,4 +1,4 @@
-package org.folio.linked.data.job;
+package org.folio.linked.data.service.scheduled;
 
 import static org.folio.linked.data.util.Constants.Cache.AUTHORITY_SOURCE_FILES;
 import static org.folio.linked.data.util.Constants.Cache.MODULE_STATE;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Log4j2
-public class CacheCleaningJob {
+public class CacheCleaningSchedule {
 
   @CacheEvict(value = SPEC_RULES, allEntries = true)
   @Scheduled(fixedRateString = "${mod-linked-data.cache.ttl.spec-rules}")

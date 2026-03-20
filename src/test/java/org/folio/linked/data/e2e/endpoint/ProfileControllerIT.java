@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.endpoint;
 
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.hamcrest.Matchers.equalTo;

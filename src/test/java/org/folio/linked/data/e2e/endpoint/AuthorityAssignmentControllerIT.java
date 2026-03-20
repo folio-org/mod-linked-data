@@ -1,4 +1,4 @@
-package org.folio.linked.data.e2e;
+package org.folio.linked.data.e2e.endpoint;
 
 import static org.folio.linked.data.domain.dto.AssignmentCheckDto.TargetEnum.CREATOR_OF_WORK;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
