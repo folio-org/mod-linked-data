@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import lombok.RequiredArgsConstructor;
@@ -71,7 +70,7 @@ public class RdfImportServiceImpl implements RdfImportService {
   @Override
   public ImportResponseDto importFile(String filterType, MultipartFile multipartFile) {
     try (var is = multipartFile.getInputStream()) {
-      var filter = ResourceTypeDictionary.fromUri(filterType);
+      var filter = ResourceTypeDictionary.fromUri(filterType).orElse(null);
       var importReport = importInputStream(is, toRdfMediaType(multipartFile.getContentType()), filter, true);
       var reportCsv = importReport.toCsv();
       return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
@@ -87,8 +86,8 @@ public class RdfImportServiceImpl implements RdfImportService {
   public ImportResponseDto importUrl(String url, String filterType, String defaultWorkType) {
     try (var is = new ByteArrayInputStream(httpClient.downloadString(url).getBytes(UTF_8))) {
       var workType = ResourceTypeDictionary.fromUri(defaultWorkType).orElse(ResourceTypeDictionary.BOOKS);
-      var filter = ResourceTypeDictionary.fromUri(filterType);
-      var importReport = importInputStream(is, APPLICATION_LD_JSON_VALUE, filter, Optional.of(workType), true);
+      var filter = ResourceTypeDictionary.fromUri(filterType).orElse(null);
+      var importReport = importInputStream(is, APPLICATION_LD_JSON_VALUE, filter, workType, true);
       var reportCsv = importReport.toCsv();
       return new ImportResponseDto(importReport.getIdsWithStatus(CREATED, UPDATED), reportCsv);
     } catch (RestClientResponseException e) {
@@ -120,7 +119,7 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private Set<Resource> importRdfJsonString(String rdfJson, Boolean save) {
     try (var inputStream = new ByteArrayInputStream(rdfJson.getBytes(UTF_8))) {
-      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, Optional.empty(), save);
+      var importReport = importInputStream(inputStream, APPLICATION_LD_JSON_VALUE, null, save);
       return importReport.getImports().stream()
         .map(ImportedResource::getResourceEntity)
         .filter(Objects::nonNull)
@@ -133,23 +132,23 @@ public class RdfImportServiceImpl implements RdfImportService {
   private ImportReport importInputStream(
     InputStream input,
     String contentType,
-    Optional<ResourceTypeDictionary> filterType,
+    ResourceTypeDictionary filterType,
     Boolean save
   ) {
-    return importInputStream(input, contentType, filterType, Optional.empty(), save);
+    return importInputStream(input, contentType, filterType, null, save);
   }
 
   private ImportReport importInputStream(
     InputStream input,
     String contentType,
-    Optional<ResourceTypeDictionary> filterType,
-    Optional<ResourceTypeDictionary> workType,
+    ResourceTypeDictionary filterType,
+    ResourceTypeDictionary workType,
     Boolean save
   ) {
     var resources = rdf4LdService.mapBibframe2RdfToLd(input, contentType);
     var lineNumber = new AtomicLong(1);
     var resourcesWithLineNumbers = resources.stream()
-      .filter(filterType.isPresent() ? r -> r.isOfType(filterType.get()) : r -> true)
+      .filter(filterType != null ? r -> r.isOfType(filterType) : r -> true)
       .map(r -> assignType(r, workType))
       .map(r -> new ResourceWithLineNumber(lineNumber.getAndIncrement(), r))
       .collect(toSet());
@@ -165,12 +164,12 @@ public class RdfImportServiceImpl implements RdfImportService {
 
   private org.folio.ld.dictionary.model.Resource assignType(
     org.folio.ld.dictionary.model.Resource resource,
-    Optional<ResourceTypeDictionary> workType
+    ResourceTypeDictionary workType
   ) {
-    if (shouldAssignType(resource) && workType.isPresent()) {
+    if (shouldAssignType(resource) && workType != null) {
       resource.getOutgoingEdges().stream()
         .filter(s -> s.getPredicate().equals(INSTANTIATES))
-        .forEach(s -> s.getTarget().addType(workType.get()));
+        .forEach(s -> s.getTarget().addType(workType));
     }
     return resource;
   }
