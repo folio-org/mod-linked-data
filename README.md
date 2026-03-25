@@ -244,16 +244,16 @@ curl --location '{{ base-uri }}/linked-data/resource' \
       ],
       "http://bibfra.me/vocab/scholar/dissertation": [
         {
-          "http://bibfra.me/vocab/lite/label": [
+          "http://bibfra.me/vocab/lite/note": [
             "label"
           ],
           "http://bibfra.me/vocab/library/degree": [
             "degree"
           ],
-          "http://bibfra.me/vocab/library/dissertationYear": [
+          "http://bibfra.me/vocab/lite/date": [
             "dissertation year"
           ],
-          "http://bibfra.me/vocab/library/dissertationNote": [
+          "http://bibfra.me/vocab/library/miscInfo": [
             "dissertation note"
           ],
           "http://bibfra.me/vocab/library/dissertationID": [
