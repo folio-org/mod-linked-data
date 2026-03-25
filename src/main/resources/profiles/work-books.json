@@ -28,7 +28,8 @@
         "Profile:Work:ClassificationNumbers",
         "Profile:Work:ContentType",
         "Profile:Work:LanguageCode",
-        "Profile:Work:PartOfSeries"
+        "Profile:Work:PartOfSeries",
+        "Profile:Work:Dissertation"
       ],
       "id": "Profile:Work"
     },
@@ -1527,6 +1528,117 @@
       },
       "id": "Profile:Work:PartOfSeries:SeriesEnumeration",
       "marc": "490 $v"
+    },
+    {
+      "type": "group",
+      "displayName": "Dissertation",
+      "uriBFLite": "http://bibfra.me/vocab/scholar/dissertation",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Profile:Work:Dissertation:Degree",
+        "Profile:Work:Dissertation:Institution",
+        "Profile:Work:Dissertation:Date",
+        "Profile:Work:Dissertation:Note",
+        "Profile:Work:Dissertation:DissertationID",
+        "Profile:Work:Dissertation:MiscellaneousInformation"
+      ],
+      "id": "Profile:Work:Dissertation"
+    },
+    {
+      "type": "literal",
+      "displayName": "Degree",
+      "uriBFLite": "http://bibfra.me/vocab/library/degree",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Work:Dissertation:Degree"
+    },
+    {
+      "bfid": "lc:RT:bf2:search:institution",
+      "type": "complex",
+      "displayName": "Institution",
+      "uriBFLite": "_grantingInstitutionReference",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "valueDataType": {}
+      },
+      "layout": {
+        "api": "institution",
+        "isNew": true,
+        "baseLabelType": "institution"
+      },
+      "id": "Profile:Work:Dissertation:Institution"
+    },
+    {
+      "type": "literal",
+      "displayName": "Date",
+      "uriBFLite": "http://bibfra.me/vocab/lite/date",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Work:Dissertation:Date"
+    },
+    {
+      "type": "literal",
+      "displayName": "Note",
+      "uriBFLite": "http://bibfra.me/vocab/lite/note",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Work:Dissertation:Note"
+    },
+    {
+      "type": "literal",
+      "displayName": "Dissertation ID",
+      "uriBFLite": "http://bibfra.me/vocab/library/dissertationID",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Work:Dissertation:DissertationID"
+    },
+    {
+      "type": "literal",
+      "displayName": "Miscellaneous information",
+      "uriBFLite": "http://bibfra.me/vocab/library/miscInfo",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Work:Dissertation:MiscellaneousInformation"
     }
   ]
 }
