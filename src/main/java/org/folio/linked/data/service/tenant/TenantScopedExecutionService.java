@@ -23,7 +23,6 @@ import org.folio.spring.tools.context.ExecutionContextBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.retry.RetryException;
 import org.springframework.core.retry.RetryTemplate;
 import org.springframework.core.retry.Retryable;
 import org.springframework.messaging.MessageHeaders;
@@ -45,14 +44,6 @@ public class TenantScopedExecutionService {
   public <T> T execute(String tenantId, Callable<T> job) {
     try (var fex = new FolioExecutionContextSetter(tenantContext(tenantId))) {
       return job.call();
-    }
-  }
-
-  public <T> void executeWithRetry(Headers headers, Retryable<T> retryable, Consumer<Throwable> failureHandler) {
-    try (var fex = new FolioExecutionContextSetter(kafkaFolioExecutionContext(headers))) {
-      retryTemplate.execute(retryable);
-    } catch (RetryException re) {
-      failureHandler.accept(re.getLastException());
     }
   }
 
