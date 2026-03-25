@@ -153,8 +153,8 @@
         "mandatory": false,
         "defaults": [],
         "useValuesFrom": [
-          "http://id.loc.gov/vocabulary/relators",
-          "https://id.loc.gov/vocabulary/rbmsrel"
+          "/linked-data/vocabularies/relators",
+          "/linked-data/vocabularies/rbmsrel"
         ],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Role"
@@ -611,7 +611,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/millus"],
+        "useValuesFrom": ["/linked-data/vocabularies/millus"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/illustrativeContent"
         }
@@ -628,7 +628,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/mgovtpubtype"],
+        "useValuesFrom": ["/linked-data/vocabularies/mgovtpubtype"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bflc/GovernmentPubType"
         }
@@ -645,7 +645,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/msupplcont"],
+        "useValuesFrom": ["/linked-data/vocabularies/msupplcont"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/SupplementaryContent"
         }
@@ -677,7 +677,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/countries"],
+        "useValuesFrom": ["/linked-data/vocabularies/countries"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Place"
         }
@@ -723,7 +723,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/maudience"],
+        "useValuesFrom": ["/linked-data/vocabularies/maudience"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/IntendedAudience"
         }
@@ -847,8 +847,8 @@
         "mandatory": false,
         "defaults": [],
         "useValuesFrom": [
-          "http://id.loc.gov/vocabulary/relators",
-          "https://id.loc.gov/vocabulary/rbmsrel"
+          "/linked-data/vocabularies/relators",
+          "/linked-data/vocabularies/rbmsrel"
         ]
       },
       "id": "Profile:Work:OtherContributors:Relationship",
@@ -896,7 +896,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/mnotetype"],
+        "useValuesFrom": ["/linked-data/vocabularies/mnotetype"],
         "valueDataType": {}
       },
       "id": "Profile:Work:NotesAboutTheWork:NoteType"
@@ -1155,7 +1155,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/organizations"],
+        "useValuesFrom": ["/linked-data/vocabularies/organizations"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }
@@ -1172,7 +1172,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/mstatus"],
+        "useValuesFrom": ["/linked-data/vocabularies/mstatus"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
@@ -1263,7 +1263,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/organizations"],
+        "useValuesFrom": ["/linked-data/vocabularies/organizations"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }
@@ -1280,7 +1280,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/contentTypes"],
+        "useValuesFrom": ["/linked-data/vocabularies/contentTypes"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Content"
         }
@@ -1316,7 +1316,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
+        "useValuesFrom": ["/linked-data/vocabularies/languages"],
         "valueDataType": { "remark": "", "dataTypeURI": "" }
       },
       "id": "Profile:Work:LanguageCode:Language"
