@@ -168,7 +168,7 @@
           "items": {
             "type": "string"
           },
-          "x-json-property": "http://bibfra.me/vocab/library/dimensions"
+          "x-json-property": "http://bibfra.me/vocab/lite/dimensions"
         },
         "projectProvisionDate": {
           "type": "array",
