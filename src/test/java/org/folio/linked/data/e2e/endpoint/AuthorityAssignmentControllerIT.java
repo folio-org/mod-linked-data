@@ -40,7 +40,7 @@ class AuthorityAssignmentControllerIT {
     "samples/marc/non_authority.json, false",
     "samples/marc/authority_person_fast.json, true",
   })
-  void authorityAssignmentCheck_creatorOfWork(String marcFile, String expectedResponse) throws Exception {
+  void authorityAssignmentCheck_creatorOfWork(String marcFile, boolean expectedResponse) throws Exception {
     // given
     var requestBuilder = post(ASSIGNMENT_CHECK_ENDPOINT)
       .accept(APPLICATION_JSON)
@@ -57,7 +57,7 @@ class AuthorityAssignmentControllerIT {
     // then
     resultActions
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.validAssignment", equalTo(Boolean.valueOf(expectedResponse))));
+      .andExpect(jsonPath("$.validAssignment", equalTo(expectedResponse)));
   }
 
   @ParameterizedTest
@@ -69,7 +69,7 @@ class AuthorityAssignmentControllerIT {
     "samples/marc/authority_concept_meeting.json, false",
     "samples/marc/non_authority.json, false"
   })
-  void authorityAssignmentCheck_degreeGrantingInstitution(String marcFile, String expectedResponse) throws Exception {
+  void authorityAssignmentCheck_degreeGrantingInstitution(String marcFile, boolean expectedResponse) throws Exception {
     // given
     var requestBuilder = post(ASSIGNMENT_CHECK_ENDPOINT)
       .accept(APPLICATION_JSON)
@@ -86,6 +86,6 @@ class AuthorityAssignmentControllerIT {
     // then
     resultActions
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.validAssignment", equalTo(Boolean.valueOf(expectedResponse))));
+      .andExpect(jsonPath("$.validAssignment", equalTo(expectedResponse)));
   }
 }
