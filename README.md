@@ -245,7 +245,7 @@ curl --location '{{ base-uri }}/linked-data/resource' \
       "http://bibfra.me/vocab/scholar/dissertation": [
         {
           "http://bibfra.me/vocab/lite/note": [
-            "label"
+            "dissertation note"
           ],
           "http://bibfra.me/vocab/library/degree": [
             "degree"
@@ -254,7 +254,7 @@ curl --location '{{ base-uri }}/linked-data/resource' \
             "dissertation year"
           ],
           "http://bibfra.me/vocab/library/miscInfo": [
-            "dissertation note"
+            "dissertation miscellaneous information"
           ],
           "http://bibfra.me/vocab/library/dissertationID": [
             "dissertation id"

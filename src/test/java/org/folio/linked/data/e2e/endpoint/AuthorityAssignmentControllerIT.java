@@ -41,23 +41,7 @@ class AuthorityAssignmentControllerIT {
     "samples/marc/authority_person_fast.json, true",
   })
   void authorityAssignmentCheck_creatorOfWork(String marcFile, boolean expectedResponse) throws Exception {
-    // given
-    var requestBuilder = post(ASSIGNMENT_CHECK_ENDPOINT)
-      .accept(APPLICATION_JSON)
-      .contentType(APPLICATION_JSON)
-      .headers(defaultHeaders(env))
-      .content(TEST_JSON_MAPPER.writeValueAsString(
-          new AssignmentCheckDto(loadResourceAsString(marcFile), CREATOR_OF_WORK)
-        )
-      );
-
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
-      .andExpect(status().isOk())
-      .andExpect(jsonPath("$.validAssignment", equalTo(expectedResponse)));
+    assertAssignmentCheck(marcFile, CREATOR_OF_WORK, expectedResponse);
   }
 
   @ParameterizedTest
@@ -70,21 +54,20 @@ class AuthorityAssignmentControllerIT {
     "samples/marc/non_authority.json, false"
   })
   void authorityAssignmentCheck_degreeGrantingInstitution(String marcFile, boolean expectedResponse) throws Exception {
-    // given
+    assertAssignmentCheck(marcFile, DEGREE_GRANTING_INSTITUTION, expectedResponse);
+  }
+
+  private void assertAssignmentCheck(String marcFile, AssignmentCheckDto.TargetEnum target,
+                                     boolean expectedResponse) throws Exception {
     var requestBuilder = post(ASSIGNMENT_CHECK_ENDPOINT)
       .accept(APPLICATION_JSON)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(TEST_JSON_MAPPER.writeValueAsString(
-          new AssignmentCheckDto(loadResourceAsString(marcFile), DEGREE_GRANTING_INSTITUTION)
-        )
-      );
+        new AssignmentCheckDto(loadResourceAsString(marcFile), target)
+      ));
 
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
+    mockMvc.perform(requestBuilder)
       .andExpect(status().isOk())
       .andExpect(jsonPath("$.validAssignment", equalTo(expectedResponse)));
   }
