@@ -9,7 +9,7 @@
     },
     "target": {
       "type": "string",
-      "enum": ["CREATOR_OF_WORK", "SUBJECT_OF_WORK"],
+      "enum": ["CREATOR_OF_WORK", "SUBJECT_OF_WORK", "DEGREE_GRANTING_INSTITUTION"],
       "description": "Target type"
     }
   },
