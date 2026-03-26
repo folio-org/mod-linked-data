@@ -111,6 +111,7 @@
 - Add import from URL API [MODLD-1019](https://folio-org.atlassian.net/browse/MODLD-1019)
 - Use system user context for processing kafka messages [MODLD-1026](https://folio-org.atlassian.net/browse/MODLD-1026)
 - Update dimensions property URI [MODLD-1024](https://folio-org.atlassian.net/browse/MODLD-1024)
+- Use GitHub Workflows for Maven [MODLD-971](https://folio-org.atlassian.net/browse/MODLD-971)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
