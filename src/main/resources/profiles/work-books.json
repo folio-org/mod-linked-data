@@ -153,8 +153,7 @@
         "mandatory": false,
         "defaults": [],
         "useValuesFrom": [
-          "/linked-data/vocabularies/relators",
-          "/linked-data/vocabularies/rbmsrel"
+          "/linked-data/vocabularies/relators"
         ],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Role"
@@ -847,8 +846,7 @@
         "mandatory": false,
         "defaults": [],
         "useValuesFrom": [
-          "/linked-data/vocabularies/relators",
-          "/linked-data/vocabularies/rbmsrel"
+          "/linked-data/vocabularies/relators"
         ]
       },
       "id": "Profile:Work:OtherContributors:Relationship",
@@ -1155,7 +1153,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["/linked-data/vocabularies/organizations"],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/organizations"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }
@@ -1263,7 +1261,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["/linked-data/vocabularies/organizations"],
+        "useValuesFrom": ["http://id.loc.gov/vocabulary/organizations"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Agent"
         }

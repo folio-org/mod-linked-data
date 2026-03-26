@@ -133,8 +133,7 @@
         "mandatory": false,
         "defaults": [],
         "useValuesFrom": [
-          "/linked-data/vocabularies/relators",
-          "/linked-data/vocabularies/rbmsrel"
+          "/linked-data/vocabularies/relators"
         ],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Role"
