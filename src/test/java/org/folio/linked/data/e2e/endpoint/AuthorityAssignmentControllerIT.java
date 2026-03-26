@@ -1,6 +1,7 @@
 package org.folio.linked.data.e2e.endpoint;
 
 import static org.folio.linked.data.domain.dto.AssignmentCheckDto.TargetEnum.CREATOR_OF_WORK;
+import static org.folio.linked.data.domain.dto.AssignmentCheckDto.TargetEnum.DEGREE_GRANTING_INSTITUTION;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
@@ -39,23 +40,35 @@ class AuthorityAssignmentControllerIT {
     "samples/marc/non_authority.json, false",
     "samples/marc/authority_person_fast.json, true",
   })
-  void authorityAssignmentCheck(String marcFile, String expectedResponse) throws Exception {
-    // given
+  void authorityAssignmentCheck_creatorOfWork(String marcFile, boolean expectedResponse) throws Exception {
+    assertAssignmentCheck(marcFile, CREATOR_OF_WORK, expectedResponse);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+    "samples/marc/authority_person.json, false",
+    "samples/marc/authority_family.json, false",
+    "samples/marc/authority_organization.json, true",
+    "samples/marc/authority_jurisdiction.json, false",
+    "samples/marc/authority_concept_meeting.json, false",
+    "samples/marc/non_authority.json, false"
+  })
+  void authorityAssignmentCheck_degreeGrantingInstitution(String marcFile, boolean expectedResponse) throws Exception {
+    assertAssignmentCheck(marcFile, DEGREE_GRANTING_INSTITUTION, expectedResponse);
+  }
+
+  private void assertAssignmentCheck(String marcFile, AssignmentCheckDto.TargetEnum target,
+                                     boolean expectedResponse) throws Exception {
     var requestBuilder = post(ASSIGNMENT_CHECK_ENDPOINT)
       .accept(APPLICATION_JSON)
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
       .content(TEST_JSON_MAPPER.writeValueAsString(
-          new AssignmentCheckDto(loadResourceAsString(marcFile), CREATOR_OF_WORK)
-        )
-      );
+        new AssignmentCheckDto(loadResourceAsString(marcFile), target)
+      ));
 
-    // when
-    var resultActions = mockMvc.perform(requestBuilder);
-
-    // then
-    resultActions
+    mockMvc.perform(requestBuilder)
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.validAssignment", equalTo(Boolean.valueOf(expectedResponse))));
+      .andExpect(jsonPath("$.validAssignment", equalTo(expectedResponse)));
   }
 }
