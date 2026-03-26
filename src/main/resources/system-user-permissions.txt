@@ -1,1 +1,3 @@
 inventory-storage.authority-source-files.collection.get
+source-storage.records.formatted.item.get
+search.authorities.collection.get
