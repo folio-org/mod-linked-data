@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.util.ResourceUtils;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class HubAsSubjectIT extends PostResourceIT {
@@ -57,7 +56,6 @@ public class HubAsSubjectIT extends PostResourceIT {
 
     assertThat(concept.getLabel()).isEqualTo("Hub AAP 😊");
     validateResourceType(concept, "http://bibfra.me/vocab/lite/Concept", "http://bibfra.me/vocab/lite/Hub");
-    assertThat(ResourceUtils.isPreferred(concept)).isFalse();
 
     var hub = getFirstOutgoingResource(concept, "http://bibfra.me/vocab/lite/focus");
     validateResourceType(hub, "http://bibfra.me/vocab/lite/Hub");

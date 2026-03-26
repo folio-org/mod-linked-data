@@ -5,7 +5,6 @@ import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.NOT_VALID_FOR_TARGET;
 import static org.folio.linked.data.domain.dto.AssignmentCheckResponseDto.InvalidAssignmentReasonEnum.UNSUPPORTED_MARC;
 import static org.folio.linked.data.util.Constants.MSG_NOT_FOUND_IN;
-import static org.folio.linked.data.util.ResourceUtils.setPreferred;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -171,7 +170,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
   private Long markObsoleteAndReplace(Resource previous, Resource incoming) {
     if (Objects.equals(previous.getTypes(), incoming.getTypes())) {
       var previousObsolete = markObsolete(previous);
-      setPreferred(incoming, true);
       addReplacedByRelation(previousObsolete, incoming);
       logMarcAction(incoming,
         "not found by id, but found by srsId [" + incoming.getFolioMetadata().getSrsId() + "]",
@@ -180,7 +178,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
     }
     markObsolete(previous);
     logMarcAction(previous, "set as obsolete", "be saved");
-    setPreferred(incoming, true);
     var saveGraphResult = resourceGraphService.saveMergingGraph(incoming);
     logMarcAction(incoming, "set as preferred", "be saved");
     return saveGraphResult.rootResource().getId();
@@ -212,7 +209,6 @@ public class ResourceMarcAuthorityServiceImpl implements ResourceMarcAuthoritySe
 
   private Resource markObsolete(Resource resource) {
     resource.setActive(false);
-    setPreferred(resource, false);
     resource.setFolioMetadata(null);
     return resource;
   }

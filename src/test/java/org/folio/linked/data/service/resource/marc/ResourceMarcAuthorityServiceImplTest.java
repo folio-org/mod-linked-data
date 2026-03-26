@@ -4,7 +4,6 @@ import static java.util.Optional.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -172,8 +171,6 @@ class ResourceMarcAuthorityServiceImplTest {
     // then
     assertThat(actualId).isEqualTo(newAuthority.getId());
     assertThat(newAuthority.getOutgoingEdges()).isEmpty();
-    assertThat(newAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("true");
-    assertThat(existedAuthority.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("false");
   }
 
   @Test
@@ -200,11 +197,9 @@ class ResourceMarcAuthorityServiceImplTest {
     // then
     assertThat(result).isEqualTo(id);
     assertThat(existed.isActive()).isFalse();
-    assertThat(existed.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("false");
     assertThat(existed.getFolioMetadata()).isNull();
     verify(resourceGraphService).saveMergingGraph(mapped);
     verify(applicationEventPublisher).publishEvent(new ResourceReplacedEvent(existed, mapped.getId()));
-    assertThat(mapped.getDoc().get(RESOURCE_PREFERRED.getValue()).get(0).stringValue()).isEqualTo("true");
     assertThat(mapped.getIncomingEdges()).contains(new ResourceEdge(existed, mapped, REPLACED_BY));
   }
 

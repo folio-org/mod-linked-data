@@ -5,8 +5,6 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
-import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
 import java.util.LinkedHashSet;
@@ -110,7 +108,7 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
     existingResource.setDoc(mergeDocs(existingResource, incomingResource));
     existingResource.setActive(incomingResource.isActive());
     addFolioMetadataIfAbsent(existingResource, incomingResource.getFolioMetadata());
-    removeReplacedByEdgeIfPreferred(existingResource);
+    removeReplacedByEdgeIfFolioResource(existingResource);
     return ResourceSaveResult.updated(existingResource);
   }
 
@@ -127,20 +125,11 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   }
 
   private JsonNode mergeDocs(Resource existingResource, Resource incomingResource) {
-    var mergedDoc = JsonUtils.merge(existingResource.getDoc(), incomingResource.getDoc());
-    resetPreferredFlagWithIncomingValue(incomingResource, mergedDoc);
-    return mergedDoc;
+    return JsonUtils.merge(existingResource.getDoc(), incomingResource.getDoc());
   }
 
-  private void resetPreferredFlagWithIncomingValue(Resource incomingResource, JsonNode mergedDoc) {
-    var resourcePreferred = RESOURCE_PREFERRED.getValue();
-    ofNullable(incomingResource.getDoc())
-      .flatMap(incomingDoc -> JsonUtils.getProperty(incomingDoc, resourcePreferred))
-      .ifPresent(incomingPreferredFlag -> JsonUtils.setProperty(mergedDoc, resourcePreferred, incomingPreferredFlag));
-  }
-
-  private void removeReplacedByEdgeIfPreferred(Resource resource) {
-    if (isPreferred(resource)) {
+  private void removeReplacedByEdgeIfFolioResource(Resource resource) {
+    if (nonNull(resource.getFolioMetadata())) {
       resource.getOutgoingEdges().removeIf(edge -> edge.getPredicate().getUri().equals(REPLACED_BY.getUri()));
     }
   }

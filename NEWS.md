@@ -109,6 +109,7 @@
 - Update DissertationMapperUnit based on the updated mapping rules [MODLD-1014](https://folio-org.atlassian.net/browse/MODLD-1014)
 - Graph cleaning spring batch job and schedule [MODLD-1013](https://folio-org.atlassian.net/browse/MODLD-1013)
 - Add import from URL API [MODLD-1019](https://folio-org.atlassian.net/browse/MODLD-1019)
+- Get rid of RESOURCE_PREFERRED property [MODLD-1028](https://folio-org.atlassian.net/browse/MODLD-1028)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
