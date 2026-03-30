@@ -51,7 +51,6 @@ import static org.folio.ld.dictionary.PropertyDictionary.PART_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.PROJECTED_PROVISION_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.QUALIFIER;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.STATEMENT_OF_RESPONSIBILITY;
@@ -341,8 +340,7 @@ public class MonographTestUtil {
 
     var genre1 = createResource(
       Map.of(
-        NAME, List.of("genre 1"),
-        RESOURCE_PREFERRED, List.of("true")
+        NAME, List.of("genre 1")
       ),
       Set.of(FORM),
       emptyMap()
@@ -435,22 +433,19 @@ public class MonographTestUtil {
   }
 
   public static Resource getSubjectPersonPreferred() {
-    return getSubjectAndConcept("person", -6999093488677112301L, -3951421359442339069L, PERSON, true);
+    return getSubjectAndConcept("person", -6999093488677112301L, -3951421359442339069L, PERSON);
   }
 
   public static Resource getSubjectFormNotPreferred() {
-    return getSubjectAndConcept("form", -4718450084121784027L, -354125450028352284L, FORM, false);
+    return getSubjectAndConcept("form", -4718450084121784027L, -354125450028352284L, FORM);
   }
 
   private static Resource getSubjectAndConcept(String name,
                                                Long subjectId,
                                                Long conceptId,
-                                               ResourceTypeDictionary type,
-                                               boolean isPreferred) {
+                                               ResourceTypeDictionary type) {
     var subject = createResource(
-      isPreferred
-        ? Map.of(NAME, List.of("Subject " + name), RESOURCE_PREFERRED, List.of("true"))
-        : Map.of(NAME, List.of("Subject " + name)),
+      Map.of(NAME, List.of("Subject " + name)),
       Set.of(type),
       emptyMap()
     ).setLabel("subject " + name)

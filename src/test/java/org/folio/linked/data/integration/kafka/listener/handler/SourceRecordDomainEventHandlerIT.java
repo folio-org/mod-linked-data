@@ -191,7 +191,7 @@ class SourceRecordDomainEventHandlerIT {
 
     assertThat(found).isPresent();
     var expectedLabel = "bValue, aaValue, cValue, qValue, dValue -- xValue -- zValue -- yValue -- vValue";
-    assertAuthority(found.get(), expectedLabel, true, true, null);
+    assertAuthority(found.get(), expectedLabel, true, null);
   }
 
   @Test
@@ -229,8 +229,8 @@ class SourceRecordDomainEventHandlerIT {
     var updatedResource = found.getFirst();
     var expectedLabelCreated = "bValue, aValue, cValue, qValue, dValue -- xValue -- zValue -- yValue -- vValue";
     var expectedLabelUpdated = expectedLabelCreated.replace("aValue", "newAValue");
-    assertAuthority(createdResource, expectedLabelCreated, false, false, updatedResource);
-    assertAuthority(updatedResource, expectedLabelUpdated, true, true, null);
+    assertAuthority(createdResource, expectedLabelCreated, false, updatedResource);
+    assertAuthority(updatedResource, expectedLabelUpdated, true, null);
   }
 
 }

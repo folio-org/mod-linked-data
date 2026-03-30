@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import tools.jackson.databind.node.JsonNodeFactory;
 
 @UnitTest
 class ResourceUtilsTest {
@@ -182,87 +181,12 @@ class ResourceUtilsTest {
     assertThat(instance2.getOutgoingEdges()).containsOnly(new ResourceEdge(instance2, work, INSTANTIATES));
   }
 
-  @Test
-  void test_isPreferred_when_preferred_flag_is_not_set() {
-    // given
-    Resource resource = new Resource();
-
-    // then
-    assertThat(ResourceUtils.isPreferred(resource)).isFalse();
-  }
-
-  @Test
-  void test_isPreferred_when_preferred_flag_is_set_as_true() {
-    // given
-    Resource resource = new Resource();
-    ResourceUtils.setPreferred(resource, true);
-
-    // then
-    assertThat(ResourceUtils.isPreferred(resource)).isTrue();
-  }
-
-  @Test
-  void test_isPreferred_when_preferred_flag_is_set_as_false() {
-    // given
-    Resource resource = new Resource();
-    ResourceUtils.setPreferred(resource, false);
-
-    // then
-    assertThat(ResourceUtils.isPreferred(resource)).isFalse();
-  }
-
   @ParameterizedTest
   @MethodSource("dataProvider")
   void getTypes_shouldReturn_resourceTypes(Resource resource, List<String> expectedTypes) {
     // expect
     assertThat(ResourceUtils.getTypeUris(resource))
       .containsExactlyInAnyOrderElementsOf(expectedTypes);
-  }
-
-  @Test
-  void copyWithoutPreferred_removesPreferredProperty_whenDocContainsPreferred() {
-    // given
-    var resource = new Resource();
-    var doc = JsonNodeFactory.instance.objectNode();
-    doc.set("http://library.link/vocab/resourcePreferred", JsonNodeFactory.instance.arrayNode().add("true"));
-    resource.setDoc(doc);
-
-    // when
-    var result = ResourceUtils.copyWithoutPreferred(resource);
-
-    // then
-    assertThat(result).isNotNull();
-    assertThat(result.has("http://library.link/vocab/resourcePreferred")).isFalse();
-  }
-
-  @Test
-  void copyWithoutPreferred_returnsNull_whenDocIsNull() {
-    // given
-    var resource = new Resource();
-    resource.setDoc(null);
-
-    // when
-    var result = ResourceUtils.copyWithoutPreferred(resource);
-
-    // then
-    assertThat(result).isNull();
-  }
-
-  @Test
-  void copyWithoutPreferred_returnsUnchangedCopy_whenDocDoesNotContainPreferred() {
-    // given
-    var resource = new Resource();
-    var doc = JsonNodeFactory.instance.objectNode();
-    doc.put("otherProperty", "value");
-    resource.setDoc(doc);
-
-    // when
-    var result = ResourceUtils.copyWithoutPreferred(resource);
-
-    // then
-    assertThat(result).isNotNull();
-    assertThat(result.has("otherProperty")).isTrue();
-    assertThat(result.get("otherProperty").asString()).isEqualTo("value");
   }
 
   @Test

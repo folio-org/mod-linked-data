@@ -8,7 +8,6 @@ import static java.util.stream.StreamSupport.stream;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
-import static org.folio.ld.dictionary.PropertyDictionary.RESOURCE_PREFERRED;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -125,10 +124,6 @@ public class ResourceUtils {
       .orElse(resource);
   }
 
-  public static void setPreferred(Resource resource, boolean preferred) {
-    addProperty(resource, RESOURCE_PREFERRED, String.valueOf(preferred));
-  }
-
   public static void addProperty(Resource resource, PropertyDictionary property, String value) {
     if (StringUtils.isBlank(value)) {
       return;
@@ -140,29 +135,11 @@ public class ResourceUtils {
     ((ObjectNode) resource.getDoc()).set(property.getValue(), arrayNode);
   }
 
-  public static boolean isPreferred(Resource resource) {
-    return getPropertyValues(resource, RESOURCE_PREFERRED)
-      .stream()
-      .anyMatch(Boolean::parseBoolean);
-  }
-
   public static List<String> getTypeUris(Resource resource) {
     return resource.getTypes()
       .stream()
       .map(ResourceTypeEntity::getUri)
       .toList();
-  }
-
-  public static JsonNode copyWithoutPreferred(Resource subject) {
-    return ofNullable(subject.getDoc())
-      .map(node -> {
-        var copiedDoc = node.deepCopy();
-        if (copiedDoc.isObject()) {
-          ((ObjectNode) copiedDoc).remove(RESOURCE_PREFERRED.getValue());
-        }
-        return copiedDoc;
-      })
-      .orElse(null);
   }
 
   public static List<String> getPropertyValues(Resource resource, PropertyDictionary property) {
