@@ -113,6 +113,7 @@
 - Update dimensions property URI [MODLD-1024](https://folio-org.atlassian.net/browse/MODLD-1024)
 - Use GitHub Workflows for Maven [MODLD-971](https://folio-org.atlassian.net/browse/MODLD-971)
 - Get rid of RESOURCE_PREFERRED property [MODLD-1028](https://folio-org.atlassian.net/browse/MODLD-1028)
+- Update profiles to use local dictionaries instead of id.loc.gov [MODLD-1027](https://folio-org.atlassian.net/browse/MODLD-1027)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
