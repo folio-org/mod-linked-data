@@ -8,13 +8,13 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
-import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.folio.linked.data.domain.dto.Reference;
 import org.folio.linked.data.domain.dto.WorkResponse;
+import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -44,7 +44,6 @@ class SubjectMapperUnitTest {
     // given
     var name = "Sample Name";
     var doc = JsonNodeFactory.instance.objectNode();
-    doc.set("http://library.link/vocab/resourcePreferred", JsonNodeFactory.instance.arrayNode().add("true"));
     doc.set("http://bibfra.me/vocab/lite/name", JsonNodeFactory.instance.arrayNode().add(name));
     var resource = new Resource().setLabel("Label").addTypes(PERSON).setDoc(doc);
     var subjectDto = new Reference()
@@ -57,7 +56,6 @@ class SubjectMapperUnitTest {
 
     // then
     assertThat(result).isNotNull();
-    assertThat(result.getDoc().has("http://library.link/vocab/resourcePreferred")).isFalse();
     assertThat(result.getDoc().get("http://bibfra.me/vocab/lite/name").get(0).asString()).isEqualTo(name);
     assertThat(result.getTypes().stream().map(ResourceTypeEntity::getUri)).contains(CONCEPT.getUri());
     assertThat(result.getOutgoingEdges())
@@ -91,14 +89,10 @@ class SubjectMapperUnitTest {
     var label = "label string";
     var id = 1L;
     var resource = new Resource()
-      .setDoc(TEST_JSON_MAPPER.readTree("""
-        {
-            "http://library.link/vocab/resourcePreferred": ["true"]
-        }
-        """))
       .setLabel(label)
       .setIdAndRefreshEdges(id)
       .addTypes(CONCEPT, PLACE);
+    resource.setFolioMetadata(new FolioMetadata(resource));
 
     // when
     var result = subjectMapperUnit.toDto(resource, new WorkResponse(2), null);
@@ -117,21 +111,11 @@ class SubjectMapperUnitTest {
     // given
     var focus = new Resource()
       .setLabel("John Doe")
-      .addTypes(PERSON)
-      .setDoc(TEST_JSON_MAPPER.readTree("""
-        {
-            "http://library.link/vocab/resourcePreferred": ["true"]
-        }
-        """));
+      .addTypes(PERSON);
 
     var subFocus = new Resource()
       .setLabel("Childhood")
-      .addTypes(TOPIC)
-      .setDoc(TEST_JSON_MAPPER.readTree("""
-        {
-            "http://library.link/vocab/resourcePreferred": ["true"]
-        }
-        """));
+      .addTypes(TOPIC);
 
     var conceptWithSubFocus = new Resource()
       .setLabel("John Doe -- Childhood")
@@ -154,12 +138,8 @@ class SubjectMapperUnitTest {
     // given
     var focus = new Resource()
       .setLabel("John Doe")
-      .addTypes(PERSON)
-      .setDoc(TEST_JSON_MAPPER.readTree("""
-        {
-            "http://library.link/vocab/resourcePreferred": ["true"]
-        }
-        """));
+      .addTypes(PERSON);
+    focus.setFolioMetadata(new FolioMetadata(focus));
 
     var conceptWithoutSubFocus = new Resource()
       .setLabel("John Doe")

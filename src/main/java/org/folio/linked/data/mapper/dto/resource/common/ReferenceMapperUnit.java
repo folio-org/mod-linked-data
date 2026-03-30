@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.dto.resource.common;
 
+import static java.util.Objects.nonNull;
 import static org.folio.linked.data.util.ResourceUtils.ensureLatestReplaced;
 
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.service.reference.ReferenceService;
-import org.folio.linked.data.util.ResourceUtils;
 
 @RequiredArgsConstructor
 public abstract class ReferenceMapperUnit implements SingleResourceMapperUnit {
@@ -21,7 +21,7 @@ public abstract class ReferenceMapperUnit implements SingleResourceMapperUnit {
     return new ReferenceResponse()
       .id(String.valueOf(latestResource.getId()))
       .label(latestResource.getLabel())
-      .isPreferred(isPreferred(latestResource))
+      .isPreferred(isFolioResource(latestResource))
       .types(latestResource.getTypes().stream().map(ResourceTypeEntity::getUri).toList());
   }
 
@@ -31,7 +31,7 @@ public abstract class ReferenceMapperUnit implements SingleResourceMapperUnit {
     return referenceService.resolveReference(reference);
   }
 
-  protected boolean isPreferred(Resource resource) {
-    return ResourceUtils.isPreferred(resource);
+  protected boolean isFolioResource(Resource resource) {
+    return nonNull(resource.getFolioMetadata());
   }
 }

@@ -1,10 +1,10 @@
 package org.folio.linked.data.mapper.dto.resource.common.agent;
 
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.linked.data.util.ResourceUtils.ensureLatestReplaced;
-import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public abstract class AgentMapperUnit implements SingleResourceMapperUnit {
         .id(String.valueOf(resourceToConvert.getId()))
         .label(resourceToConvert.getLabel())
         .type(resourceToConvert.getTypes().iterator().next().getUri())
-        .isPreferred(isPreferred(resourceToConvert));
+        .isPreferred(nonNull(resourceToConvert.getFolioMetadata()));
       agentRoleAssigner.assignRoles(agent, context.parentResource());
 
       if (context.predicate().getUri().equals(CREATOR.getUri())) {

@@ -3,7 +3,6 @@ package org.folio.linked.data.service.resource.marc;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
-import static org.folio.linked.data.util.ResourceUtils.isPreferred;
 
 import java.util.Set;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -52,8 +51,8 @@ class ResourceMarcAuthorityServiceIT {
     var v1ResourceFromDb = resourceTestService.getResourceById("1", 1);
     var v2ResourceFromDb = resourceTestService.getResourceById("2", 1);
     validateResourceIdBySrsId(srsId, v2Resource.getId());
-    assertResourceIsPreferred(v2ResourceFromDb);
-    assertResourceIsNotPreferred(v1ResourceFromDb);
+    assertResourceIsActive(v2ResourceFromDb);
+    assertResourceIsNotActive(v1ResourceFromDb);
     assertReplacedBy(v1ResourceFromDb, v2ResourceFromDb);
 
     // Revert the authority back to the original (v1) version
@@ -62,8 +61,8 @@ class ResourceMarcAuthorityServiceIT {
     v1ResourceFromDb = resourceTestService.getResourceById("1", 1);
     v2ResourceFromDb = resourceTestService.getResourceById("2", 1);
     validateResourceIdBySrsId(srsId, v1Resource.getId());
-    assertResourceIsPreferred(v1ResourceFromDb);
-    assertResourceIsNotPreferred(v2ResourceFromDb);
+    assertResourceIsActive(v1ResourceFromDb);
+    assertResourceIsNotActive(v2ResourceFromDb);
     assertReplacedBy(v2ResourceFromDb, v1ResourceFromDb);
   }
 
@@ -72,15 +71,13 @@ class ResourceMarcAuthorityServiceIT {
     assertThat(resourceIdOptional).contains(expectedResourceId);
   }
 
-  private void assertResourceIsPreferred(org.folio.linked.data.model.entity.Resource resource) {
+  private void assertResourceIsActive(org.folio.linked.data.model.entity.Resource resource) {
     assertThat(resource.isActive()).isTrue();
-    assertThat(isPreferred(resource)).isTrue();
     assertThat(resource.getOutgoingEdges()).isEmpty();
   }
 
-  private void assertResourceIsNotPreferred(org.folio.linked.data.model.entity.Resource resource) {
+  private void assertResourceIsNotActive(org.folio.linked.data.model.entity.Resource resource) {
     assertThat(resource.isActive()).isFalse();
-    assertThat(isPreferred(resource)).isFalse();
   }
 
   private void assertReplacedBy(org.folio.linked.data.model.entity.Resource resource,
