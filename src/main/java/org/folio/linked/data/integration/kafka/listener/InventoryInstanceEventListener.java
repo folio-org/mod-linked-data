@@ -2,7 +2,9 @@ package org.folio.linked.data.integration.kafka.listener;
 
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.linked.data.util.KafkaUtils.getHeaderValueByName;
 import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
+import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -44,8 +46,9 @@ public class InventoryInstanceEventListener {
   private void handleRecord(ConsumerRecord<String, InventoryInstanceEvent> consumerRecord) {
     var event = consumerRecord.value();
     if (event.getType() == UPDATE) {
-      tenantScopedExecutionService.executeWithRetry(
-        consumerRecord.headers(), () -> {
+      var tenantId = getHeaderValueByName(consumerRecord, TENANT).orElseThrow();
+      tenantScopedExecutionService.executeWithRetrySystemUser(
+        tenantId, () -> {
           inventoryInstanceEventHandler.handle(event, null);
           return null;
         },

@@ -252,7 +252,7 @@
             ]
         }
       ],
-      "http://bibfra.me/vocab/library/dimensions": [
+      "http://bibfra.me/vocab/lite/dimensions": [
         "20 cm"
       ],
       "http://bibfra.me/vocab/library/edition": [
