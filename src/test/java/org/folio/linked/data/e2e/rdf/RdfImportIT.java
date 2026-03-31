@@ -6,10 +6,13 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -28,6 +31,8 @@ import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceModificationEventListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
+import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +47,17 @@ class RdfImportIT extends ITBase {
   private static final String IMPORT_ENDPOINT = "/linked-data/import/file";
   @Autowired
   private ResourceRepository resourceRepo;
+  @Autowired
+  private KafkaSearchWorkIndexTopicListener workIndexTopicListener;
   @MockitoSpyBean
   private ResourceModificationEventListener eventListener;
+
+  @BeforeEach
+  @Override
+  public void beforeEach() {
+    super.beforeEach();
+    workIndexTopicListener.getMessages().clear();
+  }
 
   @Test
   void rdfImport_shouldSaveImportedResourceAndSendEventAndReturnId() throws Exception {
@@ -147,6 +161,46 @@ class RdfImportIT extends ITBase {
       new ResourceTypeAndLabel(ID_LCNAF, "n2021004098")
     );
     assertEvents(expectedEvents);
+  }
+
+  @Test
+  void rdfImport_shouldIncludeBothInstancesInWorkSearchIndexMessage_whenSecondInstanceAddedToExistingWorkWithInstance()
+    throws Exception {
+    // given
+    var instance1File = new MockMultipartFile(
+      "fileName", "instance1_same_work.json", "application/ld+json",
+      getClass().getResourceAsStream("/rdf/instance1_same_work.json"));
+    var importResponse1 = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+        .file(instance1File)
+        .headers(defaultHeaders(env))
+        .param("filterType", ""))
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    var instance1Id = TEST_JSON_MAPPER.readTree(importResponse1).path("resources").get(0).asLong();
+    workIndexTopicListener.getMessages().clear();
+
+    // when
+    var instance2File = new MockMultipartFile(
+      "fileName", "instance2_same_work.json", "application/ld+json",
+      getClass().getResourceAsStream("/rdf/instance2_same_work.json"));
+    var importResponse2 = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+        .file(instance2File)
+        .headers(defaultHeaders(env))
+        .param("filterType", ""))
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    var instance2Id = TEST_JSON_MAPPER.readTree(importResponse2).path("resources").get(0).asLong();
+
+    // then
+    awaitAndAssert(() ->
+      assertTrue(
+        workIndexTopicListener.getMessages().stream().anyMatch(m ->
+          m.contains(String.valueOf(instance1Id))
+            && m.contains(String.valueOf(instance2Id))
+            && m.contains("\"titles\"")
+        )
+      )
+    );
   }
 
   private void assertEvents(List<ResourceTypeAndLabel> expectedEvents) {

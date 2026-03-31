@@ -79,6 +79,8 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
       .findFirst()
       .orElse(resource);
 
+    refreshPreExistedEdges(persistedRootResource, createdResources);
+
     return new SaveGraphResult(persistedRootResource, createdResources, updatedResources);
   }
 
@@ -154,6 +156,15 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
       }
     }
     return resourceSaveResult;
+  }
+
+  private void refreshPreExistedEdges(Resource resource, Set<Resource> createdResources) {
+    resource.getIncomingEdges().stream()
+      .filter(edge -> !createdResources.contains(edge.getSource()))
+      .forEach(edge -> resourceRepo.findById(edge.getSource().getId()).ifPresent(edge::setSource));
+    resource.getOutgoingEdges().stream()
+      .filter(edge -> !createdResources.contains(edge.getTarget()))
+      .forEach(edge -> resourceRepo.findById(edge.getTarget().getId()).ifPresent(edge::setTarget));
   }
 
   private boolean doesNotExists(ResourceEdge edge) {
