@@ -2,6 +2,7 @@ package org.folio.linked.data.service.tenant;
 
 import static java.util.stream.Collectors.toMap;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
+import static org.folio.spring.integration.XOkapiHeaders.TOKEN;
 import static org.folio.spring.tools.config.RetryTemplateConfiguration.DEFAULT_KAFKA_RETRY_TEMPLATE_NAME;
 
 import java.util.Arrays;
@@ -49,7 +50,7 @@ public class TenantScopedExecutionService {
   }
 
   public <T> void executeWithRetry(Headers headers, Retryable<T> retryable, Consumer<Throwable> failureHandler) {
-    try (var fex = new FolioExecutionContextSetter(kafkaFolioExecutionContext(headers))) {
+    try (var fex = new FolioExecutionContextSetter(folioContextFromKafkaHeadersNoToken(headers))) {
       retryTemplate.execute(retryable);
     } catch (RetryException re) {
       failureHandler.accept(re.getLastException());
@@ -70,8 +71,9 @@ public class TenantScopedExecutionService {
     });
   }
 
-  private FolioExecutionContext kafkaFolioExecutionContext(Headers headers) {
+  private FolioExecutionContext folioContextFromKafkaHeadersNoToken(Headers headers) {
     var headersMap = Arrays.stream(headers.toArray())
+      .filter(h -> !h.key().equals(TOKEN))
       .collect(toMap(Header::key, Header::value, (o, o2) -> o2, (Supplier<Map<String, Object>>) HashMap::new));
     return contextBuilder.forMessageHeaders(new MessageHeaders(headersMap));
   }
