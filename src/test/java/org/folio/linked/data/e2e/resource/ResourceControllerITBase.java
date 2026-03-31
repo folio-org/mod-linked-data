@@ -843,16 +843,17 @@ abstract class ResourceControllerITBase extends ITBase {
   }
 
   private void validateProviderEvent(ResourceEdge edge, Resource source, PredicateDictionary predicate,
-                                     String expectedCode, String expectedLabel) {
+                                     String countryCode, String providerPlace) {
     var type = predicate.getUri().substring(predicate.getUri().indexOf("library/") + 8);
+    var expectedLabel = type + " name, " + type + " simple place, " + type + " date";
     assertThat(edge.getId()).isNotNull();
     assertThat(edge.getSource()).isEqualTo(source);
     assertThat(edge.getPredicate().getUri()).isEqualTo(predicate.getUri());
     var providerEvent = edge.getTarget();
-    assertThat(providerEvent.getLabel()).isEqualTo(type + " name");
+    assertThat(providerEvent.getLabel()).isEqualTo(expectedLabel);
     assertThat(providerEvent.getTypes().iterator().next().getUri()).isEqualTo(PROVIDER_EVENT.getUri());
     assertThat(providerEvent.getId()).isEqualTo(hashService.hash(providerEvent));
-    assertThat(providerEvent.getDoc().size()).isEqualTo(4);
+    assertThat(providerEvent.getDoc().size()).isEqualTo(5);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(DATE.getValue()).get(0).asString()).isEqualTo(type + " date");
     assertThat(providerEvent.getDoc().get(NAME.getValue()).size()).isEqualTo(1);
@@ -862,9 +863,10 @@ abstract class ResourceControllerITBase extends ITBase {
       .isEqualTo(type + " provider date");
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).size()).isEqualTo(1);
     assertThat(providerEvent.getDoc().get(SIMPLE_PLACE.getValue()).get(0).asString()).isEqualTo(type + " simple place");
+    assertThat(providerEvent.getDoc().get(LABEL.getValue()).get(0).asString()).isEqualTo(expectedLabel);
     assertThat(providerEvent.getOutgoingEdges()).hasSize(1);
-    validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, expectedCode,
-      expectedLabel);
+    validateProviderPlace(providerEvent.getOutgoingEdges().iterator().next(), providerEvent, countryCode,
+      providerPlace);
   }
 
   private void validateProviderPlace(ResourceEdge edge, Resource source, String expectedCode, String expectedLabel) {

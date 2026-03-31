@@ -1,7 +1,5 @@
 package org.folio.linked.data.mapper.dto.resource.common.instance.sub;
 
-import static java.util.Objects.nonNull;
-import static java.util.Optional.ofNullable;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_DISTRIBUTION;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_MANUFACTURE;
 import static org.folio.ld.dictionary.PredicateDictionary.PE_PRODUCTION;
@@ -12,10 +10,8 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PROVIDER_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.SIMPLE_PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
-import static org.folio.linked.data.util.ResourceUtils.getFirstValue;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +21,7 @@ import org.folio.linked.data.domain.dto.ProviderEventResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.label.ResourceEntityLabelService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
@@ -40,6 +37,7 @@ public class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
+  private final ResourceEntityLabelService labelService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -63,21 +61,12 @@ public class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
   public Resource toEntity(Object dto, Resource parentEntity) {
     var providerEvent = (ProviderEventRequest) dto;
     var resource = new Resource();
-    resource.setLabel(getFirstValue(() -> getPossibleLabels(providerEvent)));
     resource.addTypes(PROVIDER_EVENT);
     resource.setDoc(getDoc(providerEvent));
     coreMapper.addOutgoingEdges(resource, ProviderEventRequest.class, providerEvent.getProviderPlace(), PROVIDER_PLACE);
+    labelService.assignLabelToResource(resource);
     resource.setIdAndRefreshEdges(hashService.hash(resource));
     return resource;
-  }
-
-  private List<String> getPossibleLabels(ProviderEventRequest providerEvent) {
-    var result = new ArrayList<String>();
-    ofNullable(providerEvent.getName()).ifPresent(result::addAll);
-    ofNullable(providerEvent.getSimplePlace()).ifPresent(result::addAll);
-    ofNullable(providerEvent.getProviderPlace()).ifPresent(
-      pp -> result.addAll(pp.stream().filter(p -> nonNull(p.getLabel())).flatMap(p -> p.getLabel().stream()).toList()));
-    return result;
   }
 
   private JsonNode getDoc(ProviderEventRequest dto) {
