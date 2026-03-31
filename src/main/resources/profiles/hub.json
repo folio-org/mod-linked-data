@@ -133,8 +133,7 @@
         "mandatory": false,
         "defaults": [],
         "useValuesFrom": [
-          "http://id.loc.gov/vocabulary/relators",
-          "https://id.loc.gov/vocabulary/rbmsrel"
+          "/linked-data/vocabularies/relators"
         ],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Role"
@@ -369,7 +368,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["http://id.loc.gov/vocabulary/languages"],
+        "useValuesFrom": ["/linked-data/vocabularies/languages"],
         "valueDataType": { "remark": "", "dataTypeURI": "" }
       },
       "id": "Profile:Hub:LanguageCode:Language"
