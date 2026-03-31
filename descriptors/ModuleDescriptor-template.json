@@ -494,9 +494,7 @@
     "user": {
       "type": "system",
       "permissions": [
-        "inventory-storage.authority-source-files.collection.get",
-        "source-storage.records.formatted.item.get",
-        "search.authorities.collection.get"
+        "inventory-storage.authority-source-files.collection.get"
       ]
     }
   }
