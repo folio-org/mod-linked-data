@@ -1561,7 +1561,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:Dissertation:Degree"
+      "id": "Profile:Work:Dissertation:Degree",
+      "marc": "502 $b"
     },
     {
       "bfid": "lc:RT:bf2:search:institution",
@@ -1580,7 +1581,8 @@
         "isNew": true,
         "baseLabelType": "institution"
       },
-      "id": "Profile:Work:Dissertation:Institution"
+      "id": "Profile:Work:Dissertation:Institution",
+      "marc": "502 $c"
     },
     {
       "type": "literal",
@@ -1594,7 +1596,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:Dissertation:Date"
+      "id": "Profile:Work:Dissertation:Date",
+      "marc": "502 $d"
     },
     {
       "type": "literal",
@@ -1608,7 +1611,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:Dissertation:Note"
+      "id": "Profile:Work:Dissertation:Note",
+      "marc": "502 $a"
     },
     {
       "type": "literal",
@@ -1622,7 +1626,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:Dissertation:DissertationID"
+      "id": "Profile:Work:Dissertation:DissertationID",
+      "marc": "502 $o"
     },
     {
       "type": "literal",
@@ -1636,7 +1641,8 @@
         "useValuesFrom": [],
         "valueDataType": {}
       },
-      "id": "Profile:Work:Dissertation:MiscellaneousInformation"
+      "id": "Profile:Work:Dissertation:MiscellaneousInformation",
+      "marc": "502 $g"
     }
   ]
 }
