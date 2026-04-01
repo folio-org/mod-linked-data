@@ -9,7 +9,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -79,8 +79,6 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
       .findFirst()
       .orElse(resource);
 
-    refreshPreExistedEdges(persistedRootResource, createdResources);
-
     return new SaveGraphResult(persistedRootResource, createdResources, updatedResources);
   }
 
@@ -94,8 +92,8 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
     var result = new LinkedHashSet<ResourceSaveResult>();
     if (resource.isNew()) {
       result.add(saveOrUpdate(resource));
-      result.addAll(saveEdges(resource, resource.getOutgoingEdges(), ResourceEdge::getTarget, saved));
-      result.addAll(saveEdges(resource, resource.getIncomingEdges(), ResourceEdge::getSource, saved));
+      result.addAll(saveIncomingEdges(resource, saved));
+      result.addAll(saveOutgoingEdges(resource, saved));
     }
     return result;
   }
@@ -136,35 +134,36 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
     }
   }
 
-  private Set<ResourceSaveResult> saveEdges(Resource resource,
-                                            Set<ResourceEdge> edges,
-                                            Function<ResourceEdge, Resource> resourceSelector,
-                                            Resource saved) {
-    return edges.stream()
-      .filter(edge -> notEqual(resourceSelector.apply(edge), saved))
-      .flatMap(edge -> saveEdge(resourceSelector.apply(edge), resource, edge).stream())
+  private Set<ResourceSaveResult> saveIncomingEdges(Resource resource, Resource saved) {
+    return resource.getIncomingEdges().stream()
+      .filter(edge -> notEqual(edge.getSource(), saved))
+      .flatMap(edge -> saveEdge(edge.getSource(), ResourceEdge::setSource, resource, edge).stream())
       .collect(Collectors.toSet());
   }
 
-  private Set<ResourceSaveResult> saveEdge(Resource edgeResource, Resource resource, ResourceEdge edge) {
+  private Set<ResourceSaveResult> saveOutgoingEdges(Resource resource, Resource saved) {
+    return resource.getOutgoingEdges().stream()
+      .filter(edge -> notEqual(edge.getTarget(), saved))
+      .flatMap(edge -> saveEdge(edge.getTarget(), ResourceEdge::setTarget, resource, edge).stream())
+      .collect(Collectors.toSet());
+  }
+
+  private Set<ResourceSaveResult> saveEdge(Resource edgeResource, BiConsumer<ResourceEdge, Resource> referenceSetter,
+                                           Resource resource, ResourceEdge edge) {
     Set<ResourceSaveResult> resourceSaveResult = new LinkedHashSet<>();
     if (edge.isNew()) {
       resourceSaveResult = saveMergingGraphSkippingAlreadySaved(edgeResource, resource);
+      resourceSaveResult.stream()
+        .map(ResourceSaveResult::resource)
+        .filter(r -> r.getId().equals(edgeResource.getId()))
+        .findFirst()
+        .ifPresent(persisted -> referenceSetter.accept(edge, persisted));
       edge.computeId();
       if (doesNotExists(edge)) {
         edgeRepo.save(edge);
       }
     }
     return resourceSaveResult;
-  }
-
-  private void refreshPreExistedEdges(Resource resource, Set<Resource> createdResources) {
-    resource.getIncomingEdges().stream()
-      .filter(edge -> !createdResources.contains(edge.getSource()))
-      .forEach(edge -> resourceRepo.findById(edge.getSource().getId()).ifPresent(edge::setSource));
-    resource.getOutgoingEdges().stream()
-      .filter(edge -> !createdResources.contains(edge.getTarget()))
-      .forEach(edge -> resourceRepo.findById(edge.getTarget().getId()).ifPresent(edge::setTarget));
   }
 
   private boolean doesNotExists(ResourceEdge edge) {
