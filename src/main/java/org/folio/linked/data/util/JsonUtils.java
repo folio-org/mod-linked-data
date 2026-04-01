@@ -59,13 +59,6 @@ public class JsonUtils {
     return !JsonPath.using(JSONPATH_CONFIG).parse(json).read(jsonPath, List.class).isEmpty();
   }
 
-  public static <T> Optional<T> getElementByJsonPath(String json, String jsonPath, Class<T> type) {
-    if (isAnyBlank(json, jsonPath) || Objects.isNull(type)) {
-      return Optional.empty();
-    }
-    return Optional.ofNullable(JsonPath.using(JSONPATH_CONFIG).parse(json).read(jsonPath, type));
-  }
-
   public static String writeValueAsString(Object obj) {
     return obj instanceof String str ? str : JSON_MAPPER.writeValueAsString(obj);
   }
