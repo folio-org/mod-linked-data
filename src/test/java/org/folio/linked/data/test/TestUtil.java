@@ -13,6 +13,7 @@ import static org.folio.linked.data.service.lccn.LccnResourceService.LccnResourc
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
+import static org.folio.spring.integration.XOkapiHeaders.TOKEN;
 import static org.folio.spring.integration.XOkapiHeaders.URL;
 import static org.folio.spring.integration.XOkapiHeaders.USER_ID;
 import static org.jeasy.random.FieldPredicates.named;
@@ -105,7 +106,8 @@ public class TestUtil {
   public static List<RecordHeader> defaultKafkaHeaders() {
     return List.of(
       new RecordHeader(TENANT, TENANT_ID.getBytes(UTF_8)),
-      new RecordHeader(URL, getProperty(FOLIO_OKAPI_URL).getBytes(UTF_8))
+      new RecordHeader(URL, getProperty(FOLIO_OKAPI_URL).getBytes(UTF_8)),
+      new RecordHeader(TOKEN, "test-token".getBytes(UTF_8))
     );
   }
 
