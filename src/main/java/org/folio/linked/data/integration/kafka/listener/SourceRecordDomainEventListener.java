@@ -61,11 +61,9 @@ public class SourceRecordDomainEventListener {
       .map(SourceRecordType::fromValue)
       .orElseThrow();
 
-    var tenantId = getHeaderValueByName(consumerRecord, TENANT).orElseThrow();
-
     if (sourceRecordType == MARC_AUTHORITY || sourceRecordType == MARC_BIB) {
-      tenantScopedExecutionService.executeWithRetrySystemUser(
-        tenantId,
+      tenantScopedExecutionService.executeWithRetry(
+        consumerRecord.headers(),
         () -> {
           sourceRecordDomainEventHandler.handle(event, sourceRecordType);
           return null;
