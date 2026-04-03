@@ -142,6 +142,11 @@ public class ResourceUtils {
       .toList();
   }
 
+  public static String getFirstPropertyValue(Resource resource, PropertyDictionary property) {
+    return getPropertyValues(resource, property)
+      .getFirst();
+  }
+
   public static List<String> getPropertyValues(Resource resource, PropertyDictionary property) {
     return ofNullable(resource.getDoc())
       .map(doc -> doc.get(property.getValue()))

@@ -2,6 +2,7 @@ package org.folio.linked.data.validation.entity;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SERIES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -26,6 +27,20 @@ class PrimaryTitleEntityValidatorTest {
 
     // when
     boolean result = validator.isValid(resource, null);
+
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void shouldReturnTrue_ifGivenResourceIsWorkAndLightResourceWithEmptyOutgoingEdges() {
+    // given
+    var resource = new Resource()
+      .addTypes(WORK, LIGHT_RESOURCE)
+      .setOutgoingEdges(new HashSet<>());
+
+    // when
+    var result = validator.isValid(resource, null);
 
     // then
     assertThat(result).isTrue();
