@@ -62,7 +62,7 @@
     <easy-random.version>5.0.0</easy-random.version>
 
     <!-- Plugins versions -->
-    <maven-openapi-generator-plugin.version>7.20.0</maven-openapi-generator-plugin.version>
+    <maven-openapi-generator-plugin.version>7.21.0</maven-openapi-generator-plugin.version>
     <maven-copy-rename-plugin.version>1.0.1</maven-copy-rename-plugin.version>
     <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
     <folio-module-descriptor-validator.version>1.0.1</folio-module-descriptor-validator.version>
