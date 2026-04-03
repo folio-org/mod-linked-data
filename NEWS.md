@@ -118,6 +118,7 @@
 - Add marc field info in dissertation section of the work-books profile json [MODLD-1032](https://folio-org.atlassian.net/browse/MODLD-1032)
 - Remove AUTO_SAVE_MARC_BIB_AS_GRAPH [MODLD-1025](https://folio-org.atlassian.net/browse/MODLD-1025)
 - Preserve user context and headers in Kafka processing. Remove all references to system user [MODLD-1031](https://folio-org.atlassian.net/browse/MODLD-1031)
+- Make profile settings transactional to address inconsistency bug [MODLD-1030](https://folio-org.atlassian.net/browse/MODLD-1030)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)
