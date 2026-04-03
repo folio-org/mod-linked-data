@@ -117,6 +117,7 @@
 - Use LabelGeneratorService to compute the label of PROVIDER_EVENT resource [MODLD-1020](https://folio-org.atlassian.net/browse/MODLD-1020)
 - Add marc field info in dissertation section of the work-books profile json [MODLD-1032](https://folio-org.atlassian.net/browse/MODLD-1032)
 - Preserve user context and headers in Kafka processing. Remove all references to system user [MODLD-1031](https://folio-org.atlassian.net/browse/MODLD-1031)
+- Analytical Entries added to Work Response DTO (MODLD-1029)[https://folio-org.atlassian.net/browse/MODLD-1029]
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

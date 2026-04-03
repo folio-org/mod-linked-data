@@ -4,6 +4,7 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SERIES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -20,7 +21,7 @@ public class PrimaryTitleEntityValidator implements ConstraintValidator<PrimaryT
 
   @Override
   public boolean isValid(Resource resource, ConstraintValidatorContext context) {
-    if (isNotWorkOrInstance(resource) || isSeries(resource)) {
+    if (isNotWorkOrInstance(resource) || isSeries(resource) || isLightResource(resource)) {
       return true;
     }
     if (isEmpty(resource.getOutgoingEdges())) {
@@ -44,5 +45,9 @@ public class PrimaryTitleEntityValidator implements ConstraintValidator<PrimaryT
 
   private boolean isSeries(Resource resource) {
     return resource.isOfType(SERIES);
+  }
+
+  private boolean isLightResource(Resource resource) {
+    return resource.isOfType(LIGHT_RESOURCE);
   }
 }

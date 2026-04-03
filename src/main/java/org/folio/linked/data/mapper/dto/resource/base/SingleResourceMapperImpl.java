@@ -15,6 +15,7 @@ import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -56,15 +57,13 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
 
   @Override
   public <D> D toDto(@NonNull Resource source, @NonNull D parentDto, Resource parentResource, Predicate predicate) {
-    // Of all the types of the resource, take the first one that has a mapper
-    var resourceMapper = source.getTypes()
+    return source.getTypes()
       .stream()
       .map(type -> getMapperUnit(type.getUri(), predicate, parentDto.getClass(), null))
       .flatMap(Optional::stream)
-      .findFirst();
-
-    return resourceMapper
       .map(mapper -> mapper.toDto(source, parentDto, new ResourceMappingContext(parentResource, predicate)))
+      .filter(Objects::nonNull)
+      .findFirst()
       .orElseGet(() -> {
         var types = String.join(", ", getTypeUris(source));
         log.debug(
