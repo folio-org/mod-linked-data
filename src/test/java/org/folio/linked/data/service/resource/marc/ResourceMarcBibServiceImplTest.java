@@ -343,34 +343,6 @@ class ResourceMarcBibServiceImplTest {
   }
 
   @Test
-  void importGraphResourceFromMarc_shouldSaveResourceAndPublishEvents() {
-    // given
-    var marcJson = "{\"leader\":\"04809n   a2200865 i 4500\"}";
-    var resourceId = 1L;
-    var srsId = UUID.randomUUID().toString();
-    var resourceModel = new org.folio.ld.dictionary.model.Resource()
-      .setId(resourceId)
-      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
-    var resourceEntity = new Resource().setIdAndRefreshEdges(resourceId);
-    var saveGraphResult = new SaveGraphResult(resourceEntity);
-    var resourceModelCaptor = ArgumentCaptor.forClass(org.folio.ld.dictionary.model.Resource.class);
-
-    when(marcBib2ldMapper.fromMarcJson(marcJson)).thenReturn(Optional.of(resourceModel));
-    when(resourceModelMapper.toEntity(resourceModelCaptor.capture())).thenReturn(resourceEntity);
-    when(resourceRepo.existsById(resourceId)).thenReturn(false);
-    when(folioMetadataRepo.existsBySrsId(srsId)).thenReturn(false);
-    when(resourceGraphService.saveMergingGraph(resourceEntity)).thenReturn(saveGraphResult);
-
-    // when
-    resourceMarcService.importGraphResourceFromMarc(marcJson);
-
-    // then
-    verify(resourceGraphService).saveMergingGraph(resourceEntity);
-    verify(resourceEventsPublisher).emitEventsForCreateAndUpdate(saveGraphResult, null);
-    assertThat(resourceModelCaptor.getValue().getFolioMetadata().getSource().name()).isEqualTo(LINKED_DATA.name());
-  }
-
-  @Test
   void saveAdminMetadata_shouldDoNothingAndReturnFalse_ifGivenResourceDoesNotContainFolioMetadata() {
     // given
     var resourceModel = new org.folio.ld.dictionary.model.Resource();

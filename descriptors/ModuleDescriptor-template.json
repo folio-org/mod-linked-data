@@ -484,7 +484,6 @@
       { "name": "CACHE_TTL_AUTHORITY_SOURCE_FILES_MS", "value": "18000000" },
       { "name": "CACHE_TTL_VOCABULARIES_MS", "value": "18000000" },
       { "name": "AUTHORITY_SOURCE_FILES_LIMIT", "value": "50" },
-      { "name": "AUTO_SAVE_MARC_BIB_AS_GRAPH", "value": "false" },
       { "name": "REINDEX_CHUNK_SIZE", "value": "1000" },
       { "name": "GRAPH_CLEANING_CHUNK_SIZE", "value": "1000" },
       { "name": "GRAPH_CLEANING_MAX_ROUNDS", "value": "10" }
