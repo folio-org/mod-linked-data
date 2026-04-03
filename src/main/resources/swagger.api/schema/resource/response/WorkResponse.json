@@ -187,6 +187,13 @@
             "type": "object",
             "$ref": "../common/HubReferenceWithType.json"
           }
+        },
+        "_analyticalEntry ": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/LightWork.json"
+          }
         }
       }
     }
