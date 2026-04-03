@@ -18,7 +18,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>4.0.4</version>
+    <version>4.0.5</version>
     <relativePath />
   </parent>
 
@@ -121,12 +121,6 @@
       <groupId>org.folio</groupId>
       <artifactId>folio-kafka-wrapper</artifactId>
       <version>${folio-kafka-wrapper.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.folio</groupId>
-      <artifactId>folio-spring-system-user</artifactId>
-      <version>${folio-spring-base.version}</version>
     </dependency>
 
     <dependency>

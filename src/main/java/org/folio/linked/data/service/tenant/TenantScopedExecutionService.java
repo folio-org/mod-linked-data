@@ -18,7 +18,6 @@ import org.apache.kafka.common.header.Headers;
 import org.folio.spring.FolioExecutionContext;
 import org.folio.spring.integration.XOkapiHeaders;
 import org.folio.spring.scope.FolioExecutionContextSetter;
-import org.folio.spring.service.SystemUserScopedExecutionService;
 import org.folio.spring.tools.context.ExecutionContextBuilder;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,8 +35,6 @@ public class TenantScopedExecutionService {
   @Qualifier(DEFAULT_KAFKA_RETRY_TEMPLATE_NAME)
   private final RetryTemplate retryTemplate;
   private final ExecutionContextBuilder contextBuilder;
-  @SuppressWarnings({"removal"})
-  private final SystemUserScopedExecutionService executionService;
   @Value("${folio.okapi-url}")
   private String okapiUrl;
 
@@ -54,20 +51,6 @@ public class TenantScopedExecutionService {
     } catch (RetryException re) {
       failureHandler.accept(re.getLastException());
     }
-  }
-
-  public <T> void executeWithRetrySystemUser(String tenant,
-                                             Retryable<T> retryable,
-                                             Consumer<Throwable> failureHandler) {
-    //noinspection removal
-    executionService.executeSystemUserScoped(tenant, () -> {
-      try {
-        retryTemplate.execute(retryable);
-      } catch (Exception e) {
-        failureHandler.accept(e);
-      }
-      return null;
-    });
   }
 
   private FolioExecutionContext folioContextFromKafkaHeadersNoToken(Headers headers) {

@@ -115,9 +115,9 @@
 - Get rid of RESOURCE_PREFERRED property [MODLD-1028](https://folio-org.atlassian.net/browse/MODLD-1028)
 - Update profiles to use local dictionaries instead of id.loc.gov [MODLD-1027](https://folio-org.atlassian.net/browse/MODLD-1027)
 - Use LabelGeneratorService to compute the label of PROVIDER_EVENT resource [MODLD-1020](https://folio-org.atlassian.net/browse/MODLD-1020)
-- Preserve user context and headers in Kafka processing [MODLD-1031](https://folio-org.atlassian.net/browse/MODLD-1031)
 - Add marc field info in dissertation section of the work-books profile json [MODLD-1032](https://folio-org.atlassian.net/browse/MODLD-1032)
 - Remove AUTO_SAVE_MARC_BIB_AS_GRAPH [MODLD-1025](https://folio-org.atlassian.net/browse/MODLD-1025)
+- Preserve user context and headers in Kafka processing. Remove all references to system user [MODLD-1031](https://folio-org.atlassian.net/browse/MODLD-1031)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

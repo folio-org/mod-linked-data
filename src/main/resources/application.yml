@@ -81,12 +81,6 @@ folio:
       - name: ${mod-linked-data.kafka.topic.hub-search-index}
         numPartitions: ${KAFKA_HUB_SEARCH_INDEX_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_HUB_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR:}
-  system-user:
-    enabled: ${SYSTEM_USER_ENABLED:false}
-    username: ${SYSTEM_USER_NAME:mod-linked-data}
-    password: ${SYSTEM_USER_PASSWORD:dummy}
-    permissionsFilePath: system-user-permissions.txt
-    lastname: System
   retry:
     enabled: true
 
