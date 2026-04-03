@@ -29,6 +29,21 @@ class PrimaryTitleEntityValidatorTest {
     boolean result = validator.isValid(resource, null);
 
     // then
+    // then
+    assertThat(result).isTrue();
+  }
+
+  @Test
+  void shouldReturnTrue_ifGivenResourceIsWorkAndLightResourceWithEmptyOutgoingEdges() {
+    // given
+    var resource = new Resource()
+      .addTypes(WORK, LIGHT_RESOURCE)
+      .setOutgoingEdges(new HashSet<>());
+
+    // when
+    var result = validator.isValid(resource, null);
+
+    // then
     assertThat(result).isTrue();
   }
 
