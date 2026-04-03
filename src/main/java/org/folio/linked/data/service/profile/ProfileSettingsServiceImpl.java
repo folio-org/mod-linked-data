@@ -16,11 +16,13 @@ import org.folio.linked.data.repo.ProfileRepository;
 import org.folio.linked.data.repo.ProfileSettingsRepository;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.core.JacksonException;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
+@Transactional
 public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   private final ProfileSettingsRepository profileSettingsRepository;
   private final ProfileRepository profileRepository;
@@ -28,6 +30,7 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   private final FolioExecutionContext executionContext;
 
   @Override
+  @Transactional(readOnly = true)
   public CustomProfileSettingsResponseDto getProfileSettings(Integer profileId) {
     var userId = executionContext.getUserId();
     profileRepository.findById(profileId)
