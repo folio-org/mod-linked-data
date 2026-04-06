@@ -2,10 +2,16 @@ package org.folio.linked.data.service.resource.edge;
 
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
+import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
+import static org.folio.ld.dictionary.PredicateDictionary.OTHER_EDITION;
+import static org.folio.ld.dictionary.PredicateDictionary.OTHER_VERSION;
+import static org.folio.ld.dictionary.PredicateDictionary.RELATED_WORK;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.SERIES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.folio.ld.dictionary.PredicateDictionary;
@@ -23,8 +29,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ResourceEdgeServiceImpl implements ResourceEdgeService {
 
-  private static final Map<ResourceTypeDictionary, Set<PredicateDictionary>> OUTGOING_EDGES_TO_BE_COPIED = Map.of(
-    WORK, Set.of(DISSERTATION, GENRE)
+  private static final Map<ResourceTypeDictionary, Map<PredicateDictionary, Predicate<ResourceEdge>>>
+    PARENT_TO_OUTGOING_EDGE_AND_CONDITION = Map.of(
+    WORK, Map.of(
+      DISSERTATION, edge -> true,
+      GENRE, edge -> true,
+      IS_PART_OF, edge -> !edge.getTarget().isOfType(SERIES),
+      OTHER_EDITION, edge -> true,
+      OTHER_VERSION, edge -> true,
+      RELATED_WORK, edge -> true
+    )
   );
   private final ResourceModelMapper resourceModelMapper;
   private final ResourceEdgeRepository resourceEdgeRepository;
@@ -68,21 +82,13 @@ public class ResourceEdgeServiceImpl implements ResourceEdgeService {
   }
 
   private Set<ResourceEdge> getOutgoingEdgesToBeCopied(Resource resource) {
-    var predicatesToBeCopied = getPredicatesToBeCopied(resource);
-    return getOutgoingEdgesWithPredicate(resource, predicatesToBeCopied);
-  }
-
-  private Set<ResourceEdge> getOutgoingEdgesWithPredicate(Resource resource, Set<String> predicateUris) {
-    return resource.getOutgoingEdges().stream()
-      .filter(edge -> predicateUris.contains(edge.getPredicate().getUri()))
-      .collect(Collectors.toSet());
-  }
-
-  private Set<String> getPredicatesToBeCopied(Resource resource) {
-    return OUTGOING_EDGES_TO_BE_COPIED.entrySet().stream()
+    return PARENT_TO_OUTGOING_EDGE_AND_CONDITION.entrySet().stream()
       .filter(entry -> resource.isOfType(entry.getKey()))
-      .flatMap(entry -> entry.getValue().stream())
-      .map(PredicateDictionary::getUri)
+      .flatMap(entry -> resource.getOutgoingEdges().stream()
+        .filter(edge -> PredicateDictionary.fromUri(edge.getPredicate().getUri())
+          .map(entry.getValue()::get)
+          .map(condition -> condition.test(edge))
+          .orElse(false)))
       .collect(Collectors.toSet());
   }
 
