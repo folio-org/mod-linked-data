@@ -687,6 +687,7 @@
     {
       "type": "group",
       "displayName": "Geographic Coverage",
+      "uriBFLite": "_geographicCoverageReference",
       "constraints": {
         "repeatable": true,
         "editable": true,
@@ -701,7 +702,7 @@
     {
       "type": "complex",
       "displayName": "Search LCNAF, LCSH or GAC",
-      "uriBFLite": "_geographicCoverageReference",
+      "uriBFLite": "label",
       "constraints": {
         "repeatable": true,
         "editable": true,
