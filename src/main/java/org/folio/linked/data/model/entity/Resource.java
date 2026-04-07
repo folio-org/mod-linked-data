@@ -42,6 +42,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.configuration.audit.LinkedDataAuditEntityListener;
+import org.folio.linked.data.validation.InstanceSingleWorkConstraint;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
 import org.folio.linked.data.validation.ResourceTypeConstraint;
 import org.folio.marc4ld.util.ResourceKind;
@@ -57,6 +58,7 @@ import tools.jackson.databind.JsonNode;
 @NoArgsConstructor
 @PrimaryTitleConstraint
 @ResourceTypeConstraint
+@InstanceSingleWorkConstraint
 @Accessors(chain = true)
 @Table(name = "resources")
 @EqualsAndHashCode(of = "id")

@@ -17,7 +17,7 @@ public class PrimaryTitleDtoValidator implements
   @Override
   public boolean isValid(List<TitleFieldRequestTitleInner> titleFields, ConstraintValidatorContext context) {
     if (isNull(titleFields)) {
-      return true;
+      return false;
     }
     return titleFields.stream()
       .filter(PrimaryTitleField.class::isInstance)
