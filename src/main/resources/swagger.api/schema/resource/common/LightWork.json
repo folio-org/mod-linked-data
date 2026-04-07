@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Light Work",
+  "allOf": [
+    {
+      "$ref": "IdField.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "_relation": {
+          "type": "string"
+        }
+      }
+    }
+  ]
+}
+

@@ -3,15 +3,22 @@ package org.folio.linked.data.service.resource.edge;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.DISSERTATION;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
+import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
+import static org.folio.ld.dictionary.PredicateDictionary.OTHER_EDITION;
+import static org.folio.ld.dictionary.PredicateDictionary.OTHER_VERSION;
+import static org.folio.ld.dictionary.PredicateDictionary.RELATED_WORK;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.SERIES;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.mapper.ResourceModelMapper;
 import org.folio.linked.data.model.entity.PredicateEntity;
@@ -49,28 +56,47 @@ class ResourceEdgeServiceTest {
   void saveNewResourceEdge_shouldSaveMappedEdgeResourceWithReferenceToSource() {
     // given
     var sourceId = randomLong();
-    var edgeModel = new org.folio.ld.dictionary.model.ResourceEdge(
-      new org.folio.ld.dictionary.model.Resource().setId(sourceId),
-      new org.folio.ld.dictionary.model.Resource().setId(randomLong()), TITLE);
-    var mappedEdgeResource = new Resource().setIdAndRefreshEdges(edgeModel.getTarget().getId());
-    doReturn(mappedEdgeResource).when(resourceModelMapper).toEntity(edgeModel.getTarget());
-    doReturn(new SaveGraphResult(mappedEdgeResource)).when(resourceGraphService).saveMergingGraph(mappedEdgeResource);
+    var targetModel = new org.folio.ld.dictionary.model.Resource().setId(randomLong());
+    var mappedTarget = new Resource().setIdAndRefreshEdges(targetModel.getId());
+    doReturn(mappedTarget).when(resourceModelMapper).toEntity(targetModel);
+    doReturn(new SaveGraphResult(mappedTarget)).when(resourceGraphService).saveMergingGraph(mappedTarget);
     when(resourceEdgeRepository.save(any(ResourceEdge.class)))
       .thenAnswer(i -> i.getArgument(0));
 
     // when
-    var result = resourceEdgeService.saveNewResourceEdge(sourceId, edgeModel.getPredicate(), edgeModel.getTarget());
+    var result = resourceEdgeService.saveNewResourceEdge(sourceId, TITLE, targetModel);
 
     // then
-    assertThat(result.getSourceHash()).isEqualTo(edgeModel.getSource().getId());
-    assertThat(result.getTargetHash()).isEqualTo(edgeModel.getTarget().getId());
-    assertThat(result.getPredicateHash()).isEqualTo(edgeModel.getPredicate().getHash());
+    assertThat(result.getSourceHash()).isEqualTo(sourceId);
+    assertThat(result.getTargetHash()).isEqualTo(targetModel.getId());
+    assertThat(result.getPredicateHash()).isEqualTo(TITLE.getHash());
+  }
+
+  @Test
+  void deleteEdgesHavingPredicate_shouldDelegateToRepository() {
+    // given
+    var resourceId = randomLong();
+    var predicate = PredicateDictionary.GENRE;
+    var expectedDeletedCount = 2L;
+    doReturn(expectedDeletedCount).when(resourceEdgeRepository)
+      .deleteByIdSourceHashAndIdPredicateHash(resourceId, predicate.getHash());
+
+    // when
+    var result = resourceEdgeService.deleteEdgesHavingPredicate(resourceId, predicate);
+
+    // then
+    assertThat(result).isEqualTo(expectedDeletedCount);
+    verify(resourceEdgeRepository).deleteByIdSourceHashAndIdPredicateHash(resourceId, predicate.getHash());
   }
 
   static Stream<Arguments> dataProvider() {
     return Stream.of(
-      Arguments.of(getWork(), getEmptyWork(), List.of(DISSERTATION.getUri(),
-        GENRE.getUri())),
+      Arguments.of(getWork(), getEmptyWork(), List.of(
+        DISSERTATION.getUri(), GENRE.getUri(), IS_PART_OF.getUri(),
+        OTHER_EDITION.getUri(), OTHER_VERSION.getUri(), RELATED_WORK.getUri())),
+      Arguments.of(getWorkWithIsPartOfPointingToSeries(), getEmptyWork(), List.of(
+        DISSERTATION.getUri(), GENRE.getUri(),
+        OTHER_EDITION.getUri(), OTHER_VERSION.getUri(), RELATED_WORK.getUri())),
       Arguments.of(getInstance(), getEmptyWork(), List.of()),
       Arguments.of(getWork(), getEmptyInstance(), List.of())
     );
@@ -141,7 +167,29 @@ class ResourceEdgeServiceTest {
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), TITLE));
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), DISSERTATION));
     work.addOutgoingEdge(new ResourceEdge(work, new Resource(), GENRE));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), IS_PART_OF));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), OTHER_EDITION));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), OTHER_VERSION));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), RELATED_WORK));
     return work;
+  }
+
+  private static Resource getWorkWithIsPartOfPointingToSeries() {
+    var work = getEmptyWork();
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), TITLE));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), DISSERTATION));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), GENRE));
+    work.addOutgoingEdge(new ResourceEdge(work, getSeriesResource(), IS_PART_OF));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), OTHER_EDITION));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), OTHER_VERSION));
+    work.addOutgoingEdge(new ResourceEdge(work, new Resource(), RELATED_WORK));
+    return work;
+  }
+
+  private static Resource getSeriesResource() {
+    var series = new Resource();
+    series.setTypes(Set.of(new ResourceTypeEntity(3L, SERIES.getUri(), "series")));
+    return series;
   }
 
   private static Resource getWorkWithIncomingEdges() {
