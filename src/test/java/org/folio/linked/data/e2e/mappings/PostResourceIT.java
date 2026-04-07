@@ -3,6 +3,7 @@ package org.folio.linked.data.e2e.mappings;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
@@ -21,12 +22,9 @@ import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.test.resource.ResourceTestService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.databind.JsonNode;
 
@@ -37,12 +35,22 @@ public abstract class PostResourceIT extends ITBase {
   private static final int RESOURCE_FETCH_DEPTH = 4;
   private static final String RESOURCE_URL = "/linked-data/resource";
 
-  @Autowired
-  private MockMvc mockMvc;
-  @Autowired
-  private Environment env;
-  @Autowired
-  private ResourceTestService resourceService;
+  protected Long savedWorkId;
+
+  @BeforeEach
+  void setupWork() {
+    savedWorkId = null;
+  }
+
+  protected void createAndSaveSampleWork() {
+    savedWorkId = resourceTestService.saveGraph(getWork(getClass().getSimpleName(), hashService)).getId();
+  }
+
+  protected String workReferenceJson() {
+    return savedWorkId != null
+      ? ",%n              \"_workReference\": [ { \"id\": \"%s\" } ]".formatted(savedWorkId)
+      : "";
+  }
 
   protected abstract String postPayload();
 
@@ -67,7 +75,7 @@ public abstract class PostResourceIT extends ITBase {
     postResponse.andExpect(status().isOk());
     validateApiResponse(postResponse);
     var resourceId = getResourceId(postResponse);
-    var resource = resourceService.getResourceById(resourceId, RESOURCE_FETCH_DEPTH);
+    var resource = resourceTestService.getResourceById(resourceId, RESOURCE_FETCH_DEPTH);
     validateGraph(resource);
 
     var getRequest = get(RESOURCE_URL + "/" + resourceId)

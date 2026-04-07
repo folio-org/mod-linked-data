@@ -9,12 +9,18 @@ import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
 @ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
 class BookFormatIT extends PostResourceIT {
+
+  @BeforeEach
+  void createWork() {
+    createAndSaveSampleWork();
+  }
 
   @Override
   protected String postPayload() {
@@ -37,11 +43,12 @@ class BookFormatIT extends PostResourceIT {
                   }, {
                      "http://bibfra.me/vocab/library/term":[ "non-standard-format" ]
                   }
-               ]
+               ],
+               "_workReference": [ { "id": "%s" } ]
             }
          }
       }"""
-      .formatted("TEST: " + this.getClass().getSimpleName());
+      .formatted("TEST: " + this.getClass().getSimpleName(), savedWorkId);
   }
 
   @Override

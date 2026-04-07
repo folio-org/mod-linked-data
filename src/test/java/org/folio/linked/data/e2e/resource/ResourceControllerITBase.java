@@ -86,6 +86,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceReso
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.MonographTestUtil.getSubjectFormNotPreferred;
 import static org.folio.linked.data.test.MonographTestUtil.getSubjectPersonPreferred;
+import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.INSTANCE_WITH_WORK_REF_SAMPLE;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.WORK_WITH_INSTANCE_REF_SAMPLE;
@@ -283,7 +284,7 @@ abstract class ResourceControllerITBase extends ITBase {
   @Test
   void createWorkWithInstanceRef_shouldSaveEntityCorrectly() throws Exception {
     // given
-    var instanceForReference = getSampleInstanceResource(null, null);
+    var instanceForReference = getSampleInstanceResource(null, getWork("instanceRefPreExistingWork", hashService));
     setExistingResourcesIds(instanceForReference, hashService);
     var instanceId = resourceTestService.saveGraph(instanceForReference).getId();
     var requestBuilder = post(RESOURCE_URL)
@@ -435,7 +436,7 @@ abstract class ResourceControllerITBase extends ITBase {
   @Test
   void update_shouldReturnCorrectlyUpdateMetadataFields() throws Exception {
     // given
-    var instanceForReference = getSampleInstanceResource(null, null);
+    var instanceForReference = getSampleInstanceResource(null, getWork("metadataTestPreExistingWork", hashService));
     setExistingResourcesIds(instanceForReference, hashService);
     resourceTestService.saveGraph(instanceForReference);
     var requestBuilder = post(RESOURCE_URL)

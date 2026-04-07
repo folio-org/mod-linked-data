@@ -10,12 +10,19 @@ import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
 @ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
-public class AdminMetadataWithoutControlNumberIT extends PostResourceIT {
+class AdminMetadataWithoutControlNumberIT extends PostResourceIT {
+
+  @BeforeEach
+  void createWork() {
+    createAndSaveSampleWork();
+  }
+
   @Override
   protected String postPayload() {
     return """
@@ -36,11 +43,12 @@ public class AdminMetadataWithoutControlNumberIT extends PostResourceIT {
                      "http://bibfra.me/vocab/library/transcribingAgency": ["Agency 2"],
                      "http://bibfra.me/vocab/library/modifyingAgency": ["Agency 3", "Agency 4"]
                   }
-               ]
+               ],
+               "_workReference": [ { "id": "%s" } ]
             }
          }
       }"""
-      .formatted("TEST: " + this.getClass().getSimpleName());
+      .formatted("TEST: " + this.getClass().getSimpleName(), savedWorkId);
   }
 
   @Override

@@ -1,12 +1,16 @@
 package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.FOLIO_INVENTORY_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 
@@ -14,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.base.ITBase;
@@ -51,10 +54,10 @@ class ResourceSubgraphViewIT extends ITBase {
     var instance = mapper.fromJson(exported.iterator().next().getResourceSubgraph());
     assertThat(instance).isPresent();
     assertThat(instance.get().getLabel()).isEqualTo(titleStr);
-    assertThat(instance.get().getOutgoingEdges()).hasSize(2);
+    assertThat(instance.get().getOutgoingEdges()).hasSize(3);
     var amEdge = instance.get().getOutgoingEdges()
       .stream()
-      .filter(edge -> edge.getPredicate().equals(PredicateDictionary.ADMIN_METADATA))
+      .filter(edge -> edge.getPredicate().equals(ADMIN_METADATA))
       .findFirst();
     assertThat(amEdge).isPresent();
     var props = amEdge.get().getTarget().getDoc();
@@ -93,14 +96,16 @@ class ResourceSubgraphViewIT extends ITBase {
       .setLabel(hrid);
 
     var inventoryId = UUID.randomUUID().toString();
+    var work = getWork(titleStr, hashService);
     var resource = new Resource()
       .addTypes(INSTANCE)
       .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(titleStr)
       .setIdAndRefreshEdges(456L);
     resource.setFolioMetadata(new FolioMetadata(resource).setInventoryId(inventoryId));
-    resource.addOutgoingEdge(new ResourceEdge(resource, title, PredicateDictionary.TITLE));
-    resource.addOutgoingEdge(new ResourceEdge(resource, adminMetadata, PredicateDictionary.ADMIN_METADATA));
+    resource.addOutgoingEdge(new ResourceEdge(resource, title, TITLE));
+    resource.addOutgoingEdge(new ResourceEdge(resource, adminMetadata, ADMIN_METADATA));
+    resource.addOutgoingEdge(new ResourceEdge(resource, work, INSTANTIATES));
     title.setIdAndRefreshEdges(hashService.hash(title));
     adminMetadata.setIdAndRefreshEdges(hashService.hash(adminMetadata));
     resourceTestService.saveGraph(resource);

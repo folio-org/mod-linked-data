@@ -70,21 +70,25 @@ class RdfImportIT extends ITBase {
       .file(multipartFile)
       .headers(defaultHeaders(env))
       .param("filterType", "");
-    var expectedId = -1677400301769626518L;
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    resultActions
+    var response = resultActions
       .andExpect(status().isOk())
-      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
-      .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
-    assertThat(resourceRepo.existsById(expectedId)).isTrue();
+      .andReturn().getResponse().getContentAsString();
+    var resourceId = TEST_JSON_MAPPER.readTree(response).path("resources").get(0).asLong();
+    resultActions
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(resourceId))))
+      .andExpect(jsonPath("log", containsString(Long.toString(resourceId))));
+    assertThat(resourceRepo.existsById(resourceId)).isTrue();
 
     var expectedEvents = List.of(
       new ResourceTypeAndLabel(INSTANCE, "Title mainTitle Title subtitle"),
-      new ResourceTypeAndLabel(TITLE, "Title mainTitle Title subtitle")
+      new ResourceTypeAndLabel(TITLE, "Title mainTitle Title subtitle"),
+      new ResourceTypeAndLabel(WORK, "Title mainTitle"),
+      new ResourceTypeAndLabel(TITLE, "Title mainTitle")
     );
     assertEvents(expectedEvents);
   }

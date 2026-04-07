@@ -41,11 +41,11 @@ public abstract class AbstractVariantTitleIT extends PostResourceIT {
                     "http://bibfra.me/vocab/lite/date":[ "2026" ]
                  }
               }
-            ]
+            ]%s
           }
         }
       }"""
-      .formatted(resourceUri(), expectedMainTitle());
+      .formatted(resourceUri(), expectedMainTitle(), workReferenceJson());
   }
 
   @Override

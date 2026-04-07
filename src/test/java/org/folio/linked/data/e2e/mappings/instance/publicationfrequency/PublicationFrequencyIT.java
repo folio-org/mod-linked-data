@@ -6,9 +6,15 @@ import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.web.servlet.ResultActions;
 
-public class PublicationFrequencyIT extends PostResourceIT {
+class PublicationFrequencyIT extends PostResourceIT {
+
+  @BeforeEach
+  void createWork() {
+    createAndSaveSampleWork();
+  }
 
   @Override
   protected String postPayload() {
@@ -29,11 +35,12 @@ public class PublicationFrequencyIT extends PostResourceIT {
                      "http://bibfra.me/vocab/lite/label":["annual"],
                      "http://bibfra.me/vocab/lite/link":["http://id.loc.gov/vocabulary/frequencies/ann"]
                   }
-               ]
+               ],
+               "_workReference": [ { "id": "%s" } ]
             }
          }
       }"""
-      .formatted("TEST: " + this.getClass().getSimpleName());
+      .formatted("TEST: " + this.getClass().getSimpleName(), savedWorkId);
   }
 
   @Override

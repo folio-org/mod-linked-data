@@ -45,7 +45,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors()).contains(expectedError);
   }
 
   @Test
@@ -67,7 +67,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors()).contains(expectedError);
   }
 
   @Test
@@ -89,7 +89,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors()).contains(expectedError);
   }
 
   @Test
@@ -111,7 +111,7 @@ class ResourceControllerBaseValidationIT extends ITBase {
       .andReturn().getResponse().getContentAsString();
 
     var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
-    assertThat(errorResponse.getErrors()).containsOnly(expectedError);
+    assertThat(errorResponse.getErrors()).contains(expectedError);
   }
 
   @Test
@@ -133,10 +133,8 @@ class ResourceControllerBaseValidationIT extends ITBase {
 
     var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
     assertThat(errorResponse.getErrors())
-      .hasSize(1)
-      .first()
       .extracting("code")
-      .isEqualTo("required_primary_main_title");
+      .contains("required_primary_main_title");
   }
 
   private Error getError(String resourceType) {

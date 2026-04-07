@@ -1,8 +1,9 @@
 package org.folio.linked.data.validation.entity;
 
-import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import jakarta.validation.ConstraintValidator;
@@ -15,7 +16,7 @@ public class InstanceSingleWorkEntityValidator implements ConstraintValidator<In
 
   @Override
   public boolean isValid(Resource resource, ConstraintValidatorContext context) {
-    if (resource.isNotOfType(INSTANCE)) {
+    if (resource.isNotOfType(INSTANCE) || resource.isOfType(LIGHT_RESOURCE)) {
       return true;
     }
     if (isEmpty(resource.getOutgoingEdges())) {

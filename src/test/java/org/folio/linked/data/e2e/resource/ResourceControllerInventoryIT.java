@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -22,7 +23,7 @@ class ResourceControllerInventoryIT extends ITBase {
   @Test
   void getResourceIdByResourceInventoryId_shouldReturnResourceId() throws Exception {
     //given
-    var resource = resourceTestService.saveGraph(getSampleInstanceResource(null, null));
+    var resource = resourceTestService.saveGraph(getSampleInstanceResource(null, getSampleWork()));
     var requestBuilder = get(RESOURCE_URL + "/metadata/" + resource.getFolioMetadata().getInventoryId() + "/id")
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
