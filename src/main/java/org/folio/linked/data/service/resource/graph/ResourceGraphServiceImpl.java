@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.resource.graph;
 
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
@@ -101,7 +102,8 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   }
 
   private ResourceSaveResult saveOrUpdate(Resource resource) {
-    return resourceRepo.findById(resource.getId())
+    var id = requireNonNull(resource.getId());
+    return resourceRepo.findById(id)
       .map(existing -> updateResource(existing, resource))
       .orElseGet(() -> ResourceSaveResult.created(resourceRepo.save(resource)));
   }

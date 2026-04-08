@@ -1,12 +1,9 @@
 package org.folio.linked.data.service.resource;
 
 import static java.util.Objects.isNull;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
-import static org.folio.linked.data.util.ResourceUtils.extractWorkFromInstance;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,7 +27,6 @@ import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.service.resource.graph.ResourceGraphService;
 import org.folio.linked.data.service.resource.marc.RawMarcService;
 import org.folio.linked.data.service.resource.meta.MetadataService;
-import org.folio.linked.data.util.ResourceUtils;
 import org.folio.spring.FolioExecutionContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -84,7 +80,6 @@ public class ResourceServiceImpl implements ResourceService {
     log.info("Received request to update resource {} - {}", id, toLogString(resourceDto));
     log.debug("updateResource [{}] from DTO [{}]", id, resourceDto);
     var mapped = resourceDtoMapper.toEntity(resourceDto);
-    rejectInstanceOfAnotherWork(id, mapped);
     var existed = getResource(id);
     var oldResource = new Resource(existed);
     resourceGraphService.breakEdgesAndDelete(existed);
@@ -110,24 +105,6 @@ public class ResourceServiceImpl implements ResourceService {
   private void rejectDuplication(Resource resourceToSave) {
     if (resourceRepo.existsById(resourceToSave.getId())) {
       log.error("Resource with same ID {} already exists", resourceToSave.getId());
-      throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
-    }
-  }
-
-  private void rejectInstanceOfAnotherWork(Long requestId, Resource resourceToSave) {
-    if (resourceToSave.isNotOfType(INSTANCE) || Objects.equals(requestId, resourceToSave.getId())) {
-      return;
-    }
-
-    var incomingInstanceWorkId = extractWorkFromInstance(resourceToSave)
-      .map(Resource::getId);
-    var existedInstanceWorkId = resourceRepo.findById(resourceToSave.getId())
-      .flatMap(ResourceUtils::extractWorkFromInstance)
-      .map(Resource::getId);
-
-    if (existedInstanceWorkId.isPresent() && !existedInstanceWorkId.equals(incomingInstanceWorkId)) {
-      log.error("Instance {} is already connected to work {}. Connecting the instance to another work {} "
-        + "is not allowed.", resourceToSave.getId(), existedInstanceWorkId, incomingInstanceWorkId);
       throw exceptionBuilder.alreadyExistsException("ID", String.valueOf(resourceToSave.getId()));
     }
   }

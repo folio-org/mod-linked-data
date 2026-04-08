@@ -121,7 +121,6 @@
 - Make profile settings transactional to address inconsistency bug [MODLD-1030](https://folio-org.atlassian.net/browse/MODLD-1030)
 - Analytical Entries added to Work Response DTO [MODLD-1029](https://folio-org.atlassian.net/browse/MODLD-1029)
 - Update Work profiles with Analytical Entries [MODLD-1036](https://folio-org.atlassian.net/browse/MODLD-1036)
-- Analytical Entries added to Work Response DTO (MODLD-1029)[https://folio-org.atlassian.net/browse/MODLD-1029]
 - Validation rule - One Work per instance [MODLD-987](https://folio-org.atlassian.net/browse/MODLD-987)
 
 ## 1.0.4 (04-24-2025)

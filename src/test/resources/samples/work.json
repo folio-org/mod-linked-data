@@ -190,11 +190,6 @@
             "code"
           ]
         }
-      ],
-      "_instanceReference": [
-        {
-          "id": "%INSTANCE_ID%"
-        }
       ]
     }
   }
