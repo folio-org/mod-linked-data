@@ -1561,7 +1561,7 @@
         "Profile:Work:AnalyticalEntry:Relationship"
       ],
       "id": "Profile:Work:AnalyticalEntry",
-      "marc": "773, 787"
+      "marc": "773, 775, 776, 787"
     },
     {
       "type": "literal",
@@ -1591,7 +1591,9 @@
       },
       "children": [
         "Profile:Work:AnalyticalEntry:Relationship:HostEntry",
-        "Profile:Work:AnalyticalEntry:Relationship:OtherRelationship"
+        "Profile:Work:AnalyticalEntry:Relationship:OtherRelationship",
+        "Profile:Work:AnalyticalEntry:Relationship:OtherEdition",
+        "Profile:Work:AnalyticalEntry:Relationship:OtherVersion"
       ],
       "id": "Profile:Work:AnalyticalEntry:Relationship"
     },
@@ -1606,6 +1608,18 @@
       "displayName": "Other relationship",
       "uriBFLite": "http://bibfra.me/vocab/relation/relatedWork",
       "id": "Profile:Work:AnalyticalEntry:Relationship:OtherRelationship"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Other edition",
+      "uriBFLite": "http://bibfra.me/vocab/relation/otherEdition",
+      "id": "Profile:Work:AnalyticalEntry:Relationship:OtherEdition"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Other version",
+      "uriBFLite": "http://bibfra.me/vocab/relation/otherVersion",
+      "id": "Profile:Work:AnalyticalEntry:Relationship:OtherVersion"
     }
   ]
 }
