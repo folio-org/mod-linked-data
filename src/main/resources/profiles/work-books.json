@@ -1699,7 +1699,7 @@
     },
     {
       "type": "dropdownOption",
-      "displayName": "Host Entry",
+      "displayName": "Host entry",
       "uriBFLite": "http://bibfra.me/vocab/relation/isPartOf",
       "id": "Profile:Work:AnalyticalEntry:Relationship:HostEntry"
     },
