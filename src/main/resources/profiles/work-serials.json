@@ -29,7 +29,8 @@
         "Profile:Work:ContentType",
         "Profile:Work:LanguageCode",
         "Profile:Work:PartOfSeries",
-        "Profile:Work:TypeOfContinuingResource"
+        "Profile:Work:TypeOfContinuingResource",
+        "Profile:Work:AnalyticalEntry"
       ],
       "id": "Profile:Work"
     },
@@ -1542,6 +1543,83 @@
       },
       "id": "Profile:Work:TypeOfContinuingResource",
       "marc": "008/21"
+    },
+    {
+      "type": "group",
+      "displayName": "Analytical Entry",
+      "uriBFLite": "_analyticalEntry",
+      "constraints": {
+        "repeatable": true,
+        "editable": false,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Profile:Work:AnalyticalEntry:Label",
+        "Profile:Work:AnalyticalEntry:Relationship"
+      ],
+      "id": "Profile:Work:AnalyticalEntry",
+      "marc": "773, 775, 776, 787"
+    },
+    {
+      "type": "literal",
+      "displayName": "Label",
+      "uriBFLite": "label",
+      "constraints": {
+        "repeatable": false,
+        "editable": false,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Work:AnalyticalEntry:Label"
+    },
+    {
+      "type": "enumerated",
+      "displayName": "Relationship",
+      "uriBFLite": "_relation",
+      "constraints": {
+        "repeatable": false,
+        "editable": false,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": [
+        "Profile:Work:AnalyticalEntry:Relationship:HostEntry",
+        "Profile:Work:AnalyticalEntry:Relationship:OtherRelationship",
+        "Profile:Work:AnalyticalEntry:Relationship:OtherEdition",
+        "Profile:Work:AnalyticalEntry:Relationship:OtherVersion"
+      ],
+      "id": "Profile:Work:AnalyticalEntry:Relationship"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Host entry",
+      "uriBFLite": "http://bibfra.me/vocab/relation/isPartOf",
+      "id": "Profile:Work:AnalyticalEntry:Relationship:HostEntry"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Other relationship",
+      "uriBFLite": "http://bibfra.me/vocab/relation/relatedWork",
+      "id": "Profile:Work:AnalyticalEntry:Relationship:OtherRelationship"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Other edition",
+      "uriBFLite": "http://bibfra.me/vocab/relation/otherEdition",
+      "id": "Profile:Work:AnalyticalEntry:Relationship:OtherEdition"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Other version",
+      "uriBFLite": "http://bibfra.me/vocab/relation/otherVersion",
+      "id": "Profile:Work:AnalyticalEntry:Relationship:OtherVersion"
     }
   ]
 }
