@@ -45,7 +45,7 @@ class ResourceGraphServiceImplTest {
     var expectedResourceModel = new org.folio.ld.dictionary.model.Resource().setId(id);
 
     when(resourceRepo.findById(id)).thenReturn(Optional.of(resource));
-    when(resourceModelMapper.toModel(resource)).thenReturn(expectedResourceModel);
+    when(resourceModelMapper.toModel(resource, 7, 7)).thenReturn(expectedResourceModel);
 
     //when
     var resourceGraphDto = resourceGraphService.getResourceGraph(id);

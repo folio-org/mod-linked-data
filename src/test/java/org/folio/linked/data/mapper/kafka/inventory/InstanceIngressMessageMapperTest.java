@@ -43,7 +43,7 @@ class InstanceIngressMessageMapperTest {
     var resourceModel = new org.folio.ld.dictionary.model.Resource()
       .setId(instance.getId())
       .addType(INSTANCE);
-    doReturn(resourceModel).when(resourceModelMapper).toModel(instance);
+    doReturn(resourceModel).when(resourceModelMapper).toModelWithNoIncomingEdges(instance);
     var marcString = "{}";
     doReturn(marcString).when(ld2MarcMapper).toMarcJson(resourceModel);
 

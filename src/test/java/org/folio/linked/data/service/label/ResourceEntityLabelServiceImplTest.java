@@ -35,7 +35,7 @@ class ResourceEntityLabelServiceImplTest {
     var resource = new Resource().setIdAndRefreshEdges(1L);
     var resourceModel = new org.folio.ld.dictionary.model.Resource();
     var label = "Some Label";
-    when(resourceModelMapper.toModel(resource, 1)).thenReturn(resourceModel);
+    when(resourceModelMapper.toModel(resource, 1, 0)).thenReturn(resourceModel);
     when(labelGeneratorService.getLabel(resourceModel)).thenReturn(label);
 
     // when
@@ -44,7 +44,7 @@ class ResourceEntityLabelServiceImplTest {
     // then
     assertThat(resource.getLabel()).isEqualTo(label);
     assertThat(getPropertyValues(resource, LABEL)).containsExactly(label);
-    verify(resourceModelMapper).toModel(resource, 1);
+    verify(resourceModelMapper).toModel(resource, 1, 0);
     verify(labelGeneratorService).getLabel(resourceModel);
   }
 
@@ -53,7 +53,7 @@ class ResourceEntityLabelServiceImplTest {
     // given
     var resource = new Resource().setIdAndRefreshEdges(1L);
     var resourceModel = new org.folio.ld.dictionary.model.Resource();
-    when(resourceModelMapper.toModel(resource, 1)).thenReturn(resourceModel);
+    when(resourceModelMapper.toModel(resource, 1, 0)).thenReturn(resourceModel);
     when(labelGeneratorService.getLabel(resourceModel)).thenReturn(null);
 
     // when
@@ -62,7 +62,7 @@ class ResourceEntityLabelServiceImplTest {
     // then
     assertThat(resource.getLabel()).isEmpty();
     assertThat(getPropertyValues(resource, LABEL)).isEmpty();
-    verify(resourceModelMapper).toModel(resource, 1);
+    verify(resourceModelMapper).toModel(resource, 1, 0);
     verify(labelGeneratorService).getLabel(resourceModel);
   }
 
@@ -71,7 +71,7 @@ class ResourceEntityLabelServiceImplTest {
     // given
     var resource = new Resource().setIdAndRefreshEdges(1L);
     var resourceModel = new org.folio.ld.dictionary.model.Resource();
-    when(resourceModelMapper.toModel(resource, 1)).thenReturn(resourceModel);
+    when(resourceModelMapper.toModel(resource, 1, 0)).thenReturn(resourceModel);
     when(labelGeneratorService.getLabel(resourceModel)).thenReturn("  ");
 
     // when
@@ -80,7 +80,7 @@ class ResourceEntityLabelServiceImplTest {
     // then
     assertThat(resource.getLabel()).isEmpty();
     assertThat(getPropertyValues(resource, LABEL)).isEmpty();
-    verify(resourceModelMapper).toModel(resource, 1);
+    verify(resourceModelMapper).toModel(resource, 1, 0);
     verify(labelGeneratorService).getLabel(resourceModel);
   }
 }

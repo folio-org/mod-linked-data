@@ -76,7 +76,7 @@ public class ResourceMarcBibServiceImpl implements ResourceMarcBibService {
         return exceptionBuilder.notFoundLdResourceByIdException("Resource", String.valueOf(id));
       });
     validateMarcViewSupportedType(resource);
-    var resourceModel = resourceModelMapper.toModel(resource);
+    var resourceModel = resourceModelMapper.toModelWithNoIncomingEdges(resource);
     var marc = ld2MarcMapper.toMarcJson(resourceModel, UnmappedMarcHandling.APPEND);
     return resourceMarcViewDtoMapper.toMarcViewDto(resource, marc);
   }

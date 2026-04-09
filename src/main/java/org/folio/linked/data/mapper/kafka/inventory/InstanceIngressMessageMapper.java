@@ -37,7 +37,7 @@ public abstract class InstanceIngressMessageMapper {
   protected abstract InstanceIngressPayload toInstanceIngressPayload(Resource resource);
 
   protected String toMarcJson(Resource resource) {
-    var resourceModel = resourceModelMapper.toModel(resource);
+    var resourceModel = resourceModelMapper.toModelWithNoIncomingEdges(resource);
     return ld2MarcMapper.toMarcJson(resourceModel);
   }
 
