@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.folio.linked.data.domain.dto.ErrorResponse;
+import org.folio.linked.data.exception.JsonMappingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.mapper.error.ConstraintViolationExceptionMapper;
 import org.folio.linked.data.mapper.error.EntityNotFoundExceptionMapper;
 import org.folio.linked.data.mapper.error.GenericBadRequestMapper;
@@ -38,6 +40,8 @@ class ApiExceptionHandlerTest {
   @Mock
   private GenericBadRequestMapper genericBadRequestMapper;
   @Mock
+  private RequestProcessingExceptionBuilder exceptionBuilder;
+  @Mock
   private GenericServerExceptionMapper genericServerExceptionMapper;
   @Mock
   private EntityNotFoundExceptionMapper entityNotFoundExceptionMapper;
@@ -47,6 +51,22 @@ class ApiExceptionHandlerTest {
   private ConstraintViolationExceptionMapper constraintViolationExceptionMapper;
   @Mock
   private MethodArgumentNotValidExceptionMapper methodArgumentNotValidExceptionMapper;
+
+  @Test
+  void handleRequestProcessingException_shouldReturnCorrectResult_whenJsonMappingException() {
+    // given
+    var exception = new JsonMappingException("SomeDto", "someField");
+    var rpe = emptyRequestProcessingException();
+    var expectedResult = new ResponseEntity<ErrorResponse>(HttpStatusCode.valueOf(400));
+    when(exceptionBuilder.mappingException(exception.getDtoClass(), exception.getFieldName())).thenReturn(rpe);
+    when(requestProcessingExceptionMapper.errorResponseEntity(rpe)).thenReturn(expectedResult);
+
+    // when
+    var result = apiExceptionHandler.handleRequestProcessingException(exception);
+
+    // then
+    assertThat(result).isEqualTo(expectedResult);
+  }
 
   @Test
   void handleRequestProcessingException_shouldReturnCorrectResult() {
@@ -169,6 +189,20 @@ class ApiExceptionHandlerTest {
 
     // when
     var result = apiExceptionHandler.handleMissingServletRequestParameterException(exception);
+
+    // then
+    assertThat(result).isEqualTo(expectedResult);
+  }
+
+  @Test
+  void handleDataIntegrityViolationException_shouldReturnBadRequest_whenNotUniqueConstraintViolation() {
+    // given
+    var exception = new org.springframework.dao.DataIntegrityViolationException("error");
+    var expectedResult = new ResponseEntity<ErrorResponse>(HttpStatusCode.valueOf(400));
+    when(genericBadRequestMapper.errorResponseEntity(exception)).thenReturn(expectedResult);
+
+    // when
+    var result = apiExceptionHandler.handleDataIntegrityViolationException(exception);
 
     // then
     assertThat(result).isEqualTo(expectedResult);

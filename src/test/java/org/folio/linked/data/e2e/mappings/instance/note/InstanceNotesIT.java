@@ -8,9 +8,15 @@ import java.util.Map;
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.web.servlet.ResultActions;
 
-public class InstanceNotesIT extends PostResourceIT {
+class InstanceNotesIT extends PostResourceIT {
+
+  @BeforeEach
+  void createWork() {
+    createAndSaveSampleWork();
+  }
 
   @Override
   protected String postPayload() {
@@ -48,11 +54,12 @@ public class InstanceNotesIT extends PostResourceIT {
                  { "type":[ "http://bibfra.me/vocab/library/adminhist" ], "value":[ "Note17" ] },
                  { "type":[ "http://bibfra.me/vocab/library/physicalDescription" ], "value":[ "Note18" ] },
                  { "type":[ "http://bibfra.me/vocab/library/datesOfPublicationNote" ], "value":[ "Note19" ] }
-               ]
+               ],
+               "_workReference": [ { "id": "%s" } ]
             }
          }
       }"""
-      .formatted("TEST: " + this.getClass().getSimpleName());
+      .formatted("TEST: " + this.getClass().getSimpleName(), savedWorkId);
   }
 
   @Override

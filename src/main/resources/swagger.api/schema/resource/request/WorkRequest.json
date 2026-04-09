@@ -87,13 +87,6 @@
           },
           "x-json-property": "http://bibfra.me/vocab/library/content"
         },
-        "_instanceReference": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "../common/IdField.json"
-          }
-        },
         "_geographicCoverageReference": {
           "type": "array",
           "items": {

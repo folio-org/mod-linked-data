@@ -16,6 +16,7 @@ import org.folio.linked.data.mapper.error.GenericBadRequestMapper;
 import org.folio.linked.data.mapper.error.GenericServerExceptionMapper;
 import org.folio.linked.data.mapper.error.MethodArgumentNotValidExceptionMapper;
 import org.folio.linked.data.mapper.error.RequestProcessingExceptionMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -94,6 +95,12 @@ public class ApiExceptionHandler {
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
     MissingServletRequestParameterException e) {
+    logException(e);
+    return genericBadRequestMapper.errorResponseEntity(e);
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
     logException(e);
     return genericBadRequestMapper.errorResponseEntity(e);
   }

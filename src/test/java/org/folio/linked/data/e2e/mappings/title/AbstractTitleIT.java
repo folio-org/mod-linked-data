@@ -31,11 +31,11 @@ public abstract class AbstractTitleIT extends PostResourceIT {
                   "http://bibfra.me/vocab/library/subTitle": [ "sub title" ]
                 }
               }
-            ]
+            ]%s
           }
         }
       }"""
-      .formatted(resourceUri(), expectedMainTitle());
+      .formatted(resourceUri(), expectedMainTitle(), workReferenceJson());
   }
 
   @Override

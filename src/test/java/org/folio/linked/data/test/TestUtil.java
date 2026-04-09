@@ -73,7 +73,7 @@ public class TestUtil {
       .addDeserializer(IdentifierFieldResponse.class, new IdentifierFieldResponseDeserializer()))
     .build();
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
-  public static final String WORK_WITH_INSTANCE_REF_SAMPLE = loadResourceAsString("samples/work_and_instance_ref.json");
+  public static final String WORK_SAMPLE = loadResourceAsString("samples/work.json");
   public static final String FOLIO_OKAPI_URL = "folio.okapi-url";
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
@@ -123,7 +123,7 @@ public class TestUtil {
   }
 
   public static Map<String, Object> getSampleWorkDtoMap() {
-    return TEST_JSON_MAPPER.readValue(WORK_WITH_INSTANCE_REF_SAMPLE, Map.class);
+    return TEST_JSON_MAPPER.readValue(WORK_SAMPLE, Map.class);
   }
 
   public static <T> T random(Class<T> clazz) {

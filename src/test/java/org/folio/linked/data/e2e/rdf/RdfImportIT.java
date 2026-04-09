@@ -28,7 +28,6 @@ import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.model.entity.event.ResourceCreatedEvent;
-import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.ResourceModificationEventListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
@@ -45,8 +44,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class RdfImportIT extends ITBase {
   private static final String IMPORT_ENDPOINT = "/linked-data/import/file";
-  @Autowired
-  private ResourceRepository resourceRepo;
   @Autowired
   private KafkaSearchWorkIndexTopicListener workIndexTopicListener;
   @MockitoSpyBean
@@ -70,21 +67,25 @@ class RdfImportIT extends ITBase {
       .file(multipartFile)
       .headers(defaultHeaders(env))
       .param("filterType", "");
-    var expectedId = -1677400301769626518L;
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
 
     // then
-    resultActions
+    var response = resultActions
       .andExpect(status().isOk())
-      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
-      .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
-    assertThat(resourceRepo.existsById(expectedId)).isTrue();
+      .andReturn().getResponse().getContentAsString();
+    var resourceId = TEST_JSON_MAPPER.readTree(response).path("resources").get(0).asLong();
+    resultActions
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(resourceId))))
+      .andExpect(jsonPath("log", containsString(Long.toString(resourceId))));
+    assertThat(resourceTestService.existsById(resourceId)).isTrue();
 
     var expectedEvents = List.of(
       new ResourceTypeAndLabel(INSTANCE, "Title mainTitle Title subtitle"),
-      new ResourceTypeAndLabel(TITLE, "Title mainTitle Title subtitle")
+      new ResourceTypeAndLabel(TITLE, "Title mainTitle Title subtitle"),
+      new ResourceTypeAndLabel(WORK, "Title mainTitle"),
+      new ResourceTypeAndLabel(TITLE, "Title mainTitle")
     );
     assertEvents(expectedEvents);
   }
@@ -108,7 +109,7 @@ class RdfImportIT extends ITBase {
       .addType(new ResourceTypeEntity(PERSON.getHash(), PERSON.getUri(), ""));
     existedAuthority
       .setFolioMetadata(new FolioMetadata(existedAuthority).setInventoryId("inv_id_00000000"));
-    resourceRepo.save(existedAuthority);
+    resourceTestService.saveGraph(existedAuthority);
 
     // when
     var resultActions = mockMvc.perform(requestBuilder);
@@ -118,7 +119,7 @@ class RdfImportIT extends ITBase {
       .andExpect(status().isOk())
       .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
       .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
-    assertThat(resourceRepo.existsById(expectedId)).isTrue();
+    assertThat(resourceTestService.existsById(expectedId)).isTrue();
 
     var expectedEvents = List.of(
       new ResourceTypeAndLabel(WORK, "Work Title"),
@@ -150,7 +151,7 @@ class RdfImportIT extends ITBase {
       .andExpect(status().isOk())
       .andExpect(jsonPath("resources[0]", equalTo(Long.toString(expectedId))))
       .andExpect(jsonPath("log", containsString(Long.toString(expectedId))));
-    assertThat(resourceRepo.existsById(expectedId)).isTrue();
+    assertThat(resourceTestService.existsById(expectedId)).isTrue();
 
     var expectedEvents = List.of(
       new ResourceTypeAndLabel(WORK, "Work Title"),
@@ -201,6 +202,36 @@ class RdfImportIT extends ITBase {
         )
       )
     );
+  }
+
+  @Test
+  void rdfImport_shouldBeFailedByConstraint_whenImportSameInstanceWithAnotherWork()
+    throws Exception {
+    // given
+    var instance1File = new MockMultipartFile(
+      "fileName", "instance1_work1.json", "application/ld+json",
+      getClass().getResourceAsStream("/rdf/instance1_work1.json"));
+    mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+        .file(instance1File)
+        .headers(defaultHeaders(env))
+        .param("filterType", ""))
+      .andExpect(status().isOk());
+    workIndexTopicListener.getMessages().clear();
+
+    // when
+    var instance2File = new MockMultipartFile(
+      "fileName", "instance1_work1_to_work2.json", "application/ld+json",
+      getClass().getResourceAsStream("/rdf/instance1_work1_to_work2.json"));
+    var importResponse2 = mockMvc.perform(MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+        .file(instance2File)
+        .headers(defaultHeaders(env))
+        .param("filterType", ""));
+
+
+    // then
+    importResponse2
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("log", containsString("duplicate key value violates unique constraint")));
   }
 
   private void assertEvents(List<ResourceTypeAndLabel> expectedEvents) {

@@ -8,6 +8,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import jakarta.persistence.RollbackException;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
@@ -56,9 +57,9 @@ class PrimaryTitleEntityValidatorIT extends ITBase {
     assertThat(thrown.getCause()).isInstanceOf(RollbackException.class);
     assertThat(thrown.getCause().getCause()).isInstanceOf(ConstraintViolationException.class);
     var cve = (ConstraintViolationException) thrown.getCause().getCause();
-    assertThat(cve.getConstraintViolations()).hasSize(1);
-    assertThat(cve.getConstraintViolations().iterator().next().getMessage())
-      .isEqualTo("required_primary_main_title");
+    assertThat(cve.getConstraintViolations())
+      .extracting(ConstraintViolation::getMessage)
+      .contains("required_primary_main_title");
   }
 
   @Test

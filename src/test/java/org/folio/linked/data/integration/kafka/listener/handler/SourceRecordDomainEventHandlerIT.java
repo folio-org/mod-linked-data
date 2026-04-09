@@ -3,6 +3,7 @@ package org.folio.linked.data.integration.kafka.listener.handler;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
@@ -131,6 +132,8 @@ class SourceRecordDomainEventHandlerIT {
     existedInstance.setFolioMetadata(folioMetadata);
     var title = MonographTestUtil.createPrimaryTitle(randomLong());
     existedInstance.addOutgoingEdge(new ResourceEdge(existedInstance, title, PredicateDictionary.TITLE));
+    var work = MonographTestUtil.getSampleWork();
+    existedInstance.addOutgoingEdge(new ResourceEdge(existedInstance, work, INSTANTIATES));
     resourceTestRepository.save(existedInstance);
     var marc = loadResourceAsString("samples/marc2ld/full_marc_sample.jsonl");
     var eventProducerRecord =

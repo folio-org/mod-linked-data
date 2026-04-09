@@ -1,6 +1,7 @@
 package org.folio.linked.data.validation.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.MAIN_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
@@ -105,10 +106,25 @@ class ResourceTypeValidatorIT extends ITBase {
         "Resource with WORK and another type should be persisted"
       ),
       Arguments.of(
-        createResourceWithTitle(995L, INSTANCE),
+        createInstanceWithWork(995L),
         "Resource with single non-WORK type should be persisted"
       )
     );
+  }
+
+  private static Resource createInstanceWithWork(Long id) {
+    var title = createTitleResource(id + 1);
+    var work = new Resource()
+      .setIdAndRefreshEdges(id + 2)
+      .addTypes(WORK, BOOKS)
+      .setLabel("Test Work");
+    var instance = new Resource()
+      .setIdAndRefreshEdges(id)
+      .addTypes(INSTANCE)
+      .setLabel("Test Resource");
+    instance.addOutgoingEdge(new ResourceEdge(instance, title, TITLE));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
+    return instance;
   }
 
   private static Resource createResourceWithTitle(Long id, ResourceTypeDictionary... types) {

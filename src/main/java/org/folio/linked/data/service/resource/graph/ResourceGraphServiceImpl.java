@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.resource.graph;
 
 import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toCollection;
 import static org.apache.commons.lang3.ObjectUtils.notEqual;
@@ -10,6 +11,7 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import org.folio.linked.data.repo.ResourceEdgeRepository;
 import org.folio.linked.data.repo.ResourceRepository;
 import org.folio.linked.data.service.resource.events.ResourceEventsPublisher;
 import org.folio.linked.data.util.JsonUtils;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.JsonNode;
@@ -99,7 +102,8 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   }
 
   private ResourceSaveResult saveOrUpdate(Resource resource) {
-    return resourceRepo.findById(resource.getId())
+    var id = requireNonNull(resource.getId());
+    return resourceRepo.findById(id)
       .map(existing -> updateResource(existing, resource))
       .orElseGet(() -> ResourceSaveResult.created(resourceRepo.save(resource)));
   }
@@ -179,21 +183,26 @@ public class ResourceGraphServiceImpl implements ResourceGraphService {
   }
 
   private void breakOutgoingCircularEdges(Resource resource) {
-    resource.getOutgoingEdges().forEach(edge -> {
-      var filtered = edge.getTarget().getIncomingEdges().stream()
-        .filter(e -> resource.equals(e.getSource()))
-        .collect(Collectors.toSet());
-      edge.getTarget().getIncomingEdges().removeAll(filtered);
-    });
+    resource.getOutgoingEdges().forEach(edge ->
+      breakCircularEdgesIfInitialized(edge.getTarget().getIncomingEdges(), resource, ResourceEdge::getSource)
+    );
   }
 
   private void breakIncomingCircularEdges(Resource resource) {
-    resource.getIncomingEdges().forEach(edge -> {
-      var filtered = edge.getSource().getOutgoingEdges().stream()
-        .filter(e -> resource.equals(e.getTarget()))
-        .collect(Collectors.toSet());
-      edge.getSource().getOutgoingEdges().removeAll(filtered);
-    });
+    resource.getIncomingEdges().forEach(edge ->
+      breakCircularEdgesIfInitialized(edge.getSource().getOutgoingEdges(), resource, ResourceEdge::getTarget)
+    );
+  }
+
+  private void breakCircularEdgesIfInitialized(Set<ResourceEdge> edges, Resource resource,
+                                               Function<ResourceEdge, Resource> edgeEndpoint) {
+    if (!Hibernate.isInitialized(edges)) {
+      return;
+    }
+    var filtered = edges.stream()
+      .filter(e -> resource.equals(edgeEndpoint.apply(e)))
+      .collect(Collectors.toSet());
+    edges.removeAll(filtered);
   }
 
   private Set<Resource> filterResources(Set<ResourceSaveResult> results, Predicate<ResourceSaveResult> predicate) {

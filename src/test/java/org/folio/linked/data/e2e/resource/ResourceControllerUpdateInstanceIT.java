@@ -62,7 +62,7 @@ class ResourceControllerUpdateInstanceIT extends ITBase {
     // Assert that the request is rejected
     mockMvc.perform(updateRequest)
       .andExpect(status().isBadRequest())
-      .andExpect(jsonPath("$.errors[0].code").value("already_exists"));
+      .andExpect(jsonPath("$.errors[0].code").value("generic_bad_request"));
   }
 
   @Test

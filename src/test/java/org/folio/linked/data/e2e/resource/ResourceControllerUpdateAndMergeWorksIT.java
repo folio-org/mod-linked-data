@@ -1,5 +1,7 @@
 package org.folio.linked.data.e2e.resource;
 
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
+import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
@@ -13,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
 import org.folio.linked.data.domain.dto.LinkedDataTitle;
@@ -93,7 +94,7 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
     // Assert that instances under both works are merged into the single work
     var mergedWork = resourceTestService.getResourceById(work2.getId().toString(), 2);
     var mergedWorkInstanceIds = mergedWork.getIncomingEdges().stream()
-      .filter(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.INSTANTIATES.getUri()))
+      .filter(edge -> edge.getPredicate().getUri().equals(INSTANTIATES.getUri()))
       .map(ResourceEdge::getSource)
       .map(Resource::getId)
       .toList();
@@ -168,8 +169,8 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
       .setDoc(TEST_JSON_MAPPER.readTree("{}"))
       .setLabel(titleStr);
 
-    instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
-    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
+    instance.addOutgoingEdge(new ResourceEdge(instance, title, TITLE));
+    instance.addOutgoingEdge(new ResourceEdge(instance, work, INSTANTIATES));
 
     title.setIdAndRefreshEdges(hashService.hash(title));
     instance.setIdAndRefreshEdges(hashService.hash(instance));
