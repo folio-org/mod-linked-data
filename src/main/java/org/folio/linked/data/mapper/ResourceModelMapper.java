@@ -13,11 +13,14 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.PredicateEntity;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.BeforeMapping;
@@ -32,18 +35,32 @@ import tools.jackson.databind.JsonNode;
 @Mapper(componentModel = SPRING)
 public abstract class ResourceModelMapper {
 
-  private static final int MAX_ENTITY_TO_MODEL_EDGE_DEPTH = 7;
+  public static final int MAX_ENTITY_TO_MODEL_EDGE_DEPTH = 7;
 
   @NotForGeneration
   public Resource toEntity(org.folio.ld.dictionary.model.Resource model) {
-    return toEntity(model, new CyclicGraphContext());
+    return toEntityInternal(model, new CyclicGraphContext());
+  }
+
+  @NotForGeneration
+  public org.folio.ld.dictionary.model.Resource toModelWithNoIncomingEdges(Resource entity) {
+    return toModel(entity, MAX_ENTITY_TO_MODEL_EDGE_DEPTH, 0);
+  }
+
+  @NotForGeneration
+  public org.folio.ld.dictionary.model.Resource toModel(Resource entity,
+                                                        int outgoingEdgesDepth,
+                                                        int incomingEdgesDepth) {
+    checkMaxDepth(outgoingEdgesDepth, "outgoing");
+    checkMaxDepth(incomingEdgesDepth, "incoming");
+    return toModelInternal(entity, new CyclicGraphContext(), new DepthContext(outgoingEdgesDepth, incomingEdgesDepth));
   }
 
   @Mapping(target = "folioMetadata",
     expression = "java(model.getFolioMetadata() != null ? mapFolioMetadata(model.getFolioMetadata(), resource) : null)")
   @Mapping(target = "id", ignore = true)
-  protected abstract Resource toEntity(org.folio.ld.dictionary.model.Resource model,
-                                       @Context CyclicGraphContext cycleContext);
+  protected abstract Resource toEntityInternal(org.folio.ld.dictionary.model.Resource model,
+                                               @Context CyclicGraphContext cycleContext);
 
   @AfterMapping
   protected void assignId(@MappingTarget Resource target, org.folio.ld.dictionary.model.Resource source) {
@@ -52,43 +69,30 @@ public abstract class ResourceModelMapper {
     }
   }
 
-  @NotForGeneration
-  public org.folio.ld.dictionary.model.Resource toModel(Resource entity) {
-    return toModel(entity, MAX_ENTITY_TO_MODEL_EDGE_DEPTH);
-  }
-
-  @NotForGeneration
-  public org.folio.ld.dictionary.model.Resource toModel(Resource entity, int outgoingEdgesDepth) {
-    if (outgoingEdgesDepth > MAX_ENTITY_TO_MODEL_EDGE_DEPTH) {
-      throw new IllegalArgumentException("Requested outgoing edges depth is too high: " + outgoingEdgesDepth
-        + ". Maximum allowed is " + MAX_ENTITY_TO_MODEL_EDGE_DEPTH);
-    }
-    return toModel(entity, new CyclicGraphContext(), new DepthContext(outgoingEdgesDepth));
-  }
-
-  @Mapping(ignore = true, target = "incomingEdges")
   @Mapping(ignore = true, target = "outgoingEdges")
-  protected abstract org.folio.ld.dictionary.model.Resource toModel(Resource entity,
-                                                                    @Context CyclicGraphContext cycleContext,
-                                                                    @Context DepthContext depthContext);
+  @Mapping(ignore = true, target = "incomingEdges")
+  protected abstract org.folio.ld.dictionary.model.Resource toModelInternal(Resource entity,
+                                                                            @Context CyclicGraphContext cycleContext,
+                                                                            @Context DepthContext depthContext);
 
   @AfterMapping
   protected void mapOutgoingEdges(@MappingTarget org.folio.ld.dictionary.model.Resource target,
                                   Resource source,
                                   @Context CyclicGraphContext cycleContext,
                                   @Context DepthContext depthContext) {
-    if (!depthContext.allowsEdges()) {
-      return;
-    }
+    target.setOutgoingEdges(mapEdges(source.getOutgoingEdges(), depthContext.outgoingAllowsEdges(),
+      depthContext::nextOutgoing, (edge, next) ->
+        mapEdge(target, toModelInternal(edge.getTarget(), cycleContext, next), edge.getPredicate())));
+  }
 
-    var nextDepth = depthContext.nextDepth();
-    var outgoingEdges = source.getOutgoingEdges().stream()
-      .map(edge -> new org.folio.ld.dictionary.model.ResourceEdge(
-        target,
-        toModel(edge.getTarget(), cycleContext, nextDepth),
-        map(edge.getPredicate())))
-      .collect(toCollection(LinkedHashSet::new));
-    target.setOutgoingEdges(outgoingEdges);
+  @AfterMapping
+  protected void mapIncomingEdges(@MappingTarget org.folio.ld.dictionary.model.Resource target,
+                                  Resource source,
+                                  @Context CyclicGraphContext cycleContext,
+                                  @Context DepthContext depthContext) {
+    target.setIncomingEdges(mapEdges(source.getIncomingEdges(), depthContext.incomingAllowsEdges(),
+      depthContext::nextIncoming, (edge, next) ->
+        mapEdge(toModelInternal(edge.getSource(), cycleContext, next), target, edge.getPredicate())));
   }
 
   protected Set<ResourceTypeDictionary> map(Set<ResourceTypeEntity> typeEntities) {
@@ -115,6 +119,31 @@ public abstract class ResourceModelMapper {
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.CLASS)
   protected @interface NotForGeneration {
+  }
+
+  private void checkMaxDepth(int edgesDepth, String edgesType) {
+    if (edgesDepth > MAX_ENTITY_TO_MODEL_EDGE_DEPTH) {
+      throw new IllegalArgumentException("Requested " + edgesType + " edges depth is too high: " + edgesDepth
+        + ". Maximum allowed is " + MAX_ENTITY_TO_MODEL_EDGE_DEPTH);
+    }
+  }
+
+  private LinkedHashSet<org.folio.ld.dictionary.model.ResourceEdge> mapEdges(
+    Set<ResourceEdge> edges,
+    boolean allowsEdges,
+    Supplier<DepthContext> nextDepth,
+    BiFunction<ResourceEdge, DepthContext, org.folio.ld.dictionary.model.ResourceEdge> edgeMapper) {
+    if (!allowsEdges) {
+      return new LinkedHashSet<>();
+    }
+    var next = nextDepth.get();
+    return edges.stream().map(edge -> edgeMapper.apply(edge, next)).collect(toCollection(LinkedHashSet::new));
+  }
+
+  private org.folio.ld.dictionary.model.ResourceEdge mapEdge(org.folio.ld.dictionary.model.Resource edgeSource,
+                                                             org.folio.ld.dictionary.model.Resource edgeTarget,
+                                                             PredicateEntity predicate) {
+    return new org.folio.ld.dictionary.model.ResourceEdge(edgeSource, edgeTarget, map(predicate));
   }
 
   protected static class CyclicGraphContext {
@@ -145,18 +174,28 @@ public abstract class ResourceModelMapper {
   }
 
   protected static final class DepthContext {
-    private final int depth;
+    private final int outgoingDepth;
+    private final int incomingDepth;
 
-    private DepthContext(int depth) {
-      this.depth = Math.max(depth, 0);
+    private DepthContext(int outgoingDepth, int incomingDepth) {
+      this.outgoingDepth = Math.max(outgoingDepth, 0);
+      this.incomingDepth = Math.max(incomingDepth, 0);
     }
 
-    private boolean allowsEdges() {
-      return depth > 0;
+    private boolean outgoingAllowsEdges() {
+      return outgoingDepth > 0;
     }
 
-    private DepthContext nextDepth() {
-      return depth <= 0 ? this : new DepthContext(depth - 1);
+    private boolean incomingAllowsEdges() {
+      return incomingDepth > 0;
+    }
+
+    private DepthContext nextOutgoing() {
+      return new DepthContext(outgoingDepth - 1, incomingDepth);
+    }
+
+    private DepthContext nextIncoming() {
+      return new DepthContext(outgoingDepth, incomingDepth - 1);
     }
   }
 

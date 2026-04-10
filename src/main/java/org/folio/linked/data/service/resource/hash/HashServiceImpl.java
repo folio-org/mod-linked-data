@@ -16,7 +16,7 @@ public class HashServiceImpl implements HashService {
 
   @Override
   public Long hash(@NonNull Resource resource) {
-    return fingerprintHashService.hash(resourceModelMapper.toModel(resource));
+    return fingerprintHashService.hash(resourceModelMapper.toModelWithNoIncomingEdges(resource));
   }
 
 }

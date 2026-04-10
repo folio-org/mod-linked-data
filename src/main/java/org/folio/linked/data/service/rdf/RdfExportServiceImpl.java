@@ -28,7 +28,7 @@ public class RdfExportServiceImpl implements RdfExportService {
   public String exportInstanceToRdf(Long id) {
     return resourceRepository.findById(id)
       .filter(isInstance())
-      .map(resourceModelMapper::toModel)
+      .map(resourceModelMapper::toModelWithNoIncomingEdges)
       .map(r -> rdf4LdService.mapLdToBibframe2Rdf(r, RDFFormat.JSONLD))
       .map(os -> os.toString(UTF_8))
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException(INSTANCE.name(), String.valueOf(id)));

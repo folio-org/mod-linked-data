@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.dto.resource.common.work.sub;
 
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.OTHER_EDITION;
 import static org.folio.ld.dictionary.PredicateDictionary.OTHER_VERSION;
@@ -18,6 +19,7 @@ import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -45,11 +47,23 @@ public class LightWorkMapperUnit implements SingleResourceMapperUnit {
     if (parentDto instanceof WorkResponse workResponse) {
       var lightWork = coreMapper.toDtoWithEdges(resourceToConvert, LightWork.class, false);
       lightWork.setId(String.valueOf(resourceToConvert.getId()));
-      lightWork.setLabel(getFirstPropertyValue(resourceToConvert, LABEL));
+      lightWork.setLabel(constructUiLabel(resourceToConvert));
       lightWork.setRelation(context.predicate().getUri());
       workResponse.addAnalyticalEntryItem(lightWork);
     }
     return parentDto;
+  }
+
+  private static String constructUiLabel(Resource lightWork) {
+    var workLabel = getFirstPropertyValue(lightWork, LABEL);
+    return lightWork.getOutgoingEdges()
+      .stream()
+      .filter(re -> re.getPredicate().getUri().equals(CREATOR.getUri()))
+      .map(ResourceEdge::getTarget)
+      .map(creator -> getFirstPropertyValue(creator, LABEL))
+      .findFirst()
+      .map(creatorLabel -> workLabel + ". " + creatorLabel)
+      .orElse(workLabel);
   }
 
   @Override

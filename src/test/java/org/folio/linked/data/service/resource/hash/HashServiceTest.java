@@ -43,7 +43,7 @@ class HashServiceTest {
     // given
     var resource = new Resource();
     var mapped = new org.folio.ld.dictionary.model.Resource();
-    when(resourceModelMapper.toModel(resource)).thenReturn(mapped);
+    when(resourceModelMapper.toModelWithNoIncomingEdges(resource)).thenReturn(mapped);
     var expectedHash = randomLong();
     when(fingerprintHashService.hash(mapped)).thenReturn(expectedHash);
 

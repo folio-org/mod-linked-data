@@ -77,7 +77,7 @@ class RdfExportServiceTest {
     var instance = new Resource().setIdAndRefreshEdges(id).addTypes(ResourceTypeDictionary.INSTANCE);
     when(resourceRepository.findById(id)).thenReturn(Optional.of(instance));
     var instanceModel = new org.folio.ld.dictionary.model.Resource().setId(id);
-    when(resourceModelMapper.toModel(instance)).thenReturn(instanceModel);
+    when(resourceModelMapper.toModelWithNoIncomingEdges(instance)).thenReturn(instanceModel);
     var exportedValue = "exported";
     var exportedStream = new ByteArrayOutputStream();
     exportedStream.write(exportedValue.getBytes());

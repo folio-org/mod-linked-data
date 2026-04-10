@@ -105,7 +105,7 @@ class ResourceMarcBibServiceImplTest {
 
     when(resourceRepo.findById(id))
       .thenReturn(Optional.of(existedResource));
-    when(resourceModelMapper.toModel(existedResource))
+    when(resourceModelMapper.toModelWithNoIncomingEdges(existedResource))
       .thenReturn(expectedModelResource);
     when(ld2MarcMapper.toMarcJson(expectedModelResource, UnmappedMarcHandling.APPEND))
       .thenReturn(expectedMarcString);
