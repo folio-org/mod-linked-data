@@ -865,7 +865,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["/linked-data/vocabularies/mstatus"],
+        "useValuesFrom": ["/linked-data/vocabularies/idstatus"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
@@ -925,7 +925,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["/linked-data/vocabularies/mstatus"],
+        "useValuesFrom": ["/linked-data/vocabularies/idstatus"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
@@ -969,7 +969,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["/linked-data/vocabularies/mstatus"],
+        "useValuesFrom": ["/linked-data/vocabularies/idstatus"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
@@ -1029,7 +1029,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["/linked-data/vocabularies/mstatus"],
+        "useValuesFrom": ["/linked-data/vocabularies/idstatus"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }
@@ -1089,7 +1089,7 @@
         "editable": true,
         "mandatory": false,
         "defaults": [],
-        "useValuesFrom": ["/linked-data/vocabularies/mstatus"],
+        "useValuesFrom": ["/linked-data/vocabularies/idstatus"],
         "valueDataType": {
           "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
         }

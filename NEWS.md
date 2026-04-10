@@ -122,6 +122,7 @@
 - Analytical Entries added to Work Response DTO [MODLD-1029](https://folio-org.atlassian.net/browse/MODLD-1029)
 - Update Work profiles with Analytical Entries [MODLD-1036](https://folio-org.atlassian.net/browse/MODLD-1036)
 - Validation rule - One Work per instance [MODLD-987](https://folio-org.atlassian.net/browse/MODLD-987)
+- Add new vocabulary for smaller set of statuses [MODLD-1041](https://folio-org.atlassian.net/browse/MODLD-1041)
 
 ## 1.0.4 (04-24-2025)
 - Work Edit form - Instance read-only section: "Notes about the instance" data is not shown [MODLD-716](https://folio-org.atlassian.net/browse/MODLD-716)

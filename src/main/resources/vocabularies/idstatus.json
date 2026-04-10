@@ -1,0 +1,50 @@
+[
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/current",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "current"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "current"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/cancinv",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "canceled or invalid"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "cancinv"
+      }
+    ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/incorrect",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "incorrect"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "incorrect"
+      }
+    ]
+  }
+]
