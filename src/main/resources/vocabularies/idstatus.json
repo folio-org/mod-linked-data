@@ -30,5 +30,21 @@
         "@value": "cancinv"
       }
     ]
+  },
+  {
+    "@id": "http://id.loc.gov/vocabulary/mstatus/incorrect",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority"
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "incorrect"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#code": [
+      {
+        "@value": "incorrect"
+      }
+    ]
   }
 ]
