@@ -72,10 +72,10 @@ class LightWorkIT extends ITBase {
         RELATED_WORK.getUri()
       )))
       .andExpect(jsonPath(analyticalEntryPath + "[*]['label']", containsInAnyOrder(
-        labelFor(IS_PART_OF_ID) + ". ",
-        labelFor(OTHER_EDITION_ID) + ". ",
-        labelFor(OTHER_VERSION_ID) + ". ",
-        labelFor(RELATED_WORK_ID) + ". "
+        labelFor(IS_PART_OF_ID),
+        labelFor(OTHER_EDITION_ID),
+        labelFor(OTHER_VERSION_ID),
+        labelFor(RELATED_WORK_ID)
       )));
   }
 
@@ -150,10 +150,10 @@ class LightWorkIT extends ITBase {
         RELATED_WORK.getUri()
       )))
       .andExpect(jsonPath(analyticalEntryPath + "[*]['label']", containsInAnyOrder(
-        labelFor(IS_PART_OF_ID) + ". ",
-        labelFor(OTHER_EDITION_ID) + ". ",
-        labelFor(OTHER_VERSION_ID) + ". ",
-        labelFor(RELATED_WORK_ID) + ". "
+        labelFor(IS_PART_OF_ID),
+        labelFor(OTHER_EDITION_ID),
+        labelFor(OTHER_VERSION_ID),
+        labelFor(RELATED_WORK_ID)
       )));
   }
 

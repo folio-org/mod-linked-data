@@ -56,14 +56,14 @@ public class LightWorkMapperUnit implements SingleResourceMapperUnit {
 
   private static String constructUiLabel(Resource lightWork) {
     var workLabel = getFirstPropertyValue(lightWork, LABEL);
-    var creatorLabel = lightWork.getOutgoingEdges()
+    return lightWork.getOutgoingEdges()
       .stream()
       .filter(re -> re.getPredicate().getUri().equals(CREATOR.getUri()))
       .map(ResourceEdge::getTarget)
       .map(creator -> getFirstPropertyValue(creator, LABEL))
       .findFirst()
-      .orElse("");
-    return workLabel + ". " + creatorLabel;
+      .map(creatorLabel -> workLabel + ". " + creatorLabel)
+      .orElse(workLabel);
   }
 
   @Override
