@@ -3,6 +3,7 @@ package org.folio.linked.data.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 @UnitTest
 class ResourceUtilsTest {
@@ -280,6 +282,58 @@ class ResourceUtilsTest {
     assertThat(result)
       .as(description)
       .isEqualTo(expectedTypeName);
+  }
+
+  @Test
+  void getFirstPropertyValue_shouldReturnFirstValue_whenDocHasMultipleValues() {
+    // given
+    var resource = new Resource();
+    var arrayNode = JsonNodeFactory.instance.arrayNode().add("First").add("Second");
+    resource.setDoc(JsonNodeFactory.instance.objectNode().set(NAME.getValue(), arrayNode));
+
+    // when
+    var result = ResourceUtils.getFirstPropertyValue(resource, NAME);
+
+    // then
+    assertThat(result).isEqualTo("First");
+  }
+
+  @Test
+  void getFirstPropertyValue_shouldReturnEmptyString_whenDocIsNull() {
+    // given
+    var resource = new Resource();
+
+    // when
+    var result = ResourceUtils.getFirstPropertyValue(resource, NAME);
+
+    // then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void getFirstPropertyValue_shouldReturnEmptyString_whenPropertyIsAbsent() {
+    // given
+    var resource = new Resource();
+    ResourceUtils.addProperty(resource, LABEL, "SomeLabel");
+
+    // when
+    var result = ResourceUtils.getFirstPropertyValue(resource, NAME);
+
+    // then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void getFirstPropertyValue_shouldReturnValue_whenPropertyHasSingleValue() {
+    // given
+    var resource = new Resource();
+    ResourceUtils.addProperty(resource, NAME, "OnlyValue");
+
+    // when
+    var result = ResourceUtils.getFirstPropertyValue(resource, NAME);
+
+    // then
+    assertThat(result).isEqualTo("OnlyValue");
   }
 
   private static Stream<Arguments> provideResourceTypesForGetTypeName() {
