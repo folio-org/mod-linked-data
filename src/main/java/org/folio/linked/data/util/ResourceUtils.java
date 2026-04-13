@@ -143,8 +143,8 @@ public class ResourceUtils {
   }
 
   public static String getFirstPropertyValue(Resource resource, PropertyDictionary property) {
-    return getPropertyValues(resource, property)
-      .getFirst();
+    var properties = getPropertyValues(resource, property);
+    return properties.isEmpty() ? "" : properties.getFirst();
   }
 
   public static List<String> getPropertyValues(Resource resource, PropertyDictionary property) {
