@@ -39,7 +39,7 @@
     <!-- Folio dependencies versions -->
     <folio-spring-base.version>10.0.0</folio-spring-base.version>
     <folio-service-tools.version>6.0.0-SNAPSHOT</folio-service-tools.version>
-    <folio-kafka-wrapper.version>4.0.0-SNAPSHOT</folio-kafka-wrapper.version>
+    <folio-kafka-wrapper.version>4.0.0</folio-kafka-wrapper.version>
     <mod-source-record-storage-client.version>5.11.0-SNAPSHOT</mod-source-record-storage-client.version>
     <mod-record-specifications-dto.version>3.0.0-SNAPSHOT</mod-record-specifications-dto.version>
     <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
