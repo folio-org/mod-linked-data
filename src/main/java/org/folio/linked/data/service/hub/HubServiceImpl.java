@@ -7,6 +7,7 @@ import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.mapper.dto.resource.hub.HubMapperUnit;
 import org.folio.linked.data.service.rdf.RdfImportService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class HubServiceImpl implements HubService {
   }
 
   @Override
+  @Transactional
   public ResourceResponseDto saveHub(String hubUri) {
     return importHub(hubUri, true);
   }

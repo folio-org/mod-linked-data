@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.data.domain.Pageable.unpaged;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Set;
@@ -68,11 +69,13 @@ class HubControllerIT {
     var resultActions = mockMvc.perform(requestBuilder);
 
     //then
-    var result = resultActions
+    resultActions
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
-      .andReturn().getResponse().getContentAsString();
-    assertThat(result).contains("Hub 150986 mainTitle");
+      .andExpect(jsonPath("$.resource['http://bibfra.me/vocab/lite/Hub']"
+        + "['http://bibfra.me/vocab/library/title'][0]"
+        + "['http://bibfra.me/vocab/library/Title']['http://bibfra.me/vocab/library/mainTitle'][0]")
+        .value("Hub 150986 mainTitle 汉"));
 
     var hubCountAfter = resourceRepository.findAllByTypeWithEdgesLoaded(Set.of(HUB.getUri()), 1, unpaged())
       .getTotalElements();
