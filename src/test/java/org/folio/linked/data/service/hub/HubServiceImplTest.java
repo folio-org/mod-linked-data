@@ -68,4 +68,41 @@ class HubServiceImplTest {
       .isEqualTo(expectedException);
     verify(rdfImportService).importRdfUrl(hubUri, false);
   }
+
+  @Test
+  void saveHub_shouldDownloadSaveAndConvertHub() {
+    // given
+    var hubUri = "https://example.com/hub.json";
+    var resource = new Resource();
+    var doc = TEST_JSON_MAPPER.createObjectNode();
+    var linkArray = TEST_JSON_MAPPER.createArrayNode().add(hubUri);
+    doc.set(LINK.getValue(), linkArray);
+    resource.setDoc(doc);
+    var expectedResponse = new ResourceResponseDto();
+
+    when(rdfImportService.importRdfUrl(hubUri, true)).thenReturn(resource);
+    when(hubMapperUnit.toDto(eq(resource), any(ResourceResponseDto.class), any())).thenReturn(expectedResponse);
+
+    // when
+    var result = hubService.saveHub(hubUri);
+
+    // then
+    assertThat(result).isEqualTo(expectedResponse);
+    verify(rdfImportService).importRdfUrl(hubUri, true);
+    verify(hubMapperUnit).toDto(eq(resource), any(ResourceResponseDto.class), any());
+  }
+
+  @Test
+  void saveHub_shouldThrowException_whenNoMatchingResource() {
+    // given
+    var hubUri = "https://example.com/hub.json";
+    var expectedException = new RequestProcessingException(404, "code", null, "message");
+
+    when(rdfImportService.importRdfUrl(hubUri, true)).thenThrow(expectedException);
+
+    // when & then
+    assertThatThrownBy(() -> hubService.saveHub(hubUri))
+      .isEqualTo(expectedException);
+    verify(rdfImportService).importRdfUrl(hubUri, true);
+  }
 }
