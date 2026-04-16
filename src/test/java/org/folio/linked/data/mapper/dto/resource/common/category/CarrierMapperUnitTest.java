@@ -3,6 +3,7 @@ package org.folio.linked.data.mapper.dto.resource.common.category;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
@@ -51,5 +52,23 @@ class CarrierMapperUnitTest {
     assertThat(props.get(LINK.getValue())).hasSize(1).contains(expectedLink);
     assertThat(props.get(TERM.getValue())).hasSize(1).contains(expectedTerm);
     assertThat(props.get(CODE.getValue())).hasSize(1).contains(expectedMarcCode);
+    assertThat(props.get(SOURCE.getValue())).hasSize(1).contains("rdacarrier");
+  }
+
+  @Test
+  void toEntity_shouldUseProvidedSourceWhenPresent() {
+    // given
+    var customSource = "customCarrierSource";
+    Category category = new Category()
+      .link(List.of("http://id.loc.gov/vocabulary/carriers/ha"))
+      .source(List.of(customSource));
+
+    // when
+    var resource = carrierMapperUnit.toEntity(category, new Resource());
+
+    // then
+    Map<String, List<String>> props = TEST_JSON_MAPPER.convertValue(resource.getDoc(), new TypeReference<>() {
+    });
+    assertThat(props.get(SOURCE.getValue())).hasSize(1).contains(customSource);
   }
 }

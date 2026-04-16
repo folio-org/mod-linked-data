@@ -73,12 +73,16 @@ public abstract class CategoryMapperUnit implements SingleResourceMapperUnit, Ma
 
   protected abstract String getCategorySetLink();
 
+  protected List<String> getSource(Category dto) {
+    return dto.getSource();
+  }
+
   protected JsonNode getDoc(Category dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, CODE, getMarcCodes(dto.getLink()));
     putProperty(map, TERM, dto.getTerm());
     putProperty(map, LINK, dto.getLink());
-    putProperty(map, SOURCE, dto.getSource());
+    putProperty(map, SOURCE, getSource(dto));
     return map.isEmpty() ? null : coreMapper.toJson(map);
   }
 
