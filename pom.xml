@@ -41,7 +41,7 @@
     <folio-service-tools.version>6.0.0-SNAPSHOT</folio-service-tools.version>
     <folio-kafka-wrapper.version>4.0.0</folio-kafka-wrapper.version>
     <mod-source-record-storage-client.version>5.11.0-SNAPSHOT</mod-source-record-storage-client.version>
-    <mod-record-specifications-dto.version>3.0.0-SNAPSHOT</mod-record-specifications-dto.version>
+    <mod-record-specifications-dto.version>3.0.0</mod-record-specifications-dto.version>
     <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>2.0.0-SNAPSHOT</lib-linked-data-marc4ld.version>
     <lib-linked-data-fingerprint.version>2.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
