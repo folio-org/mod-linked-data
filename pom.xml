@@ -44,7 +44,7 @@
     <mod-record-specifications-dto.version>3.0.0</mod-record-specifications-dto.version>
     <lib-linked-data-dictionary.version>2.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
     <lib-linked-data-marc4ld.version>2.0.0-SNAPSHOT</lib-linked-data-marc4ld.version>
-    <lib-linked-data-fingerprint.version>2.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
+    <lib-linked-data-fingerprint.version>2.0.0</lib-linked-data-fingerprint.version>
     <lib-linked-data-rdf4ld.version>1.0.0-SNAPSHOT</lib-linked-data-rdf4ld.version>
 
     <!-- Dependencies versions -->
