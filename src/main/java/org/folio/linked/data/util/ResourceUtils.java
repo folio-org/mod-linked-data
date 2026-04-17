@@ -46,6 +46,10 @@ public class ResourceUtils {
     .toFormatter();
 
 
+  public static List<String> getSourceOrFallback(List<String> source, String fallback) {
+    return isNotEmpty(source) ? source : List.of(fallback);
+  }
+
   public static String getFirstValue(Supplier<List<String>> valuesSupplier) {
     if (isNull(valuesSupplier)) {
       return "";
