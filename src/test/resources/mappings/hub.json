@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "urlPattern": "/some-hub-storage/.*"
+        "urlPattern": "/some-hub-storage/150986\\.json"
       },
       "response": {
         "status": 200,
@@ -11,6 +11,20 @@
           "Content-Type": "application/json"
         },
         "body": "[{\"@id\":\"http://localhost/some-hub-storage/150986.json\",\"@type\":[\"http://id.loc.gov/ontologies/bibframe/Hub\"],\"http://id.loc.gov/ontologies/bflc/aap\":[{\"@value\":\"Hub AAP 😊\"}],\"http://id.loc.gov/ontologies/bibframe/title\":[{\"@id\":\"http://test-tobe-changed.folio.com/resources/PRIMARY_TITLE_ID\"}]},{\"@id\":\"http://test-tobe-changed.folio.com/resources/PRIMARY_TITLE_ID\",\"@type\":[\"http://id.loc.gov/ontologies/bibframe/Title\"],\"http://id.loc.gov/ontologies/bibframe/mainTitle\":[{\"@value\":\"Hub 150986 mainTitle 汉\"}]}]",
+        "transformers": ["response-template"]
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/some-hub-storage/150987\\.json"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "[{\"@id\":\"http://localhost/some-hub-storage/150987.json\",\"@type\":[\"http://id.loc.gov/ontologies/bibframe/Hub\"],\"http://id.loc.gov/ontologies/bflc/aap\":[{\"@value\":\"Hub AAP 2\"}],\"http://id.loc.gov/ontologies/bibframe/title\":[{\"@id\":\"http://test-tobe-changed.folio.com/resources/PRIMARY_TITLE_ID_2\"}]},{\"@id\":\"http://test-tobe-changed.folio.com/resources/PRIMARY_TITLE_ID_2\",\"@type\":[\"http://id.loc.gov/ontologies/bibframe/Title\"],\"http://id.loc.gov/ontologies/bibframe/mainTitle\":[{\"@value\":\"Hub 150987 mainTitle\"}]}]",
         "transformers": ["response-template"]
       }
     }

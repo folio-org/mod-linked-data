@@ -5,7 +5,9 @@ import static org.folio.linked.data.mapper.dto.resource.base.SingleResourceMappe
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.mapper.dto.resource.hub.HubMapperUnit;
+import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.rdf.RdfImportService;
+import org.folio.linked.data.service.resource.ResourceService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class HubServiceImpl implements HubService {
 
   private final HubMapperUnit hubMapperUnit;
+  private final ResourceService resourceService;
   private final RdfImportService rdfImportService;
 
   @Override
@@ -29,6 +32,14 @@ public class HubServiceImpl implements HubService {
 
   private ResourceResponseDto importHub(String hubUri, boolean save) {
     var hubResource = rdfImportService.importRdfUrl(hubUri, save);
+    return save ? fetch(hubResource.getId()) : toDto(hubResource);
+  }
+
+  private ResourceResponseDto fetch(Long id) {
+    return resourceService.getResourceById(id);
+  }
+
+  private ResourceResponseDto toDto(Resource hubResource) {
     return hubMapperUnit.toDto(hubResource, new ResourceResponseDto(), ResourceMappingContext.forRoot());
   }
 
