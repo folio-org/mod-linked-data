@@ -5,6 +5,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.IS_DEFINED_BY;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.LABEL;
 import static org.folio.ld.dictionary.PropertyDictionary.LINK;
+ import static org.folio.ld.dictionary.PropertyDictionary.SOURCE;
 import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
@@ -55,6 +56,24 @@ class ContentMapperUnitTest {
     assertThat(props.get(LINK.getValue())).hasSize(1).contains(expectedLink);
     assertThat(props.get(TERM.getValue())).hasSize(1).contains(expectedTerm);
     assertThat(props.get(CODE.getValue())).hasSize(1).contains(expectedMarcCode);
+    assertThat(props.get(SOURCE.getValue())).hasSize(1).contains("rdacontent");
+  }
+
+  @Test
+  void toEntity_shouldUseProvidedSourceWhenPresent() {
+    // given
+    var customSource = "customContentSource";
+    Category category = new Category()
+      .link(List.of("http://id.loc.gov/vocabulary/contentTypes/crd"))
+      .source(List.of(customSource));
+
+    // when
+    var resource = contentMapperUnit.toEntity(category, new Resource());
+
+    // then
+    Map<String, List<String>> props = TEST_JSON_MAPPER.convertValue(resource.getDoc(), new TypeReference<>() {
+    });
+    assertThat(props.get(SOURCE.getValue())).hasSize(1).contains(customSource);
   }
 
   @Test
