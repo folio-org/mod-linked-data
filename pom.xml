@@ -109,6 +109,16 @@
       <groupId>org.folio</groupId>
       <artifactId>mod-source-record-storage-client</artifactId>
       <version>${mod-source-record-storage-client.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.folio</groupId>
+          <artifactId>domain-models-runtime</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.folio</groupId>
+          <artifactId>domain-models-api-interfaces</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

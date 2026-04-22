@@ -3,8 +3,8 @@ package org.folio.linked.data.util;
 import static java.util.Optional.ofNullable;
 import static org.folio.spring.integration.XOkapiHeaders.TENANT;
 
-import io.vertx.core.Handler;
 import java.util.Optional;
+import java.util.function.Consumer;
 import lombok.experimental.UtilityClass;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +22,7 @@ public class KafkaUtils {
                                                 String eventId,
                                                 LinkedDataTenantService linkedDataTenantService,
                                                 Logger log,
-                                                Handler<ConsumerRecord<String, T>> handler) {
+                                                Consumer<ConsumerRecord<String, T>> handler) {
     var event = consumerRecord.value();
     var eventName = event.getClass().getSimpleName();
     var tenant = getHeaderValueByName(consumerRecord, TENANT)
@@ -30,7 +30,7 @@ public class KafkaUtils {
         .formatted(eventName, eventId)));
     boolean tenantExists = linkedDataTenantService.isTenantExists(tenant);
     if (tenantExists) {
-      handler.handle(consumerRecord);
+      handler.accept(consumerRecord);
     } else {
       log.debug("Received {} [id {}] will be ignored since module is not installed on tenant {}",
         eventName, eventId, tenant);
