@@ -1,3 +1,5 @@
+## 2.0.1 (IN PROGRESS)
+
 ## 2.0.0 (17-04-2026)
 - Created new API GET /profile/{id} [MODLD-713](https://folio-org.atlassian.net/browse/MODLD-713)
 - Created new API POST /import/file [MODLD-729](https://folio-org.atlassian.net/browse/MODLD-729), [MODLD-740](https://folio-org.atlassian.net/browse/MODLD-740)
