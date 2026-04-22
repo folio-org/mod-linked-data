@@ -14,6 +14,7 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.mapper.dto.resource.hub.HubMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.rdf.RdfImportService;
+import org.folio.linked.data.service.resource.ResourceService;
 import org.folio.spring.testing.type.UnitTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,6 +33,8 @@ class HubServiceImplTest {
   private HubMapperUnit hubMapperUnit;
   @Mock
   private RdfImportService rdfImportService;
+  @Mock
+  private ResourceService resourceService;
 
   @Test
   void previewHub_shouldDownloadAndConvertHub() {
@@ -74,6 +77,7 @@ class HubServiceImplTest {
     // given
     var hubUri = "https://example.com/hub.json";
     var resource = new Resource();
+    resource.setIdAndRefreshEdges(42L);
     var doc = TEST_JSON_MAPPER.createObjectNode();
     var linkArray = TEST_JSON_MAPPER.createArrayNode().add(hubUri);
     doc.set(LINK.getValue(), linkArray);
@@ -81,7 +85,7 @@ class HubServiceImplTest {
     var expectedResponse = new ResourceResponseDto();
 
     when(rdfImportService.importRdfUrl(hubUri, true)).thenReturn(resource);
-    when(hubMapperUnit.toDto(eq(resource), any(ResourceResponseDto.class), any())).thenReturn(expectedResponse);
+    when(resourceService.getResourceById(42L)).thenReturn(expectedResponse);
 
     // when
     var result = hubService.saveHub(hubUri);
@@ -89,7 +93,7 @@ class HubServiceImplTest {
     // then
     assertThat(result).isEqualTo(expectedResponse);
     verify(rdfImportService).importRdfUrl(hubUri, true);
-    verify(hubMapperUnit).toDto(eq(resource), any(ResourceResponseDto.class), any());
+    verify(resourceService).getResourceById(42L);
   }
 
   @Test

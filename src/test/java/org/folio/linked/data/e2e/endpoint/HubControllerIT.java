@@ -82,7 +82,37 @@ class HubControllerIT {
     assertThat(hubCountAfter).isEqualTo(hubCountBefore + 1);
   }
 
+  @Test
+  void saveHub_shouldReturnFullHubResource_whenSavedSecondTime() throws Exception {
+    //given
+    var requestBuilder = MockMvcRequestBuilders.post(HUB_ENDPOINT)
+      .param("hubUri", getSecondHubUri())
+      .headers(defaultHeaders(env));
+    mockMvc.perform(requestBuilder).andExpect(status().isOk());
+    var hubCountAfterFirstSave = resourceRepository.findAllByTypeWithEdgesLoaded(Set.of(HUB.getUri()), 1, unpaged())
+      .getTotalElements();
+
+    //when saved a second time (updates an existing hub)
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    //then the response still contains fully mapped edges (no LazyInitializationException)
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.resource['http://bibfra.me/vocab/lite/Hub']"
+        + "['http://bibfra.me/vocab/library/title'][0]"
+        + "['http://bibfra.me/vocab/library/Title']['http://bibfra.me/vocab/library/mainTitle'][0]")
+        .value("Hub 150987 mainTitle"));
+    var hubCountAfterSecondSave = resourceRepository.findAllByTypeWithEdgesLoaded(Set.of(HUB.getUri()), 1, unpaged())
+      .getTotalElements();
+    assertThat(hubCountAfterSecondSave).isEqualTo(hubCountAfterFirstSave);
+  }
+
   private String getHubUri() {
     return getProperty(FOLIO_OKAPI_URL) + "/some-hub-storage/150986.json";
+  }
+
+  private String getSecondHubUri() {
+    return getProperty(FOLIO_OKAPI_URL) + "/some-hub-storage/150987.json";
   }
 }
