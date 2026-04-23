@@ -5,7 +5,7 @@
   <name>mod-linked-data</name>
   <groupId>org.folio</groupId>
   <artifactId>mod-linked-data</artifactId>
-  <version>2.0.1</version>
+  <version>3.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -42,10 +42,10 @@
     <folio-kafka-wrapper.version>4.0.0</folio-kafka-wrapper.version>
     <mod-source-record-storage-client.version>6.0.0</mod-source-record-storage-client.version>
     <mod-record-specifications-dto.version>3.0.0</mod-record-specifications-dto.version>
-    <lib-linked-data-dictionary.version>2.0.0</lib-linked-data-dictionary.version>
-    <lib-linked-data-marc4ld.version>2.0.0</lib-linked-data-marc4ld.version>
-    <lib-linked-data-fingerprint.version>2.0.0</lib-linked-data-fingerprint.version>
-    <lib-linked-data-rdf4ld.version>1.0.0</lib-linked-data-rdf4ld.version>
+    <lib-linked-data-dictionary.version>3.0.0-SNAPSHOT</lib-linked-data-dictionary.version>
+    <lib-linked-data-marc4ld.version>3.0.0-SNAPSHOT</lib-linked-data-marc4ld.version>
+    <lib-linked-data-fingerprint.version>3.0.0-SNAPSHOT</lib-linked-data-fingerprint.version>
+    <lib-linked-data-rdf4ld.version>2.0.0-SNAPSHOT</lib-linked-data-rdf4ld.version>
 
     <!-- Dependencies versions -->
     <hypersistence-utils-hibernate>3.15.2</hypersistence-utils-hibernate>
@@ -686,6 +686,6 @@
     <url>https://github.com/folio-org/${project.artifactId}</url>
     <connection>scm:git:git://github.com/folio-org/${project.artifactId}.git</connection>
     <developerConnection>scm:git:git@github.com:folio-org/${project.artifactId}.git</developerConnection>
-    <tag>v2.0.1</tag>
+    <tag>HEAD</tag>
   </scm>
 </project>

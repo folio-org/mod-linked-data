@@ -1,3 +1,5 @@
+## 3.0.0 (IN PROGRESS)
+
 ## 2.0.1 (23-04-2026)
 - Fix Hub Import from external (LoC) source in case of low speed [MODLD-1053](https://folio-org.atlassian.net/browse/MODLD-1053)
 - Clean out redundant dependencies [MODLD-1047](https://folio-org.atlassian.net/browse/MODLD-1047)
