@@ -49,7 +49,7 @@
 
     <!-- Dependencies versions -->
     <hypersistence-utils-hibernate>3.15.2</hypersistence-utils-hibernate>
-    <apache-commons-io.version>2.21.0</apache-commons-io.version>
+    <apache-commons-io.version>2.22.0</apache-commons-io.version>
     <apache-commons-collections.version>4.5.0</apache-commons-collections.version>
     <apache-commons-csv.version>1.14.1</apache-commons-csv.version>
     <mapstruct.version>1.6.3</mapstruct.version>
