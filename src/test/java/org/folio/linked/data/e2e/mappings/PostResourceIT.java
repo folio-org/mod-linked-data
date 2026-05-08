@@ -33,7 +33,7 @@ import tools.jackson.databind.JsonNode;
 public abstract class PostResourceIT extends ITBase {
 
   private static final int RESOURCE_FETCH_DEPTH = 4;
-  private static final String RESOURCE_URL = "/linked-data/resource";
+  protected static final String RESOURCE_URL = "/linked-data/resource";
 
   protected Long savedWorkId;
 
