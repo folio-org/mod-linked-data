@@ -52,10 +52,17 @@ class ResourceControllerIT extends ResourceControllerITBase {
 
   @Override
   protected void checkInventoryMessage(Long id, InstanceIngressEvent.EventTypeEnum eventType) {
-    awaitAndAssert(() ->
-      assertTrue(inventoryTopicListener.getMessages().stream().anyMatch(m -> m.contains(id.toString())
-        && m.contains(eventType.getValue())))
-    );
+    awaitAndAssert(() -> {
+      var message = inventoryTopicListener.getMessages().stream()
+        .filter(m -> m.contains(id.toString()) && m.contains(eventType.getValue()))
+        .findFirst()
+        .orElse(null);
+      assertNotNull(message);
+      if (eventType == InstanceIngressEvent.EventTypeEnum.CREATE_INSTANCE) {
+        assertTrue(message.contains("sourceRecordObject"), "Payload should contain sourceRecordObject MARC");
+        assertTrue(message.contains("LINKED_DATA"), "Payload sourceType should be LINKED_DATA");
+      }
+    });
   }
 
   @Override
