@@ -11,6 +11,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -32,8 +33,8 @@ import tools.jackson.databind.JsonNode;
 @ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
 public abstract class PostResourceIT extends ITBase {
 
-  private static final int RESOURCE_FETCH_DEPTH = 4;
   protected static final String RESOURCE_URL = "/linked-data/resource";
+  private static final int RESOURCE_FETCH_DEPTH = 4;
 
   protected Long savedWorkId;
 
@@ -57,6 +58,18 @@ public abstract class PostResourceIT extends ITBase {
   protected abstract void validateApiResponse(ResultActions apiResponse);
 
   protected abstract void validateGraph(Resource resource);
+
+  /**
+   * Override to supply a PUT payload and activate {@link #testPutRequest()}.
+   * Returns {@code null} by default (skips the PUT test).
+   */
+  protected String putPayload() {
+    return null;
+  }
+
+  protected void validateUpdatedApiResponse(ResultActions apiResponse) {}
+
+  protected void validateUpdatedGraph(Resource resource) {}
 
   @Test
   void testPostRequest() throws Exception {
@@ -84,6 +97,44 @@ public abstract class PostResourceIT extends ITBase {
     var getResponse = mockMvc.perform(getRequest);
     getResponse.andExpect(status().isOk());
     validateApiResponse(getResponse);
+  }
+
+  @Test
+  void testPutRequest() throws Exception {
+    var updatePayload = putPayload();
+    if (updatePayload == null) {
+      return;
+    }
+
+    // given
+    var postRequest = post(RESOURCE_URL)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(postPayload());
+    var postResponse = mockMvc.perform(postRequest);
+    postResponse.andExpect(status().isOk());
+    var resourceId = getResourceId(postResponse);
+
+    // when
+    var putRequest = put(RESOURCE_URL + "/" + resourceId)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(updatePayload);
+    var putResponse = mockMvc.perform(putRequest);
+
+    // then
+    putResponse.andExpect(status().isOk());
+    validateUpdatedApiResponse(putResponse);
+    var updatedResourceId = getResourceId(putResponse);
+    var updatedResource = resourceTestService.getResourceById(updatedResourceId, RESOURCE_FETCH_DEPTH);
+    validateUpdatedGraph(updatedResource);
+
+    var getRequest = get(RESOURCE_URL + "/" + updatedResourceId)
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+    var getResponse = mockMvc.perform(getRequest);
+    getResponse.andExpect(status().isOk());
+    validateUpdatedApiResponse(getResponse);
   }
 
   @SneakyThrows
