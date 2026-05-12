@@ -1,7 +1,18 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PropertyDictionary.ATTRIBUTION;
+import static org.folio.ld.dictionary.PropertyDictionary.AUTHORITY_LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_FIELD;
+import static org.folio.ld.dictionary.PropertyDictionary.EQUIVALENT;
+import static org.folio.ld.dictionary.PropertyDictionary.FIELD_LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.LINKAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME_ALTERNATIVE;
+import static org.folio.ld.dictionary.PropertyDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
@@ -11,6 +22,7 @@ import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
@@ -168,6 +180,90 @@ class MergeResourcesIT {
       .noneMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.REPLACED_BY.getUri()));
   }
 
+  @Test
+  void shouldMergePerson100MultiValuedSubfields() {
+    // given
+    resourceGraphService.saveMergingGraph(createPersonResource(1L, Map.of(
+      ATTRIBUTION, List.of("attribution-v1"),
+      NAME_ALTERNATIVE, List.of("name-alt-v1")
+    )));
+
+    // when
+    resourceGraphService.saveMergingGraph(createPersonResource(1L, Map.of(
+      ATTRIBUTION, List.of("attribution-v2"),
+      NAME_ALTERNATIVE, List.of("name-alt-v2")
+    )));
+
+    // then
+    var doc = resourceTestService.getResourceById("1", 1).getDoc();
+    assertDocValues(doc, ATTRIBUTION, List.of("attribution-v1", "attribution-v2"));
+    assertDocValues(doc, NAME_ALTERNATIVE, List.of("name-alt-v1", "name-alt-v2"));
+  }
+
+  @Test
+  void shouldMergeOrganization110MultiValuedSubfields() {
+    // given
+    resourceGraphService.saveMergingGraph(createOrganizationResource(1L, Map.of(
+      PLACE, List.of("place-v1"),
+      AUTHORITY_LINK, List.of("auth-link-v1"),
+      EQUIVALENT, List.of("equiv-v1"),
+      LINKAGE, List.of("linkage-v1"),
+      CONTROL_FIELD, List.of("ctrl-v1"),
+      FIELD_LINK, List.of("fl-v1")
+    )));
+
+    // when
+    resourceGraphService.saveMergingGraph(createOrganizationResource(1L, Map.of(
+      PLACE, List.of("place-v2"),
+      AUTHORITY_LINK, List.of("auth-link-v2"),
+      EQUIVALENT, List.of("equiv-v2"),
+      LINKAGE, List.of("linkage-v2"),
+      CONTROL_FIELD, List.of("ctrl-v2"),
+      FIELD_LINK, List.of("fl-v2")
+    )));
+
+    // then
+    var doc = resourceTestService.getResourceById("1", 1).getDoc();
+    assertDocValues(doc, PLACE, List.of("place-v1", "place-v2"));
+    assertDocValues(doc, AUTHORITY_LINK, List.of("auth-link-v1", "auth-link-v2"));
+    assertDocValues(doc, EQUIVALENT, List.of("equiv-v1", "equiv-v2"));
+    assertDocValues(doc, LINKAGE, List.of("linkage-v1", "linkage-v2"));
+    assertDocValues(doc, CONTROL_FIELD, List.of("ctrl-v1", "ctrl-v2"));
+    assertDocValues(doc, FIELD_LINK, List.of("fl-v1", "fl-v2"));
+  }
+
+  @Test
+  void shouldMergeMeeting111MultiValuedSubfields() {
+    // given
+    resourceGraphService.saveMergingGraph(createMeetingResource(1L, Map.of(
+      PLACE, List.of("place-v1"),
+      AUTHORITY_LINK, List.of("auth-link-v1"),
+      EQUIVALENT, List.of("equiv-v1"),
+      LINKAGE, List.of("linkage-v1"),
+      CONTROL_FIELD, List.of("ctrl-v1"),
+      FIELD_LINK, List.of("fl-v1")
+    )));
+
+    // when
+    resourceGraphService.saveMergingGraph(createMeetingResource(1L, Map.of(
+      PLACE, List.of("place-v2"),
+      AUTHORITY_LINK, List.of("auth-link-v2"),
+      EQUIVALENT, List.of("equiv-v2"),
+      LINKAGE, List.of("linkage-v2"),
+      CONTROL_FIELD, List.of("ctrl-v2"),
+      FIELD_LINK, List.of("fl-v2")
+    )));
+
+    // then
+    var doc = resourceTestService.getResourceById("1", 1).getDoc();
+    assertDocValues(doc, PLACE, List.of("place-v1", "place-v2"));
+    assertDocValues(doc, AUTHORITY_LINK, List.of("auth-link-v1", "auth-link-v2"));
+    assertDocValues(doc, EQUIVALENT, List.of("equiv-v1", "equiv-v2"));
+    assertDocValues(doc, LINKAGE, List.of("linkage-v1", "linkage-v2"));
+    assertDocValues(doc, CONTROL_FIELD, List.of("ctrl-v1", "ctrl-v2"));
+    assertDocValues(doc, FIELD_LINK, List.of("fl-v1", "fl-v2"));
+  }
+
   private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {
     var mainResource = resourceTestService.getResourceById(mainId.toString(), 4);
     assertThat(mainResource.getOutgoingEdges()).hasSize(1);
@@ -241,6 +337,31 @@ class MergeResourcesIT {
       Set.of(ResourceTypeDictionary.IDENTIFIER),
       pred2OutgoingResources
     ).setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createPersonResource(Long hash, Map<PropertyDictionary, List<String>> properties) {
+    return MonographTestUtil.createResource(properties, Set.of(PERSON), Map.of())
+      .setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createOrganizationResource(Long hash, Map<PropertyDictionary, List<String>> properties) {
+    return MonographTestUtil.createResource(properties, Set.of(ORGANIZATION), Map.of())
+      .setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createMeetingResource(Long hash, Map<PropertyDictionary, List<String>> properties) {
+    return MonographTestUtil.createResource(properties, Set.of(MEETING), Map.of())
+      .setIdAndRefreshEdges(hash);
+  }
+
+  private void assertDocValues(tools.jackson.databind.JsonNode doc, PropertyDictionary property,
+                               List<String> expectedValues) {
+    var node = doc.get(property.getValue());
+    assertThat(node).isNotNull();
+    var actual = StreamSupport.stream(node.spliterator(), false)
+      .map(n -> n.asText())
+      .toList();
+    assertThat(actual).containsExactlyInAnyOrderElementsOf(expectedValues);
   }
 
   private void assertEdge(ResourceEdge edge, long sourceHash, long targetHash, Resource source) {
