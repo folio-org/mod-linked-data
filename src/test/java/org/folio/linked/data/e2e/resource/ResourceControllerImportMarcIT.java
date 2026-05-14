@@ -1,8 +1,11 @@
 package org.folio.linked.data.e2e.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getInstanceRequestDto;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toCarrierCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toCarrierLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toCarrierTerm;
@@ -10,17 +13,25 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toInstance;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toMediaTerm;
+import static org.folio.linked.data.test.resource.ResourceSpecUtil.createSpecRules;
+import static org.folio.linked.data.test.resource.ResourceSpecUtil.createSpecifications;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
+import org.assertj.core.api.Assertions;
+import org.folio.linked.data.domain.dto.InstanceResponseField;
+import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.integration.rest.specification.SpecClient;
 import org.folio.linked.data.integration.rest.srs.SrsClient;
 import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
@@ -40,6 +51,8 @@ import org.springframework.test.web.servlet.MockMvc;
 class ResourceControllerImportMarcIT extends ITBase {
   @MockitoBean
   private SrsClient srsClient;
+  @MockitoBean
+  private SpecClient specClient;
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -236,6 +249,96 @@ class ResourceControllerImportMarcIT extends ITBase {
       .andExpect(jsonPath(toCarrierCode(toInstance())).value("ha"))
       .andExpect(jsonPath(toCarrierLink(toInstance())).value("http://id.loc.gov/vocabulary/carriers/ha"))
       .andExpect(jsonPath(toCarrierTerm(toInstance())).value("aperture card"));
+  }
+
+  @Test
+  void shouldImportMarcAndEditResource() throws Exception {
+    // Step 1: Import a MARC record
+    var instanceId = UUID.randomUUID().toString();
+    var sampleSrsResponse = """
+      {
+         "parsedRecord":{
+            "content":{
+               "fields":[
+                  { "001":"in00000000005" },
+                  { "008":"251031|                      ||| |      " },
+                  {
+                     "245":{
+                        "ind1":" ",
+                        "ind2":" ",
+                        "subfields":[ { "a":"shouldImportMarcAndEditResource - Testing edit" } ]
+                     }
+                  }
+               ],
+               "leader":"00258naa a2200085uu 4500"
+            }
+         }
+      }
+      """;
+
+    when(srsClient.getSourceStorageInstanceRecordById(instanceId))
+      .thenReturn(ResponseEntity.ok(TEST_JSON_MAPPER.readValue(sampleSrsResponse, Record.class)));
+
+    var importPayload = mockMvc.perform(
+        post("/linked-data/inventory-instance/{inventoryId}/import", instanceId)
+          .contentType(APPLICATION_JSON)
+          .headers(defaultHeaders(env)))
+      .andExpect(status().isCreated())
+      .andReturn()
+      .getResponse()
+      .getContentAsString();
+
+    var resourceId = TEST_JSON_MAPPER.readTree(importPayload).get("id").asString();
+
+    // Step 2: GET the imported instance to retrieve the work reference ID
+    var getResponse = mockMvc.perform(
+        get("/linked-data/resource/{id}", resourceId)
+          .contentType(APPLICATION_JSON)
+          .headers(defaultHeaders(env)))
+      .andExpect(status().isOk())
+      .andReturn()
+      .getResponse()
+      .getContentAsString();
+
+    var importedResponse = TEST_JSON_MAPPER.readValue(getResponse, ResourceResponseDto.class);
+    var importedInstance = ((InstanceResponseField) importedResponse.getResource()).getInstance();
+    var workId = Long.parseLong(importedInstance.getWorkReference().getFirst().getId());
+
+    // Step 3: Edit the imported resource (simulates "Edit in Linked data editor" → Save)
+    var specRuleId = UUID.randomUUID();
+    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok(createSpecifications(specRuleId)));
+    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok(createSpecRules()));
+
+    searchWorkIndexTopicListener.getMessages().clear();
+
+    var updateResponse = mockMvc.perform(
+        put("/linked-data/resource/{id}", resourceId)
+          .contentType(APPLICATION_JSON)
+          .headers(defaultHeaders(env))
+          .content(getInstanceRequestDto(workId, "shouldImportMarcAndEditResource - Edited instance")))
+      .andExpect(status().isOk())
+      .andReturn()
+      .getResponse()
+      .getContentAsString();
+
+    // Step 4: Verify the edited resource — old instance replaced, source changed to LINKED_DATA
+    var updatedResourceResponse = TEST_JSON_MAPPER.readValue(updateResponse, ResourceResponseDto.class);
+    var updatedInstanceId = ((InstanceResponseField) updatedResourceResponse.getResource()).getInstance().getId();
+
+    assertFalse(resourceTestService.existsById(Long.parseLong(resourceId)));
+    var updatedResource = resourceTestService.getResourceById(updatedInstanceId, 1);
+    assertThat(updatedResource.getFolioMetadata().getSource()).isEqualTo(LINKED_DATA);
+
+    // Step 5: Editing the instance should publish an UPDATE event on the search index topic
+    awaitAndAssert(() -> assertTrue(
+      searchWorkIndexTopicListener.getMessages().stream()
+        .anyMatch(msg -> {
+          var root = TEST_JSON_MAPPER.readTree(msg);
+          return root.get("type").asString().equals("UPDATE")
+            && root.get("resourceName").asString().equals("linked-data-work")
+            && msg.contains(String.valueOf(workId));
+        })
+    ));
   }
 
   private boolean isExpectedInventoryMessage(String message, String resourceId) {
