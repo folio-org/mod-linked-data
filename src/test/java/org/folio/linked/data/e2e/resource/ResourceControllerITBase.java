@@ -82,6 +82,7 @@ import static org.folio.linked.data.domain.dto.ResourceIndexEventType.CREATE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
+import static org.folio.linked.data.model.entity.ResourceSource.MARC;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.MonographTestUtil.getSubjectFormNotPreferred;
@@ -359,6 +360,59 @@ abstract class ResourceControllerITBase extends ITBase {
     assertThat(updatedFolioMetadata.getSource().name())
       .isEqualTo(folioMetadataDto.getSource().name())
       .isEqualTo(LINKED_DATA.name());
+
+    checkSearchIndexMessage(work.getId(), UPDATE);
+    checkIndexDate(work.getId().toString());
+  }
+
+  @Test
+  void update_shouldReturnCorrectlyUpdatedInstanceWithWorkRef_whenMarcSourced_shouldUpdateSourceToLinkedData()
+    throws Exception {
+    // given
+    var specRuleId = randomUUID();
+    when(specClient.getBibMarcSpecs()).thenReturn(ResponseEntity.ok().body(createSpecifications(specRuleId)));
+    when(specClient.getSpecRules(specRuleId)).thenReturn(ResponseEntity.ok().body(createSpecRules()));
+
+    var work = getSampleWork();
+    var marcInstance = getSampleInstanceResource(null, work);
+    marcInstance.getFolioMetadata().setSource(MARC);
+    var originalInstance = resourceTestService.saveGraph(marcInstance);
+    var updateDto = getSampleInstanceDtoMap();
+    var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
+    instanceMap.remove("inventoryId");
+    instanceMap.remove("srsId");
+
+    var updateRequest = put(RESOURCE_URL + "/" + originalInstance.getId())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env))
+      .content(
+        TEST_JSON_MAPPER.writeValueAsString(updateDto).replaceAll(WORK_ID_PLACEHOLDER, work.getId().toString())
+      );
+
+    // when
+    var resultActions = mockMvc.perform(updateRequest);
+
+    // then
+    assertFalse(resourceTestService.existsById(originalInstance.getId()));
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath(toInstance(), notNullValue()))
+      .andReturn().getResponse().getContentAsString();
+    var resourceResponse = TEST_JSON_MAPPER.readValue(response, ResourceResponseDto.class);
+    var instanceDto = ((InstanceResponseField) resourceResponse.getResource()).getInstance();
+    var updatedInstance = resourceTestService.getResourceById(instanceDto.getId(), 1);
+
+    var updatedFolioMetadata = updatedInstance.getFolioMetadata();
+    var originalFolioMetadata = originalInstance.getFolioMetadata();
+    var folioMetadataDto = instanceDto.getFolioMetadata();
+    assertThat(updatedFolioMetadata.getSource()).isEqualTo(LINKED_DATA);
+    assertThat(updatedFolioMetadata.getInventoryId())
+      .isEqualTo(folioMetadataDto.getInventoryId())
+      .isEqualTo(originalFolioMetadata.getInventoryId());
+    assertThat(updatedFolioMetadata.getSrsId())
+      .isEqualTo(folioMetadataDto.getSrsId())
+      .isEqualTo(originalFolioMetadata.getSrsId());
 
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
