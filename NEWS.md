@@ -1,4 +1,5 @@
 ## 3.0.0 (IN PROGRESS)
+- Correct log settings to match expected key case [MODLD-1063](https://folio-org.atlassian.net/browse/MODLD-1063)
 
 ## 2.0.1 (23-04-2026)
 - Fix Hub Import from external (LoC) source in case of low speed [MODLD-1053](https://folio-org.atlassian.net/browse/MODLD-1053)
