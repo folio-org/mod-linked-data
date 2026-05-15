@@ -366,7 +366,7 @@
       "displayName": "Statement of Responsibility",
       "uriBFLite": "http://bibfra.me/vocab/library/statementOfResponsibility",
       "constraints": {
-        "repeatable": true,
+        "repeatable": false,
         "editable": true,
         "mandatory": false,
         "defaults": [],
@@ -389,6 +389,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:EditionStatement",
+
       "marc": "250 $a, $b"
     },
     {
