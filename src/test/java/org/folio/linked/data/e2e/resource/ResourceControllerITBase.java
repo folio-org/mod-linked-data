@@ -10,7 +10,9 @@ import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -72,6 +74,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
@@ -83,6 +86,10 @@ import static org.folio.linked.data.domain.dto.ResourceIndexEventType.DELETE;
 import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
 import static org.folio.linked.data.model.entity.ResourceSource.MARC;
+import static org.folio.linked.data.test.MonographTestUtil.JURISDICTION_CONTRIBUTOR_ID;
+import static org.folio.linked.data.test.MonographTestUtil.JURISDICTION_CONTRIBUTOR_LABEL;
+import static org.folio.linked.data.test.MonographTestUtil.JURISDICTION_CREATOR_ID;
+import static org.folio.linked.data.test.MonographTestUtil.JURISDICTION_CREATOR_LABEL;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleWork;
 import static org.folio.linked.data.test.MonographTestUtil.getSubjectFormNotPreferred;
@@ -161,6 +168,12 @@ import static org.folio.linked.data.test.resource.ResourceJsonPath.toWork;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentCode;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentLink;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContentTerm;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorReferenceId;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorReferenceLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkContributorReferenceType;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorReferenceId;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorReferenceLabel;
+import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkCreatorReferenceType;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDateEnd;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDateStart;
 import static org.folio.linked.data.test.resource.ResourceJsonPath.toWorkDeweyEdition;
@@ -602,8 +615,8 @@ abstract class ResourceControllerITBase extends ITBase {
     var work = getSampleWork();
     var instance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     assertThat(resourceTestService.findById(instance.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(50);
-    assertThat(resourceTestService.countEdges()).isEqualTo(49);
+    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countEdges()).isEqualTo(51);
     var requestBuilder = delete(RESOURCE_URL + "/" + instance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -614,9 +627,9 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(instance.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(49);
+    assertThat(resourceTestService.countResources()).isEqualTo(51);
     assertThat(resourceTestService.findEdgeById(instance.getOutgoingEdges().iterator().next().getId())).isNotPresent();
-    assertThat(resourceTestService.countEdges()).isEqualTo(31);
+    assertThat(resourceTestService.countEdges()).isEqualTo(33);
     checkSearchIndexMessage(work.getId(), UPDATE);
     checkIndexDate(work.getId().toString());
   }
@@ -626,8 +639,8 @@ abstract class ResourceControllerITBase extends ITBase {
     // given
     var existed = resourceTestService.saveGraph(getSampleWork(getSampleInstanceResource(null, null)));
     assertThat(resourceTestService.findById(existed.getId())).isPresent();
-    assertThat(resourceTestService.countResources()).isEqualTo(50);
-    assertThat(resourceTestService.countEdges()).isEqualTo(49);
+    assertThat(resourceTestService.countResources()).isEqualTo(52);
+    assertThat(resourceTestService.countEdges()).isEqualTo(51);
     var requestBuilder = delete(RESOURCE_URL + "/" + existed.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -638,7 +651,7 @@ abstract class ResourceControllerITBase extends ITBase {
     // then
     resultActions.andExpect(status().isNoContent());
     assertThat(resourceTestService.existsById(existed.getId())).isFalse();
-    assertThat(resourceTestService.countResources()).isEqualTo(49);
+    assertThat(resourceTestService.countResources()).isEqualTo(51);
     assertThat(resourceTestService.findEdgeById(existed.getOutgoingEdges().iterator().next().getId())).isNotPresent();
     assertThat(resourceTestService.countEdges()).isEqualTo(31);
     checkSearchIndexMessage(existed.getId(), DELETE);
@@ -799,7 +812,13 @@ abstract class ResourceControllerITBase extends ITBase {
       .andExpect(jsonPath(toWorkGovPublicationLink(workBase), equalTo("http://id.loc.gov/vocabulary/mgovtpubtype/a")))
       .andExpect(jsonPath(toIllustrationsCode(workBase), equalTo("a")))
       .andExpect(jsonPath(toIllustrationsLink(workBase), equalTo("http://id.loc.gov/vocabulary/millus/ill")))
-      .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("Illustrations")));
+      .andExpect(jsonPath(toIllustrationsTerm(workBase), equalTo("Illustrations")))
+      .andExpect(jsonPath(toWorkCreatorReferenceId(workBase), notNullValue()))
+      .andExpect(jsonPath(toWorkCreatorReferenceLabel(workBase), equalTo(JURISDICTION_CREATOR_LABEL)))
+      .andExpect(jsonPath(toWorkCreatorReferenceType(workBase), equalTo(JURISDICTION.getUri())))
+      .andExpect(jsonPath(toWorkContributorReferenceId(workBase), notNullValue()))
+      .andExpect(jsonPath(toWorkContributorReferenceLabel(workBase), equalTo(JURISDICTION_CONTRIBUTOR_LABEL)))
+      .andExpect(jsonPath(toWorkContributorReferenceType(workBase), equalTo(JURISDICTION.getUri())));
     if (workBase.equals(toWork()) && withInstance) {
       resultActions.andExpect(jsonPath(toInstanceReference(workBase), notNullValue()));
       validateInstanceResponse(resultActions, toInstanceReference(workBase));
@@ -1142,7 +1161,23 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(work, TABLE_OF_CONTENTS.getValue(), "table of contents");
     validateLiteral(work, LABEL.getValue(),
       "Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
-    var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
+
+    var creatorEdge = work.getOutgoingEdges().stream()
+      .filter(e -> CREATOR.getUri().equals(e.getPredicate().getUri()))
+      .findFirst()
+      .orElseThrow(() -> new AssertionError("CREATOR edge not found on work"));
+    validateJurisdictionEdge(creatorEdge, work, JURISDICTION_CREATOR_LABEL, JURISDICTION_CREATOR_ID);
+
+    var contributorEdge = work.getOutgoingEdges().stream()
+      .filter(e -> CONTRIBUTOR.getUri().equals(e.getPredicate().getUri()))
+      .findFirst()
+      .orElseThrow(() -> new AssertionError("CONTRIBUTOR edge not found on work"));
+    validateJurisdictionEdge(contributorEdge, work, JURISDICTION_CONTRIBUTOR_LABEL, JURISDICTION_CONTRIBUTOR_ID);
+
+    var outgoingEdgeIterator = work.getOutgoingEdges().stream()
+      .filter(e -> !CREATOR.getUri().equals(e.getPredicate().getUri())
+        && !CONTRIBUTOR.getUri().equals(e.getPredicate().getUri()))
+      .iterator();
     validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "Illustrations",
       Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/ill", CODE.getValue(), "a"),
       "Illustrative Content"
@@ -1167,6 +1202,15 @@ abstract class ResourceControllerITBase extends ITBase {
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.geographicCoverages().getFirst(),
       GEOGRAPHIC_COVERAGE.getUri());
     assertThat(outgoingEdgeIterator.hasNext()).isFalse();
+  }
+
+  private void validateJurisdictionEdge(ResourceEdge edge, Resource source, String expectedLabel, long expectedId) {
+    assertThat(edge.getId()).isNotNull();
+    assertThat(edge.getSource()).isEqualTo(source);
+    var agent = edge.getTarget();
+    assertThat(agent.getLabel()).isEqualTo(expectedLabel);
+    assertThat(agent.getTypes().iterator().next().getUri()).isEqualTo(JURISDICTION.getUri());
+    assertThat(agent.getId()).isEqualTo(expectedId);
   }
 
   private void validateDdcClassification(ResourceEdge edge, Resource source) {
@@ -1326,11 +1370,17 @@ abstract class ResourceControllerITBase extends ITBase {
     var genre2 = saveResource(-4816872480602594231L, "genre 2", "{\"http://bibfra.me/vocab/lite/name\": [\"genre 2\"]}", FORM);
     var assigningAgency = saveResource(4932783899755316479L, "assigning agency", "{\"http://bibfra.me/vocab/lite/name\": [\"assigning agency\"]}", ORGANIZATION);
     var libraryOfCongress = saveResource(8752404686183471966L, "United States, Library of Congress", "{\"http://bibfra.me/vocab/lite/name\": [\"United States, Library of Congress\"]}", ORGANIZATION);
+    var jurisdictionCreator = saveResource(JURISDICTION_CREATOR_ID, JURISDICTION_CREATOR_LABEL,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"" + JURISDICTION_CREATOR_LABEL + "\"]}", JURISDICTION);
+    var jurisdictionContributor = saveResource(JURISDICTION_CONTRIBUTOR_ID, JURISDICTION_CONTRIBUTOR_LABEL,
+      "{\"http://bibfra.me/vocab/lite/name\": [\"" + JURISDICTION_CONTRIBUTOR_LABEL + "\"]}", JURISDICTION);
     return new LookupResources(
       List.of(subjectPerson, subjectForm),
       List.of(unitedStates, europe),
       List.of(genre1, genre2),
-      List.of(assigningAgency, libraryOfCongress)
+      List.of(assigningAgency, libraryOfCongress),
+      jurisdictionCreator,
+      jurisdictionContributor
     );
   }
 
@@ -1359,7 +1409,9 @@ abstract class ResourceControllerITBase extends ITBase {
     List<Resource> subjects,
     List<Resource> geographicCoverages,
     List<Resource> genres,
-    List<Resource> assigningSources
+    List<Resource> assigningSources,
+    Resource jurisdictionCreator,
+    Resource jurisdictionContributor
   ) {
   }
 }

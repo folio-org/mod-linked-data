@@ -8,7 +8,9 @@ import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -73,6 +75,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
@@ -104,6 +107,11 @@ import org.folio.linked.data.service.resource.hash.HashService;
 
 @UtilityClass
 public class MonographTestUtil {
+
+  public static final long JURISDICTION_CREATOR_ID = 1000000000000000001L;
+  public static final String JURISDICTION_CREATOR_LABEL = "jurisdiction creator";
+  public static final long JURISDICTION_CONTRIBUTOR_ID = 1000000000000000002L;
+  public static final String JURISDICTION_CONTRIBUTOR_LABEL = "jurisdiction contributor";
 
   public static Resource getSampleInstanceResource() {
     return getSampleInstanceResource(null, getSampleWork());
@@ -398,6 +406,10 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
     pred2OutgoingResources.put(ILLUSTRATIONS, List.of(createIllustrations()));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(createSupplementaryContent()));
+    pred2OutgoingResources.put(CREATOR,
+      List.of(createJurisdictionAgent(JURISDICTION_CREATOR_ID, JURISDICTION_CREATOR_LABEL)));
+    pred2OutgoingResources.put(CONTRIBUTOR,
+      List.of(createJurisdictionAgent(JURISDICTION_CONTRIBUTOR_ID, JURISDICTION_CONTRIBUTOR_LABEL)));
 
     var work = createResource(
       Map.ofEntries(
@@ -637,6 +649,15 @@ public class MonographTestUtil {
     var lccn = (LinkedHashMap) ((LinkedHashMap) map.getFirst()).get(ID_LCCN.getUri());
     var status = (ArrayList) lccn.get(STATUS.getUri());
     ((LinkedHashMap) status.getFirst()).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
+  }
+
+  private static Resource createJurisdictionAgent(long id, String label) {
+    return createResource(
+      Map.of(NAME, List.of(label)),
+      Set.of(JURISDICTION),
+      emptyMap()
+    ).setLabel(label)
+      .setIdAndRefreshEdges(id);
   }
 
   public static Resource getWork(String titleStr, HashService hashService) {
