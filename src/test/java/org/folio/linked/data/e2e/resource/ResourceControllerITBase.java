@@ -10,9 +10,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
-import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
-import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -1162,22 +1160,7 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLiteral(work, LABEL.getValue(),
       "Primary: mainTitle Primary: subTitle Primary: partNumber Primary: partName");
 
-    var creatorEdge = work.getOutgoingEdges().stream()
-      .filter(e -> CREATOR.getUri().equals(e.getPredicate().getUri()))
-      .findFirst()
-      .orElseThrow(() -> new AssertionError("CREATOR edge not found on work"));
-    validateJurisdictionEdge(creatorEdge, work, JURISDICTION_CREATOR_LABEL, JURISDICTION_CREATOR_ID);
-
-    var contributorEdge = work.getOutgoingEdges().stream()
-      .filter(e -> CONTRIBUTOR.getUri().equals(e.getPredicate().getUri()))
-      .findFirst()
-      .orElseThrow(() -> new AssertionError("CONTRIBUTOR edge not found on work"));
-    validateJurisdictionEdge(contributorEdge, work, JURISDICTION_CONTRIBUTOR_LABEL, JURISDICTION_CONTRIBUTOR_ID);
-
-    var outgoingEdgeIterator = work.getOutgoingEdges().stream()
-      .filter(e -> !CREATOR.getUri().equals(e.getPredicate().getUri())
-        && !CONTRIBUTOR.getUri().equals(e.getPredicate().getUri()))
-      .iterator();
+    var outgoingEdgeIterator = work.getOutgoingEdges().iterator();
     validateCategory(outgoingEdgeIterator.next(), work, ILLUSTRATIONS, "Illustrations",
       Map.of(LINK.getValue(), "http://id.loc.gov/vocabulary/millus/ill", CODE.getValue(), "a"),
       "Illustrative Content"
@@ -1193,6 +1176,10 @@ abstract class ResourceControllerITBase extends ITBase {
     validateLcClassification(outgoingEdgeIterator.next(), work);
     validatePrimaryTitle(outgoingEdgeIterator.next(), work);
     validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().getFirst());
+    validateJurisdictionEdge(outgoingEdgeIterator.next(), work,
+      JURISDICTION_CREATOR_LABEL, JURISDICTION_CREATOR_ID);
+    validateJurisdictionEdge(outgoingEdgeIterator.next(), work,
+      JURISDICTION_CONTRIBUTOR_LABEL, JURISDICTION_CONTRIBUTOR_ID);
     validateSubject(outgoingEdgeIterator.next(), work, lookupResources.subjects().get(1));
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().getFirst(), GENRE.getUri());
     validateResourceEdge(outgoingEdgeIterator.next(), work, lookupResources.genres().get(1), GENRE.getUri());
