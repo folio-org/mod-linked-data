@@ -13,6 +13,7 @@ import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -78,7 +79,9 @@ class RdfImportIT extends ITBase {
     var resourceId = TEST_JSON_MAPPER.readTree(response).path("resources").get(0).asLong();
     resultActions
       .andExpect(jsonPath("resources[0]", equalTo(Long.toString(resourceId))))
-      .andExpect(jsonPath("log", containsString(Long.toString(resourceId))));
+      .andExpect(jsonPath("log", containsString("ID;TYPE;LABEL;STATUS;FAILURE_REASON")))
+      .andExpect(jsonPath("log", containsString(Long.toString(resourceId) + ";Instance;")))
+      .andExpect(jsonPath("log", containsString(";Created;")));
     assertThat(resourceTestService.existsById(resourceId)).isTrue();
 
     var expectedEvents = List.of(
@@ -232,6 +235,27 @@ class RdfImportIT extends ITBase {
     importResponse2
       .andExpect(status().isOk())
       .andExpect(jsonPath("log", containsString("duplicate key value violates unique constraint")));
+  }
+
+  @Test
+  void rdfImport_shouldReturnEmptyResourcesAndHeaderOnlyLog_whenEmptyJsonFileSubmitted() throws Exception {
+    // given
+    var multipartFile = new MockMultipartFile("fileName", "empty.json",
+      "application/ld+json", "[]".getBytes());
+    var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+      .file(multipartFile)
+      .headers(defaultHeaders(env))
+      .param("filterType", "");
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("resources").doesNotExist())
+      .andExpect(jsonPath("log", equalTo("ID;TYPE;LABEL;STATUS;FAILURE_REASON\n")));
+    verify(eventListener, times(0)).afterCreate(any());
   }
 
   private void assertEvents(List<ResourceTypeAndLabel> expectedEvents) {
