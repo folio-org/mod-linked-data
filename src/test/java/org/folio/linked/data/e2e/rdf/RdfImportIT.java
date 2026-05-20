@@ -12,6 +12,7 @@ import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -256,6 +257,48 @@ class RdfImportIT extends ITBase {
       .andExpect(jsonPath("resources").doesNotExist())
       .andExpect(jsonPath("log", equalTo("ID;TYPE;LABEL;STATUS;FAILURE_REASON\n")));
     verify(eventListener, times(0)).afterCreate(any());
+  }
+
+  @Test
+  void rdfImport_shouldSaveAllInstancesAndReturnCsvLog_whenFileContainsWorkWithMultipleInstances() throws Exception {
+    // given
+    var fileName = "work_with_multiple_instances.json";
+    var input = this.getClass().getResourceAsStream("/rdf/" + fileName);
+    var multipartFile = new MockMultipartFile("fileName", fileName, "application/ld+json", input);
+    var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+      .file(multipartFile)
+      .headers(defaultHeaders(env))
+      .param("filterType", "");
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    var resourcesNode = TEST_JSON_MAPPER.readTree(response).path("resources");
+    assertThat(resourcesNode.size()).isEqualTo(2);
+    var instance1Id = resourcesNode.get(0).asLong();
+    var instance2Id = resourcesNode.get(1).asLong();
+
+    resultActions
+      .andExpect(jsonPath("resources", hasSize(2)))
+      .andExpect(jsonPath("log", containsString("ID;TYPE;LABEL;STATUS;FAILURE_REASON")))
+      .andExpect(jsonPath("log", containsString(instance1Id + ";Instance;Instance 1 Main Title;Created;")))
+      .andExpect(jsonPath("log", containsString(instance2Id + ";Instance;Instance 2 Main Title;Created;")));
+    assertThat(resourceTestService.existsById(instance1Id)).isTrue();
+    assertThat(resourceTestService.existsById(instance2Id)).isTrue();
+
+    var expectedEvents = List.of(
+      new ResourceTypeAndLabel(INSTANCE, "Instance 1 Main Title"),
+      new ResourceTypeAndLabel(TITLE, "Instance 1 Main Title"),
+      new ResourceTypeAndLabel(INSTANCE, "Instance 2 Main Title"),
+      new ResourceTypeAndLabel(TITLE, "Instance 2 Main Title"),
+      new ResourceTypeAndLabel(WORK, "Multi Work Main Title"),
+      new ResourceTypeAndLabel(TITLE, "Multi Work Main Title")
+    );
+    assertEvents(expectedEvents);
   }
 
   private void assertEvents(List<ResourceTypeAndLabel> expectedEvents) {
