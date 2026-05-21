@@ -1,10 +1,12 @@
 package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
@@ -297,6 +299,41 @@ class RdfImportIT extends ITBase {
       new ResourceTypeAndLabel(TITLE, "Instance 2 Main Title"),
       new ResourceTypeAndLabel(WORK, "Multi Work Main Title"),
       new ResourceTypeAndLabel(TITLE, "Multi Work Main Title")
+    );
+    assertEvents(expectedEvents);
+  }
+
+  @Test
+  void rdfImport_shouldMaterializeConceptNodeBetweenWorkAndSubjectAuthority() throws Exception {
+    // given
+    var fileName = "instance_work_subjects.json";
+    var input = this.getClass().getResourceAsStream("/rdf/" + fileName);
+    var multipartFile = new MockMultipartFile("fileName", fileName, "application/ld+json", input);
+    var requestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+      .file(multipartFile)
+      .headers(defaultHeaders(env))
+      .param("filterType", "");
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    var resourceId = TEST_JSON_MAPPER.readTree(response).path("resources").get(0).asLong();
+    assertThat(resourceTestService.existsById(resourceId)).isTrue();
+
+    // The two CONCEPT events cannot originate from the fixture (it has no bf:Concept nodes)
+    var expectedEvents = List.of(
+      new ResourceTypeAndLabel(INSTANCE, "Subject Instance Title"),
+      new ResourceTypeAndLabel(TITLE, "Subject Instance Title"),
+      new ResourceTypeAndLabel(WORK, "Subject Work Title"),
+      new ResourceTypeAndLabel(TITLE, "Subject Work Title"),
+      new ResourceTypeAndLabel(CONCEPT, "Subject Person"),
+      new ResourceTypeAndLabel(PERSON, "Subject Person"),
+      new ResourceTypeAndLabel(CONCEPT, "Subject Topic"),
+      new ResourceTypeAndLabel(TOPIC, "Subject Topic")
     );
     assertEvents(expectedEvents);
   }
