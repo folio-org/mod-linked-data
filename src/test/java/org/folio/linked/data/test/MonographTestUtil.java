@@ -328,6 +328,61 @@ public class MonographTestUtil {
     ).setLabel(mainTitle);
   }
 
+  public static Resource getSampleInstanceWithWorkTitlesForRdfExport() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Instance: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Instance: mainTitle");
+    var instanceParallelTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Instance Parallel: mainTitle")),
+      Set.of(PARALLEL_TITLE),
+      emptyMap()
+    ).setLabel("Instance Parallel: mainTitle");
+    var instanceVariantTitle = createVariantTitleWithType("Instance Variant: mainTitle", "0");
+
+    var instancePred2Outgoing = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instancePred2Outgoing.put(TITLE, List.of(instancePrimaryTitle, instanceParallelTitle, instanceVariantTitle));
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      instancePred2Outgoing
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("4387gb6d-223f-68d8-cg4f-73defg369743")
+        .setSrsId("65f7a283-feh1-6f39-9969-2g3e58ag083d")
+    );
+    instance.setLabel("Instance: mainTitle");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Work: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Work: mainTitle");
+    var workParallelTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Work Parallel: mainTitle")),
+      Set.of(PARALLEL_TITLE),
+      emptyMap()
+    ).setLabel("Work Parallel: mainTitle");
+    var workVariantTitle = createVariantTitleWithType("Work Variant: mainTitle", "0");
+    var workPred2Outgoing = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    workPred2Outgoing.put(TITLE, List.of(workPrimaryTitle, workParallelTitle, workVariantTitle));
+    var work = createResource(
+      Map.of(LINK, List.of(UUID.randomUUID().toString())),
+      Set.of(WORK, BOOKS),
+      workPred2Outgoing
+    ).setLabel("Work: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
   public static Resource getSampleInstanceResourceForRdfExport() {
     var primaryTitle = createPrimaryTitle(null);
     var parallelTitle = createParallelTitle();

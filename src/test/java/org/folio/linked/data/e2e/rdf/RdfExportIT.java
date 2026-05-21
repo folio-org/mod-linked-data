@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkTitlesForRdfExport;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,4 +62,30 @@ class RdfExportIT {
     assertThat(response).contains("statement of responsibility");
   }
 
+  @Test
+  void rdfExport_shouldReturnExportedResultWithWorkAndInstanceTitles() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithWorkTitlesForRdfExport());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Instance");
+    assertThat(response).contains("Instance: mainTitle");
+    assertThat(response).contains("Instance Parallel: mainTitle");
+    assertThat(response).contains("Instance Variant: mainTitle");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Work");
+    assertThat(response).contains("Work: mainTitle");
+    assertThat(response).contains("Work Parallel: mainTitle");
+    assertThat(response).contains("Work Variant: mainTitle");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/por");
+  }
 }
