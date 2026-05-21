@@ -317,6 +317,59 @@ public class MonographTestUtil {
     ).setLabel(mainTitle + " " + subTitle);
   }
 
+  private static Resource createVariantTitleWithType(String mainTitle, String type) {
+    return createResource(
+      Map.of(
+        MAIN_TITLE, List.of(mainTitle),
+        VARIANT_TYPE, List.of(type)
+      ),
+      Set.of(VARIANT_TITLE),
+      emptyMap()
+    ).setLabel(mainTitle);
+  }
+
+  public static Resource getSampleInstanceResourceForRdfExport() {
+    var primaryTitle = createPrimaryTitle(null);
+    var parallelTitle = createParallelTitle();
+    var variantTitlePor = createVariantTitleWithType("Variant por: mainTitle", "0");
+    var variantTitleDis = createVariantTitleWithType("Variant dis: mainTitle", "2");
+    var variantTitleCov = createVariantTitleWithType("Variant cov: mainTitle", "4");
+    var variantTitleAtp = createVariantTitleWithType("Variant atp: mainTitle", "5");
+    var variantTitleCap = createVariantTitleWithType("Variant cap: mainTitle", "6");
+    var variantTitleRun = createVariantTitleWithType("Variant run: mainTitle", "7");
+    var variantTitleSpi = createVariantTitleWithType("Variant spi: mainTitle", "8");
+
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(TITLE, List.of(
+      primaryTitle, parallelTitle,
+      variantTitlePor, variantTitleDis, variantTitleCov, variantTitleAtp,
+      variantTitleCap, variantTitleRun, variantTitleSpi
+    ));
+
+    var instance = createResource(
+      Map.ofEntries(
+        entry(DIMENSIONS, List.of("20 cm")),
+        entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility"))
+      ),
+      Set.of(INSTANCE),
+      pred2OutgoingResources
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("3276fa5c-112e-57c7-bf3e-62cdef258632")
+        .setSrsId("54e69172-edg0-5e28-8858-1f2d479f972c")
+    );
+    instance.setLabel(primaryTitle.getLabel());
+
+    var linkedWork = getSampleWork();
+    var edge = new ResourceEdge(instance, linkedWork, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    linkedWork.addIncomingEdge(edge);
+
+    return instance;
+  }
+
   public static Resource getSampleWork() {
     return getSampleWork(null);
   }

@@ -1,7 +1,7 @@
 package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,7 +31,7 @@ class RdfExportIT {
   @Test
   void rdfExport_shouldReturnExportedResultForExistedInstance() throws Exception {
     // given
-    var existed = resourceTestService.saveGraph(getSampleInstanceResource());
+    var existed = resourceTestService.saveGraph(getSampleInstanceResourceForRdfExport());
     var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env));
@@ -44,7 +44,21 @@ class RdfExportIT {
       .andExpect(status().isOk())
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
-    assertThat(response).isNotBlank();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Title");
+    assertThat(response).contains("Primary: mainTitle");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/ParallelTitle");
+    assertThat(response).contains("Parallel: mainTitle");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/por");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/dis");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/cov");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/atp");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/cap");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/run");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/vartitletype/spi");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/dimensions");
+    assertThat(response).contains("20 cm");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/responsibilityStatement");
+    assertThat(response).contains("statement of responsibility");
   }
 
 }

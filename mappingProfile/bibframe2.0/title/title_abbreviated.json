@@ -1,0 +1,26 @@
+{
+  "ldResourceDef": {
+    "typeSet": "ABBREVIATED_TITLE",
+    "predicate": "TITLE"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/AbbreviatedTitle",
+    "predicate": "http://id.loc.gov/ontologies/bibframe/title"
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "MAIN_TITLE",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/mainTitle"
+      },
+      {
+        "ldProperty": "PART_NAME",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/partName"
+      },
+      {
+        "ldProperty": "PART_NUMBER",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/partNumber"
+      }
+    ]
+  }
+}

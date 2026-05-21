@@ -1,0 +1,24 @@
+{
+  "ldResourceDef": {
+    "typeSet": "INSTANCE"
+  },
+  "bfResourceDef": {
+    "typeSet": "http://id.loc.gov/ontologies/bibframe/Instance"
+  },
+  "resourceMapping": {
+    "properties": [
+      {
+        "ldProperty": "LINK",
+        "bfProperty": "@iri"
+      },
+      {
+        "ldProperty": "DIMENSIONS",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/dimensions"
+      },
+      {
+        "ldProperty": "STATEMENT_OF_RESPONSIBILITY",
+        "bfProperty": "http://id.loc.gov/ontologies/bibframe/responsibilityStatement"
+      }
+    ]
+  }
+}
