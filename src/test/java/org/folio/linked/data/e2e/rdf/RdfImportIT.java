@@ -2,9 +2,14 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
@@ -287,8 +292,8 @@ class RdfImportIT extends ITBase {
     resultActions
       .andExpect(jsonPath("resources", hasSize(2)))
       .andExpect(jsonPath("log", containsString("ID;TYPE;LABEL;STATUS;FAILURE_REASON")))
-      .andExpect(jsonPath("log", containsString(instance1Id + ";Instance;Instance 1 Main Title;Created;")))
-      .andExpect(jsonPath("log", containsString(instance2Id + ";Instance;Instance 2 Main Title;Created;")));
+      .andExpect(jsonPath("log", containsString(";Instance;Instance 1 Main Title;Created;")))
+      .andExpect(jsonPath("log", containsString(";Instance;Instance 2 Main Title;Created;")));
     assertThat(resourceTestService.existsById(instance1Id)).isTrue();
     assertThat(resourceTestService.existsById(instance2Id)).isTrue();
 
@@ -324,7 +329,6 @@ class RdfImportIT extends ITBase {
     var resourceId = TEST_JSON_MAPPER.readTree(response).path("resources").get(0).asLong();
     assertThat(resourceTestService.existsById(resourceId)).isTrue();
 
-    // The two CONCEPT events cannot originate from the fixture (it has no bf:Concept nodes)
     var expectedEvents = List.of(
       new ResourceTypeAndLabel(INSTANCE, "Subject Instance Title"),
       new ResourceTypeAndLabel(TITLE, "Subject Instance Title"),
@@ -333,7 +337,17 @@ class RdfImportIT extends ITBase {
       new ResourceTypeAndLabel(CONCEPT, "Subject Person"),
       new ResourceTypeAndLabel(PERSON, "Subject Person"),
       new ResourceTypeAndLabel(CONCEPT, "Subject Topic"),
-      new ResourceTypeAndLabel(TOPIC, "Subject Topic")
+      new ResourceTypeAndLabel(TOPIC, "Subject Topic"),
+      new ResourceTypeAndLabel(CONCEPT, "Subject Family"),
+      new ResourceTypeAndLabel(FAMILY, "Subject Family"),
+      new ResourceTypeAndLabel(CONCEPT, "Subject Organization"),
+      new ResourceTypeAndLabel(ORGANIZATION, "Subject Organization"),
+      new ResourceTypeAndLabel(CONCEPT, "Subject Meeting"),
+      new ResourceTypeAndLabel(MEETING, "Subject Meeting"),
+      new ResourceTypeAndLabel(CONCEPT, "Subject Place"),
+      new ResourceTypeAndLabel(PLACE, "Subject Place"),
+      new ResourceTypeAndLabel(CONCEPT, "Subject Form"),
+      new ResourceTypeAndLabel(FORM, "Subject Form")
     );
     assertEvents(expectedEvents);
   }

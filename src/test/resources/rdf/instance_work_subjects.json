@@ -43,6 +43,21 @@
       },
       {
         "@id": "_:topicSubject"
+      },
+      {
+        "@id": "_:familySubject"
+      },
+      {
+        "@id": "_:organizationSubject"
+      },
+      {
+        "@id": "_:meetingSubject"
+      },
+      {
+        "@id": "_:placeSubject"
+      },
+      {
+        "@id": "_:formSubject"
       }
     ]
   },
@@ -88,6 +103,91 @@
     "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
       {
         "@value": "Subject Topic"
+      }
+    ]
+  },
+  {
+    "@id": "_:familySubject",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Family"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Subject Family"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "Subject Family"
+      }
+    ]
+  },
+  {
+    "@id": "_:organizationSubject",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Organization"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Subject Organization"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "Subject Organization"
+      }
+    ]
+  },
+  {
+    "@id": "_:meetingSubject",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Meeting"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Subject Meeting"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "Subject Meeting"
+      }
+    ]
+  },
+  {
+    "@id": "_:placeSubject",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/Place"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Subject Place"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "Subject Place"
+      }
+    ]
+  },
+  {
+    "@id": "_:formSubject",
+    "@type": [
+      "http://www.loc.gov/mads/rdf/v1#Authority",
+      "http://id.loc.gov/ontologies/bibframe/GenreForm"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#label": [
+      {
+        "@value": "Subject Form"
+      }
+    ],
+    "http://www.loc.gov/mads/rdf/v1#authoritativeLabel": [
+      {
+        "@value": "Subject Form"
       }
     ]
   }
