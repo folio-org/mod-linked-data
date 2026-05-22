@@ -73,6 +73,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -421,6 +422,70 @@ public class MonographTestUtil {
     var edge = new ResourceEdge(instance, linkedWork, INSTANTIATES);
     instance.addOutgoingEdge(edge);
     linkedWork.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkCreatorLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
+        .setSrsId("7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d")
+    );
+    instance.setLabel("Creator LCCN: mainTitle");
+
+    var lcnafIdentifier = createResource(
+      Map.of(
+        NAME, List.of("n2021004098"),
+        LINK, List.of("http://id.loc.gov/authorities/n2021004098")
+      ),
+      Set.of(IDENTIFIER, ID_LCNAF),
+      Map.of(STATUS, List.of(createResource(
+        Map.of(
+          LABEL, List.of("current"),
+          LINK, List.of("http://id.loc.gov/vocabulary/mstatus/current")
+        ),
+        Set.of(ResourceTypeDictionary.STATUS),
+        emptyMap()
+      )))
+    ).setLabel("n2021004098");
+
+    var creator = createResource(
+      Map.of(NAME, List.of("n2021004098")),
+      Set.of(PERSON),
+      Map.of(MAP, List.of(lcnafIdentifier))
+    ).setLabel("n2021004098");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        CREATOR, List.of(creator)
+      ))
+    ).setLabel("Creator LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
 
     return instance;
   }
