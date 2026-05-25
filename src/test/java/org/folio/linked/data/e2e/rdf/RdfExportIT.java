@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithProvisionActivities;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkComplexSubject;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkCreatorLccn;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkCreatorNoLccn;
@@ -190,5 +191,32 @@ class RdfExportIT {
       .andReturn().getResponse().getContentAsString();
     assertThat(response).contains("Complex Subject Person");
     assertThat(response).contains("Complex Subject Topic");
+  }
+
+  @Test
+  void rdfExport_shouldReturnRdfWithAllProvisionActivities() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithProvisionActivities());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/provisionActivity");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Publication");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Distribution");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Manufacture");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Production");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/date");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bflc/simpleAgent");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/place");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/countries/al");
   }
 }
