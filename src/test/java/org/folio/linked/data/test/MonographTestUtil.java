@@ -490,6 +490,54 @@ public class MonographTestUtil {
     return instance;
   }
 
+  public static Resource getSampleInstanceWithWorkCreatorNoLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator No LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e")
+        .setSrsId("8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e")
+    );
+    instance.setLabel("Creator No LCCN: mainTitle");
+
+    var creator = createResource(
+      Map.of(NAME, List.of("Creator No LCCN")),
+      Set.of(PERSON),
+      emptyMap()
+    ).setLabel("Creator No LCCN");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator No LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        CREATOR, List.of(creator)
+      ))
+    ).setLabel("Creator No LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
   public static Resource getSampleWork() {
     return getSampleWork(null);
   }
