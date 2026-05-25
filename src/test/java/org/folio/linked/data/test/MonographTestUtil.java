@@ -577,13 +577,13 @@ public class MonographTestUtil {
     ).setLabel("n2021009876");
 
     var subjectPerson = createResource(
-      Map.of(NAME, List.of("Subject Person LCCN")),
+      Map.of(LABEL, List.of("Subject Person LCCN"), NAME, List.of("Subject Person LCCN")),
       Set.of(PERSON),
       Map.of(MAP, List.of(lcnafIdentifier))
     ).setLabel("Subject Person LCCN");
 
     var subjectConcept = createResource(
-      Map.of(NAME, List.of("Subject Person LCCN")),
+      Map.of(LABEL, List.of("Subject Person LCCN")),
       Set.of(CONCEPT, PERSON),
       Map.of(FOCUS, List.of(subjectPerson))
     ).setLabel("Subject Person LCCN");
@@ -631,13 +631,13 @@ public class MonographTestUtil {
     instance.setLabel("Subject No LCCN: mainTitle");
 
     var subjectPerson = createResource(
-      Map.of(NAME, List.of("Subject No LCCN Person")),
+      Map.of(LABEL, List.of("Subject No LCCN Person"), NAME, List.of("Subject No LCCN Person")),
       Set.of(PERSON),
       emptyMap()
     ).setLabel("Subject No LCCN Person");
 
     var subjectConcept = createResource(
-      Map.of(NAME, List.of("Subject No LCCN Person")),
+      Map.of(LABEL, List.of("Subject No LCCN Person")),
       Set.of(CONCEPT, PERSON),
       Map.of(FOCUS, List.of(subjectPerson))
     ).setLabel("Subject No LCCN Person");
@@ -685,19 +685,19 @@ public class MonographTestUtil {
     instance.setLabel("Complex Subject: mainTitle");
 
     var focusPerson = createResource(
-      Map.of(NAME, List.of("Complex Subject Person")),
+      Map.of(LABEL, List.of("Complex Subject Person"), NAME, List.of("Complex Subject Person")),
       Set.of(PERSON),
       emptyMap()
     ).setLabel("Complex Subject Person");
 
     var subFocusTopic = createResource(
-      Map.of(NAME, List.of("Complex Subject Topic")),
+      Map.of(LABEL, List.of("Complex Subject Topic"), NAME, List.of("Complex Subject Topic")),
       Set.of(TOPIC),
       emptyMap()
     ).setLabel("Complex Subject Topic");
 
     var subjectConcept = createResource(
-      Map.of(NAME, List.of("Complex Subject Person -- Complex Subject Topic")),
+      Map.of(LABEL, List.of("Complex Subject Person -- Complex Subject Topic")),
       Set.of(CONCEPT),
       new LinkedHashMap<>(Map.of(
         FOCUS, List.of(focusPerson),

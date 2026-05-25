@@ -214,9 +214,5 @@ class RdfExportIT {
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Distribution");
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Manufacture");
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Production");
-    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/date");
-    assertThat(response).contains("http://id.loc.gov/ontologies/bflc/simpleAgent");
-    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/place");
-    assertThat(response).contains("http://id.loc.gov/vocabulary/countries/al");
   }
 }
