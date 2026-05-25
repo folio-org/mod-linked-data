@@ -739,17 +739,17 @@ public class MonographTestUtil {
     var manufacture = providerEvent("manufacture", "as", "American Samoa");
     var production = providerEvent("production", "af", "Afghanistan");
 
-    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
-    pred2OutgoingResources.put(TITLE, List.of(instancePrimaryTitle));
-    pred2OutgoingResources.put(PE_PUBLICATION, List.of(publication));
-    pred2OutgoingResources.put(PE_DISTRIBUTION, List.of(distribution));
-    pred2OutgoingResources.put(PE_MANUFACTURE, List.of(manufacture));
-    pred2OutgoingResources.put(PE_PRODUCTION, List.of(production));
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instancePrimaryTitle));
+    instanceEdges.put(PE_PUBLICATION, List.of(publication));
+    instanceEdges.put(PE_DISTRIBUTION, List.of(distribution));
+    instanceEdges.put(PE_MANUFACTURE, List.of(manufacture));
+    instanceEdges.put(PE_PRODUCTION, List.of(production));
 
     var instance = createResource(
       emptyMap(),
       Set.of(INSTANCE),
-      pred2OutgoingResources
+      instanceEdges
     );
     instance.setFolioMetadata(
       new FolioMetadata(instance)
