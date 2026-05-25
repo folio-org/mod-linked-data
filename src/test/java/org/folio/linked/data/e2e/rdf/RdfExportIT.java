@@ -2,9 +2,11 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkComplexSubject;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkCreatorLccn;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkCreatorNoLccn;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkSubjectLccn;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkSubjectNoLccn;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkTitlesForRdfExport;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -148,5 +150,45 @@ class RdfExportIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andReturn().getResponse().getContentAsString();
     assertThat(response).contains("http://id.loc.gov/rwo/agents/n2021009876");
+  }
+
+  @Test
+  void rdfExport_shouldReturnRdfWithSubjectAsBlankNodeWhenNoLccn() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithWorkSubjectNoLccn());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).doesNotContain("http://id.loc.gov/rwo/agents/");
+    assertThat(response).contains("Subject No LCCN Person");
+  }
+
+  @Test
+  void rdfExport_shouldReturnRdfWithComplexSubject() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithWorkComplexSubject());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("Complex Subject Person");
+    assertThat(response).contains("Complex Subject Topic");
   }
 }

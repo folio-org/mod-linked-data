@@ -13,6 +13,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
 import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
@@ -82,6 +83,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
@@ -600,6 +602,123 @@ public class MonographTestUtil {
         SUBJECT, List.of(subjectConcept)
       ))
     ).setLabel("Subject LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkSubjectNoLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject No LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a")
+        .setSrsId("0d1e2f3a-4b5c-6d7e-8f9a-0b1c2d3e4f5a")
+    );
+    instance.setLabel("Subject No LCCN: mainTitle");
+
+    var subjectPerson = createResource(
+      Map.of(NAME, List.of("Subject No LCCN Person")),
+      Set.of(PERSON),
+      emptyMap()
+    ).setLabel("Subject No LCCN Person");
+
+    var subjectConcept = createResource(
+      Map.of(NAME, List.of("Subject No LCCN Person")),
+      Set.of(CONCEPT, PERSON),
+      Map.of(FOCUS, List.of(subjectPerson))
+    ).setLabel("Subject No LCCN Person");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject No LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        SUBJECT, List.of(subjectConcept)
+      ))
+    ).setLabel("Subject No LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkComplexSubject() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Complex Subject: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Complex Subject: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b")
+        .setSrsId("1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b")
+    );
+    instance.setLabel("Complex Subject: mainTitle");
+
+    var focusPerson = createResource(
+      Map.of(NAME, List.of("Complex Subject Person")),
+      Set.of(PERSON),
+      emptyMap()
+    ).setLabel("Complex Subject Person");
+
+    var subFocusTopic = createResource(
+      Map.of(NAME, List.of("Complex Subject Topic")),
+      Set.of(TOPIC),
+      emptyMap()
+    ).setLabel("Complex Subject Topic");
+
+    var subjectConcept = createResource(
+      Map.of(NAME, List.of("Complex Subject Person -- Complex Subject Topic")),
+      Set.of(CONCEPT),
+      new LinkedHashMap<>(Map.of(
+        FOCUS, List.of(focusPerson),
+        SUB_FOCUS, List.of(subFocusTopic)
+      ))
+    ).setLabel("Complex Subject Person -- Complex Subject Topic");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Complex Subject: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Complex Subject: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        SUBJECT, List.of(subjectConcept)
+      ))
+    ).setLabel("Complex Subject: mainTitle");
 
     var edge = new ResourceEdge(instance, work, INSTANTIATES);
     instance.addOutgoingEdge(edge);
