@@ -538,6 +538,76 @@ public class MonographTestUtil {
     return instance;
   }
 
+  public static Resource getSampleInstanceWithWorkSubjectLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f")
+        .setSrsId("9c0d1e2f-3a4b-5c6d-7e8f-9a0b1c2d3e4f")
+    );
+    instance.setLabel("Subject LCCN: mainTitle");
+
+    var lcnafIdentifier = createResource(
+      Map.of(
+        NAME, List.of("n2021009876"),
+        LINK, List.of("http://id.loc.gov/authorities/n2021009876")
+      ),
+      Set.of(IDENTIFIER, ID_LCNAF),
+      Map.of(STATUS, List.of(createResource(
+        Map.of(
+          LABEL, List.of("current"),
+          LINK, List.of("http://id.loc.gov/vocabulary/mstatus/current")
+        ),
+        Set.of(ResourceTypeDictionary.STATUS),
+        emptyMap()
+      )))
+    ).setLabel("n2021009876");
+
+    var subjectPerson = createResource(
+      Map.of(NAME, List.of("Subject Person LCCN")),
+      Set.of(PERSON),
+      Map.of(MAP, List.of(lcnafIdentifier))
+    ).setLabel("Subject Person LCCN");
+
+    var subjectConcept = createResource(
+      Map.of(NAME, List.of("Subject Person LCCN")),
+      Set.of(CONCEPT, PERSON),
+      Map.of(FOCUS, List.of(subjectPerson))
+    ).setLabel("Subject Person LCCN");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        SUBJECT, List.of(subjectConcept)
+      ))
+    ).setLabel("Subject LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
   public static Resource getSampleWork() {
     return getSampleWork(null);
   }
