@@ -95,6 +95,50 @@ class PreferredProfileIT {
     validateEmptyPreferredProfile(mockMvc.perform(get(urlWithResourceType).headers(headers)));
   }
 
+  @Test
+  void shouldPreferredProfileDifferPerUser() throws Exception {
+    // given
+    var headersUser1 = defaultHeadersWithUserId(env, randomUUID().toString());
+    headersUser1.setContentType(APPLICATION_JSON);
+    var headersUser2 = defaultHeadersWithUserId(env, randomUUID().toString());
+    headersUser2.setContentType(APPLICATION_JSON);
+
+    // when: User1 sets Monograph (id=3), User2 sets Serials (id=5)
+    mockMvc.perform(post(PREFERRED_PROFILE_URL)
+        .headers(headersUser1)
+        .content("""
+          {
+              "id": 3,
+              "resourceType": "http://bibfra.me/vocab/lite/Instance"
+          }"""))
+      .andExpect(status().isNoContent());
+
+    mockMvc.perform(post(PREFERRED_PROFILE_URL)
+        .headers(headersUser2)
+        .content("""
+          {
+              "id": 5,
+              "resourceType": "http://bibfra.me/vocab/lite/Instance"
+          }"""))
+      .andExpect(status().isNoContent());
+
+    // then: each user sees only their own preferred profile
+    var urlWithResourceType = PREFERRED_PROFILE_URL + "?resourceType=http://bibfra.me/vocab/lite/Instance";
+    mockMvc.perform(get(urlWithResourceType).headers(headersUser1))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.length()", equalTo(1)))
+      .andExpect(jsonPath("$[0].id", equalTo(3)))
+      .andExpect(jsonPath("$[0].name", equalTo("Monograph")));
+
+    mockMvc.perform(get(urlWithResourceType).headers(headersUser2))
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.length()", equalTo(1)))
+      .andExpect(jsonPath("$[0].id", equalTo(5)))
+      .andExpect(jsonPath("$[0].name", equalTo("Serials")));
+  }
+
   private void validatePreferredProfile(ResultActions result) throws Exception {
     result
       .andExpect(status().isOk())
