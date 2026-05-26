@@ -2,6 +2,9 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithEanForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithIsbnForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithLccnForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithProvisionActivities;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkComplexSubject;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkCreatorLccn;
@@ -15,10 +18,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.stream.Stream;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
@@ -214,5 +221,95 @@ class RdfExportIT {
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Distribution");
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Manufacture");
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Production");
+  }
+
+  @Test
+  void rdfExport_shouldReturnRdfWithLccnIdentifier() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithLccnForRdfExport());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Lccn");
+    assertThat(response).contains("2010470075");
+    assertThat(response).contains("http://id.loc.gov/vocabulary/mstatus/current");
+  }
+
+  @ParameterizedTest
+  @MethodSource("isbnExportArgs")
+  void rdfExport_shouldReturnRdfWithIsbnQualifierAndStatusPermutations(
+    String isbn, String qualifier, String statusLabel, boolean isCurrent) throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithIsbnForRdfExport(isbn, qualifier, isCurrent));
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Isbn");
+    assertThat(response).contains(isbn);
+    assertThat(response).contains(qualifier);
+    assertThat(response).contains("http://id.loc.gov/vocabulary/mstatus/" + statusLabel);
+  }
+
+  @ParameterizedTest
+  @MethodSource("eanExportArgs")
+  void rdfExport_shouldReturnRdfWithEanValueAndQualifierPermutations(
+    String ean, String qualifier) throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithEanForRdfExport(ean, qualifier));
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Ean");
+    assertThat(response).contains(ean);
+    if (qualifier == null) {
+      assertThat(response).doesNotContain("http://id.loc.gov/ontologies/bibframe/qualifier");
+    } else {
+      assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/qualifier");
+      assertThat(response).contains(qualifier);
+    }
+  }
+
+  static Stream<Arguments> isbnExportArgs() {
+    return Stream.of(
+      Arguments.of("0850598370", "pbk", "current", true),
+      Arguments.of("9780850598377", "pbk", "cancinv", false),
+      Arguments.of("9781111111111", "hbk", "current", true),
+      Arguments.of("9782222222222", "hbk", "cancinv", false)
+    );
+  }
+
+  static Stream<Arguments> eanExportArgs() {
+    return Stream.of(
+      Arguments.of("780696204364", "abc"),
+      Arguments.of("9783007601470", "distribution"),
+      Arguments.of("9772049364017", null)
+    );
   }
 }

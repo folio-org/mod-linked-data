@@ -778,6 +778,129 @@ public class MonographTestUtil {
     return instance;
   }
 
+  public static Resource getSampleInstanceWithLccnForRdfExport() {
+    var lccn = createResource(
+      Map.of(NAME, List.of("2010470075")),
+      Set.of(IDENTIFIER, ID_LCCN),
+      Map.of(STATUS, List.of(createMstatusResource(true)))
+    ).setLabel("2010470075");
+
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Lccn RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Lccn RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(MAP, List.of(lccn));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Lccn RdfExport");
+
+    linkNewWork(instance, "Lccn RdfExport");
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithIsbnForRdfExport(String isbn, String qualifier, boolean isCurrent) {
+    var isbnResource = createResource(
+      Map.of(NAME, List.of(isbn), QUALIFIER, List.of(qualifier)),
+      Set.of(IDENTIFIER, ID_ISBN),
+      Map.of(STATUS, List.of(createMstatusResource(isCurrent)))
+    ).setLabel(isbn);
+
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Isbn RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Isbn RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(MAP, List.of(isbnResource));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Isbn RdfExport: " + isbn);
+
+    linkNewWork(instance, "Isbn RdfExport");
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithEanForRdfExport(String ean, String qualifier) {
+    var properties = qualifier == null
+      ? Map.of(NAME, List.of(ean))
+      : Map.of(NAME, List.of(ean), QUALIFIER, List.of(qualifier));
+    var eanResource = createResource(
+      properties,
+      Set.of(IDENTIFIER, ID_IAN),
+      emptyMap()
+    ).setLabel(ean);
+
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Ean RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Ean RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(MAP, List.of(eanResource));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Ean RdfExport: " + ean);
+
+    linkNewWork(instance, "Ean RdfExport");
+    return instance;
+  }
+
+  private static void linkNewWork(Resource instance, String titleStr) {
+    var workTitle = createResource(
+      Map.of(MAIN_TITLE, List.of(titleStr)),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel(titleStr);
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      Map.of(TITLE, List.of(workTitle))
+    ).setLabel(titleStr);
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+  }
+
+  private static Resource createMstatusResource(boolean isCurrent) {
+    var label = isCurrent ? "current" : "cancinv";
+    return createResource(
+      Map.of(
+        LABEL, List.of(label),
+        LINK, List.of("http://id.loc.gov/vocabulary/mstatus/" + label)
+      ),
+      Set.of(ResourceTypeDictionary.STATUS),
+      emptyMap()
+    ).setLabel(label);
+  }
+
   public static Resource getSampleWork() {
     return getSampleWork(null);
   }
