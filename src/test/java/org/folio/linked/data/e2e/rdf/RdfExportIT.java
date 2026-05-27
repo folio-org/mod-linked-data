@@ -2,6 +2,8 @@ package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleRareBooksInstanceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleSerialsInstanceForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithEanForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithIsbnForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithLccnForRdfExport;
@@ -221,6 +223,47 @@ class RdfExportIT {
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Distribution");
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Manufacture");
     assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Production");
+  }
+
+  @Test
+  void rdfExport_shouldReturnRdfWithSerialsWorkType() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleSerialsInstanceForRdfExport());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Work");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Serial");
+    assertThat(response).contains("Serials RdfExport: mainTitle");
+  }
+
+  @Test
+  void rdfExport_shouldReturnRdfWithRareBooksInstance() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleRareBooksInstanceForRdfExport());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Instance");
+    assertThat(response).contains("RareBooks RdfExport: mainTitle");
   }
 
   @Test

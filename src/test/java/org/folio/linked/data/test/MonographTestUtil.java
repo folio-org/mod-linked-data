@@ -5,6 +5,7 @@ import static java.util.Map.entry;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
@@ -64,6 +65,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.TERM;
 import static org.folio.ld.dictionary.PropertyDictionary.VARIANT_TYPE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ANNOTATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
@@ -425,6 +427,92 @@ public class MonographTestUtil {
     instance.addOutgoingEdge(edge);
     linkedWork.addIncomingEdge(edge);
 
+    return instance;
+  }
+
+  public static Resource getSampleSerialsInstanceForRdfExport() {
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Serials RdfExport: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Serials RdfExport: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instanceTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Serials RdfExport: mainTitle");
+
+    var workTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Serials RdfExport: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Serials RdfExport: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, CONTINUING_RESOURCES),
+      Map.of(TITLE, List.of(workTitle))
+    ).setLabel("Serials RdfExport: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleRareBooksInstanceForRdfExport() {
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("RareBooks RdfExport: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("RareBooks RdfExport: mainTitle");
+
+    var bookFormatCategorySet = createResource(
+      Map.of(
+        LINK, List.of("http://id.loc.gov/vocabulary/bookformat"),
+        LABEL, List.of("Book Format")
+      ),
+      Set.of(CATEGORY_SET),
+      emptyMap()
+    ).setLabel("Book Format");
+
+    var bookFormat = createResource(
+      Map.of(
+        TERM, List.of("folio"),
+        CODE, List.of("folio"),
+        LINK, List.of("http://id.loc.gov/vocabulary/bookformat/folio")
+      ),
+      Set.of(CATEGORY),
+      Map.of(IS_DEFINED_BY, List.of(bookFormatCategorySet))
+    ).setLabel("folio");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(BOOK_FORMAT, List.of(bookFormat));
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      instanceEdges
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("RareBooks RdfExport: mainTitle");
+
+    linkNewWork(instance, "RareBooks RdfExport: mainTitle");
     return instance;
   }
 

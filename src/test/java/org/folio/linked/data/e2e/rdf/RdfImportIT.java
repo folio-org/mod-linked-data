@@ -14,6 +14,9 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
@@ -53,6 +56,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class RdfImportIT extends ITBase {
   private static final String IMPORT_ENDPOINT = "/linked-data/import/file";
+  private static final String EXPORT_ENDPOINT = "/linked-data/resource/{id}/rdf";
   @Autowired
   private KafkaSearchWorkIndexTopicListener workIndexTopicListener;
   @MockitoSpyBean
@@ -350,6 +354,56 @@ class RdfImportIT extends ITBase {
       new ResourceTypeAndLabel(FORM, "Subject Form")
     );
     assertEvents(expectedEvents);
+  }
+
+  @Test
+  void rdfImport_shouldSaveSerialInstanceAndExportWithSerialWorkType() throws Exception {
+    // given - import phase
+    var fileName = "instance_serial.json";
+    var input = this.getClass().getResourceAsStream("/rdf/" + fileName);
+    var multipartFile = new MockMultipartFile("fileName", fileName,
+      "application/ld+json", input);
+    var importRequestBuilder = MockMvcRequestBuilders.multipart(IMPORT_ENDPOINT)
+      .file(multipartFile)
+      .headers(defaultHeaders(env))
+      .param("filterType", "");
+
+    // when - import
+    var importResultActions = mockMvc.perform(importRequestBuilder);
+
+    // then - verify import
+    var importResponse = importResultActions
+      .andExpect(status().isOk())
+      .andReturn().getResponse().getContentAsString();
+    var resourceId = TEST_JSON_MAPPER.readTree(importResponse).path("resources").get(0).asLong();
+    importResultActions
+      .andExpect(jsonPath("resources[0]", equalTo(Long.toString(resourceId))))
+      .andExpect(jsonPath("log", containsString(Long.toString(resourceId) + ";Instance;")))
+      .andExpect(jsonPath("log", containsString(";Created;")));
+    assertThat(resourceTestService.existsById(resourceId)).isTrue();
+
+    var expectedEvents = List.of(
+      new ResourceTypeAndLabel(INSTANCE, "Serial mainTitle Serial subtitle"),
+      new ResourceTypeAndLabel(TITLE, "Serial mainTitle Serial subtitle"),
+      new ResourceTypeAndLabel(WORK, "Serial mainTitle"),
+      new ResourceTypeAndLabel(TITLE, "Serial mainTitle")
+    );
+    assertEvents(expectedEvents);
+
+    // given - export phase (round-trip)
+    var exportRequestBuilder = get(EXPORT_ENDPOINT.replace("{id}", Long.toString(resourceId)))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when - export
+    var exportResultActions = mockMvc.perform(exportRequestBuilder);
+
+    // then - verify Serial type survives round-trip
+    var exportResponse = exportResultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(exportResponse).contains("http://id.loc.gov/ontologies/bibframe/Serial");
   }
 
   private void assertEvents(List<ResourceTypeAndLabel> expectedEvents) {
