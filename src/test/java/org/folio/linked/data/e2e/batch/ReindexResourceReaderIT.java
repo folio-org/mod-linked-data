@@ -18,6 +18,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleHub;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
@@ -201,6 +202,46 @@ class ReindexResourceReaderIT extends ITBase {
     assertThat(readHub.getCreatedBy()).isNull();
     assertThat(readHub.getUpdatedBy()).isNull();
     assertThat(readHub.getFolioMetadata()).isNull();
+  }
+
+  @Test
+  void read_shouldExcludeLightResources_whenWorkAlsoHasLightResourceType() {
+    // given
+    var regularWorkInstance = tenantScopedExecutionService.execute(TENANT_ID, () ->
+      resourceTestService.saveGraph(getSampleInstanceResource())
+    );
+    var regularWork = regularWorkInstance.getOutgoingEdges().stream()
+      .filter(e -> e.getPredicate().getUri().equals(INSTANTIATES.getUri()))
+      .map(ResourceEdge::getTarget)
+      .findFirst()
+      .orElseThrow();
+
+    var lightWork = new Resource()
+      .addTypes(WORK, LIGHT_RESOURCE)
+      .setLabel("Light Work");
+    lightWork.setIdAndRefreshEdges(hashService.hash(lightWork));
+    tenantScopedExecutionService.execute(TENANT_ID, () ->
+      resourceTestService.saveGraph(lightWork)
+    );
+
+    // when
+    var results = tenantScopedExecutionService.execute(TENANT_ID, () -> {
+      var reader = new ReindexResourceReader(dataSource, 100, true, null);
+      var list = new ArrayList<Resource>();
+      reader.open(new ExecutionContext());
+      Resource r;
+      while ((r = reader.read()) != null) {
+        list.add(r);
+      }
+      reader.close();
+      return list;
+    });
+
+    // then
+    var resultIds = results.stream().map(Resource::getId).collect(Collectors.toSet());
+    assertThat(resultIds)
+      .contains(regularWork.getId())
+      .doesNotContain(lightWork.getId());
   }
 }
 
