@@ -42,6 +42,9 @@ import tools.jackson.databind.JsonNode;
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class ResourceControllerUpdateWorkIT extends ITBase {
+  private static final int BOOKS_PROFILE_ID = 2;
+  private static final int SERIALS_WORK_PROFILE_ID = 6;
+
   @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
@@ -66,7 +69,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     resourceTestService.saveGraph(instance);
 
     // when
-    var workUpdateRequestDto = getWorkRequestDto("simple_work", 2, person.getId(), instance.getId());
+    var workUpdateRequestDto = getWorkRequestDto("simple_work", BOOKS_PROFILE_ID, person.getId(), instance.getId());
     putResource(work.getId(), workUpdateRequestDto);
 
     // then
@@ -86,7 +89,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     work1.addOutgoingEdge(edge);
     work2.addIncomingEdge(edge);
     resourceTestService.saveGraph(work2);
-    var workUpdateRequestDto = getWorkRequestDto("updated work2", 2, null, null);
+    var workUpdateRequestDto = getWorkRequestDto("updated work2", BOOKS_PROFILE_ID, null, null);
 
     // when
     var putApiResponse = putResource(work2.getId(), workUpdateRequestDto);
@@ -109,17 +112,16 @@ class ResourceControllerUpdateWorkIT extends ITBase {
 
   @Test
   void updateWork_should_include_instanceReference_in_response_when_profileId_changed() throws Exception {
-    // given: Work with profileId=2 (Books) linked to an Instance
+    // given
     var work = getWork("work_for_profile_change");
     var instance = getInstance(work);
     resourceTestService.saveGraph(instance);
 
-    // when: PUT changes profileId from 2 to 6 (Serials Work = WORK+ContinuingResources)
-    // profileId change alters additionalResourceTypes → new Work hash → new Work ID in DB
-    var dto = getWorkRequestDto("work_for_profile_change", 6, null, instance.getId());
+    // when
+    var dto = getWorkRequestDto("work_for_profile_change", SERIALS_WORK_PROFILE_ID, null, instance.getId());
     var putApiResponse = putResource(work.getId(), dto);
 
-    // then: _instanceReference must be present in the response for the re-hashed Work
+    // then
     var instanceRefs = putApiResponse
       .path("resource")
       .path("http://bibfra.me/vocab/lite/Work")
