@@ -199,10 +199,11 @@ class CoreMapperTest {
   void addIncomingEdges_shouldThrowNpe_ifGivenChildEntityIsNull() {
     // given
     Resource childEntity = null;
+    var dtoList = List.of();
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addIncomingEdges(childEntity, Object.class, List.of(), INSTANTIATES));
+      () -> coreMapper.addIncomingEdges(childEntity, Object.class, dtoList, INSTANTIATES));
 
     // then
     assertThat(thrown.getMessage(), is("childEntity is marked non-null but is null"));
@@ -211,11 +212,13 @@ class CoreMapperTest {
   @Test
   void addIncomingEdges_shouldThrowNpe_ifGivenParentDtoClassIsNull() {
     // given
+    var childEntity = new Resource();
+    var dtoList = List.of();
     Class<Object> parent = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addIncomingEdges(new Resource(), parent, List.of(), INSTANTIATES));
+      () -> coreMapper.addIncomingEdges(childEntity, parent, dtoList, INSTANTIATES));
 
     // then
     assertThat(thrown.getMessage(), is("parentDtoClass is marked non-null but is null"));
@@ -224,11 +227,13 @@ class CoreMapperTest {
   @Test
   void addIncomingEdges_shouldThrowNpe_ifGivenPredicateIsNull() {
     // given
+    var childEntity = new Resource();
+    var dtoList = List.of();
     Predicate predicate = null;
 
     // when
     NullPointerException thrown = assertThrows(NullPointerException.class,
-      () -> coreMapper.addIncomingEdges(new Resource(), Object.class, List.of(), predicate));
+      () -> coreMapper.addIncomingEdges(childEntity, Object.class, dtoList, predicate));
 
     // then
     assertThat(thrown.getMessage(), is("predicate is marked non-null but is null"));
