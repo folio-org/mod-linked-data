@@ -57,6 +57,17 @@ public class CoreMapperImpl implements CoreMapper {
       .forEach(parentEntity::addOutgoingEdge);
   }
 
+  @Override
+  public <T, P> void addIncomingEdges(@NonNull Resource childEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
+                                      @NonNull Predicate predicate) {
+    ofNullable(dtoList)
+      .stream()
+      .flatMap(Collection::stream)
+      .map(dto -> singleResourceMapper.toEntity(dto, parentDtoClass, predicate, childEntity))
+      .map(r -> new ResourceEdge(r, childEntity, predicate))
+      .forEach(childEntity::addIncomingEdge);
+  }
+
   private <T> T readResourceDoc(@NonNull Resource resource, @NonNull Class<T> dtoClass) {
     return readDoc(resource.getDoc(), dtoClass);
   }
