@@ -5,6 +5,7 @@ import static java.util.Map.entry;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
 import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
@@ -33,6 +34,8 @@ import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
@@ -117,6 +120,8 @@ public class MonographTestUtil {
   public static final String JURISDICTION_CREATOR_LABEL = "jurisdiction creator";
   public static final long JURISDICTION_CONTRIBUTOR_ID = 1000000000000000002L;
   public static final String JURISDICTION_CONTRIBUTOR_LABEL = "jurisdiction contributor";
+  public static final String SAMPLE_ADMIN_METADATA_HRID = "in00123456";
+  public static final String SAMPLE_ADMIN_METADATA_UUID = "a1b2c3d4-1001-0000-0000-000000000001";
 
   public static Resource getSampleInstanceResource() {
     return getSampleInstanceResource(null, getSampleWork());
@@ -956,6 +961,29 @@ public class MonographTestUtil {
     instance.setLabel("Ean RdfExport: " + ean);
 
     linkNewWork(instance, "Ean RdfExport");
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithAdminMetadataForRdfExport() {
+    var adminMetadata = createResource(
+      Map.of(
+        CONTROL_NUMBER, List.of(SAMPLE_ADMIN_METADATA_HRID),
+        CREATED_DATE, List.of("2025-11-19")
+      ),
+      Set.of(ANNOTATION),
+      Map.of()
+    );
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), Map.of());
+    instance.addOutgoingEdge(new ResourceEdge(instance, adminMetadata, ADMIN_METADATA));
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(SAMPLE_ADMIN_METADATA_UUID)
+        .setSrsId(UUID.randomUUID().toString())
+    );
+
+    linkNewWork(instance, "AdminMetadata RdfExport");
     return instance;
   }
 

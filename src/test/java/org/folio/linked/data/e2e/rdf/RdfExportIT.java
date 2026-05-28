@@ -1,7 +1,10 @@
 package org.folio.linked.data.e2e.rdf;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.folio.linked.data.test.MonographTestUtil.SAMPLE_ADMIN_METADATA_HRID;
+import static org.folio.linked.data.test.MonographTestUtil.SAMPLE_ADMIN_METADATA_UUID;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithAdminMetadataForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleRareBooksInstanceForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleSerialsInstanceForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithEanForRdfExport;
@@ -337,6 +340,30 @@ class RdfExportIT {
       assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/qualifier");
       assertThat(response).contains(qualifier);
     }
+  }
+
+  @Test
+  void rdfExport_shouldReturnRdfWithUuidAndHrid() throws Exception {
+    // given
+    var existed = resourceTestService.saveGraph(getSampleInstanceWithAdminMetadataForRdfExport());
+    var requestBuilder = get(EXPORT_ENDPOINT.replace("{id}", existed.getId().toString()))
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+
+    // when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    // then
+    var response = resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/identifiedBy");
+    assertThat(response).contains("http://id.loc.gov/ontologies/bibframe/Local");
+    assertThat(response).contains(SAMPLE_ADMIN_METADATA_HRID);
+    assertThat(response).contains("FOLIO HRID");
+    assertThat(response).contains(SAMPLE_ADMIN_METADATA_UUID);
+    assertThat(response).contains("FOLIO Inventory UUID");
   }
 
   static Stream<Arguments> isbnExportArgs() {
