@@ -2,6 +2,7 @@ package org.folio.linked.data.configuration.batch.reindex.reader;
 
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.LIGHT_RESOURCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.valueOf;
 import static org.folio.linked.data.configuration.batch.reindex.ReindexBatchJobConfig.SUPPORTED_TYPES;
@@ -110,10 +111,16 @@ public class IndexableResourceQueryBuilder {
 
   private static final String FROM_CLAUSE =
     "resources r JOIN resource_type_map rtm ON r.resource_hash = rtm.resource_hash";
+  private static final String EXCLUDE_LIGHT_RESOURCE =
+    " AND NOT EXISTS ("
+      + "SELECT 1 FROM resource_type_map rtm_lr"
+      + " WHERE rtm_lr.resource_hash = r.resource_hash"
+      + "   AND rtm_lr.type_hash = " + LIGHT_RESOURCE.getHash()
+      + ")";
   private static final String WHERE_FULL =
-    "rtm.type_hash IN (:" + TYPE_HASHES_PARAM + ")";
+    "rtm.type_hash IN (:" + TYPE_HASHES_PARAM + ")" + EXCLUDE_LIGHT_RESOURCE;
   private static final String WHERE_NOT_INDEXED =
-    "r.index_date IS NULL AND rtm.type_hash IN (:" + TYPE_HASHES_PARAM + ")";
+    "r.index_date IS NULL AND rtm.type_hash IN (:" + TYPE_HASHES_PARAM + ")" + EXCLUDE_LIGHT_RESOURCE;
   private static final String GROUP_BY_CLAUSE = "r.resource_hash";
 
   public static PostgresPagingQueryProvider buildQueryProvider(boolean isFullReindex) {
