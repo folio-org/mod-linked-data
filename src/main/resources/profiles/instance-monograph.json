@@ -1332,7 +1332,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:URLOfInstance:Note",
-      "marc": "856 $x"
+      "marc": "856 $z"
     },
     {
       "type": "group",
