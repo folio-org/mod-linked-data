@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
 import static org.folio.ld.dictionary.PredicateDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PredicateDictionary.GOVERNMENT_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.ILLUSTRATIONS;
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.ld.dictionary.PredicateDictionary.IS_PART_OF;
 import static org.folio.ld.dictionary.PredicateDictionary.ORIGIN_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
@@ -122,6 +123,7 @@ public class WorkMapperUnit extends TopResourceMapperUnit {
 
     labelService.assignLabelToResource(work);
     work.setIdAndRefreshEdges(hashService.hash(work));
+    coreMapper.addIncomingEdges(work, WorkRequest.class, workDto.getInstanceReference(), INSTANTIATES);
     return work;
   }
 

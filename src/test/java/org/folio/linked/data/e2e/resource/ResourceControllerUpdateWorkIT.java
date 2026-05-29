@@ -14,6 +14,7 @@ import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOUR
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -41,6 +42,9 @@ import tools.jackson.databind.JsonNode;
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
 class ResourceControllerUpdateWorkIT extends ITBase {
+  private static final int BOOKS_PROFILE_ID = 2;
+  private static final int SERIALS_WORK_PROFILE_ID = 6;
+
   @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
@@ -65,7 +69,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     resourceTestService.saveGraph(instance);
 
     // when
-    var workUpdateRequestDto = getWorkRequestDto("simple_work", person.getId(), instance.getId());
+    var workUpdateRequestDto = getWorkRequestDto("simple_work", BOOKS_PROFILE_ID, person.getId(), instance.getId());
     putResource(work.getId(), workUpdateRequestDto);
 
     // then
@@ -85,7 +89,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     work1.addOutgoingEdge(edge);
     work2.addIncomingEdge(edge);
     resourceTestService.saveGraph(work2);
-    var workUpdateRequestDto = getWorkRequestDto("updated work2", null, null);
+    var workUpdateRequestDto = getWorkRequestDto("updated work2", BOOKS_PROFILE_ID, null, null);
 
     // when
     var putApiResponse = putResource(work2.getId(), workUpdateRequestDto);
@@ -106,7 +110,27 @@ class ResourceControllerUpdateWorkIT extends ITBase {
     );
   }
 
-  private String getWorkRequestDto(String label, Long personId, Long instanceId) {
+  @Test
+  void updateWork_should_include_instanceReference_in_response_when_profileId_changed() throws Exception {
+    // given
+    var work = getWork("work_for_profile_change");
+    var instance = getInstance(work);
+    resourceTestService.saveGraph(instance);
+
+    // when
+    var dto = getWorkRequestDto("work_for_profile_change", SERIALS_WORK_PROFILE_ID, null, instance.getId());
+    var putApiResponse = putResource(work.getId(), dto);
+
+    // then
+    var instanceRefs = putApiResponse
+      .path("resource")
+      .path("http://bibfra.me/vocab/lite/Work")
+      .path("_instanceReference");
+    assertEquals(1, instanceRefs.size());
+    assertEquals(String.valueOf(instance.getId()), instanceRefs.get(0).path("id").asString());
+  }
+
+  private String getWorkRequestDto(String label, int profileId, Long personId, Long instanceId) {
     var creatorRef = personId == null
       ? ""
       : ", \"_creatorReference\": [ { \"id\": \"" + personId + "\" } ]";
@@ -117,7 +141,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
       {
         "resource": {
           "http://bibfra.me/vocab/lite/Work": {
-            "profileId": 2,
+            "profileId": %d,
             "http://bibfra.me/vocab/library/title": [
               {
                 "http://bibfra.me/vocab/library/Title": {
@@ -128,7 +152,7 @@ class ResourceControllerUpdateWorkIT extends ITBase {
           }
         }
       }
-      """.formatted(label, creatorRef, instanceRef);
+      """.formatted(profileId, label, creatorRef, instanceRef);
   }
 
   private Resource getWork(String label) {

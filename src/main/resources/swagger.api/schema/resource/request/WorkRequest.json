@@ -178,6 +178,13 @@
             "type": "object",
             "$ref": "../common/HubReferenceWithType.json"
           }
+        },
+        "_instanceReference": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "../common/IdField.json"
+          }
         }
       }
     }
