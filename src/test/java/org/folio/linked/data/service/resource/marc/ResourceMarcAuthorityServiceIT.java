@@ -24,6 +24,23 @@ class ResourceMarcAuthorityServiceIT {
   private FolioMetadataRepository folioMetadataRepository;
 
   @Test
+  void saveMarcAuthority_whenAuthorityNotInDatabase_shouldCreateAndActivateAuthority() {
+    var srsId = "srs_id_new_01";
+    var newResource = new Resource()
+      .setId(10L)
+      .setDoc(TEST_JSON_MAPPER.readTree("{}"))
+      .setTypes(Set.of(ResourceTypeDictionary.PERSON))
+      .setLabel("new_label_01")
+      .setFolioMetadata(new FolioMetadata().setSrsId(srsId));
+
+    resourceMarcAuthorityService.saveMarcAuthority(newResource);
+
+    validateResourceIdBySrsId(srsId, newResource.getId());
+    var resourceFromDb = resourceTestService.getResourceById("10", 1);
+    assertResourceIsActive(resourceFromDb);
+  }
+
+  @Test
   void testAuthorityPreferenceToggle_when_authority_is_reverted_back_to_original_state() {
     var srsId = "src_id_01";
 

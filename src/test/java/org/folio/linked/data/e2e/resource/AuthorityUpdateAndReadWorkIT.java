@@ -64,6 +64,28 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
 
 
   @Test
+  void authorityCreate_shouldSaveAsActiveAuthorityAndBeReturnedForLinkedWork() throws Exception {
+    // given
+    final var authority = createAuthority();
+
+    // then — authority is saved as active
+    assertThat(authority.isActive()).isTrue();
+
+    // and — GET /resource/{workId} returns the authority
+    var work = createWorkAndLinkToAuthority(authority);
+    var requestBuilder = get(RESOURCE_URL + "/" + work.getId())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+    var response = mockMvc.perform(requestBuilder)
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response)
+      .contains(authority.getId().toString())
+      .contains(authority.getLabel());
+  }
+
+  @Test
   void authorityUpdate_withSameFingerprint_shouldRetainSingleAuthorityVersionAndShowItForWork() throws Exception {
     // given
     var authority = createAuthority();
