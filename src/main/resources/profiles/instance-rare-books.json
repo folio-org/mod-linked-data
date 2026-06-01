@@ -1128,7 +1128,7 @@
         "valueDataType": {}
       },
       "id": "Profile:Instance:NotesAboutTheInstance:Note",
-      "marc": "5XX"
+      "marc": "3XX, 5XX"
     },
     {
       "type": "simple",

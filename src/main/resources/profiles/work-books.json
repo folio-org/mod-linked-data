@@ -651,7 +651,7 @@
         }
       },
       "id": "Profile:Work:SupplementaryContent",
-      "marc": "008/24-27"
+      "marc": "008/24-27, 31"
     },
     {
       "type": "literal",
