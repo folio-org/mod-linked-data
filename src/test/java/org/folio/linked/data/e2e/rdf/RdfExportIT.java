@@ -5,8 +5,6 @@ import static org.folio.linked.data.test.MonographTestUtil.SAMPLE_ADMIN_METADATA
 import static org.folio.linked.data.test.MonographTestUtil.SAMPLE_ADMIN_METADATA_UUID;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResourceForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithAdminMetadataForRdfExport;
-import static org.folio.linked.data.test.MonographTestUtil.getSampleRareBooksInstanceForRdfExport;
-import static org.folio.linked.data.test.MonographTestUtil.getSampleSerialsInstanceForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithEanForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithIsbnForRdfExport;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithLccnForRdfExport;
@@ -17,6 +15,8 @@ import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWith
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkSubjectLccn;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkSubjectNoLccn;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceWithWorkTitlesForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleRareBooksInstanceForRdfExport;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleSerialsInstanceForRdfExport;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
