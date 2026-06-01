@@ -2,10 +2,10 @@ package org.folio.linked.data.service.lccn;
 
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.folio.ld.dictionary.model.Resource;
 import org.folio.linked.data.model.entity.ResourceSubgraphView;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public interface LccnResourceService {
 
@@ -13,7 +13,7 @@ public interface LccnResourceService {
 
   Resource unMockLccnEdges(Resource resourceModel, Map<String, LccnResourceSearchResult> searchResults);
 
-  record LccnResourceSearchResult(@Nullable ResourceSubgraphView subgraphView, @Nonnull String inventoryId) {
+  record LccnResourceSearchResult(@Nullable ResourceSubgraphView subgraphView, @NonNull String inventoryId) {
   }
 
 }

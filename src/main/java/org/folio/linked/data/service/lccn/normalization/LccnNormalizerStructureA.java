@@ -1,6 +1,6 @@
 package org.folio.linked.data.service.lccn.normalization;
 
-import static com.github.jknack.handlebars.internal.lang3.StringUtils.SPACE;
+import static org.apache.commons.lang3.StringUtils.SPACE;
 
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
