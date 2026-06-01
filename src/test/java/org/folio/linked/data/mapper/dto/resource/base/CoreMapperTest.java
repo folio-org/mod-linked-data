@@ -1,18 +1,22 @@
 package org.folio.linked.data.mapper.dto.resource.base;
 
+import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -191,4 +195,100 @@ class CoreMapperTest {
     assertThat(edgesAreExpected, is(true));
   }
 
+  @Test
+  void addIncomingEdges_shouldThrowNpe_ifGivenChildEntityIsNull() {
+    // given
+    Resource childEntity = null;
+    var dtoList = List.of();
+
+    // when
+    NullPointerException thrown = assertThrows(NullPointerException.class,
+      () -> coreMapper.addIncomingEdges(childEntity, Object.class, dtoList, INSTANTIATES));
+
+    // then
+    assertThat(thrown.getMessage(), is("childEntity is marked non-null but is null"));
+  }
+
+  @Test
+  void addIncomingEdges_shouldThrowNpe_ifGivenParentDtoClassIsNull() {
+    // given
+    var childEntity = new Resource();
+    var dtoList = List.of();
+    Class<Object> parent = null;
+
+    // when
+    NullPointerException thrown = assertThrows(NullPointerException.class,
+      () -> coreMapper.addIncomingEdges(childEntity, parent, dtoList, INSTANTIATES));
+
+    // then
+    assertThat(thrown.getMessage(), is("parentDtoClass is marked non-null but is null"));
+  }
+
+  @Test
+  void addIncomingEdges_shouldThrowNpe_ifGivenPredicateIsNull() {
+    // given
+    var childEntity = new Resource();
+    var dtoList = List.of();
+    Predicate predicate = null;
+
+    // when
+    NullPointerException thrown = assertThrows(NullPointerException.class,
+      () -> coreMapper.addIncomingEdges(childEntity, Object.class, dtoList, predicate));
+
+    // then
+    assertThat(thrown.getMessage(), is("predicate is marked non-null but is null"));
+  }
+
+  @Test
+  void addIncomingEdges_shouldDoNothing_ifGivenDtoListIsNull() {
+    // given
+    var childEntity = new Resource();
+
+    // when
+    coreMapper.addIncomingEdges(childEntity, Object.class, null, INSTANTIATES);
+
+    // then
+    verifyNoInteractions(singleResourceMapper);
+    assertThat(childEntity.getIncomingEdges(), hasSize(0));
+  }
+
+  @Test
+  void addIncomingEdges_shouldDoNothing_ifGivenDtoListIsEmpty() {
+    // given
+    var childEntity = new Resource();
+
+    // when
+    coreMapper.addIncomingEdges(childEntity, Object.class, Collections.emptyList(), INSTANTIATES);
+
+    // then
+    verifyNoInteractions(singleResourceMapper);
+    assertThat(childEntity.getIncomingEdges(), hasSize(0));
+  }
+
+  @Test
+  void addIncomingEdges_shouldAddMappedEdgesToResource_ifGivenDtoListIsNotEmpty() {
+    // given
+    var childEntity = new Resource();
+    var parent = Object.class;
+    var predicate = INSTANTIATES;
+    var dto1 = new Object();
+    var dto2 = new Object();
+    var expectedSource1 = new Resource().setIdAndRefreshEdges(111L);
+    doReturn(expectedSource1).when(singleResourceMapper).toEntity(dto1, parent, predicate, childEntity);
+    var expectedSource2 = new Resource().setIdAndRefreshEdges(222L);
+    doReturn(expectedSource2).when(singleResourceMapper).toEntity(dto2, parent, predicate, childEntity);
+    var dtoList = List.of(dto1, dto2);
+
+    // when
+    coreMapper.addIncomingEdges(childEntity, parent, dtoList, predicate);
+
+    // then
+    assertThat(childEntity.getIncomingEdges(), hasSize(2));
+    var edgesAreExpected = childEntity.getIncomingEdges().stream().allMatch(edge ->
+      edge.getPredicate().getHash().equals(predicate.getHash())
+        && edge.getTarget().equals(childEntity)
+        && (edge.getSource().equals(expectedSource1) || edge.getSource().equals(expectedSource2))
+    );
+    assertTrue(edgesAreExpected);
+  }
 }

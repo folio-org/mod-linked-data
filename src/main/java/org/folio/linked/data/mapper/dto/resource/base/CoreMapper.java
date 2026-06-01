@@ -14,6 +14,9 @@ public interface CoreMapper {
   <T, P> void addOutgoingEdges(@NonNull Resource parentEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
                                @NonNull Predicate predicate);
 
+  <T, P> void addIncomingEdges(@NonNull Resource childEntity, @NonNull Class<P> parentDtoClass, List<T> dtoList,
+                               @NonNull Predicate predicate);
+
   JsonNode toJson(Map<String, List<String>> map);
 
 }
