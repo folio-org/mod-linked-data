@@ -1,5 +1,11 @@
-## 3.0.0 (IN PROGRESS)
+## 2.0.3 (02-06-2026)
+- Exclude LIGHT_RESOURCE from reindexing [MODLD-1071](https://folio-org.atlassian.net/browse/MODLD-1071)
+- Fix Instance loses association with Work when Work profile is changed [MODLD-1072](https://folio-org.atlassian.net/browse/MODLD-1072)
+- Fix tooltip displays incorrect MARC equivalents [MODLD-1073](https://folio-org.atlassian.net/browse/MODLD-1073)
+
+## 2.0.2 (19-05-2026)
 - Correct log settings to match expected key case [MODLD-1063](https://folio-org.atlassian.net/browse/MODLD-1063)
+- Statement of responsibility” section is not repeatable [MODLD-1061](https://folio-org.atlassian.net/browse/MODLD-1061)
 
 ## 2.0.1 (23-04-2026)
 - Fix Hub Import from external (LoC) source in case of low speed [MODLD-1053](https://folio-org.atlassian.net/browse/MODLD-1053)
