@@ -11,6 +11,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.NAME_ALTERNATIVE;
 import static org.folio.ld.dictionary.PropertyDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
@@ -268,6 +269,40 @@ class MergeResourcesIT {
   }
 
   @Test
+  void shouldReuseExistingAgentWhenHubHasCreatorAndContributorConnections() {
+    // given: a Person agent already persisted in the graph with a deterministic hash
+    long agentHash = 700L;
+    resourceGraphService.saveMergingGraph(createPersonResource(agentHash, Map.of(
+      PropertyDictionary.NAME, List.of("Hub Agent")
+    )));
+    assertThat(resourceTestService.countResources()).isEqualTo(1L);
+
+    // when: a Hub referencing the same Agent via CREATOR and CONTRIBUTOR is saved
+    long hubHash = 800L;
+    var agentAsCreator = createPersonResource(agentHash, Map.of(
+      PropertyDictionary.NAME, List.of("Hub Agent")
+    ));
+    var agentAsContributor = createPersonResource(agentHash, Map.of(
+      PropertyDictionary.NAME, List.of("Hub Agent")
+    ));
+    var pred2OutgoingResources = new java.util.LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(PredicateDictionary.CREATOR, List.of(agentAsCreator));
+    pred2OutgoingResources.put(PredicateDictionary.CONTRIBUTOR, List.of(agentAsContributor));
+    resourceGraphService.saveMergingGraph(createHubResource(hubHash, pred2OutgoingResources));
+
+    // then: Agent is reused — total 2 resources (Hub + Agent, not 3)
+    assertThat(resourceTestService.countResources()).isEqualTo(2L);
+    var savedHub = resourceTestService.getResourceById(String.valueOf(hubHash), 2);
+    assertThat(savedHub.getOutgoingEdges()).hasSize(2);
+    assertThat(savedHub.getOutgoingEdges())
+      .anyMatch(e -> e.getPredicate().getUri().equals(PredicateDictionary.CREATOR.getUri())
+        && e.getId().getTargetHash() == agentHash);
+    assertThat(savedHub.getOutgoingEdges())
+      .anyMatch(e -> e.getPredicate().getUri().equals(PredicateDictionary.CONTRIBUTOR.getUri())
+        && e.getId().getTargetHash() == agentHash);
+  }
+
+  @Test
   void shouldReuseSharedConceptNodesFor610FieldsWithCommonSubfields() {
     long orgHash = 100L;
     long formHash = 200L;
@@ -411,6 +446,14 @@ class MergeResourcesIT {
       .map(n -> n.asText())
       .toList();
     assertThat(actual).containsExactlyInAnyOrderElementsOf(expectedValues);
+  }
+
+  private Resource createHubResource(Long hash, Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
+    return MonographTestUtil.createResource(
+      Map.of(PropertyDictionary.NAME, List.of("Sample Hub")),
+      Set.of(HUB),
+      pred2OutgoingResources
+    ).setIdAndRefreshEdges(hash);
   }
 
   private Resource createConceptComponent(long hash, ResourceTypeDictionary type, String name) {
