@@ -22,6 +22,9 @@ import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +34,7 @@ import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.integration.kafka.sender.inventory.InstanceCreateMessageSender;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -59,6 +63,8 @@ class MergeResourcesIT {
   private TenantScopedExecutionService tenantScopedExecutionService;
   @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
+  @MockitoSpyBean
+  private InstanceCreateMessageSender instanceCreateMessageSender;
 
   @BeforeEach
   void beforeEach() {
@@ -346,6 +352,24 @@ class MergeResourcesIT {
     // both concepts share the same Form sub-focus node
     assertThat(getSubFocusTargetIds(savedConcept1)).contains(formHash);
     assertThat(getSubFocusTargetIds(savedConcept2)).contains(formHash);
+  }
+
+  @Test
+  void shouldNotSendCreateInventoryMessage_forLightResourceInstance() {
+    // given
+    var lightInstance = new Resource()
+      .setIdAndRefreshEdges(101L)
+      .addTypes(ResourceTypeDictionary.LIGHT_RESOURCE, ResourceTypeDictionary.INSTANCE);
+    var lightWork = new Resource()
+      .setIdAndRefreshEdges(201L)
+      .addTypes(ResourceTypeDictionary.LIGHT_RESOURCE, ResourceTypeDictionary.WORK);
+    lightWork.addOutgoingEdge(new ResourceEdge(lightWork, lightInstance, PredicateDictionary.INSTANTIATES));
+
+    // when
+    resourceGraphService.saveMergingGraphInNewTransaction(lightWork);
+
+    // then
+    verify(instanceCreateMessageSender, never()).accept(any());
   }
 
   private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {
