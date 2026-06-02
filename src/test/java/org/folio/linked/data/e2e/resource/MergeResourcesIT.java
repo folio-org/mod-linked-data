@@ -9,11 +9,14 @@ import static org.folio.ld.dictionary.PropertyDictionary.FIELD_LINK;
 import static org.folio.ld.dictionary.PropertyDictionary.LINKAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME_ALTERNATIVE;
 import static org.folio.ld.dictionary.PropertyDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
@@ -264,6 +267,52 @@ class MergeResourcesIT {
     assertDocValues(doc, FIELD_LINK, List.of("fl-v1", "fl-v2"));
   }
 
+  @Test
+  void shouldReuseSharedConceptNodesFor610FieldsWithCommonSubfields() {
+    long orgHash = 100L;
+    long formHash = 200L;
+    long topic1Hash = 301L;
+    long topic2Hash = 302L;
+    long concept1Hash = 401L;
+    long concept2Hash = 402L;
+
+    // given: first 610 field
+    resourceGraphService.saveMergingGraph(
+      createOrganizationConceptResource(concept1Hash,
+        createConceptComponent(orgHash, ORGANIZATION, "Org Name"),
+        List.of(
+          createConceptComponent(formHash, FORM, "Form Subdiv"),
+          createConceptComponent(topic1Hash, TOPIC, "Topic 1")
+        )
+      )
+    );
+
+    // when: second 610 field with same $a and $v, different $x
+    resourceGraphService.saveMergingGraph(
+      createOrganizationConceptResource(concept2Hash,
+        createConceptComponent(orgHash, ORGANIZATION, "Org Name"),
+        List.of(
+          createConceptComponent(formHash, FORM, "Form Subdiv"),
+          createConceptComponent(topic2Hash, TOPIC, "Topic 2")
+        )
+      )
+    );
+
+    // then: 6 unique resources — Organization and Form nodes are not duplicated
+    assertThat(resourceTestService.countResources()).isEqualTo(6L);
+
+    var savedConcept1 = resourceTestService.getResourceById(String.valueOf(concept1Hash), 2);
+    var savedConcept2 = resourceTestService.getResourceById(String.valueOf(concept2Hash), 2);
+
+    // both concepts reference the same Organization focus node
+    assertThat(getFocusTargetId(savedConcept1)).isEqualTo(orgHash);
+    assertThat(getFocusTargetId(savedConcept2)).isEqualTo(orgHash);
+
+    // both concepts share the same Form sub-focus node
+    assertThat(getSubFocusTargetIds(savedConcept1)).contains(formHash);
+    assertThat(getSubFocusTargetIds(savedConcept2)).contains(formHash);
+  }
+
   private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {
     var mainResource = resourceTestService.getResourceById(mainId.toString(), 4);
     assertThat(mainResource.getOutgoingEdges()).hasSize(1);
@@ -362,6 +411,40 @@ class MergeResourcesIT {
       .map(n -> n.asText())
       .toList();
     assertThat(actual).containsExactlyInAnyOrderElementsOf(expectedValues);
+  }
+
+  private Resource createConceptComponent(long hash, ResourceTypeDictionary type, String name) {
+    return MonographTestUtil.createResource(
+      Map.of(PropertyDictionary.NAME, List.of(name)),
+      Set.of(type),
+      Map.of()
+    ).setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createOrganizationConceptResource(long hash, Resource focus, List<Resource> subFoci) {
+    return MonographTestUtil.createResource(
+      Map.of(PropertyDictionary.NAME, List.of("organization concept")),
+      Set.of(CONCEPT, ORGANIZATION),
+      new java.util.LinkedHashMap<>(Map.of(
+        PredicateDictionary.FOCUS, List.of(focus),
+        PredicateDictionary.SUB_FOCUS, subFoci
+      ))
+    ).setIdAndRefreshEdges(hash);
+  }
+
+  private long getFocusTargetId(Resource concept) {
+    return concept.getOutgoingEdges().stream()
+      .filter(e -> e.getPredicate().getUri().equals(PredicateDictionary.FOCUS.getUri()))
+      .findFirst()
+      .orElseThrow()
+      .getId().getTargetHash();
+  }
+
+  private List<Long> getSubFocusTargetIds(Resource concept) {
+    return concept.getOutgoingEdges().stream()
+      .filter(e -> e.getPredicate().getUri().equals(PredicateDictionary.SUB_FOCUS.getUri()))
+      .map(e -> e.getId().getTargetHash())
+      .toList();
   }
 
   private void assertEdge(ResourceEdge edge, long sourceHash, long targetHash, Resource source) {
