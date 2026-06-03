@@ -21,9 +21,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.core.type.TypeReference;
 
 class WorkDissertationIT extends PostResourceIT {
-  private static final Resource GRANTING_INSTITUTION_1 = createOrganization(5481852630377445080L,
+  private final Resource GRANTING_INSTITUTION_1 = createOrganization(5481852630377445080L,
     "granting institution 1", null);
-  private static final Resource GRANTING_INSTITUTION_2 = createOrganization(-6468470931408362304L,
+  private final Resource GRANTING_INSTITUTION_2 = createOrganization(-6468470931408362304L,
     "granting institution 2", "srsId2");
 
   @Autowired
