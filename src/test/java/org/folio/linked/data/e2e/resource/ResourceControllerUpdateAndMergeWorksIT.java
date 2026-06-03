@@ -5,39 +5,37 @@ import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
-import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.util.ResourceUtils.extractInstancesFromWork;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.InstanceIngressEvent;
-import org.folio.linked.data.domain.dto.LinkedDataTitle;
-import org.folio.linked.data.domain.dto.LinkedDataWork;
-import org.folio.linked.data.domain.dto.ResourceIndexEvent;
-import org.folio.linked.data.domain.dto.ResourceIndexEventType;
 import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.integration.kafka.sender.inventory.InstanceUpdateMessageSender;
+import org.folio.linked.data.integration.kafka.sender.search.WorkCreateMessageSender;
+import org.folio.linked.data.integration.kafka.sender.search.WorkDeleteMessageSender;
+import org.folio.linked.data.mapper.kafka.inventory.InstanceIngressMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.repo.ResourceRepository;
-import org.folio.linked.data.test.kafka.KafkaInventoryTopicListener;
 import org.folio.linked.data.test.kafka.KafkaProducerTestConfiguration;
-import org.folio.linked.data.test.kafka.KafkaSearchWorkIndexTopicListener;
 import org.folio.linked.data.test.resource.ResourceTestService;
 import org.folio.marc4ld.service.marc2ld.reader.MarcReaderProcessor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.marc4j.marc.DataField;
 import org.marc4j.marc.Record;
 import org.marc4j.marc.Subfield;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 @IntegrationTest
 @SpringBootTest(classes = {KafkaProducerTestConfiguration.class})
@@ -45,21 +43,17 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
   @Autowired
   private ResourceTestService resourceTestService;
   @Autowired
-  private KafkaInventoryTopicListener inventoryTopicListener;
-  @Autowired
-  private KafkaSearchWorkIndexTopicListener searchWorkIndexTopicListener;
-  @Autowired
   private ResourceRepository resourceRepository;
   @Autowired
   private MarcReaderProcessor marcReader;
-
-  @BeforeEach
-  @Override
-  public void beforeEach() {
-    super.beforeEach();
-    searchWorkIndexTopicListener.getMessages().clear();
-    inventoryTopicListener.getMessages().clear();
-  }
+  @Autowired
+  private InstanceIngressMessageMapper instanceIngressMessageMapper;
+  @MockitoSpyBean
+  private WorkDeleteMessageSender workDeleteMessageSender;
+  @MockitoSpyBean
+  private WorkCreateMessageSender workCreateMessageSender;
+  @MockitoSpyBean
+  private InstanceUpdateMessageSender instanceUpdateMessageSender;
 
   /**
    * Merge two works into a single work and ensure the following
@@ -105,28 +99,25 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
     assertTrue(resourceRepository.findById(work1.getId()).isEmpty());
 
     // Assert that appropriate events are sent to mod-search
-    Set<ResourceIndexEvent> searchEventList = new HashSet<>();
-    awaitAndAssert(() ->
-      assertTrue(
-        searchWorkIndexTopicListener.getMessages()
-          .stream()
-          .anyMatch(m -> {
-            searchEventList.add(parse(m, ResourceIndexEvent.class));
-            return isExpectedSearchEvents(searchEventList, work1.getId(), work2.getId());
-          })
-      )
-    );
+    var deleteCaptor = ArgumentCaptor.forClass(Resource.class);
+    verify(workDeleteMessageSender).accept(deleteCaptor.capture());
+    assertEquals(work1.getId(), deleteCaptor.getValue().getId());
+
+    var createCaptor = ArgumentCaptor.forClass(Resource.class);
+    verify(workCreateMessageSender).accept(createCaptor.capture());
+    var capturedWork = createCaptor.getValue();
+    assertEquals(work2.getId(), capturedWork.getId());
+    assertEquals(2, extractInstancesFromWork(capturedWork).size());
 
     // Assert that appropriate events are sent to inventory
-    Set<InstanceIngressEvent> inventoryEventList = new HashSet<>();
-    awaitAndAssert(() ->
-      assertTrue(inventoryTopicListener.getMessages().stream()
-        .anyMatch(m -> {
-          inventoryEventList.add(parse(m, InstanceIngressEvent.class));
-          return isExpectedInventoryEvents(inventoryEventList);
-        })
-      )
-    );
+    var instanceCaptor = ArgumentCaptor.forClass(Resource.class);
+    verify(instanceUpdateMessageSender, times(2)).accept(instanceCaptor.capture());
+    instanceCaptor.getAllValues().forEach(instance -> {
+      var event = instanceIngressMessageMapper.toInstanceIngressEvent(instance);
+      var marcStr = event.getEventPayload().getSourceRecordObject();
+      var marcRecord = marcReader.readMarc(marcStr).toList().getFirst();
+      assertTrue(isExpectedMarc(marcRecord));
+    });
   }
 
   private String getWorkRequestDto(Long instanceId, String title) {
@@ -176,52 +167,6 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
     instance.setIdAndRefreshEdges(hashService.hash(instance));
 
     return instance;
-  }
-
-  private <T> T parse(String json, Class<T> clazz) {
-    return TEST_JSON_MAPPER.readValue(json, clazz);
-  }
-
-  private boolean isExpectedSearchEvents(Set<ResourceIndexEvent> events, long deletedWorkId, long createdWorkId) {
-    if (events.size() < 2) {
-      return false;
-    }
-    return events.stream().anyMatch(e -> isSearchDeleteEvent(e, deletedWorkId)) &&
-      events.stream().anyMatch(e -> isSearchCreateEvent(e, createdWorkId));
-  }
-
-  private boolean isSearchCreateEvent(ResourceIndexEvent event, Long createdWorkId) {
-    var work = getWorkFromEvent(event);
-    return event.getType().equals(ResourceIndexEventType.CREATE)
-      && work.getId().equals(createdWorkId.toString())
-      && work.getInstances().size() == 2
-      && work.getInstances().stream().allMatch(
-      i -> i.getTitles().stream().map(LinkedDataTitle::getValue)
-        .allMatch(t -> t.equals("simple_work1_instance") || t.equals("simple_work2_instance"))
-    );
-  }
-
-  private boolean isSearchDeleteEvent(ResourceIndexEvent event, Long deletedWorkId) {
-    var work = getWorkFromEvent(event);
-    return event.getType().equals(ResourceIndexEventType.DELETE) && work.getId().equals(deletedWorkId.toString());
-  }
-
-  private LinkedDataWork getWorkFromEvent(ResourceIndexEvent event) {
-    var data = (Map<String, Object>) event.getNew();
-    return TEST_JSON_MAPPER.convertValue(data, LinkedDataWork.class);
-  }
-
-  private boolean isExpectedInventoryEvents(Set<InstanceIngressEvent> inventoryEventList) {
-    return inventoryEventList.size() == 2 && inventoryEventList.stream()
-      .allMatch(
-        event -> {
-          var payload = event.getEventPayload();
-          var marcStr = payload.getSourceRecordObject();
-          var marcRecord = marcReader.readMarc(marcStr).toList().getFirst();
-          return event.getEventType().equals(InstanceIngressEvent.EventTypeEnum.UPDATE_INSTANCE)
-            && isExpectedMarc(marcRecord);
-        }
-      );
   }
 
   private boolean isExpectedMarc(Record marcRecord) {
