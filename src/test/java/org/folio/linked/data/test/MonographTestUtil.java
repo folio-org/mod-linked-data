@@ -40,6 +40,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
+import static org.folio.ld.dictionary.PropertyDictionary.FOLIO_INVENTORY_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_AREA_CODE;
@@ -968,13 +969,23 @@ public class MonographTestUtil {
     var adminMetadata = createResource(
       Map.of(
         CONTROL_NUMBER, List.of(SAMPLE_ADMIN_METADATA_HRID),
-        CREATED_DATE, List.of("2025-11-19")
+        CREATED_DATE, List.of("2025-11-19"),
+        FOLIO_INVENTORY_ID, List.of(SAMPLE_ADMIN_METADATA_UUID)
       ),
       Set.of(ANNOTATION),
       Map.of()
     );
 
-    var instance = createResource(emptyMap(), Set.of(INSTANCE), Map.of());
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("AdminMetadata RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("AdminMetadata RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
     instance.addOutgoingEdge(new ResourceEdge(instance, adminMetadata, ADMIN_METADATA));
     instance.setFolioMetadata(
       new FolioMetadata(instance)
@@ -982,6 +993,7 @@ public class MonographTestUtil {
         .setInventoryId(SAMPLE_ADMIN_METADATA_UUID)
         .setSrsId(UUID.randomUUID().toString())
     );
+    instance.setLabel("AdminMetadata RdfExport");
 
     linkNewWork(instance, "AdminMetadata RdfExport");
     return instance;
