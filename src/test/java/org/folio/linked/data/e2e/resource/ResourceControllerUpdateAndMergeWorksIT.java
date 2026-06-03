@@ -7,6 +7,7 @@ import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.awaitAndAssert;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.testcontainers.shaded.org.awaitility.Durations.FIVE_MINUTES;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -226,6 +227,9 @@ class ResourceControllerUpdateAndMergeWorksIT extends ITBase {
 
   private boolean isExpectedMarc(Record marcRecord) {
     var df520 = (DataField) marcRecord.getVariableField("520");
+    if (df520 == null) {
+      return false;
+    }
     var df520SfA = df520.getSubfields('a');
     return df520SfA.size() == 2 &&
       df520SfA.stream()
