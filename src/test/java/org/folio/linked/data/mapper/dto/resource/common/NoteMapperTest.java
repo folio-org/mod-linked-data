@@ -28,7 +28,7 @@ class NoteMapperTest {
 
   @Test
   void dimensions_property_shouldBeLiteralNotNote_andHaveLiteNamespaceUri() {
-    assertThat(InstanceMapperUnit.SUPPORTED_NOTES).doesNotContain(DIMENSIONS);
+    assertThat(InstanceMapperUnit.SUPPORTED_NOTES).isNotEmpty().doesNotContain(DIMENSIONS);
     assertThat(DIMENSIONS.getValue()).isEqualTo("http://bibfra.me/vocab/lite/dimensions");
   }
 

@@ -467,7 +467,7 @@ class MergeResourcesIT {
     var node = doc.get(property.getValue());
     assertThat(node).isNotNull();
     var actual = StreamSupport.stream(node.spliterator(), false)
-      .map(n -> n.asText())
+      .map(JsonNode::asString)
       .toList();
     assertThat(actual).containsExactlyInAnyOrderElementsOf(expectedValues);
   }
