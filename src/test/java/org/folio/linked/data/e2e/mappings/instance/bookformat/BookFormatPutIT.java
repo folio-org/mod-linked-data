@@ -1,9 +1,8 @@
 package org.folio.linked.data.e2e.mappings.instance.bookformat;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.folio.linked.data.test.MonographTestUtil.getWork;
+import static org.folio.linked.data.test.MonographTestUtil.getSampleRareBooksInstanceForRdfExport;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
-import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
 import static org.folio.linked.data.test.TestUtil.getProperty;
@@ -15,15 +14,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.UUID;
 import lombok.SneakyThrows;
-import org.folio.ld.dictionary.PredicateDictionary;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
-import org.folio.linked.data.model.entity.ResourceEdge;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.ResultActions;
@@ -39,13 +33,14 @@ class BookFormatPutIT extends ITBase {
   @SneakyThrows
   void shouldUpdateBookFormats() {
     // given
-    var work = resourceTestService.saveGraph(getWork("Test Work", hashService));
-    var existingInstance = resourceTestService.saveGraph(buildInstance(work));
+    var instanceGraph = getSampleRareBooksInstanceForRdfExport();
+    var workId = getFirstOutgoingResource(instanceGraph, "http://bibfra.me/vocab/lite/instantiates").getId();
+    var existingInstance = resourceTestService.saveGraph(instanceGraph);
 
     var putRequest = put(RESOURCE_URL + "/" + existingInstance.getId())
       .contentType(APPLICATION_JSON)
       .headers(defaultHeaders(env))
-      .content(putPayload(work.getId()));
+      .content(putPayload(workId));
 
     // when
     var putResponse = mockMvc.perform(putRequest);
@@ -56,29 +51,6 @@ class BookFormatPutIT extends ITBase {
     var updatedResourceId = getResourceId(putResponse);
     var updatedResource = resourceTestService.getResourceById(updatedResourceId, RESOURCE_FETCH_DEPTH);
     validateUpdatedGraph(updatedResource);
-  }
-
-  private Resource buildInstance(Resource work) {
-    var titleDoc = TEST_JSON_MAPPER.createObjectNode();
-    titleDoc.putArray("http://bibfra.me/vocab/library/mainTitle").add("TEST: BookFormatPutIT");
-    var title = new Resource()
-      .addTypes(ResourceTypeDictionary.TITLE)
-      .setDoc(titleDoc)
-      .setLabel("TEST: BookFormatPutIT");
-
-    var instance = new Resource()
-      .addTypes(ResourceTypeDictionary.INSTANCE)
-      .setDoc(TEST_JSON_MAPPER.createObjectNode())
-      .setLabel("TEST: BookFormatPutIT");
-    instance.addOutgoingEdge(new ResourceEdge(instance, title, PredicateDictionary.TITLE));
-    instance.addOutgoingEdge(new ResourceEdge(instance, work, PredicateDictionary.INSTANTIATES));
-
-    title.setIdAndRefreshEdges(hashService.hash(title));
-    instance.setIdAndRefreshEdges(hashService.hash(instance));
-    instance.setFolioMetadata(new FolioMetadata(instance)
-      .setInventoryId(UUID.randomUUID().toString())
-      .setSrsId(UUID.randomUUID().toString()));
-    return instance;
   }
 
   private String putPayload(Long workId) {

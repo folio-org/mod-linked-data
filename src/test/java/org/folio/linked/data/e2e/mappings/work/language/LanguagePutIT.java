@@ -17,13 +17,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import lombok.SneakyThrows;
-import org.springframework.test.web.servlet.ResultActions;
 import org.folio.linked.data.domain.dto.LanguageWithType;
 import org.folio.linked.data.e2e.base.ITBase;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.folio.linked.data.model.entity.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.ResultActions;
 
 @IntegrationTest
 @ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
