@@ -3,6 +3,9 @@ package org.folio.linked.data.e2e.mappings.work.creator;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
+import static org.folio.linked.data.test.TestUtil.getOutgoingResources;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

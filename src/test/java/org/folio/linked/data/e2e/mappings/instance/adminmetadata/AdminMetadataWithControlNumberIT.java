@@ -2,6 +2,10 @@ package org.folio.linked.data.e2e.mappings.instance.adminmetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
+import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
+import static org.folio.linked.data.test.TestUtil.getProperties;
+import static org.folio.linked.data.test.TestUtil.getProperty;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

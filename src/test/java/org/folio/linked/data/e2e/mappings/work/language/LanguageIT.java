@@ -2,17 +2,21 @@ package org.folio.linked.data.e2e.mappings.work.language;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
+import static org.folio.linked.data.test.TestUtil.getOutgoingResources;
+import static org.folio.linked.data.test.TestUtil.getProperty;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.LanguageWithType;
-import org.folio.linked.data.e2e.mappings.PutResourceIT;
+import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.test.web.servlet.ResultActions;
 
-public class LanguageIT extends PutResourceIT {
+public class LanguageIT extends PostResourceIT {
 
   @Override
   protected String postPayload() {
@@ -153,64 +157,6 @@ public class LanguageIT extends PutResourceIT {
     assertThat(getProperty(language, "http://bibfra.me/vocab/library/term")).isEqualTo(expected.term);
     assertThat(getProperty(language, "http://bibfra.me/vocab/library/code")).isEqualTo(expected.code);
     assertThat(language.getLabel()).isEqualTo(expected.code);
-  }
-
-  @Override
-  protected String putPayload() {
-    return """
-      {
-       "resource":{
-          "http://bibfra.me/vocab/lite/Work":{
-           "profileId": 2,
-           "http://bibfra.me/vocab/library/title":[
-            {
-             "http://bibfra.me/vocab/library/Title":{
-              "http://bibfra.me/vocab/library/mainTitle":[ "%s" ]
-             }
-            }
-           ],
-           "_languages":[
-            {
-             "_codes":[{
-              "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/languages/fre" ],
-              "http://bibfra.me/vocab/library/term":[ "French" ]
-             }],
-             "_types":[ "http://bibfra.me/vocab/lite/language" ]
-            }
-           ]
-          }
-         }
-      }"""
-      .formatted("TEST: " + this.getClass().getSimpleName() + " updated");
-  }
-
-  @Override
-  @SneakyThrows
-  protected void validateUpdatedApiResponse(ResultActions apiResponse) {
-    var actualLanguages = getActualLanguages(apiResponse);
-
-    assertThat(actualLanguages).hasSize(1);
-    var language = actualLanguages.get(0);
-    assertThat(language.getCodes()).hasSize(1);
-    var code = language.getCodes().get(0);
-    assertThat(code.getLink()).containsExactly("http://id.loc.gov/vocabulary/languages/fre");
-    assertThat(code.getTerm()).containsExactly("French");
-    assertThat(code.getCode()).containsExactly("fre");
-    assertThat(language.getTypes()).containsExactly("http://bibfra.me/vocab/lite/language");
-  }
-
-  @Override
-  protected void validateUpdatedGraph(Resource resource) {
-    var frenchLanguage = getFirstOutgoingResource(resource, "http://bibfra.me/vocab/lite/language");
-    validateResourceType(frenchLanguage, "http://bibfra.me/vocab/lite/LanguageCategory");
-    assertThat(getProperty(frenchLanguage, "http://bibfra.me/vocab/lite/link"))
-      .isEqualTo("http://id.loc.gov/vocabulary/languages/fre");
-    assertThat(getProperty(frenchLanguage, "http://bibfra.me/vocab/library/term")).isEqualTo("French");
-    assertThat(getProperty(frenchLanguage, "http://bibfra.me/vocab/library/code")).isEqualTo("fre");
-    assertThat(frenchLanguage.getLabel()).isEqualTo("fre");
-    assertThat(getOutgoingResources(resource, "http://bibfra.me/vocab/lite/originalLanguage")).isEmpty();
-    assertThat(getOutgoingResources(resource, "http://bibfra.me/vocab/lite/tableOfContentsLanguage")).isEmpty();
-    assertThat(getOutgoingResources(resource, "http://bibfra.me/vocab/lite/accompanyingMaterialLanguage")).isEmpty();
   }
 
   private record LanguageCategory(

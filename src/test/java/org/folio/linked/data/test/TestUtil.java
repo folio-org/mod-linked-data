@@ -1,12 +1,13 @@
 package org.folio.linked.data.test;
 
-import static java.lang.System.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toCollection;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.StreamSupport.stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.REPLACED_BY;
 import static org.folio.linked.data.service.lccn.LccnResourceService.LccnResourceSearchResult;
@@ -29,9 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
@@ -42,7 +45,9 @@ import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceSubgraphView;
+import org.folio.linked.data.model.entity.ResourceTypeEntity;
 import org.folio.linked.data.test.json.IdentifierFieldResponseDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
 import org.folio.linked.data.test.json.TitleFieldResponseDeserializer;
@@ -53,6 +58,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.test.web.servlet.ResultActions;
 import org.testcontainers.shaded.org.awaitility.core.ThrowingRunnable;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -88,7 +94,7 @@ public class TestUtil {
     var httpHeaders = new HttpHeaders();
     if (!isStandaloneTest(env)) {
       httpHeaders.add(TENANT, TENANT_ID);
-      httpHeaders.add(URL, getProperty(FOLIO_OKAPI_URL));
+      httpHeaders.add(URL, java.lang.System.getProperty(FOLIO_OKAPI_URL));
     }
     return httpHeaders;
   }
@@ -106,7 +112,7 @@ public class TestUtil {
   public static List<RecordHeader> defaultKafkaHeaders() {
     return List.of(
       new RecordHeader(TENANT, TENANT_ID.getBytes(UTF_8)),
-      new RecordHeader(URL, getProperty(FOLIO_OKAPI_URL).getBytes(UTF_8)),
+      new RecordHeader(URL, java.lang.System.getProperty(FOLIO_OKAPI_URL).getBytes(UTF_8)),
       new RecordHeader(TOKEN, "test-token".getBytes(UTF_8))
     );
   }
@@ -229,6 +235,51 @@ public class TestUtil {
         }
       }
       """.formatted(title, workId);
+  }
+
+  @SneakyThrows
+  public static String getResourceId(ResultActions response) {
+    var content = response.andReturn().getResponse().getContentAsString();
+    var resourceNode = TEST_JSON_MAPPER.readTree(content).path("resource");
+    return Stream.of(
+        "http://bibfra.me/vocab/lite/Instance",
+        "http://bibfra.me/vocab/lite/Work",
+        "http://bibfra.me/vocab/lite/Hub"
+      )
+      .filter(resourceNode::has)
+      .findFirst()
+      .map(key -> resourceNode.path(key).path("id").asString())
+      .orElseThrow(() -> new RuntimeException("No Instance, Work, or Hub node found in response"));
+  }
+
+  public static String getProperty(Resource resource, String property) {
+    return getProperties(resource, property).stream()
+      .findFirst()
+      .orElseThrow();
+  }
+
+  public static Set<String> getProperties(Resource resource, String property) {
+    return stream(resource.getDoc().get(property).spliterator(), false)
+      .map(JsonNode::asString)
+      .collect(toSet());
+  }
+
+  public static Resource getFirstOutgoingResource(Resource resource, String url) {
+    return getOutgoingResources(resource, url).getFirst();
+  }
+
+  public static List<Resource> getOutgoingResources(Resource resource, String predicate) {
+    return resource.getOutgoingEdges().stream()
+      .filter(edge -> edge.getPredicate().getUri().equals(predicate))
+      .map(ResourceEdge::getTarget)
+      .toList();
+  }
+
+  public static void validateResourceType(Resource resource, String... expectedTypes) {
+    var actualTypes = resource.getTypes().stream()
+      .map(ResourceTypeEntity::getUri)
+      .collect(toSet());
+    assertThat(actualTypes).isEqualTo(Set.of(expectedTypes));
   }
 
 }

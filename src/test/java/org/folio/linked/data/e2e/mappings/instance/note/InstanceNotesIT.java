@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.mappings.instance.note;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.linked.data.test.TestUtil.getProperty;
 
 import java.util.HashMap;
 import java.util.Map;
