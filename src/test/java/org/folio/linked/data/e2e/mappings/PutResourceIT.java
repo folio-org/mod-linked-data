@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
  * Extends {@link PostResourceIT} with a PUT round-trip test.
  * Subclasses that need to verify update (PUT) behaviour should extend this class instead of {@link PostResourceIT}.
  */
-public abstract class PostAndPutResourceIT extends PostResourceIT {
+public abstract class PutResourceIT extends PostResourceIT {
 
   protected abstract String putPayload();
 

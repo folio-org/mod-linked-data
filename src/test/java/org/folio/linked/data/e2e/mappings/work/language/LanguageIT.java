@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Set;
 import lombok.SneakyThrows;
 import org.folio.linked.data.domain.dto.LanguageWithType;
-import org.folio.linked.data.e2e.mappings.PostAndPutResourceIT;
+import org.folio.linked.data.e2e.mappings.PutResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.test.web.servlet.ResultActions;
 
-public class LanguageIT extends PostAndPutResourceIT {
+public class LanguageIT extends PutResourceIT {
 
   @Override
   protected String postPayload() {
