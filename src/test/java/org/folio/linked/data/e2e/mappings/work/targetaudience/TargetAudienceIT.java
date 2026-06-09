@@ -1,6 +1,7 @@
 package org.folio.linked.data.e2e.mappings.work.targetaudience;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
 import static org.folio.linked.data.test.TestUtil.getProperty;

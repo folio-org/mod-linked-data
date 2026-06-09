@@ -81,6 +81,8 @@ public class TestUtil {
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_SAMPLE = loadResourceAsString("samples/work.json");
   public static final String FOLIO_OKAPI_URL = "folio.okapi-url";
+  public static final String RESOURCE_URL = "/linked-data/resource";
+  public static final int RESOURCE_FETCH_DEPTH = 4;
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
 

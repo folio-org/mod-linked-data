@@ -2,6 +2,8 @@ package org.folio.linked.data.e2e.mappings.instance.bookformat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleRareBooksInstanceForRdfExport;
+import static org.folio.linked.data.test.TestUtil.RESOURCE_FETCH_DEPTH;
+import static org.folio.linked.data.test.TestUtil.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
@@ -25,9 +27,6 @@ import org.springframework.test.web.servlet.ResultActions;
 @IntegrationTest
 @ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
 class BookFormatPutIT extends ITBase {
-
-  private static final String RESOURCE_URL = "/linked-data/resource";
-  private static final int RESOURCE_FETCH_DEPTH = 4;
 
   @Test
   @SneakyThrows

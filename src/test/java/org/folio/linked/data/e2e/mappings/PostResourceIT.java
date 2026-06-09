@@ -1,6 +1,8 @@
 package org.folio.linked.data.e2e.mappings;
 
 import static org.folio.linked.data.test.MonographTestUtil.getWork;
+import static org.folio.linked.data.test.TestUtil.RESOURCE_FETCH_DEPTH;
+import static org.folio.linked.data.test.TestUtil.RESOURCE_URL;
 import static org.folio.linked.data.test.TestUtil.STANDALONE_TEST_PROFILE;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.folio.linked.data.test.TestUtil.getResourceId;
@@ -21,9 +23,6 @@ import org.springframework.test.web.servlet.ResultActions;
 @IntegrationTest
 @ActiveProfiles({STANDALONE_PROFILE, STANDALONE_TEST_PROFILE})
 public abstract class PostResourceIT extends ITBase {
-
-  protected static final String RESOURCE_URL = "/linked-data/resource";
-  protected static final int RESOURCE_FETCH_DEPTH = 4;
 
   protected Long savedWorkId;
 
