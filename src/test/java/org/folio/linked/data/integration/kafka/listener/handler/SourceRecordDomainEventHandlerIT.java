@@ -106,6 +106,9 @@ class SourceRecordDomainEventHandlerIT {
   @ParameterizedTest
   @CsvSource({
     "samples/marc2ld/marc_non_monograph_leader.jsonl, 0",
+    "samples/marc2ld/marc_non_monograph_leader_music.jsonl, 0",
+    "samples/marc2ld/marc_non_monograph_leader_cartographic.jsonl, 0",
+    "samples/marc2ld/marc_non_monograph_leader_integrating.jsonl, 0",
     "samples/marc2ld/marc_monograph_leader.jsonl, 1"
   })
   void shouldNotProcessEventForNullableResource(String resource, int interactions) {

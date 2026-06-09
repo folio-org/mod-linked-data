@@ -2,6 +2,10 @@ package org.folio.linked.data.e2e.mappings.work.language;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
+import static org.folio.linked.data.test.TestUtil.getOutgoingResources;
+import static org.folio.linked.data.test.TestUtil.getProperty;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
 
 import java.util.List;
 import java.util.Map;

@@ -3,6 +3,9 @@ package org.folio.linked.data.e2e.mappings.title;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TITLE;
+import static org.folio.linked.data.test.TestUtil.getOutgoingResources;
+import static org.folio.linked.data.test.TestUtil.getProperty;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

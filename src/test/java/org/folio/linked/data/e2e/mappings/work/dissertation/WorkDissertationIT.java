@@ -3,6 +3,9 @@ package org.folio.linked.data.e2e.mappings.work.dissertation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
+import static org.folio.linked.data.test.TestUtil.getOutgoingResources;
+import static org.folio.linked.data.test.TestUtil.getProperty;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,9 +24,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import tools.jackson.core.type.TypeReference;
 
 class WorkDissertationIT extends PostResourceIT {
-  private static final Resource GRANTING_INSTITUTION_1 = createOrganization(5481852630377445080L,
+  private final Resource grantingInstitution1 = createOrganization(5481852630377445080L,
     "granting institution 1", null);
-  private static final Resource GRANTING_INSTITUTION_2 = createOrganization(-6468470931408362304L,
+  private final Resource grantingInstitution2 = createOrganization(-6468470931408362304L,
     "granting institution 2", "srsId2");
 
   @Autowired
@@ -31,8 +34,8 @@ class WorkDissertationIT extends PostResourceIT {
 
   @BeforeEach
   void createDegreeGrantingInstitutions() {
-    resourceTestService.saveGraph(GRANTING_INSTITUTION_1);
-    resourceTestService.saveGraph(GRANTING_INSTITUTION_2);
+    resourceTestService.saveGraph(grantingInstitution1);
+    resourceTestService.saveGraph(grantingInstitution2);
   }
 
   @Override
@@ -76,8 +79,8 @@ class WorkDissertationIT extends PostResourceIT {
       }"""
       .formatted(
         "TEST: " + getClass().getSimpleName(),
-        GRANTING_INSTITUTION_1.getId(),
-        GRANTING_INSTITUTION_2.getFolioMetadata().getSrsId()
+        grantingInstitution1.getId(),
+        grantingInstitution2.getFolioMetadata().getSrsId()
       );
   }
 
@@ -89,8 +92,8 @@ class WorkDissertationIT extends PostResourceIT {
       .toList();
 
     assertThat(dissertations).hasSize(2);
-    validateDissertation(dissertations.get(0), "1", GRANTING_INSTITUTION_1);
-    validateDissertation(dissertations.get(1), "2", GRANTING_INSTITUTION_2);
+    validateDissertation(dissertations.get(0), "1", grantingInstitution1);
+    validateDissertation(dissertations.get(1), "2", grantingInstitution2);
   }
 
   @Override
@@ -109,8 +112,8 @@ class WorkDissertationIT extends PostResourceIT {
       .toList();
 
     assertThat(actual).hasSize(2);
-    validateApiResponseDissertation(actual.get(0), "1", GRANTING_INSTITUTION_1);
-    validateApiResponseDissertation(actual.get(1), "2", GRANTING_INSTITUTION_2);
+    validateApiResponseDissertation(actual.get(0), "1", grantingInstitution1);
+    validateApiResponseDissertation(actual.get(1), "2", grantingInstitution2);
   }
 
   private void validateDissertation(Resource dissertation, String suffix, Resource grantingInstitution) {

@@ -5,10 +5,14 @@ import static java.util.Map.entry;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.folio.ld.dictionary.PredicateDictionary.ACCESS_LOCATION;
+import static org.folio.ld.dictionary.PredicateDictionary.ADMIN_METADATA;
+import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
 import static org.folio.ld.dictionary.PredicateDictionary.CARRIER;
 import static org.folio.ld.dictionary.PredicateDictionary.CLASSIFICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.CONTENT;
+import static org.folio.ld.dictionary.PredicateDictionary.CONTRIBUTOR;
 import static org.folio.ld.dictionary.PredicateDictionary.COPYRIGHT;
+import static org.folio.ld.dictionary.PredicateDictionary.CREATOR;
 import static org.folio.ld.dictionary.PredicateDictionary.EXTENT;
 import static org.folio.ld.dictionary.PredicateDictionary.FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.GENRE;
@@ -27,14 +31,18 @@ import static org.folio.ld.dictionary.PredicateDictionary.PE_PUBLICATION;
 import static org.folio.ld.dictionary.PredicateDictionary.PROVIDER_PLACE;
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PredicateDictionary.SUBJECT;
+import static org.folio.ld.dictionary.PredicateDictionary.SUB_FOCUS;
 import static org.folio.ld.dictionary.PredicateDictionary.TITLE;
 import static org.folio.ld.dictionary.PropertyDictionary.CODE;
+import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.CREATED_DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_END;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE_START;
 import static org.folio.ld.dictionary.PropertyDictionary.DIMENSIONS;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION;
 import static org.folio.ld.dictionary.PropertyDictionary.EDITION_NUMBER;
+import static org.folio.ld.dictionary.PropertyDictionary.FOLIO_INVENTORY_ID;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_AREA_CODE;
 import static org.folio.ld.dictionary.PropertyDictionary.GEOGRAPHIC_COVERAGE;
 import static org.folio.ld.dictionary.PropertyDictionary.ISSUANCE;
@@ -64,6 +72,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.BOOKS;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY_SET;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONTINUING_RESOURCES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.COPYRIGHT_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
@@ -71,8 +80,10 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.IDENTIFIER;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISBN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCNAF;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.LANGUAGE_CATEGORY;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PARALLEL_TITLE;
@@ -80,6 +91,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.SUPPLEMENTARY_CONTENT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.VARIANT_TITLE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.folio.linked.data.model.entity.ResourceSource.LINKED_DATA;
@@ -104,6 +116,13 @@ import org.folio.linked.data.service.resource.hash.HashService;
 
 @UtilityClass
 public class MonographTestUtil {
+
+  public static final long JURISDICTION_CREATOR_ID = 1000000000000000001L;
+  public static final String JURISDICTION_CREATOR_LABEL = "jurisdiction creator";
+  public static final long JURISDICTION_CONTRIBUTOR_ID = 1000000000000000002L;
+  public static final String JURISDICTION_CONTRIBUTOR_LABEL = "jurisdiction contributor";
+  public static final String SAMPLE_ADMIN_METADATA_HRID = "in00123456";
+  public static final String SAMPLE_ADMIN_METADATA_UUID = "a1b2c3d4-1001-0000-0000-000000000001";
 
   public static Resource getSampleInstanceResource() {
     return getSampleInstanceResource(null, getSampleWork());
@@ -309,6 +328,707 @@ public class MonographTestUtil {
     ).setLabel(mainTitle + " " + subTitle);
   }
 
+  private static Resource createVariantTitleWithType(String mainTitle, String type) {
+    return createResource(
+      Map.of(
+        MAIN_TITLE, List.of(mainTitle),
+        VARIANT_TYPE, List.of(type)
+      ),
+      Set.of(VARIANT_TITLE),
+      emptyMap()
+    ).setLabel(mainTitle);
+  }
+
+  public static Resource getSampleInstanceWithWorkTitlesForRdfExport() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Instance: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Instance: mainTitle");
+    var instanceParallelTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Instance Parallel: mainTitle")),
+      Set.of(PARALLEL_TITLE),
+      emptyMap()
+    ).setLabel("Instance Parallel: mainTitle");
+    var instanceVariantTitle = createVariantTitleWithType("Instance Variant: mainTitle", "0");
+
+    var instancePred2Outgoing = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instancePred2Outgoing.put(TITLE, List.of(instancePrimaryTitle, instanceParallelTitle, instanceVariantTitle));
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      instancePred2Outgoing
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("4387gb6d-223f-68d8-cg4f-73defg369743")
+        .setSrsId("65f7a283-feh1-6f39-9969-2g3e58ag083d")
+    );
+    instance.setLabel("Instance: mainTitle");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Work: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Work: mainTitle");
+    var workParallelTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Work Parallel: mainTitle")),
+      Set.of(PARALLEL_TITLE),
+      emptyMap()
+    ).setLabel("Work Parallel: mainTitle");
+    var workVariantTitle = createVariantTitleWithType("Work Variant: mainTitle", "0");
+    var workPred2Outgoing = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    workPred2Outgoing.put(TITLE, List.of(workPrimaryTitle, workParallelTitle, workVariantTitle));
+    var work = createResource(
+      Map.of(LINK, List.of(UUID.randomUUID().toString())),
+      Set.of(WORK, BOOKS),
+      workPred2Outgoing
+    ).setLabel("Work: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceResourceForRdfExport() {
+    var primaryTitle = createPrimaryTitle(null);
+    var parallelTitle = createParallelTitle();
+    var variantTitlePor = createVariantTitleWithType("Variant por: mainTitle", "0");
+    var variantTitleDis = createVariantTitleWithType("Variant dis: mainTitle", "2");
+    var variantTitleCov = createVariantTitleWithType("Variant cov: mainTitle", "4");
+    var variantTitleAtp = createVariantTitleWithType("Variant atp: mainTitle", "5");
+    var variantTitleCap = createVariantTitleWithType("Variant cap: mainTitle", "6");
+    var variantTitleRun = createVariantTitleWithType("Variant run: mainTitle", "7");
+    var variantTitleSpi = createVariantTitleWithType("Variant spi: mainTitle", "8");
+
+    var pred2OutgoingResources = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(TITLE, List.of(
+      primaryTitle, parallelTitle,
+      variantTitlePor, variantTitleDis, variantTitleCov, variantTitleAtp,
+      variantTitleCap, variantTitleRun, variantTitleSpi
+    ));
+
+    var instance = createResource(
+      Map.ofEntries(
+        entry(DIMENSIONS, List.of("20 cm")),
+        entry(STATEMENT_OF_RESPONSIBILITY, List.of("statement of responsibility"))
+      ),
+      Set.of(INSTANCE),
+      pred2OutgoingResources
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("3276fa5c-112e-57c7-bf3e-62cdef258632")
+        .setSrsId("54e69172-edg0-5e28-8858-1f2d479f972c")
+    );
+    instance.setLabel(primaryTitle.getLabel());
+
+    var linkedWork = getSampleWork();
+    var edge = new ResourceEdge(instance, linkedWork, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    linkedWork.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleSerialsInstanceForRdfExport() {
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Serials RdfExport: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Serials RdfExport: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instanceTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Serials RdfExport: mainTitle");
+
+    var workTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Serials RdfExport: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Serials RdfExport: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, CONTINUING_RESOURCES),
+      Map.of(TITLE, List.of(workTitle))
+    ).setLabel("Serials RdfExport: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleRareBooksInstanceForRdfExport() {
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("RareBooks RdfExport: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("RareBooks RdfExport: mainTitle");
+
+    var bookFormatCategorySet = createResource(
+      Map.of(
+        LINK, List.of("http://id.loc.gov/vocabulary/bookformat"),
+        LABEL, List.of("Book Format")
+      ),
+      Set.of(CATEGORY_SET),
+      emptyMap()
+    ).setLabel("Book Format");
+
+    var bookFormat = createResource(
+      Map.of(
+        TERM, List.of("folio"),
+        CODE, List.of("folio"),
+        LINK, List.of("http://id.loc.gov/vocabulary/bookformat/folio")
+      ),
+      Set.of(CATEGORY),
+      Map.of(IS_DEFINED_BY, List.of(bookFormatCategorySet))
+    ).setLabel("folio");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(BOOK_FORMAT, List.of(bookFormat));
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      instanceEdges
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("RareBooks RdfExport: mainTitle");
+
+    linkNewWork(instance, "RareBooks RdfExport: mainTitle");
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkCreatorLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d")
+        .setSrsId("7a8b9c0d-1e2f-3a4b-5c6d-7e8f9a0b1c2d")
+    );
+    instance.setLabel("Creator LCCN: mainTitle");
+
+    var lcnafIdentifier = createResource(
+      Map.of(
+        NAME, List.of("n2021004098"),
+        LINK, List.of("http://id.loc.gov/authorities/n2021004098")
+      ),
+      Set.of(IDENTIFIER, ID_LCNAF),
+      Map.of(STATUS, List.of(createResource(
+        Map.of(
+          LABEL, List.of("current"),
+          LINK, List.of("http://id.loc.gov/vocabulary/mstatus/current")
+        ),
+        Set.of(ResourceTypeDictionary.STATUS),
+        emptyMap()
+      )))
+    ).setLabel("n2021004098");
+
+    var creator = createResource(
+      Map.of(NAME, List.of("n2021004098")),
+      Set.of(PERSON),
+      Map.of(MAP, List.of(lcnafIdentifier))
+    ).setLabel("n2021004098");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        CREATOR, List.of(creator)
+      ))
+    ).setLabel("Creator LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkCreatorNoLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator No LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("2b3c4d5e-6f7a-8b9c-0d1e-2f3a4b5c6d7e")
+        .setSrsId("8b9c0d1e-2f3a-4b5c-6d7e-8f9a0b1c2d3e")
+    );
+    instance.setLabel("Creator No LCCN: mainTitle");
+
+    var creator = createResource(
+      Map.of(NAME, List.of("Creator No LCCN")),
+      Set.of(PERSON),
+      emptyMap()
+    ).setLabel("Creator No LCCN");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Creator No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Creator No LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        CREATOR, List.of(creator)
+      ))
+    ).setLabel("Creator No LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkSubjectLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("3c4d5e6f-7a8b-9c0d-1e2f-3a4b5c6d7e8f")
+        .setSrsId("9c0d1e2f-3a4b-5c6d-7e8f-9a0b1c2d3e4f")
+    );
+    instance.setLabel("Subject LCCN: mainTitle");
+
+    var lcnafIdentifier = createResource(
+      Map.of(
+        NAME, List.of("n2021009876"),
+        LINK, List.of("http://id.loc.gov/authorities/n2021009876")
+      ),
+      Set.of(IDENTIFIER, ID_LCNAF),
+      Map.of(STATUS, List.of(createResource(
+        Map.of(
+          LABEL, List.of("current"),
+          LINK, List.of("http://id.loc.gov/vocabulary/mstatus/current")
+        ),
+        Set.of(ResourceTypeDictionary.STATUS),
+        emptyMap()
+      )))
+    ).setLabel("n2021009876");
+
+    var subjectPerson = createResource(
+      Map.of(LABEL, List.of("Subject Person LCCN"), NAME, List.of("Subject Person LCCN")),
+      Set.of(PERSON),
+      Map.of(MAP, List.of(lcnafIdentifier))
+    ).setLabel("Subject Person LCCN");
+
+    var subjectConcept = createResource(
+      Map.of(LABEL, List.of("Subject Person LCCN")),
+      Set.of(CONCEPT, PERSON),
+      Map.of(FOCUS, List.of(subjectPerson))
+    ).setLabel("Subject Person LCCN");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        SUBJECT, List.of(subjectConcept)
+      ))
+    ).setLabel("Subject LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkSubjectNoLccn() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject No LCCN: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("4d5e6f7a-8b9c-0d1e-2f3a-4b5c6d7e8f9a")
+        .setSrsId("0d1e2f3a-4b5c-6d7e-8f9a-0b1c2d3e4f5a")
+    );
+    instance.setLabel("Subject No LCCN: mainTitle");
+
+    var subjectPerson = createResource(
+      Map.of(LABEL, List.of("Subject No LCCN Person"), NAME, List.of("Subject No LCCN Person")),
+      Set.of(PERSON),
+      emptyMap()
+    ).setLabel("Subject No LCCN Person");
+
+    var subjectConcept = createResource(
+      Map.of(LABEL, List.of("Subject No LCCN Person")),
+      Set.of(CONCEPT, PERSON),
+      Map.of(FOCUS, List.of(subjectPerson))
+    ).setLabel("Subject No LCCN Person");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Subject No LCCN: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Subject No LCCN: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        SUBJECT, List.of(subjectConcept)
+      ))
+    ).setLabel("Subject No LCCN: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithWorkComplexSubject() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Complex Subject: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Complex Subject: mainTitle");
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      Map.of(TITLE, List.of(instancePrimaryTitle))
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("5e6f7a8b-9c0d-1e2f-3a4b-5c6d7e8f9a0b")
+        .setSrsId("1e2f3a4b-5c6d-7e8f-9a0b-1c2d3e4f5a6b")
+    );
+    instance.setLabel("Complex Subject: mainTitle");
+
+    var focusPerson = createResource(
+      Map.of(LABEL, List.of("Complex Subject Person"), NAME, List.of("Complex Subject Person")),
+      Set.of(PERSON),
+      emptyMap()
+    ).setLabel("Complex Subject Person");
+
+    var subFocusTopic = createResource(
+      Map.of(LABEL, List.of("Complex Subject Topic"), NAME, List.of("Complex Subject Topic")),
+      Set.of(TOPIC),
+      emptyMap()
+    ).setLabel("Complex Subject Topic");
+
+    var subjectConcept = createResource(
+      Map.of(LABEL, List.of("Complex Subject Person -- Complex Subject Topic")),
+      Set.of(CONCEPT),
+      new LinkedHashMap<>(Map.of(
+        FOCUS, List.of(focusPerson),
+        SUB_FOCUS, List.of(subFocusTopic)
+      ))
+    ).setLabel("Complex Subject Person -- Complex Subject Topic");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Complex Subject: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Complex Subject: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      new LinkedHashMap<>(Map.of(
+        TITLE, List.of(workPrimaryTitle),
+        SUBJECT, List.of(subjectConcept)
+      ))
+    ).setLabel("Complex Subject: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithProvisionActivities() {
+    var instancePrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Provision Activities: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Provision Activities: mainTitle");
+
+    var publication = providerEvent("publication", "al", "Albania");
+    var distribution = providerEvent("distribution", "dz", "Algeria");
+    var manufacture = providerEvent("manufacture", "as", "American Samoa");
+    var production = providerEvent("production", "af", "Afghanistan");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instancePrimaryTitle));
+    instanceEdges.put(PE_PUBLICATION, List.of(publication));
+    instanceEdges.put(PE_DISTRIBUTION, List.of(distribution));
+    instanceEdges.put(PE_MANUFACTURE, List.of(manufacture));
+    instanceEdges.put(PE_PRODUCTION, List.of(production));
+
+    var instance = createResource(
+      emptyMap(),
+      Set.of(INSTANCE),
+      instanceEdges
+    );
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId("6f7a8b9c-0d1e-2f3a-4b5c-6d7e8f9a0b1c")
+        .setSrsId("2f3a4b5c-6d7e-8f9a-0b1c-2d3e4f5a6b7c")
+    );
+    instance.setLabel("Provision Activities: mainTitle");
+
+    var workPrimaryTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Provision Activities: mainTitle")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Provision Activities: mainTitle");
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      Map.of(TITLE, List.of(workPrimaryTitle))
+    ).setLabel("Provision Activities: mainTitle");
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithLccnForRdfExport() {
+    var lccn = createResource(
+      Map.of(NAME, List.of("2010470075")),
+      Set.of(IDENTIFIER, ID_LCCN),
+      Map.of(STATUS, List.of(createMstatusResource(true)))
+    ).setLabel("2010470075");
+
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Lccn RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Lccn RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(MAP, List.of(lccn));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Lccn RdfExport");
+
+    linkNewWork(instance, "Lccn RdfExport");
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithIsbnForRdfExport(String isbn, String qualifier, boolean isCurrent) {
+    var isbnResource = createResource(
+      Map.of(NAME, List.of(isbn), QUALIFIER, List.of(qualifier)),
+      Set.of(IDENTIFIER, ID_ISBN),
+      Map.of(STATUS, List.of(createMstatusResource(isCurrent)))
+    ).setLabel(isbn);
+
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Isbn RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Isbn RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(MAP, List.of(isbnResource));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Isbn RdfExport: " + isbn);
+
+    linkNewWork(instance, "Isbn RdfExport");
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithEanForRdfExport(String ean, String qualifier) {
+    var properties = qualifier == null
+      ? Map.of(NAME, List.of(ean))
+      : Map.of(NAME, List.of(ean), QUALIFIER, List.of(qualifier));
+    var eanResource = createResource(
+      properties,
+      Set.of(IDENTIFIER, ID_IAN),
+      emptyMap()
+    ).setLabel(ean);
+
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("Ean RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("Ean RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+    instanceEdges.put(MAP, List.of(eanResource));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(UUID.randomUUID().toString())
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("Ean RdfExport: " + ean);
+
+    linkNewWork(instance, "Ean RdfExport");
+    return instance;
+  }
+
+  public static Resource getSampleInstanceWithAdminMetadataForRdfExport() {
+    var adminMetadata = createResource(
+      Map.of(
+        CONTROL_NUMBER, List.of(SAMPLE_ADMIN_METADATA_HRID),
+        CREATED_DATE, List.of("2025-11-19"),
+        FOLIO_INVENTORY_ID, List.of(SAMPLE_ADMIN_METADATA_UUID)
+      ),
+      Set.of(ANNOTATION),
+      Map.of()
+    );
+
+    var instanceTitle = createResource(
+      Map.of(MAIN_TITLE, List.of("AdminMetadata RdfExport")),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel("AdminMetadata RdfExport");
+
+    var instanceEdges = new LinkedHashMap<PredicateDictionary, List<Resource>>();
+    instanceEdges.put(TITLE, List.of(instanceTitle));
+
+    var instance = createResource(emptyMap(), Set.of(INSTANCE), instanceEdges);
+    instance.addOutgoingEdge(new ResourceEdge(instance, adminMetadata, ADMIN_METADATA));
+    instance.setFolioMetadata(
+      new FolioMetadata(instance)
+        .setSource(LINKED_DATA)
+        .setInventoryId(SAMPLE_ADMIN_METADATA_UUID)
+        .setSrsId(UUID.randomUUID().toString())
+    );
+    instance.setLabel("AdminMetadata RdfExport");
+
+    linkNewWork(instance, "AdminMetadata RdfExport");
+    return instance;
+  }
+
+  private static void linkNewWork(Resource instance, String titleStr) {
+    var workTitle = createResource(
+      Map.of(MAIN_TITLE, List.of(titleStr)),
+      Set.of(ResourceTypeDictionary.TITLE),
+      emptyMap()
+    ).setLabel(titleStr);
+
+    var work = createResource(
+      emptyMap(),
+      Set.of(WORK, BOOKS),
+      Map.of(TITLE, List.of(workTitle))
+    ).setLabel(titleStr);
+
+    var edge = new ResourceEdge(instance, work, INSTANTIATES);
+    instance.addOutgoingEdge(edge);
+    work.addIncomingEdge(edge);
+  }
+
+  private static Resource createMstatusResource(boolean isCurrent) {
+    var label = isCurrent ? "current" : "cancinv";
+    return createResource(
+      Map.of(
+        LABEL, List.of(label),
+        LINK, List.of("http://id.loc.gov/vocabulary/mstatus/" + label)
+      ),
+      Set.of(ResourceTypeDictionary.STATUS),
+      emptyMap()
+    ).setLabel(label);
+  }
+
   public static Resource getSampleWork() {
     return getSampleWork(null);
   }
@@ -398,6 +1118,10 @@ public class MonographTestUtil {
     pred2OutgoingResources.put(LANGUAGE, List.of(language));
     pred2OutgoingResources.put(ILLUSTRATIONS, List.of(createIllustrations()));
     pred2OutgoingResources.put(PredicateDictionary.SUPPLEMENTARY_CONTENT, List.of(createSupplementaryContent()));
+    pred2OutgoingResources.put(CREATOR,
+      List.of(createJurisdictionAgent(JURISDICTION_CREATOR_ID, JURISDICTION_CREATOR_LABEL)));
+    pred2OutgoingResources.put(CONTRIBUTOR,
+      List.of(createJurisdictionAgent(JURISDICTION_CONTRIBUTOR_ID, JURISDICTION_CONTRIBUTOR_LABEL)));
 
     var work = createResource(
       Map.ofEntries(
@@ -637,6 +1361,15 @@ public class MonographTestUtil {
     var lccn = (LinkedHashMap) ((LinkedHashMap) map.getFirst()).get(ID_LCCN.getUri());
     var status = (ArrayList) lccn.get(STATUS.getUri());
     ((LinkedHashMap) status.getFirst()).put(LINK.getValue(), List.of("http://id.loc.gov/vocabulary/mstatus/current"));
+  }
+
+  private static Resource createJurisdictionAgent(long id, String label) {
+    return createResource(
+      Map.of(NAME, List.of(label)),
+      Set.of(JURISDICTION),
+      emptyMap()
+    ).setLabel(label)
+      .setIdAndRefreshEdges(id);
   }
 
   public static Resource getWork(String titleStr, HashService hashService) {

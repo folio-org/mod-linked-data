@@ -1,5 +1,7 @@
 package org.folio.linked.data.e2e.mappings.work.title;
 
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
+
 import org.folio.linked.data.e2e.mappings.title.AbstractTitleIT;
 import org.folio.linked.data.model.entity.Resource;
 

@@ -1,20 +1,40 @@
 package org.folio.linked.data.e2e.resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.PropertyDictionary.ATTRIBUTION;
+import static org.folio.ld.dictionary.PropertyDictionary.AUTHORITY_LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.CONTROL_FIELD;
+import static org.folio.ld.dictionary.PropertyDictionary.EQUIVALENT;
+import static org.folio.ld.dictionary.PropertyDictionary.FIELD_LINK;
+import static org.folio.ld.dictionary.PropertyDictionary.LINKAGE;
+import static org.folio.ld.dictionary.PropertyDictionary.NAME_ALTERNATIVE;
+import static org.folio.ld.dictionary.PropertyDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.CONCEPT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.FORM;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.STATUS;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 import static org.folio.linked.data.test.TestUtil.TENANT_ID;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.cleanResourceTables;
 import static org.folio.linked.data.test.TestUtil.loadResourceAsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.StreamSupport;
 import org.folio.ld.dictionary.PredicateDictionary;
 import org.folio.ld.dictionary.PropertyDictionary;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.e2e.base.IntegrationTest;
+import org.folio.linked.data.integration.kafka.sender.inventory.InstanceCreateMessageSender;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
@@ -43,6 +63,8 @@ class MergeResourcesIT {
   private TenantScopedExecutionService tenantScopedExecutionService;
   @MockitoSpyBean
   private KafkaAdminService kafkaAdminService;
+  @MockitoSpyBean
+  private InstanceCreateMessageSender instanceCreateMessageSender;
 
   @BeforeEach
   void beforeEach() {
@@ -168,6 +190,188 @@ class MergeResourcesIT {
       .noneMatch(edge -> edge.getPredicate().getUri().equals(PredicateDictionary.REPLACED_BY.getUri()));
   }
 
+  @Test
+  void shouldMergePerson100MultiValuedSubfields() {
+    // given
+    resourceGraphService.saveMergingGraph(createPersonResource(1L, Map.of(
+      ATTRIBUTION, List.of("attribution-v1"),
+      NAME_ALTERNATIVE, List.of("name-alt-v1")
+    )));
+
+    // when
+    resourceGraphService.saveMergingGraph(createPersonResource(1L, Map.of(
+      ATTRIBUTION, List.of("attribution-v2"),
+      NAME_ALTERNATIVE, List.of("name-alt-v2")
+    )));
+
+    // then
+    var doc = resourceTestService.getResourceById("1", 1).getDoc();
+    assertDocValues(doc, ATTRIBUTION, List.of("attribution-v1", "attribution-v2"));
+    assertDocValues(doc, NAME_ALTERNATIVE, List.of("name-alt-v1", "name-alt-v2"));
+  }
+
+  @Test
+  void shouldMergeOrganization110MultiValuedSubfields() {
+    // given
+    resourceGraphService.saveMergingGraph(createOrganizationResource(1L, Map.of(
+      PLACE, List.of("place-v1"),
+      AUTHORITY_LINK, List.of("auth-link-v1"),
+      EQUIVALENT, List.of("equiv-v1"),
+      LINKAGE, List.of("linkage-v1"),
+      CONTROL_FIELD, List.of("ctrl-v1"),
+      FIELD_LINK, List.of("fl-v1")
+    )));
+
+    // when
+    resourceGraphService.saveMergingGraph(createOrganizationResource(1L, Map.of(
+      PLACE, List.of("place-v2"),
+      AUTHORITY_LINK, List.of("auth-link-v2"),
+      EQUIVALENT, List.of("equiv-v2"),
+      LINKAGE, List.of("linkage-v2"),
+      CONTROL_FIELD, List.of("ctrl-v2"),
+      FIELD_LINK, List.of("fl-v2")
+    )));
+
+    // then
+    var doc = resourceTestService.getResourceById("1", 1).getDoc();
+    assertDocValues(doc, PLACE, List.of("place-v1", "place-v2"));
+    assertDocValues(doc, AUTHORITY_LINK, List.of("auth-link-v1", "auth-link-v2"));
+    assertDocValues(doc, EQUIVALENT, List.of("equiv-v1", "equiv-v2"));
+    assertDocValues(doc, LINKAGE, List.of("linkage-v1", "linkage-v2"));
+    assertDocValues(doc, CONTROL_FIELD, List.of("ctrl-v1", "ctrl-v2"));
+    assertDocValues(doc, FIELD_LINK, List.of("fl-v1", "fl-v2"));
+  }
+
+  @Test
+  void shouldMergeMeeting111MultiValuedSubfields() {
+    // given
+    resourceGraphService.saveMergingGraph(createMeetingResource(1L, Map.of(
+      PLACE, List.of("place-v1"),
+      AUTHORITY_LINK, List.of("auth-link-v1"),
+      EQUIVALENT, List.of("equiv-v1"),
+      LINKAGE, List.of("linkage-v1"),
+      CONTROL_FIELD, List.of("ctrl-v1"),
+      FIELD_LINK, List.of("fl-v1")
+    )));
+
+    // when
+    resourceGraphService.saveMergingGraph(createMeetingResource(1L, Map.of(
+      PLACE, List.of("place-v2"),
+      AUTHORITY_LINK, List.of("auth-link-v2"),
+      EQUIVALENT, List.of("equiv-v2"),
+      LINKAGE, List.of("linkage-v2"),
+      CONTROL_FIELD, List.of("ctrl-v2"),
+      FIELD_LINK, List.of("fl-v2")
+    )));
+
+    // then
+    var doc = resourceTestService.getResourceById("1", 1).getDoc();
+    assertDocValues(doc, PLACE, List.of("place-v1", "place-v2"));
+    assertDocValues(doc, AUTHORITY_LINK, List.of("auth-link-v1", "auth-link-v2"));
+    assertDocValues(doc, EQUIVALENT, List.of("equiv-v1", "equiv-v2"));
+    assertDocValues(doc, LINKAGE, List.of("linkage-v1", "linkage-v2"));
+    assertDocValues(doc, CONTROL_FIELD, List.of("ctrl-v1", "ctrl-v2"));
+    assertDocValues(doc, FIELD_LINK, List.of("fl-v1", "fl-v2"));
+  }
+
+  @Test
+  void shouldReuseExistingAgentWhenHubHasCreatorAndContributorConnections() {
+    // given: a Person agent already persisted in the graph with a deterministic hash
+    long agentHash = 700L;
+    resourceGraphService.saveMergingGraph(createPersonResource(agentHash, Map.of(
+      PropertyDictionary.NAME, List.of("Hub Agent")
+    )));
+    assertThat(resourceTestService.countResources()).isEqualTo(1L);
+
+    // when: a Hub referencing the same Agent via CREATOR and CONTRIBUTOR is saved
+    long hubHash = 800L;
+    var agentAsCreator = createPersonResource(agentHash, Map.of(
+      PropertyDictionary.NAME, List.of("Hub Agent")
+    ));
+    var agentAsContributor = createPersonResource(agentHash, Map.of(
+      PropertyDictionary.NAME, List.of("Hub Agent")
+    ));
+    var pred2OutgoingResources = new java.util.LinkedHashMap<PredicateDictionary, List<Resource>>();
+    pred2OutgoingResources.put(PredicateDictionary.CREATOR, List.of(agentAsCreator));
+    pred2OutgoingResources.put(PredicateDictionary.CONTRIBUTOR, List.of(agentAsContributor));
+    resourceGraphService.saveMergingGraph(createHubResource(hubHash, pred2OutgoingResources));
+
+    // then: Agent is reused — total 2 resources (Hub + Agent, not 3)
+    assertThat(resourceTestService.countResources()).isEqualTo(2L);
+    var savedHub = resourceTestService.getResourceById(String.valueOf(hubHash), 2);
+    assertThat(savedHub.getOutgoingEdges()).hasSize(2);
+    assertThat(savedHub.getOutgoingEdges())
+      .anyMatch(e -> e.getPredicate().getUri().equals(PredicateDictionary.CREATOR.getUri())
+        && e.getId().getTargetHash() == agentHash);
+    assertThat(savedHub.getOutgoingEdges())
+      .anyMatch(e -> e.getPredicate().getUri().equals(PredicateDictionary.CONTRIBUTOR.getUri())
+        && e.getId().getTargetHash() == agentHash);
+  }
+
+  @Test
+  void shouldReuseSharedConceptNodesFor610FieldsWithCommonSubfields() {
+    long orgHash = 100L;
+    long formHash = 200L;
+    long topic1Hash = 301L;
+    long topic2Hash = 302L;
+    long concept1Hash = 401L;
+    long concept2Hash = 402L;
+
+    // given: first 610 field
+    resourceGraphService.saveMergingGraph(
+      createOrganizationConceptResource(concept1Hash,
+        createConceptComponent(orgHash, ORGANIZATION, "Org Name"),
+        List.of(
+          createConceptComponent(formHash, FORM, "Form Subdiv"),
+          createConceptComponent(topic1Hash, TOPIC, "Topic 1")
+        )
+      )
+    );
+
+    // when: second 610 field with same $a and $v, different $x
+    resourceGraphService.saveMergingGraph(
+      createOrganizationConceptResource(concept2Hash,
+        createConceptComponent(orgHash, ORGANIZATION, "Org Name"),
+        List.of(
+          createConceptComponent(formHash, FORM, "Form Subdiv"),
+          createConceptComponent(topic2Hash, TOPIC, "Topic 2")
+        )
+      )
+    );
+
+    // then: 6 unique resources — Organization and Form nodes are not duplicated
+    assertThat(resourceTestService.countResources()).isEqualTo(6L);
+
+    var savedConcept1 = resourceTestService.getResourceById(String.valueOf(concept1Hash), 2);
+    var savedConcept2 = resourceTestService.getResourceById(String.valueOf(concept2Hash), 2);
+
+    // both concepts reference the same Organization focus node
+    assertThat(getFocusTargetId(savedConcept1)).isEqualTo(orgHash);
+    assertThat(getFocusTargetId(savedConcept2)).isEqualTo(orgHash);
+
+    // both concepts share the same Form sub-focus node
+    assertThat(getSubFocusTargetIds(savedConcept1)).contains(formHash);
+    assertThat(getSubFocusTargetIds(savedConcept2)).contains(formHash);
+  }
+
+  @Test
+  void shouldNotSendCreateInventoryMessage_forLightResourceInstance() {
+    // given
+    var lightInstance = new Resource()
+      .setIdAndRefreshEdges(101L)
+      .addTypes(ResourceTypeDictionary.LIGHT_RESOURCE, ResourceTypeDictionary.INSTANCE);
+    var lightWork = new Resource()
+      .setIdAndRefreshEdges(201L)
+      .addTypes(ResourceTypeDictionary.LIGHT_RESOURCE, ResourceTypeDictionary.WORK);
+    lightWork.addOutgoingEdge(new ResourceEdge(lightWork, lightInstance, PredicateDictionary.INSTANTIATES));
+
+    // when
+    resourceGraphService.saveMergingGraphInNewTransaction(lightWork);
+
+    // then
+    verify(instanceCreateMessageSender, never()).accept(any());
+  }
+
   private void assertResourceConnectedToAnother(Long mainId, Long anotherId) {
     var mainResource = resourceTestService.getResourceById(mainId.toString(), 4);
     assertThat(mainResource.getOutgoingEdges()).hasSize(1);
@@ -241,6 +445,73 @@ class MergeResourcesIT {
       Set.of(ResourceTypeDictionary.IDENTIFIER),
       pred2OutgoingResources
     ).setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createPersonResource(Long hash, Map<PropertyDictionary, List<String>> properties) {
+    return MonographTestUtil.createResource(properties, Set.of(PERSON), Map.of())
+      .setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createOrganizationResource(Long hash, Map<PropertyDictionary, List<String>> properties) {
+    return MonographTestUtil.createResource(properties, Set.of(ORGANIZATION), Map.of())
+      .setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createMeetingResource(Long hash, Map<PropertyDictionary, List<String>> properties) {
+    return MonographTestUtil.createResource(properties, Set.of(MEETING), Map.of())
+      .setIdAndRefreshEdges(hash);
+  }
+
+  private void assertDocValues(tools.jackson.databind.JsonNode doc, PropertyDictionary property,
+                               List<String> expectedValues) {
+    var node = doc.get(property.getValue());
+    assertThat(node).isNotNull();
+    var actual = StreamSupport.stream(node.spliterator(), false)
+      .map(JsonNode::asString)
+      .toList();
+    assertThat(actual).containsExactlyInAnyOrderElementsOf(expectedValues);
+  }
+
+  private Resource createHubResource(Long hash, Map<PredicateDictionary, List<Resource>> pred2OutgoingResources) {
+    return MonographTestUtil.createResource(
+      Map.of(PropertyDictionary.NAME, List.of("Sample Hub")),
+      Set.of(HUB),
+      pred2OutgoingResources
+    ).setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createConceptComponent(long hash, ResourceTypeDictionary type, String name) {
+    return MonographTestUtil.createResource(
+      Map.of(PropertyDictionary.NAME, List.of(name)),
+      Set.of(type),
+      Map.of()
+    ).setIdAndRefreshEdges(hash);
+  }
+
+  private Resource createOrganizationConceptResource(long hash, Resource focus, List<Resource> subFoci) {
+    return MonographTestUtil.createResource(
+      Map.of(PropertyDictionary.NAME, List.of("organization concept")),
+      Set.of(CONCEPT, ORGANIZATION),
+      new java.util.LinkedHashMap<>(Map.of(
+        PredicateDictionary.FOCUS, List.of(focus),
+        PredicateDictionary.SUB_FOCUS, subFoci
+      ))
+    ).setIdAndRefreshEdges(hash);
+  }
+
+  private long getFocusTargetId(Resource concept) {
+    return concept.getOutgoingEdges().stream()
+      .filter(e -> e.getPredicate().getUri().equals(PredicateDictionary.FOCUS.getUri()))
+      .findFirst()
+      .orElseThrow()
+      .getId().getTargetHash();
+  }
+
+  private List<Long> getSubFocusTargetIds(Resource concept) {
+    return concept.getOutgoingEdges().stream()
+      .filter(e -> e.getPredicate().getUri().equals(PredicateDictionary.SUB_FOCUS.getUri()))
+      .map(e -> e.getId().getTargetHash())
+      .toList();
   }
 
   private void assertEdge(ResourceEdge edge, long sourceHash, long targetHash, Resource source) {

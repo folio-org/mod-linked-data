@@ -14,7 +14,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.folio.linked.data.domain.dto.Note;
+import org.folio.linked.data.mapper.dto.resource.common.instance.InstanceMapperUnit;
 import org.folio.spring.testing.type.UnitTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -23,6 +25,12 @@ import tools.jackson.databind.JsonNode;
 @UnitTest
 class NoteMapperTest {
   private final NoteMapper noteMapper = new NoteMapper();
+
+  @Test
+  void dimensions_property_shouldBeLiteralNotNote_andHaveLiteNamespaceUri() {
+    assertThat(InstanceMapperUnit.SUPPORTED_NOTES).isNotEmpty().doesNotContain(DIMENSIONS);
+    assertThat(DIMENSIONS.getValue()).isEqualTo("http://bibfra.me/vocab/lite/dimensions");
+  }
 
   private static Stream<Arguments> provideDocAndExpectedNotes() {
     return Stream.of(

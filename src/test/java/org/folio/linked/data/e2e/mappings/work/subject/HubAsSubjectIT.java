@@ -2,6 +2,9 @@ package org.folio.linked.data.e2e.mappings.work.subject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.linked.data.test.TestUtil.FOLIO_OKAPI_URL;
+import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
+import static org.folio.linked.data.test.TestUtil.getProperty;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 

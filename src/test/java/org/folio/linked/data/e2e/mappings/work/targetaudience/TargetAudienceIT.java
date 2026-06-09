@@ -1,11 +1,20 @@
 package org.folio.linked.data.e2e.mappings.work.targetaudience;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.RESOURCE_URL;
+import static org.folio.linked.data.test.TestUtil.defaultHeaders;
+import static org.folio.linked.data.test.TestUtil.getFirstOutgoingResource;
+import static org.folio.linked.data.test.TestUtil.getProperty;
+import static org.folio.linked.data.test.TestUtil.validateResourceType;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import lombok.SneakyThrows;
 import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultActions;
 
 class TargetAudienceIT extends PostResourceIT {
@@ -66,5 +75,35 @@ class TargetAudienceIT extends PostResourceIT {
       .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/library/code'][0]").value("b"))
       .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/lite/link'][0]")
         .value("http://id.loc.gov/vocabulary/maudience/pri"));
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldNotCreateTargetAudience_whenLinkIsInvalid() {
+    // 'xyz' is not a valid maudience suffix — no code can be derived from the link
+    var payload = """
+      {
+        "resource":{
+          "http://bibfra.me/vocab/lite/Work":{
+            "profileId": 2,
+            "http://bibfra.me/vocab/library/title":[{
+              "http://bibfra.me/vocab/library/Title":{
+                "http://bibfra.me/vocab/library/mainTitle":[ "TEST" ]
+              }
+            }],
+            "http://bibfra.me/vocab/library/targetAudience":[{
+              "http://bibfra.me/vocab/lite/link":[ "http://id.loc.gov/vocabulary/maudience/xyz" ]
+            }]
+          }
+        }
+      }""";
+
+    var audiencePath = "$.resource['http://bibfra.me/vocab/lite/Work']['http://bibfra.me/vocab/library/targetAudience']";
+    mockMvc.perform(post(RESOURCE_URL)
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(env))
+        .content(payload))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath(audiencePath + "[0]['http://bibfra.me/vocab/library/code']").doesNotExist());
   }
 }

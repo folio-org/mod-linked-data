@@ -2,6 +2,7 @@ package org.folio.linked.data.e2e.resource;
 
 import static org.folio.linked.data.e2e.resource.ResourceControllerITBase.RESOURCE_URL;
 import static org.folio.linked.data.test.MonographTestUtil.getSampleInstanceResource;
+import static org.folio.linked.data.test.MonographTestUtil.getWork;
 import static org.folio.linked.data.test.TestUtil.defaultHeaders;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
@@ -50,5 +51,22 @@ class ResourceControllerMarcPreviewIT extends ITBase {
       .andExpect(jsonPath("recordType", equalTo("MARC_BIB")))
       .andExpect(jsonPath("parsedRecord.content", notNullValue()))
       .andExpect(jsonPath("parsedRecord.content.fields[*]['630'].subfields[0].a", hasItem("Unmapped field")));
+  }
+
+  @Test
+  void shouldReturnNotFound_whenResourceDoesNotExist() throws Exception {
+    mockMvc.perform(get(RESOURCE_URL + "/" + Long.MAX_VALUE + "/marc")
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(env)))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturnBadRequest_whenResourceIsNotInstance() throws Exception {
+    var work = resourceTestService.saveGraph(getWork(getClass().getSimpleName(), hashService));
+    mockMvc.perform(get(RESOURCE_URL + "/" + work.getId() + "/marc")
+        .contentType(APPLICATION_JSON)
+        .headers(defaultHeaders(env)))
+      .andExpect(status().isBadRequest());
   }
 }

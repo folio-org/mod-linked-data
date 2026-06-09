@@ -190,6 +190,16 @@
             "code"
           ]
         }
+      ],
+      "_creatorReference": [
+        {
+          "id": "1000000000000000001"
+        }
+      ],
+      "_contributorReference": [
+        {
+          "id": "1000000000000000002"
+        }
       ]
     }
   }

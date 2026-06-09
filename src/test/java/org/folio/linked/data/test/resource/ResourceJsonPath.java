@@ -383,6 +383,30 @@ public class ResourceJsonPath {
     return join(".", workBase, dynamicArrayPath(GENRE_REF), path(IS_PREFERRED_PROPERTY));
   }
 
+  public static String toWorkCreatorReferenceId(String workBase) {
+    return join(".", workBase, arrayPath("_creatorReference"), path("id"));
+  }
+
+  public static String toWorkCreatorReferenceLabel(String workBase) {
+    return join(".", workBase, arrayPath("_creatorReference"), path("label"));
+  }
+
+  public static String toWorkCreatorReferenceType(String workBase) {
+    return join(".", workBase, arrayPath("_creatorReference"), path("type"));
+  }
+
+  public static String toWorkContributorReferenceId(String workBase) {
+    return join(".", workBase, arrayPath("_contributorReference"), path("id"));
+  }
+
+  public static String toWorkContributorReferenceLabel(String workBase) {
+    return join(".", workBase, arrayPath("_contributorReference"), path("label"));
+  }
+
+  public static String toWorkContributorReferenceType(String workBase) {
+    return join(".", workBase, arrayPath("_contributorReference"), path("type"));
+  }
+
   public static String toWorkDateStart(String workBase) {
     return join(".", workBase, arrayPath(DATE_START.getValue()));
   }

@@ -64,6 +64,67 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
 
 
   @Test
+  void authorityCreate_shouldSaveAsActiveAuthorityAndBeReturnedForLinkedWork() throws Exception {
+    // given
+    final var authority = createAuthority();
+
+    // then — authority is saved as active
+    assertThat(authority.isActive()).isTrue();
+
+    // and — GET /resource/{workId} returns the authority
+    var work = createWorkAndLinkToAuthority(authority);
+    var requestBuilder = get(RESOURCE_URL + "/" + work.getId())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+    var response = mockMvc.perform(requestBuilder)
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response)
+      .contains(authority.getId().toString())
+      .contains(authority.getLabel());
+  }
+
+  @Test
+  void authorityUpdate_withSameFingerprint_shouldRetainSingleAuthorityVersionAndShowItForWork() throws Exception {
+    // given
+    var authority = createAuthority();
+    var work = createWorkAndLinkToAuthority(authority);
+    var sameContentUpdateEvent = getSrsDomainEventProducerRecord(randomUUID().toString(), getAuthorityJson(),
+      SOURCE_RECORD_UPDATED, MARC_AUTHORITY);
+
+    // when
+    eventKafkaTemplate.send(sameContentUpdateEvent);
+    awaitAndAssert(() -> verify(resourceMarcService, times(2))
+      .saveMarcAuthority(any(org.folio.ld.dictionary.model.Resource.class)));
+
+    // then
+    assertWorkEdgesStillPointToAuthorityInTheDb(work, authority);
+    var authoritiesFromDb = tenantScopedExecutionService.execute(
+      TENANT_ID,
+      () -> resourceTestRepository.findAllByTypeWithEdgesLoaded(Set.of(CONCEPT.getUri(), PERSON.getUri()), 2,
+          Pageable.ofSize(10))
+        .stream()
+        .sorted(comparing(Resource::getLabel))
+        .toList()
+    );
+    assertThat(authoritiesFromDb).hasSize(1);
+    assertAuthority(authoritiesFromDb.getFirst(),
+      "bValue, aValue, cValue, qValue, dValue -- xValue -- zValue -- yValue -- vValue", true, null);
+
+    var requestBuilder = get(RESOURCE_URL + "/" + work.getId())
+      .contentType(APPLICATION_JSON)
+      .headers(defaultHeaders(env));
+    var response = mockMvc.perform(requestBuilder)
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+    assertThat(response)
+      .contains(authoritiesFromDb.getFirst().getId().toString())
+      .contains(authoritiesFromDb.getFirst().getLabel());
+  }
+
+  @Test
   void authorityUpdate_withNewFingerprint_shouldLinkItToPreviousAndReturnAsWorkActiveAuthority() throws Exception {
     // given
     var authority = createAuthority();
@@ -79,7 +140,7 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
 
     // then
     var authoritiesFromDb = readAndAssertAuthoritiesInTheDb();
-    assertWorkIsStillLinkedToObsoleteAuthorityInTheDb(work, authoritiesFromDb.getFirst());
+    assertWorkEdgesStillPointToAuthorityInTheDb(work, authoritiesFromDb.getFirst());
     assertGetWorkWithActiveAuthority(work.getId(), authoritiesFromDb);
   }
 
@@ -100,14 +161,14 @@ class AuthorityUpdateAndReadWorkIT extends ITBase {
       .doesNotContain(authorities.getFirst().getLabel());
   }
 
-  private void assertWorkIsStillLinkedToObsoleteAuthorityInTheDb(Resource work, Resource obsoleteAuthority) {
+  private void assertWorkEdgesStillPointToAuthorityInTheDb(Resource work, Resource authority) {
     var workFromDb = tenantScopedExecutionService.execute(
       TENANT_ID,
       () -> resourceTestRepository.findByIdWithEdgesLoaded(work.getId()).orElseThrow()
     );
     assertThat(workFromDb.getOutgoingEdges()).hasSize(3);
-    assertThat(workFromDb.getOutgoingEdges()).contains(new ResourceEdge(workFromDb, obsoleteAuthority, AUTHOR));
-    assertThat(workFromDb.getOutgoingEdges()).contains(new ResourceEdge(workFromDb, obsoleteAuthority, CREATOR));
+    assertThat(workFromDb.getOutgoingEdges()).contains(new ResourceEdge(workFromDb, authority, AUTHOR));
+    assertThat(workFromDb.getOutgoingEdges()).contains(new ResourceEdge(workFromDb, authority, CREATOR));
   }
 
   private List<Resource> readAndAssertAuthoritiesInTheDb() {
