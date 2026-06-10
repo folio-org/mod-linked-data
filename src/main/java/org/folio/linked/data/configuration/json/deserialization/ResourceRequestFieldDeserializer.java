@@ -2,6 +2,7 @@ package org.folio.linked.data.configuration.json.deserialization;
 
 import java.util.Map;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.AuthorityField;
 import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
@@ -16,7 +17,8 @@ public class ResourceRequestFieldDeserializer extends ValueDeserializer<Resource
   private static final Map<String, Class<? extends ResourceRequestField>> IDENDTITY_MAP = Map.of(
     ResourceTypeDictionary.INSTANCE.getUri(), InstanceField.class,
     ResourceTypeDictionary.WORK.getUri(), WorkField.class,
-    ResourceTypeDictionary.HUB.getUri(), HubField.class
+    ResourceTypeDictionary.HUB.getUri(), HubField.class,
+    "_authority", AuthorityField.class
   );
   private final DtoDeserializer<ResourceRequestField> dtoDeserializer;
 

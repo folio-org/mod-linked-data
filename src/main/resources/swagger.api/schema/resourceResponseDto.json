@@ -40,6 +40,17 @@
               "description": "Hub response DTO."
             }
           }
+        },
+        {
+          "title": "AuthorityResponseField",
+          "properties": {
+            "Authority": {
+              "type": "object",
+              "$ref": "resource/response/AuthorityResponse.json",
+              "x-json-property": "_authority",
+              "description": "Authority response DTO"
+            }
+          }
         }
       ]
     }
