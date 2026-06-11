@@ -16,24 +16,24 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AuthorityProfileSelectionStrategy implements ProfileSelectionStrategy {
-  private static final int AUTHORITY_FAMILY_PROFILE_ID = 8;
-  private static final int AUTHORITY_FORM_PROFILE_ID = 9;
-  private static final int AUTHORITY_JURISDICTION_PROFILE_ID = 10;
-  private static final int AUTHORITY_MEETING_PROFILE_ID = 11;
-  private static final int AUTHORITY_ORGANIZATION_PROFILE_ID = 12;
-  private static final int AUTHORITY_PERSON_PROFILE_ID = 13;
-  private static final int AUTHORITY_PLACE_PROFILE_ID = 14;
-  private static final int AUTHORITY_TOPIC_PROFILE_ID = 15;
+  private static final int FAMILY_PROFILE_ID = 8;
+  private static final int FORM_PROFILE_ID = 9;
+  private static final int JURISDICTION_PROFILE_ID = 10;
+  private static final int MEETING_PROFILE_ID = 11;
+  private static final int ORGANIZATION_PROFILE_ID = 12;
+  private static final int PERSON_PROFILE_ID = 13;
+  private static final int PLACE_PROFILE_ID = 14;
+  private static final int TOPIC_PROFILE_ID = 15;
 
   private static final Map<Integer, ResourceTypeDictionary> TYPE_BY_PROFILE_ID = Map.of(
-    AUTHORITY_FAMILY_PROFILE_ID, FAMILY,
-    AUTHORITY_FORM_PROFILE_ID, FORM,
-    AUTHORITY_JURISDICTION_PROFILE_ID, JURISDICTION,
-    AUTHORITY_MEETING_PROFILE_ID, MEETING,
-    AUTHORITY_ORGANIZATION_PROFILE_ID, ORGANIZATION,
-    AUTHORITY_PERSON_PROFILE_ID, PERSON,
-    AUTHORITY_PLACE_PROFILE_ID, PLACE,
-    AUTHORITY_TOPIC_PROFILE_ID, TOPIC
+    FAMILY_PROFILE_ID, FAMILY,
+    FORM_PROFILE_ID, FORM,
+    JURISDICTION_PROFILE_ID, JURISDICTION,
+    MEETING_PROFILE_ID, MEETING,
+    ORGANIZATION_PROFILE_ID, ORGANIZATION,
+    PERSON_PROFILE_ID, PERSON,
+    PLACE_PROFILE_ID, PLACE,
+    TOPIC_PROFILE_ID, TOPIC
   );
 
   @Override
