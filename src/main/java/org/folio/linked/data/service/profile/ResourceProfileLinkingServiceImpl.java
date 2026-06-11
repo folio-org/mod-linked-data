@@ -5,6 +5,7 @@ import static org.folio.linked.data.util.ResourceUtils.getTypeUris;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
@@ -37,6 +38,17 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
     return resourceProfileRepository.findProfileIdByResourceHash(resource.getId())
       .map(ResourceProfileRepository.ProfileIdProjection::getProfileId)
       .orElseGet(() -> selectAppropriateProfile(resource));
+  }
+
+  @Override
+  public ResourceTypeDictionary resolveResourceType(Integer profileId) {
+    return profileSelectionStrategies.stream()
+      .filter(strategy -> strategy.supportsProfileId(profileId))
+      .map(strategy -> strategy.resourceType(profileId))
+      .findFirst()
+      .orElseThrow(
+        () -> exceptionBuilder.notSupportedException(String.valueOf(profileId), "Resource Type Resolution")
+      );
   }
 
   private Integer selectAppropriateProfile(Resource resource) {
