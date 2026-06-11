@@ -399,7 +399,27 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-  /linked-data/profile/settings/{profileId}:
+  /linked-data/profile/{profileId}/settings:
+    get:
+      operationId: getAllProfileSettings
+      tags:
+        - profile
+      description: Get the workspace profile settings metadata list for a profile for the current user
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      responses:
+        '200':
+          description: Workspace profile settings metadata list for the current user
+          content:
+            application/json:
+              schema:
+                $ref: "schema/profile/customProfileSettingsMetadataArray.json"
+        '404':
+          description: No profile found with a given profileId
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+  /linked-data/profile/{profileId}/settings/{profileSettingsId}:
     get:
       operationId: getProfileSettings
       tags:
@@ -407,6 +427,7 @@ paths:
       description: Get the workspace profile settings for a profile for the current user
       parameters:
         - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/profileSettingsId'
       responses:
         '200':
           description: Workspace profile settings for the current user
@@ -426,6 +447,7 @@ paths:
       description: Create or update the workspace profile settings for a profile for the current user
       parameters:
         - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/profileSettingsId'
       requestBody:
         content:
           application/json:
@@ -636,6 +658,14 @@ components:
       in: path
       required: true
       description: ID of the profile
+      schema:
+        type: integer
+        format: int16
+    profileSettingsId:
+      name: profileSettingsId
+      in: path
+      required: true
+      description: ID of the profile settings
       schema:
         type: integer
         format: int16
