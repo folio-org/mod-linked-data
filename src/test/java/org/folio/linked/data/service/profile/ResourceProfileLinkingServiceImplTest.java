@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -94,6 +95,16 @@ class ResourceProfileLinkingServiceImplTest {
     @Override
     public Integer selectProfile(Resource resource) {
       return TEST_PROFILE_ID;
+    }
+
+    @Override
+    public boolean supportsProfileId(Integer profileId) {
+      return false;
+    }
+
+    @Override
+    public ResourceTypeDictionary resourceType(Integer profileId) {
+      return null;
     }
   }
 }

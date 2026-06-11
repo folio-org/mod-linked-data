@@ -155,6 +155,7 @@ public class ResourceServiceImpl implements ResourceService {
       case InstanceField instance -> instance.getInstance().getProfileId();
       case WorkField work -> work.getWork().getProfileId();
       case HubField hub -> hub.getHub().getProfileId();
+      case AuthorityField authority -> authority.getAuthority().getProfileId();
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };

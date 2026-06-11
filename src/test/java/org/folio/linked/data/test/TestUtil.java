@@ -83,6 +83,7 @@ public class TestUtil {
   public static final String FOLIO_OKAPI_URL = "folio.okapi-url";
   public static final String RESOURCE_URL = "/linked-data/resource";
   public static final int RESOURCE_FETCH_DEPTH = 4;
+  public static final String AUTHORITY_PATH = "$.resource['_authority']";
   private static final EasyRandomParameters PARAMETERS = new EasyRandomParameters();
   private static final EasyRandom GENERATOR = new EasyRandom(PARAMETERS);
 
@@ -246,12 +247,13 @@ public class TestUtil {
     return Stream.of(
         "http://bibfra.me/vocab/lite/Instance",
         "http://bibfra.me/vocab/lite/Work",
-        "http://bibfra.me/vocab/lite/Hub"
+        "http://bibfra.me/vocab/lite/Hub",
+        "_authority"
       )
       .filter(resourceNode::has)
       .findFirst()
       .map(key -> resourceNode.path(key).path("id").asString())
-      .orElseThrow(() -> new RuntimeException("No Instance, Work, or Hub node found in response"));
+      .orElseThrow(() -> new RuntimeException("No Instance, Work, Hub, or Authority node found in response"));
   }
 
   public static String getProperty(Resource resource, String property) {
