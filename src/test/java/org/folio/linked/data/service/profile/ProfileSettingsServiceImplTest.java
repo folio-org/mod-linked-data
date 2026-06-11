@@ -39,7 +39,24 @@ class ProfileSettingsServiceImplTest {
   private FolioExecutionContext executionContext;
 
   @Test
-  void getProfileSettings_shouldThrowNotFound_ifNoSuchProfile() {
+  void getAllProfileSettings_shouldReturnEmptyList_ifNoSettings() {
+    // given
+    var userId = UUID.randomUUID();
+    doReturn(userId).when(executionContext).getUserId();
+    var id = 1;
+    var profile = new Profile();
+    profile.setId(id);
+    when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+
+    // when
+    var settings = profileSettingsService.getAllProfileSettings(id);
+
+    // then
+    assertThat(settings).isEmpty();
+  }
+
+  @Test
+  void getAllProfileSettings_shouldThrowNotFound_ifNoSuchProfile() {
     // given
     var userId = UUID.randomUUID();
     doReturn(userId).when(executionContext).getUserId();
@@ -50,7 +67,27 @@ class ProfileSettingsServiceImplTest {
 
     // when
     var thrown = assertThrows(RequestProcessingException.class,
-      () -> profileSettingsService.getProfileSettings(id));
+      () -> profileSettingsService.getAllProfileSettings(id));
+
+    // then
+    assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
+    assertThat(thrown.getMessage()).isEmpty();
+  }
+
+  @Test
+  void getProfileSettings_shouldThrowNotFound_ifNoSuchProfile() {
+    // given
+    var userId = UUID.randomUUID();
+    doReturn(userId).when(executionContext).getUserId();
+    var id = 1;
+    var settingsId = 1;
+    when(profileRepository.findById(id)).thenReturn(Optional.empty());
+    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
+      .thenReturn(emptyRequestProcessingException());
+
+    // when
+    var thrown = assertThrows(RequestProcessingException.class,
+      () -> profileSettingsService.getProfileSettings(id, settingsId));
 
     // then
     assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
@@ -66,9 +103,10 @@ class ProfileSettingsServiceImplTest {
     var profile = new Profile();
     profile.setId(id);
     when(profileRepository.findById(id)).thenReturn(Optional.of(profile));
+    var profileSettingsId = 2;
 
     // when
-    var settings = profileSettingsService.getProfileSettings(id);
+    var settings = profileSettingsService.getProfileSettings(id, profileSettingsId);
 
     // then
     assertThat(settings.getActive()).isFalse();
@@ -81,14 +119,16 @@ class ProfileSettingsServiceImplTest {
     var userId = UUID.randomUUID();
     doReturn(userId).when(executionContext).getUserId();
     var id = 1;
+    var name = "name";
     when(profileRepository.findById(id)).thenReturn(Optional.empty());
     when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
       .thenReturn(emptyRequestProcessingException());
-    var settings = new CustomProfileSettingsRequestDto(false, null);
+    var profileSettingsId = 5;
+    var settings = new CustomProfileSettingsRequestDto(name, false, null);
 
     // when
     var thrown = assertThrows(RequestProcessingException.class,
-      () -> profileSettingsService.setProfileSettings(id, settings));
+      () -> profileSettingsService.setProfileSettings(id, profileSettingsId, settings));
 
     // then
     assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
