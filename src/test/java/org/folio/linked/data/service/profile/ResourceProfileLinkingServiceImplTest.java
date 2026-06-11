@@ -2,6 +2,10 @@ package org.folio.linked.data.service.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
+import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -9,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.exception.RequestProcessingException;
+import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -28,6 +34,8 @@ class ResourceProfileLinkingServiceImplTest {
 
   @Mock
   private ResourceProfileRepository resourceProfileRepository;
+  @Mock
+  private RequestProcessingExceptionBuilder exceptionBuilder;
 
   private ResourceProfileLinkingServiceImpl profileLinkingService;
 
@@ -83,6 +91,54 @@ class ResourceProfileLinkingServiceImplTest {
     assertThat(result).isEqualTo(TestStrategy.TEST_PROFILE_ID);
   }
 
+
+  @Test
+  void shouldResolveResourceType_whenStrategySupportsProfileId() {
+    // given
+    var profileId = 13;
+    var strategy = mock(ProfileSelectionStrategy.class);
+    when(strategy.supportsProfileId(profileId)).thenReturn(true);
+    when(strategy.resourceType(profileId)).thenReturn(PERSON);
+    var service = new ResourceProfileLinkingServiceImpl(resourceProfileRepository, null, List.of(strategy));
+
+    // when
+    var result = service.resolveResourceType(profileId);
+
+    // then
+    assertThat(result).isEqualTo(PERSON);
+  }
+
+  @Test
+  void shouldResolveResourceType_returnsFirstMatchingStrategyResult() {
+    // given
+    var profileId = 13;
+    var notMatching = mock(ProfileSelectionStrategy.class);
+    when(notMatching.supportsProfileId(profileId)).thenReturn(false);
+    var matching = mock(ProfileSelectionStrategy.class);
+    when(matching.supportsProfileId(profileId)).thenReturn(true);
+    when(matching.resourceType(profileId)).thenReturn(PERSON);
+    var service = new ResourceProfileLinkingServiceImpl(
+      resourceProfileRepository, null, List.of(notMatching, matching));
+
+    // when
+    var result = service.resolveResourceType(profileId);
+
+    // then
+    assertThat(result).isEqualTo(PERSON);
+  }
+
+  @Test
+  void shouldThrowException_whenNoStrategySupportsProfileId() {
+    // given
+    var profileId = TestStrategy.TEST_PROFILE_ID;
+    when(exceptionBuilder.notSupportedException(String.valueOf(profileId), "Resource Type Resolution"))
+      .thenReturn(emptyRequestProcessingException());
+    var service = new ResourceProfileLinkingServiceImpl(
+      resourceProfileRepository, exceptionBuilder, List.of(new TestStrategy()));
+
+    // when / then
+    assertThrows(RequestProcessingException.class, () -> service.resolveResourceType(profileId));
+  }
 
   private static final class TestStrategy implements ProfileSelectionStrategy {
     static final Integer TEST_PROFILE_ID = 99;
