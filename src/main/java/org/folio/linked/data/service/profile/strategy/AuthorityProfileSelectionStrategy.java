@@ -7,6 +7,7 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.MEETING;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PLACE;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.TEMPORAL;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.TOPIC;
 
 import java.util.Map;
@@ -23,7 +24,8 @@ public class AuthorityProfileSelectionStrategy implements ProfileSelectionStrate
   private static final int ORGANIZATION_PROFILE_ID = 12;
   private static final int PERSON_PROFILE_ID = 13;
   private static final int PLACE_PROFILE_ID = 14;
-  private static final int TOPIC_PROFILE_ID = 15;
+  private static final int TEMPORAL_PROFILE_ID = 15;
+  private static final int TOPIC_PROFILE_ID = 16;
 
   private static final Map<Integer, ResourceTypeDictionary> TYPE_BY_PROFILE_ID = Map.of(
     FAMILY_PROFILE_ID, FAMILY,
@@ -33,6 +35,7 @@ public class AuthorityProfileSelectionStrategy implements ProfileSelectionStrate
     ORGANIZATION_PROFILE_ID, ORGANIZATION,
     PERSON_PROFILE_ID, PERSON,
     PLACE_PROFILE_ID, PLACE,
+    TEMPORAL_PROFILE_ID, TEMPORAL,
     TOPIC_PROFILE_ID, TOPIC
   );
 
