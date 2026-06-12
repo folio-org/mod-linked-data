@@ -16,6 +16,7 @@ import static org.folio.linked.data.util.ResourceUtils.putProperty;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.AuthorityField;
 import org.folio.linked.data.domain.dto.AuthorityRequest;
 import org.folio.linked.data.domain.dto.AuthorityResponse;
@@ -51,14 +52,29 @@ public class AuthorityMapperUnit extends TopResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var authorityDto = ((AuthorityField) dto).getAuthority();
-    var authority = new Resource().addTypes(resourceProfileService.resolveResourceType(authorityDto.getProfileId()));
-    authority.setDoc(getDoc(authorityDto));
+    var type = resourceProfileService.resolveResourceType(authorityDto.getProfileId());
+    var authority = new Resource().addTypes(type);
+    authority.setDoc(getDocByType(type, authorityDto));
     labelService.assignLabelToResource(authority);
     authority.setIdAndRefreshEdges(hashService.hash(authority));
     return authority;
   }
 
-  private JsonNode getDoc(AuthorityRequest dto) {
+  private JsonNode getDocByType(ResourceTypeDictionary type, AuthorityRequest dto) {
+    return switch (type) {
+      case FAMILY       -> getFamilyDoc(dto);
+      case FORM         -> getFormDoc(dto);
+      case JURISDICTION -> getJurisdictionDoc(dto);
+      case MEETING      -> getMeetingDoc(dto);
+      case ORGANIZATION -> getOrganizationDoc(dto);
+      case PERSON       -> getPersonDoc(dto);
+      case PLACE        -> getPlaceDoc(dto);
+      case TOPIC        -> getTopicDoc(dto);
+      default -> throw new IllegalArgumentException("Unsupported authority type: " + type);
+    };
+  }
+
+  private JsonNode getFamilyDoc(AuthorityRequest dto) {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getName());
     putProperty(map, NUMERATION, dto.getNumeration());
@@ -68,9 +84,73 @@ public class AuthorityMapperUnit extends TopResourceMapperUnit {
     putProperty(map, ATTRIBUTION, dto.getAttribution());
     putProperty(map, NAME_ALTERNATIVE, dto.getNameAlternative());
     putProperty(map, AFFILIATION, dto.getAffiliation());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getFormDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getJurisdictionDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
     putProperty(map, SUBORDINATE_UNIT, dto.getSubordinateUnit());
     putProperty(map, PLACE, dto.getPlace());
+    putProperty(map, DATE, dto.getDate());
+    putProperty(map, MISC_INFO, dto.getMiscInfo());
+    putProperty(map, AFFILIATION, dto.getAffiliation());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getMeetingDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
+    putProperty(map, PLACE, dto.getPlace());
+    putProperty(map, DATE, dto.getDate());
+    putProperty(map, SUBORDINATE_UNIT, dto.getSubordinateUnit());
+    putProperty(map, MISC_INFO, dto.getMiscInfo());
+    putProperty(map, AFFILIATION, dto.getAffiliation());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getOrganizationDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
+    putProperty(map, SUBORDINATE_UNIT, dto.getSubordinateUnit());
+    putProperty(map, PLACE, dto.getPlace());
+    putProperty(map, DATE, dto.getDate());
+    putProperty(map, MISC_INFO, dto.getMiscInfo());
+    putProperty(map, AFFILIATION, dto.getAffiliation());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getPersonDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
+    putProperty(map, NUMERATION, dto.getNumeration());
+    putProperty(map, TITLES, dto.getTitles());
+    putProperty(map, DATE, dto.getDate());
+    putProperty(map, MISC_INFO, dto.getMiscInfo());
+    putProperty(map, ATTRIBUTION, dto.getAttribution());
+    putProperty(map, NAME_ALTERNATIVE, dto.getNameAlternative());
+    putProperty(map, AFFILIATION, dto.getAffiliation());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getPlaceDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
+    putProperty(map, MISC_INFO, dto.getMiscInfo());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getTopicDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
     putProperty(map, GEOGRAPHIC_COVERAGE, dto.getGeographicCoverage());
+    putProperty(map, MISC_INFO, dto.getMiscInfo());
     return coreMapper.toJson(map);
   }
 }
