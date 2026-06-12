@@ -1,15 +1,17 @@
 package org.folio.linked.data.model.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.folio.linked.data.model.entity.pk.ProfileSettingsPk;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -18,14 +20,25 @@ import org.hibernate.type.SqlTypes;
 @Table(name = "profile_settings")
 @Accessors(chain = true)
 public class ProfileSettings {
+  @Id
+  @GeneratedValue(strategy  = GenerationType.SEQUENCE, generator = "profile_settings_id_seq_gen")
+  @SequenceGenerator(
+    name = "profile_settings_id_seq_gen",
+    sequenceName = "profile_settings_id_seq",
+    initialValue = 1,
+    allocationSize = 1
+  )
+  private Integer id;
 
-  @EmbeddedId
-  private ProfileSettingsPk id;
+  @Column(name = "user_id", nullable = false)
+  private UUID userId;
 
-  @MapsId("profileId")
   @ManyToOne
   @JoinColumn(name = "profile_id", nullable = false)
   private Profile profile;
+
+  @Column(name = "name", nullable = false)
+  private String name;
 
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "settings", columnDefinition = "jsonb", nullable = false)
