@@ -69,6 +69,7 @@ public class AuthorityMapperUnit extends TopResourceMapperUnit {
       case ORGANIZATION -> getOrganizationDoc(dto);
       case PERSON       -> getPersonDoc(dto);
       case PLACE        -> getPlaceDoc(dto);
+      case TEMPORAL     -> getTemporalDoc(dto);
       case TOPIC        -> getTopicDoc(dto);
       default -> throw new IllegalArgumentException("Unsupported authority type: " + type);
     };
@@ -143,6 +144,12 @@ public class AuthorityMapperUnit extends TopResourceMapperUnit {
     var map = new HashMap<String, List<String>>();
     putProperty(map, NAME, dto.getName());
     putProperty(map, MISC_INFO, dto.getMiscInfo());
+    return coreMapper.toJson(map);
+  }
+
+  private JsonNode getTemporalDoc(AuthorityRequest dto) {
+    var map = new HashMap<String, List<String>>();
+    putProperty(map, NAME, dto.getName());
     return coreMapper.toJson(map);
   }
 

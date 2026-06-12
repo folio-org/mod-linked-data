@@ -23,6 +23,7 @@ class AuthorityProfileSelectionStrategyTest {
     "ORGANIZATION, true",
     "PERSON, true",
     "PLACE, true",
+    "TEMPORAL, true",
     "TOPIC, true",
     "INSTANCE, false",
     "WORK, false",
@@ -48,7 +49,8 @@ class AuthorityProfileSelectionStrategyTest {
     "ORGANIZATION, 12",
     "PERSON, 13",
     "PLACE, 14",
-    "TOPIC, 15"
+    "TEMPORAL, 15",
+    "TOPIC, 16"
   })
   void selectProfile_shouldReturnExpectedProfileId(ResourceTypeDictionary type, int expectedProfileId) {
     // given
@@ -71,6 +73,7 @@ class AuthorityProfileSelectionStrategyTest {
     "13, true",
     "14, true",
     "15, true",
+    "16, true",
     "999, false",
     "1, false"
   })
@@ -91,7 +94,8 @@ class AuthorityProfileSelectionStrategyTest {
     "12, ORGANIZATION",
     "13, PERSON",
     "14, PLACE",
-    "15, TOPIC"
+    "15, TEMPORAL",
+    "16, TOPIC"
   })
   void resourceType_shouldReturnExpectedType(int profileId, ResourceTypeDictionary expected) {
     // when
