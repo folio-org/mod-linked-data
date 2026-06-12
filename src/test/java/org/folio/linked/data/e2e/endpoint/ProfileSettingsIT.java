@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,7 +76,7 @@ class ProfileSettingsIT {
   }
 
   @Test
-  void shouldSetProfileSettings() throws Exception {
+  void shouldCreateProfileSettings() throws Exception {
     // given
     var headers = defaultHeadersWithUserId(env, randomUUID().toString());
     headers.setContentType(APPLICATION_JSON);
@@ -84,15 +85,15 @@ class ProfileSettingsIT {
       .headers(headers)
       .content("""
         {
-            "name": "My settings",
-            "active": true,
-            "children": [
-              {
-                "id": "Work:Monograph:Title",
-                "visible": true,
-                "order": 1
-              }
-            ]
+          "name": "My settings",
+          "active": true,
+          "children": [
+            {
+              "id": "Work:Monograph:Title",
+              "visible": true,
+              "order": 1
+            }
+          ]
         }""");
     mockMvc.perform(postRequest)
       .andExpect(status().isNoContent());
@@ -116,4 +117,71 @@ class ProfileSettingsIT {
       .andExpect(jsonPath("$.active", is(true)))
       .andExpect(jsonPath("$.children.length()", equalTo(1)));
   }
+
+  @Test
+  void shouldSetProfileSettings() throws Exception {
+    // given
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
+    headers.setContentType(APPLICATION_JSON);
+
+    var postRequest = post(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers)
+      .content("""
+        {
+          "name": "My settings",
+          "active": true,
+          "children": [
+            {
+              "id": "Work:Monograph:Title",
+              "visible": true,
+              "order": 1
+            }
+          ]
+        }""");
+    mockMvc.perform(postRequest)
+      .andExpect(status().isNoContent());
+
+    // when
+    var getAllRequest = get(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers);
+    var getAllResult = mockMvc.perform(getAllRequest)
+      .andExpect(status().isOk())
+      .andReturn();
+    var getAllResponseBody = getAllResult.getResponse().getContentAsString();
+    var settingsId = JsonPath.read(getAllResponseBody, "$.[0].id");
+
+    var putRequest = put(PROFILE_URL + "2" + SETTINGS_PATH + "/" + settingsId)
+      .headers(headers)
+      .content("""
+        {
+          "name": "My settings",
+          "active": true,
+          "children": [
+            {
+              "id": "Work:Monograph:Title",
+              "visible": true,
+              "order": 1
+            },
+            {
+              "id": "Work:Monograph:OtherTitleInformation",
+              "visible": true,
+              "order": 2
+            }
+          ]
+        }
+          """);
+    mockMvc.perform(putRequest)
+      .andExpect(status().isNoContent());
+
+    var getRequest = get(PROFILE_URL + "2" + SETTINGS_PATH + "/" + settingsId)
+      .headers(headers);
+
+    // then
+    mockMvc.perform(getRequest)
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$.active", is(true)))
+      .andExpect(jsonPath("$.children.length()", equalTo(2)));
+  }
+
 }
