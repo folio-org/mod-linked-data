@@ -54,6 +54,22 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   }
 
   @Override
+  public void createProfileSettings(
+    Integer profileId,
+    CustomProfileSettingsRequestDto profileSettingsRequest
+  ) {
+    var userId = executionContext.getUserId();
+    var profile = profileRepository.findById(profileId)
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
+    try {
+      var settings = toEntity(profile, null, userId, profileSettingsRequest);
+      profileSettingsRepository.save(settings);
+    } catch (JacksonException e) {
+      throw exceptionBuilder.badRequestException("Could not process settings", String.valueOf(profileId));
+    }
+  }
+
+  @Override
   public void setProfileSettings(
     Integer profileId,
     Integer profileSettingsId,

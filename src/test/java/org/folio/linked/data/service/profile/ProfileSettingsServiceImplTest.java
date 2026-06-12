@@ -114,6 +114,27 @@ class ProfileSettingsServiceImplTest {
   }
 
   @Test
+  void createProfileSettings_shouldThrowNotFound_ifNoSuchProfile() {
+    // given
+    var userId = UUID.randomUUID();
+    doReturn(userId).when(executionContext).getUserId();
+    var id = 1;
+    var name = "name";
+    when(profileRepository.findById(id)).thenReturn(Optional.empty());
+    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
+      .thenReturn(emptyRequestProcessingException());
+    var settings = new CustomProfileSettingsRequestDto(name, false, null);
+
+    // when
+    var thrown = assertThrows(RequestProcessingException.class,
+      () -> profileSettingsService.createProfileSettings(id, settings));
+
+    // then
+    assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
+    assertThat(thrown.getMessage()).isEmpty();
+  }
+  
+  @Test
   void setProfileSettings_shouldThrowNotFound_ifNoSuchProfile() {
     // given
     var userId = UUID.randomUUID();

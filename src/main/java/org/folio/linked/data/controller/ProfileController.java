@@ -63,6 +63,14 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
+  public ResponseEntity<Void> createProfileSettings(
+      Integer profileId,
+      CustomProfileSettingsRequestDto profileSettingsRequest) {
+    profileSettingsService.createProfileSettings(profileId, profileSettingsRequest);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
   public ResponseEntity<Void> setProfileSettings(
       Integer profileId,
       Integer profileSettingsId,

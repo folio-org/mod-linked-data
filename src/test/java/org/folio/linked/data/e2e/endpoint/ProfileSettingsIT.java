@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.jayway.jsonpath.JsonPath;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,28 @@ import org.springframework.test.web.servlet.MockMvc;
 @IntegrationTest
 class ProfileSettingsIT {
 
-  private static final String PROFILE_SETTINGS_URL = "/linked-data/profile/settings/";
+  private static final String PROFILE_URL = "/linked-data/profile/";
+  private static final String SETTINGS_PATH = "/settings";
 
   @Autowired
   private MockMvc mockMvc;
   @Autowired
   private Environment env;
+
+  @Test
+  void shouldBeEmptyForProfileWithNoSettings() throws Exception {
+    // given
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
+    headers.setContentType(APPLICATION_JSON);
+
+    // when, then
+    var getAllRequest = get(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers);
+    mockMvc.perform(getAllRequest)
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$").isEmpty());
+  }
 
   @Test
   void shouldBeNotFoundForUnknownProfile() throws Exception {
@@ -34,7 +51,7 @@ class ProfileSettingsIT {
     headers.setContentType(APPLICATION_JSON);
 
     // when, then
-    var getRequest = get(PROFILE_SETTINGS_URL + "9999999")
+    var getRequest = get(PROFILE_URL + "9999999" + SETTINGS_PATH + "/1")
       .headers(headers);
     mockMvc.perform(getRequest)
       .andExpect(status().isNotFound());
@@ -47,7 +64,7 @@ class ProfileSettingsIT {
     headers.setContentType(APPLICATION_JSON);
 
     // when
-    var getRequest = get(PROFILE_SETTINGS_URL + "2")
+    var getRequest = get(PROFILE_URL + "2" + SETTINGS_PATH + "/1")
       .headers(headers);
 
     // then
@@ -63,10 +80,11 @@ class ProfileSettingsIT {
     var headers = defaultHeadersWithUserId(env, randomUUID().toString());
     headers.setContentType(APPLICATION_JSON);
 
-    var postRequest = post(PROFILE_SETTINGS_URL + "2")
+    var postRequest = post(PROFILE_URL + "2" + SETTINGS_PATH)
       .headers(headers)
       .content("""
         {
+            "name": "My settings",
             "active": true,
             "children": [
               {
@@ -80,7 +98,15 @@ class ProfileSettingsIT {
       .andExpect(status().isNoContent());
 
     // when
-    var getRequest = get(PROFILE_SETTINGS_URL + "2")
+    var getAllRequest = get(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers);
+    var getAllResult = mockMvc.perform(getAllRequest)
+      .andExpect(status().isOk())
+      .andReturn();
+    var getAllResponseBody = getAllResult.getResponse().getContentAsString();
+    var settingsId = JsonPath.read(getAllResponseBody, "$.[0].id");
+
+    var getRequest = get(PROFILE_URL + "2" + SETTINGS_PATH + "/" + settingsId)
       .headers(headers);
 
     // then

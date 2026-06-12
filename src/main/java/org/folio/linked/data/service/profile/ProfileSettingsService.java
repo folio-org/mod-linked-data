@@ -10,6 +10,11 @@ public interface ProfileSettingsService {
 
   CustomProfileSettingsResponseDto getProfileSettings(Integer profileId, Integer profileSettingsId);
 
+  void createProfileSettings(
+    Integer profileId,
+    CustomProfileSettingsRequestDto profileSettingsRequest
+  );
+
   void setProfileSettings(
     Integer profileId,
     Integer profileSettingsId,

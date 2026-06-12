@@ -419,6 +419,28 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
+    post:
+      operationId: createProfileSettings
+      tags:
+        - profile
+      description: Create the workspace profile settings for a profile for the current user
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "schema/profile/customProfileSettingsRequestDto.json"
+      responses:
+        '204':
+          description: Workspace profile settings created or updated successfully
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '404':
+          description: No profile found with a given profileId
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
   /linked-data/profile/{profileId}/settings/{profileSettingsId}:
     get:
       operationId: getProfileSettings
@@ -440,11 +462,11 @@ paths:
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 
-    post:
+    put:
       operationId: setProfileSettings
       tags:
         - profile
-      description: Create or update the workspace profile settings for a profile for the current user
+      description: Update the workspace profile settings for a profile for the current user
       parameters:
         - $ref: '#/components/parameters/profileId'
         - $ref: '#/components/parameters/profileSettingsId'
