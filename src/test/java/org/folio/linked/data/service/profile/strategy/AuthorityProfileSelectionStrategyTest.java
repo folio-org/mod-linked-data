@@ -29,7 +29,7 @@ class AuthorityProfileSelectionStrategyTest {
     "WORK, false",
     "HUB, false"
   })
-  void supports_shouldReturnExpectedResult(ResourceTypeDictionary type, boolean expected) {
+  void supports_shouldReturnTrueForAuthorityType_andFalseOtherwise(ResourceTypeDictionary type, boolean isSupported) {
     // given
     var resource = new Resource().addTypes(type);
 
@@ -37,7 +37,7 @@ class AuthorityProfileSelectionStrategyTest {
     var result = strategy.supports(resource);
 
     // then
-    assertThat(result).isEqualTo(expected);
+    assertThat(result).isEqualTo(isSupported);
   }
 
   @ParameterizedTest
@@ -77,12 +77,13 @@ class AuthorityProfileSelectionStrategyTest {
     "999, false",
     "1, false"
   })
-  void supportsProfileId_shouldReturnExpectedResult(int profileId, boolean expected) {
+  void supportsProfileId_shouldReturnTrueForAuthorityProfileId_andFalseOtherwise(int profileId,
+                                                                                 boolean isAuthorityProfileId) {
     // when
     var result = strategy.supportsProfileId(profileId);
 
     // then
-    assertThat(result).isEqualTo(expected);
+    assertThat(result).isEqualTo(isAuthorityProfileId);
   }
 
   @ParameterizedTest
@@ -97,11 +98,11 @@ class AuthorityProfileSelectionStrategyTest {
     "15, TEMPORAL",
     "16, TOPIC"
   })
-  void resourceType_shouldReturnExpectedType(int profileId, ResourceTypeDictionary expected) {
+  void resourceType_shouldReturnCorrespondingAuthorityType(int profileId, ResourceTypeDictionary expectedType) {
     // when
     var result = strategy.resourceType(profileId);
 
     // then
-    assertThat(result).isEqualTo(expected);
+    assertThat(result).isEqualTo(expectedType);
   }
 }
