@@ -38,5 +38,6 @@ class FormAuthorityIT extends PostResourceIT {
   protected void validateGraph(Resource resource) {
     validateResourceType(resource, "http://bibfra.me/vocab/lite/Form");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/name")).isEqualTo("Test Form Name");
+    assertThat(resource.getLabel()).isEqualTo("Test Form Name");
   }
 }

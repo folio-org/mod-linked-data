@@ -53,5 +53,6 @@ class OrganizationAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/date")).isEqualTo("1985-2023");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Organization info");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Parent Org");
+    assertThat(resource.getLabel()).isEqualTo("Test Organization Name, Org Sub Unit, Org Place, 1985-2023");
   }
 }

@@ -53,5 +53,6 @@ class MeetingAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/subordinateUnit")).isEqualTo("Meeting Sub Unit");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Meeting info");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Meeting Org");
+    assertThat(resource.getLabel()).isEqualTo("Test Meeting Name, 2010, Meeting Place, Meeting Sub Unit");
   }
 }

@@ -41,5 +41,6 @@ class PlaceAuthorityIT extends PostResourceIT {
     validateResourceType(resource, "http://bibfra.me/vocab/lite/Place");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/name")).isEqualTo("Test Place Name");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Place info");
+    assertThat(resource.getLabel()).isEqualTo("Test Place Name");
   }
 }

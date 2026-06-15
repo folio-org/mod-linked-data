@@ -42,6 +42,7 @@ class TopicAuthorityIT extends PostResourceIT {
   protected void validateGraph(Resource resource) {
     validateResourceType(resource, "http://bibfra.me/vocab/lite/Topic");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/name")).isEqualTo("Test Topic Name");
+    assertThat(resource.getLabel()).isEqualTo("Test Topic Name");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/geographicCoverage")).isEqualTo("North America");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Topic info");
   }

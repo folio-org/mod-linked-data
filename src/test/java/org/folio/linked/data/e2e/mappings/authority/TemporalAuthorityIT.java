@@ -38,5 +38,6 @@ class TemporalAuthorityIT extends PostResourceIT {
   protected void validateGraph(Resource resource) {
     validateResourceType(resource, "http://bibfra.me/vocab/lite/Temporal");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/name")).isEqualTo("Test Temporal Name");
+    assertThat(resource.getLabel()).isEqualTo("Test Temporal Name");
   }
 }

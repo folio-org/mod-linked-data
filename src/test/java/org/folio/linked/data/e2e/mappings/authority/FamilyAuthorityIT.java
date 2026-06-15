@@ -59,5 +59,6 @@ class FamilyAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/attribution")).isEqualTo("Family attribution");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/nameAlternative")).isEqualTo("Alt Family Name");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Family University");
+    assertThat(resource.getLabel()).isEqualTo("I, Test Family Name, Dr., Alt Family Name, 2000-2024");
   }
 }
