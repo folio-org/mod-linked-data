@@ -59,5 +59,6 @@ class PersonAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/attribution")).isEqualTo("Person attribution");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/nameAlternative")).isEqualTo("Alt Person Name");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Person University");
+    assertThat(resource.getLabel()).isEqualTo("II, Test Person Name, Prof., Alt Person Name, 1970-2024");
   }
 }

@@ -53,5 +53,6 @@ class JurisdictionAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/date")).isEqualTo("1990-2020");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Jurisdiction info");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Jurisdiction Org");
+    assertThat(resource.getLabel()).isEqualTo("Test Jurisdiction Name, Sub Unit, Test Place, 1990-2020");
   }
 }
