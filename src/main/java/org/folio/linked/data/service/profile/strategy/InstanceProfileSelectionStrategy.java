@@ -49,3 +49,4 @@ public class InstanceProfileSelectionStrategy implements ProfileSelectionStrateg
       .map(ProfileMetadata::getId);
   }
 }
+

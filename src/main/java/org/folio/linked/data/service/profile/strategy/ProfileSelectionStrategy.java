@@ -7,3 +7,4 @@ public interface ProfileSelectionStrategy {
 
   Integer selectProfile(Resource resource);
 }
+

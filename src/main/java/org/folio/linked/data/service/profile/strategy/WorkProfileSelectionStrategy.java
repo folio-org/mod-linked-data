@@ -43,3 +43,4 @@ public class WorkProfileSelectionStrategy implements ProfileSelectionStrategy {
       .map(ProfileMetadata::getId);
   }
 }
+
