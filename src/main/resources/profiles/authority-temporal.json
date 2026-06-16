@@ -1,5 +1,34 @@
 {
   "id": 15,
   "name": "Temporal",
-  "resourceType": "http://bibfra.me/vocab/lite/Temporal"
+  "resourceType": "http://bibfra.me/vocab/lite/Temporal",
+  "value": [
+    [
+      {
+        "type": "block",
+        "displayName": "Temporal",
+        "bfid": "lde:Profile:Authority",
+        "uriBFLite": "_authority",
+        "children": [
+          "Profile:Authority:ChronologicalTerm"
+        ],
+        "id": "Profile:Authority"
+      },
+      {
+        "type": "literal",
+        "displayName": "Chronological term",
+        "uriBFLite": "http://bibfra.me/vocab/lite/name",
+        "constraints": {
+          "repeatable": false,
+          "editable": true,
+          "mandatory": true,
+          "defaults": [],
+          "useValuesFrom": [],
+          "valueDataType": {}
+        },
+        "id": "Profile:Authority:ChronologicalTerm",
+        "marc": "648$a"
+      }
+    ]
+  ]
 }
