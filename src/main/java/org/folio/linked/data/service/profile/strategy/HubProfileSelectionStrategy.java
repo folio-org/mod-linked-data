@@ -19,3 +19,4 @@ public class HubProfileSelectionStrategy implements ProfileSelectionStrategy {
     return HUB_PROFILE_ID;
   }
 }
+
