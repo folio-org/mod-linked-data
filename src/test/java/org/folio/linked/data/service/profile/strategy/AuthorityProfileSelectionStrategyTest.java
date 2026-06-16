@@ -13,7 +13,6 @@ class AuthorityProfileSelectionStrategyTest {
 
   private final AuthorityProfileSelectionStrategy strategy = new AuthorityProfileSelectionStrategy();
 
-
   @ParameterizedTest
   @CsvSource({
     "FAMILY, true",
