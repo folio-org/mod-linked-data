@@ -5,16 +5,13 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.INSTANCE;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.exception.RequestProcessingException;
-import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceProfile;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
@@ -35,14 +32,15 @@ class ResourceProfileLinkingServiceImplTest {
   @Mock
   private ResourceProfileRepository resourceProfileRepository;
   @Mock
-  private RequestProcessingExceptionBuilder exceptionBuilder;
+  private ProfileService profileService;
 
   private ResourceProfileLinkingServiceImpl profileLinkingService;
 
   @BeforeEach
   void setUp() {
     var strategy = new TestStrategy();
-    profileLinkingService = new ResourceProfileLinkingServiceImpl(resourceProfileRepository, null, List.of(strategy));
+    profileLinkingService = new ResourceProfileLinkingServiceImpl(resourceProfileRepository,
+      null, List.of(strategy), profileService);
   }
 
   @Test
@@ -91,53 +89,27 @@ class ResourceProfileLinkingServiceImplTest {
     assertThat(result).isEqualTo(TestStrategy.TEST_PROFILE_ID);
   }
 
-
   @Test
-  void shouldResolveResourceType_whenStrategySupportsProfileId() {
+  void shouldResolveResourceType() {
     // given
     var profileId = 13;
-    var strategy = mock(ProfileSelectionStrategy.class);
-    when(strategy.supportsProfileId(profileId)).thenReturn(true);
-    when(strategy.selectResourceType(profileId)).thenReturn(PERSON);
-    var service = new ResourceProfileLinkingServiceImpl(resourceProfileRepository, null, List.of(strategy));
+    when(profileService.getResourceTypeByProfileId(profileId)).thenReturn(PERSON);
 
     // when
-    var result = service.resolveResourceType(profileId);
+    var result = profileLinkingService.resolveResourceType(profileId);
 
     // then
     assertThat(result).isEqualTo(PERSON);
   }
 
   @Test
-  void shouldResolveResourceType_returnsFirstMatchingStrategyResult() {
-    // given
-    var profileId = 13;
-    var notMatching = mock(ProfileSelectionStrategy.class);
-    when(notMatching.supportsProfileId(profileId)).thenReturn(false);
-    var matching = mock(ProfileSelectionStrategy.class);
-    when(matching.supportsProfileId(profileId)).thenReturn(true);
-    when(matching.selectResourceType(profileId)).thenReturn(PERSON);
-    var service = new ResourceProfileLinkingServiceImpl(
-      resourceProfileRepository, null, List.of(notMatching, matching));
-
-    // when
-    var result = service.resolveResourceType(profileId);
-
-    // then
-    assertThat(result).isEqualTo(PERSON);
-  }
-
-  @Test
-  void shouldThrowException_whenNoStrategySupportsProfileId() {
+  void shouldThrowException_whenResolveResourceTypeFails() {
     // given
     var profileId = TestStrategy.TEST_PROFILE_ID;
-    when(exceptionBuilder.notSupportedException(String.valueOf(profileId), "Resource Type Resolution"))
-      .thenReturn(emptyRequestProcessingException());
-    var service = new ResourceProfileLinkingServiceImpl(
-      resourceProfileRepository, exceptionBuilder, List.of(new TestStrategy()));
+    when(profileService.getResourceTypeByProfileId(profileId)).thenThrow(emptyRequestProcessingException());
 
     // when / then
-    assertThrows(RequestProcessingException.class, () -> service.resolveResourceType(profileId));
+    assertThrows(RequestProcessingException.class, () -> profileLinkingService.resolveResourceType(profileId));
   }
 
   private static final class TestStrategy implements ProfileSelectionStrategy {
@@ -151,16 +123,6 @@ class ResourceProfileLinkingServiceImplTest {
     @Override
     public Integer selectProfile(Resource resource) {
       return TEST_PROFILE_ID;
-    }
-
-    @Override
-    public boolean supportsProfileId(Integer profileId) {
-      return false;
-    }
-
-    @Override
-    public ResourceTypeDictionary selectResourceType(Integer profileId) {
-      return null;
     }
   }
 }

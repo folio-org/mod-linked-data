@@ -22,6 +22,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   private final ResourceProfileRepository resourceProfileRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
   private final List<ProfileSelectionStrategy> profileSelectionStrategies;
+  private final ProfileService profileService;
 
   @Override
   @Transactional
@@ -42,13 +43,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
 
   @Override
   public ResourceTypeDictionary resolveResourceType(Integer profileId) {
-    return profileSelectionStrategies.stream()
-      .filter(strategy -> strategy.supportsProfileId(profileId))
-      .map(strategy -> strategy.selectResourceType(profileId))
-      .findFirst()
-      .orElseThrow(
-        () -> exceptionBuilder.notSupportedException(String.valueOf(profileId), "Resource Type Resolution")
-      );
+    return profileService.getResourceTypeByProfileId(profileId);
   }
 
   private Integer selectAppropriateProfile(Resource resource) {

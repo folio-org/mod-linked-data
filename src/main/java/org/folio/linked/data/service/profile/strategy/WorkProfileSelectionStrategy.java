@@ -6,7 +6,6 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.profile.PreferredProfileService;
@@ -36,16 +35,6 @@ public class WorkProfileSelectionStrategy implements ProfileSelectionStrategy {
     return getUserPreferredProfileId().orElse(WORK_MONOGRAPH_PROFILE_ID);
   }
 
-  @Override
-  public boolean supportsProfileId(Integer profileId) {
-    return WORK_MONOGRAPH_PROFILE_ID.equals(profileId) || WORK_SERIAL_PROFILE_ID.equals(profileId);
-  }
-
-  @Override
-  public ResourceTypeDictionary selectResourceType(Integer profileId) {
-    return WORK;
-  }
-
   private Optional<Integer> getUserPreferredProfileId() {
     return preferredProfileService
       .getPreferredProfiles(WORK.getUri())
@@ -54,4 +43,3 @@ public class WorkProfileSelectionStrategy implements ProfileSelectionStrategy {
       .map(ProfileMetadata::getId);
   }
 }
-

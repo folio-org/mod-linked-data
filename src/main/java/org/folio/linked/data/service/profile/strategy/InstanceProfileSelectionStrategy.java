@@ -8,7 +8,6 @@ import static org.folio.linked.data.util.ResourceUtils.hasEdge;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.profile.PreferredProfileService;
@@ -42,18 +41,6 @@ public class InstanceProfileSelectionStrategy implements ProfileSelectionStrateg
     return getUserPreferredProfileId().orElse(INSTANCE_MONOGRAPH_PROFILE_ID);
   }
 
-  @Override
-  public boolean supportsProfileId(Integer profileId) {
-    return INSTANCE_MONOGRAPH_PROFILE_ID.equals(profileId)
-      || INSTANCE_RARE_BOOKS_PROFILE_ID.equals(profileId)
-      || INSTANCE_SERIAL_PROFILE_ID.equals(profileId);
-  }
-
-  @Override
-  public ResourceTypeDictionary selectResourceType(Integer profileId) {
-    return INSTANCE;
-  }
-
   private Optional<Integer> getUserPreferredProfileId() {
     return preferredProfileService
       .getPreferredProfiles(INSTANCE.getUri())
@@ -62,4 +49,3 @@ public class InstanceProfileSelectionStrategy implements ProfileSelectionStrateg
       .map(ProfileMetadata::getId);
   }
 }
-
