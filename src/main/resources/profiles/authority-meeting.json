@@ -1,7 +1,7 @@
 {
   "id": 11,
   "name": "Meeting",
-  "resourceType": "_authority",
+  "resourceType": "http://bibfra.me/vocab/lite/Meeting",
   "value": [
     [
       {

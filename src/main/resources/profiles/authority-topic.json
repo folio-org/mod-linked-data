@@ -1,7 +1,7 @@
 {
   "id": 16,
   "name": "Topic",
-  "resourceType": "_authority",
+  "resourceType": "http://bibfra.me/vocab/lite/Topic",
   "value": [
     [
       {

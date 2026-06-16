@@ -1,7 +1,7 @@
 {
   "id": 9,
   "name": "Form",
-  "resourceType": "_authority",
+  "resourceType": "http://bibfra.me/vocab/lite/Form",
   "value": [
     [
       {
