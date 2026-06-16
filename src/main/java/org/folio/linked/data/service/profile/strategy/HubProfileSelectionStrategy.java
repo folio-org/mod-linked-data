@@ -2,7 +2,6 @@ package org.folio.linked.data.service.profile.strategy;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.stereotype.Component;
 
@@ -18,15 +17,5 @@ public class HubProfileSelectionStrategy implements ProfileSelectionStrategy {
   @Override
   public Integer selectProfile(Resource resource) {
     return HUB_PROFILE_ID;
-  }
-
-  @Override
-  public boolean supportsProfileId(Integer profileId) {
-    return HUB_PROFILE_ID.equals(profileId);
-  }
-
-  @Override
-  public ResourceTypeDictionary selectResourceType(Integer profileId) {
-    return HUB;
   }
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Profile;
@@ -61,6 +62,15 @@ public class ProfileServiceImpl implements ProfileService {
       .stream()
       .map(profile -> new ProfileMetadata(profile.getId(), profile.getName(), profile.getResourceType().getUri()))
       .toList();
+  }
+
+  @Override
+  @Cacheable(value = PROFILES, key = "@folioExecutionContext.tenantId + '_resourceType_' + #profileId")
+  public ResourceTypeDictionary getResourceTypeByProfileId(Integer profileId) {
+    return profileRepository.findResourceTypeUriById(profileId)
+      .flatMap(ResourceTypeDictionary::fromUri)
+      .orElseThrow(() -> exceptionBuilder.notSupportedException(String.valueOf(profileId),
+        "Failed to get resource type by profile id"));
   }
 
   private void saveProfile(Resource resource) {
