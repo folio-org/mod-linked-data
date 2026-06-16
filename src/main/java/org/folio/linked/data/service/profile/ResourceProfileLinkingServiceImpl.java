@@ -44,7 +44,7 @@ public class ResourceProfileLinkingServiceImpl implements ResourceProfileLinking
   public ResourceTypeDictionary resolveResourceType(Integer profileId) {
     return profileSelectionStrategies.stream()
       .filter(strategy -> strategy.supportsProfileId(profileId))
-      .map(strategy -> strategy.resourceType(profileId))
+      .map(strategy -> strategy.selectResourceType(profileId))
       .findFirst()
       .orElseThrow(
         () -> exceptionBuilder.notSupportedException(String.valueOf(profileId), "Resource Type Resolution")

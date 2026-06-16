@@ -97,9 +97,9 @@ class AuthorityProfileSelectionStrategyTest {
     "15, TEMPORAL",
     "16, TOPIC"
   })
-  void resourceType_shouldReturnCorrespondingAuthorityType(int profileId, ResourceTypeDictionary expectedType) {
+  void selectResourceType_shouldReturnCorrespondingAuthorityType(int profileId, ResourceTypeDictionary expectedType) {
     // when
-    var result = strategy.resourceType(profileId);
+    var result = strategy.selectResourceType(profileId);
 
     // then
     assertThat(result).isEqualTo(expectedType);
