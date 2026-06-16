@@ -117,27 +117,11 @@ public class AuthorityMapperUnit extends TopResourceMapperUnit {
   }
 
   private JsonNode getOrganizationDoc(AuthorityRequest dto) {
-    var map = new HashMap<String, List<String>>();
-    putProperty(map, NAME, dto.getName());
-    putProperty(map, SUBORDINATE_UNIT, dto.getSubordinateUnit());
-    putProperty(map, PLACE, dto.getPlace());
-    putProperty(map, DATE, dto.getDate());
-    putProperty(map, MISC_INFO, dto.getMiscInfo());
-    putProperty(map, AFFILIATION, dto.getAffiliation());
-    return coreMapper.toJson(map);
+    return getJurisdictionDoc(dto);
   }
 
   private JsonNode getPersonDoc(AuthorityRequest dto) {
-    var map = new HashMap<String, List<String>>();
-    putProperty(map, NAME, dto.getName());
-    putProperty(map, NUMERATION, dto.getNumeration());
-    putProperty(map, TITLES, dto.getTitles());
-    putProperty(map, DATE, dto.getDate());
-    putProperty(map, MISC_INFO, dto.getMiscInfo());
-    putProperty(map, ATTRIBUTION, dto.getAttribution());
-    putProperty(map, NAME_ALTERNATIVE, dto.getNameAlternative());
-    putProperty(map, AFFILIATION, dto.getAffiliation());
-    return coreMapper.toJson(map);
+    return getFamilyDoc(dto);
   }
 
   private JsonNode getPlaceDoc(AuthorityRequest dto) {
@@ -148,9 +132,7 @@ public class AuthorityMapperUnit extends TopResourceMapperUnit {
   }
 
   private JsonNode getTemporalDoc(AuthorityRequest dto) {
-    var map = new HashMap<String, List<String>>();
-    putProperty(map, NAME, dto.getName());
-    return coreMapper.toJson(map);
+    return getFormDoc(dto);
   }
 
   private JsonNode getTopicDoc(AuthorityRequest dto) {
