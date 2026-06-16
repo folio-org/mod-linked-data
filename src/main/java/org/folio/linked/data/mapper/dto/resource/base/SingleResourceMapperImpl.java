@@ -20,7 +20,6 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Predicate;
 import org.folio.linked.data.domain.dto.AuthorityField;
 import org.folio.linked.data.exception.NotSupportedException;
@@ -28,7 +27,6 @@ import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.profile.ProfileService;
-import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.springframework.stereotype.Service;
 
 @Log4j2
