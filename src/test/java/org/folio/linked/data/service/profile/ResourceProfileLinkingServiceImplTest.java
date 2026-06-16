@@ -98,7 +98,7 @@ class ResourceProfileLinkingServiceImplTest {
     var profileId = 13;
     var strategy = mock(ProfileSelectionStrategy.class);
     when(strategy.supportsProfileId(profileId)).thenReturn(true);
-    when(strategy.resourceType(profileId)).thenReturn(PERSON);
+    when(strategy.selectResourceType(profileId)).thenReturn(PERSON);
     var service = new ResourceProfileLinkingServiceImpl(resourceProfileRepository, null, List.of(strategy));
 
     // when
@@ -116,7 +116,7 @@ class ResourceProfileLinkingServiceImplTest {
     when(notMatching.supportsProfileId(profileId)).thenReturn(false);
     var matching = mock(ProfileSelectionStrategy.class);
     when(matching.supportsProfileId(profileId)).thenReturn(true);
-    when(matching.resourceType(profileId)).thenReturn(PERSON);
+    when(matching.selectResourceType(profileId)).thenReturn(PERSON);
     var service = new ResourceProfileLinkingServiceImpl(
       resourceProfileRepository, null, List.of(notMatching, matching));
 
@@ -159,7 +159,7 @@ class ResourceProfileLinkingServiceImplTest {
     }
 
     @Override
-    public ResourceTypeDictionary resourceType(Integer profileId) {
+    public ResourceTypeDictionary selectResourceType(Integer profileId) {
       return null;
     }
   }

@@ -42,7 +42,7 @@ public class WorkProfileSelectionStrategy implements ProfileSelectionStrategy {
   }
 
   @Override
-  public ResourceTypeDictionary resourceType(Integer profileId) {
+  public ResourceTypeDictionary selectResourceType(Integer profileId) {
     return WORK;
   }
 

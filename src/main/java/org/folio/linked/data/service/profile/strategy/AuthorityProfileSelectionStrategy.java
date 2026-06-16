@@ -62,7 +62,7 @@ public class AuthorityProfileSelectionStrategy implements ProfileSelectionStrate
   }
 
   @Override
-  public ResourceTypeDictionary resourceType(Integer profileId) {
+  public ResourceTypeDictionary selectResourceType(Integer profileId) {
     return TYPE_BY_PROFILE_ID.get(profileId);
   }
 }

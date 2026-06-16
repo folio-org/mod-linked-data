@@ -10,5 +10,5 @@ public interface ProfileSelectionStrategy {
 
   boolean supportsProfileId(Integer profileId);
 
-  ResourceTypeDictionary resourceType(Integer profileId);
+  ResourceTypeDictionary selectResourceType(Integer profileId);
 }

@@ -26,7 +26,7 @@ public class HubProfileSelectionStrategy implements ProfileSelectionStrategy {
   }
 
   @Override
-  public ResourceTypeDictionary resourceType(Integer profileId) {
+  public ResourceTypeDictionary selectResourceType(Integer profileId) {
     return HUB;
   }
 }
