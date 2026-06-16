@@ -42,7 +42,7 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
   public <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentRequestDto, Predicate predicate,
                                Resource parentEntity) {
     try {
-      var typeUri = dto instanceof AuthorityField ? getProfileAuthorityTypeUri((AuthorityField) dto) : null;
+      var typeUri = dto instanceof AuthorityField authorityField ? getProfileAuthorityTypeUri(authorityField) : null;
       return getMapperUnit(typeUri, predicate, parentRequestDto, dto.getClass())
         .map(mapper -> mapper.toEntity(dto, parentEntity))
         .orElseThrow(() -> new NotSupportedException("Dto [" + dto.getClass().getSimpleName() + IS_NOT_SUPPORTED_FOR
@@ -88,7 +88,8 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
       .filter(m -> isNull(parentResponseDto) || m.supportedParents().contains(parentResponseDto))
       .filter(m -> {
         var annotation = m.getClass().getAnnotation(MapperUnit.class);
-        var typeMatches = isNull(typeUri) || typeUri.equals(annotation.type().getUri());
+        var typeMatches = isNull(typeUri) || stream(annotation.type())
+          .anyMatch(t -> typeUri.equals(t.getUri()));
         var predicateMatches = isNull(pred) || stream(annotation.predicate())
           .anyMatch(dict -> pred.getHash().equals(dict.getHash()));
         var requestDtoMatches = isNull(requestDto) || requestDto.equals(annotation.requestDto());

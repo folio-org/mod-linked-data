@@ -12,6 +12,7 @@ import org.folio.linked.data.domain.dto.AuthorityRequest;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.service.label.ResourceEntityLabelService;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -23,8 +24,9 @@ public class PlaceAuthorityMapperUnit extends AuthorityMapperUnit {
 
   public PlaceAuthorityMapperUnit(CoreMapper coreMapper, HashService hashService,
                                   ResourceEntityLabelService labelService,
-                                  ResourceProfileLinkingService resourceProfileService) {
-    super(coreMapper, hashService, labelService, resourceProfileService);
+                                  ResourceProfileLinkingService resourceProfileService,
+                                  ProfileService profileService) {
+    super(coreMapper, hashService, labelService, resourceProfileService, profileService);
   }
 
   @Override

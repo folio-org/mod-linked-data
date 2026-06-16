@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBORDINATE_UNIT;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ORGANIZATION;
 import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
@@ -16,19 +17,21 @@ import org.folio.linked.data.domain.dto.AuthorityRequest;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.service.label.ResourceEntityLabelService;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.JsonNode;
 
 @Component
-@MapperUnit(type = ORGANIZATION, requestDto = AuthorityField.class)
-public class OrganizationAuthorityMapperUnit extends AuthorityMapperUnit {
+@MapperUnit(type = {ORGANIZATION, JURISDICTION}, requestDto = AuthorityField.class)
+public class OrganizationAndJurisdictionAuthorityMapperUnit extends AuthorityMapperUnit {
 
-  public OrganizationAuthorityMapperUnit(CoreMapper coreMapper, HashService hashService,
-                                         ResourceEntityLabelService labelService,
-                                         ResourceProfileLinkingService resourceProfileService) {
-    super(coreMapper, hashService, labelService, resourceProfileService);
+  public OrganizationAndJurisdictionAuthorityMapperUnit(CoreMapper coreMapper, HashService hashService,
+                                                        ResourceEntityLabelService labelService,
+                                                        ResourceProfileLinkingService resourceProfileService,
+                                                        ProfileService profileService) {
+    super(coreMapper, hashService, labelService, resourceProfileService, profileService);
   }
 
   @Override

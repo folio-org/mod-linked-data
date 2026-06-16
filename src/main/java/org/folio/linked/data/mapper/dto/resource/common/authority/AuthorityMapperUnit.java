@@ -7,10 +7,10 @@ import org.folio.linked.data.domain.dto.AuthorityResponse;
 import org.folio.linked.data.domain.dto.AuthorityResponseField;
 import org.folio.linked.data.domain.dto.ResourceResponseDto;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
-import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.mapper.dto.resource.common.TopResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.label.ResourceEntityLabelService;
+import org.folio.linked.data.service.profile.ProfileService;
 import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.folio.linked.data.service.resource.hash.HashService;
 import tools.jackson.databind.JsonNode;
@@ -22,6 +22,7 @@ public abstract class AuthorityMapperUnit extends TopResourceMapperUnit {
   private final HashService hashService;
   private final ResourceEntityLabelService labelService;
   private final ResourceProfileLinkingService resourceProfileService;
+  private final ProfileService profileService;
 
   @Override
   public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
@@ -37,7 +38,7 @@ public abstract class AuthorityMapperUnit extends TopResourceMapperUnit {
   @Override
   public Resource toEntity(Object dto, Resource parentEntity) {
     var authorityDto = ((AuthorityField) dto).getAuthority();
-    var type = this.getClass().getAnnotation(MapperUnit.class).type();
+    var type = profileService.getResourceTypeByProfileId(authorityDto.getProfileId());
     var authority = new Resource().addTypes(type);
     authority.setDoc(getDoc(authorityDto));
     labelService.assignLabelToResource(authority);
