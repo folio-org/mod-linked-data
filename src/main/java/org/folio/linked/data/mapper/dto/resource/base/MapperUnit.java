@@ -11,7 +11,7 @@ import org.folio.ld.dictionary.ResourceTypeDictionary;
 @Target(ElementType.TYPE)
 public @interface MapperUnit {
 
-  ResourceTypeDictionary type();
+  ResourceTypeDictionary[] type();
 
   PredicateDictionary[] predicate() default { PredicateDictionary.NULL };
 
