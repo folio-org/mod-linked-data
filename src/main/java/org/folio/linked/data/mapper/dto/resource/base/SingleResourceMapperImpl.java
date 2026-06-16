@@ -20,11 +20,15 @@ import java.util.Optional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.ld.dictionary.model.Predicate;
+import org.folio.linked.data.domain.dto.AuthorityField;
 import org.folio.linked.data.exception.NotSupportedException;
 import org.folio.linked.data.exception.RequestProcessingException;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Resource;
+import org.folio.linked.data.service.profile.ProfileService;
+import org.folio.linked.data.service.profile.ResourceProfileLinkingService;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -34,12 +38,14 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
 
   private final List<SingleResourceMapperUnit> mapperUnits;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
+  private final ProfileService profileService;
 
   @Override
   public <P> Resource toEntity(@NonNull Object dto, @NonNull Class<P> parentRequestDto, Predicate predicate,
                                Resource parentEntity) {
     try {
-      return getMapperUnit(null, predicate, parentRequestDto, dto.getClass())
+      var typeUri = dto instanceof AuthorityField ? getProfileAuthorityTypeUri((AuthorityField) dto) : null;
+      return getMapperUnit(typeUri, predicate, parentRequestDto, dto.getClass())
         .map(mapper -> mapper.toEntity(dto, parentEntity))
         .orElseThrow(() -> new NotSupportedException("Dto [" + dto.getClass().getSimpleName() + IS_NOT_SUPPORTED_FOR
           + (nonNull(predicate) ? PREDICATE + predicate.getUri() + RIGHT_SQUARE_BRACKET + AND : EMPTY)
@@ -72,6 +78,10 @@ public class SingleResourceMapperImpl implements SingleResourceMapper {
             + "parent [" + parentDto.getClass().getSimpleName() + ".class]");
         return null;
       });
+  }
+
+  private String getProfileAuthorityTypeUri(AuthorityField dto) {
+    return profileService.getResourceTypeByProfileId(dto.getAuthority().getProfileId()).getUri();
   }
 
   private Optional<SingleResourceMapperUnit> getMapperUnit(String typeUri, Predicate pred, Class<?> parentResponseDto,
