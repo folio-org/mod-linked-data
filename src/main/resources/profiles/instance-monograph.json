@@ -54,9 +54,9 @@
       "children": [
         "Profile:Instance:TitleInformation:InstanceTitle:NonSortCharacterCount",
         "Profile:Instance:TitleInformation:InstanceTitle:MainTitle",
+        "Profile:Instance:TitleInformation:InstanceTitle:OtherTitleInformation",
         "Profile:Instance:TitleInformation:InstanceTitle:PartNumber",
-        "Profile:Instance:TitleInformation:InstanceTitle:PartName",
-        "Profile:Instance:TitleInformation:InstanceTitle:OtherTitleInformation"
+        "Profile:Instance:TitleInformation:InstanceTitle:PartName"
       ],
       "id": "Profile:Instance:TitleInformation:InstanceTitle"
     },
@@ -142,9 +142,9 @@
       "uriBFLite": "http://bibfra.me/vocab/library/VariantTitle",
       "children": [
         "Profile:Instance:TitleInformation:VariantTitle:VariantTitle",
+        "Profile:Instance:TitleInformation:VariantTitle:OtherTitleInformation",
         "Profile:Instance:TitleInformation:VariantTitle:PartNumber",
         "Profile:Instance:TitleInformation:VariantTitle:PartName",
-        "Profile:Instance:TitleInformation:VariantTitle:OtherTitleInformation",
         "Profile:Instance:TitleInformation:VariantTitle:Date",
         "Profile:Instance:TitleInformation:VariantTitle:VariantTitleType",
         "Profile:Instance:TitleInformation:VariantTitle:Note"
