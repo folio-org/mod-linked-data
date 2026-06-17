@@ -3,6 +3,7 @@ package org.folio.linked.data.service.profile;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES;
+import static org.folio.linked.data.util.Constants.Cache.PROFILES_RESOURCE_TYPE;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
 import java.io.IOException;
@@ -65,7 +66,7 @@ public class ProfileServiceImpl implements ProfileService {
   }
 
   @Override
-  @Cacheable(value = PROFILES, key = "@folioExecutionContext.tenantId + '_resourceType_' + #profileId")
+  @Cacheable(value = PROFILES_RESOURCE_TYPE, key = "@folioExecutionContext.tenantId + '_' + #profileId")
   public ResourceTypeDictionary getResourceTypeByProfileId(Integer profileId) {
     return profileRepository.findResourceTypeUriById(profileId)
       .flatMap(ResourceTypeDictionary::fromUri)
