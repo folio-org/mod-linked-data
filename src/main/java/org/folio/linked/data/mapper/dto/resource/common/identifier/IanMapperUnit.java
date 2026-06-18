@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.instance.sub.identifier;
+package org.folio.linked.data.mapper.dto.resource.common.identifier;
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_IAN;

@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.instance.sub.identifier;
+package org.folio.linked.data.mapper.dto.resource.common.identifier;
 
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;

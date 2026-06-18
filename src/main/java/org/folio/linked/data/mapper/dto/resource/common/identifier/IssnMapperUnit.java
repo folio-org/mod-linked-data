@@ -1,39 +1,39 @@
-package org.folio.linked.data.mapper.dto.resource.common.instance.sub.identifier;
+package org.folio.linked.data.mapper.dto.resource.common.identifier;
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
-import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_LCCN;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISSN;
 
 import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
-import org.folio.linked.data.domain.dto.LccnField;
-import org.folio.linked.data.domain.dto.LccnFieldResponse;
+import org.folio.linked.data.domain.dto.IssnField;
+import org.folio.linked.data.domain.dto.IssnFieldResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
-@MapperUnit(type = ID_LCCN, predicate = MAP, requestDto = LccnField.class)
-public class LccnMapperUnit extends AbstractIdentifierMapperUnit {
+@MapperUnit(type = ID_ISSN, predicate = MAP, requestDto = IssnField.class)
+public class IssnMapperUnit extends AbstractIdentifierMapperUnit {
 
-  protected LccnMapperUnit(CoreMapper coreMapper, HashService hashService) {
+  protected IssnMapperUnit(CoreMapper coreMapper, HashService hashService) {
     super(coreMapper, hashService);
   }
 
   @Override
   protected ResourceTypeDictionary getIdentifierType() {
-    return ID_LCCN;
+    return ID_ISSN;
   }
 
   @Override
   protected IdentifierFieldResponse toFieldResponse(IdentifierResponse identifierResponse) {
-    return new LccnFieldResponse().lccn(identifierResponse);
+    return new IssnFieldResponse().issn(identifierResponse);
   }
 
   @Override
   protected IdentifierRequest toIdentifierRequest(Object dto) {
-    return ((LccnField) dto).getLccn();
+    return ((IssnField) dto).getIssn();
   }
 }
