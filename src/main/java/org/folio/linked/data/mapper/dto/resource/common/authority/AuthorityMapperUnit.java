@@ -1,5 +1,7 @@
 package org.folio.linked.data.mapper.dto.resource.common.authority;
 
+import static org.folio.ld.dictionary.PredicateDictionary.MAP;
+
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.AuthorityField;
 import org.folio.linked.data.domain.dto.AuthorityRequest;
@@ -41,6 +43,7 @@ public abstract class AuthorityMapperUnit extends TopResourceMapperUnit {
     var type = profileService.getResourceTypeByProfileId(authorityDto.getProfileId());
     var authority = new Resource().addTypes(type);
     authority.setDoc(getDoc(authorityDto));
+    coreMapper.addOutgoingEdges(authority, AuthorityRequest.class, authorityDto.getMap(), MAP);
     labelService.assignLabelToResource(authority);
     authority.setIdAndRefreshEdges(hashService.hash(authority));
     return authority;

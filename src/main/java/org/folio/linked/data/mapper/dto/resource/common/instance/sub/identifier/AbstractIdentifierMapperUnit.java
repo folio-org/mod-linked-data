@@ -10,6 +10,7 @@ import static org.folio.linked.data.util.ResourceUtils.putProperty;
 import java.util.HashMap;
 import java.util.List;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.linked.data.domain.dto.AuthorityResponse;
 import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
@@ -40,6 +41,9 @@ abstract class AbstractIdentifierMapperUnit implements InstanceSubResourceMapper
     if (parentDto instanceof InstanceResponse instance) {
       var identifierResponse = getResponseDto(resourceToConvert);
       instance.addMapItem(toFieldResponse(identifierResponse));
+    } else if (parentDto instanceof AuthorityResponse authority) {
+      var identifierResponse = getResponseDto(resourceToConvert);
+      authority.addMapItem(toFieldResponse(identifierResponse));
     }
     return parentDto;
   }
