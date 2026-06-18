@@ -20,6 +20,7 @@ import org.folio.linked.data.domain.dto.ProviderEventRequest;
 import org.folio.linked.data.domain.dto.ProviderEventResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
+import org.folio.linked.data.mapper.dto.resource.common.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.label.ResourceEntityLabelService;
 import org.folio.linked.data.service.resource.hash.HashService;

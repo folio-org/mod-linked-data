@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.instance.sub;
+package org.folio.linked.data.mapper.dto.resource.common;
 
 import java.util.Set;
 import org.folio.linked.data.domain.dto.AuthorityRequest;

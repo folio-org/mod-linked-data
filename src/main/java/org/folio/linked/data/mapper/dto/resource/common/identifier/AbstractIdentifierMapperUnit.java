@@ -16,7 +16,7 @@ import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
-import org.folio.linked.data.mapper.dto.resource.common.instance.sub.SubResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.resource.common.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import tools.jackson.databind.JsonNode;
