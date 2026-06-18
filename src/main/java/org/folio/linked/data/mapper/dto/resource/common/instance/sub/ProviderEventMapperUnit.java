@@ -33,7 +33,7 @@ import tools.jackson.databind.JsonNode;
   requestDto = ProviderEventRequest.class
 )
 @Component
-public class ProviderEventMapperUnit implements InstanceSubResourceMapperUnit {
+public class ProviderEventMapperUnit implements SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

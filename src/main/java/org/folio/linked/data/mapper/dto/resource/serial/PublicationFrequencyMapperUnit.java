@@ -18,7 +18,7 @@ import org.folio.linked.data.domain.dto.PublicationFrequency;
 import org.folio.linked.data.domain.dto.PublicationFrequencyResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
-import org.folio.linked.data.mapper.dto.resource.common.instance.sub.InstanceSubResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.resource.common.instance.sub.SubResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ import tools.jackson.databind.JsonNode;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = FREQUENCY, predicate = PUBLICATION_FREQUENCY, requestDto = PublicationFrequency.class)
-public class PublicationFrequencyMapperUnit implements InstanceSubResourceMapperUnit {
+public class PublicationFrequencyMapperUnit implements SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

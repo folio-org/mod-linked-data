@@ -7,7 +7,7 @@ import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapperUnit;
 
-public interface InstanceSubResourceMapperUnit extends SingleResourceMapperUnit {
+public interface SubResourceMapperUnit extends SingleResourceMapperUnit {
 
   @Override
   default Set<Class<?>> supportedParents() {

@@ -23,7 +23,7 @@ import tools.jackson.databind.JsonNode;
 @RequiredArgsConstructor
 @MapperUnit(type = SUPPLEMENTARY_CONTENT, predicate = PredicateDictionary.SUPPLEMENTARY_CONTENT,
   requestDto = SupplementaryContent.class)
-public class InstanceSupplementaryContentMapperUnit implements InstanceSubResourceMapperUnit {
+public class InstanceSupplementaryContentMapperUnit implements SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

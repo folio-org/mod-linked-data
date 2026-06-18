@@ -23,7 +23,7 @@ import tools.jackson.databind.JsonNode;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = ANNOTATION, predicate = ACCESS_LOCATION, requestDto = AccessLocation.class)
-public class AccessLocationMapperUnit implements InstanceSubResourceMapperUnit {
+public class AccessLocationMapperUnit implements SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

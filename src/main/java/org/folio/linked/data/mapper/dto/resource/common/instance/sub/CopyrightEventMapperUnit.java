@@ -22,7 +22,7 @@ import tools.jackson.databind.JsonNode;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = COPYRIGHT_EVENT, predicate = COPYRIGHT, requestDto = CopyrightEvent.class)
-public class CopyrightEventMapperUnit implements InstanceSubResourceMapperUnit {
+public class CopyrightEventMapperUnit implements SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;

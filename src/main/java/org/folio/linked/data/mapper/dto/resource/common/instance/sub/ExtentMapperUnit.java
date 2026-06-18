@@ -22,7 +22,7 @@ import tools.jackson.databind.JsonNode;
 @Component
 @RequiredArgsConstructor
 @MapperUnit(type = EXTENT, predicate = PredicateDictionary.EXTENT, requestDto = Extent.class)
-public class ExtentMapperUnit implements InstanceSubResourceMapperUnit {
+public class ExtentMapperUnit implements SubResourceMapperUnit {
 
   private final CoreMapper coreMapper;
   private final HashService hashService;
