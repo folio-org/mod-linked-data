@@ -4,6 +4,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.AFFILIATION;
 import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
+import static org.folio.ld.dictionary.PropertyDictionary.NUMBER_OF_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.PLACE;
 import static org.folio.ld.dictionary.PropertyDictionary.SUBORDINATE_UNIT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.JURISDICTION;
@@ -43,6 +44,7 @@ public class OrganizationAndJurisdictionAuthorityMapperUnit extends AuthorityMap
     putProperty(map, DATE, dto.getDate());
     putProperty(map, MISC_INFO, dto.getMiscInfo());
     putProperty(map, AFFILIATION, dto.getAffiliation());
+    putProperty(map, NUMBER_OF_PARTS, dto.getNumberOfParts());
     return coreMapper.toJson(map);
   }
 }

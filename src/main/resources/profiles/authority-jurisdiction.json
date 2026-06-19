@@ -15,6 +15,7 @@
         "Profile:Authority:Date",
         "Profile:Authority:MiscellaneousInformation",
         "Profile:Authority:Affiliation",
+        "Profile:Authority:NumberOfParts",
         "Profile:Authority:Identifiers"
       ],
       "id": "Profile:Authority"
@@ -108,6 +109,21 @@
       },
       "id": "Profile:Authority:Affiliation",
       "marc": "710$u"
+    },
+    {
+      "type": "literal",
+      "displayName": "Number of parts",
+      "uriBFLite": "http://bibfra.me/vocab/library/numberOfParts",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:NumberOfParts",
+      "marc": "110/710$n"
     },
     {
       "type": "dropdown",

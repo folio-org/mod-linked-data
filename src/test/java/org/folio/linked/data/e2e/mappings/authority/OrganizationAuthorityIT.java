@@ -28,6 +28,7 @@ class OrganizationAuthorityIT extends PostResourceIT {
             "http://bibfra.me/vocab/lite/date": ["1985-2023"],
             "http://bibfra.me/vocab/library/miscInfo": ["Organization info"],
             "http://bibfra.me/vocab/scholar/affiliation": ["Parent Org"],
+            "http://bibfra.me/vocab/library/numberOfParts": ["Organization Number of parts"],
             "http://library.link/vocab/map": [
               {
                 "http://library.link/identifier/LCCN": {
@@ -55,7 +56,8 @@ class OrganizationAuthorityIT extends PostResourceIT {
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/place'][0]").value("Org Place"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/lite/date'][0]").value("1985-2023"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/miscInfo'][0]").value("Organization info"))
-      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Parent Org"));
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Parent Org"))
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/numberOfParts'][0]").value("Organization Number of parts"));
 
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
     var mapNode = TEST_JSON_MAPPER.readTree(responsePayload)
@@ -75,6 +77,7 @@ class OrganizationAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/date")).isEqualTo("1985-2023");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Organization info");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Parent Org");
+    assertThat(getProperty(resource, "http://bibfra.me/vocab/library/numberOfParts")).isEqualTo("Organization Number of parts");
     assertThat(resource.getLabel()).isEqualTo("Test Organization Name, Org Sub Unit, Org Place, 1985-2023");
 
     var identifiers = getOutgoingResources(resource, "http://library.link/vocab/map");

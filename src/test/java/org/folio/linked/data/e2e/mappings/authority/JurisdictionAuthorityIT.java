@@ -28,6 +28,7 @@ class JurisdictionAuthorityIT extends PostResourceIT {
             "http://bibfra.me/vocab/lite/date": ["1990-2020"],
             "http://bibfra.me/vocab/library/miscInfo": ["Jurisdiction info"],
             "http://bibfra.me/vocab/scholar/affiliation": ["Jurisdiction Org"],
+            "http://bibfra.me/vocab/library/numberOfParts": ["Jurisdiction Number of parts"],
             "http://library.link/vocab/map": [
               {
                 "http://library.link/identifier/LCCN": {
@@ -55,7 +56,8 @@ class JurisdictionAuthorityIT extends PostResourceIT {
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/place'][0]").value("Test Place"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/lite/date'][0]").value("1990-2020"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/miscInfo'][0]").value("Jurisdiction info"))
-      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Jurisdiction Org"));
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Jurisdiction Org"))
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/numberOfParts'][0]").value("Jurisdiction Number of parts"));
 
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
     var mapNode = TEST_JSON_MAPPER.readTree(responsePayload)
@@ -75,6 +77,7 @@ class JurisdictionAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/date")).isEqualTo("1990-2020");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Jurisdiction info");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Jurisdiction Org");
+    assertThat(getProperty(resource, "http://bibfra.me/vocab/library/numberOfParts")).isEqualTo("Jurisdiction Number of parts");
     assertThat(resource.getLabel()).isEqualTo("Test Jurisdiction Name, Sub Unit, Test Place, 1990-2020");
 
     var identifiers = getOutgoingResources(resource, "http://library.link/vocab/map");

@@ -6,6 +6,7 @@ import static org.folio.ld.dictionary.PropertyDictionary.DATE;
 import static org.folio.ld.dictionary.PropertyDictionary.MISC_INFO;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME_ALTERNATIVE;
+import static org.folio.ld.dictionary.PropertyDictionary.NUMBER_OF_PARTS;
 import static org.folio.ld.dictionary.PropertyDictionary.NUMERATION;
 import static org.folio.ld.dictionary.PropertyDictionary.TITLES;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.FAMILY;
@@ -47,6 +48,7 @@ public class PersonAndFamilyAuthorityMapperUnit extends AuthorityMapperUnit {
     putProperty(map, ATTRIBUTION, dto.getAttribution());
     putProperty(map, NAME_ALTERNATIVE, dto.getNameAlternative());
     putProperty(map, AFFILIATION, dto.getAffiliation());
+    putProperty(map, NUMBER_OF_PARTS, dto.getNumberOfParts());
     return coreMapper.toJson(map);
   }
 }

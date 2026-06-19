@@ -30,6 +30,7 @@ class FamilyAuthorityIT extends PostResourceIT {
             "http://bibfra.me/vocab/library/attribution": ["Family attribution"],
             "http://bibfra.me/vocab/lite/nameAlternative": ["Alt Family Name"],
             "http://bibfra.me/vocab/scholar/affiliation": ["Family University"],
+            "http://bibfra.me/vocab/library/numberOfParts": ["Family Number of parts"],
             "http://library.link/vocab/map": [
               {
                 "http://library.link/identifier/LCCN": {
@@ -59,7 +60,8 @@ class FamilyAuthorityIT extends PostResourceIT {
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/miscInfo'][0]").value("Some family info"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/attribution'][0]").value("Family attribution"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/lite/nameAlternative'][0]").value("Alt Family Name"))
-      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Family University"));
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Family University"))
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/numberOfParts'][0]").value("Family Number of parts"));
 
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
     var mapNode = TEST_JSON_MAPPER.readTree(responsePayload)
@@ -81,6 +83,7 @@ class FamilyAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/attribution")).isEqualTo("Family attribution");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/nameAlternative")).isEqualTo("Alt Family Name");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Family University");
+    assertThat(getProperty(resource, "http://bibfra.me/vocab/library/numberOfParts")).isEqualTo("Family Number of parts");
     assertThat(resource.getLabel()).isEqualTo("I, Test Family Name, Dr., Alt Family Name, 2000-2024");
 
     var identifiers = getOutgoingResources(resource, "http://library.link/vocab/map");
