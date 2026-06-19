@@ -30,6 +30,7 @@ class PersonAuthorityIT extends PostResourceIT {
             "http://bibfra.me/vocab/library/attribution": ["Person attribution"],
             "http://bibfra.me/vocab/lite/nameAlternative": ["Alt Person Name"],
             "http://bibfra.me/vocab/scholar/affiliation": ["Person University"],
+            "http://bibfra.me/vocab/library/numberOfParts": ["Person Number of parts"],
             "http://library.link/vocab/map": [
               {
                 "http://library.link/identifier/LCCN": {
@@ -59,7 +60,8 @@ class PersonAuthorityIT extends PostResourceIT {
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/miscInfo'][0]").value("Person info"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/attribution'][0]").value("Person attribution"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/lite/nameAlternative'][0]").value("Alt Person Name"))
-      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Person University"));
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Person University"))
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/numberOfParts'][0]").value("Person Number of parts"));
 
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
     var mapNode = TEST_JSON_MAPPER.readTree(responsePayload)
@@ -81,6 +83,7 @@ class PersonAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/attribution")).isEqualTo("Person attribution");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/lite/nameAlternative")).isEqualTo("Alt Person Name");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Person University");
+    assertThat(getProperty(resource, "http://bibfra.me/vocab/library/numberOfParts")).isEqualTo("Person Number of parts");
     assertThat(resource.getLabel()).isEqualTo("II, Test Person Name, Prof., Alt Person Name, 1970-2024");
 
     var identifiers = getOutgoingResources(resource, "http://library.link/vocab/map");

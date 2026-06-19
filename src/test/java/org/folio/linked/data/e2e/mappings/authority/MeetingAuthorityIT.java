@@ -28,6 +28,7 @@ class MeetingAuthorityIT extends PostResourceIT {
             "http://bibfra.me/vocab/library/subordinateUnit": ["Meeting Sub Unit"],
             "http://bibfra.me/vocab/library/miscInfo": ["Meeting info"],
             "http://bibfra.me/vocab/scholar/affiliation": ["Meeting Org"],
+            "http://bibfra.me/vocab/library/numberOfParts": ["Meeting Number of parts"],
             "http://library.link/vocab/map": [
               {
                 "http://library.link/identifier/LCCN": {
@@ -55,7 +56,8 @@ class MeetingAuthorityIT extends PostResourceIT {
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/lite/date'][0]").value("2010"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/subordinateUnit'][0]").value("Meeting Sub Unit"))
       .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/miscInfo'][0]").value("Meeting info"))
-      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Meeting Org"));
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/scholar/affiliation'][0]").value("Meeting Org"))
+      .andExpect(jsonPath(AUTHORITY_PATH + "['http://bibfra.me/vocab/library/numberOfParts'][0]").value("Meeting Number of parts"));
 
     var responsePayload = apiResponse.andReturn().getResponse().getContentAsString();
     var mapNode = TEST_JSON_MAPPER.readTree(responsePayload)
@@ -75,6 +77,7 @@ class MeetingAuthorityIT extends PostResourceIT {
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/subordinateUnit")).isEqualTo("Meeting Sub Unit");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/library/miscInfo")).isEqualTo("Meeting info");
     assertThat(getProperty(resource, "http://bibfra.me/vocab/scholar/affiliation")).isEqualTo("Meeting Org");
+    assertThat(getProperty(resource, "http://bibfra.me/vocab/library/numberOfParts")).isEqualTo("Meeting Number of parts");
     assertThat(resource.getLabel()).isEqualTo("Test Meeting Name, 2010, Meeting Place, Meeting Sub Unit");
 
     var identifiers = getOutgoingResources(resource, "http://library.link/vocab/map");

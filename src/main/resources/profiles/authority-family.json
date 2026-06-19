@@ -17,6 +17,7 @@
         "Profile:Authority:AttributionQualifier",
         "Profile:Authority:FullerFormOfName",
         "Profile:Authority:Affiliation",
+        "Profile:Authority:NumberOfParts",
         "Profile:Authority:Identifiers"
       ],
       "id": "Profile:Authority"
@@ -140,6 +141,21 @@
       },
       "id": "Profile:Authority:Affiliation",
       "marc": "700$u"
+    },
+    {
+      "type": "literal",
+      "displayName": "Number of parts",
+      "uriBFLite": "http://bibfra.me/vocab/library/numberOfParts",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:NumberOfParts",
+      "marc": "100/700$n"
     },
     {
       "type": "dropdown",

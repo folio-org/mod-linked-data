@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Authority object",
+  "allOf": [
+    {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/name"
+        },
+        "numeration": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/numeration"
+        },
+        "titles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/titles"
+        },
+        "date": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/date"
+        },
+        "miscInfo": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/miscInfo"
+        },
+        "attribution": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/attribution"
+        },
+        "nameAlternative": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/lite/nameAlternative"
+        },
+        "affiliation": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/scholar/affiliation"
+        },
+        "numberOfParts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/numberOfParts"
+        },
+        "subordinateUnit": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/subordinateUnit"
+        },
+        "place": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/place"
+        },
+        "geographicCoverage": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-json-property": "http://bibfra.me/vocab/library/geographicCoverage"
+        }
+      }
+    }
+  ]
+}
+
