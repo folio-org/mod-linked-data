@@ -40,7 +40,7 @@ import lombok.experimental.UtilityClass;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.folio.linked.data.configuration.ErrorResponseConfig;
-import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
+import org.folio.linked.data.domain.dto.MapResponse;
 import org.folio.linked.data.domain.dto.ResourceResponseField;
 import org.folio.linked.data.domain.dto.TitleFieldResponseTitleInner;
 import org.folio.linked.data.exception.RequestProcessingException;
@@ -48,7 +48,7 @@ import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.linked.data.model.entity.ResourceSubgraphView;
 import org.folio.linked.data.model.entity.ResourceTypeEntity;
-import org.folio.linked.data.test.json.IdentifierFieldResponseDeserializer;
+import org.folio.linked.data.test.json.MapResponseDeserializer;
 import org.folio.linked.data.test.json.ResourceResponseFieldDeserializer;
 import org.folio.linked.data.test.json.TitleFieldResponseDeserializer;
 import org.jeasy.random.EasyRandom;
@@ -76,7 +76,7 @@ public class TestUtil {
     .addModule(new SimpleModule()
       .addDeserializer(ResourceResponseField.class, new ResourceResponseFieldDeserializer())
       .addDeserializer(TitleFieldResponseTitleInner.class, new TitleFieldResponseDeserializer())
-      .addDeserializer(IdentifierFieldResponse.class, new IdentifierFieldResponseDeserializer()))
+      .addDeserializer(MapResponse.class, new MapResponseDeserializer()))
     .build();
   public static final String INSTANCE_WITH_WORK_REF_SAMPLE = loadResourceAsString("samples/instance_and_work_ref.json");
   public static final String WORK_SAMPLE = loadResourceAsString("samples/work.json");

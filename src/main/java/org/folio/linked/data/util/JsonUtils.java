@@ -15,10 +15,10 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.configuration.json.deserialization.ResourceRequestFieldDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.event.SourceRecordDomainEventDeserializer;
-import org.folio.linked.data.configuration.json.deserialization.instance.IdentifierFieldDeserializer;
+import org.folio.linked.data.configuration.json.deserialization.instance.MapRequestDeserializer;
 import org.folio.linked.data.configuration.json.deserialization.title.TitleFieldRequestDeserializer;
 import org.folio.linked.data.configuration.json.serialization.MarcRecordSerializationConfig;
-import org.folio.linked.data.domain.dto.IdentifierField;
+import org.folio.linked.data.domain.dto.MapRequest;
 import org.folio.linked.data.domain.dto.MarcRecord;
 import org.folio.linked.data.domain.dto.ResourceRequestField;
 import org.folio.linked.data.domain.dto.SourceRecordDomainEvent;
@@ -44,7 +44,7 @@ public class JsonUtils {
     .addModule(new SimpleModule()
       .addDeserializer(ResourceRequestField.class, new ResourceRequestFieldDeserializer())
       .addDeserializer(TitleFieldRequestTitleInner.class, new TitleFieldRequestDeserializer())
-      .addDeserializer(IdentifierField.class, new IdentifierFieldDeserializer())
+      .addDeserializer(MapRequest.class, new MapRequestDeserializer())
       .addDeserializer(SourceRecordDomainEvent.class, new SourceRecordDomainEventDeserializer()))
     .build();
 

@@ -84,6 +84,13 @@
             "type": "string"
           },
           "x-json-property": "http://bibfra.me/vocab/library/geographicCoverage"
+        },
+        "map": {
+          "type": "array",
+          "items": {
+            "$ref": "MapRequest.json"
+          },
+          "x-json-property": "http://library.link/vocab/map"
         }
       }
     }

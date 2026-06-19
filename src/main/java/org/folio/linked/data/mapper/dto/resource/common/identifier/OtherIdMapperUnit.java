@@ -1,12 +1,12 @@
-package org.folio.linked.data.mapper.dto.resource.common.instance.sub.identifier;
+package org.folio.linked.data.mapper.dto.resource.common.identifier;
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_UNKNOWN;
 
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
+import org.folio.linked.data.domain.dto.MapResponse;
 import org.folio.linked.data.domain.dto.OtherIdField;
 import org.folio.linked.data.domain.dto.OtherIdFieldResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
@@ -28,7 +28,7 @@ public class OtherIdMapperUnit extends AbstractIdentifierMapperUnit {
   }
 
   @Override
-  protected IdentifierFieldResponse toFieldResponse(IdentifierResponse identifierResponse) {
+  protected MapResponse toFieldResponse(IdentifierResponse identifierResponse) {
     return new OtherIdFieldResponse().identifier(identifierResponse);
   }
 
