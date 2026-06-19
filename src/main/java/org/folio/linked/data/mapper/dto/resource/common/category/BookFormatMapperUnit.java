@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.monograph;
+package org.folio.linked.data.mapper.dto.resource.common.category;
 
 import static org.folio.ld.dictionary.PredicateDictionary.BOOK_FORMAT;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.CATEGORY;
@@ -8,13 +8,12 @@ import org.folio.linked.data.domain.dto.CategoryResponse;
 import org.folio.linked.data.domain.dto.InstanceResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
-import org.folio.linked.data.mapper.dto.resource.common.category.CategoryMapperUnit;
 import org.folio.linked.data.service.resource.hash.HashService;
 import org.springframework.stereotype.Component;
 
 @Component
 @MapperUnit(type = CATEGORY, predicate = BOOK_FORMAT, requestDto = Category.class)
-public class BookFormatMapperUnit  extends CategoryMapperUnit {
+public class BookFormatMapperUnit extends CategoryMapperUnit {
 
   private static final String CATEGORY_SET_LABEL = "Book Format";
   private static final String CATEGORY_SET_LINK = "http://id.loc.gov/vocabulary/bookformat";

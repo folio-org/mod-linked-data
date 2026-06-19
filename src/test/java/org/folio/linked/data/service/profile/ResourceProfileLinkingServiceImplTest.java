@@ -82,7 +82,6 @@ class ResourceProfileLinkingServiceImplTest {
     assertThat(result).isEqualTo(TestStrategy.TEST_PROFILE_ID);
   }
 
-
   private static final class TestStrategy implements ProfileSelectionStrategy {
     static final Integer TEST_PROFILE_ID = 99;
 

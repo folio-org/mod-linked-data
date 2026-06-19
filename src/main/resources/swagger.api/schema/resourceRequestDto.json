@@ -46,6 +46,17 @@
               "description": "Hub request DTO"
             }
           }
+        },
+        {
+          "title": "AuthorityField",
+          "properties": {
+            "Authority": {
+              "type": "object",
+              "$ref": "resource/request/AuthorityRequest.json",
+              "x-json-property": "_authority",
+              "description": "Authority request DTO"
+            }
+          }
         }
       ]
     }

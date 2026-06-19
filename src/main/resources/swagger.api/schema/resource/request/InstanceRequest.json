@@ -46,65 +46,7 @@
         "map": {
           "type": "array",
           "items": {
-            "title": "IdentifierField",
-            "oneOf": [
-              {
-                "type": "object",
-                "title": "LccnField",
-                "properties": {
-                  "Lccn": {
-                    "type": "object",
-                    "$ref": "IdentifierRequest.json",
-                    "x-json-property": "http://library.link/identifier/LCCN",
-                    "x-field-extra-annotation": "@org.folio.linked.data.validation.LccnPatternConstraint"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "title": "IssnField",
-                "properties": {
-                  "Issn": {
-                    "type": "object",
-                    "$ref": "IdentifierRequest.json",
-                    "x-json-property": "http://library.link/identifier/ISSN"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "title": "IsbnField",
-                "properties": {
-                  "Isbn": {
-                    "type": "object",
-                    "$ref": "IdentifierRequest.json",
-                    "x-json-property": "http://library.link/identifier/ISBN"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "title": "IanField",
-                "properties": {
-                  "Ian": {
-                    "type": "object",
-                    "$ref": "IdentifierRequest.json",
-                    "x-json-property": "http://library.link/identifier/IAN"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "title": "OtherIdField",
-                "properties": {
-                  "Identifier": {
-                    "type": "object",
-                    "$ref": "IdentifierRequest.json",
-                    "x-json-property": "http://library.link/identifier/UNKNOWN"
-                  }
-                }
-              }
-            ]
+            "$ref": "MapRequest.json"
           },
           "x-json-property": "http://library.link/vocab/map"
         },

@@ -3,6 +3,7 @@ package org.folio.linked.data.service.profile;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES;
+import static org.folio.linked.data.util.Constants.Cache.PROFILES_RESOURCE_TYPE;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.ld.dictionary.ResourceTypeDictionary;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Profile;
@@ -61,6 +63,15 @@ public class ProfileServiceImpl implements ProfileService {
       .stream()
       .map(profile -> new ProfileMetadata(profile.getId(), profile.getName(), profile.getResourceType().getUri()))
       .toList();
+  }
+
+  @Override
+  @Cacheable(value = PROFILES_RESOURCE_TYPE, key = "@folioExecutionContext.tenantId + '_' + #profileId")
+  public ResourceTypeDictionary getResourceTypeByProfileId(Integer profileId) {
+    return profileRepository.findResourceTypeUriById(profileId)
+      .flatMap(ResourceTypeDictionary::fromUri)
+      .orElseThrow(() -> exceptionBuilder.notSupportedException(String.valueOf(profileId),
+        "Failed to get resource type by profile id"));
   }
 
   private void saveProfile(Resource resource) {

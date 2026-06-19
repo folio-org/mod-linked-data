@@ -1,6 +1,7 @@
 package org.folio.linked.data.service.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.PERSON;
 import static org.folio.linked.data.test.TestUtil.emptyRequestProcessingException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,5 +69,30 @@ class ProfileServiceImplTest {
     //then
     assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
     assertThat(thrown.getMessage()).isEmpty();
+  }
+
+  @Test
+  void getResourceTypeByProfileId_shouldReturnResourceType() {
+    //given
+    var profileId = 13;
+    when(profileRepository.findResourceTypeUriById(profileId)).thenReturn(Optional.of(PERSON.getUri()));
+
+    //when
+    var result = profileService.getResourceTypeByProfileId(profileId);
+
+    //then
+    assertThat(result).isEqualTo(PERSON);
+  }
+
+  @Test
+  void getResourceTypeByProfileId_shouldThrowException_whenProfileNotFound() {
+    //given
+    var profileId = 99;
+    when(profileRepository.findResourceTypeUriById(profileId)).thenReturn(Optional.empty());
+    when(exceptionBuilder.notSupportedException(anyString(), anyString()))
+      .thenReturn(emptyRequestProcessingException());
+
+    //when / then
+    assertThrows(RequestProcessingException.class, () -> profileService.getResourceTypeByProfileId(profileId));
   }
 }

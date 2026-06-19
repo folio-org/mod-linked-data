@@ -1,4 +1,4 @@
-package org.folio.linked.data.mapper.dto.resource.common.instance.sub.identifier;
+package org.folio.linked.data.mapper.dto.resource.common.identifier;
 
 import static org.folio.ld.dictionary.PredicateDictionary.STATUS;
 import static org.folio.ld.dictionary.PropertyDictionary.NAME;
@@ -9,18 +9,22 @@ import static org.folio.linked.data.util.ResourceUtils.putProperty;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
+import org.folio.linked.data.domain.dto.AuthorityRequest;
+import org.folio.linked.data.domain.dto.AuthorityResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
+import org.folio.linked.data.domain.dto.InstanceRequest;
 import org.folio.linked.data.domain.dto.InstanceResponse;
+import org.folio.linked.data.domain.dto.MapResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
-import org.folio.linked.data.mapper.dto.resource.common.instance.sub.InstanceSubResourceMapperUnit;
+import org.folio.linked.data.mapper.dto.resource.base.SingleResourceMapperUnit;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.service.resource.hash.HashService;
 import tools.jackson.databind.JsonNode;
 
-abstract class AbstractIdentifierMapperUnit implements InstanceSubResourceMapperUnit {
+abstract class AbstractIdentifierMapperUnit implements SingleResourceMapperUnit {
   private final CoreMapper coreMapper;
   private final HashService hashService;
 
@@ -31,15 +35,23 @@ abstract class AbstractIdentifierMapperUnit implements InstanceSubResourceMapper
 
   protected abstract ResourceTypeDictionary getIdentifierType();
 
-  protected abstract IdentifierFieldResponse toFieldResponse(IdentifierResponse identifierResponse);
+  protected abstract MapResponse toFieldResponse(IdentifierResponse identifierResponse);
 
   protected abstract IdentifierRequest toIdentifierRequest(Object dto);
 
   @Override
-  public <P> P toDto(Resource resourceToConvert, P parentDto, ResourceMappingContext context) {
+  public Set<Class<?>> supportedParents() {
+    return Set.of(InstanceRequest.class, InstanceResponse.class, AuthorityRequest.class, AuthorityResponse.class);
+  }
+
+  @Override
+  public <P> P toDto(Resource resourceToConvert, P parentDto, SingleResourceMapperUnit.ResourceMappingContext context) {
     if (parentDto instanceof InstanceResponse instance) {
       var identifierResponse = getResponseDto(resourceToConvert);
       instance.addMapItem(toFieldResponse(identifierResponse));
+    } else if (parentDto instanceof AuthorityResponse authority) {
+      var identifierResponse = getResponseDto(resourceToConvert);
+      authority.addMapItem(toFieldResponse(identifierResponse));
     }
     return parentDto;
   }

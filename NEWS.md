@@ -1,5 +1,6 @@
 ## 3.0.0 (IN PROGRESS)
 - Update order of fields for Title in profiles. [MODLD-1090](https://folio-org.atlassian.net/browse/MODLD-1090)
+- Standalone Authority resource CRUD API [MODLD-1082](https://folio-org.atlassian.net/browse/MODLD-1082)
 
 ## 2.0.3 (02-06-2026)
 - Exclude LIGHT_RESOURCE from reindexing [MODLD-1071](https://folio-org.atlassian.net/browse/MODLD-1071)

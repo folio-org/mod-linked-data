@@ -1,14 +1,14 @@
-package org.folio.linked.data.mapper.dto.resource.common.instance.sub.identifier;
+package org.folio.linked.data.mapper.dto.resource.common.identifier;
 
 import static org.folio.ld.dictionary.PredicateDictionary.MAP;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.ID_ISSN;
 
 import org.folio.ld.dictionary.ResourceTypeDictionary;
-import org.folio.linked.data.domain.dto.IdentifierFieldResponse;
 import org.folio.linked.data.domain.dto.IdentifierRequest;
 import org.folio.linked.data.domain.dto.IdentifierResponse;
 import org.folio.linked.data.domain.dto.IssnField;
 import org.folio.linked.data.domain.dto.IssnFieldResponse;
+import org.folio.linked.data.domain.dto.MapResponse;
 import org.folio.linked.data.mapper.dto.resource.base.CoreMapper;
 import org.folio.linked.data.mapper.dto.resource.base.MapperUnit;
 import org.folio.linked.data.service.resource.hash.HashService;
@@ -28,7 +28,7 @@ public class IssnMapperUnit extends AbstractIdentifierMapperUnit {
   }
 
   @Override
-  protected IdentifierFieldResponse toFieldResponse(IdentifierResponse identifierResponse) {
+  protected MapResponse toFieldResponse(IdentifierResponse identifierResponse) {
     return new IssnFieldResponse().issn(identifierResponse);
   }
 
