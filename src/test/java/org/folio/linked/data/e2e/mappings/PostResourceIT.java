@@ -73,5 +73,10 @@ public abstract class PostResourceIT extends ITBase {
     var getResponse = mockMvc.perform(getRequest);
     getResponse.andExpect(status().isOk());
     validateApiResponse(getResponse);
+    validateKafkaMessages(resourceId);
+  }
+
+  protected void validateKafkaMessages(String id) {
+    // no-op by default; override to add Kafka message assertions
   }
 }

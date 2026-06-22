@@ -1,4 +1,4 @@
-package org.folio.linked.data.integration.kafka.sender.search;
+package org.folio.linked.data.integration.kafka.sender.search.hub;
 
 import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;

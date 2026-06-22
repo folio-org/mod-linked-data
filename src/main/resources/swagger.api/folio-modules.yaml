@@ -20,6 +20,8 @@ components:
       $ref: folio-modules/search/authoritySearchResponse.json
     settingsSearchResponse:
       $ref: folio-modules/search/settingsSearchResponse.json
+    linkedDataAuthority:
+      $ref: folio-modules/search/linkedDataAuthority.json
     linkedDataInstance:
       $ref: folio-modules/search/linkedDataInstance.json
     linkedDataWork:

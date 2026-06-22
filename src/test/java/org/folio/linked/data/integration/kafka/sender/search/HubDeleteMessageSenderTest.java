@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
+import org.folio.linked.data.integration.kafka.sender.search.hub.HubDeleteMessageSender;
 import org.folio.linked.data.mapper.kafka.search.HubSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.spring.testing.type.UnitTest;

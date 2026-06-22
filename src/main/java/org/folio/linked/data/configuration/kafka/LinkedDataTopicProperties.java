@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("mod-linked-data.kafka.topic")
 public class LinkedDataTopicProperties {
 
+  private String authoritySearchIndex;
   private String workSearchIndex;
   private String hubSearchIndex;
   private String instanceIngress;

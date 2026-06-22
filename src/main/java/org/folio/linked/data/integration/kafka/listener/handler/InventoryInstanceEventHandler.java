@@ -10,7 +10,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.linked.data.domain.dto.InventoryInstanceEvent;
-import org.folio.linked.data.integration.kafka.sender.search.WorkUpdateMessageSender;
+import org.folio.linked.data.integration.kafka.sender.search.work.WorkUpdateMessageSender;
 import org.folio.linked.data.model.entity.FolioMetadata;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.repo.FolioMetadataRepository;

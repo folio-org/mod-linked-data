@@ -75,6 +75,9 @@ folio:
     retry-interval-ms: ${KAFKA_RETRY_INTERVAL_MS:2000}
     retry-delivery-attempts: ${KAFKA_RETRY_DELIVERY_ATTEMPTS:0}
     topics:
+      - name: ${mod-linked-data.kafka.topic.authority-search-index}
+        numPartitions: ${KAFKA_AUTHORITY_SEARCH_INDEX_TOPIC_PARTITIONS:3}
+        replicationFactor: ${KAFKA_AUTHORITY_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR:}
       - name: ${mod-linked-data.kafka.topic.work-search-index}
         numPartitions: ${KAFKA_WORK_SEARCH_INDEX_TOPIC_PARTITIONS:3}
         replicationFactor: ${KAFKA_WORK_SEARCH_INDEX_TOPIC_REPLICATION_FACTOR:}
@@ -96,6 +99,7 @@ mod-linked-data:
     max-params: ${SEARCH_MAX_PARAMS:100}
   kafka:
     topic:
+      authority-search-index: ${KAFKA_AUTHORITY_SEARCH_INDEX_TOPIC:linked-data.authority}
       work-search-index: ${KAFKA_WORK_SEARCH_INDEX_TOPIC:linked-data.work}
       hub-search-index: ${KAFKA_HUB_SEARCH_INDEX_TOPIC:linked-data.hub}
       instance-ingress: ${KAFKA_INVENTORY_INSTANCE_INGRESS_EVENT_TOPIC:inventory.instance_ingress}
