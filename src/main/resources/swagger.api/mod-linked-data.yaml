@@ -432,8 +432,12 @@ paths:
             schema:
               $ref: "schema/profile/customProfileSettingsRequestDto.json"
       responses:
-        '204':
-          description: Workspace profile settings created or updated successfully
+        '201':
+          description: Workspace profile settings created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "schema/profile/customProfileSettingsMetadata.json"
         '400':
           $ref: '#/components/responses/badRequestResponse'
         '404':
@@ -482,6 +486,22 @@ paths:
           $ref: '#/components/responses/badRequestResponse'
         '404':
           description: No profile found with a given profileId
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+
+    delete:
+      operationId: deleteProfileSettings
+      tags:
+        - profile
+      description: Delete a saved workspace profile settings for a profile for the current user
+      parameters:
+        - $ref: '#/components/parameters/profileId'
+        - $ref: '#/components/parameters/profileSettingsId'
+      responses:
+        '204':
+          description: Saved workspace profile settings deleted successfully
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
         '500':
           $ref: '#/components/responses/internalServerErrorResponse'
 

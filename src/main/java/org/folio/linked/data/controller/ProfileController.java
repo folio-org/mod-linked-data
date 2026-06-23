@@ -1,5 +1,7 @@
 package org.folio.linked.data.controller;
 
+import static org.springframework.http.HttpStatus.CREATED;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.folio.linked.data.domain.dto.CustomProfileSettingsMetadata;
@@ -63,11 +65,12 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
-  public ResponseEntity<Void> createProfileSettings(
+  public ResponseEntity<CustomProfileSettingsMetadata> createProfileSettings(
       Integer profileId,
       CustomProfileSettingsRequestDto profileSettingsRequest) {
-    profileSettingsService.createProfileSettings(profileId, profileSettingsRequest);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity
+      .status(CREATED)
+      .body(profileSettingsService.createProfileSettings(profileId, profileSettingsRequest));
   }
 
   @Override
@@ -76,6 +79,15 @@ public class ProfileController implements ProfileApi {
       Integer profileSettingsId,
       CustomProfileSettingsRequestDto profileSettingsRequest) {
     profileSettingsService.setProfileSettings(profileId, profileSettingsId, profileSettingsRequest);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> deleteProfileSettings(
+      Integer profileId,
+      Integer profileSettingsId
+  ) {
+    profileSettingsService.deleteProfileSettings(profileId, profileSettingsId);
     return ResponseEntity.noContent().build();
   }
 }

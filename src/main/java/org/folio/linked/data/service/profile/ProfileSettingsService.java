@@ -10,7 +10,7 @@ public interface ProfileSettingsService {
 
   CustomProfileSettingsResponseDto getProfileSettings(Integer profileId, Integer profileSettingsId);
 
-  void createProfileSettings(
+  CustomProfileSettingsMetadata createProfileSettings(
     Integer profileId,
     CustomProfileSettingsRequestDto profileSettingsRequest
   );
@@ -20,4 +20,6 @@ public interface ProfileSettingsService {
     Integer profileSettingsId,
     CustomProfileSettingsRequestDto profileSettingsRequest
   );
+
+  void deleteProfileSettings(Integer profileId, Integer profileSettingsId);
 }

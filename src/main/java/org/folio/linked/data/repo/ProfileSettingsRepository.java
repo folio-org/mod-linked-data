@@ -10,4 +10,6 @@ public interface ProfileSettingsRepository extends CrudRepository<ProfileSetting
   List<ProfileSettings> findByUserIdAndProfileId(UUID userId, Integer profileId);
 
   Optional<ProfileSettings> findByIdAndUserId(Integer id, UUID userId);
+
+  void deleteByIdAndProfileIdAndUserId(Integer id, Integer profileId, UUID userId);
 }

@@ -96,7 +96,7 @@ class ProfileSettingsIT {
           ]
         }""");
     mockMvc.perform(postRequest)
-      .andExpect(status().isNoContent());
+      .andExpect(status().isCreated());
 
     // when
     var getAllRequest = get(PROFILE_URL + "2" + SETTINGS_PATH)
@@ -139,7 +139,7 @@ class ProfileSettingsIT {
           ]
         }""");
     mockMvc.perform(postRequest)
-      .andExpect(status().isNoContent());
+      .andExpect(status().isCreated());
 
     // when
     var getAllRequest = get(PROFILE_URL + "2" + SETTINGS_PATH)

@@ -54,7 +54,7 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   }
 
   @Override
-  public void createProfileSettings(
+  public CustomProfileSettingsMetadata createProfileSettings(
     Integer profileId,
     CustomProfileSettingsRequestDto profileSettingsRequest
   ) {
@@ -63,7 +63,8 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
     try {
       var settings = toEntity(profile, null, userId, profileSettingsRequest);
-      profileSettingsRepository.save(settings);
+      var saved = profileSettingsRepository.save(settings);
+      return toMetadata(profileId, userId, saved);
     } catch (JacksonException e) {
       throw exceptionBuilder.badRequestException("Could not process settings", String.valueOf(profileId));
     }
@@ -86,6 +87,14 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     }
   }
 
+  @Override
+  public void deleteProfileSettings(Integer profileId, Integer profileSettingsId) {
+    var userId = executionContext.getUserId();
+    profileRepository.findById(profileId)
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
+    profileSettingsRepository.deleteByIdAndProfileIdAndUserId(profileSettingsId, profileId, userId);
+  }
+
   /**
    * In any case where the custom profile settings are not available, whether because
    * they haven't been set, they've been corrupted, or something else is wrong internally,
@@ -101,14 +110,7 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     UUID userId,
     ProfileSettings settings
   ) {
-    try {
-      var customProfileSettings = JSON_MAPPER.readValue(settings.getSettings(), CustomProfileSettings.class);
-      return new CustomProfileSettingsMetadata(settings.getId(), profileId, customProfileSettings.getName());
-    } catch (JacksonException e) {
-      log.error("Could not read stored profile settings  (user: {}, profile: {}) - default to profile",
-        userId, profileId);
-      return null;
-    }
+    return new CustomProfileSettingsMetadata(settings.getId(), profileId, settings.getName());
   }
 
   private CustomProfileSettingsResponseDto toDto(Integer profileId, UUID userId, ProfileSettings settings) {
