@@ -14,6 +14,7 @@ import static org.folio.linked.data.domain.dto.ResourceIndexEventType.UPDATE;
 import static org.folio.linked.data.test.TestUtil.getJsonNode;
 import static org.folio.linked.data.test.TestUtil.randomLong;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.folio.linked.data.domain.dto.LinkedDataAuthority;
@@ -53,7 +54,7 @@ class AuthoritySearchMessageMapperTest {
     var authority = (LinkedDataAuthority) result.getNew();
     assertThat(authority.getId()).isEqualTo(resource.getId().toString());
     assertThat(authority.getLabel()).isEqualTo(resource.getLabel());
-    assertThat(authority.getType()).isEqualTo(PERSON.getUri());
+    assertThat(authority.getTypes()).containsOnly(PERSON.getUri());
     assertThat(authority.getIdentifiers()).hasSize(1);
     assertThat(authority.getIdentifiers().getFirst().getValue()).isEqualTo("n2024001234");
     assertThat(authority.getIdentifiers().getFirst().getType()).isEqualTo(LCCN);
@@ -97,7 +98,7 @@ class AuthoritySearchMessageMapperTest {
   }
 
   @Test
-  void toIndex_shouldExcludeConceptType_whenAuthorityHasConceptAndPersonTypes() {
+  void toIndex_shouldIncludeMultipleTypes_whenAuthorityHasMultipleTypes() {
     // given
     var resource = new Resource()
       .setIdAndRefreshEdges(randomLong())
@@ -110,23 +111,23 @@ class AuthoritySearchMessageMapperTest {
 
     // then
     var authority = (LinkedDataAuthority) result.getNew();
-    assertThat(authority.getType()).isEqualTo(PERSON.getUri());
+    assertThat(authority.getTypes()).containsOnly(CONCEPT.getUri(), PERSON.getUri());
   }
 
   @Test
-  void toIndex_shouldReturnNullType_whenOnlyConceptTypePresent() {
+  void toIndex_shouldReturnNoTypes_whenNoTypeGiven() {
     // given
     var resource = new Resource()
       .setIdAndRefreshEdges(randomLong())
       .setLabel("Only Concept")
-      .addTypes(CONCEPT);
+      .setTypes(new HashSet<>());
 
     // when
     var result = authoritySearchMessageMapper.toIndex(resource, CREATE);
 
     // then
     var authority = (LinkedDataAuthority) result.getNew();
-    assertThat(authority.getType()).isNull();
+    assertThat(authority.getTypes()).isEmpty();
   }
 
   @Test
