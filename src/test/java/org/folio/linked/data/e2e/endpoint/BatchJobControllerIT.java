@@ -1,7 +1,7 @@
 package org.folio.linked.data.e2e.endpoint;
 
 import static java.lang.Long.parseLong;
-import static java.time.ZoneId.systemDefault;
+import static java.time.Month.SEPTEMBER;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.folio.ld.dictionary.PredicateDictionary.INSTANTIATES;
@@ -23,8 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 import org.folio.linked.data.e2e.base.ITBase;
@@ -49,8 +48,7 @@ class BatchJobControllerIT extends ITBase {
   private static final String INCREMENTAL_REINDEX_URL = "/linked-data/reindex/incremental";
   private static final String REINDEX_STATUS_URL = "/linked-data/batch/status";
   private static final String QUERY_PARAM_RESOURCE_TYPE = "resourceType";
-  private static final Date GIVEN_INDEX_DATE = Date.from(LocalDate.of(1986, 9, 15)
-    .atStartOfDay(systemDefault()).toInstant());
+  private static final LocalDateTime GIVEN_INDEX_DATE = LocalDateTime.of(1986, SEPTEMBER, 15, 0, 0);
 
   @Autowired
   private ResourceRepository resourceRepo;
@@ -211,9 +209,9 @@ class BatchJobControllerIT extends ITBase {
     var indexDate = freshPersistedOptional.get().getIndexDate();
     if (isSet) {
       assertThat(indexDate).isNotNull();
-      assertThat(indexDate.getTime()).isNotEqualTo(GIVEN_INDEX_DATE.getTime());
+      assertThat(indexDate).isNotEqualTo(GIVEN_INDEX_DATE);
     } else if (nonNull(indexDate)) {
-      assertThat(indexDate.getTime()).isEqualTo(GIVEN_INDEX_DATE.getTime());
+      assertThat(indexDate).isEqualTo(GIVEN_INDEX_DATE);
     }
   }
 

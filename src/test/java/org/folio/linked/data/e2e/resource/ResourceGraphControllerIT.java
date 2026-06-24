@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Set;
 import org.folio.ld.dictionary.model.Resource;
@@ -46,7 +45,7 @@ class ResourceGraphControllerIT extends ITBase {
   void getResourceGraphById_shouldReturnResourceGraph() throws Exception {
     // given
     var providerEvent = MonographTestUtil.providerEvent("production", "af", "Afghanistan");
-    var date = Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55"));
+    var date = LocalDateTime.parse("2018-05-05T11:50:55");
     providerEvent.setIndexDate(date);
     var providerEventResource = resourceTestService.saveGraph(providerEvent);
 

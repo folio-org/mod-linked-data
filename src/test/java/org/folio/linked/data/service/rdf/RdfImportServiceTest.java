@@ -481,7 +481,7 @@ class RdfImportServiceTest {
 
     // then
     assertThat(result.getResources()).hasSize(1);
-    assertThat(work.isOfType(ResourceTypeDictionary.BOOKS));
+    assertThat(work.isOfType(ResourceTypeDictionary.BOOKS)).isTrue();
     verify(metadataService).ensure(entity);
     verify(httpClient).downloadString(rdfUrl);
   }
@@ -544,7 +544,7 @@ class RdfImportServiceTest {
 
     // then
     assertThat(result.getResources()).hasSize(1);
-    assertThat(work.isOfType(ResourceTypeDictionary.CONTINUING_RESOURCES));
+    assertThat(work.isOfType(ResourceTypeDictionary.CONTINUING_RESOURCES)).isTrue();
     verify(metadataService).ensure(entity);
     verify(httpClient).downloadString(rdfUrl);
   }
@@ -607,7 +607,7 @@ class RdfImportServiceTest {
 
     // then
     assertThat(result.getResources()).hasSize(1);
-    assertThat(work.isOfType(ResourceTypeDictionary.BOOKS));
+    assertThat(work.isOfType(ResourceTypeDictionary.BOOKS)).isTrue();
     verify(metadataService).ensure(entity);
     verify(httpClient).downloadString(rdfUrl);
   }

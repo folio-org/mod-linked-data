@@ -15,6 +15,7 @@ import tools.jackson.databind.module.SimpleModule;
 @Log4j2
 @Component
 @RequiredArgsConstructor
+@SuppressWarnings("java:S3749")
 public class ResourceSubgraphViewMapper {
 
   private final JsonMapper jsonMapper = JSON_MAPPER.rebuild()

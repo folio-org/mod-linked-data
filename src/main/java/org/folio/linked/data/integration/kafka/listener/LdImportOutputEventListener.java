@@ -4,6 +4,7 @@ import static org.folio.linked.data.util.Constants.STANDALONE_PROFILE;
 import static org.folio.linked.data.util.KafkaUtils.handleForExistedTenant;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -45,7 +46,7 @@ public class LdImportOutputEventListener {
     log.info("Processing LD-Import output event with Job ID {} and ts {}",
       consumerRecord.value().getJobExecutionId(), consumerRecord.value().getTs());
     var event = consumerRecord.value();
-    var startTime = OffsetDateTime.now();
+    var startTime = OffsetDateTime.now(ZoneId.systemDefault());
     tenantScopedExecutionService.executeWithRetry(
       consumerRecord.headers(),
       () -> {
