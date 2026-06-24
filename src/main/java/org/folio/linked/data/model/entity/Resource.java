@@ -27,9 +27,9 @@ import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.Version;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -41,11 +41,11 @@ import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.ld.dictionary.specific.ResourceKind;
 import org.folio.linked.data.configuration.audit.LinkedDataAuditEntityListener;
 import org.folio.linked.data.validation.InstanceSingleWorkConstraint;
 import org.folio.linked.data.validation.PrimaryTitleConstraint;
 import org.folio.linked.data.validation.ResourceTypeConstraint;
-import org.folio.marc4ld.util.ResourceKind;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -79,7 +79,7 @@ public class Resource implements Persistable<Long> {
   @Type(JsonBinaryType.class)
   private JsonNode doc;
 
-  private Date indexDate;
+  private LocalDateTime indexDate;
 
   private boolean active = true;
 
@@ -107,11 +107,11 @@ public class Resource implements Persistable<Long> {
   private FolioMetadata folioMetadata;
 
   @Column(name = "created_date", updatable = false, nullable = false)
-  private Timestamp createdDate;
+  private LocalDateTime createdDate;
 
   @UpdateTimestamp
   @Column(name = "updated_date", nullable = false)
-  private Timestamp updatedDate;
+  private LocalDateTime updatedDate;
 
   @CreatedBy
   @Column(name = "created_by")
@@ -131,7 +131,7 @@ public class Resource implements Persistable<Long> {
   public Resource(@NonNull Resource that) {
     this.id = that.id;
     this.label = that.label;
-    this.doc = (JsonNode) ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
+    this.doc = ofNullable(that.getDoc()).map(JsonNode::deepCopy).orElse(null);
     this.folioMetadata = that.folioMetadata;
     this.indexDate = that.indexDate;
     this.types = new LinkedHashSet<>(that.getTypes());
@@ -228,7 +228,7 @@ public class Resource implements Persistable<Long> {
         + "Folio metadata can be set only for instance and authority resources");
     }
     if (isNull(this.createdDate)) {
-      this.createdDate = new Timestamp(System.currentTimeMillis());
+      this.createdDate = LocalDateTime.now(ZoneId.systemDefault());
     }
   }
 

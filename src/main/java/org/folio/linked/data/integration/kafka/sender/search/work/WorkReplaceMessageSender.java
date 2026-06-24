@@ -1,4 +1,4 @@
-package org.folio.linked.data.integration.kafka.sender.search;
+package org.folio.linked.data.integration.kafka.sender.search.work;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;

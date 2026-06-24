@@ -328,7 +328,7 @@ abstract class ResourceControllerITBase extends ITBase {
     var work = getSampleWork();
     var originalInstance = resourceTestService.saveGraph(getSampleInstanceResource(null, work));
     var updateDto = getSampleInstanceDtoMap();
-    var instanceMap = (LinkedHashMap) ((LinkedHashMap) updateDto.get("resource")).get(INSTANCE.getUri());
+    var instanceMap = ((Map<String, Map<String, List<String>>>) updateDto.get("resource")).get(INSTANCE.getUri());
     instanceMap.put(DIMENSIONS.getValue(), List.of("200 m"));
     instanceMap.remove("inventoryId");
     instanceMap.remove("srsId");
@@ -534,7 +534,7 @@ abstract class ResourceControllerITBase extends ITBase {
   private void compareResourceMetadataOfOriginalAndUpdated(Resource original, Resource updated, UUID updatedById) {
     assertEquals(USER_ID, updated.getCreatedBy());
     assertEquals(updatedById, updated.getUpdatedBy());
-    assertTrue(updated.getUpdatedDate().after(original.getUpdatedDate()));
+    assertThat(updated.getUpdatedDate()).isAfter(original.getUpdatedDate());
     assertEquals(original.getCreatedDate(), updated.getCreatedDate());
     assertEquals(original.getCreatedBy(), updated.getCreatedBy());
     assertNull(original.getUpdatedBy());

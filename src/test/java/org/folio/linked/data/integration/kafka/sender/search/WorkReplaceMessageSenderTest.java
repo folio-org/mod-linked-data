@@ -8,6 +8,10 @@ import static org.folio.ld.dictionary.ResourceTypeDictionary.WORK;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import org.folio.linked.data.integration.kafka.sender.search.work.WorkCreateMessageSender;
+import org.folio.linked.data.integration.kafka.sender.search.work.WorkDeleteMessageSender;
+import org.folio.linked.data.integration.kafka.sender.search.work.WorkReplaceMessageSender;
+import org.folio.linked.data.integration.kafka.sender.search.work.WorkUpdateMessageSender;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;
 import org.folio.spring.testing.type.UnitTest;

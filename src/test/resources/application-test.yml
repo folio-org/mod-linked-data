@@ -10,6 +10,8 @@ spring:
 folio:
   kafka:
     topics:
+      - name: linked-data.authority
+        numPartitions: 1
       - name: linked-data.work
         numPartitions: 1
       - name: inventory.instance_ingress
@@ -31,6 +33,7 @@ mod-linked-data:
 
 test:
   topic:
+    search-authority: folio.test_tenant.linked-data.authority
     search-work: folio.test_tenant.linked-data.work
     search-hub: folio.test_tenant.linked-data.hub
     inventory-instance-ingress: folio.test_tenant.inventory.instance_ingress

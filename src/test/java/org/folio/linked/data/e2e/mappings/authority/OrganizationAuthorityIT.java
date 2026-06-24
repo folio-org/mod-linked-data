@@ -9,11 +9,10 @@ import static org.folio.linked.data.test.TestUtil.validateResourceType;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import lombok.SneakyThrows;
-import org.folio.linked.data.e2e.mappings.PostResourceIT;
 import org.folio.linked.data.model.entity.Resource;
 import org.springframework.test.web.servlet.ResultActions;
 
-class OrganizationAuthorityIT extends PostResourceIT {
+class OrganizationAuthorityIT extends PostAuthorityIT {
 
   @Override
   protected String postPayload() {
