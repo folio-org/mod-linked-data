@@ -156,4 +156,23 @@ class ProfileSettingsServiceImplTest {
     assertThat(thrown.getMessage()).isEmpty();
   }
 
+  @Test
+  void deleteProfileSettings_shouldThrowNotFound_ifNoSuchProfile() {
+    // given
+    var userId = UUID.randomUUID();
+    doReturn(userId).when(executionContext).getUserId();
+    var id = 1;
+    when(profileRepository.findById(id)).thenReturn(Optional.empty());
+    when(exceptionBuilder.notFoundLdResourceByIdException(anyString(), anyString()))
+      .thenReturn(emptyRequestProcessingException());
+    var profileSettingsId = 5;
+
+    // when
+    var thrown = assertThrows(RequestProcessingException.class,
+      () -> profileSettingsService.deleteProfileSettings(id, profileSettingsId));
+
+    // then
+    assertThat(thrown.getClass()).isEqualTo(RequestProcessingException.class);
+    assertThat(thrown.getMessage()).isEmpty();
+  }
 }

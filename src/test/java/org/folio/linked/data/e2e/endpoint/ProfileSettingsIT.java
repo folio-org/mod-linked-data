@@ -5,6 +5,7 @@ import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -95,18 +96,13 @@ class ProfileSettingsIT {
             }
           ]
         }""");
-    mockMvc.perform(postRequest)
-      .andExpect(status().isCreated());
+    var postResult = mockMvc.perform(postRequest)
+      .andExpect(status().isCreated())
+      .andReturn();
+    var postResultBody = postResult.getResponse().getContentAsString();
+    var settingsId = JsonPath.read(postResultBody, "$.id");
 
     // when
-    var getAllRequest = get(PROFILE_URL + "2" + SETTINGS_PATH)
-      .headers(headers);
-    var getAllResult = mockMvc.perform(getAllRequest)
-      .andExpect(status().isOk())
-      .andReturn();
-    var getAllResponseBody = getAllResult.getResponse().getContentAsString();
-    var settingsId = JsonPath.read(getAllResponseBody, "$.[0].id");
-
     var getRequest = get(PROFILE_URL + "2" + SETTINGS_PATH + "/" + settingsId)
       .headers(headers);
 
@@ -138,18 +134,13 @@ class ProfileSettingsIT {
             }
           ]
         }""");
-    mockMvc.perform(postRequest)
-      .andExpect(status().isCreated());
+    var postResult = mockMvc.perform(postRequest)
+      .andExpect(status().isCreated())
+      .andReturn();
+    var postResultBody = postResult.getResponse().getContentAsString();
+    var settingsId = JsonPath.read(postResultBody, "$.id");
 
     // when
-    var getAllRequest = get(PROFILE_URL + "2" + SETTINGS_PATH)
-      .headers(headers);
-    var getAllResult = mockMvc.perform(getAllRequest)
-      .andExpect(status().isOk())
-      .andReturn();
-    var getAllResponseBody = getAllResult.getResponse().getContentAsString();
-    var settingsId = JsonPath.read(getAllResponseBody, "$.[0].id");
-
     var putRequest = put(PROFILE_URL + "2" + SETTINGS_PATH + "/" + settingsId)
       .headers(headers)
       .content("""
@@ -184,4 +175,36 @@ class ProfileSettingsIT {
       .andExpect(jsonPath("$.children.length()", equalTo(2)));
   }
 
+  @Test
+  void shouldDeleteProfileSettings() throws Exception {
+    // given
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
+    headers.setContentType(APPLICATION_JSON);
+
+    var postRequest = post(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers)
+      .content("""
+        {
+          "name": "My settings",
+          "active": true,
+          "children": [
+            {
+              "id": "Work:Monograph:Title",
+              "visible": true,
+              "order": 1
+            }
+          ]
+        }""");
+    var postResult = mockMvc.perform(postRequest)
+      .andExpect(status().isCreated())
+      .andReturn();
+    var postResultBody = postResult.getResponse().getContentAsString();
+    var settingsId = JsonPath.read(postResultBody, "$.id");
+
+    // when
+    var deleteRequest = delete(PROFILE_URL + "2" + SETTINGS_PATH + "/" + settingsId)
+      .headers(headers);
+    mockMvc.perform(deleteRequest)
+      .andExpect(status().isNoContent());
+  }
 }
