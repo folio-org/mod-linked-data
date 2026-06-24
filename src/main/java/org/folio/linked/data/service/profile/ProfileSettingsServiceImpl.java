@@ -34,11 +34,10 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   @Transactional(readOnly = true)
   public List<CustomProfileSettingsMetadata> getAllProfileSettings(Integer profileId) {
     var userId = executionContext.getUserId();
-    profileRepository.findById(profileId)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
+    getProfile(profileId);
     var settings = profileSettingsRepository.findByUserIdAndProfileId(userId, profileId);
     return settings.stream()
-      .map(profileSettings -> toMetadata(profileId, userId, profileSettings))
+      .map(profileSettings -> toMetadata(profileId, profileSettings))
       .toList();
   }
 
@@ -46,8 +45,7 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   @Transactional(readOnly = true)
   public CustomProfileSettingsResponseDto getProfileSettings(Integer profileId, Integer profileSettingsId) {
     var userId = executionContext.getUserId();
-    profileRepository.findById(profileId)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
+    getProfile(profileId);
     var settings = profileSettingsRepository.findByIdAndUserId(profileSettingsId, userId);
     return settings.map(profileSettings -> toDto(profileId, userId, profileSettings))
       .orElseGet(() -> defaultToProfile(profileId, profileSettingsId));
@@ -59,12 +57,11 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     CustomProfileSettingsRequestDto profileSettingsRequest
   ) {
     var userId = executionContext.getUserId();
-    var profile = profileRepository.findById(profileId)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
+    var profile = getProfile(profileId);
     try {
       var settings = toEntity(profile, null, userId, profileSettingsRequest);
       var saved = profileSettingsRepository.save(settings);
-      return toMetadata(profileId, userId, saved);
+      return toMetadata(profileId, saved);
     } catch (JacksonException e) {
       throw exceptionBuilder.badRequestException("Could not process settings", String.valueOf(profileId));
     }
@@ -77,8 +74,7 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     CustomProfileSettingsRequestDto profileSettingsRequest
   ) {
     var userId = executionContext.getUserId();
-    var profile = profileRepository.findById(profileId)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
+    var profile = getProfile(profileId);
     try {
       var settings = toEntity(profile, profileSettingsId, userId, profileSettingsRequest);
       profileSettingsRepository.save(settings);
@@ -90,9 +86,13 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
   @Override
   public void deleteProfileSettings(Integer profileId, Integer profileSettingsId) {
     var userId = executionContext.getUserId();
-    profileRepository.findById(profileId)
-      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
+    getProfile(profileId);
     profileSettingsRepository.deleteByIdAndProfileIdAndUserId(profileSettingsId, profileId, userId);
+  }
+
+  private Profile getProfile(Integer profileId) {
+    return profileRepository.findById(profileId)
+      .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));
   }
 
   /**
@@ -107,7 +107,6 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
 
   private CustomProfileSettingsMetadata toMetadata(
     Integer profileId,
-    UUID userId,
     ProfileSettings settings
   ) {
     return new CustomProfileSettingsMetadata(settings.getId(), profileId, settings.getName());
