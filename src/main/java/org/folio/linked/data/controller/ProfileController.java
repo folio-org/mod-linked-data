@@ -74,7 +74,7 @@ public class ProfileController implements ProfileApi {
       @Valid CustomProfileSettingsRequestDto profileSettingsRequest) {
     var wrappedRequest = new CreateProfileSettingsRequest(profileId, profileSettingsRequest);
     validateCreateProfileSettingsRequest(wrappedRequest);
-  
+
     return ResponseEntity
       .status(CREATED)
       .body(profileSettingsService.createProfileSettings(profileId, profileSettingsRequest));
