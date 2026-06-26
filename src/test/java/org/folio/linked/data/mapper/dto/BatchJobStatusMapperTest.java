@@ -1,5 +1,6 @@
 package org.folio.linked.data.mapper.dto;
 
+import static java.time.Month.FEBRUARY;
 import static java.time.OffsetDateTime.of;
 import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,8 +26,8 @@ class BatchJobStatusMapperTest {
   private final BatchJobStatusMapper mapper = new BatchJobStatusMapperImpl();
 
   static Stream<Arguments> toDtoArgs() {
-    var startTime = LocalDateTime.of(2026, 2, 27, 10, 0, 0);
-    var endTime = LocalDateTime.of(2026, 2, 27, 10, 5, 0);
+    var startTime = LocalDateTime.of(2026, FEBRUARY, 27, 10, 0, 0);
+    var endTime = LocalDateTime.of(2026, FEBRUARY, 27, 10, 5, 0);
 
     return Stream.of(
       Arguments.of(
@@ -72,7 +73,7 @@ class BatchJobStatusMapperTest {
         "non-reindex steps ignored",
         REINDEX_STEP_NAME,
         execution(null, null, "COMPLETED", null, null, null,
-          Set.of(stepWithName("dropIndexStep", 999L, 999L), reindexStep(100L, 98L))),
+          Set.of(dropIndexStep(), reindexStep(100L, 98L))),
         new BatchJobStatusDto().jobName("jobName").linesRead(100L).linesSent(98L).status("COMPLETED")
       ),
       Arguments.of(
@@ -87,7 +88,7 @@ class BatchJobStatusMapperTest {
         "graph cleaning — non-graph steps ignored",
         GRAPH_CLEANING_STEP_NAME,
         execution(null, null, "COMPLETED", null, null, 1,
-          Set.of(stepWithName("dropIndexStep", 999L, 999L), graphCleaningStep(100L, 98L))),
+          Set.of(dropIndexStep(), graphCleaningStep(100L, 98L))),
         new BatchJobStatusDto().jobName("jobName").executionRound(1).linesRead(100L).linesSent(98L).status("COMPLETED")
       ),
       Arguments.of(
@@ -127,8 +128,8 @@ class BatchJobStatusMapperTest {
     return stepWithName(1L, GRAPH_CLEANING_STEP_NAME, readCount, writeCount);
   }
 
-  private static BatchStepExecution stepWithName(String name, Long readCount, Long writeCount) {
-    return stepWithName(2L, name, readCount, writeCount);
+  private static BatchStepExecution dropIndexStep() {
+    return stepWithName(2L, "dropIndexStep", 999L, 999L);
   }
 
   private static BatchStepExecution stepWithName(Long id, String name, Long readCount, Long writeCount) {

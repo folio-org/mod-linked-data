@@ -1,0 +1,264 @@
+{
+  "id": 11,
+  "name": "Meeting",
+  "resourceType": "http://bibfra.me/vocab/lite/Meeting",
+  "value": [
+    {
+      "type": "block",
+      "displayName": "Meeting",
+      "bfid": "lde:Profile:Authority",
+      "uriBFLite": "_authority",
+      "children": [
+        "Profile:Authority:MeetingName",
+        "Profile:Authority:Location",
+        "Profile:Authority:Date",
+        "Profile:Authority:SubordinateUnit",
+        "Profile:Authority:MiscellaneousInformation",
+        "Profile:Authority:Affiliation",
+        "Profile:Authority:NumberOfParts",
+        "Profile:Authority:Identifiers"
+      ],
+      "id": "Profile:Authority"
+    },
+    {
+      "type": "literal",
+      "displayName": "Meeting name",
+      "uriBFLite": "http://bibfra.me/vocab/lite/name",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": true,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:MeetingName",
+      "marc": "111/711$a"
+    },
+    {
+      "type": "literal",
+      "displayName": "Location",
+      "uriBFLite": "http://bibfra.me/vocab/library/place",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:Location",
+      "marc": "111/711$c"
+    },
+    {
+      "type": "literal",
+      "displayName": "Date",
+      "uriBFLite": "http://bibfra.me/vocab/lite/date",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:Date",
+      "marc": "111/711$d"
+    },
+    {
+      "type": "literal",
+      "displayName": "Subordinate unit",
+      "uriBFLite": "http://bibfra.me/vocab/library/subordinateUnit",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:SubordinateUnit",
+      "marc": "111/711$e"
+    },
+    {
+      "type": "literal",
+      "displayName": "Miscellaneous information",
+      "uriBFLite": "http://bibfra.me/vocab/library/miscInfo",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:MiscellaneousInformation",
+      "marc": "111/711$g"
+    },
+    {
+      "type": "literal",
+      "displayName": "Affiliation",
+      "uriBFLite": "http://bibfra.me/vocab/scholar/affiliation",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:Affiliation",
+      "marc": "711$u"
+    },
+    {
+      "type": "literal",
+      "displayName": "Number of parts",
+      "uriBFLite": "http://bibfra.me/vocab/library/numberOfParts",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:NumberOfParts",
+      "marc": "111/711$n"
+    },
+    {
+      "type": "dropdown",
+      "displayName": "Identifiers",
+      "uriBFLite": "http://library.link/vocab/map",
+      "constraints": {
+        "repeatable": true,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "children": ["Profile:Authority:Identifiers:LCCN", "Profile:Authority:Identifiers:OtherIdentifier"],
+      "id": "Profile:Authority:Identifiers"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "LCCN",
+      "bfid": "lc:RT:bf2:Identifiers:LCCN",
+      "uriBFLite": "http://library.link/identifier/LCCN",
+      "children": [
+        "Profile:Authority:Identifiers:LCCN:LCCN",
+        "Profile:Authority:Identifiers:LCCN:Qualifier",
+        "Profile:Authority:Identifiers:LCCN:InvalidCanceled"
+      ],
+      "id": "Profile:Authority:Identifiers:LCCN",
+      "marc": "N/A"
+    },
+    {
+      "type": "literal",
+      "displayName": "LCCN",
+      "uriBFLite": "http://bibfra.me/vocab/lite/name",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:Identifiers:LCCN:LCCN",
+      "marc": "010 $a"
+    },
+    {
+      "type": "literal",
+      "displayName": "Qualifier",
+      "uriBFLite": "http://bibfra.me/vocab/library/qualifier",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:Identifiers:LCCN:Qualifier",
+      "marc": "024 _8 $q"
+    },
+    {
+      "type": "simple",
+      "displayName": "Invalid/Canceled?",
+      "uriBFLite": "http://bibfra.me/vocab/library/status",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": ["/linked-data/vocabularies/idstatus"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
+        }
+      },
+      "id": "Profile:Authority:Identifiers:LCCN:InvalidCanceled",
+      "marc": "010 $z"
+    },
+    {
+      "type": "dropdownOption",
+      "displayName": "Other Identifier",
+      "bfid": "lc:RT:bf2:Identifiers:OtherIdentifier",
+      "uriBFLite": "http://library.link/identifier/UNKNOWN",
+      "children": [
+        "Profile:Authority:Identifiers:OtherIdentifier:OtherIdentifier",
+        "Profile:Authority:Identifiers:OtherIdentifier:Qualifier",
+        "Profile:Authority:Identifiers:OtherIdentifier:InvalidCanceled"
+      ],
+      "id": "Profile:Authority:Identifiers:OtherIdentifier",
+      "marc": "N/A"
+    },
+    {
+      "type": "literal",
+      "displayName": "Other Identifier",
+      "uriBFLite": "http://bibfra.me/vocab/lite/name",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:Identifiers:OtherIdentifier:OtherIdentifier",
+      "marc": "024 _8 $a"
+    },
+    {
+      "type": "literal",
+      "displayName": "Qualifier",
+      "uriBFLite": "http://bibfra.me/vocab/library/qualifier",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": [],
+        "valueDataType": {}
+      },
+      "id": "Profile:Authority:Identifiers:OtherIdentifier:Qualifier",
+      "marc": "024 _8 $q"
+    },
+    {
+      "type": "simple",
+      "displayName": "Invalid/Canceled?",
+      "uriBFLite": "http://bibfra.me/vocab/library/status",
+      "constraints": {
+        "repeatable": false,
+        "editable": true,
+        "mandatory": false,
+        "defaults": [],
+        "useValuesFrom": ["/linked-data/vocabularies/idstatus"],
+        "valueDataType": {
+          "dataTypeURI": "http://id.loc.gov/ontologies/bibframe/Status"
+        }
+      },
+      "id": "Profile:Authority:Identifiers:OtherIdentifier:InvalidCanceled",
+      "marc": "024 _8 $z"
+    }
+  ]
+}

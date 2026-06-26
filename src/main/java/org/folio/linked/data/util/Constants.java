@@ -14,6 +14,7 @@ public class Constants {
   public static final String AND = " and ";
   public static final String RESOURCE_WITH_GIVEN_ID = "Resource with given id [";
   public static final String IS_NOT_FOUND = "] is not found";
+  public static final String SEARCH_AUTHORITY_RESOURCE_NAME = "linked-data-authority";
   public static final String SEARCH_WORK_RESOURCE_NAME = "linked-data-work";
   public static final String SEARCH_HUB_RESOURCE_NAME = "linked-data-hub";
   public static final String RELATION_PREDICATE_PREFIX = "http://bibfra.me/vocab/relation/";
@@ -29,6 +30,7 @@ public class Constants {
     public static final String SETTINGS_ENTRIES = "settings-entries";
     public static final String MODULE_STATE = "module-state";
     public static final String PROFILES = "profiles";
+    public static final String PROFILES_RESOURCE_TYPE = "profiles-resource-type";
     public static final String AUTHORITY_SOURCE_FILES = "authority-source-files";
     public static final String VOCABULARIES = "vocabularies";
   }

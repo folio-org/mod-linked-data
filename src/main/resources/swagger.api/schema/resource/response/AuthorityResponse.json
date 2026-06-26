@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Authority response DTO",
+  "allOf": [
+    {
+      "$ref": "../common/IdField.json"
+    },
+    {
+      "$ref": "../common/ProfileIdField.json"
+    },
+    {
+      "$ref": "../common/Authority.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "map": {
+          "type": "array",
+          "items": {
+            "$ref": "MapResponse.json"
+          },
+          "x-json-property": "http://library.link/vocab/map"
+        }
+      }
+    }
+  ]
+}

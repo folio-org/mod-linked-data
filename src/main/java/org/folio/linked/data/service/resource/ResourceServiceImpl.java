@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.folio.linked.data.domain.dto.AuthorityField;
 import org.folio.linked.data.domain.dto.HubField;
 import org.folio.linked.data.domain.dto.InstanceField;
 import org.folio.linked.data.domain.dto.PrimaryTitle;
@@ -143,6 +144,7 @@ public class ResourceServiceImpl implements ResourceService {
       case InstanceField instance -> "Instance, Title: " + getPrimaryMainTitles(instance.getInstance().getTitle());
       case WorkField work -> "Work, Title: " + getPrimaryMainTitles(work.getWork().getTitle());
       case HubField hub -> "Hub, Title: " + getPrimaryMainTitles(hub.getHub().getTitle());
+      case AuthorityField authority -> "Authority, Name" + authority.getAuthority().getName();
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };
@@ -153,6 +155,7 @@ public class ResourceServiceImpl implements ResourceService {
       case InstanceField instance -> instance.getInstance().getProfileId();
       case WorkField work -> work.getWork().getProfileId();
       case HubField hub -> hub.getHub().getProfileId();
+      case AuthorityField authority -> authority.getAuthority().getProfileId();
       default -> throw exceptionBuilder.badRequestException(
         "Unsupported DTO", requestDto.getResource().getClass().getSimpleName());
     };

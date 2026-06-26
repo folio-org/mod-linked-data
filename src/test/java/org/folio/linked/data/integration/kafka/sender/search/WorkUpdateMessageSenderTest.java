@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
+import org.folio.linked.data.integration.kafka.sender.search.work.WorkUpdateMessageSender;
 import org.folio.linked.data.mapper.kafka.search.WorkSearchMessageMapper;
 import org.folio.linked.data.model.entity.Resource;
 import org.folio.linked.data.model.entity.ResourceEdge;

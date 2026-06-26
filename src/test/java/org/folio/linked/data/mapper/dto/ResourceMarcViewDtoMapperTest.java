@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.folio.ld.dictionary.ResourceTypeDictionary.PROVIDER_EVENT;
 import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +54,6 @@ class ResourceMarcViewDtoMapperTest {
         "http://bibfra.me/vocab/lite/place", List.of("Alaska")))
       )
       .setLabel("Alaska")
-      .setIndexDate(Timestamp.valueOf(LocalDateTime.parse("2018-05-05T11:50:55")));
+      .setIndexDate(LocalDateTime.parse("2018-05-05T11:50:55"));
   }
 }

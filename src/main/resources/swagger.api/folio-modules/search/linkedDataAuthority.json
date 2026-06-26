@@ -1,0 +1,33 @@
+{
+  "description": "Linked Data Authority dto",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Linked Data ID of the Authority",
+      "type": "string"
+    },
+    "types": {
+      "description": "Types of the Authority",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "label": {
+      "description": "Label of the Authority",
+      "type": "string"
+    },
+    "identifiers": {
+      "type": "array",
+      "description": "Resource identifier array",
+      "items": {
+        "$ref": "common/linkedDataIdentifier.json"
+      }
+    }
+  },
+  "required": [
+    "id",
+    "type",
+    "label"
+  ]
+}

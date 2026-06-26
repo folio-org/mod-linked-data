@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Authority request DTO",
+  "allOf": [
+    {
+      "$ref": "../common/ProfileIdField.json"
+    },
+    {
+      "$ref": "../common/Authority.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "map": {
+          "type": "array",
+          "items": {
+            "$ref": "MapRequest.json"
+          },
+          "x-json-property": "http://library.link/vocab/map"
+        }
+      }
+    }
+  ]
+}

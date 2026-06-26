@@ -10,6 +10,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.folio.linked.data.domain.dto.ImportResultEvent;
 import org.folio.linked.data.domain.dto.InstanceIngressEvent;
+import org.folio.linked.data.domain.dto.LinkedDataAuthority;
 import org.folio.linked.data.domain.dto.LinkedDataHub;
 import org.folio.linked.data.domain.dto.LinkedDataWork;
 import org.folio.linked.data.domain.dto.ResourceIndexEvent;
@@ -30,6 +31,16 @@ import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 public class KafkaProducerConfiguration {
   private final KafkaProperties kafkaProperties;
   private final LinkedDataTopicProperties linkedDataTopicProperties;
+
+  @Bean
+  public FolioMessageProducer<ResourceIndexEvent> authorityIndexMessageProducer(
+    KafkaTemplate<String, ResourceIndexEvent> resourceIndexEventMessageTemplate
+  ) {
+    var producer = new FolioMessageProducer<>(resourceIndexEventMessageTemplate,
+      linkedDataTopicProperties::getAuthoritySearchIndex);
+    producer.setKeyMapper(rie -> ((LinkedDataAuthority) rie.getNew()).getId());
+    return producer;
+  }
 
   @Bean
   public FolioMessageProducer<ResourceIndexEvent> workIndexMessageProducer(
