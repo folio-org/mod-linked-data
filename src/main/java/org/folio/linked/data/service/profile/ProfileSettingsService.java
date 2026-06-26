@@ -22,4 +22,6 @@ public interface ProfileSettingsService {
   );
 
   void deleteProfileSettings(Integer profileId, Integer profileSettingsId);
+
+  Boolean nameExistsForProfile(Integer profileId, CustomProfileSettingsRequestDto profileSettingsRequest);
 }

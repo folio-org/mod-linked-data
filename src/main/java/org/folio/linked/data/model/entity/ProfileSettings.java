@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -17,7 +18,15 @@ import org.hibernate.type.SqlTypes;
 
 @Data
 @Entity
-@Table(name = "profile_settings")
+@Table(
+  name = "profile_settings",
+  uniqueConstraints = {
+    @UniqueConstraint(
+      name = "unique_profile_settings_name",
+      columnNames = {"user_id", "profile_id", "name"}
+      )
+  }
+)
 @Accessors(chain = true)
 public class ProfileSettings {
   @Id

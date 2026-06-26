@@ -90,6 +90,13 @@ public class ProfileSettingsServiceImpl implements ProfileSettingsService {
     profileSettingsRepository.deleteByIdAndProfileIdAndUserId(profileSettingsId, profileId, userId);
   }
 
+  @Override
+  public Boolean nameExistsForProfile(Integer profileId, CustomProfileSettingsRequestDto profileSettingsRequest) {
+    var userId = executionContext.getUserId();
+    return profileSettingsRepository.existsByUserIdAndProfileIdAndName(
+      userId, profileId, profileSettingsRequest.getName());
+  }
+
   private Profile getProfile(Integer profileId) {
     return profileRepository.findById(profileId)
       .orElseThrow(() -> exceptionBuilder.notFoundLdResourceByIdException("Profile", String.valueOf(profileId)));

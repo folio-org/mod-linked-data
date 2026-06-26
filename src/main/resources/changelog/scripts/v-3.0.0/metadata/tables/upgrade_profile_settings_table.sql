@@ -34,6 +34,10 @@ update profile_settings
 alter table profile_settings
   alter column name set not null;
 
+-- Make name unique for each user-profile
+alter table profile_settings
+  add constraint unique_profile_settings_name unique (user_id, profile_id, name);
+
 --rollback alter table profile_settings drop column name;
 --rollback drop index profile_settings_user_profile;
 --rollback alter table profile_settings drop constraint profile_settings_id_pk;

@@ -11,5 +11,7 @@ public interface ProfileSettingsRepository extends CrudRepository<ProfileSetting
 
   Optional<ProfileSettings> findByIdAndUserId(Integer id, UUID userId);
 
+  Boolean existsByUserIdAndProfileIdAndName(UUID userId, Integer profileId, String name);
+
   void deleteByIdAndProfileIdAndUserId(Integer id, Integer profileId, UUID userId);
 }
