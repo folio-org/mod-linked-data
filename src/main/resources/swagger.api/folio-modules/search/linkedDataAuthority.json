@@ -27,7 +27,7 @@
   },
   "required": [
     "id",
-    "type",
+    "types",
     "label"
   ]
 }

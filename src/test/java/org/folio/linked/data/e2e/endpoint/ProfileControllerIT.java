@@ -73,7 +73,7 @@ class ProfileControllerIT {
   }
 
   @Test
-  void getMetadataByResourceType_returnsMetadata() throws Exception {
+  void getMetadataByResourceType_returnsMetadata_forWork() throws Exception {
     //given
     var requestBuilder = get(PROFILE_URL + "/metadata?resourceType=http://bibfra.me/vocab/lite/Work")
       .headers(defaultHeaders(env));
@@ -91,5 +91,47 @@ class ProfileControllerIT {
       .andExpect(jsonPath("$[1].id", equalTo(6)))
       .andExpect(jsonPath("$[1].name", equalTo("Serials Work")))
       .andExpect(jsonPath("$[1].resourceType", equalTo("http://bibfra.me/vocab/lite/Work")));
+  }
+
+  @Test
+  void getMetadataByResourceType_returnsMetadataForAuthority() throws Exception {
+    //given
+    var requestBuilder = get(PROFILE_URL + "/metadata?resourceType=Authority")
+      .headers(defaultHeaders(env));
+
+    //when
+    var resultActions = mockMvc.perform(requestBuilder);
+
+    //then
+    resultActions
+      .andExpect(status().isOk())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andExpect(jsonPath("$[0].id", equalTo(8)))
+      .andExpect(jsonPath("$[0].name", equalTo("Family")))
+      .andExpect(jsonPath("$[0].resourceType", equalTo("http://bibfra.me/vocab/lite/Family")))
+      .andExpect(jsonPath("$[1].id", equalTo(9)))
+      .andExpect(jsonPath("$[1].name", equalTo("Form")))
+      .andExpect(jsonPath("$[1].resourceType", equalTo("http://bibfra.me/vocab/lite/Form")))
+      .andExpect(jsonPath("$[2].id", equalTo(10)))
+      .andExpect(jsonPath("$[2].name", equalTo("Jurisdiction")))
+      .andExpect(jsonPath("$[2].resourceType", equalTo("http://bibfra.me/vocab/lite/Jurisdiction")))
+      .andExpect(jsonPath("$[3].id", equalTo(11)))
+      .andExpect(jsonPath("$[3].name", equalTo("Meeting")))
+      .andExpect(jsonPath("$[3].resourceType", equalTo("http://bibfra.me/vocab/lite/Meeting")))
+      .andExpect(jsonPath("$[4].id", equalTo(12)))
+      .andExpect(jsonPath("$[4].name", equalTo("Organization")))
+      .andExpect(jsonPath("$[4].resourceType", equalTo("http://bibfra.me/vocab/lite/Organization")))
+      .andExpect(jsonPath("$[5].id", equalTo(13)))
+      .andExpect(jsonPath("$[5].name", equalTo("Person")))
+      .andExpect(jsonPath("$[5].resourceType", equalTo("http://bibfra.me/vocab/lite/Person")))
+      .andExpect(jsonPath("$[6].id", equalTo(14)))
+      .andExpect(jsonPath("$[6].name", equalTo("Place")))
+      .andExpect(jsonPath("$[6].resourceType", equalTo("http://bibfra.me/vocab/lite/Place")))
+      .andExpect(jsonPath("$[7].id", equalTo(15)))
+      .andExpect(jsonPath("$[7].name", equalTo("Temporal")))
+      .andExpect(jsonPath("$[7].resourceType", equalTo("http://bibfra.me/vocab/lite/Temporal")))
+      .andExpect(jsonPath("$[8].id", equalTo(16)))
+      .andExpect(jsonPath("$[8].name", equalTo("Topic")))
+      .andExpect(jsonPath("$[8].resourceType", equalTo("http://bibfra.me/vocab/lite/Topic")));
   }
 }
