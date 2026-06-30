@@ -1,6 +1,8 @@
 package org.folio.linked.data.e2e.endpoint;
 
 import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.folio.linked.data.test.TestUtil.TEST_JSON_MAPPER;
 import static org.folio.linked.data.test.TestUtil.defaultHeadersWithUserId;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -14,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.jayway.jsonpath.JsonPath;
+import org.folio.linked.data.domain.dto.ErrorResponse;
 import org.folio.linked.data.e2e.base.IntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +115,92 @@ class ProfileSettingsIT {
       .andExpect(content().contentType(APPLICATION_JSON))
       .andExpect(jsonPath("$.active", is(true)))
       .andExpect(jsonPath("$.children.length()", equalTo(1)));
+  }
+
+  @Test
+  void shouldRejectCreatingDuplicateNamedSettings() throws Exception {
+    // given
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
+    headers.setContentType(APPLICATION_JSON);
+
+    var postRequest = post(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers)
+      .content("""
+        {
+          "name": "My settings",
+          "active": true,
+          "children": [
+            {
+              "id": "Work:Monograph:Title",
+              "visible": true,
+              "order": 1
+            }
+          ]
+        }""");
+    mockMvc.perform(postRequest)
+      .andExpect(status().isCreated());
+
+    // when
+    var duplicatePostRequest = post(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers)
+      .content("""
+        {
+          "name": "My settings",
+          "active": true,
+          "children": [
+            {
+              "id": "Work:Monograph:Title",
+              "visible": true,
+              "order": 1
+            },
+            {
+              "id": "Work:Monograph:OtherTitleInformation",
+              "visible": true,
+              "order": 2
+            }
+          ]
+        }
+          """);
+    var response = mockMvc.perform(duplicatePostRequest)
+      .andExpect(status().isBadRequest())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+
+    var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
+    assertThat(errorResponse.getErrors())
+      .extracting("code")
+      .contains("profile_settings_name_not_unique");;
+  }
+
+  @Test
+  void shouldRejectBlankNamedSettings() throws Exception {
+    // given
+    var headers = defaultHeadersWithUserId(env, randomUUID().toString());
+    headers.setContentType(APPLICATION_JSON);
+
+    var postRequest = post(PROFILE_URL + "2" + SETTINGS_PATH)
+      .headers(headers)
+      .content("""
+        {
+          "name": "",
+          "active": true,
+          "children": [
+            {
+              "id": "Work:Monograph:Title",
+              "visible": true,
+              "order": 1
+            }
+          ]
+        }""");
+    var response = mockMvc.perform(postRequest)
+      .andExpect(status().isBadRequest())
+      .andExpect(content().contentType(APPLICATION_JSON))
+      .andReturn().getResponse().getContentAsString();
+
+    var errorResponse = TEST_JSON_MAPPER.readValue(response, ErrorResponse.class);
+    assertThat(errorResponse.getErrors())
+      .extracting("code")
+      .contains("must not be blank");
   }
 
   @Test
