@@ -2,6 +2,7 @@ package org.folio.linked.data.service.profile;
 
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.folio.ld.dictionary.ResourceTypeDictionary.HUB;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES;
 import static org.folio.linked.data.util.Constants.Cache.PROFILES_RESOURCE_TYPE;
 import static org.folio.linked.data.util.JsonUtils.JSON_MAPPER;
@@ -12,6 +13,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.folio.ld.dictionary.ResourceTypeDictionary;
+import org.folio.ld.dictionary.specific.ResourceKind;
 import org.folio.linked.data.domain.dto.ProfileMetadata;
 import org.folio.linked.data.exception.RequestProcessingExceptionBuilder;
 import org.folio.linked.data.model.entity.Profile;
@@ -31,6 +33,7 @@ import tools.jackson.databind.JsonNode;
 @Transactional(readOnly = true)
 public class ProfileServiceImpl implements ProfileService {
   private static final String PROFILES_PATTERN = "classpath*:profiles/*.json";
+  private static final String AUTHORITY_META_TYPE = "Authority";
   private final ProfileRepository profileRepository;
   private final ResourceTypeRepository typeRepository;
   private final RequestProcessingExceptionBuilder exceptionBuilder;
@@ -58,11 +61,23 @@ public class ProfileServiceImpl implements ProfileService {
 
   @Override
   public List<ProfileMetadata> getMetadataByResourceType(String resourceTypeUri) {
+    var resourceTypeUris = unwrapAuthorities(resourceTypeUri);
     return profileRepository
-      .findByResourceTypeUriOrderByIdAsc(resourceTypeUri)
+      .findByResourceTypeUriInOrderByIdAsc(resourceTypeUris)
       .stream()
       .map(profile -> new ProfileMetadata(profile.getId(), profile.getName(), profile.getResourceType().getUri()))
       .toList();
+  }
+
+  private List<String> unwrapAuthorities(String resourceTypeUri) {
+    if (AUTHORITY_META_TYPE.equals(resourceTypeUri)) {
+      return ResourceKind.AUTHORITY.stream()
+        .filter(t -> t != HUB)
+        .map(ResourceTypeDictionary::getUri)
+        .toList();
+    } else {
+      return List.of(resourceTypeUri);
+    }
   }
 
   @Override

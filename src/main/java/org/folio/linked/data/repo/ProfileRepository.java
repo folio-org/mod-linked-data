@@ -16,5 +16,5 @@ public interface ProfileRepository extends CrudRepository<Profile, Integer> {
   @Query("SELECT p.resourceType.uri FROM Profile p WHERE p.id = :id")
   Optional<String> findResourceTypeUriById(@Param("id") Integer id);
 
-  List<Profile> findByResourceTypeUriOrderByIdAsc(String resourceTypeUri);
+  List<Profile> findByResourceTypeUriInOrderByIdAsc(List<String> resourceTypeUris);
 }
